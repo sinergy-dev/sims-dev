@@ -1,0 +1,41 @@
+vendor/
+node_modules/
+npm-debug.log
+
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
+
+# Laravel 5 & Lumen specific
+public/storage
+public/hot
+storage/*.key
+.env.*.php
+.env.php
+.env
+.env.backup
+Homestead.yaml
+Homestead.json
+
+# Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
+.rocketeer/
+
+# Ignore SSL Cert
+ca_bundle.crt
+certificate.crt
+private.key
+
+# Ignore AdminLTE Folder
+public/AdminLTE/
+public/.well-known/
+public/report/
+
+# Ignore Other
+sftp-config.json.backup
+
+# Ignore Firebase-key
+app/Http/Controllers/firebase-key.json
+
+# Ignore Image
+public/img
+
