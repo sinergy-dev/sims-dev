@@ -18,6 +18,8 @@ Route::post('/update_result2', 'SalesController@update_result');
 Route::post('/update_result2a', 'SalesController@update_result');
 Route::post('/update_result3', 'SalesController@update_result');
 Route::post('/update_result4', 'SalesController@update_result');
+Route::post('/update_result5', 'SalesController@update_result');
+
 
 
 Route::group(['middleware' => ['SIP']], function () {
