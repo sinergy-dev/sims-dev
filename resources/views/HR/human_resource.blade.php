@@ -2034,14 +2034,26 @@
 	</div>
 
 	<div class="modal fade" id="modal_update" role="dialog">
-	    <div class="modal-dialog modal-md">
+	    <div class="modal-dialog modal-lg">
 	    
 	      <!-- Modal content-->
-	      <div class="modal-content modal-md">
+	      <div class="modal-content">
 	        <div class="modal-header">
 	          <h4 class="modal-title">Detail Employees</h4>
 	        </div>
 	        <div class="modal-body">
+	        	<!-- <div class="nav-tabs-custom active" id="project_tab" role="tabpanel" aria-labelledby="project-tab">
+        			<ul class="nav nav-tabs" id="myTab" role="tablist">
+        				<li class="active"><a href="#tab_1" data-toggle="tab">Detail Profile</a></li>
+              			<li><a href="#tab_2" data-toggle="tab">Update Profile</a></li>
+        			</ul>
+
+        			<div class="tab-content">
+            			<div class="tab-pane active" id="tab_1">
+            			</div>
+            		</div>
+        		</div> -->
+
 	          <form method="POST" action="{{url('hu_rec/update')}}">
 	                        @csrf
 	                        <div class="form-group row" hidden>
@@ -2059,9 +2071,9 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="name" class="col-md-4 col-form-label text-md-left">{{ __('Employees Name') }}</label>
+	                            <label for="name" class="col-md-2 col-form-label">{{ __('Employees Name') }}</label>
 
-	                            <div class="col-md-8">
+	                            <div class="col-md-10">
 	                                <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" autofocus>
 
 	                                @if ($errors->has('name'))
@@ -2073,9 +2085,9 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+	                            <label for="email" class="col-md-2 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
-	                            <div class="col-md-8">
+	                            <div class="col-md-10">
 	                                <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
 
 	                                @if ($errors->has('email'))
@@ -2087,10 +2099,14 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company') }}</label>
+	                            <label for="company" class="col-md-2 col-form-label text-md-right">{{ __('Company') }}</label>
 
-	                            <div class="col-md-8">
-	                                <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onkeyup="copytextbox();" required autofocus>
+	                            <div class="col-md-4">
+	                            	<input id="company_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+	                        	</div>
+
+	                            <div class="col-md-4">
+	                                <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onchange="companySelect(this)" required autofocus>
 	                                    <option value="">-- Select Company --</option>
 	                                    <option value="1" data-target="sip" id="1">SIP</option>
 	                                    <option value="2" data-target="msp" id="2">MSP</option>
@@ -2103,7 +2119,73 @@
 	                            </div>
 	                        </div>
 
+	                        <!--tampilkan divisi berdasarkan divisi-->
+	                        <div class="form-group row">
+	                            <label for="divisi" class="col-md-2 col-form-label text-md-right">{{ __('Division') }}</label>
+
+	                            <div class="col-md-4">
+	                            	<input id="divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+	                        	</div>
+
+	                            <div class="col-md-4">
+	                                <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}"  required autofocus>
+	                                </select>
+	                                @if ($errors->has('company'))
+	                                    <span class="invalid-feedback">
+	                                        <strong>{{ $errors->first('company') }}</strong>
+	                                    </span>
+	                                @endif
+	                            </div>
+	                        </div>
+
+
+	                        <!--tampilkan divisi berdasarkan sub-divisi-->
+	                        <div class="form-group row">
+	                            <label for="divisi" class="col-md-2 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
+
+	                            <div class="col-md-4">
+	                            	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
+	                        	</div>
+
+	                            <div class="col-md-4">
+	                                <select id="sub_divisi_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" required autofocus>
+	                                </select>
+	                                @if ($errors->has('company'))
+	                                    <span class="invalid-feedback">
+	                                        <strong>{{ $errors->first('company') }}</strong>
+	                                    </span>
+	                                @endif
+	                            </div>
+	                        </div>
+
+
+	                        <!--tampilkan divisi berdasarkan posisi-->
+	                        <div class="form-group row">
+	                            <label for="posisi" class="col-md-2 col-form-label text-md-right">{{ __('Position') }}</label>
+
+	                            <div class="col-md-4">
+	                            	<input id="posisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
+	                        	</div>
+
+	                            <div class="col-md-4">
+	                                <select id="posisi_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}"  required autofocus>
+	                                    <option value="">-- Select division --</option>
+	                                    <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
+	                                    <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
+	                                    <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
+	                                    <option value="SALES" data-target="sales" id="sales">SALES</option>
+	                                    <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
+	                                    <option value="NULL" data-target="director" id="director">NONE</option>
+	                                </select>
+	                                @if ($errors->has('company'))
+	                                    <span class="invalid-feedback">
+	                                        <strong>{{ $errors->first('company') }}</strong>
+	                                    </span>
+	                                @endif
+	                            </div>
+	                        </div>
 	                      <!--SIP-->
+
 	                        <div class="form-group row"  style="display:none;"  id="company_update-sip">
 	                            <label for="division" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
 
@@ -2493,7 +2575,7 @@
        $('.btn-editan').click(function(){
         $.ajax({
           type:"GET",
-          url:'/hu_rec/get_hu',
+          url:"{{url('/hu_rec/get_hu')}}",
           data:{
             id_hu:this.value,
           },
@@ -2507,6 +2589,15 @@
                $("#address_update").val(value.address);
                $("#phone_number_update").val(value.phone);
                $("#password_update").val(value.password);
+               $("#divisi_view_update").val(value.id_division);
+               $("#subdivisi_view_update").val(value.id_territory);
+               if (value.id_company == '1') {
+               	$("#company_view_update").val("SIP")
+               }else{
+               	$("#company_view_update").val("MSP")
+               }
+               $("#posisi_view_update").val(value.id_position);
+               
             });
 
           }
@@ -3195,6 +3286,56 @@
 			 $(this).addClass("current");
 			 showPage(parseInt($(this).text()));
 		});
+
+		function companySelect(id)
+		{
+			console.log(id.value);
+			if (id.value == '1') {
+				$('#divisi_update').html(append)
+                var append = "<option>-- Select Option --</option>";
+                
+                append = append + "<option value='TECHNICAL'>" + "TECHNICAL" + "</option>";
+                append = append + "<option value='FINANCE'>" + "FINANCE/ACCOUNTING" + "</option>";
+                append = append + "<option value='HR'>" + "HUMAN RESOURCE" + "</option>";
+                append = append + "<option value='SALES'>" + "SALES" + "</option>";
+                append = append + "<option value='OPERATION'>" + "OPERATION" + "</option>";
+                append = append + "<option value='NULL'>" + "NONE" + "</option>";
+
+                $("#company_view_update").val("SIP");
+
+                $('#divisi_update').html(append);		
+			}else{
+				$('#divisi_update').html(append)
+                var append = "<option>-- Select Option --</option>";
+                
+                append = append + "<option value='SALES_MSP'>" + "SALES" + "</option>";
+                append = append + "<option value='TECHNICAL_MSP'>" + "TECHNICAL" + "</option>";
+                append = append + "<option value='WAREHOUSE_MSP'>" + "WAREHOUSE" + "</option>";
+                append = append + "<option value='OPERATION_MSP'>" + "OPERATION" + "</option>";
+                append = append + "<option value='ADMIN_MSP'>" + "NONE" + "</option>";
+
+                $('#divisi_update').html(append);
+
+                $("#company_view_update").val("MSP");
+			}
+		}
+
+		function divisiSelect(id)
+		{
+			if (id.value == 'TECHNICAL') {
+				$('#sub_divisi_update').html(append)
+                var append = "<option>-- Select Option --</option>";
+                
+                append = append + "<option value='DVG'>" + "IMPLEMENTATION" + "</option>";
+                append = append + "<option value='PRESALES'>" + "PRESALES" + "</option>";
+                append = append + "<option value='DEV'>" + "DEVELOPMENT" + "</option>";
+                append = append + "<option value=''>" + "NONE" + "</option>";
+
+                $("#subdivisi_view_update").val();
+
+                $('#sub_divisi_update').html(append);	
+			}
+		}
 
       
     </script>
