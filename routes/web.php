@@ -25,6 +25,8 @@ Route::post('/update_result5', 'SalesController@update_result');
 //dinar cantik2
 //dinar cantik4
 
+
+//coba git lagi
 Route::group(['middleware' => ['SIP']], function () {
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
