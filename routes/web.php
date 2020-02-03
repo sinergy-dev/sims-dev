@@ -22,6 +22,7 @@ Route::post('/update_result5', 'SalesController@update_result');
 
 
 //dinar cantik
+//dinar cantik2
 
 Route::group(['middleware' => ['SIP']], function () {
 
