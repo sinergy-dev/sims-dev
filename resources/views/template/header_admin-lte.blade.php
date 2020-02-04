@@ -755,7 +755,7 @@
           </li>
           @endif
 
-          @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'STAFF GA')
+          @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'STAFF GA' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM')
           <li>
             <a href="{{url('/quote')}}" style="font-size: 14px"></i>Quote Number</a>
           </li>
