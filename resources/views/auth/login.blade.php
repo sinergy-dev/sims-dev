@@ -62,9 +62,19 @@
                           @endif
                       </div>
                   </div>
-                  <button type="submit" class="btn btn-primary btn-block">
-                    Login
-                  </button>
+                  <div class="form-group">
+                      <div class="col-md-12">
+                          <button type="submit" class="btn btn-primary btn-block">
+                            Login
+                          </button>
+                      </div>
+                      <div class="col-md-12" style="margin-top: 5px">
+                        <a class="pull-left" href="{{ route('password.request') }}" target="_blank">
+                          <i class="fa fa-lock"></i>
+                            Forgot Your Password?
+                        </a>
+                      </div>
+                  </div>
               </form>
             </div>
           </div>
