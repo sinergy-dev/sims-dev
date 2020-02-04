@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\User;
 use Mail;
+use App\Mail\EmailRemainderWeekly;
 use App\Mail\MailResult;
 use App\Mail\mailPID;
 use App\Notifications\Testing;
@@ -35,6 +36,30 @@ class TestController extends Controller
         	Mail::to($data->email)->send(new MailResult($users,$pid_info));
         }
 	}
+
+  public function testRemainderEmail(){
+    $parameterEmail = collect([
+      "to" => DB::table('users')->where('nik',1150991080)->first()->name,
+      "proses_count" => DB::table('sales_lead_register')->where('nik',1150991080)->whereRaw('(`result` = "SD" OR `result` = "TP")')->count(),
+      "tp_count" => DB::table('sales_lead_register')->where('nik',1150991080)->where('result' ,'TP')->count(),
+      "tp_detail" => DB::table('sales_lead_register')
+        ->select('sales_lead_register.lead_id','tb_contact.brand_name','sales_lead_register.opp_name')
+        ->join('tb_contact','sales_lead_register.id_customer','=','tb_contact.id_customer')
+        ->where('nik',1150991080)
+        ->where('result' ,'TP')
+        ->get(),
+      "sd_count" => DB::table('sales_lead_register')->where('nik',1150991080)->where('result' ,'SD')->count(),
+      "sd_detail" => DB::table('sales_lead_register')
+        ->select('sales_lead_register.lead_id','tb_contact.brand_name','sales_lead_register.opp_name')
+        ->join('tb_contact','sales_lead_register.id_customer','=','tb_contact.id_customer')
+        ->where('nik',1150991080)
+        ->where('result' ,'SD')
+        ->get(),
+    ]);
+
+    $return =  new EmailRemainderWeekly($parameterEmail);
+    return $return;
+  }
 
   public function authentication($id)
   {
