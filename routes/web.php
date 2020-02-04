@@ -34,6 +34,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/home', 'HomeController@index')->name('home');
 
 	Route::get('/testEmail', 'TestController@send_mail');
+	Route::get('/testRemainderEmail', 'TestController@testRemainderEmail');
 	Route::get('/testEmailViewSales', 'TestController@view_mail_to_sales');
 	Route::get('/testEmailViewFinance', 'TestController@view_mail_to_finance');
 
