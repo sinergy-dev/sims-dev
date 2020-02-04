@@ -1120,7 +1120,7 @@
                           {{$data->amount}}
                           @endif
                         </td>
-                        <td>
+                        <td hidden>
                           {{$data->id_territory}}
                         </td>
                     </tr>
@@ -1806,7 +1806,7 @@
                           {{$data->amount}}
                           @endif
                         </td>
-                        <td>{{$data->id_territory}}</td>
+                        <td hidden>{{$data->id_territory}}</td>
                     </tr>
                     @endif
                   @else
@@ -1946,7 +1946,7 @@
                           {{$data->amount}}
                           @endif
                         </td>
-                        <td>{{$data->id_territory}}</td>
+                        <td hidden>{{$data->id_territory}}</td>
                     </tr>
                   @endif
                 @endforeach
