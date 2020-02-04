@@ -427,6 +427,7 @@
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
     $('#customer_quote').select2();
+    $("#backdate_num").select2();
     function quote(quote_number,position,to,attention,title,project,description, project_id,note) {
       $('#edit_quote_number').val(quote_number);
       $('#edit_position').val(position);
@@ -490,7 +491,7 @@
       window.location.hash = id;
     });
 
-    $("#backdate_num").select2();
+    
 
     // on load of the page: switch to the currently selected tab
     var hash = window.location.hash;
