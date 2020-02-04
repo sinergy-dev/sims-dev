@@ -153,8 +153,7 @@ class SALESController extends Controller
                         $query->select('lead_id')->from('tb_pid');
                     })
                     ->get();
-
-                
+               
 	        } elseif($pos == 'OPERATION DIRECTOR'|| $div == 'MSM' && $pos == 'MANAGER') {
                 $lead = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -458,7 +457,7 @@ class SALESController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','users.id_territory')
                     ->where('users.id_company','1')
                     ->where('year','2018')
                     ->get();
@@ -468,7 +467,7 @@ class SALESController extends Controller
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.opp_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_solution_design.nik', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan','sales_lead_register.closing_date','sales_lead_register.deal_price','sales_lead_register.year','tb_contact.id_customer','sales_solution_design.status')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_solution_design.nik', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan','sales_lead_register.closing_date','sales_lead_register.deal_price','sales_lead_register.year','tb_contact.id_customer','sales_solution_design.status','users.id_territory')
                     ->whereYear('sales_lead_register.created_at',date('Y'))
                     ->where('sales_lead_register.result','!=','hmm')
                     ->where('users.id_company','1')
@@ -478,7 +477,7 @@ class SALESController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','users.id_company','sales_lead_register.deal_price','sales_lead_register.year')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','users.id_company','sales_lead_register.deal_price','sales_lead_register.year','users.id_territory')
                     ->orwhere('year',$dates)
                     ->where('users.id_company','1')
                     ->where('result','OPEN')
@@ -489,7 +488,7 @@ class SALESController extends Controller
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                     ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.opp_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_solution_design.nik', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan','sales_lead_register.closing_date','sales_lead_register.deal_price','sales_lead_register.year','tb_contact.id_customer')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_solution_design.nik', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan','sales_lead_register.closing_date','sales_lead_register.deal_price','sales_lead_register.year','tb_contact.id_customer','users.id_territory')
                     ->where('id_company','1')
                     ->where('sales_lead_register.result','!=','hmm')
                     ->get();
@@ -498,7 +497,7 @@ class SALESController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','users.id_company','sales_lead_register.deal_price','sales_lead_register.year')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','users.id_company','sales_lead_register.deal_price','sales_lead_register.year','users.id_territory')
                     ->where('users.id_company','1')
                     ->where('result','OPEN')
                     ->get();
@@ -664,7 +663,7 @@ class SALESController extends Controller
             ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
             ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
             ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status')
+            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory')
             ->where('result','!=','hmm')
             ->orderBy('created_at','desc')
             ->get();
@@ -677,7 +676,7 @@ class SALESController extends Controller
             ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
             ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
             ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status')
+            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory')
             ->where('result','!=','hmm')
             ->whereYear('sales_lead_register.created_at', '=', $dates-1)
             ->orwhere('year',$dates)

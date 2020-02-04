@@ -311,48 +311,33 @@
 <div class="box">
     <div class="box-header">
       @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR'  || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-      <div class="dropdown pull-right" style="margin-left: 5px">
-        <button type="button" class="dropbtn-add" id="btn_add_sales" data-toggle="modal" data-target="#modal_lead"><i class="fa fa-plus"> </i>&nbsp Lead Register</button>
-      </div>
-
-      <div class="dropdown pull-right">
-          <select name="year_dif" id="year_dif" class="btn btn-md btn-success fa" style="font-size: 14px;background-color:#4CAF50;border-style: none;height: 30px;width: 145px">
-          @foreach($year as $years)
-            @if($years->year < $year_now)
-              <option value="{{$years->year}}"> &#xf073 &nbsp&nbsp{{$years->year}}</option>
-            @endif
-          @endforeach
-          <option selected value="{{$year_now}}"> &#xf073 &nbsp&nbsp{{$year_now}}</option>
-        </select>
-      </div>
-
-      @elseif(Auth::User()->id_division == 'PMO')
-        <!-- <div class="pull-right dropdown">
-          <button type="button" class="btn btn-warning btn-sm dropdown-toggle margin-left-custom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <b><i class="fa fa-download"></i> Export</b>
-          </button>
-          <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-            <a class="dropdown-item" href="{{action('ReportController@downloadPdfwin')}}"> PDF </a><br>
-            <a class="dropdown-item" href="{{action('PMOController@exportExcel')}}"> EXCEL </a>
-          </div>
+        <div class="dropdown pull-right" style="margin-left: 5px">
+          <button type="button" class="dropbtn-add" id="btn_add_sales" data-toggle="modal" data-target="#modal_lead"><i class="fa fa-plus"> </i>&nbsp Lead Register</button>
         </div>
 
         <div class="dropdown pull-right">
-          <button class="dropbtn"><i class="fa fa-filter"></i>&nbspFilter Year</button>
-          <div class="dropdown-content">
-            <div class="year">
-              <span class="fa fa-calendar"></span>
-              <input type="button" name="answer" value="2018" onclick="show2018()" class="transparant-filter" />
-            </div>
-            <div class="year">
-              <span class="fa fa-calendar"></span>
-              <input type="button" name="answer" value="2019" onclick="show2019()" class="transparant-filter" />
-            </div>
-          </div>
-        </div> -->
-      @else
-      @endif
+            <select name="year_dif" id="year_dif" class="btn btn-md btn-success fa" style="font-size: 14px;background-color:#4CAF50;border-style: none;height: 30px;width: 145px">
+            @foreach($year as $years)
+              @if($years->year < $year_now)
+                <option value="{{$years->year}}"> &#xf073 &nbsp&nbsp{{$years->year}}</option>
+              @endif
+            @endforeach
+            <option selected value="{{$year_now}}"> &#xf073 &nbsp&nbsp{{$year_now}}</option>
+          </select>
+        </div>
 
+        @if(Auth::User()->id_division != 'SALES' && Auth::User()->id_territory != 'OPERATION')
+        <select id="table-filter" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
+          <option value="">Filter By Territory</option>
+          <option>TERRITORY 1</option>
+          <option>TERRITORY 2</option>
+          <option>TERRITORY 3</option>
+          <option>TERRITORY 4</option>
+          <option>TERRITORY 5</option>
+          <option>TERRITORY 6</option>
+        </select>
+        @endif
+      @endif
     </div>
  
     <div class="box-body">
@@ -382,6 +367,8 @@
                   <th>Action</th>
                   @endif 
                   <th>Note</th>
+                  <th hidden></th>
+                  <th hidden>15</th>
                 </tr>
                 @if(Auth::User()->id_territory == 'OPERATION')
                 <tr id="status">
@@ -395,6 +382,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th hidden></th>
                   <th hidden></th>
                 </tr>
                 @elseif( Auth::User()->id_division == 'SALES')
@@ -410,6 +398,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th hidden></th>
                   <th hidden></th>
                 </tr>
                 @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
@@ -430,6 +419,8 @@
                   <th></th>
                   @endif 
                   <th></th>
+                  <th hidden></th>
+                  <th hidden></th>
                   <th hidden></th>
                 </tr>
                 @else
@@ -454,6 +445,8 @@
                   <th></th>
                   @else
                   @endif
+                  <th hidden></th>
+                  <th hidden></th>
                   <th hidden></th>
                 </tr>
                 @endif
@@ -654,6 +647,14 @@
                         </td>
                         <td hidden>
                           {{$data->year}}
+                        </td>
+                        <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                        </td>
+                        <td hidden>
+                          {{$data->id_territory}}
                         </td>
                     </tr>
                   @endforeach
@@ -887,7 +888,7 @@
                           @endif
                         @endif
                       </td>
-                      @if(Auth::User()->id_division == 'SALES' || Auth::User()->id_company == '1' && Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_company == '2' && Auth::User()->id_division != 'TECHNICAL')
+                      @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
                         <td>
                           @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
                           <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
@@ -907,6 +908,14 @@
                       </td>
                       <td hidden>
                         {{$data->year}}
+                      </td>
+                      <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                      </td>
+                      <td hidden>
+                          {{$data->id_territory}}
                       </td>
                     </tr>
                   @endforeach
@@ -1106,6 +1115,14 @@
                         <td hidden>
                           {{$data->year}}
                         </td>
+                        <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                        </td>
+                        <td>
+                          {{$data->id_territory}}
+                        </td>
                     </tr>
                   @endforeach   
                 @elseif(Auth::User()->id_territory == 'OPERATION')
@@ -1163,6 +1180,11 @@
                     </td>
                     <td hidden>
                       {{$data->year}}
+                    </td>
+                    <td hidden>
+                      @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                      {{$data->amount}}
+                      @endif
                     </td>
                   </tr>
                   @endforeach
@@ -1251,6 +1273,11 @@
                       </td>
                       <td hidden>
                         {{$data->year}}
+                      </td>
+                      <td hidden>
+                        @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                        {{$data->amount}}
+                        @endif
                       </td>
                     </tr>
                   @endforeach
@@ -1554,6 +1581,8 @@
                   <th>Action</th>
                   @endif 
                   <th>Note</th>
+                  <th hidden="">14</th>
+                  <th hidden>15</th>
                 </tr>
                 @if(Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_territory == 'DPG')
                 <tr id="sekarang">
@@ -1578,6 +1607,8 @@
                   @else
                   @endif
                   <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
                 </tr>
                 @elseif( Auth::User()->id_division == 'SALES')
                 <tr id="sekarang">
@@ -1593,6 +1624,7 @@
                   <th></th>
                   <th></th>
                   <th hidden></th>
+                  <th hidden=""></th>
                 </tr>
                 @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                 <tr id="sekarang">
@@ -1613,6 +1645,8 @@
                   @endif 
                   <th></th>
                   <th hidden></th>
+                  <th hidden=""></th>
+                  <th hidden></th>
                 </tr>
                 @elseif(Auth::User()->id_territory == 'OPERATION')
                 <tr id="sekarang">
@@ -1627,6 +1661,7 @@
                   <th></th>
                   <th></th>
                   <th hidden></th>
+                  <th hidden=""></th>
                 </tr>
                 @endif
               </thead>
@@ -1636,270 +1671,282 @@
                   @if($data->year == $year_now-1)
                     @if($data->result != 'WIN' && $data->result != 'LOSE' && $data->result != 'CANCEL')
                     <tr>
-                      <td hidden>
-                        {{$data->code_company}}
-                      </td>
-                      <td>
-                      @if($data->result != 'OPEN')
-                        <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
-                      @else
-                        {{ $data->lead_id }}
-                      @endif
-                      </td>
-                      <td>{{ $data->brand_name}}</td>
-                      <td>{{ $data->opp_name}}</td>
-                      <td>{!!substr($data->created_at,0,10)!!}</td>
-                      <td>{{ $data->closing_date}}</td>
-                      <td>{{ $data->name }}</td>
-                      <td>
-                        @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
-                          @if($data->deal_price == NULL)
-                            <i class="money">{{$data->amount}}</i>
-                          @else
-                            <i class="money">{{$data->deal_price}}</i>
-                          @endif
+                        <td hidden>
+                          {{$data->code_company}}
+                        </td>
+                        <td>
+                        @if($data->result != 'OPEN')
+                          <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
                         @else
-                          @if($data->amount == '')
-                            <i class="money"></i>
-                          @elseif($data->amount != '')
-                            <i class="money">{{$data->amount}}</i>
-                          @endif
+                          {{ $data->lead_id }}
                         @endif
-                      </td>
-                      <td>
-                          @if($data->result == 'OPEN')
-                            <label class="btn-xs status-initial">INITIAL</label>
-                          @elseif($data->result == '')
-                            <label class="btn-xs status-open">OPEN</label>
-                          @elseif($data->result == 'SD')
-                            <label class="btn-xs status-sd">SD</label>
-                          @elseif($data->result == 'TP')
-                            <label class="btn-xs status-tp">TP</label>
-                          @elseif($data->result == 'WIN')
-                            <label class="btn-xs status-win">WIN</label>
-                          @elseif($data->result == 'LOSE')
-                            <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
-                          @elseif($data->result == 'CANCEL')
-                          <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
-                          @elseif($data->result == 'HOLD')
-                            <label class="btn-xs status-initial" style="background-color: #919e92">HOLD</label>
-                          @elseif($data->result == 'SPECIAL')
-                            <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
+                        </td>
+                        <td>{{ $data->brand_name}}</td>
+                        <td>{{ $data->opp_name}}</td>
+                        <td>{!!substr($data->created_at,0,10)!!}</td>
+                        <td>{{ $data->closing_date}}</td>
+                        <td>{{ $data->name }}</td>
+                        <td>
+                          @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
+                            @if($data->deal_price == NULL)
+                              <i class="money">{{$data->amount}}</i>
+                            @else
+                              <i class="money">{{$data->deal_price}}</i>
+                            @endif
+                          @else
+                            @if($data->amount == '')
+                              <i class="money"></i>
+                            @elseif($data->amount != '')
+                              <i class="money">{{$data->amount}}</i>
+                            @endif
                           @endif
-                      </td>
-                      <td>
-                        @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES')
-                          @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result != 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN' || Auth::User()->id_division == 'SALES')
-                            @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' || Auth::User()->id_division == 'SALES')
-                              @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_division == 'SALES')
-                                @if($data->status_sho != 'PMO')
-                                 	<!-- <button data-target="#salesproject" data-toggle="modal" class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}')">ID Project</button> -->
-                                 	<button class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}','{{$data->status}}')">ID Project</button>
-                                  @if($data->status_handover != 'handover')
-                                    <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                        </td>
+                        <td>
+                            @if($data->result == 'OPEN')
+                              <label class="btn-xs status-initial">INITIAL</label>
+                            @elseif($data->result == '')
+                              <label class="btn-xs status-open">OPEN</label>
+                            @elseif($data->result == 'SD')
+                              <label class="btn-xs status-sd">SD</label>
+                            @elseif($data->result == 'TP')
+                              <label class="btn-xs status-tp">TP</label>
+                            @elseif($data->result == 'WIN')
+                              <label class="btn-xs status-win">WIN</label>
+                            @elseif($data->result == 'LOSE')
+                              <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                            @elseif($data->result == 'CANCEL')
+                            <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
+                            @elseif($data->result == 'HOLD')
+                              <label class="btn-xs status-initial" style="background-color: #919e92">HOLD</label>
+                            @elseif($data->result == 'SPECIAL')
+                              <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
+                            @endif
+                        </td>
+                        <td>
+                          @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES')
+                            @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result != 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN' || Auth::User()->id_division == 'SALES')
+                              @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' || Auth::User()->id_division == 'SALES')
+                                @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_division == 'SALES')
+                                  @if($data->status_sho != 'PMO')
+                                   	<!-- <button data-target="#salesproject" data-toggle="modal" class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}')">ID Project</button> -->
+                                   	<button class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}','{{$data->status}}')">ID Project</button>
+                                    @if($data->status_handover != 'handover')
+                                      <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                                    @endif
+                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover == 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover == 'handover')
+                                  @if($data->status_sho != 'PMO')
+                                      <button type="button" class="btn btn-xs btn-primary" onclick="assignPMO('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModalPMO">Assign</button>
+                                    @elseif($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
+                                      <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
+                                      <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
+                                    @else
+                                      <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
+                                          @if($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
+                                          <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
+                                        @else
+                                          <button onclick="reassignEngineer('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignEngineer">Re-Assign</button></a>
+                                          @endif
+                                    @endif
                                   @endif
-                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover == 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover == 'handover')
-                                @if($data->status_sho != 'PMO')
-                                    <button type="button" class="btn btn-xs btn-primary" onclick="assignPMO('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModalPMO">Assign</button>
-                                  @elseif($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
-                                    <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
-                                    <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
-                                  @else
-                                    <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
-                                        @if($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
-                                        <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
-                                      @else
-                                        <button onclick="reassignEngineer('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignEngineer">Re-Assign</button></a>
-                                        @endif
-                                  @endif
+                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover != 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover != 'handover')
+                                  <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
                                 @endif
-                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover != 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover != 'handover')
-                                <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'LOSE' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'TP' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @else
+                              <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
                               @endif
-                            @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'LOSE' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                            @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'TP' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
                             @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                              <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}', '{{$data->nik}}', '{{$data->created_at}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                             @endif
-                          @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}', '{{$data->nik}}', '{{$data->created_at}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
-                          @endif
-                        @elseif(Auth::User()->id_position == 'DIRECTOR')
-                          @if(Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN')
-                            @if(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                            @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                            @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                          @elseif(Auth::User()->id_position == 'DIRECTOR')
+                            @if(Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN')
+                              @if(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @else
+                              <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                              @endif
                             @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                              <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                             @endif
-                          @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                           @endif
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
-                          <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
-                        @endif
-                        @if(Auth::User()->name == $data->name && $data->result == 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'OPEN' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && $data->result == 'OPEN')
-                          <a href="{{ url('delete_sales', $data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
-                          </button></a>
-                        @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-                          @if($data->result == 'WIN')
-                            <a href="{{ url('delete_update_status',$data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')" type="submit">&nbspDelete
+                        </td>
+                        <td>
+                          @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
+                            <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
+                          @endif
+                          @if(Auth::User()->name == $data->name && $data->result == 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'OPEN' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && $data->result == 'OPEN')
+                            <a href="{{ url('delete_sales', $data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
                             </button></a>
+                          @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                            @if($data->result == 'WIN')
+                              <a href="{{ url('delete_update_status',$data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')" type="submit">&nbspDelete
+                              </button></a>
+                            @endif
                           @endif
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->keterangan != '')
-                        <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
-                        @else
+                        </td>
+                        <td>
+                          @if($data->keterangan != '')
+                          <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
+                          @else
 
-                        @endif
-                      </td>
-                      <td hidden>
-                        {{$data->year}}
-                      </td>
+                          @endif
+                        </td>
+                        <td hidden>
+                          {{$data->year}}
+                        </td>
+                        <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                        </td>
+                        <td>{{$data->id_territory}}</td>
                     </tr>
                     @endif
                   @else
                     <tr>
-                      <td hidden>
-                        {{$data->code_company}}
-                      </td>
-                      <td>
-                      @if($data->result != 'OPEN')
-                        <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
-                      @else
-                        {{ $data->lead_id }}
-                      @endif
-                      </td>
-                      <td>{{ $data->brand_name}}</td>
-                      <td>{{ $data->opp_name}}</td>
-                      <td>{!!substr($data->created_at,0,10)!!}</td>
-                      <td>{{ $data->closing_date}}</td>
-                      <td>{{ $data->name }}</td>
-                      <td>
-                        @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
-                          @if($data->deal_price == NULL)
-                            <i class="money">{{$data->amount}}</i>
-                          @else
-                            <i class="money">{{$data->deal_price}}</i>
-                          @endif
+                        <td hidden>
+                          {{$data->code_company}}
+                        </td>
+                        <td>
+                        @if($data->result != 'OPEN')
+                          <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
                         @else
-                          @if($data->amount == '')
-                            <i class="money"></i>
-                          @elseif($data->amount != '')
-                            <i class="money">{{$data->amount}}</i>
-                          @endif
+                          {{ $data->lead_id }}
                         @endif
-                      </td>
-                      <td>
-                          @if($data->result == 'OPEN')
-                            <label class="btn-xs status-initial">INITIAL</label>
-                          @elseif($data->result == '')
-                            <label class="btn-xs status-open">OPEN</label>
-                          @elseif($data->result == 'SD')
-                            <label class="btn-xs status-sd">SD</label>
-                          @elseif($data->result == 'TP')
-                            <label class="btn-xs status-tp">TP</label>
-                          @elseif($data->result == 'WIN')
-                            <label class="btn-xs status-win">WIN</label>
-                          @elseif($data->result == 'LOSE')
-                            <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
-                          @elseif($data->result == 'CANCEL')
-                          <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
-                          @elseif($data->result == 'HOLD')
-                            <label class="btn-xs status-initial" style="background-color: #919e92">HOLD</label>
-                          @elseif($data->result == 'SPECIAL')
-                            <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
+                        </td>
+                        <td>{{ $data->brand_name}}</td>
+                        <td>{{ $data->opp_name}}</td>
+                        <td>{!!substr($data->created_at,0,10)!!}</td>
+                        <td>{{ $data->closing_date}}</td>
+                        <td>{{ $data->name }}</td>
+                        <td>
+                          @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
+                            @if($data->deal_price == NULL)
+                              <i class="money">{{$data->amount}}</i>
+                            @else
+                              <i class="money">{{$data->deal_price}}</i>
+                            @endif
+                          @else
+                            @if($data->amount == '')
+                              <i class="money"></i>
+                            @elseif($data->amount != '')
+                              <i class="money">{{$data->amount}}</i>
+                            @endif
                           @endif
-                      </td>
-                      <td>
-                        @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES')
-                          @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result != 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN' || Auth::User()->id_division == 'SALES')
-                            @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' || Auth::User()->id_division == 'SALES')
-                              @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_division == 'SALES')
-                                @if($data->status_sho != 'PMO')
-                                  <!-- <button data-target="#salesproject" data-toggle="modal" class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}')">ID Project</button> -->
-                                  <button class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}','{{$data->status}}')">ID Project</button>
-                                  @if($data->status_handover != 'handover')
-                                    <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                        </td>
+                        <td>
+                            @if($data->result == 'OPEN')
+                              <label class="btn-xs status-initial">INITIAL</label>
+                            @elseif($data->result == '')
+                              <label class="btn-xs status-open">OPEN</label>
+                            @elseif($data->result == 'SD')
+                              <label class="btn-xs status-sd">SD</label>
+                            @elseif($data->result == 'TP')
+                              <label class="btn-xs status-tp">TP</label>
+                            @elseif($data->result == 'WIN')
+                              <label class="btn-xs status-win">WIN</label>
+                            @elseif($data->result == 'LOSE')
+                              <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                            @elseif($data->result == 'CANCEL')
+                            <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
+                            @elseif($data->result == 'HOLD')
+                              <label class="btn-xs status-initial" style="background-color: #919e92">HOLD</label>
+                            @elseif($data->result == 'SPECIAL')
+                              <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
+                            @endif
+                        </td>
+                        <td>
+                          @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES')
+                            @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result != 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN' || Auth::User()->id_division == 'SALES')
+                              @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' || Auth::User()->id_division == 'SALES')
+                                @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_division == 'SALES')
+                                  @if($data->status_sho != 'PMO')
+                                    <!-- <button data-target="#salesproject" data-toggle="modal" class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}')">ID Project</button> -->
+                                    <button class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}','{{$data->status}}')">ID Project</button>
+                                    @if($data->status_handover != 'handover')
+                                      <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                                    @endif
+                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover == 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover == 'handover')
+                                  @if($data->status_sho != 'PMO')
+                                      <button type="button" class="btn btn-xs btn-primary" onclick="assignPMO('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModalPMO">Assign</button>
+                                    @elseif($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
+                                      <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
+                                      <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
+                                    @else
+                                      <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
+                                          @if($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
+                                          <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
+                                        @else
+                                          <button onclick="reassignEngineer('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignEngineer">Re-Assign</button></a>
+                                          @endif
+                                    @endif
                                   @endif
-                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover == 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover == 'handover')
-                                @if($data->status_sho != 'PMO')
-                                    <button type="button" class="btn btn-xs btn-primary" onclick="assignPMO('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModalPMO">Assign</button>
-                                  @elseif($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
-                                    <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
-                                    <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
-                                  @else
-                                    <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
-                                        @if($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
-                                        <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
-                                      @else
-                                        <button onclick="reassignEngineer('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignEngineer">Re-Assign</button></a>
-                                        @endif
-                                  @endif
+                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover != 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover != 'handover')
+                                  <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
                                 @endif
-                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover != 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover != 'handover')
-                                <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'LOSE' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'TP' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @else
+                              <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
                               @endif
-                            @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'LOSE' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                            @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'TP' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
                             @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                              <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}', '{{$data->nik}}', '{{$data->created_at}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                             @endif
-                          @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}', '{{$data->nik}}', '{{$data->created_at}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
-                          @endif
-                        @elseif(Auth::User()->id_position == 'DIRECTOR')
-                          @if(Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN')
-                            @if(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                            @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                            @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
-                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                          @elseif(Auth::User()->id_position == 'DIRECTOR')
+                            @if(Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN')
+                              @if(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                              @else
+                              <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                              @endif
                             @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                              <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                             @endif
-                          @else
-                            <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                           @endif
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
-                          <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
-                        @endif
-                        @if(Auth::User()->name == $data->name && $data->result == 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'OPEN' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && $data->result == 'OPEN')
-                          <a href="{{ url('delete_sales', $data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
-                          </button></a>
-                        @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-                          @if($data->result == 'WIN')
-                            <a href="{{ url('delete_update_status',$data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')" type="submit">&nbspDelete
+                        </td>
+                        <td>
+                          @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
+                            <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
+                          @endif
+                          @if(Auth::User()->name == $data->name && $data->result == 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'OPEN' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && $data->result == 'OPEN')
+                            <a href="{{ url('delete_sales', $data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
                             </button></a>
+                          @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                            @if($data->result == 'WIN')
+                              <a href="{{ url('delete_update_status',$data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')" type="submit">&nbspDelete
+                              </button></a>
+                            @endif
                           @endif
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->keterangan != '')
-                        <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
-                        @else
+                        </td>
+                        <td>
+                          @if($data->keterangan != '')
+                          <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
+                          @else
 
-                        @endif
-                      </td>
-                      <td hidden>
-                        {{$data->year}}
-                      </td>
+                          @endif
+                        </td>
+                        <td hidden>
+                          {{$data->year}}
+                        </td>
+                        <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                        </td>
+                        <td>{{$data->id_territory}}</td>
                     </tr>
                   @endif
                 @endforeach
@@ -1991,6 +2038,11 @@
                         <td hidden>
                           {{$data->year}}
                         </td>
+                        <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                        </td>
                       </tr>
                     @endif
                   @elseif($data->year == $year_now)
@@ -2078,6 +2130,11 @@
                         <td hidden>
                           {{$data->year}}
                         </td>
+                        <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                        </td>
                     </tr>
                   @endif
                 @endforeach
@@ -2096,7 +2153,7 @@
                       <td>{!!substr($data->created_at,0,10)!!}</td>
                       <td>{{ $data->closing_date}}</td>
                       <td>{{ $data->name }}</td>
-                      <td></td>
+                      <td>-</td>
                       @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
                         @if($data->deal_price == NULL)
                           <td><i></i><i class="money">{{$data->amount}}</i></td>
@@ -2251,6 +2308,12 @@
                       <td hidden>
                         {{$data->year}}
                       </td>
+                      <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                      </td>
+                      <td hidden>{{$data->id_territory}}</td>
                     </tr>
                 @endforeach
                 @foreach($leadspre as $key => $data)
@@ -2360,6 +2423,12 @@
                           @endif
                         </td>
                         <td hidden>{{$data->year}}</td>
+                        <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                        </td>
+                        <td hidden>{{$data->id_territory}}</td>
                       </tr>
                   @endif
                 @endforeach
@@ -2592,6 +2661,11 @@
                       <td hidden>
                         {{$data->year}}
                       </td>
+                      <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                      </td>
                     </tr>
                     @endif
                   @else
@@ -2820,6 +2894,11 @@
                       <td hidden>
                         {{$data->year}}
                       </td>
+                      <td hidden>
+                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                          {{$data->amount}}
+                          @endif
+                      </td>
                     </tr>
                   @endif
                 @endforeach
@@ -2861,7 +2940,18 @@
                 @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                   <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
                 @else
-                  <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
                 @endif
               </tfoot>
             </table>
@@ -3872,7 +3962,7 @@
       }); 
 
       @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES') {
-        $('#datasnow').DataTable({
+        var datasnow = $('#datasnow').DataTable({
            "responsive":true,
            "order": [[ "3", "desc" ]],
            pageLength: 50,
@@ -3883,11 +3973,11 @@
 	            var api = this.api(),data;
 	            // Remove the formatting to get integer data for summation
 
-	            var total = api.column(7, {page:'current'}).data().sum();
+	            var total = api.column(12, {page:'current'}).data().sum();
 
-	            var filtered = api.column( 7, {"filter": "applied"} ).data().sum();
+	            var filtered = api.column( 12, {"filter": "applied"} ).data().sum();
 
-	            var totalpage = api.column(7).data().sum();
+	            var totalpage = api.column(12).data().sum();
 
 	            $( api.column( 5 ).footer() ).html("Total Amount");
 
@@ -3917,6 +4007,10 @@
                 initkat();
                 
             });
+
+            $('#table-filter').on('change', function(){
+              datasnow.columns(13).search( this.value ).draw(); 
+            }); 
           }
         });
 
@@ -3945,9 +4039,9 @@
     				    i : 0;
     				};
 
-    				var total = api.column(7).data().sum();
+    				var total = api.column(12).data().sum();
 
-    				var filtered = api.column( 7, {"filter": "applied"} ).data().sum();
+    				var filtered = api.column( 12, {"filter": "applied"} ).data().sum();
 
             $( api.column( 6 ).footer() ).html("Total Amount");
 	           
@@ -3975,11 +4069,15 @@
                 initkat();
                 
             });
+
+            $('#table-filter').on('change', function(){
+              table.columns(13).search( this.value ).draw(); 
+            });
           }
         });
 
       }@elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES') {
-        $('#datasnow').DataTable({
+        var datasnow = $('#datasnow').DataTable({
            "responsive":true,
            "columnDefs":[
             {"width": "20%", "targets":5},
@@ -4033,6 +4131,10 @@
 
                 initkat();
                 
+            });
+
+            $('#table-filter').on('change', function(){
+              datasnow.columns(13).search( this.value ).draw(); 
             });
           }
         });
@@ -4093,10 +4195,15 @@
                 initkat();
                 
             });
+
+            $('#table-filter').on('change', function(){
+              table.columns(14).search( this.value ).draw(); 
+            });
           }
         });
 
       }@else{
+
         @if(Auth::User()->id_territory == 'OPERATION')
           
           $('#datasnow').DataTable({
@@ -4187,6 +4294,7 @@
                 });
             },
           })
+        
         @elseif(Auth::User()->id_division == 'SALES')
           $('#datasnow').DataTable({
            "responsive":true,
@@ -4195,24 +4303,119 @@
            "orderCellsTop": true,
            "footerCallback": function( row, data, start, end, display ) {
         
-          var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
+            var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
+
+                  var api = this.api(),data;
+                // Remove the formatting to get integer data for summation
+
+            var filtered = api.column(12, {"filter": "applied"} ).data().sum();
+
+                  $( api.column(5).footer() ).html("Total Amount");
+
+                  $( api.column(6).footer() ).html(numFormat(filtered)+'');
+
+
+             },
+             initComplete: function () {
+                this.api().columns([[1],[7]]).every( function () {
+                    var column = this;
+                    var title = $(this).text();
+                    var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Filter '+ title +'</option></select>')
+                        .appendTo($("#sekarang").find("th").eq(column.index()))
+                        .on('change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val());                                     
+
+                        column.search(val ? '^' + val + '$' : '', true, false)
+                            .draw();
+                    });
+                    
+                    column.data().unique().sort().each(function (d, j) {
+                        select.append('<option>' + d + '</option>')
+                    });
+
+                    initkat();
+                    
+                });
+              },
+          })
+
+          var table =  $('#datas2019').DataTable({
+             "responsive":true,
+             "order": [[ "3", "desc" ]],
+             pageLength: 50,
+             "orderCellsTop": true,
+             "footerCallback": function( row, data, start, end, display ) {
+          
+              var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
+
+                    var api = this.api(),data;
+                  // Remove the formatting to get integer data for summation
+
+              var filtered = api.column(12, {"filter": "applied"} ).data().sum();
+
+                  $( api.column(5).footer() ).html("Total Amount");
+
+                  $( api.column(6).footer() ).html(numFormat(filtered)+'');
+
+
+               },
+               initComplete: function () {
+                  this.api().columns([[1],[5],[7]]).every( function () {
+                      var column = this;
+                      var title = $(this).text();
+                      var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Filter '+ title +'</option></select>')
+                          .appendTo($("#status").find("th").eq(column.index()))
+                          .on('change', function () {
+                          var val = $.fn.dataTable.util.escapeRegex(
+                          $(this).val());                                     
+
+                          column.search(val ? '^' + val + '$' : '', true, false)
+                              .draw();
+                      });
+
+                      column.data().unique().sort().each(function (d, j) {
+                          select.append('<option>' + d + '</option>')
+                      });
+
+                      initkat();
+                      
+                  });
+              
+                },
+          })
+
+        @else
+
+          var datasnow = $('#datasnow').DataTable({
+             "responsive":true,
+             "order": [[ "4", "desc" ]],
+             pageLength: 50,
+             "orderCellsTop": true,
+             "footerCallback": function( row, data, start, end, display ) {
+                var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
 
                 var api = this.api(),data;
-              // Remove the formatting to get integer data for summation
+                // Remove the formatting to get integer data for summation
 
-          var filtered = api.column(6, {"filter": "applied"} ).data().sum();
+                var total = api.column(13, {page:'current'}).data().sum();
 
-                $( api.column(5).footer() ).html("Total Amount");
+                var filtered = api.column(13, {"filter": "applied"} ).data().sum();
 
-                $( api.column(6).footer() ).html(numFormat(filtered)+'');
+                var totalpage = api.column(13).data().sum();
 
+                $( api.column( 5 ).footer() ).html("Total Amount");
 
-           },
-           initComplete: function () {
-              this.api().columns([[1],[7]]).every( function () {
+                $( api.column( 6 ).footer() ).html(numFormat(totalpage));
+
+                $( api.column( 6 ).footer() ).html(numFormat(filtered)+'');
+
+            },
+            initComplete: function () {
+              this.api().columns([[0],[2],[6],[8]]).every( function () {
                   var column = this;
                   var title = $(this).text();
-                  var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Filter '+ title +'</option></select>')
+                  var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Show All '+ title +'</option></select>')
                       .appendTo($("#sekarang").find("th").eq(column.index()))
                       .on('change', function () {
                       var val = $.fn.dataTable.util.escapeRegex(
@@ -4221,7 +4424,7 @@
                       column.search(val ? '^' + val + '$' : '', true, false)
                           .draw();
                   });
-                  
+
                   column.data().unique().sort().each(function (d, j) {
                       select.append('<option>' + d + '</option>')
                   });
@@ -4229,152 +4432,68 @@
                   initkat();
                   
               });
-            },
-          })
 
-          var table =  $('#datas2019').DataTable({
-           "responsive":true,
-           "order": [[ "3", "desc" ]],
-           pageLength: 50,
-           "orderCellsTop": true,
-           "footerCallback": function( row, data, start, end, display ) {
-        
-          var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
+              $('#table-filter').on('change', function(){
+                  datasnow.columns(14).search( this.value ).draw(); 
+              }); 
+
+             },
+             
+          });
+
+          var table = $('#datas2019').DataTable({
+             "responsive":true,
+             "order": [[ "4", "desc" ]],
+             pageLength: 50,
+             "orderCellsTop": true,
+            "footerCallback": function( row, data, start, end, display ) {
+                var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
 
                 var api = this.api(),data;
-              // Remove the formatting to get integer data for summation
+                // Remove the formatting to get integer data for summation
 
-          var filtered = api.column(6, {"filter": "applied"} ).data().sum();
+                var total = api.column(7, {page:'current'}).data().sum();
 
-              $( api.column(5).footer() ).html("Total Amount");
+                var filtered = api.column( 13, {"filter": "applied"} ).data().sum();
 
-              $( api.column(6).footer() ).html(numFormat(filtered)+'');
+                var totalpage = api.column(13).data().sum();
+
+                $( api.column( 5 ).footer() ).html("Total Amount");
+
+                $( api.column( 6 ).footer() ).html(numFormat(totalpage));
+
+                $( api.column( 6 ).footer() ).html(numFormat(filtered)+'');
 
 
-         },
-         initComplete: function () {
-            this.api().columns([[1],[5],[7]]).every( function () {
-                var column = this;
-                var title = $(this).text();
-                var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Filter '+ title +'</option></select>')
-                    .appendTo($("#status").find("th").eq(column.index()))
-                    .on('change', function () {
-                    var val = $.fn.dataTable.util.escapeRegex(
-                    $(this).val());                                     
+              },
+            initComplete: function () {
+                this.api().columns([[0],[2],[6],[8]]).every( function () {
+                    var column = this;
+                    var title = $(this).text();
+                    var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Show All '+ title +'</option></select>')
+                        .appendTo($("#status").find("th").eq(column.index()))
+                        .on('change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val());                                     
 
-                    column.search(val ? '^' + val + '$' : '', true, false)
-                        .draw();
+                        column.search(val ? '^' + val + '$' : '', true, false)
+                            .draw();
+                    });
+
+                    column.data().unique().sort().each(function (d, j) {
+                        select.append('<option>' + d + '</option>')
+                    });
+
+                    initkat();
+                    
                 });
 
-                column.data().unique().sort().each(function (d, j) {
-                    select.append('<option>' + d + '</option>')
-                });
-
-                initkat();
-                
-            });
-        
-          },
-         })
-
-        @else
-
-        $('#datasnow').DataTable({
-           "responsive":true,
-           "order": [[ "4", "desc" ]],
-           pageLength: 50,
-           "orderCellsTop": true,
-           "footerCallback": function( row, data, start, end, display ) {
-              var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
-
-              var api = this.api(),data;
-              // Remove the formatting to get integer data for summation
-
-              var total = api.column(7, {page:'current'}).data().sum();
-
-              var filtered = api.column( 7, {"filter": "applied"} ).data().sum();
-
-              var totalpage = api.column(7).data().sum();
-
-              $( api.column( 5 ).footer() ).html("Total Amount");
-
-              $( api.column( 6 ).footer() ).html(numFormat(totalpage));
-
-              $( api.column( 6 ).footer() ).html(numFormat(filtered)+'');
-
-          },
-          initComplete: function () {
-            this.api().columns([[0],[2],[6],[8]]).every( function () {
-                var column = this;
-                var title = $(this).text();
-                var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Show All '+ title +'</option></select>')
-                    .appendTo($("#sekarang").find("th").eq(column.index()))
-                    .on('change', function () {
-                    var val = $.fn.dataTable.util.escapeRegex(
-                    $(this).val());                                     
-
-                    column.search(val ? '^' + val + '$' : '', true, false)
-                        .draw();
-                });
-
-                column.data().unique().sort().each(function (d, j) {
-                    select.append('<option>' + d + '</option>')
-                });
-
-                initkat();
-                
-            });
-           },
-        });
-
-        var table = $('#datas2019').DataTable({
-           "responsive":true,
-           "order": [[ "4", "desc" ]],
-           pageLength: 50,
-           "orderCellsTop": true,
-          "footerCallback": function( row, data, start, end, display ) {
-              var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp.' ).display;
-
-              var api = this.api(),data;
-              // Remove the formatting to get integer data for summation
-
-              var total = api.column(7, {page:'current'}).data().sum();
-
-              var filtered = api.column( 7, {"filter": "applied"} ).data().sum();
-
-              var totalpage = api.column(7).data().sum();
-
-              $( api.column( 5 ).footer() ).html("Total Amount");
-
-              $( api.column( 6 ).footer() ).html(numFormat(totalpage));
-
-              $( api.column( 6 ).footer() ).html(numFormat(filtered)+'');
-
-
+                $('#table-filter').on('change', function(){
+                  table.columns(14).search( this.value ).draw(); 
+                }); 
             },
-          initComplete: function () {
-              this.api().columns([[0],[2],[6],[8]]).every( function () {
-                  var column = this;
-                  var title = $(this).text();
-                  var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Show All '+ title +'</option></select>')
-                      .appendTo($("#status").find("th").eq(column.index()))
-                      .on('change', function () {
-                      var val = $.fn.dataTable.util.escapeRegex(
-                      $(this).val());                                     
-
-                      column.search(val ? '^' + val + '$' : '', true, false)
-                          .draw();
-                  });
-
-                  column.data().unique().sort().each(function (d, j) {
-                      select.append('<option>' + d + '</option>')
-                  });
-
-                  initkat();
-                  
-              });
-          },
-        })
+          })
+        
         @endif
 
       }
