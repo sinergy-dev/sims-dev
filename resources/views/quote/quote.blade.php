@@ -437,7 +437,7 @@
     }
 
     $('#data_all').DataTable( {
-      "order": [[ 0, "desc" ]],
+      "order": [[ 4, "desc" ]],
       fixedColumns:   {
           leftColumns: 1
       },
