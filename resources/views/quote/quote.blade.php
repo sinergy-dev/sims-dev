@@ -38,10 +38,10 @@
       <div class="box-header with-border">
         
           <div class="pull-right">
-            @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL'  || Auth::User()->id_position == 'STAFF GA')
+            @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL'  || Auth::User()->id_position == 'STAFF GA' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM')
             <button type="button" class="btn btn-success pull-right" style="width: 100px" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
             @endif
-            @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'STAFF GA')
+            @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'STAFF GA' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM')
             @if($counts)
             <button type="button" class="btn btn-success pull-right" id="" data-target="#letter_backdate" data-toggle="modal" style="margin-right: 10px;width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
             @else
@@ -105,8 +105,6 @@
                         <td>{{ $data->note }}</td>
                         @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
                           <td>
-                            <!-- <button class="btn btn-sm btn-primary fa fa-search fa-lg" data-target="#modalEdit" data-toggle="modal" style="width: 40px;height: 40px;text-align: center;" onclick="quote('{{$data->quote_number}}','{{$data->position}}','{{$data->to}}','{{$data->attention}}','{{$data->title}}','{{$data->project}}')">
-                            </button> -->
                             @if(Auth::User()->nik == $data->nik)
                             <button class="btn btn-xs btn-primary" style="vertical-align: top; width: 60px" data-target="#modalEdit" data-toggle="modal" onclick="quote('{{$data->quote_number}}','{{$data->position}}','{{$data->to}}','{{$data->attention}}','{{$data->title}}','{{$data->project}}')">&nbsp Edit
                             </button>
@@ -114,9 +112,6 @@
                             <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px">&nbsp Edit
                             </button>
                             @endif
-
-                            <!--  <a href="{{ url('delete?id_quote='. $data->id_quote) }}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data?')">
-                            </button></a> -->
                           </td>
                         @endif
                       </tr>
@@ -170,8 +165,6 @@
                       <td>{{$data->note}}</td>
                       @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
                         <td>
-                          <!-- <button class="btn btn-sm btn-primary fa fa-search fa-lg" data-target="#modalEdit" data-toggle="modal" style="width: 40px;height: 40px;text-align: center;" onclick="quote('{{$data->quote_number}}','{{$data->position}}','{{$data->to}}','{{$data->attention}}','{{$data->title}}','{{$data->project}}')">
-                          </button> -->
                           @if(Auth::User()->nik == $data->nik)
                           <button class="btn btn-xs btn-primary" style="vertical-align: top;" data-target="#modalEdit" data-toggle="modal" onclick="quote('{{$data->quote_number}}','{{$data->position}}','{{$data->to}}','{{$data->attention}}','{{$data->title}}','{{$data->project}}')">&nbsp Edit
                           </button>
@@ -223,6 +216,15 @@
                   <label>To</label>
                   <input class="form-control" placeholder="Enter To" id="to" name="to" required>
               </div>
+
+              <!-- <div class="form-group">
+                <label>Customer</label>
+                <select class="form-control" id="customer_quote" name="customer_quote" required style="width: 100%">
+                  @foreach($customer as $data)
+                  <option value="{{$data->id_customer}}">{{$data->customer_legal_name}}</option>
+                  @endforeach
+                </select>
+              </div> -->
 
               <div class="form-group">
                   <label>Attention</label>
@@ -424,6 +426,7 @@
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
+    $('#customer_quote').select2();
     function quote(quote_number,position,to,attention,title,project,description, project_id,note) {
       $('#edit_quote_number').val(quote_number);
       $('#edit_position').val(position);
@@ -454,6 +457,8 @@
        leftColumns: 1,
       }
     });
+
+    
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
       $("#alert").slideUp(300);

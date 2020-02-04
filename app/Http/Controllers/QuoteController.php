@@ -7,13 +7,14 @@ use App\Quote;
 use DB;
 use Auth;
 use Excel;
+use App\TB_Contact;
 
 class QuoteController extends Controller
 {
 	public function __construct()
-        {
+    {
         $this->middleware('auth');
-        }
+    }
     
 	public function index()
 	{
@@ -45,19 +46,7 @@ class QuoteController extends Controller
 
         $counts = count($count);
 
-        // if ($ter != null) {
-        //     $notif = DB::table('sales_lead_register')
-        //     ->select('opp_name')
-        //     ->orderBy('created_at','desc')->first();
-        // }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-        //     $notif = DB::table('sales_lead_register')
-        //     ->select('opp_name')
-        //     ->orderBy('created_at','desc')->first();
-        // }else{
-        //     $notif = DB::table('sales_lead_register')
-        //     ->select('opp_name')
-        //     ->orderBy('created_at','desc')->first();
-        // }
+        $customer = TB_Contact::select('customer_legal_name', 'id_customer')->get();
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -203,107 +192,13 @@ class QuoteController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse'));
+        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer'));
 	}
 
 	public function create()
 	{
 
 	}
-
-	/*public function store(Request $request)
-    {
-
-         $type = 'Q';
-         $posti = $request['position'];
-         $month_quote = substr($request['date_quote'],5,2);
-         $year_quote = substr($request['date_quote'],0,4);
-
-         $array_bln = array('01' => "I" ,
-                            '02' => "II",
-                            '03' => "III",
-                            '04' => "IV",
-                            '05' => "V",
-                            '06' => "VI",
-                            '07' => "VII",
-                            '08' => "VIII",
-                            '09' => "IX",
-                            '10' => "X",
-                            '11' => "XI",
-                            '12' => "XII");
-         $bln = $array_bln[$month_quote];
-
-         // $inc = DB::table('tb_quote')
-         //            ->select('quote_number')
-         //            ->get();
-
-         // $increment = count($inc);
-         // $nomor = $increment+1;
-
-         // if($nomor < 10){
-         //     $nomorcek = substr($nomor, 0);
-         // } elseif($nomor > 9 && $nomor < 99) {
-         //     $nomorcek = substr($nomor, 1);
-         // } elseif($nomor >= 100){
-         //     $nomorcek = substr($nomor, 2);
-         // }
-
-         $getnumber = Quote::orderBy('no', 'desc')->first();
-
-         if($getnumber == NULL){
-             $getlastnumber = 1;
-             $lastnumber = $getlastnumber;
-         } else{
-             $lastnumber = $getnumber->no+1;
-         }// } else {
-         //    if($getnumber->no > 7){
-         //        $query = Quote::where('no', 'like', '%8')->get();
-
-         //        foreach ($query as $compare) {
-         //             if($getnumber->no == $compare->no){
-         //                $lastnumber = $getnumber->no+2;
-         //             } else {
-         //                $lastnumber = $getnumber->no+1;
-         //             }            
-         //         }
-         //     }
-         // }
-
-         // if($getnumber->no == '8'){
-         //    $lastnumber = $getnumber->no+2;
-         // } else {
-         //    $lastnumber = $getnumber->no+1;
-         // }
-            
-         if($lastnumber < 10){
-            $akhirnomor = '00' . $lastnumber;
-         }elseif($lastnumber > 9 && $lastnumber < 100){
-            $akhirnomor = '0' . $lastnumber;
-         }elseif($lastnumber >= 100){
-            $akhirnomor = $lastnumber;
-         }
-
-         $q_num = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
-
-        $tambah = new Quote();
-        $tambah->no = $lastnumber;
-        $tambah->quote_number = $q_num;
-        $tambah->position = $request['position'];
-        $tambah->type_of_letter = 'Q';
-        $tambah->date = $request['date_quote'];
-        $tambah->to = $request['to'];
-        $tambah->attention = $request['attention'];
-        $tambah->title = $request['title'];
-        $tambah->project = $request['project'];
-        $tambah->description = $request['description'];
-        $tambah->from = $request['from'];
-        $tambah->division = $request['division'];
-        $tambah->project_id = $request['project_id'];
-        $tambah->status = 'F';
-        $tambah->save();
-
-        return redirect()->to('/quote');
-	}*/
 
     public function store(Request $request)
     {
