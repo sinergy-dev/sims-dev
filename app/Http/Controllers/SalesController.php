@@ -1757,7 +1757,7 @@ class SALESController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->select('sales_lead_register.lead_id','sales_lead_register.nik','tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.result2','sales_lead_register.result3','sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.status_engineer')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.result2','sales_lead_register.result3','sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.status_engineer', 'sales_lead_register.id_customer')
                     ->where('lead_id',$lead_id)
                     ->first();
 
@@ -1819,8 +1819,11 @@ class SALESController extends Controller
         $tampilkan_po = POCustomer::select('date','no_po','nominal','note','id_tb_po_cus')->where('lead_id',$lead_id)->get();
 
         $get_quote_number = DB::table('tb_quote')
-                            ->select('id_quote', 'quote_number')
-                            ->where('status','T')
+                            ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer')
+                            ->select('id_quote', 'quote_number', 'customer_legal_name')
+                            ->where('status', null)
+                            ->where('tb_quote.id_customer', $tampilkan->id_customer)
+                            ->orderBy('tb_quote.created_at', 'desc')
                             ->get();
 
         $tampilkan_progress = DB::table('tb_pmo_progress')
@@ -2504,6 +2507,14 @@ class SALESController extends Controller
 
                     $tambahpid->save();
 
+                    $update_quo = TenderProcess::where('lead_id', $lead_id)->first();
+                    $update_quo->quote_number_final = $request['quote_number_final'];
+                    $update_quo->update();
+
+                    $update_status_quo = Quote::where('quote_number', $request['quote_number_final'])->first();
+                    $update_status_quo->status = 'choosed';
+                    $update_status_quo->update();
+
                     $cekstatus = PID::select('status')->where('lead_id', $tambahpid->lead_id)->first();
 
                     if ($cekstatus->status == 'requested') {
@@ -2618,8 +2629,8 @@ class SALESController extends Controller
                                 ->get();
             }
 
-            $users = User::where('email','faiqoh@sinergy.co.id')->first();
-            Notification::send($users, new Result());
+            /*$users = User::where('email','faiqoh@sinergy.co.id')->first();
+            Notification::send($users, new Result());*/
            
 
         return redirect()->back();

@@ -93,7 +93,7 @@
                         <td>{{ $data->type_of_letter }}</td>
                         <td>{{ $data->month }}</td>
                         <td>{{ $data->date }}</td>
-                        <td>{{ $data->to }}</td>
+                        <td>{{ $data->customer_legal_name }}</td>
                         <td>{{ $data->attention }}</td>
                         <td>{{ $data->title }}</td>
                         <td>{{ $data->project }}</td>
@@ -154,7 +154,7 @@
                       <td>{{ $data->position }}</td>
                       <td>{{ $data->type_of_letter }}</td>
                       <td>{{ $data->date }}</td>
-                      <td>{{ $data->to }}</td>
+                      <td>{{ $data->customer_legal_name }}</td>
                       <td>{{ $data->attention }}</td>
                       <td>{{ $data->title }}</td>
                       <td>{{ $data->project }}</td>
@@ -212,19 +212,19 @@
                   <input type="date" class="form-control" id="date" name="date" required>
               </div>
 
-              <div class="form-group">
+              <!-- <div class="form-group">
                   <label>To</label>
                   <input class="form-control" placeholder="Enter To" id="to" name="to" required>
-              </div>
+              </div> -->
 
-              <!-- <div class="form-group">
+              <div class="form-group">
                 <label>Customer</label>
                 <select class="form-control" id="customer_quote" name="customer_quote" required style="width: 100%">
                   @foreach($customer as $data)
                   <option value="{{$data->id_customer}}">{{$data->customer_legal_name}}</option>
                   @endforeach
                 </select>
-              </div> -->
+              </div>
 
               <div class="form-group">
                   <label>Attention</label>
@@ -307,10 +307,18 @@
             <label for="">Date</label>
             <input type="date" class="form-control" name="date" id="date" required>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="to" id="to" required>
-          </div> 
+          </div>  -->
+          <div class="form-group">
+            <label>Customer</label>
+            <select class="form-control" id="customer_quote_backdate" name="customer_quote_backdate" required style="width: 100%">
+              @foreach($customer as $data)
+              <option value="{{$data->id_customer}}">{{$data->customer_legal_name}}</option>
+              @endforeach
+            </select>
+          </div>
           <div class="form-group">
             <label for="">Attention</label>
             <input type="text" class="form-control" placeholder="Enter Attention" name="attention" id="attention">
@@ -428,6 +436,7 @@
   <script type="text/javascript">
     $('#customer_quote').select2();
     $("#backdate_num").select2();
+    $("#customer_quote_backdate").select2();
     function quote(quote_number,position,to,attention,title,project,description, project_id,note) {
       $('#edit_quote_number').val(quote_number);
       $('#edit_position').val(position);
