@@ -1125,22 +1125,29 @@
             <label><u>Mohon Isi input di bawah sebelum submit!</u></label>
 
             <label>Date PO</label>
-            <input type="text" name="date_po" id="date_po" class="form-control date" required><br>
+            <input type="text" name="date_po" id="date_po" class="form-control date" ><br>
             
             <label>No. PO</label>
             <input type="text" name="no_po" id="no_po" class="form-control"><br>
             
             <label>Amount PO <sup><b>(Grand Total)</b></sup></label>
-            <input type="text" name="amount_pid" id="amount_pid" class="form-control money" required><br>
+            <input type="text" name="amount_pid" id="amount_pid" class="form-control money" ><br>
             
             <label>Project Type</label>
-            <select class="form-control" id="project_type" name="project_type" required>
+            <select class="form-control" id="project_type" name="project_type" >
               <option value="">-- Choose Result --</option>
               <option value="Supply Only">Supply Only</option>
               <option value="Implementation">Implementation</option>
               <option value="Maintenance">Maintenance</option>
               <option value="Managed-Services">Managed-Services</option>
               <option value="Services">Services</option>
+            </select> 
+
+            <label style="padding-top: 15px;">No. Quote</label>
+            <select class="form-control" id="quote_number_final" name="quote_number_final" style="width: 100%; ">
+              @foreach($get_quote_number as $data)
+              <option value="{{$data->quote_number}}">{{$data->quote_number}} - {{$data->customer_legal_name}}</option>
+              @endforeach
             </select> 
 
             <label class="checkbox" style="padding-left: 25px; padding-top: 10px;">
@@ -1541,6 +1548,8 @@
     <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
     <script src="{{asset("template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script>
     <script type="text/javascript">
+
+      $("#quote_number_final").select2();
 
       function edit_po(id_tb_po_cus,no_po,nominal,date,note){
       	$('#id_po_customer_edit').val(id_tb_po_cus);

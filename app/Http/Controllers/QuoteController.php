@@ -36,7 +36,8 @@ class QuoteController extends Controller
 
 		$datas = DB::table('tb_quote')
                         ->join('users', 'users.nik', '=', 'tb_quote.nik')
-                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type')
+                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         ->orderBy('tb_quote.created_at', 'desc')
                         ->get();
 
@@ -291,7 +292,8 @@ class QuoteController extends Controller
                         $tambah->type_of_letter = $type;
                         $tambah->month = $bln;
                         $tambah->date = $request['date'];
-                        $tambah->to = $request['to'];
+                        // $tambah->to = $request['to'];
+                        $tambah->id_customer = $request['customer_quote'];
                         $tambah->attention = $request['attention'];
                         $tambah->title = $request['title'];
                         $tambah->project = $request['project'];
@@ -359,7 +361,8 @@ class QuoteController extends Controller
                     $tambah->type_of_letter = $type;
                     $tambah->month = $bln;
                     $tambah->date = $request['date'];
-                    $tambah->to = $request['to'];
+                    // $tambah->to = $request['to'];
+                    $tambah->id_customer = $request['customer_quote'];
                     $tambah->attention = $request['attention'];
                     $tambah->title = $request['title'];
                     $tambah->project = $request['project'];
@@ -422,7 +425,8 @@ class QuoteController extends Controller
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
             $tambah->date = $request['date'];
-            $tambah->to = $request['to'];
+            // $tambah->to = $request['to'];
+            $tambah->id_customer = $request['customer_quote'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];
             $tambah->project = $request['project'];
@@ -489,7 +493,8 @@ class QuoteController extends Controller
         $update->type_of_letter = $type;
         $update->month = $bln;
         $update->date = $request['date'];
-        $update->to = $request['to'];
+        // $update->to = $request['to'];
+        $tambah->id_customer = $request['customer_quote_backdate'];
         $update->attention = $request['attention'];
         $update->title = $request['title'];
         $update->project = $request['project'];

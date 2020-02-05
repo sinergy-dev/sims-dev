@@ -25,6 +25,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('closedate:mail')->dailyAt('02:10');
+
+        $schedule->command('CustomRemainder:all_remainder')
+            ->weekly()
+            ->thursdays()
+            ->at('07:00');
         // $schedule->call(function() {
         //     syslog(1, 'helooo');
         // })->everyMinute();
