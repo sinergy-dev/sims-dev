@@ -11,32 +11,34 @@
 			<th></th>
 			<td></td>
 		</tr>
-		<tr>
-			<th>{{$data["sd_count"]}} Lead - SD Phase</th>
-			<th></th>
-			<td></td>
-		</tr>
-		<tr>
-			<th valign="top">Detail</th>
-			<th></th>
-			<td></td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<ul>
-					@foreach($data["sd_detail"] as $sd)
-					<li>
-						<span style="font-family: 'Lucida Console', Monaco, monospace;">
-							<a href="#">{{$sd->lead_id}}</a> 
-							[{{str_limit($sd->brand_name, 20)}}]
-						</span>
-						 - {{$sd->opp_name}}
-						</li>
-					@endforeach
-				</ul>
-			</td>
-		</tr>
-		
+		@if($data["sd_count"] != 0)
+			<tr>
+				<th>{{$data["sd_count"]}} Lead - SD Phase</th>
+				<th></th>
+				<td></td>
+			</tr>
+			<tr>
+				<th valign="top">Detail</th>
+				<th></th>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<ul>
+						@foreach($data["sd_detail"] as $sd)
+						<li>
+							<span style="font-family: 'Lucida Console', Monaco, monospace;">
+								<a href="https://app.sinergy.co.id/detail_project/{{$sd->lead_id}}">{{$sd->lead_id}}</a> 
+								[{{str_limit($sd->brand_name, 20)}}]
+							</span>
+							 - {{$sd->opp_name}}
+							</li>
+						@endforeach
+					</ul>
+				</td>
+			</tr>
+		@endif
+		@if($data["tp_count"] != 0)
 		<tr>
 			<th>{{$data["tp_count"]}} Lead - TP Phase</th>
 			<th></th>
@@ -53,15 +55,16 @@
 					@foreach($data["tp_detail"] as $tp)
 					<li>
 						<span style="font-family: 'Lucida Console', Monaco, monospace;">
-							<a href="#">{{$tp->lead_id}}</a> 
+							<a href="https://app.sinergy.co.id/detail_project/{{$tp->lead_id}}">{{$tp->lead_id}}</a> 
 							[{{str_limit($tp->brand_name, 20)}}]
 						</span>
-						 - {{$sd->opp_name}}
+						 - {{$tp->opp_name}}
 					</li>
 					@endforeach
 				</ul>
 			</td>
 		</tr>
+		@endif		
 	</table>
 	<p>
 		Mohon untuk segera di periksa kembali terhadap lead tersebut. Bila ada update progres lebih lanjut harap segera update lead yang di maksud pada <a href="https://app.sinergy.co.id/">SIMS App</a><br>
