@@ -121,6 +121,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/delete_pr/{id_pr}','PrController@destroy_pr');
 	Route::get('prAdmin','PrController@PrAdmin');
 	Route::get('downloadExcelPrAdmin','PrController@downloadExcelPr');
+	Route::get('/getfilteryearpr', 'PrController@getfilteryear');
+	Route::get('/getdatapr', 'PrController@getdatapr');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::post('/store_po', 'PONumberController@store');
