@@ -29,6 +29,7 @@ class EmailRemainderWeekly extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.MailRemainderWeekly');
+        return $this->subject('[SIMS-App] Reminder Email Weekly - Sales Lead Register')
+            ->view('mail.MailRemainderWeekly');
     }
 }
