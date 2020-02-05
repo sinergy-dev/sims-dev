@@ -384,7 +384,12 @@ class HRController extends Controller
                 $tambah->id_division = 'TECHNICAL';
         } elseif ($request['division_msp'] == 'WAREHOUSE_MSP') {
                 $tambah->id_division = 'WAREHOUSE';
-        } elseif($request['division_sip'] == 'NONE'){
+        }elseif ($request['division_msp'] == 'OPERATION_MSP') {
+                $tambah->id_division = 'PMO';
+                $tambah->id_position = 'PM';
+                $tambah->id_territory = 'OPERATION';
+        }
+         elseif($request['division_sip'] == 'NONE'){
                 $tambah->id_division = NULL;
         } elseif($request['id_sub_division_tech_msp'] == 'PRESALES'){
                 $tambah->id_division = 'TECHNICAL PRESALES';
@@ -528,6 +533,8 @@ class HRController extends Controller
 
         $nik = $request['nik_update'];
 
+        $check_nik = User::select('date_of_entry','date_of_birth')->where('nik',$nik)->first();
+
         $bb = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth;
 
         $cek = DB::table('users')
@@ -554,105 +561,137 @@ class HRController extends Controller
         }
         
         $nims = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth. $nomor;
-        
-        // $niks = DB::table('users')
-        //         ->select('nik')
-        //         ->where('nik',$nik)
-        //         ->first();
-
-        // $niks_update = substr($niks->nik, -3,3);
-
-        // $nim = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth. '/' .$niks_update ;
-        // $nims = str_replace('/', '', $nim);
-        
 
         $update = User::where('nik',$nik)->first();
-        $update->nik =  $nims;
+        if ($check_nik->date_of_entry !=  $request['date_of_entry_update'] && $check_nik->date_of_entry !=  $request['date_of_birth_update']) {
+            $update->nik =  $nims;
+        }
         $update->name = $request['name'];
         $update->email = $request['email'];
         $update->id_company = $request['company_update'];
 
-        if($request['id_sub_division_tech_update'] == 'PRESALES'){
-            $update->id_division = 'TECHNICAL PRESALES';
-        } elseif($request['division_update'] == 'OPERATION'){
-            if($request['id_sub_division_operation_update'] == 'PMO'){
-                $update->id_division = 'PMO';
-            } elseif($request['id_sub_division_operation_update'] == 'MSM'){
-                $update->id_division = 'MSM';
-            }  
-        } elseif($request['division_msp_update'] == 'SALES_MSP'){
-                $update->id_division = 'SALES';
-        } elseif ($request['division_msp_update'] == 'TECHNICAL_MSP') {
-                $update->id_division = 'TECHNICAL';
-        } elseif ($request['division_msp_update'] == 'WAREHOUSE_MSP') {
-                $update->id_division = 'WAREHOUSE';
-        } elseif($request['division_update'] == 'NONE'){
-                $update->id_division = NULL;
-       	} elseif($request['id_sub_division_tech_msp_update'] == 'PRESALES'){
-                $update->id_division = 'TECHNICAL PRESALES';
-        }  else {
-                $update->id_division = $request['division_update'];
-        }
-
-        if ($request['pos_tech_update'] != '') {
-            if($request['id_sub_division_tech_update'] == 'DPG'){
-                if($request['pos_tech_update'] == 'MANAGER'){
-                    $update->id_position = 'ENGINEER MANAGER';  
-                } elseif($request['pos_tech_update'] == 'STAFF'){
-                    $update->id_position = 'ENGINEER STAFF';
-                } elseif($request['pos_tech_update'] == 'HEAD'){
-                    $update->id_position = 'MANAGER';
+        if ($request['divisi_update'] == 'OPERATION') {
+           if ($request['sub_divisi_update'] == 'OPERATION') {
+               $update->id_position = 'OPERATION DIRECTOR';
+           }
+        }else if ($request['divisi_update'] == 'TECHNICAL') {
+            if ($request['sub_divisi_update'] == 'DPG') {
+                if ($request['posisi_update'] == 'MANAGER') {
+                   $update->id_position = 'ENGINEER MANAGER';
+                }else{
+                   $update->id_position = 'ENGINEER STAFF'; 
                 }
-            }elseif ($request['id_sub_division_tech_update'] == 'NONE') {
-                if($request['pos_tech_update'] == 'HEAD'){
-                    $update->id_position = 'MANAGER';  
-                }
-            } else {
-                $update->id_position = $request['pos_tech_update'];
-            }
-        } else if($request['pos_finance_update'] != ''){
-           if($request['pos_finance_update'] == 'HEAD'){
-                $update->id_position = 'MANAGER';   
-            } elseif($request['pos_finance_update'] == 'DIRECTOR'){
-                $update->id_position = 'FINANCE DIRECTOR';
-            } else {
-                $update->id_position = $request['pos_finance_update'];
-            }
-        } else if($request['pos_dir_update'] != ''){
-           $update->id_position = $request['pos_dir_update'];
-        } else if($request['pos_operation_update'] != ''){
-            if ($request['pos_operation_update'] == 'DIRECTOR') {
-                $update->id_position = 'OPERATION DIRECTOR';
+            }if ($request['sub_divisi_update'] == 'PRESALES') {
+                $update->id_territory = 'TECHNICAL PRESALES';
             }else{
-                $update->id_position = $request['pos_operation_update']; 
+                $update->id_position = $request['posisi_update'];
             }
-        } else if($request['pos_sales_update'] != ''){
-           $update->id_position = $request['pos_sales_update']; 
-        } else if($request['pos_hr_update'] != ''){
-           $update->id_position = $request['pos_hr_update']; 
-        } else if ($request['pos_tech_msp_update'] != '') {
-           $update->id_position = $request['pos_tech_msp_update'];
-        } else if ($request['pos_sales_msp_update'] != '') {
-           $update->id_position = $request['pos_sales_msp_update'];
+            
+        }else{
+            $update->id_position = $request['posisi_update'];
+            $update->id_division = $request['divisi_update'];
+            $update->id_territory = $request['sub_divisi_update'];
         }
+        
 
-        if ($request['id_sub_division_finance'] != '') {
-            $update->id_territory = $request['id_sub_division_finance'];
-        }else if ($request['id_sub_division_operation_update'] != '') {
-            if ($request['id_sub_division_operation_update'] == 'DIR') {
-                $update->id_territory = NULL;
-            } else if ($request['id_sub_division_operation_update'] == 'PMO' || $request['id_sub_division_operation_update'] == 'MSM') {
-                $update->id_territory = 'OPERATION';
-            } else{
-                $update->id_territory = $request['id_sub_division_operation_update'];
-            }
-        }else if ($request['territory_update']!= '') {
-            $update->id_territory = $request['territory_update'];
-        }else if ($request['id_sub_division_tech_update'] == 'NONE') {
-            $update->id_territory = NULL;
-        }else if ($request['id_sub_division_tech_update'] != '') {
-            $update->id_territory = $request['id_sub_division_tech_update'];
+        if ($request['sub_divisi_update'] == 'MSM') {
+            $update->id_division = 'MSM';
+            $update->id_territory = 'OPERATION';
+        }else if ($request['sub_divisi_update'] == 'PMO') {
+            $update->id_division = 'PMO';
+            $update->id_territory = 'OPERATION';
+        }else if ($request['sub_divisi_update'] == 'OPERATION') {
+            $update->id_division = 'PMO';
+            $update->id_territory = 'OPERATION';
+        }else if ($request['sub_divisi_update'] == 'WAREHOUSE') {
+            $update->id_position = 'WAREHOUSE';
+            $update->id_territory = '';
+            $update->id_division = '-';
         }
+        
+        
+
+        // if($request['id_sub_division_tech_update'] == 'PRESALES'){
+        //     $update->id_division = 'TECHNICAL PRESALES';
+        // } elseif($request['division_update'] == 'OPERATION'){
+        //     if($request['id_sub_division_operation_update'] == 'PMO'){
+        //         $update->id_division = 'PMO';
+        //     } elseif($request['id_sub_division_operation_update'] == 'MSM'){
+        //         $update->id_division = 'MSM';
+        //     }  
+        // } elseif($request['division_msp_update'] == 'SALES_MSP'){
+        //         $update->id_division = 'SALES';
+        // } elseif ($request['division_msp_update'] == 'TECHNICAL_MSP') {
+        //         $update->id_division = 'TECHNICAL';
+        // } elseif ($request['division_msp_update'] == 'WAREHOUSE_MSP') {
+        //         $update->id_division = 'WAREHOUSE';
+        // } elseif($request['division_update'] == 'NONE'){
+        //         $update->id_division = NULL;
+       	// } elseif($request['id_sub_division_tech_msp_update'] == 'PRESALES'){
+        //         $update->id_division = 'TECHNICAL PRESALES';
+        // }  else {
+        //         $update->id_division = $request['division_update'];
+        // }
+
+        // if ($request['pos_tech_update'] != '') {
+        //     if($request['id_sub_division_tech_update'] == 'DPG'){
+        //         if($request['pos_tech_update'] == 'MANAGER'){
+        //             $update->id_position = 'ENGINEER MANAGER';  
+        //         } elseif($request['pos_tech_update'] == 'STAFF'){
+        //             $update->id_position = 'ENGINEER STAFF';
+        //         } elseif($request['pos_tech_update'] == 'HEAD'){
+        //             $update->id_position = 'MANAGER';
+        //         }
+        //     }elseif ($request['id_sub_division_tech_update'] == 'NONE') {
+        //         if($request['pos_tech_update'] == 'HEAD'){
+        //             $update->id_position = 'MANAGER';  
+        //         }
+        //     } else {
+        //         $update->id_position = $request['pos_tech_update'];
+        //     }
+        // } else if($request['pos_finance_update'] != ''){
+        //    if($request['pos_finance_update'] == 'HEAD'){
+        //         $update->id_position = 'MANAGER';   
+        //     } elseif($request['pos_finance_update'] == 'DIRECTOR'){
+        //         $update->id_position = 'FINANCE DIRECTOR';
+        //     } else {
+        //         $update->id_position = $request['pos_finance_update'];
+        //     }
+        // } else if($request['pos_dir_update'] != ''){
+        //    $update->id_position = $request['pos_dir_update'];
+        // } else if($request['pos_operation_update'] != ''){
+        //     if ($request['pos_operation_update'] == 'DIRECTOR') {
+        //         $update->id_position = 'OPERATION DIRECTOR';
+        //     }else{
+        //         $update->id_position = $request['pos_operation_update']; 
+        //     }
+        // } else if($request['pos_sales_update'] != ''){
+        //    $update->id_position = $request['pos_sales_update']; 
+        // } else if($request['pos_hr_update'] != ''){
+        //    $update->id_position = $request['pos_hr_update']; 
+        // } else if ($request['pos_tech_msp_update'] != '') {
+        //    $update->id_position = $request['pos_tech_msp_update'];
+        // } else if ($request['pos_sales_msp_update'] != '') {
+        //    $update->id_position = $request['pos_sales_msp_update'];
+        // }
+
+        // if ($request['id_sub_division_finance'] != '') {
+        //     $update->id_territory = $request['id_sub_division_finance'];
+        // }else if ($request['id_sub_division_operation_update'] != '') {
+        //     if ($request['id_sub_division_operation_update'] == 'DIR') {
+        //         $update->id_territory = NULL;
+        //     } else if ($request['id_sub_division_operation_update'] == 'PMO' || $request['id_sub_division_operation_update'] == 'MSM') {
+        //         $update->id_territory = 'OPERATION';
+        //     } else{
+        //         $update->id_territory = $request['id_sub_division_operation_update'];
+        //     }
+        // }else if ($request['territory_update']!= '') {
+        //     $update->id_territory = $request['territory_update'];
+        // }else if ($request['id_sub_division_tech_update'] == 'NONE') {
+        //     $update->id_territory = NULL;
+        // }else if ($request['id_sub_division_tech_update'] != '') {
+        //     $update->id_territory = $request['id_sub_division_tech_update'];
+        // }
 
         $update->date_of_birth = $request['date_of_birth_update'];
         $update->date_of_entry = $request['date_of_entry_update'];
