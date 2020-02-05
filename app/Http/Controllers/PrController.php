@@ -398,7 +398,7 @@ class PrController extends Controller
     {
         $filter_pr = DB::table('tb_pr')
                         ->join('users', 'users.nik', '=', 'tb_pr.from')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'users.nik')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
                         ->where('result', '!=', 'R')
                         // ->where('date','like',$request->data."%")
                         ->whereYear('tb_pr.created_at', $request->data)
@@ -412,7 +412,7 @@ class PrController extends Controller
         $tahun = date("Y"); 
 
         return array("data" => PR::join('users', 'users.nik', '=', 'tb_pr.from')
-                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'users.nik')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
                                 ->where('result', '!=', 'R')
                                 ->where('date','like',$tahun."%")
                                 ->get());

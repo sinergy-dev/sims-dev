@@ -277,15 +277,14 @@
   <!-- <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.js"></script>
   <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
   <script type="text/javascript">
-    function edit_pr(no,to,attention,title,project,description,from,issuance,project_id,note) {
+    function edit_pr(no_pr,to,attention,title,project,description,issuance,project_id,note) {
       $('#modaledit').modal('show')
-      $('#edit_no_pr').val(no);
+      $('#edit_no_pr').val(no_pr);
       $('#edit_to').val(to);
       $('#edit_attention').val(attention);
       $('#edit_title').val(title);
       $('#edit_project').val(project);
       $('#edit_description').val(description);
-      $('#edit_from').val(from);
       $('#edit_issuance').val(issuance);
       $('#edit_project_id').val(project_id);
       $('#edit_note').val(note);
@@ -305,13 +304,16 @@
           "dataSrc": function (json){
 
             json.data.forEach(function(data,index){
-              // if (Auth::User()->nik == data.nik) {
-                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr()')'>&nbsp Edit</button>";
-              /*}else{
-                data.btn_edit = "<button class='btn btn-xs btn-primary disabled')'>&nbsp Edit</button>";
-              }*/
+              if("{{Auth::User()->nik}}" == data.from) {
+                var x = '"' + data.no_pr + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.issuance+ '","' +data.project_id+ '","' +data.note+ '"'
+                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
+              } else {
+                data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+              }
+                
             });
             return json.data;
+            
           }
         },
         "columns": [
