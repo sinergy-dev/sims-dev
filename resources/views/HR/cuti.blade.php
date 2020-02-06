@@ -85,10 +85,10 @@
         <h3 class="box-title">Hari Libur Nasional Tahun {{$year}}</h3>
         <div class="box-tools pull-right">
           <i class="fa fa-fw fa-lg fa-angle-left field-icon toggle-arrow"></i>
-            </div>
+        </div>
       </div>
         <div class="box-body div-libur" style="display: none;">
-          
+
         </div>
       </div>
 
@@ -105,50 +105,11 @@
           @endif
             
           @if(Auth::User()->id_position == 'HR MANAGER')
-          <div style="width: 170px;margin-right: 10px" class="pull-left">
-            <div class="input-group date">
-                <select class="form-control" id="pilih" name="pilih">
-                  <option value="Select">-- Select Filter By --</option>
-                  <option value="date">Filter By Date</option>
-                  <option value="div">Filter By Division</option>
-                  <option value="all">Filter By Date & Div</option>
-                </select>
-            </div>
-          </div> 
-
-          <div style="width: 300px;margin-right: 10px" class="pull-left">
-            <div class="input-group date">
-                <div class="input-group-addon">
-                  <i class="fa fa-calendar"></i>
-                </div>
-                <input type="text" class="form-control" id="dates" name="dates" disabled="">
-            </div>
-          </div> 
-
-          <div style="width: 250px;margin-right: 10px" class="input-group date pull-left disabled">
-            <div class="input-group-addon">
-              <i class="fa fa-filter"></i>
-            </div>
-            <select class="form-control" id="division_cuti" name="division_cuti" disabled="">
-              <option value="alldeh">ALL DIVISION</option>
-              @foreach($division as $data)
-                @if($data->id_division != 'NULL')
-                 @if($data->id_division == '-')
-                 <option value="{{$data->id_division}}">WAREHOUSE</option>
-                 @else
-                 <option value="{{$data->id_division}}">{{$data->id_division}}</option>
-                 @endif
-                
-                @endif
-              @endforeach
-            </select>
-          </div>
           <a href="{{action('HRGAController@cutipdf')}}" target="_blank" onclick="print()">
           <button class="btn btn-sm btn-danger" style="width: 120px"><i class="fa fa-file-pdf-o"></i>&nbsp Preview PDF</button></a>
           <button class="btn btn-sm btn-success" onclick="exportExcel()"><i class="fa fa-file-excel-o"></i>&nbspExcel</button>
           <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#setting_cuti"><i class="fa fa-wrench"></i>&nbspTotal Cuti</button>
-          @endif
-           
+           @endif
           </div>
       </div>
 
@@ -168,18 +129,18 @@
                     <a href="#bos" data-toggle="tab">{{Auth::User()->name}}</a>
                     @endif
                   </li>
-                  <li  class="active">
+                  @if(Auth::User()->id_position != 'STAFF')
+                  <li class="active">
+                    <a href="#cuti" data-toggle="tab">Report Cuti {{$bulan}}</a>
+                  </li>
+                  @endif
+                  <li>
                     @if(Auth::User()->id_position == 'HR MANAGER')
                     <a href="#staff" data-toggle="tab">Report Cuti</a>
                     @else
                     <a href="#staff" data-toggle="tab">STAFF</a>
                     @endif
                   </li>
-                  @if(Auth::User()->id_position == 'HR MANAGER')
-                  <li>
-                    <a href="#cuti" data-toggle="tab">Report Cuti {{$bulan}}</a>
-                  </li>
-                  @endif
               </ul>
           @endif
 
@@ -207,8 +168,8 @@
                         </tr>
                         <tr>
                           @if(Auth::User()->id_position == 'HR MANAGER')
-                            <th>2019</th>
-                            <th>2020</th>
+                            <th>{{$tahun_lalu}}</th>
+                            <th>{{$tahun_ini}}</th>
                           @else  
                             <th></th>
                             <th></th>
@@ -310,14 +271,138 @@
                       </tbody>
                   </table>
                 </div>
+
+                <div class="tab-pane active" id="cuti">
+                  <table class="table table-bordered table-striped dataTable" id="datatablew" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th>Employees Name</th>
+                            <th>Division</th>
+                            @if(Auth::User()->id_position == 'HR MANAGER')
+                            <th>Cuti Request</th>
+                            <th>Request Date</th>
+                            @else
+                            <th>Date of Request</th>
+                            <th>Time Off</th>
+                            @endif
+                            <th>Status</th>
+                            <th>
+                             Action
+                            </th>
+                          </tr>
+                        </thead>
+                          <tbody>
+                            @foreach($cuti2 as $data)
+                              @if(Auth::User()->id_position != 'STAFF')
+                               <tr>
+                                  <td>{{$data->name}}</td>
+                                  <td>{{$data->id_division}}</td>
+                                  <td>
+                                    <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
+                                    border: none;">{{$data->days}}
+                                  Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
+                                  </td>
+
+                                  <td>{{$data->date_req}}</td>
+                                  <td>
+                                    @if($data->status == 'v')
+                                     <label class="btn-sm btn-success">Approved</label>
+                                    @elseif($data->status == 'd')
+                                     <label class="btn-sm btn-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</label>
+                                    @else
+                                     <label class="btn-sm btn-warning">Pending</label> 
+                                    @endif
+                                  </td>
+                                  @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
+                                  <td>
+                                    @if(Auth::User()->id_position == 'HR MANAGER')
+                                        @if($data->status == NULL)
+                                            <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
+                                            <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
+                                          @else
+                                            <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
+                                            <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
+                                        @endif
+                                      @else
+                                        @if(Auth::User()->id_territory == $data->id_territory)
+                                          @if($data->status == NULL)
+                                            <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
+                                            <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
+                                          @else
+                                            <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
+                                            <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
+                                          @endif
+                                        @else
+                                        <i>no action</i>
+                                      @endif
+                                    @endif
+                                  </td>
+                                  @else
+                                      <td>
+                                        @if($data->status == NULL)
+                                        <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
+                                        <a href="{{ url('delete_sales', $data->lead_id) }}">
+                                          <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
+                                    </button>
+                                  </a>
+                                        @endif
+                                      </td>
+                                  @endif
+                              </tr>
+                              @endif
+                            @endforeach
+                          </tbody>
+                    </table>
+                </div>
                 @endif 
 
-                  
-                @if(Auth::User()->id_position != 'MANAGER')  
+                @if(Auth::User()->id_position != 'MANAGER' && Auth::User()->id_position != 'HR MANAGER')  
                 <div class="tab-pane active" id="staff">
                   @else
-                  <div class="tab-pane active" id="staff">
+                  <div class="tab-pane" id="staff">
                   @endif
+
+                  @if(Auth::User()->id_position == 'HR MANAGER')
+                    <div style="width: 170px;margin-right: 10px" class="pull-left">
+                      <div class="input-group date">
+                          <select class="form-control" id="pilih" name="pilih">
+                            <option value="Select">-- Select Filter By --</option>
+                            <option value="date">Filter By Date</option>
+                            <option value="div">Filter By Division</option>
+                            <option value="all">Filter By Date & Div</option>
+                          </select>
+                      </div>
+                    </div> 
+
+                    <div style="width: 300px;margin-right: 10px" class="pull-left">
+                      <div class="input-group date">
+                          <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                          </div>
+                          <input type="text" class="form-control" id="dates" name="dates" disabled="">
+                      </div>
+                    </div> 
+
+                    <div style="width: 250px;margin-right: 10px" class="input-group date pull-left disabled">
+                      <div class="input-group-addon">
+                        <i class="fa fa-filter"></i>
+                      </div>
+                      <select class="form-control" id="division_cuti" name="division_cuti" disabled="">
+                        <option value="alldeh">ALL DIVISION</option>
+                        @foreach($division as $data)
+                          @if($data->id_division != 'NULL')
+                           @if($data->id_division == '-')
+                           <option value="{{$data->id_division}}">WAREHOUSE</option>
+                           @else
+                           <option value="{{$data->id_division}}">{{$data->id_division}}</option>
+                           @endif
+                          
+                          @endif
+                        @endforeach
+                      </select>
+                    </div>
+                    @endif
+
                     <table class="table table-bordered table-striped dataTable" id="datatable" width="100%" cellspacing="0">
                         <thead>
                           <tr>
@@ -331,15 +416,9 @@
                             <th>Time Off</th>
                             @endif
                             <th>Status</th>
-                            @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER' || Auth::User()->id_position == 'HR MANAGER' )
-                              <th>
-                               Action
+                            <th>
+                             Action
                             </th>
-                          @else
-                              <th>
-                               Action
-                              </th>
-                          @endif
                           </tr>
                         </thead>
                           <tbody id="report" name="report">
@@ -367,6 +446,7 @@
                                     </td>
                                     @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
                                     <td>
+                                      @if(Auth::User()->id_territory == $data->id_territory)
                                         @if($data->status == NULL)
                                           @if(Auth::User()->id_territory == '')
                                             @if($data->id_position == 'MANAGER')
@@ -382,6 +462,9 @@
                                          @else
                                           <i>no action</i>
                                         @endif
+                                      @else
+                                      <i>no action</i>
+                                      @endif
                                     </td>
                                     @else
                                         <td>
@@ -395,7 +478,7 @@
                                         </td>
                                     @endif
                                </tr>
-                            @elseif(Auth::User()->id_position == 'HR MANAGER')
+                              @elseif(Auth::User()->id_position == 'HR MANAGER')
                               <tr>
                                   <td>{{$data->name}}</td>
                                   <td>{{$data->id_division}}</td>
@@ -436,16 +519,17 @@
                                         @endif
                                       </td>
                                   @endif
-                               </tr>
+                              </tr>
                               @endif
                             @endforeach
                         </tbody>
                     </table>
                   </div>
                 </div>
+
             </div>
           </div>
-      </div>
+        </div>
       </div>
 
       
@@ -799,6 +883,7 @@
     // });
 
     var tables = $('#datatables').DataTable();
+    var tablew = $("#datatablew").DataTable();
     var table  = $('#datatable').DataTable({
        "columnDefs":[
             {"width": "30%", "targets":0},
@@ -1236,7 +1321,7 @@
       console.log($(".date_off").val());
         $.ajax({
           type:"GET",
-          url:'/detilcuti',
+          url:'{{url("/detilcuti")}}',
           data:{
             cuti:this.value,
           },
