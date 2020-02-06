@@ -903,7 +903,7 @@
           </li>
         </ul>
       </li>
-      @elseif(Auth::User()->id_position == 'STAFF' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_position == 'MANAGER')
+      @else
       <li class="treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
           <i class="fa fa-users"></i>
@@ -919,6 +919,13 @@
         </ul>
       </li>
       @endif
+      <li class="treeview">
+        <ul class="treeview-menu" id="HRPages">
+          <li>
+            <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
+          </li>
+        </ul>
+      </li>
 
 
       @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG')
