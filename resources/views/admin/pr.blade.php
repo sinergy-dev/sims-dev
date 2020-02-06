@@ -277,17 +277,51 @@
   <!-- <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.js"></script>
   <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
   <script type="text/javascript">
-    function edit_pr(no_pr,to,attention,title,project,description,issuance,project_id,note) {
+    function edit_pr(no,to,attention,title,project,description,issuance,project_id,note) {
       $('#modaledit').modal('show')
-      $('#edit_no_pr').val(no_pr);
+      $('#edit_no_pr').val(no);
       $('#edit_to').val(to);
-      $('#edit_attention').val(attention);
-      $('#edit_title').val(title);
-      $('#edit_project').val(project);
-      $('#edit_description').val(description);
-      $('#edit_issuance').val(issuance);
-      $('#edit_project_id').val(project_id);
-      $('#edit_note').val(note);
+      if (attention == "null") {
+        '';
+      } else {
+        $('#edit_attention').val(attention);
+      }
+
+      if (title == "null") {
+        '';
+      } else {
+        $('#edit_title').val(title);
+      }
+
+      if (project == "null") {
+        '';
+      } else {
+        $('#edit_project').val(project);
+      }
+
+      if (description == "null") {
+        '';
+      } else {
+        $('#edit_description').val(description);
+      }
+
+      if (issuance == "null") {
+        '';
+      } else {
+        $('#edit_issuance').val(issuance);
+      }
+
+      if (project_id == "null") {
+        '';
+      } else {
+        $('#edit_project_id').val(project_id);
+      }
+
+      if (note == "null") {
+        '';
+      } else {
+        $('#edit_note').val(note);
+      }
     }
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
@@ -305,7 +339,7 @@
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.from) {
-                var x = '"' + data.no_pr + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.issuance+ '","' +data.project_id+ '","' +data.note+ '"'
+                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.issuance+ '","' +data.project_id+ '","' +data.note+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
@@ -323,7 +357,7 @@
           { "data": "month" },
           { "data": "date" },
           { "data": "to" },
-          { "data": "attention" },
+          { "data": "attention"},
           { "data": "title" },
           { "data": "project" },
           { "data": "description" },
