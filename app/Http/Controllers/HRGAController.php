@@ -298,20 +298,49 @@ class HRGAController extends Controller
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('tb_position','tb_position.id_position','=','users.id_position')
                 ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
+                ->orderBy('tb_cuti.date_req','DESC')
                 ->where('id_territory', $ter)
                 ->groupby('id_cuti')
                 ->get();
+
+
+                $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->whereYear('tb_cuti.date_req',date('Y'))
+                    ->whereMonth('tb_cuti.date_req',date('m'))
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->groupby('nik')
+                    ->get();
             } elseif($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG'){
                 $cuti = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
                     ->groupby('id_cuti')
+                    ->orderBy('tb_cuti.date_req','DESC')
                     ->where('users.id_division','TECHNICAL')
                     ->where('users.id_territory','DPG')
+                    ->get();
+
+                $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->whereYear('tb_cuti.date_req',date('Y'))
+                    ->whereMonth('tb_cuti.date_req',date('m'))
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->groupby('nik')
                     ->get();
             } elseif($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER'){
                 $cuti = DB::table('tb_cuti')
@@ -319,11 +348,25 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position') 
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory') 
                     ->where('users.id_division','TECHNICAL')
                     ->where('users.id_territory','DVG')
+                    ->orderBy('tb_cuti.date_req','DESC')
                     ->groupby('id_cuti')
                     ->orderBy('id_cuti','desc')
+                    ->get();
+
+                $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->whereYear('tb_cuti.date_req',date('Y'))
+                    ->whereMonth('tb_cuti.date_req',date('m'))
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->groupby('nik')
                     ->get();
 
                 $detail_cuti = DB::table('tb_cuti')
@@ -337,10 +380,25 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position') 
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory') 
                     ->where('users.id_division','PMO')
+                    ->orderBy('tb_cuti.date_req','DESC')
                     ->groupby('id_cuti')
                     ->orderBy('id_cuti','desc')
+                    ->get();
+
+
+                $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->whereYear('tb_cuti.date_req',date('Y'))
+                    ->whereMonth('tb_cuti.date_req',date('m'))
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->groupby('nik')
                     ->get();
             } else{
                 $cuti = DB::table('tb_cuti')
@@ -348,11 +406,25 @@ class HRGAController extends Controller
                 ->join('users','users.nik','=','tb_cuti.nik')
                 ->join('tb_position','tb_position.id_position','=','users.id_position')
                 ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position') 
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory') 
                 ->groupby('id_cuti')
+                ->orderBy('tb_cuti.date_req','DESC')
                 ->where('users.nik',$nik)
                 ->orderBy('id_cuti','desc')
                 ->get();
+
+                $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->whereYear('tb_cuti.date_req',date('Y'))
+                    ->whereMonth('tb_cuti.date_req',date('m'))
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->groupby('nik')
+                    ->get();
 
                 $detail_cuti = DB::table('tb_cuti')
                             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
@@ -367,21 +439,48 @@ class HRGAController extends Controller
             ->join('tb_position','tb_position.id_position','=','users.id_position')
             ->join('tb_division','tb_division.id_division','=','users.id_division')
             ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position')
-            ->where('users.id_division','TECHNICAL PRESALES')
+            ->where('users.id_division','TECHNICAL PRESALES','users.id_territory')
             ->groupby('id_cuti')
             ->orderBy('id_cuti','desc')
             ->get();
+
+
+            $cuti2 = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                ->whereYear('tb_cuti.date_req',date('Y'))
+                ->whereMonth('tb_cuti.date_req',date('m'))
+                ->orderBy('date_req','DESC')
+                ->groupby('tb_cuti.id_cuti')
+                ->groupby('nik')
+                ->get();
         }elseif($div == 'FINANCE' && $pos == 'MANAGER'){
         	$cuti = DB::table('tb_cuti')
             ->join('users','users.nik','=','tb_cuti.nik')
             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
             ->join('tb_position','tb_position.id_position','=','users.id_position')
             ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position')
+            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
             ->where('users.id_division','FINANCE')
             ->groupby('id_cuti')
             ->orderBy('id_cuti','desc')
             ->get();
+
+
+            $cuti2 = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                ->whereYear('tb_cuti.date_req','2020')
+                ->orderBy('date_req','DESC')
+                ->groupby('tb_cuti.id_cuti')
+                ->groupby('nik')
+                ->get();
         }elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF'){
         	$cuti = DB::table('tb_cuti')
             ->join('users','users.nik','=','tb_cuti.nik')
@@ -409,13 +508,27 @@ class HRGAController extends Controller
 	            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
 	            ->join('tb_position','tb_position.id_position','=','users.id_position')
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
-	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email')
+	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
                 ->orderBy('date_req','DESC')
 	            ->where('status','v')
                 ->orwhere('tb_position.id_position','not like', '%STAFF%')
 	            ->groupby('tb_cuti.id_cuti')
 	            ->groupby('nik')
 	            ->get();
+
+            $cuti2 = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                ->whereYear('tb_cuti.date_req',date('Y'))
+                    ->whereMonth('tb_cuti.date_req',date('m'))
+                ->orderBy('date_req','DESC')
+                ->groupby('tb_cuti.id_cuti')
+                ->groupby('nik')
+                ->get();
+
 
 	        $cuti_index = DB::table('users')
 	            ->join('tb_cuti','tb_cuti.nik','=','users.nik')
@@ -441,10 +554,23 @@ class HRGAController extends Controller
             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
             ->join('tb_position','tb_position.id_position','=','users.id_position')
             ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position')
+            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
             ->groupby('id_cuti')
             ->orderBy('id_cuti','desc')
             ->get();
+
+            $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->whereMonth('tb_cuti.date_req',date('m'))
+                    ->whereYear('tb_cuti.date_req',date('Y'))
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->groupby('nik')
+                    ->get();
 
 
         }
@@ -588,7 +714,7 @@ class HRGAController extends Controller
                             ->get();
         }
 
-        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu'));
+        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu','cuti2'));
     }
 
     public function detil_cuti(Request $request)
@@ -952,12 +1078,13 @@ class HRGAController extends Controller
 
     public function CutiExcel(Request $request)
     {
-        $nama = 'Report Cuti SIP & MSP '. $request->date_start . ' sampai ' . $request->date_end;
+        // $nama = 'Report Cuti SIP & MSP '. $request->date_start . ' sampai ' . $request->date_end;
+        $nama = 'Report Cuti SIP & MSP '. date('F') .' '. date('Y');
         Excel::create($nama, function ($excel) use ($request) {
             $excel->sheet('Sinergy informasi Pratama', function ($sheet) use ($request) {
         
-                $sheet->mergeCells('A1:E1');
-                $sheet->setBorder('A1:E1', 'thin');
+                $sheet->mergeCells('A1:F1');
+                $sheet->setBorder('A1:F1', 'thin');
 
                 $sheet->row(1, function ($row) {
                     $row->setFontFamily('Calibri');
@@ -1096,13 +1223,14 @@ class HRGAController extends Controller
 	                
 
                     $datasheetcuti = array();
-                    $datasheetcuti[0] = array("No","Nama Karyawan", "Division", "Cuti Sudah diambil", "Sisa Cuti");
+                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti");
                     $i=1;
 
                     foreach ($cuti_index as $data) {
                         $datasheetcuti[$i] = array($i,
                                     $data['name'],
-                                    $data['name_division'],
+                                    $data['']."",
+                                    $data['']."",
                                     $data['niks']." Hari",
                                     $data['cutis']." Hari"
                                 );
@@ -1112,7 +1240,8 @@ class HRGAController extends Controller
                     foreach ($cuti_list as $datas ) {
                     	$datasheetcuti[$i] = array($i,
                                     $datas['name'],
-                                    $datas['id_division'],
+                                    $data['']."",
+                                    $data['']."",
                                     $datas['']."0 Hari",
                                     $datas['cutis']." Hari"
                                 );
@@ -1125,8 +1254,8 @@ class HRGAController extends Controller
 
             $excel->sheet('Multi Solusindo Perkasa', function ($sheet) use ($request) {
         
-                $sheet->mergeCells('A1:E1');
-                $sheet->setBorder('A1:E1', 'thin');
+                $sheet->mergeCells('A1:F1');
+                $sheet->setBorder('A1:F1', 'thin');
 
                 $sheet->row(1, function ($row) {
                     $row->setFontFamily('Calibri');
@@ -1264,14 +1393,15 @@ class HRGAController extends Controller
                     
 
                     $datasheetcuti = array();
-                    $datasheetcuti[0] = array("No","Nama Karyawan", "Division", "Cuti Sudah diambil", "Sisa Cuti");
+                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti");
                     $i=1;
 
                     foreach ($cuti_index as $data) {
 
                         $datasheetcuti[$i] = array($i,
                                     $data['name'],
-                                    $data['name_division'],
+                                    $data['']."",
+                                    $data['']."",
                                     $data['niks']." Hari",
                                     $data['cutis']." Hari"
                                 );
@@ -1281,7 +1411,8 @@ class HRGAController extends Controller
                     foreach ($cuti_list as $datas ) {
                         $datasheetcuti[$i] = array($i,
                                     $datas['name'],
-                                    $datas['id_division'],
+                                    $datas['']."",
+                                    $datas['']."",
                                     $datas['']."0 Hari",
                                     $datas['cutis']." Hari"
                                 );
@@ -1372,6 +1503,8 @@ class HRGAController extends Controller
                         ->join('tb_company','tb_company.id_company','=','users.id_company')
                         ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
                         ->where('status','v')
+                        ->whereMonth('tb_cuti.date_req',date('m'))
+                        ->whereYear('tb_cuti.date_req',date('Y'))
                         ->groupby('tb_cuti.id_cuti')
                         ->get();
                     }
