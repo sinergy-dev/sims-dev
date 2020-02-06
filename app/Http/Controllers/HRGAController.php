@@ -410,6 +410,7 @@ class HRGAController extends Controller
 	            ->join('tb_position','tb_position.id_position','=','users.id_position')
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
 	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email')
+                ->orderBy('date_req','DESC')
 	            ->where('status','v')
                 ->orwhere('tb_position.id_position','not like', '%STAFF%')
 	            ->groupby('tb_cuti.id_cuti')
@@ -449,9 +450,13 @@ class HRGAController extends Controller
         }
 
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_KEY'));
-        $json = (string)$api_response->getBody();
-        $datas_nasional = json_decode($json, true);
+        // $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_KEY'));
+        // $json = (string)$api_response->getBody();
+        // $datas_nasional = json_decode($json, true);
+
+        $bulan = date('F');
+        $tahun_ini = date('Y');
+        $tahun_lalu = date('Y') - 1;
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -583,7 +588,7 @@ class HRGAController extends Controller
                             ->get();
         }
 
-        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','year','datas_nasional'));
+        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu'));
     }
 
     public function detil_cuti(Request $request)
