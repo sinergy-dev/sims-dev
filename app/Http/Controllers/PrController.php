@@ -189,6 +189,9 @@ class PrController extends Controller
 
         $sidebar_collapse = true;
 
+        $year_now = date("Y");
+
+
         return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse'));
     }
 
@@ -366,28 +369,6 @@ class PrController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -411,6 +392,29 @@ class PrController extends Controller
         $update->update();
 
         return redirect('pr')->with('update', 'Updated Purchase Request Data Successfully!');
+    }
+
+    public function getfilteryear(Request $request)
+    {
+        $filter_pr = DB::table('tb_pr')
+                        ->join('users', 'users.nik', '=', 'tb_pr.from')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
+                        ->where('result', '!=', 'R')
+                        ->whereYear('tb_pr.created_at', $request->data)
+                        ->get();
+
+        return array("data" => $filter_pr);
+    }
+
+    public function getdatapr(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => PR::join('users', 'users.nik', '=', 'tb_pr.from')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
+                                ->where('result', '!=', 'R')
+                                ->where('date','like',$tahun."%")
+                                ->get());
     }
 
     /**

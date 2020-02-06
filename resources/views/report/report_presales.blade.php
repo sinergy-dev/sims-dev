@@ -824,7 +824,7 @@
 
 	    $.ajax({
 	      type:"GET",
-	      url:"/getfiltersdyearpresales",
+	      url:"getfiltersdyearpresales",
 	      data:{
 	        data:this.value,
 	        type:tahun,
@@ -851,7 +851,7 @@
 
 	    $.ajax({
 	      type:"GET",
-	      url:"/getfiltertpyearpresales",
+	      url:"getfiltertpyearpresales",
 	      data:{
 	        data:this.value,
 	        type:tahun,
@@ -882,7 +882,7 @@
 
 	    $.ajax({
 	      type:"GET",
-	      url:"/getfilterwinyearpresales",
+	      url:"getfilterwinyearpresales",
 	      data:{
 	        data:this.value,
 	        type:tahun,
@@ -909,7 +909,7 @@
 
 	    $.ajax({
 	      type:"GET",
-	      url:"/getfilterloseyearpresales",
+	      url:"getfilterloseyearpresales",
 	      data:{
 	        data:this.value,
 	        type:tahun,

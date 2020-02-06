@@ -32,7 +32,13 @@
 
           <div class="box">
             <div class="box-header with-border">
-              
+              <div class="pull-left">
+                <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+                <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
+                    <option value="2020">&#xf073 &nbsp2020</option>
+                    <option value="2019">&#xf073 &nbsp2019</option>
+                </select>
+              </div>
               <div class="pull-right">
                   <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Request</button>
                   <a href="{{url('/downloadExcelPr')}}"><button class="btn btn-warning" style="height: 40px; margin-right: 10px;"><i class="fa fa-print"></i> EXCEL </button></a>
@@ -41,7 +47,7 @@
 
            <div class="box-body">
             <div class="table-responsive">
-                  <table class="table table-bordered table-striped dataTable display nowrap" id="data_Table" width="100%" cellspacing="0">
+                  <table class="table table-bordered table-striped dataTable display nowrap" id="data_pr" width="100%" cellspacing="0">
                     <thead>
                       <tr>
                         <th>No</th>
@@ -63,7 +69,7 @@
                       </tr>
                     </thead>
                     <tbody id="products-list" name="products-list">
-                      @foreach($datas as $data)
+                     <!--  @foreach($datas as $data)
                       <tr>
                         <td>{{$data->no_pr}}</td>
                         <td>{{$data->position}}</td>
@@ -88,14 +94,10 @@
                           <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px">&nbsp Edit
                           </button>
                           @endif
-                          <!-- <a href="{{url('/delete_pr', $data->no)}}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                          </button></a> -->
                         </td>
                       </tr>
-                      @endforeach
+                      @endforeach -->
                     </tbody>
-                    <tfoot>
-                    </tfoot>
                   </table>
             </div>
            </div>
@@ -275,34 +277,120 @@
   <!-- <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.js"></script>
   <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
   <script type="text/javascript">
-    function edit_pr(no,to,attention,title,project,description,from,issuance,project_id,note) {
+    function edit_pr(no,to,attention,title,project,description,issuance,project_id,note) {
+      $('#modaledit').modal('show')
       $('#edit_no_pr').val(no);
       $('#edit_to').val(to);
-      $('#edit_attention').val(attention);
-      $('#edit_title').val(title);
-      $('#edit_project').val(project);
-      $('#edit_description').val(description);
-      $('#edit_from').val(from);
-      $('#edit_issuance').val(issuance);
-      $('#edit_project_id').val(project_id);
-      $('#edit_note').val(note);
+      if (attention == "null") {
+        '';
+      } else {
+        $('#edit_attention').val(attention);
+      }
+
+      if (title == "null") {
+        '';
+      } else {
+        $('#edit_title').val(title);
+      }
+
+      if (project == "null") {
+        '';
+      } else {
+        $('#edit_project').val(project);
+      }
+
+      if (description == "null") {
+        '';
+      } else {
+        $('#edit_description').val(description);
+      }
+
+      if (issuance == "null") {
+        '';
+      } else {
+        $('#edit_issuance').val(issuance);
+      }
+
+      if (project_id == "null") {
+        '';
+      } else {
+        $('#edit_project_id').val(project_id);
+      }
+
+      if (note == "null") {
+        '';
+      } else {
+        $('#edit_note').val(note);
+      }
     }
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
          $("#alert").slideUp(300);
     });
 
-    $('#data_Table').DataTable( {
-      "order": [[ 0, "desc" ]],
-      fixedColumns:   {
-          leftColumns: 1
-      },
-      scrollX:true,
-      pageLength: 20,
-    });
+    initPrTable();
+
+    function initPrTable() {
+      $("#data_pr").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('getdatapr')}}",
+          "dataSrc": function (json){
+
+            json.data.forEach(function(data,index){
+              if("{{Auth::User()->nik}}" == data.from) {
+                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.issuance+ '","' +data.project_id+ '","' +data.note+ '"'
+                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
+              } else {
+                data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+              }
+                
+            });
+            return json.data;
+            
+          }
+        },
+        "columns": [
+          { "data": "no_pr" },
+          { "data": "position" },
+          { "data": "type_of_letter" },
+          { "data": "month" },
+          { "data": "date" },
+          { "data": "to" },
+          { "data": "attention"},
+          { "data": "title" },
+          { "data": "project" },
+          { "data": "description" },
+          { "data": "name" },
+          { "data": "division" },
+          { "data": "issuance" },
+          { "data": "project_id" },
+          { "data": "note" },
+          {
+            "className": 'btn_edit',
+            "orderable": false,
+            "data": "btn_edit",
+            "defaultContent": ''
+          },
+        ],
+        "searching": true,
+        "lengthChange": false,
+        "info":false,
+        "scrollX": true,
+        "order": [[ 0, "desc" ]],
+        "fixedColumns":   {
+            leftColumns: 1
+        },
+        "pageLength": 20,
+      })
+    }
     
     $(".dismisbar").click(function(){
-         $(".notification-bar").slideUp(300);
-        }); 
+      $(".notification-bar").slideUp(300);
+    }); 
+
+    $("#year_filter").change(function(){
+      $('#data_pr').DataTable().ajax.url("{{url('getfilteryearpr')}}?data=" + this.value).load();
+    });
   </script>
 @endsection
