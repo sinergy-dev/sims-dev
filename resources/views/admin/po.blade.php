@@ -248,27 +248,27 @@
 </section>
 
 <style type="text/css">
-    .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
+  .transparant{
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    width: 25px;
+  }
 
-    .btnPR{
-      color: #fff;
-      background-color: #007bff;
-      border-color: #007bff;
-      width: 170px;
-      padding-top: 4px;
-      padding-left: 10px;
-    }
+  .btnPR{
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+    width: 170px;
+    padding-top: 4px;
+    padding-left: 10px;
+  }
 
-    .DTFC_LeftBodyLiner {
-      overflow: hidden;
+  .DTFC_LeftBodyLiner {
+    overflow: hidden;
   }
 </style>
 
