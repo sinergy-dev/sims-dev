@@ -88,17 +88,7 @@
             </div>
       </div>
         <div class="box-body div-libur" style="display: none;">
-          @foreach($datas_nasional['items'] as $i => $v)
-            @if(substr($v['start']['date'], 0, 4) == $year)
-            <div class="col-sm-2 col-xs-12" style="margin-top: 10px;margin-bottom:10px">
-              <time datetime="2014-09-20" class="icon">
-            <em>{{$v['summary']}}</em>
-            <strong>{{date("F", strtotime($v['start']['date']))}}</strong>
-            <span>{{date("j", strtotime($v['start']['date']))}}</span>
-          </time>
-            </div>
-            @endif
-          @endforeach
+          
         </div>
       </div>
 
@@ -173,18 +163,23 @@
               <ul class="nav nav-tabs" id="cutis">
                   <li>
                     @if(Auth::User()->id_position == 'HR MANAGER')
-                    <a href="#bos" data-toggle="tab">Report Penggunaan Cuti</a>
+                    <a href="#bos" data-toggle="tab">List Cuti Karyawan</a>
                     @else
                     <a href="#bos" data-toggle="tab">{{Auth::User()->name}}</a>
                     @endif
                   </li>
                   <li  class="active">
                     @if(Auth::User()->id_position == 'HR MANAGER')
-                    <a href="#staff" data-toggle="tab">Detail Report Bulanan</a>
+                    <a href="#staff" data-toggle="tab">Report Cuti</a>
                     @else
                     <a href="#staff" data-toggle="tab">STAFF</a>
                     @endif
                   </li>
+                  @if(Auth::User()->id_position == 'HR MANAGER')
+                  <li>
+                    <a href="#cuti" data-toggle="tab">Report Cuti {{$bulan}}</a>
+                  </li>
+                  @endif
               </ul>
           @endif
 
@@ -793,15 +788,15 @@
   }
   @endif
 
-    $(function() {
-      $('#calendar').fullCalendar({
-        googleCalendarApiKey: 'AIzaSyAf8ww4lC-hR6mDPf4RA4iuhhGI2eEoEiI',
-        events: {
-          googleCalendarId: 'en.indonesian#holiday@group.v.calendar.google.com',
-          className: 'gcal-event' // an option!
-        }
-      });
-    });
+    // $(function() {
+    //   $('#calendar').fullCalendar({
+    //     googleCalendarApiKey: 'AIzaSyAf8ww4lC-hR6mDPf4RA4iuhhGI2eEoEiI',
+    //     events: {
+    //       googleCalendarId: 'en.indonesian#holiday@group.v.calendar.google.com',
+    //       className: 'gcal-event' // an option!
+    //     }
+    //   });
+    // });
 
     var tables = $('#datatables').DataTable();
     var table  = $('#datatable').DataTable({
@@ -850,7 +845,7 @@
 
         $.ajax({
           type:"GET",
-          url:'/detilcuti',
+          url:'{{url("/detilcuti")}}',
           data:{
             cuti:this.value,
           },
@@ -885,7 +880,7 @@
 
       $.ajax({
           type:"GET",
-          url:'/detilcuti',
+          url:'{{url("/detilcuti")}}',
           data:{
             cuti:this.value,
           },
@@ -1210,7 +1205,7 @@
       console.log($(".date_off").val());
         $.ajax({
           type:"GET",
-          url:'/detilcuti',
+          url:'{{url("/detilcuti")}}',
           data:{
             pilih:$("#pilih").val(),
             date_start:moment($('#dates').val().slice(0,10)).format("YYYY-MM-DD"),
