@@ -7,6 +7,7 @@ use App\PONumber;
 use DB;
 use Auth;
 use Excel;
+use App\PR;
 
 class PONumberController extends Controller
 {
@@ -163,11 +164,12 @@ class PONumberController extends Controller
 
         $datas = DB::table('tb_po')
                         ->join('users','users.nik','=','tb_po.from')
-                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name', 'no_pr')
-                        ->where('date','like',$tahun."%")
+                        ->join('tb_pr', 'tb_pr.no', '=', 'tb_po.no_pr', 'left')
+                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name', 'tb_pr.no_pr')
+                        ->where('tb_po.date','like',$tahun."%")
                         ->get();
 
-        $no_pr = DB::table('tb_pr')->select('no_pr')->where('date','like',$tahun."%")->get();
+        $no_pr = DB::table('tb_pr')->select('no_pr', 'to', 'no')->where('date','like',$tahun."%")->where('result', '!=', 'used')->orderBy('created_at', 'desc')->get();
 
         if (Auth::User()->id_position == 'ADMIN') {
             $notifClaim = DB::table('dvg_esm')
@@ -189,6 +191,40 @@ class PONumberController extends Controller
         $sidebar_collapse = true;
 
         return view('admin/po', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse', 'no_pr'));
+    }
+
+    public function getdatapr(Request $request)
+    {
+        $cek_pro  = PR::select('project_id')->where('no',$request->data)->first();
+
+        return array(DB::table('tb_pr')
+            ->join('users', 'users.nik', '=', 'tb_pr.from')
+            ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'name', 'issuance', 'project_id', 'division')
+            ->where('no',$request->data)
+            ->get(),$request->data);
+        
+    }
+
+    public function getdatapo(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => PONumber::join('users','users.nik','=','tb_po.from')
+                        ->join('tb_pr', 'tb_pr.no', '=', 'tb_po.no_pr', 'left')
+                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name', 'tb_pr.no_pr')
+                        ->where('tb_po.date','like',$tahun."%")
+                        ->get());
+    }
+
+    public function getfilteryear(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => PONumber::join('users','users.nik','=','tb_po.from')
+                        ->join('tb_pr', 'tb_pr.no', '=', 'tb_po.no_pr', 'left')
+                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name', 'tb_pr.no_pr')
+                        ->whereYear('tb_po.created_at', $request->data)
+                        ->get());
     }
 
     /**
@@ -276,6 +312,10 @@ class PONumberController extends Controller
             $tambah->no_pr = $request['no_pr'];
 	        $tambah->save();
 
+            $update_no_pr = PR::where('no', $request->no_pr)->first();
+            $update_no_pr->result = 'used';
+            $update_no_pr->update();
+
 	        return redirect('po')->with('success', 'Created Purchase Order Successfully!');
         } else {
         	$type = 'PO';
@@ -336,31 +376,14 @@ class PONumberController extends Controller
             $tambah->no_pr = $request['no_pr'];
 	        $tambah->save();
 
+            $update_no_pr = PR::where('no', $request->no_pr)->first();
+            $update_no_pr->result = 'used';
+            $update_no_pr->update();
+
 	        return redirect('po')->with('success', 'Created Purchase Order Successfully!');
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

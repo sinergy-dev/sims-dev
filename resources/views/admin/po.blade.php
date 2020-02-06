@@ -31,7 +31,13 @@
 
       <div class="box">
         <div class="box-header with-border">
-          
+          <div class="pull-left">
+            <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+            <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
+                <option value="2020">&#xf073 &nbsp2020</option>
+                <option value="2019">&#xf073 &nbsp2019</option>
+            </select>
+          </div>
           <div class="pull-right">
           	@if(Auth::User()->name == 'Felicia Debi Noor' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
             <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
@@ -42,7 +48,7 @@
 
        <div class="box-body">
          <div class="table-responsive">
-            <table class="table table-bordered table-striped dataTable nowrap" id="data_Table" width="100%" cellspacing="0">
+            <table class="table table-bordered table-striped dataTable nowrap" id="data_po" width="100%" cellspacing="0">
               <thead>
                 <tr>
                   <th>No PO</th>
@@ -65,7 +71,7 @@
                 </tr>
               </thead>
               <tbody id="products-list" name="products-list">
-                @foreach($datas as $data)
+                <!-- @foreach($datas as $data)
                 <tr>
                   <td>{{$data->no_po}}</td>
                   <td>{{$data->no_pr}}</td>
@@ -91,11 +97,9 @@
                     <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px">&nbsp Edit
                     </button>
                     @endif
-                    <!-- <a href="{{url('/delete_po', $data->no)}}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                    </button></a> -->
                   </td>
                 </tr>
-                @endforeach
+                @endforeach -->
               </tbody>
               <tfoot>
               </tfoot>
@@ -118,7 +122,7 @@
           	<label>NO PR</label>
           	<select class="form-control" name="no_pr" id="no_pr" style="width: 100%">
           		@foreach($no_pr as $data)
-          		<option value="{{$data->no_pr}}">{{$data->no_pr}}</option>
+          		<option value="{{$data->no}}">{{$data->no_pr}} - {{$data->to}}</option>
           		@endforeach
           	</select>
           </div>  
@@ -148,14 +152,15 @@
           </div>
           <div class="form-group">
             <label for="">Division</label>
-            <select type="text" class="form-control" placeholder="Select Division" name="division" id="division" required>
+            <!-- <select type="text" class="form-control" placeholder="Select Division" name="division" id="division" required>
                 <option>PMO</option>
                 <option>PRE/Tech/Impl</option>
                 <option>MSM</option>
                 <option>Marketing</option>
                 <option>FA</option>
                 <option>HR</option>
-            </select>
+            </select> -->
+            <input type="text" class="form-control" name="division" id="division" required>
           </div>
           <div class="form-group">
             <label for="">Issuance</label>
@@ -185,7 +190,7 @@
           <h4 class="modal-title">Edit Purchase Order</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('/update_po')}}" id="modaledit" name="modaledit">
+          <form method="POST" action="{{url('/update_po')}}" id="modal_edit" name="modal_edit">
             @csrf
           <input type="text" placeholder="Enter No PO" name="edit_no_po" id="edit_no_po" hidden>
           <div class="form-group">
@@ -216,7 +221,7 @@
             <label for="">Project ID</label>
             <input type="text" class="form-control" placeholder="Enter Project ID" name="edit_project_id" id="edit_project_id">
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Division</label>
             <select type="text" class="form-control" placeholder="Select Division" name="edit_division" id="edit_division" required>
                 <option>PMO</option>
@@ -226,7 +231,7 @@
                 <option>FA</option>
                 <option>HR</option>
             </select>
-          </div>
+          </div> -->
           <div class="form-group">
             <label for="">Note</label>
             <input type="text" class="form-control" placeholder="Enter Note" name="edit_note" id="edit_note">
@@ -275,37 +280,146 @@
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
-    function edit_po(no,to,attention,title,project,description,from,issuance,project_id,division,note) {
+
+    initTablePo();
+
+    function initTablePo() {
+      $("#data_po").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('getdatapo')}}",
+          "dataSrc": function (json){
+            json.data.forEach(function(data,index){
+              if("{{Auth::User()->nik}}" == data.from) {
+                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.issuance+ '","' +data.project_id+ '","' +data.note+ '"'
+                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_po(" + x + ")'>&nbsp Edit</button>";
+              } else {
+                data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+              }                
+            });
+            return json.data;
+          }
+        },
+        "columns": [
+          { "data": "no_po" },
+          { "data": "no_pr" },
+          { "data": "position" },
+          { "data": "type_of_letter" },
+          { "data": "month" },
+          { "data": "date" },
+          { "data": "to" },
+          { "data": "attention"},
+          { "data": "title" },
+          { "data": "project" },
+          { "data": "description" },
+          { "data": "name" },
+          { "data": "division" },
+          { "data": "issuance" },
+          { "data": "project_id" },
+          { "data": "note" },
+          {
+            "className": 'btn_edit',
+            "orderable": false,
+            "data": "btn_edit",
+            "defaultContent": ''
+          },
+        ],
+        "searching": true,
+        "lengthChange": false,
+        "info":false,
+        "scrollX": true,
+        "order": [[ 0, "desc" ]],
+        "fixedColumns":   {
+            leftColumns: 2
+        },
+        "pageLength": 20,
+      })
+    }
+
+    function edit_po(no,to,attention,title,project,description,issuance,project_id,note) {
+      $('#modaledit').modal('show');
       $('#edit_no_po').val(no);
       $('#edit_to').val(to);
-      $('#edit_attention').val(attention);
-      $('#edit_title').val(title);
-      $('#edit_project').val(project);
-      $('#edit_description').val(description);
-      $('#edit_from').val(from);
-      $('#edit_issuance').val(issuance);
-      $('#edit_project_id').val(project_id);
-      $('#edit_division').val(division);
-      $('#edit_note').val(note);
+      if (attention == "null") {
+        '';
+      } else {
+        $('#edit_attention').val(attention);
+      }
+
+      if (title == "null") {
+        '';
+      } else {
+        $('#edit_title').val(title);
+      }
+
+      if (project == "null") {
+        '';
+      } else {
+        $('#edit_project').val(project);
+      }
+
+      if (description == "null") {
+        '';
+      } else {
+        $('#edit_description').val(description);
+      }
+
+      if (issuance == "null") {
+        '';
+      } else {
+        $('#edit_issuance').val(issuance);
+      }
+
+      if (project_id == "null") {
+        '';
+      } else {
+        $('#edit_project_id').val(project_id);
+      }
+
+      if (note == "null") {
+        '';
+      } else {
+        $('#edit_note').val(note);
+      }
     }
 
     $('#no_pr').select2();
+
+    $('#no_pr').on('change', function(e){
+      var Product = $('#no_pr').val();
+
+         $.ajax({
+          type:"GET",
+          url:'getDataPrforPo',
+          data:{
+            data:this.value,
+          },
+          success: function(result){
+            $.each(result[0], function(key, value){
+              $("#to").val(value.to);
+              $("#attention").val(value.attention);
+              $("#title").val(value.title);
+              $("#project").val(value.project);
+              $("#description").val(value.description);
+              $("#division").val(value.division);
+              $("#project_id").val(value.project_id);
+              $("#issuance").val(value.issuance);
+            });
+          }
+        });
+         console.log($('#no_pr').val());
+    });
+
+    $("#year_filter").change(function(){
+      $('#data_po').DataTable().ajax.url("{{url('getfilteryearpo')}}?data=" + this.value).load();
+    });
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
          $("#alert").slideUp(300);
     });
 
-    $('#data_Table').DataTable( {
-        "scrollX": true,
-        pageLength: 20,
-        "order": [[ 0, "desc" ]],
-        fixedColumns:   {
-            leftColumns: 2
-        },
-        });
-
     $(".dismisbar").click(function(){
-         $(".notification-bar").slideUp(300);
-        }); 
+      $(".notification-bar").slideUp(300);
+    }); 
   </script>
 @endsection

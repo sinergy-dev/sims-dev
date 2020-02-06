@@ -278,7 +278,7 @@
   <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
   <script type="text/javascript">
     function edit_pr(no,to,attention,title,project,description,issuance,project_id,note) {
-      $('#modaledit').modal('show')
+      $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
       $('#edit_to').val(to);
       if (attention == "null") {
