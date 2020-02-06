@@ -701,8 +701,6 @@ class HRController extends Controller
         $update->update();
 
         return redirect('hu_rec')->with('update', 'Updated Employee Data Successfully!');
-
-        //
     }
 
     /**
