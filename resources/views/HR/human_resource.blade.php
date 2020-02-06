@@ -1,59 +1,59 @@
 @extends('template.template_admin-lte')
 @section('content')
   <style type="text/css">
-    .margin-left-custom-psw{
-      margin-left: 45px;
-    }
-	.input-container {
-	  display: -ms-flexbox; /* IE10 */
-	  display: flex;
-	  width: 100%;
-	  margin-bottom: 15px;
-	}
+	    .margin-left-custom-psw{
+	      margin-left: 45px;
+	    }
+		.input-container {
+		  display: -ms-flexbox; /* IE10 */
+		  display: flex;
+		  width: 100%;
+		  margin-bottom: 15px;
+		}
 
-	.icon {
-	  padding: 10px;
-	  background: dodgerblue;
-	  color: white;
-	  min-width: 50px;
-	  text-align: center;
-	}
+		.icon {
+		  padding: 10px;
+		  background: dodgerblue;
+		  color: white;
+		  min-width: 50px;
+		  text-align: center;
+		}
 
-	.input-field {
-	  width: 100%;
-	  padding: 10px;
-	  outline: none;
-	}
+		.input-field {
+		  width: 100%;
+		  padding: 10px;
+		  outline: none;
+		}
 
-	.input-field:focus {
-	  border: 2px solid dodgerblue;
-	}
+		.input-field:focus {
+		  border: 2px solid dodgerblue;
+		}
 
-	.current {
-	  color: green;
-	}
+		.current {
+		  color: green;
+		}
 
-	#pagin li {
-	  display: inline-block;
-	}
+		#pagin li {
+		  display: inline-block;
+		}
 
-	.prev {
-	  cursor: pointer;
-	}
+		.prev {
+		  cursor: pointer;
+		}
 
-	.next {
-	  cursor: pointer;
-	}
+		.next {
+		  cursor: pointer;
+		}
 
-	.last{
-	  cursor:pointer;
-	  margin-left:5px;
-	}
+		.last{
+		  cursor:pointer;
+		  margin-left:5px;
+		}
 
-	.first{
-	  cursor:pointer;
-	  margin-right:5px;
-	}
+		.first{
+		  cursor:pointer;
+		  margin-right:5px;
+		}
 
   </style>
 
@@ -241,7 +241,7 @@
 				                              @endif
 				                            @elseif($data->id_territory == 'OPERATION')
 				                              @if($data->id_division == 'OPERATION')
-				                                Operation Director
+				                              	Operation Director
 				                              @elseif($data->id_division == 'PMO')
 				                                @if($data->id_position == 'MANAGER')
 				                                  Div. Project Management Office
@@ -684,7 +684,7 @@
                                 Finance Director
                               @endif
                             @elseif($data->id_territory == 'OPERATION')
-                              @if($data->id_division == null)
+                              @if($data->id_division == 'OPERATION')
                                 Operation Director
                               @elseif($data->id_division == 'PMO')
                                 @if($data->id_position == 'MANAGER')
@@ -2034,7 +2034,7 @@
 	</div>
 
 	<div class="modal fade" id="modal_update" role="dialog">
-	    <div class="modal-dialog modal-lg">
+	    <div class="modal-dialog modal-md">
 	    
 	      <!-- Modal content-->
 	      <div class="modal-content">
@@ -2042,21 +2042,10 @@
 	          <h4 class="modal-title">Detail Employees</h4>
 	        </div>
 	        <div class="modal-body">
-	        	<!-- <div class="nav-tabs-custom active" id="project_tab" role="tabpanel" aria-labelledby="project-tab">
-        			<ul class="nav nav-tabs" id="myTab" role="tablist">
-        				<li class="active"><a href="#tab_1" data-toggle="tab">Detail Profile</a></li>
-              			<li><a href="#tab_2" data-toggle="tab">Update Profile</a></li>
-        			</ul>
-
-        			<div class="tab-content">
-            			<div class="tab-pane active" id="tab_1">
-            			</div>
-            		</div>
-        		</div> -->
 
 	          <form method="POST" action="{{url('hu_rec/update')}}">
 	                        @csrf
-	                        <div class="form-group row" hidden>
+	                        <div class="form-group row hidden">
 	                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
 
 	                            <div class="col-md-8">
@@ -2071,9 +2060,9 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="name" class="col-md-2 col-form-label">{{ __('Employees Name') }}</label>
+	                            <label for="name" class="col-md-4 col-form-label">{{ __('Employees Name') }}</label>
 
-	                            <div class="col-md-10">
+	                            <div class="col-md-8">
 	                                <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" autofocus>
 
 	                                @if ($errors->has('name'))
@@ -2085,9 +2074,9 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="email" class="col-md-2 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+	                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
-	                            <div class="col-md-10">
+	                            <div class="col-md-8">
 	                                <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
 
 	                                @if ($errors->has('email'))
@@ -2099,7 +2088,7 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="company" class="col-md-2 col-form-label text-md-right">{{ __('Company') }}</label>
+	                            <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company') }}</label>
 
 	                            <div class="col-md-4">
 	                            	<input id="company_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
@@ -2121,14 +2110,14 @@
 
 	                        <!--tampilkan divisi berdasarkan divisi-->
 	                        <div class="form-group row">
-	                            <label for="divisi" class="col-md-2 col-form-label text-md-right">{{ __('Division') }}</label>
+	                            <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
 
 	                            <div class="col-md-4">
 	                            	<input id="divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
 	                        	</div>
 
 	                            <div class="col-md-4">
-	                                <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}"  required autofocus>
+	                                <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="divisi_update" value="{{ old('company') }}"  required autofocus>
 	                                </select>
 	                                @if ($errors->has('company'))
 	                                    <span class="invalid-feedback">
@@ -2141,14 +2130,14 @@
 
 	                        <!--tampilkan divisi berdasarkan sub-divisi-->
 	                        <div class="form-group row">
-	                            <label for="divisi" class="col-md-2 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
+	                            <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
 
 	                            <div class="col-md-4">
 	                            	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
 	                        	</div>
 
 	                            <div class="col-md-4">
-	                                <select id="sub_divisi_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" required autofocus>
+	                                <select id="sub_divisi_update" onchange="subdivisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="sub_divisi_update" value="{{ old('company') }}" required autofocus>
 	                                </select>
 	                                @if ($errors->has('company'))
 	                                    <span class="invalid-feedback">
@@ -2161,21 +2150,14 @@
 
 	                        <!--tampilkan divisi berdasarkan posisi-->
 	                        <div class="form-group row">
-	                            <label for="posisi" class="col-md-2 col-form-label text-md-right">{{ __('Position') }}</label>
+	                            <label for="posisi" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
 
 	                            <div class="col-md-4">
 	                            	<input id="posisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
 	                        	</div>
 
 	                            <div class="col-md-4">
-	                                <select id="posisi_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}"  required autofocus>
-	                                    <option value="">-- Select division --</option>
-	                                    <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
-	                                    <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
-	                                    <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
-	                                    <option value="SALES" data-target="sales" id="sales">SALES</option>
-	                                    <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
-	                                    <option value="NULL" data-target="director" id="director">NONE</option>
+	                                <select id="posisi_update" onchange="posisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="posisi_update" value="{{ old('company') }}"  required autofocus>
 	                                </select>
 	                                @if ($errors->has('company'))
 	                                    <span class="invalid-feedback">
@@ -2186,7 +2168,7 @@
 	                        </div>
 	                      <!--SIP-->
 
-	                        <div class="form-group row"  style="display:none;"  id="company_update-sip">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="company_update-sip">
 	                            <label for="division" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
 
 	                            <div class="col-md-8">
@@ -2205,10 +2187,10 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
 	                        <!--DIRECTOR-->
-	                        <div class="form-group row"  style="display:none;"  id="division_update-director">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-director">
 	                            <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
 
 	                            <div class="col-md-8">
@@ -2221,10 +2203,10 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 	                        
 	                        <!-- Technical -->
-	                        <div class="form-group row"  style="display:none;"  id="division_update-technical">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-technical">
 	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
 
 	                            <div class="col-md-8">
@@ -2254,10 +2236,10 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
 	                        <!-- Sales -->
-	                        <div class="form-group row"  style="display:none;"  id="division_update-sales" >
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-sales" >
 
 	                            <label for="territory" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
 
@@ -2287,10 +2269,10 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
 	                        <!-- Finance -->
-	                        <div class="form-group row"  style="display:none;"  id="division_update-finance">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-finance">
 	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
 
 	                            <div class="col-md-8">
@@ -2318,10 +2300,10 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
 	                        <!-- Operation -->
-	                        <div class="form-group row"  style="display:none;"  id="division_update-operation">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-operation">
 	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
 
 	                            <div class="col-md-8">
@@ -2350,10 +2332,10 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
 	                        <!-- HR -->
-	                        <div class="form-group row"  style="display:none;"  id="division_update-hr">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-hr">
 	                            <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
 
 	                            <div class="col-md-8">
@@ -2365,7 +2347,7 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
 
 	                        <!-- MSP -->
@@ -2400,7 +2382,7 @@
 	                            </div>
 	                        </div> -->
 
-	                        <div class="form-group row"  style="display:none;"  id="company_update-msp">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="company_update-msp">
 	                            <label for="division-msp" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
 
 	                            <div class="col-md-8">
@@ -2418,9 +2400,9 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
-	                        <div class="form-group row"  style="display:none;"  id="division-msp-update-sales_msp_update">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-sales_msp_update">
 	                          <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
 
 	                            <div class="col-md-8">
@@ -2432,9 +2414,9 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
+	                        </div> -->
 
-	                        <div class="form-group row"  style="display:none;"  id="division-msp-update-technical_msp_update">
+	                        <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-technical_msp_update">
 	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
 
 	                            <div class="col-md-8">
@@ -2462,11 +2444,7 @@
 	                                    </span>
 	                                @endif
 	                            </div>
-	                        </div>
-
-
-
-
+	                        </div> -->
 
 	                        <div class="form-group row">
 	                            <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
@@ -3299,7 +3277,7 @@
                 append = append + "<option value='HR'>" + "HUMAN RESOURCE" + "</option>";
                 append = append + "<option value='SALES'>" + "SALES" + "</option>";
                 append = append + "<option value='OPERATION'>" + "OPERATION" + "</option>";
-                append = append + "<option value='NULL'>" + "NONE" + "</option>";
+                append = append + "<option value=''>" + "NONE" + "</option>";
 
                 $("#company_view_update").val("SIP");
 
@@ -3308,11 +3286,10 @@
 				$('#divisi_update').html(append)
                 var append = "<option>-- Select Option --</option>";
                 
-                append = append + "<option value='SALES_MSP'>" + "SALES" + "</option>";
-                append = append + "<option value='TECHNICAL_MSP'>" + "TECHNICAL" + "</option>";
-                append = append + "<option value='WAREHOUSE_MSP'>" + "WAREHOUSE" + "</option>";
-                append = append + "<option value='OPERATION_MSP'>" + "OPERATION" + "</option>";
-                append = append + "<option value='ADMIN_MSP'>" + "NONE" + "</option>";
+                append = append + "<option value='SALES'>" + "SALES" + "</option>";
+                append = append + "<option value='TECHNICAL'>" + "TECHNICAL" + "</option>";
+                append = append + "<option value='OPERATION'>" + "OPERATION" + "</option>";
+                append = append + "<option value='ADMIN'>" + "NONE" + "</option>";
 
                 $('#divisi_update').html(append);
 
@@ -3322,21 +3299,124 @@
 
 		function divisiSelect(id)
 		{
-			if (id.value == 'TECHNICAL') {
-				$('#sub_divisi_update').html(append)
-                var append = "<option>-- Select Option --</option>";
+			
+			$('#sub_divisi_update').html(append)
+
+            if (id.value == 'TECHNICAL') {
+            	var append = "<option>-- Select Option --</option>";
                 
-                append = append + "<option value='DVG'>" + "IMPLEMENTATION" + "</option>";
+                append = append + "<option value='DPG'>" + "IMPLEMENTATION" + "</option>";
                 append = append + "<option value='PRESALES'>" + "PRESALES" + "</option>";
-                append = append + "<option value='DEV'>" + "DEVELOPMENT" + "</option>";
+                append = append + "<option value='DVG'>" + "DEVELOPMENT" + "</option>";
                 append = append + "<option value=''>" + "NONE" + "</option>";
 
-                $("#subdivisi_view_update").val();
+            }else if(id.value == 'FINANCE'){
+            	var append = "<option>-- Select Option --</option>";
 
-                $('#sub_divisi_update').html(append);	
+                append = append + "<option value='FINANCE'>" + "FINANCE" + "</option>";
+                append = append + "<option value='ACC'>" + "ACCOUNTING" + "</option>";	
+				
+			}else if(id.value == 'HR'){
+				var append = "<option>-- Select Option --</option>";
+
+        		append = append + "<option value='HR MANAGER'>" + "HR MANAGER" + "</option>";
+                append = append + "<option value='STAFF HR'>" + "STAFF HR" + "</option>";
+                append = append + "<option value='STAFF GA'>" + "STAFF GA" + "</option>";
+
+			}else if(id.value == 'SALES'){
+				var append = "<option>-- Select Option --</option>";
+                
+                append = append + "<option value='TERRITORY 1'>" + "TERRITORY 1" + "</option>";
+                append = append + "<option value='TERRITORY 2'>" + "TERRITORY 2" + "</option>";
+                append = append + "<option value='TERRITORY 3'>" + "TERRITORY 3" + "</option>";
+                append = append + "<option value='TERRITORY 4'>" + "TERRITORY 4" + "</option>";
+                append = append + "<option value='TERRITORY 5'>" + "TERRITORY 5" + "</option>";	
+                append = append + "<option value='SALES MSP'>" + "SALES MSP" + "</option>";	
+
+				
+			}else if(id.value == 'OPERATION'){
+				var append = "<option>-- Select Option --</option>";
+
+				if ($("#company_view_update").val() == 'MSP') {
+	                append = append + "<option value='PMO'>" + "PMO" + "</option>";
+	                append = append + "<option value='WAREHOUSE'>" + "WAREHOUSE" + "</option>";
+	                append = append + "<option value='OPERATION'>" + "NONE" + "</option>";
+				}else{
+					append = append + "<option value='MSM'>" + "MSM" + "</option>";
+	                append = append + "<option value='PMO'>" + "PMO" + "</option>";
+	                append = append + "<option value='WAREHOUSE'>" + "WAREHOUSE" + "</option>";
+	                append = append + "<option value='OPERATION'>" + "NONE" + "</option>";
+				}
+				
+            }
+
+			$('#sub_divisi_update').html(append);
+
+			$('#posisi_update').html(append)
+
+			if(id.value == ''){
+				var append = "<option>-- Select Option --</option>";
+
+        		append = append + "<option value='DIRECTOR'>" + "DIRECTOR" + "</option>";
+
+			}else if(id.value == 'WAREHOUSE'){
+				var append = "<option>-- Select Option --</option>";
+
+        		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+                append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
+
+                $("#divisi_view_update").val('');
 			}
+			$('#posisi_update').html(append);
+
+			$("#divisi_view_update").val(id.value);
 		}
 
-      
+		function subdivisiSelect(id){
+    		$('#posisi_update').html(append)
+            var append = "<option>-- Select Option --</option>";
+        	if (id.value == '') {
+
+        		append = append + "<option value='HEAD'>" + "HEAD" + "</option>";
+                append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+
+        	}else if(id.value == 'MSM'){
+
+        		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+                append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+                append = append + "<option value='SERVICE PROJECT(HEAD)'>" + "SERVICE PROJECT (HEAD)" + "</option>";
+                append = append + "<option value='SERVICE PROJECT(STAFF)'>" + "SERVICE PROJECT (STAFF)" + "</option>";
+                append = append + "<option value='SUPPORT ENGINEER(HEAD)'>" + "SUPPORT ENGINEER (HEAD)" + "</option>";
+                append = append + "<option value='SUPPORT ENGINEER(STAFF)'>" + "SUPPORT ENGINEER (STAFF)" + "</option>";
+                append = append + "<option value='HELP DESK'>" + "HELP DESK" + "</option>";
+                append = append + "<option value='CALL SO'>" + "CALL SO" + "</option>";
+
+        	}else if (id.value == 'PMO') {
+
+        		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+                append = append + "<option value='PM'>" + "PM" + "</option>";
+                append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+
+        	}else if (id.value == 'OPERATION') {
+
+        		append = append + "<option value='DIRECTOR'>" + "DIRECTOR" + "</option>";
+
+        	} else{
+            
+                append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+                append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
+                append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+
+            }
+            
+            $('#posisi_update').html(append);
+
+            $("#subdivisi_view_update").val(id.value);
+
+        }
+
+        function posisiSelect(id){
+        	$("#posisi_view_update").val(id.value);
+        }
     </script>
   @endsection
