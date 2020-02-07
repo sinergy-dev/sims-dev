@@ -181,7 +181,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                           <i class="">{{$data->amount_idr}}</i>
                       </td>
                       <td>
-                          <i class="">{{$data->amount_idr_before_tax}}</i>
+                          <i class="">{{round($data->amount_idr_before_tax,2)}}</i>
                       </td>
                       @endif
                         <td>{{$data->note}}</td>
@@ -315,13 +315,20 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                       @endif
                       </td>
                       <td>{{$data->lead_id}}</td>
-                      @if($data->lead_id == "MSPQUO")
+                      @if($data->id_company == '2')
                       <td>-</td>
                       <td>{{$data->no_po_customer}}</td>
                       @else
                       <td>{{$data->no_po_customer}}</td>
                       <td>-</td>
                       @endif
+                  <!--     @if($data->lead_id == "MSPQUO")
+                      <td>-</td>
+                      <td>{{$data->no_po_customer}}</td>
+                      @else
+                      <td>{{$data->no_po_customer}}</td>
+                      <td>-</td>
+                      @endif -->
                       <td>
                         @if($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO')
                         {{$data->customer_name}}
