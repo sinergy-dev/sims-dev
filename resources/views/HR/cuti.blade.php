@@ -356,7 +356,7 @@
                 </div>
                 @endif 
 
-                @if(Auth::User()->id_position != 'MANAGER' && Auth::User()->id_position != 'HR MANAGER')  
+                @if(Auth::User()->id_position == 'STAFF')  
                 <div class="tab-pane active" id="staff">
                   @else
                   <div class="tab-pane" id="staff">
@@ -401,7 +401,7 @@
                         @endforeach
                       </select>
                     </div>
-                    @endif
+                  @endif
 
                     <table class="table table-bordered table-striped dataTable" id="datatable" width="100%" cellspacing="0">
                         <thead>
@@ -424,17 +424,71 @@
                           <tbody id="report" name="report">
                             @foreach($cuti as $data)
                               @if(($data->nik == Auth::User()->nik) == (Auth::User()->id_position != 'ENGINEER MANAGER' && Auth::User()->id_position != 'MANAGER'))
-                               <tr>
+                                <tr>
+                                      <td>{{$data->name}}</td>
+                                      <td>{{$data->name_division}}</td>
+                                      <td>
+                                        {{$data->date_req}}
+                                      </td>
+                                      <td>
+                                        <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
+                                        border: none;">{{$data->days}}
+                                      Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
+                                      </td>
+                                      <td>
+                                        @if($data->status == 'v')
+                                         <label class="btn-sm btn-success">Approved</label>
+                                        @elseif($data->status == 'd')
+                                         <label class="btn-sm btn-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</label>
+                                        @else
+                                         <label class="btn-sm btn-warning">Pending</label> 
+                                        @endif
+                                      </td>
+                                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
+                                      <td>
+                                        @if(Auth::User()->id_territory == $data->id_territory)
+                                          @if($data->status == NULL)
+                                            @if(Auth::User()->id_territory == '')
+                                              @if($data->id_position == 'MANAGER')
+                                              <button tname="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
+                                              <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
+                                              @else
+                                              <i>no action</i>
+                                              @endif
+                                            @else
+                                            <button tname="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
+                                            <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
+                                            @endif  
+                                           @else
+                                            <i>no action</i>
+                                          @endif
+                                        @else
+                                        <i>no action</i>
+                                        @endif
+                                      </td>
+                                      @else
+                                          <td>
+                                            @if($data->status == NULL)
+                                            <button class="btn btn-primary btn-xs" id="btn-edit" style="width: 60px;" value="{{$data->id_cuti}}">Edit</button>
+                                            <a href="{{ url('delete_cuti', $data->id_cuti) }}">
+                                            <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
+                                      </button>
+                                      </a>
+                                            @endif
+                                          </td>
+                                      @endif
+                                </tr>
+                              @elseif(Auth::User()->id_position == 'HR MANAGER')
+                                <tr>
                                     <td>{{$data->name}}</td>
-                                    <td>{{$data->name_division}}</td>
-                                    <td>
-                                      {{$data->date_req}}
-                                    </td>
+                                    <td>{{$data->id_division}}</td>
                                     <td>
                                       <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
                                       border: none;">{{$data->days}}
                                     Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
                                     </td>
+
+                                    <td>{{$data->date_req}}</td>
                                     <td>
                                       @if($data->status == 'v')
                                        <label class="btn-sm btn-success">Approved</label>
@@ -446,80 +500,26 @@
                                     </td>
                                     @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
                                     <td>
-                                      @if(Auth::User()->id_territory == $data->id_territory)
                                         @if($data->status == NULL)
-                                          @if(Auth::User()->id_territory == '')
-                                            @if($data->id_position == 'MANAGER')
-                                            <button tname="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
-                                            <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
-                                            @else
-                                            <i>no action</i>
-                                            @endif
-                                          @else
-                                          <button tname="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
+                                          <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
                                           <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
-                                          @endif  
-                                         @else
-                                          <i>no action</i>
+                                        @else
+                                          <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
+                                          <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
                                         @endif
-                                      @else
-                                      <i>no action</i>
-                                      @endif
                                     </td>
                                     @else
                                         <td>
                                           @if($data->status == NULL)
-                                          <button class="btn btn-primary btn-xs" id="btn-edit" style="width: 60px;" value="{{$data->id_cuti}}">Edit</button>
-                                          <a href="{{ url('delete_cuti', $data->id_cuti) }}">
-                                          <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
-                                    </button>
+                                          <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
+                                          <a href="{{ url('delete_sales', $data->lead_id) }}">
+                                            <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
+                                      </button>
                                     </a>
                                           @endif
                                         </td>
                                     @endif
-                               </tr>
-                              @elseif(Auth::User()->id_position == 'HR MANAGER')
-                              <tr>
-                                  <td>{{$data->name}}</td>
-                                  <td>{{$data->id_division}}</td>
-                                  <td>
-                                    <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
-                                    border: none;">{{$data->days}}
-                                  Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
-                                  </td>
-
-                                  <td>{{$data->date_req}}</td>
-                                  <td>
-                                    @if($data->status == 'v')
-                                     <label class="btn-sm btn-success">Approved</label>
-                                    @elseif($data->status == 'd')
-                                     <label class="btn-sm btn-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</label>
-                                    @else
-                                     <label class="btn-sm btn-warning">Pending</label> 
-                                    @endif
-                                  </td>
-                                  @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
-                                  <td>
-                                      @if($data->status == NULL)
-                                        <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
-                                        <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
-                                      @else
-                                        <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
-                                        <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
-                                      @endif
-                                  </td>
-                                  @else
-                                      <td>
-                                        @if($data->status == NULL)
-                                        <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
-                                        <a href="{{ url('delete_sales', $data->lead_id) }}">
-                                          <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
-                                    </button>
-                                  </a>
-                                        @endif
-                                      </td>
-                                  @endif
-                              </tr>
+                                </tr>
                               @endif
                             @endforeach
                         </tbody>
