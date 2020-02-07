@@ -270,7 +270,7 @@
               <div class="form-group">
                 <label>Project Type</label>
                 <select class="form-control" id="project_type" name="project_type" required style="width: 100%">
-                  <option>--Choose Project Type--</option>
+                  <option value="">--Choose Project Type--</option>
                   <option value="Supply Only">Supply Only</option>
                   <option value="Maintenance">Maintenance</option>
                   <option value="Implementation">Implementation</option>
