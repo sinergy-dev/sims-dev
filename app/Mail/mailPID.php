@@ -11,16 +11,18 @@ class mailPID extends Mailable
 {
     use Queueable, SerializesModels;
     public $pid_info;
+    public $users;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($pid_info)
+    public function __construct($pid_info,$users)
     {
         //
         $this->pid_info = $pid_info;
+        $this->users = $users;
     }
 
     /**
