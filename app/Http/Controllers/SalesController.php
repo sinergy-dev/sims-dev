@@ -2124,27 +2124,29 @@ class SALESController extends Controller
             $tambah->keterangan = $request['note'];
             $tambah->save();
 
-            $date_po = strtotime($_POST['date_po']); 
-            $date_po = date("Y-m-d",$date_po);
+            // $date_po = strtotime($_POST['date_po']); 
+            // $date_po = date("Y-m-d",$date_po);
 
-            $tambah_po = new PID();
-            $tambah_po->lead_id = $lead;
-            $tambah_po->amount_pid = str_replace(',', '', $request['amount_po']);
-            $tambah_po->no_po = $request['no_po'];
-            $tambah_po->date_po = $date_po;
-            $tambah_po->status == 'requested';
-            $tambah_po->save();
+            
 
-            if (!empty($request['po'])) {
-                $tambah_sd = new solution_design();
-                $tambah_sd->lead_id = $lead;
-                $tambah_sd->nik = Auth::User()->nik;
-                $tambah_sd->save();
+            // if (!empty($request['po'])) {
+            // 	$tambah_po = new PID();
+	           //  $tambah_po->lead_id = $lead;
+	           //  $tambah_po->amount_pid = str_replace(',', '', $request['amount_po']);
+	           //  $tambah_po->no_po = $request['no_po'];
+	           //  $tambah_po->date_po = $date_po;
+	           //  $tambah_po->status == 'requested';
+	           //  $tambah_po->save();
+	            
+            //     $tambah_sd = new solution_design();
+            //     $tambah_sd->lead_id = $lead;
+            //     $tambah_sd->nik = Auth::User()->nik;
+            //     $tambah_sd->save();
 
-                $tambahtp = new TenderProcess();
-                $tambahtp->lead_id = $lead;
-                $tambahtp->save();
-            }
+            //     $tambahtp = new TenderProcess();
+            //     $tambahtp->lead_id = $lead;
+            //     $tambahtp->save();
+            // }
 
 
             $lead_change_log = $name->code . date('y') . date('m') . $nomor;
