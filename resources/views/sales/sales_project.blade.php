@@ -315,20 +315,16 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                       @endif
                       </td>
                       <td>{{$data->lead_id}}</td>
-                      @if($data->id_company == '2')
-                      <td>-</td>
-                      <td>{{$data->no_po_customer}}</td>
-                      @else
-                      <td>{{$data->no_po_customer}}</td>
-                      <td>-</td>
-                      @endif
-                  <!--     @if($data->lead_id == "MSPQUO")
-                      <td>-</td>
-                      <td>{{$data->no_po_customer}}</td>
-                      @else
-                      <td>{{$data->no_po_customer}}</td>
-                      <td>-</td>
-                      @endif -->
+                      <td>
+                        {{$data->no_po}}
+                      </td>
+                      <td>
+                        @if($data->lead_id == "MSPQUO" || $data->lead_id == "MSPPO")
+                        {{$data->no_po_customer}}
+                        @else
+                        {{$data->quote_number}}
+                        @endif
+                      </td>
                       <td>
                         @if($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO')
                         {{$data->customer_name}}
@@ -420,7 +416,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                         </tr>
                       </thead>
                       <tbody>
-                        @foreach($pid_request as $pid)
+                        <!-- @foreach($pid_request as $pid)
                           <tr>
                             <td>{{$pid->created_at}}</td>
                             <td>{{$pid->code_company}}</td>
@@ -434,15 +430,27 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                               <button class="btn btn-xs btn-primary" data-target="#showRequestProjectID" style="width: 100%" data-toggle="modal" onclick="showRequestProjectID('{{$pid->id_pid_request}}')">Show</button>
                             </td>
                           </tr>
-                        @endforeach
+                        @endforeach -->
                         @foreach($pid_request_lead as $pids)
                           <tr>
                             <td>{{$pids->created_at}}</td>
                             <td>{{$pids->code_company}}</td>
-                            <td>{{$pids->no_po}}</td>
+                            <td>
+                              @if($pids->no_po == '')
+                              {{$pids->quote_number}}
+                              @else
+                              {{$pids->no_po}}
+                              @endif
+                            </td>
                             <td>{{$pids->opp_name}}</td>
                             <td>{{$pids->name}}</td>
-                            <td>{{$pids->date_po}}</td>
+                            <td>
+                              @if($pids->date_po == '')
+                              {{$pids->date}}
+                              @else
+                              {{$pids->date_po}}
+                              @endif
+                            </td>
                             <td><i class="money">{{$pids->amount_pid}}</i></td>
                             <td>{{$pids->note}}</td>
                             <td>
@@ -533,7 +541,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       </div>
       <div class="modal-body">
         <input type="hidden" id="inputCustomer">
-      <input type="hidden" id="code_name" name="id_customer_quotation">
+        <input type="hidden" id="code_name" name="id_customer_quotation">
         <div class="form-group">
           <label for="">Quote No.</label>
           <input type="text" class="form-control select2" style="width: 100%" id="inputQuo">
@@ -866,7 +874,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   <!-- <script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.20/sorting/numeric-comma.js"></script> -->
   <script type="text/javascript">
 
-    function showRequestProjectID(id){
+    /*function showRequestProjectID(id){
       $.ajax({
         type:"GET",
         url:"{{url('/salesproject/getRequestProjectID')}}",
@@ -884,7 +892,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           $("#inputNote").val(result.note)
         }
       })
-    }
+    }*/
 
     function acceptProjectID(id){
       $.ajax({
@@ -894,12 +902,17 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           id:id
         },
         success:function(result){
+          $("#code_name").val(result.code)
           $("#inputCustomer").val(result.lead_id)
           $("#inputPO").val(result.no_po)
           $("#inputProject").val(result.opp_name)
           $("#inputSales").val(result.name)
-          $("#inputQuo").val(result.quote_number2)
-          $("#inputDate").val(result.date_po)
+          $("#inputQuo").val(result.quote_number)
+          if (result.date_po == null) {
+            $("#inputDate").val(result.date)
+          }else{
+            $("#inputDate").val(result.date_po)
+          }
           $("#inputAmount").val(result.amount_pid)
           $("#inputNote").val(result.note)
         }
@@ -922,8 +935,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           date:moment($("#inputDate").val()).format('L'),
           amount:$("#inputAmount").val(),
           note:$("#inputNote").val(),
+          p_order:$("#inputPO").val(),
           quote:$("#inputQuo").val(),
           id_cus:$("#code_name").val(),
+          // id_customer_quotation:$("#code_name").val(),
           // payungs:$("#inputCustomer").val(),
         },
         success:function(result){
