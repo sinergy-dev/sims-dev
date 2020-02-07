@@ -4299,7 +4299,7 @@ class SALESController extends Controller
         // Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info));
         // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
 
-        $users = User::join('tb_pid')->select('users.name','users.email')->where('tb_pid.lead_id',$request['customer_name'])->first();
+        $users = User::join('sales_lead_register')->join('tb_pid')->select('users.name','users.email')->where('tb_pid.lead_id',$request['customer_name'])->first();
 
         // $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
 
