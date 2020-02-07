@@ -2547,9 +2547,9 @@ class SALESController extends Controller
                
                             // return "$pid_info";
 
-                        Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
-                        Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));
-                        // Mail::to($users->email)->send(new MailResult($users,$pid_info));
+                        // Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
+                        // Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));
+                        Mail::to($users->email)->send(new MailResult($users,$pid_info));
                     }
 
                     
@@ -4299,7 +4299,9 @@ class SALESController extends Controller
         // Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info));
         // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
 
-        $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+        $users = User::join('tb_pid')->select('users.name','users.email')->where('tb_pid.lead_id',$request['customer_name'])->first();
+
+        // $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
 
         Mail::to($users->email)->send(new mailPID($users,$pid_info));
 
