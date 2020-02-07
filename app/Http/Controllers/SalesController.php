@@ -4302,7 +4302,7 @@ class SALESController extends Controller
 
         // $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
 
-        Mail::to($users->email)->send(new mailPID($users,$pid_info));
+        Mail::to($users->email)->send(new mailPID($pid_info,$users));
         
         // Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info,$users));
 
