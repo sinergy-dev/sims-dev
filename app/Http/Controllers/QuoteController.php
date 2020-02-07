@@ -30,16 +30,16 @@ class QuoteController extends Controller
 
         $pops2 = Quote::select('quote_number')->where('status_backdate', 'F')->orderBy('updated_at', 'desc')->first();
 
-        $backdate_num = Quote::select('quote_number','id_quote')->where('status_backdate', 'T')->get();
-
         $tahun = date("Y");
 
 		$datas = DB::table('tb_quote')
                         ->join('users', 'users.nik', '=', 'tb_quote.nik')
-                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer')
+                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
                         ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         ->orderBy('tb_quote.created_at', 'desc')
                         ->get();
+
+        $backdate_num = Quote::select('quote_number','id_quote')->where('status_backdate', 'T')->get();
 
         $count = DB::table('tb_quote')
                     ->where('status_backdate', 'T')
@@ -206,7 +206,8 @@ class QuoteController extends Controller
 
         $tahun = date("Y");
         $cek = DB::table('tb_quote')
-                ->where('date','like',$tahun."%")
+                // ->where('date','like',$tahun."%")
+                ->whereYear('created_at', $tahun)
                 ->count('id_quote');
 
         if ($cek > 0) {
@@ -249,7 +250,7 @@ class QuoteController extends Controller
                     $bln = $array_bln[$month_quote];
 
 
-                    $getnumber = Quote::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+                    $getnumber = Quote::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
 
                     $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
 
@@ -333,7 +334,7 @@ class QuoteController extends Controller
                                         '12' => "XII");
                     $bln = $array_bln[$month_quote];
 
-                    $getnumber = Quote::orderBy('id_quote', 'desc')->where('date','like',$tahun."%")->count();
+                    $getnumber = Quote::orderBy('id_quote', 'desc')->whereYear('created_at', $tahun)->count();
 
                     $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
 
@@ -397,7 +398,7 @@ class QuoteController extends Controller
                                 '12' => "XII");
             $bln = $array_bln[$month_quote];
 
-            $getnumber = Quote::orderBy('id_quote', 'desc')->where('date','like',$tahun."%")->count();
+            $getnumber = Quote::orderBy('id_quote', 'desc')->whereYear('created_at', $tahun)->count();
 
             $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
 

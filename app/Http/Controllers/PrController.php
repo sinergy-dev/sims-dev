@@ -170,6 +170,8 @@ class PrController extends Controller
                         ->where('date','like',$tahun."%")
                         ->get();
 
+        // $year_pr = PR::select(substr('date', 1, 4))->groupBy('date');
+
         if (Auth::User()->id_position == 'ADMIN') {
             $notifClaim = DB::table('dvg_esm')
                             ->select('nik_admin', 'personnel', 'type')
@@ -188,9 +190,6 @@ class PrController extends Controller
         }
 
         $sidebar_collapse = true;
-
-        $year_now = date("Y");
-
 
         return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse'));
     }

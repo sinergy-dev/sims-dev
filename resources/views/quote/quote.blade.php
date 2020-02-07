@@ -93,7 +93,12 @@
                         <td>{{ $data->type_of_letter }}</td>
                         <td>{{ $data->month }}</td>
                         <td>{{ $data->date }}</td>
-                        <td>{{ $data->customer_legal_name }}</td>
+                        <td>@if($data->id_customer == '')
+                        {{$data->to}}
+                        @else
+                        {{ $data->customer_legal_name }}
+                        @endif
+                        </td>
                         <td>{{ $data->attention }}</td>
                         <td>{{ $data->title }}</td>
                         <td>{{ $data->project }}</td>
@@ -154,7 +159,12 @@
                       <td>{{ $data->position }}</td>
                       <td>{{ $data->type_of_letter }}</td>
                       <td>{{ $data->date }}</td>
-                      <td>{{ $data->customer_legal_name }}</td>
+                      <td> @if($data->id_customer == '')
+                        {{$data->to}}
+                        @else
+                        {{ $data->customer_legal_name }}
+                        @endif
+                      </td>
                       <td>{{ $data->attention }}</td>
                       <td>{{ $data->title }}</td>
                       <td>{{ $data->project }}</td>
@@ -260,7 +270,7 @@
               <div class="form-group">
                 <label>Project Type</label>
                 <select class="form-control" id="project_type" name="project_type" required style="width: 100%">
-                  <option>--Choose Project Type--</option>
+                  <option value="">--Choose Project Type--</option>
                   <option value="Supply Only">Supply Only</option>
                   <option value="Maintenance">Maintenance</option>
                   <option value="Implementation">Implementation</option>
@@ -351,7 +361,7 @@
           <div class="form-group">
             <label>Project Type</label>
             <select class="form-control" id="project_type" name="project_type" required style="width: 100%">
-              <option>--Choose Project Type--</option>
+              <option value="">--Choose Project Type--</option>
               <option value="Supply Only">Supply Only</option>
               <option value="Maintenance">Maintenance</option>
               <option value="Implementation">Implementation</option>
