@@ -316,10 +316,14 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                       </td>
                       <td>{{$data->lead_id}}</td>
                       <td>
+                        @if($data->lead_id == "MSPPO")
+                        {{$data->no_po_customer}}
+                        @else
                         {{$data->no_po}}
+                        @endif
                       </td>
                       <td>
-                        @if($data->lead_id == "MSPQUO" || $data->lead_id == "MSPPO")
+                        @if($data->lead_id == "MSPQUO")
                         {{$data->no_po_customer}}
                         @else
                         {{$data->quote_number}}
