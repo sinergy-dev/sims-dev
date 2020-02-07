@@ -250,7 +250,7 @@ class QuoteController extends Controller
                     $bln = $array_bln[$month_quote];
 
 
-                    $getnumber = Quote::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+                    $getnumber = Quote::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
 
                     $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
 
@@ -334,7 +334,7 @@ class QuoteController extends Controller
                                         '12' => "XII");
                     $bln = $array_bln[$month_quote];
 
-                    $getnumber = Quote::orderBy('id_quote', 'desc')->where('date','like',$tahun."%")->count();
+                    $getnumber = Quote::orderBy('id_quote', 'desc')->whereYear('created_at', $tahun)->count();
 
                     $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
 
@@ -398,7 +398,7 @@ class QuoteController extends Controller
                                 '12' => "XII");
             $bln = $array_bln[$month_quote];
 
-            $getnumber = Quote::orderBy('id_quote', 'desc')->where('date','like',$tahun."%")->count();
+            $getnumber = Quote::orderBy('id_quote', 'desc')->whereYear('created_at', $tahun)->count();
 
             $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
 
