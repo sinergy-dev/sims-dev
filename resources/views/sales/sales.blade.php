@@ -334,7 +334,6 @@
           <option>TERRITORY 3</option>
           <option>TERRITORY 4</option>
           <option>TERRITORY 5</option>
-          <option>TERRITORY 6</option>
         </select>
         @endif
       @endif
