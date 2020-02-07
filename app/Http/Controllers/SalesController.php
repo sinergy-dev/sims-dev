@@ -3393,12 +3393,14 @@ class SALESController extends Controller
                 $salesmsp = DB::table('tb_id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id','left')
+                    ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')
                     ->join('tb_company','tb_company.id_company','=','users.id_company')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po')
                     ->where('users.id_company','2')
                     ->whereYear('tb_id_project.created_at',date('Y'))
-                    ->where('status','!=','WO')
+                    ->where('tb_id_project.status','!=','WO')
                     ->get();
             }elseif ($pos == 'STAFF') {
                 $salessp = DB::table('tb_id_project')
@@ -3655,7 +3657,7 @@ class SALESController extends Controller
                         ->where('tb_pid_request.status','requested')
                         ->get(); 
 
-        $pid_request_lead = PID::join('sales_lead_register','sales_lead_register.lead_id','=','tb_pid.lead_id')
+        $pid_request_lead = PID::join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_pid.lead_id')
                         ->join('users','users.nik','=','sales_lead_register.nik')
                         ->join('tb_company','tb_company.id_company','=','users.id_company')
                         ->where('tb_pid.status','requested')
@@ -3670,7 +3672,7 @@ class SALESController extends Controller
     }
 
     public function getAcceptProjectID(Request $request){
-        $po_number = PID::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_pid.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->join('sales_tender_process', 'sales_lead_register.lead_id', '=', 'sales_tender_process.lead_id')->select('sales_lead_register.opp_name', 'name', 'no_po', 'date_po', 'amount_pid', 'quote_number2', 'sales_lead_register.lead_id')->where('id_pid',$request->id)
+        $po_number = PID::join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')->join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_pid.lead_id')->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->join('sales_tender_process', 'sales_lead_register.lead_id', '=', 'sales_tender_process.lead_id')->select('sales_lead_register.opp_name', 'name', 'no_po', 'date_po', 'amount_pid', 'quote_number2', 'sales_lead_register.lead_id', 'tb_contact.code','tb_quote_msp.quote_number','tb_quote_msp.date')->where('id_pid',$request->id)
             ->first();
 
         return $po_number;
@@ -3691,7 +3693,7 @@ class SALESController extends Controller
 
     public function store_sales_project(Request $request)
     {
-    	$year = date('Y');
+        $year = date('Y');
         $array_bln = array(1 => "I" ,"II","III","IV","V","VI","VII","VIII","IX","X","XI","XII");
         $bln = $array_bln[date('n')];
 
@@ -3705,7 +3707,7 @@ class SALESController extends Controller
                     ->first();
 
         if (substr($request['date'], 6,4) != $year) {
-        	return redirect()->back()->with('gagal', 'Tanggal Yang Kamu Input Tidak Valid!');
+            return redirect()->back()->with('gagal', 'Tanggal Yang Kamu Input Tidak Valid!');
         }
                     
         $hitung_sip = DB::table('tb_id_project')
@@ -3810,107 +3812,107 @@ class SALESController extends Controller
 
                         if ($cek_id_project == NULL) {
 
-                        	$tambah = new SalesProject();
+                            $tambah = new SalesProject();
 
-	                        $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
+                            $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
                             $edate = strtotime($request['date']); 
-				            $edate = date("Y-m-d",$edate);
-		                    $tambah->date = $edate;
-	                        $tambah->id_project = $project;
-	                        $tambah->nik = $request['sales'];
-	                        $tambah->no_po_customer = $no_po->no_po;
-	                        $tambah->lead_id = $request['customer_name'];
-	                        $tambah->name_project = $project_name->opp_name;
+                            $edate = date("Y-m-d",$edate);
+                            $tambah->date = $edate;
+                            $tambah->id_project = $project;
+                            $tambah->nik = $request['sales'];
+                            $tambah->no_po_customer = $no_po->no_po;
+                            $tambah->lead_id = $request['customer_name'];
+                            $tambah->name_project = $project_name->opp_name;
                             $tambah->sales_name = $project_name->name;
-	                        $tambah->amount_idr = str_replace(',', '', $request['amount']);
-	                        $tambah->amount_usd = $request['kurs'];
-	                        $tambah->note = $request['note'];
-	                        if (is_null($request['payungs'])) {
+                            $tambah->amount_idr = str_replace(',', '', $request['amount']);
+                            $tambah->amount_usd = $request['kurs'];
+                            $tambah->note = $request['note'];
+                            if (is_null($request['payungs'])) {
                                 $tambah->status = 'NEW';
                             }else{
                                 $tambah->status = $request['payungs'];
                             }
-	                        $tambah->save();
+                            $tambah->save();
 
-	                        $update = Sales::where('lead_id', $lead_id)->first();
-		                    $update->status_sho = 'SHO';
-		                    $update->pid = $cek_pid + 1;
-		                    $update->update();
+                            $update = Sales::where('lead_id', $lead_id)->first();
+                            $update->status_sho = 'SHO';
+                            $update->pid = $cek_pid + 1;
+                            $update->update();
 
                             $update = PID::where('lead_id',$request['customer_name'])->first();
                             $update->status = 'done';
                             $update->save();
-                        	# code...
+                            # code...
                         
                         }else{
 
-                        	if ($cek_id_project->status == 'SP' && $cek_result->result == 'SPECIAL' || $cek_id_project->status == 'SP' && $cek_result->result == 'WIN') {
+                            if ($cek_id_project->status == 'SP' && $cek_result->result == 'SPECIAL' || $cek_id_project->status == 'SP' && $cek_result->result == 'WIN') {
 
-		                        $hitung_detail_sip = DB::table('tb_detail_id_project')
-		                            ->join('tb_id_project', 'tb_id_project.id_pro', '=', 'tb_detail_id_project.id_pro')
-		                            ->select('tb_detail_id_project.id_project')
-		                            ->orderBy('tb_detail_id_project.id_project','desc')
-		                            ->where('tb_id_project.id_pro',$cek_id_project->id_pro)
-		                            ->first();
+                                $hitung_detail_sip = DB::table('tb_detail_id_project')
+                                    ->join('tb_id_project', 'tb_id_project.id_pro', '=', 'tb_detail_id_project.id_pro')
+                                    ->select('tb_detail_id_project.id_project')
+                                    ->orderBy('tb_detail_id_project.id_project','desc')
+                                    ->where('tb_id_project.id_pro',$cek_id_project->id_pro)
+                                    ->first();
 
-		                        $counts_detail = count($hitung_detail_sip);
+                                $counts_detail = count($hitung_detail_sip);
 
-		                        if ($counts_detail > 0) {
-		                            $increment_detail = round($hitung_detail_sip->id_project);
-		                        }else{
-		                            $increment_detail = round($hitung_detail_sip);
-		                        }
-		                        $nomor_detail = $increment_detail+1;
+                                if ($counts_detail > 0) {
+                                    $increment_detail = round($hitung_detail_sip->id_project);
+                                }else{
+                                    $increment_detail = round($hitung_detail_sip);
+                                }
+                                $nomor_detail = $increment_detail+1;
 
-		                        if($nomor_detail <= 9){
-		                            $nomor_detail = '00' . $nomor_detail;
-		                        }elseif($nomor_detail > 9 && $nomor_detail < 99){
-		                            $nomor_detail = '0' . $nomor_detail;
-		                        }
+                                if($nomor_detail <= 9){
+                                    $nomor_detail = '00' . $nomor_detail;
+                                }elseif($nomor_detail > 9 && $nomor_detail < 99){
+                                    $nomor_detail = '0' . $nomor_detail;
+                                }
 
-		                        $detail_project = $nomor_detail. '/' . $id_pro_payung->id_project . '/' . 'KP';
-		                        
-		                        $tambah_detail = new Detail_IdProject();
-		                        $tambah_detail->id_project = $detail_project;
-		                        $tambah_detail->id_pro = $cek_id_project->id_pro;
-		                        $tambah_detail->date = $edate;
-		                        $tambah_detail->no_po_customer = $no_po->no_po;
-		                        $tambah_detail->amount_idr = str_replace(',', '', $request['amount']);
-		                        $tambah_detail->save();
+                                $detail_project = $nomor_detail. '/' . $id_pro_payung->id_project . '/' . 'KP';
+                                
+                                $tambah_detail = new Detail_IdProject();
+                                $tambah_detail->id_project = $detail_project;
+                                $tambah_detail->id_pro = $cek_id_project->id_pro;
+                                $tambah_detail->date = $edate;
+                                $tambah_detail->no_po_customer = $no_po->no_po;
+                                $tambah_detail->amount_idr = str_replace(',', '', $request['amount']);
+                                $tambah_detail->save();
 
-		                        $count_detail_pro = Detail_IdProject::where('id_pro',$cek_id_project->id_pro)->count('id_project');
+                                $count_detail_pro = Detail_IdProject::where('id_pro',$cek_id_project->id_pro)->count('id_project');
 
-		                        $update = Sales::where('lead_id', $contact)->first();
-		                        $update->pid = $count_detail_pro + 1;
-		                        $update->update();
+                                $update = Sales::where('lead_id', $contact)->first();
+                                $update->pid = $count_detail_pro + 1;
+                                $update->update();
 
                                 $update = PID::where('lead_id',$request['customer_name'])->first();
                                 $update->status = 'done';
                                 $update->save();
-		                        
-		                        }else{
+                                
+                                }else{
 
-		                        $tambah = new SalesProject();
-		                        $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
+                                $tambah = new SalesProject();
+                                $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
                                 $edate = strtotime($request['date']); 
-					            $edate = date("Y-m-d",$edate);
-			                    $tambah->date = $edate;
-		                        $tambah->id_project = $project;
-		                        $tambah->nik = $request['sales'];
-		                        $tambah->no_po_customer = $no_po->no_po;
-		                        $tambah->lead_id = $request['customer_name'];
-		                        $tambah->name_project = $project_name->opp_name;
+                                $edate = date("Y-m-d",$edate);
+                                $tambah->date = $edate;
+                                $tambah->id_project = $project;
+                                $tambah->nik = $request['sales'];
+                                $tambah->no_po_customer = $no_po->no_po;
+                                $tambah->lead_id = $request['customer_name'];
+                                $tambah->name_project = $project_name->opp_name;
                                 $tambah->sales_name = $project_name->name;
-		                        $tambah->amount_idr = str_replace(',', '', $request['amount']);
-		                        $tambah->amount_usd = $request['kurs'];
-		                        $tambah->note = $request['note'];
-		                        $tambah->status = 'SP';
-		                        $tambah->save();
+                                $tambah->amount_idr = str_replace(',', '', $request['amount']);
+                                $tambah->amount_usd = $request['kurs'];
+                                $tambah->note = $request['note'];
+                                $tambah->status = 'SP';
+                                $tambah->save();
 
                                 $update = PID::where('lead_id',$request['customer_name'])->first();
                                 $update->status = 'done';
                                 $update->save();
-		                    }
+                            }
 
                         }
                         
@@ -3922,7 +3924,7 @@ class SALESController extends Controller
                     $tambah = new SalesProject();
                     $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
                     $edate = strtotime($request['date']); 
-		            $edate = date("Y-m-d",$edate);
+                    $edate = date("Y-m-d",$edate);
                     $tambah->date = $edate;
                     $tambah->id_project = $project;
                     $tambah->nik = $request['sales'];
@@ -4014,6 +4016,7 @@ class SALESController extends Controller
                 $nomor = '0' . $nomor;
             }
 
+            $name_msp = $request['id_cus'];
 
             $project = $nomor.'/'.$name .'/'. 'MSP/' .$bln .'/'. date('Y');
 
@@ -4027,11 +4030,15 @@ class SALESController extends Controller
                     $tambah = new SalesProject();
                     $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
                     $edate = strtotime($request['date']); 
-		            $edate = date("Y-m-d",$edate);
+                    $edate = date("Y-m-d",$edate);
                     $tambah->date = $edate;
                     $tambah->id_project = $project;
                     $tambah->nik = $request['sales'];
-                    $tambah->no_po_customer = $no_po->no_po;
+                    if ($request['inputPO'] == '') {
+                       $tambah->no_po_customer = $request['quote'];
+                    }else{
+                        $tambah->no_po_customer = $request['p_order'];
+                    }
                     $tambah->lead_id = $request['customer_name'];
                     // $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
                     $tambah->name_project = $project_name->opp_name;
@@ -4045,14 +4052,16 @@ class SALESController extends Controller
                     }
                     $tambah->save();
 
-                    $update = Sales::where('lead_id', $lead_id)->first();
-                    $update->status_sho = 'SHO';
-                    $update->pid = $cek_pid + 1;
-                    $update->update();
-
                     $update = PID::where('lead_id',$request['customer_name'])->first();
                     $update->status = 'done';
                     $update->save();
+
+                    // $update = Sales::where('lead_id', $lead_id)->first();
+                    // $update->status_sho = 'SHO';
+                    // $update->pid = $cek_pid + 1;
+                    // $update->update();
+
+                    
                 
                 }else{
 
@@ -4067,7 +4076,11 @@ class SALESController extends Controller
                         $tambah->date = $edate;
                         $tambah->id_project = $project;
                         $tambah->nik = $request['sales'];
-                        $tambah->no_po_customer = $no_po->no_po;
+                        if ($request['inputPO'] == '') {
+                           $tambah->no_po_customer = $request['quote'];
+                        }else{
+                            $tambah->no_po_customer = $request['p_order'];
+                        }
                         $tambah->lead_id = $request['customer_name'];
                         // $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
                         $tambah->name_project = $project_name->opp_name;
@@ -4081,14 +4094,10 @@ class SALESController extends Controller
                         }
                         $tambah->save();
 
-                        $update = Sales::where('lead_id', $lead_id)->first();
-                        $update->status_sho = 'SHO';
-                        $update->pid = $cek_pid + 1;
-                        $update->update();
-
                         $update = PID::where('lead_id',$request['customer_name'])->first();
                         $update->status = 'done';
                         $update->save();
+
 
                     }else{
 
@@ -4138,24 +4147,24 @@ class SALESController extends Controller
                         
                         }else{
 
-                            $tambah = new SalesProject();
-                            $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
-                            $tambah->date = $edate;
-                            $tambah->id_project = $project;
-                            $tambah->nik = $request['sales'];
-                            $tambah->no_po_customer = $no_po->no_po;
-                            $tambah->lead_id = $request['customer_name'];
-                            $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
-                            $tambah->name_project = $project_name->opp_name;
-                            $tambah->amount_idr = str_replace(',', '', $request['amount']);
-                            $tambah->amount_usd = $request['kurs'];
-                            $tambah->note = $request['note'];
-                            $tambah->status = 'SP';
-                            $tambah->save();
+                            // $tambah = new SalesProject();
+                            // $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
+                            // $tambah->date = $edate;
+                            // $tambah->id_project = $project;
+                            // $tambah->nik = $request['sales'];
+                            // $tambah->no_po_customer = $no_po->no_po;
+                            // $tambah->lead_id = $request['customer_name'];
+                            // $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
+                            // $tambah->name_project = $project_name->opp_name;
+                            // $tambah->amount_idr = str_replace(',', '', $request['amount']);
+                            // $tambah->amount_usd = $request['kurs'];
+                            // $tambah->note = $request['note'];
+                            // $tambah->status = 'SP';
+                            // $tambah->save();
 
-                            $update = PID::where('lead_id',$request['customer_name'])->first();
-                            $update->status = 'done';
-                            $update->save();
+                            // $update = PID::where('lead_id',$request['customer_name'])->first();
+                            // $update->status = 'done';
+                            // $update->save();
                         
                         }
 
@@ -4170,13 +4179,17 @@ class SALESController extends Controller
                     $tambah = new SalesProject();
                     $tambah->customer_name = TB_Contact::where('id_customer',$cek_result->id_customer)->first()->customer_legal_name;
                     $edate = strtotime($request['date']); 
-		            $edate = date("Y-m-d",$edate);
+                    $edate = date("Y-m-d",$edate);
                     $tambah->date = $edate;
                     $tambah->id_project = $project;
                     $tambah->nik = $request['sales'];
-                    $tambah->no_po_customer = $no_po->no_po;
+                    if ($request['inputPO'] == '') {
+                       $tambah->no_po_customer = $request['quote'];
+                    }else{
+                        $tambah->no_po_customer = $request['p_order'];
+                    }
                     $tambah->lead_id = $request['customer_name'];
-                    $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
+                    // $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
                     $tambah->name_project = $project_name->opp_name;
                     $tambah->amount_idr = str_replace(',', '', $request['amount']);
                     $tambah->amount_usd = $request['kurs'];
@@ -4188,14 +4201,10 @@ class SALESController extends Controller
                     }
                     $tambah->save();
 
-                    $update = Sales::where('lead_id', $lead_id)->first();
-                    $update->status_sho = 'SHO';
-                    $update->pid = $cek_pid + 1;
-                    $update->update();
-
                     $update = PID::where('lead_id',$request['customer_name'])->first();
                     $update->status = 'done';
                     $update->save();
+
 
                 }else {
                     $cek_id_project = Salesproject::select('status','id_pro')->where('id_pro',$request['payung_id'])->where('status','SP')->first();
@@ -4300,17 +4309,11 @@ class SALESController extends Controller
           $pid_info->no_quote = "-";
         }
 
-        // Mail::to($users->email)->send(new MailResult($users,$pid_info));
-        // Mail::to('faiqoh@sinergy.co.id')->send(new mailPID($pid_info));
-        // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
 
-        $users = User::join('sales_lead_register','sales_lead_register.nik','=','users.nik')->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')->select('users.name','users.email')->where('tb_pid.lead_id',$request['customer_name'])->first();
-
-        // $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
-
-        Mail::to($users->email)->send(new mailPID($pid_info,$users));
-        
-        // Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info,$users));
+        // Mail::to($users->email)->send(new mailPID($users,$pid_info));
+        /*Mail::to('faiqoh@sinergy.co.id')->send(new mailPID($pid_info));
+        Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info));
+        Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));*/
 
         return redirect()->to('/salesproject')->with('success', 'Create PID Successfully!');
         
