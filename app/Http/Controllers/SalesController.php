@@ -4033,7 +4033,7 @@ class SALESController extends Controller
                     $tambah->nik = $request['sales'];
                     $tambah->no_po_customer = $no_po->no_po;
                     $tambah->lead_id = $request['customer_name'];
-                    $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
+                    // $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
                     $tambah->name_project = $project_name->opp_name;
                     $tambah->amount_idr = str_replace(',', '', $request['amount']);
                     $tambah->amount_usd = $request['kurs'];
@@ -4069,7 +4069,7 @@ class SALESController extends Controller
                         $tambah->nik = $request['sales'];
                         $tambah->no_po_customer = $no_po->no_po;
                         $tambah->lead_id = $request['customer_name'];
-                        $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
+                        // $tambah->sales_name = DB::table('users')->where('nik',QuoteMSP::where('quote_number',$request['quote'])->first()->nik)->first()->name;
                         $tambah->name_project = $project_name->opp_name;
                         $tambah->amount_idr = str_replace(',', '', $request['amount']);
                         $tambah->amount_usd = $request['kurs'];
