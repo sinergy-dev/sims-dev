@@ -255,7 +255,7 @@ class LetterController extends Controller
                                         '12' => "XII");
                     $bln = $array_bln[$month_pr];
 
-                    $getnumber = Letter::orderBy('no', 'desc')->where('date', 'like', $tahun."%")->count();
+                    $getnumber = Letter::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
 
                     $getnumbers = Letter::orderBy('no', 'desc')->first();
 
@@ -334,7 +334,7 @@ class LetterController extends Controller
                                         '12' => "XII");
                     $bln = $array_bln[$month_pr];
 
-                    $getnumber = Letter::orderBy('no', 'desc')->where('date', 'like', $tahun."%")->count();
+                    $getnumber = Letter::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
 
                     $getnumbers = Letter::orderBy('no', 'desc')->first();
 
@@ -397,7 +397,7 @@ class LetterController extends Controller
                                 '12' => "XII");
             $bln = $array_bln[$month_pr];
 
-            $getnumber = Letter::orderBy('no', 'desc')->where('date', 'like', $tahun."%")->count();
+            $getnumber = Letter::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
 
             $getnumbers = Letter::orderBy('no', 'desc')->first();
 
