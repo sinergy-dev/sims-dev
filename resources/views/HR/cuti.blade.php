@@ -95,6 +95,7 @@
     <div class="box">
       <div class="box-header">
           <div class="pull-right">
+          <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
           @if($cek_cuti->status_karyawan == 'cuti')
             @if($cek_cuti->cuti > 0)
             <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
@@ -849,28 +850,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script type="text/javascript">
 
-  @if (Auth::User()->cuti != NULL) {
-    $(document).ready(function() {
+  
+    $(".show-sisa-cuti").click(function(){
       $.ajax({
-            type:"GET",
-            url:"getCutiAuth",
-            success: function(result){
-                swal({
-                  title: "Hello "+result[0].name+" !!!",
-            text: "Cuti kamu tahun ini tersisa " + result[0].cuti + " Kamu Mau menggunakan Cuti?",
-            confirmButtonColor: "#22542f",
-            confirmButtonText: "OK!",
-            closeOnConfirm: true,
-            type:"warning"
+        type:"GET",
+        url:"getCutiAuth",
+        success: function(result){
+          if (result[0].cuti == 0 || result[0].cuti == null) {
+            swal({
+              title: "Hello "+result[0].name+" !!!",
+              text: "Cuti kamu Habis Sorry Ya ga bisa cuti dulu !! ",
+              confirmButtonColor: "#22542f",
+              confirmButtonText: "OK!",
+              closeOnConfirm: true,
+              type:"warning"
 
-                });
-          
-            },
-          });
-        
+            });
+          }else{
+            swal({
+              title: "Hello "+result[0].name+" !!!",
+              text: "Cuti kamu tahun ini tersisa " + result[0].cuti + " Kamu Mau menggunakan Cuti?",
+              confirmButtonColor: "#22542f",
+              confirmButtonText: "OK!",
+              closeOnConfirm: true,
+              type:"warning"
+
+            });
+          }
+        },
+      });
     });
-  }
-  @endif
 
     // $(function() {
     //   $('#calendar').fullCalendar({
