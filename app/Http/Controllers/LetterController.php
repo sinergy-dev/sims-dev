@@ -29,6 +29,9 @@ class LetterController extends Controller
 
         $pops2 = Letter::select('no_letter')->where('status', 'F')->orderBy('updated_at', 'desc')->first();
 
+        $tahun = date("Y");
+
+        // $backdate_num = Quote::select('quote_number','id_quote')->where('status_backdate', 'T')->where('date','like',$tahun."%")->get();
         $backdate_num = Letter::select('no_letter','no')->where('status', 'T')->get();
 
         if ($ter != null) {
@@ -157,7 +160,6 @@ class LetterController extends Controller
             ->get();
         }
 
-        $tahun = date("Y");
 
         $datas = DB::table('tb_letter')
                         ->join('users', 'users.nik', '=', 'tb_letter.nik')
@@ -209,7 +211,7 @@ class LetterController extends Controller
         
         $tahun = date("Y");
         $cek = DB::table('tb_letter')
-                ->where('date','like',$tahun."%")
+                ->whereYear('created_at', $tahun)
                 ->count('no');
 
         // $getno_new = $getno->no;

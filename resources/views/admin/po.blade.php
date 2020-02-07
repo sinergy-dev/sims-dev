@@ -121,6 +121,7 @@
           <div class="form-group">
           	<label>NO PR</label>
           	<select class="form-control" name="no_pr" id="no_pr" style="width: 100%">
+              <option value="">--Choose No PR--</option>
           		@foreach($no_pr as $data)
           		<option value="{{$data->no}}">{{$data->no_pr}} - {{$data->to}}</option>
           		@endforeach
