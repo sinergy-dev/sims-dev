@@ -209,8 +209,7 @@ class QuoteController extends Controller
                         ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
                         ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         // ->orderBy('tb_quote.created_at', 'desc')
-                        ->where('status_backdate', null)
-                        // ->orWhere('status_backdate', 'F')
+                        ->where('status_backdate', 'A')
                         ->where('date','like',$tahun."%")
                         ->get());
     }
@@ -308,7 +307,7 @@ class QuoteController extends Controller
                         if ($i == 0) {
                             $tambah->id_quote = $nom->id_quote+1;
                             $tambah->quote_number = $no;
-                            $tambah->status_backdate = NULL;
+                            $tambah->status_backdate = 'A';
                         } else{
                             $tambah->id_quote = $nom->id_quote+2;
                             $tambah->quote_number = $no9;
@@ -398,6 +397,7 @@ class QuoteController extends Controller
                     $tambah->division = $request['division'];
                     $tambah->project_id = $request['project_id'];
                     $tambah->project_type = $request['project_type'];
+                    $tambah->status_backdate = 'A';
                     $tambah->save();
 
                     return redirect('quote')->with('success', 'Create Quote Number Successfully!');
@@ -462,6 +462,7 @@ class QuoteController extends Controller
             $tambah->division = $request['division'];
             $tambah->project_id = $request['project_id'];
             $tambah->project_type = $request['project_type'];
+            $tambah->status_backdate = 'A';
             $tambah->save();
 
             return redirect('quote')->with('success', 'Create Quote Number Successfully!');
