@@ -731,7 +731,7 @@
               <h4 class="modal-title">Setting Penggunaan Cuti</h4>
             </div>
             <div class="modal-body">
-              <form method="POST" action="{{url('/set_total_cuti')}}">
+              <!-- <form method="POST" action="{{url('/set_total_cuti')}}">
                   @csrf
                   <div class="form-group">
                       <label>Masukkan Pengurangan Jatah Cuti Tahun ini (optional)</label>
@@ -739,11 +739,15 @@
                   </div>
                   <button class="btn btn-primary btn-xs" style="width: 60px">Submit</button>
                   <button type="button" class="btn btn-default btn-xs" data-dismiss="modal" style="width: 60px"><i class=" fa fa-times"></i>&nbspClose</button>
-              </form>
+              </form> -->
+              <form method="POST" action="{{url('/setting_total_cuti')}}">
+              <div class="form-group">
+                  <label>Masukkan Pengurangan Jatah Cuti Tahun ini (optional)</label>
+                  <input type="" name="pengurangan_cuti" id="pengurangan_cuti" class="form-control" style="width: 60px">
+              </div>
             </div>
             <div class="modal-body">
-              <form method="POST" action="{{url('/setting_total_cuti')}}">
-                @csrf
+              @csrf
               <div class="form-group" style="margin-top: 20px">
                   <div class="row">
                     <div class="col-md-4">

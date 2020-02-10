@@ -993,24 +993,46 @@ class HRGAController extends Controller
             $nik = User::select('nik','status_karyawan',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))->get();
 
             foreach ($nik as $data) {
-                $update = User::where('nik',$data->nik)->first();
-                if ($data->status_karyawan == 'cuti') {
-                	if ($data->date_of_entrys < 365) {
-                    	$update->cuti = NULL;
-	                }else{
-	                    $update->cuti = $request['set_cuti'];
-	                }
-	                
+                if ($request['pengurangan_cuti'] == NULL) {
+                    $update = User::where('nik',$data->nik)->first();
+                    if ($data->status_karyawan == 'cuti') {
+                        if ($data->date_of_entrys < 365) {
+                            $update->cuti = NULL;
+                        }else{
+                            $update->cuti = $request['set_cuti'];
+                        }
+                        
+                    }else{
+                        $update->cuti = NULL;
+                    }
+                    $update->update();
                 }else{
-                	$update->cuti = NULL;
+                    $update = User::where('nik',$data->nik)->first();
+                    if ($data->status_karyawan == 'cuti') {
+                        if ($data->date_of_entrys < 365) {
+                            $update->cuti = NULL;
+                        }else{
+                            $update->cuti = $request['set_cuti'] - $request['pengurangan_cuti'];
+                        }
+                        
+                    }else{
+                        $update->cuti = NULL;
+                    }
+                    $update->update();
+
                 }
-                $update->update();
-                
             }
         }else{
-            $update = User::where('nik',$request->users)->first();
-            $update->cuti = $request['set_cuti'];
-            $update->update();
+            if ($request['pengurangan_cuti'] == NULL) {
+                $update = User::where('nik',$request->users)->first();
+                $update->cuti = $request['set_cuti'];
+                $update->update();
+            }else{
+                $update = User::where('nik',$request->users)->first();
+                $update->cuti = $request['set_cuti'] - $request['pengurangan_cuti'];
+                $update->update();
+            }
+            
         }
 
         return redirect()->back();
