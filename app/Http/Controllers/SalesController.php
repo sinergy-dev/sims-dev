@@ -4025,7 +4025,7 @@ class SALESController extends Controller
 
             $name_msp = $request['id_cus'];
 
-            $project = $nomor.'/'.$name .'/'. 'MSP/' .$bln .'/'. date('Y');
+            $project = $nomor.'/'. $name_msp .'/'. 'MSP/' .$bln .'/'. date('Y');
 
             $lead_id = $request['customer_name'];
 
@@ -4068,8 +4068,6 @@ class SALESController extends Controller
                     // $update->pid = $cek_pid + 1;
                     // $update->update();
 
-                    
-                
                 }else{
 
                     $cek_id_project = Salesproject::select('status','id_pro')->where('id_pro',$request['payung_id'])->where('status','SP')->first();
