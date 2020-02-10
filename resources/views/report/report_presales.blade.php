@@ -305,22 +305,22 @@
               </ul>
 
               <div class="tab-content">
-                    <div class="tab-pane active"  role="tabpanel" >
+                <div class="tab-pane active"  role="tabpanel" >
                 
-                    <div class="table-responsive">
-                      <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
-                        <thead>
-                          <tr>
-                            <th><center>Lead Id</center></th>
-                            <th><center>Customer</center></th>
-                            <th><center>Opty Name</center></th>
-                            <th><center>Owner</center></th>
-                            <th><center>Amount</center></th>
-                            <th><center>Status</center></th>
-                          </tr>
-                        </thead>
-                      </table>
-                    </div>
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th><center>Lead Id</center></th>
+                          <th><center>Customer</center></th>
+                          <th><center>Opty Name</center></th>
+                          <th><center>Owner</center></th>
+                          <th><center>Amount</center></th>
+                          <th><center>Status</center></th>
+                        </tr>
+                      </thead>
+                    </table>
+                  </div>
                 </div>
               </div>
           </div>

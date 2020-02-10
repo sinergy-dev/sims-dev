@@ -201,6 +201,19 @@ class QuoteController extends Controller
 
 	}
 
+    public function getdataquote(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => Quote::join('users', 'users.nik', '=', 'tb_quote.nik')
+                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        // ->orderBy('tb_quote.created_at', 'desc')
+                        ->where('status_backdate', null)
+                        ->where('date','like',$tahun."%")
+                        ->get());
+    }
+
     public function store(Request $request)
     {
 
