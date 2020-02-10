@@ -452,7 +452,7 @@
               </thead>
               <tbody id="products-list" name="products-list">
                 @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')        
-                  @foreach($leadsnow as $datas => $data)
+                  @foreach($leadsnow as $data)
                     <tr>
                       <td>
                         @if($data->result != 'OPEN')
@@ -482,6 +482,8 @@
                           Rizaldo Frendy Kurniawan
                         @elseif($data->nik == $nt->nik)
                           Aura Anugrah Pranata
+                        @elseif($data->nik == $jh->nik)
+                          Johan Ardi Wibisono
                         @endif
                       </td>
                       @endif
@@ -658,7 +660,7 @@
                     </tr>
                   @endforeach
 
-                  @foreach($leadsprenow as $datas => $data)
+                  @foreach($leadsprenow as $data)
                     <tr>
                       <td>
                         @if(Auth::User()->id_division == 'PMO')
@@ -738,6 +740,8 @@
                           Rizaldo Frendy Kurniawan
                         @elseif($data->nik == $nt->nik)
                           Aura Anugrah Pranata
+                        @elseif($data->nik == $jh->nik)
+                          Johan Ardi Wibisono
                         @endif
                       </td>
                       @elseif(Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_company == '2')
