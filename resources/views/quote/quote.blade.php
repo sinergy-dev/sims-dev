@@ -456,13 +456,47 @@
     function edit_quote(quote_number,to,attention,title,project,description, project_id,note) {
       $('#modalEdit').modal('show');
       $('#edit_quote_number').val(quote_number);
-      $('#edit_to').val(to);
-      $('#edit_attention').val(attention);
-      $('#edit_title').val(title);
-      $('#edit_project').val(project);
-      $('#edit_description').val(description);
-      $('#edit_project_id').val(project_id);
-      $('#edit_note').val(note);
+      if (to == "null") {
+        '';
+      } else {
+        $('#edit_to').val(to);
+
+      }
+      if (attention == "null") {
+        '';
+      } else {
+        $('#edit_attention').val(attention);
+      }
+
+      if (title == "null") {
+        '';
+      } else {
+        $('#edit_title').val(title);
+      }
+
+      if (project == "null") {
+        '';
+      } else {
+        $('#edit_project').val(project);
+      }
+
+      if (description == "null") {
+        '';
+      } else {
+        $('#edit_description').val(description);
+      }
+
+      if (project_id == "null") {
+        '';
+      } else {
+        $('#edit_project_id').val(project_id);
+      }
+
+      if (note == "null") {
+        '';
+      } else {
+        $('#edit_note').val(note);
+      }
     }
 
     initQuoTable();
