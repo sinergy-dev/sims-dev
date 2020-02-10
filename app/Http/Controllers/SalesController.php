@@ -2515,9 +2515,12 @@ class SALESController extends Controller
                     $update_quo->quote_number_final = $request['quote_number_final'];
                     $update_quo->update();
 
-                    $update_status_quo = Quote::where('quote_number', $request['quote_number_final'])->first();
-                    $update_status_quo->status = 'choosed';
-                    $update_status_quo->update();
+                    if ($request['quote_number_final'] != null) {
+                        $update_status_quo = Quote::where('quote_number', $request['quote_number_final'])->first();
+                        $update_status_quo->status = 'choosed';
+                        $update_status_quo->update();
+                    }
+                    
 
                     $cekstatus = PID::select('status')->where('lead_id', $tambahpid->lead_id)->first();
 
@@ -2543,7 +2546,7 @@ class SALESController extends Controller
                             $pid_info->url_create = "/salesproject#acceptProjectID?" . $pid_info->id_pid;
                         }
 
-                        $users = User::select('name')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+                        $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
                
                             // return "$pid_info";
 
@@ -4314,8 +4317,9 @@ class SALESController extends Controller
           $pid_info->no_quote = "-";
         }
 
+        $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->first();
 
-        // Mail::to($users->email)->send(new mailPID($users,$pid_info));
+        Mail::to($users->email)->send(new mailPID($users,$pid_info));
         /*Mail::to('faiqoh@sinergy.co.id')->send(new mailPID($pid_info));
         Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info));
         Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));*/

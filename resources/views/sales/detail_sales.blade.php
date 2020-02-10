@@ -1106,6 +1106,7 @@
 
             <label style="padding-top: 15px;">No. Quote</label>
             <select class="form-control" id="quote_number_final" name="quote_number_final" style="width: 100%; ">
+            	<option value="">Choose Quote</option>
               @foreach($get_quote_number as $data)
               <option value="{{$data->quote_number}}">{{$data->quote_number}} - {{$data->customer_legal_name}}</option>
               @endforeach
