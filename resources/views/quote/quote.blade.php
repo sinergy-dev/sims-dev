@@ -60,11 +60,9 @@
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs" id="myTab">
             <li class="nav-item active">
-                <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" >All</a>
+                <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changetabPaneAll()" >All</a>
             <li class="nav-item">
-                <a class="nav-link" id="backdate-tab" data-toggle="tab" href="#backdate" role="tab" aria-controls="backdate" aria-selected="true" >
-                    Backdate
-                </a>
+                <a class="nav-link" id="backdate-tab" data-toggle="tab" href="#backdate" role="tab" aria-controls="backdate" aria-selected="true" onclick="changetabPane()" >Backdate</a>
             </li>
           </ul>
 
@@ -555,6 +553,16 @@
         "pageLength": 20,
       })
     }
+
+    function changetabPane() {
+      $('#data_all').DataTable().ajax.url("{{url('getdatabackdatequote')}}?data=").load();
+    }
+
+    function changetabPaneAll() {
+      $('#data_all').DataTable().ajax.url("{{url('getdataquote')}}?_=").load();
+    }
+
+    
 
     /*$('#data_all').DataTable( {
       "order": [[ 4, "desc" ]],
