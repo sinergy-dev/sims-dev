@@ -51,9 +51,7 @@
 </style>
 
   <section class="content-header">
-    <h1>
-      Detail - {{ $tampilkan->lead_id }} /<small> {{$tampilkan->opp_name}}</small>
-    </h1>
+  	<a href="{{url('/project')}}"><button button class="btn btn-s btn-danger pull-left"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
     <ol class="breadcrumb">
       <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
       <li class="active"><a href="/project">Lead Register</a></li>
@@ -62,344 +60,314 @@
   </section>
 
   <section class="content">
-    <a href="{{url('/project')}}"><button button class="btn btn-s btn-danger pull-left" style="width: 150px"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
-    <p>&nbsp</p>
-    @if(Auth::User()->id_division == 'PMO')
-      @if(Auth::User()->id_position == 'MANAGER')
-        <button class="btn btn-primary" id="" data-target="#formResult2" data-toggle="modal"><i class="fa fa-circle-o-notch"></i>&nbspStatus
-        </button>
-      @elseif(Auth::User()->name == $pmo_id->name)
-        <button class="btn btn-primary" id="" data-target="#formResult2" data-toggle="modal"><i class="fa fa-circle-o-notch"></i>&nbspStatus
-        </button>
-      @endif
-    @elseif(Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_territory == 'DPG')
-      @if(Auth::User()->id_position == 'ENGINEER MANAGER')
-      <button class="btn btn-primary" id="" data-target="#formResult3" data-toggle="modal"><i class="fa fa-circle-o-notch"></i>&nbspStatus
-      </button>
-      @elseif(Auth::User()->id_position == 'ENGINEER STAFF')
-        @if(Auth::User()->name == $current_eng->name)
-        <button class="btn btn-primary" id="" data-target="#formResult3" data-toggle="modal"><i class="fa fa-circle-o-notch"></i>&nbspStatus
-        </button>
-        @endif
-      @endif
-    @else
-    @endif
-    <div style="padding-bottom: 30px"></div>
+    <div class="callout callout-info" style="margin-top: 30px!important;">
+	    <h4>(<i class="fa fa-info"></i>) <b>Lead id :</b></h4>
+	    <h4>{{$tampilkan->lead_id}} - {{$tampilkan->opp_name}}</h4>
+	</div>
 
-    <div class="row margin-top">
-      <div class="col-md-12">
-        <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title">Status</h3>
+    <div class="row">
+      <div class="col-md-6">
+      	<div class="box box-solid box-default">
+      		<div class="box-header">
+      			<h3 class="box-title">Status</h3>
+      		</div>
+	          
+	        <div class="box-body">
+	          	<div class='circle-container'>
+	              <a>
+	                <span class="deg315 dot" id="init"></span>
+	                <span class="deginitial" id="s_init"><b style="opacity: 0.4">INITIAL</b></span> 
+	              </a>
+	              <a href='#' class='deg45'><span class="dot" id="open"></span></a>
+	              <span class="degopen" id="s_open"><b style="opacity: 0.4">OPEN</b></span>
+	              <a href='#' class='deg180'><span class="dot" id="sd"></span></a>
+	              <span class="degSD" id="s_sd"><b style="opacity: 0.4">SOLUTION DESIGN</b></span>
+	              <a href='#' class='deg225'><span class="dot" id="tp"></span></a>
+	              <span class="degTP" id="s_tp"><b style="opacity: 0.4">TENDER PROCESS</b></span>
+	              <a href='#' class='deg135'><span class="dot" id="win_lose"></span></a>
+	              <span class="degwin" id="s_winlose"><b style="opacity: 0.4">WIN/LOSE</b></span>
+	              <div class="step-content">
+	              </div>
+		        </div>
+	    	</div>
+        </div>
+      </div>
 
-            <!-- <div class="box-tools pull-right">
-              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-              </button>
-              <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-            </div> -->
-        </div>
-
-        <div class="box-body">
-        <div class="col-md-6">
-          <div class='circle-container padding-right'>
-              <a>
-                <span class="deg315 dot" id="init"></span>
-                <span class="deginitial" id="s_init"><b style="opacity: 0.4">INITIAL</b></span> 
-              </a>
-              <a href='#' class='deg45'><span class="dot" id="open"></span></a>
-              <span class="degopen" id="s_open"><b style="opacity: 0.4">OPEN</b></span>
-              <a href='#' class='deg180'><span class="dot" id="sd"></span></a>
-              <span class="degSD" id="s_sd"><b style="opacity: 0.4">SOLUTION DESIGN</b></span>
-              <a href='#' class='deg225'><span class="dot" id="tp"></span></a>
-              <span class="degTP" id="s_tp"><b style="opacity: 0.4">TENDER PROCESS</b></span>
-              <a href='#' class='deg135'><span class="dot" id="win_lose"></span></a>
-              <span class="degwin" id="s_winlose"><b style="opacity: 0.4">WIN/LOSE</b></span>
-              <div class="step-content">
-              </div>
-          </div>
-          <br>
-        </div>
-        <div class="col-md-6">
-          <div class="box box-solid">
-            <div class="box-header with-border">
-              <h4 class="card-title mb-1 pull-left">{{ $tampilkan->lead_id }}</h4>
-              <h4 class="card-title mb-1 pull-right" id="date_create" name="date_create">{!!substr( $tampilkan->created_at,0,10 )!!}</h4>
-            </div>
-            <div class="box-body">
-              <div class="box-header">
-                <h5 class="pull-right">Owner : <i>{{$tampilkan->name}}</i></h5>
-                <h4 class="pull-left">{{ $tampilkan->customer_legal_name }}</h4><br><br>
-                <h4>{{$tampilkan->opp_name}}</h4>
-              </div>
-              <div class="box-body">
-                @if(Auth::User()->id_company == '1')
-                  @if($tampilkan_com->id_company == '1')
-                    <h5>Current Presales : <i>{{$tampilkans->name}}</i></h5>
-                  @elseif($tampilkan_com->id_company == '2')
-                  <h5>Current Presales : <i>Presales</i></h5>
-                  @endif
-                @else
-                <h5>Current Presales : <i>Presales</i></h5>
-                @endif
-              <!--   @if(Auth::User()->id_division == 'PMO')
-                <h5>Current PMO : <i>{{$pmo_id->name}}</i></h5>
-                @endif -->
-                @if(Auth::User()->id_position == 'ENGINEER STAFF')
-                <h5>Current Engineer : <i>{{$current_eng->name}}</i></h5>
-                @elseif(Auth::User()->id_position == 'ENGINEER MANAGER')
-                <h5>Current Engineer : <i>{{$current_eng->name}}</i></h5>
-                @endif
-                <h6 >Amount : Rp <b class="money">{{ $tampilkan->amount }}</b></h6>
-              </div>
-            </div>
-            <div class="box-footer with-border small text-muted">Posted {{ $tampilkan->created_at }}</div>
-          </div>
-        </div>
-        </div>
-        </div>
+      <div class="col-md-6">
+      	<div class="box box-solid box-default">
+      		<div class="box-header">
+      			<h3 class="box-title">Details</h3>
+      		</div>
+      		<div class="box-body">
+      		  <table class="table table-bordered">
+      		  	<tr>
+      		  		<th>Owner</th>
+      		  		<td>{{$tampilkan->name}}</td>
+      		  	</tr>
+      		  	<tr>
+      		  		<th>Customer</th>
+      		  		<td>{{$tampilkan->customer_legal_name}}</td>
+      		  	</tr>
+      		  	<tr>
+      		  		<th>Opty Name</th>
+      		  		<td>{{$tampilkan->opp_name}}</td>
+      		  	</tr>
+      		  	<tr>
+      		  		<th>Current Presales</th>
+      		  		<td>    
+      		  		@if($tampilkan_com->id_company == '1')
+		              <h5>{{$tampilkans->name}}</h5>
+		            @else
+		            <h5>Presales</h5>
+		            @endif
+		        	</td>
+      		  	</tr>
+      		  	<tr>
+      		  		<th>Amount</th>
+      		  		<td>Rp <b class="money">{{ $tampilkan->amount }}</b></td>
+      		  	</tr>
+      		  	<tr>
+      		  		<th>Closing date</th>
+      		  		<td>{{ $tampilkan->closing_date }}</td>
+      		  	</tr>
+      		  </table>
+	         <!--  <div class="">
+	            <h5 class="pull-right">Owner : <i>{{$tampilkan->name}}</i></h5>
+	            <h5 class="pull-left">{{ $tampilkan->customer_legal_name }}</h5><br><br>
+	            <h5>{{$tampilkan->opp_name}}</h5>
+	          </div>
+	          <div class="">
+	          	@if(Auth::User()->id_company == '1')
+	              @if($tampilkan_com->id_company == '1')
+	                <h5>Current Presales : <i>{{$tampilkans->name}}</i></h5>
+	              @elseif($tampilkan_com->id_company == '2')
+	              <h5>Current Presales : <i>Presales</i></h5>
+	              @endif
+	            @else
+	            <h5>Current Presales : <i>Presales</i></h5>
+	            @endif
+	            @if(Auth::User()->id_position == 'ENGINEER STAFF')
+	            <h5>Current Engineer : <i>{{$current_eng->name}}</i></h5>
+	            @elseif(Auth::User()->id_position == 'ENGINEER MANAGER')
+	            <h5>Current Engineer : <i>{{$current_eng->name}}</i></h5>
+	            @endif
+	            <h6 >Amount : Rp <b class="money">{{ $tampilkan->amount }}</b></h6>
+	            <h6 >Closing Date : {{ $tampilkan->closing_date }}</h6>
+	          </div> -->
+	        </div>
+      	</div>
+      	
       </div>
     </div>
 
-    @if(Auth::User()->id_division != 'PMO' &&  Auth::User()->id_position != 'ENGINEER MANAGER' && Auth::User()->id_position != 'ENGINEER STAFF')
+    	@if(Auth::User()->id_division != 'PMO' &&  Auth::User()->id_position != 'ENGINEER MANAGER' && Auth::User()->id_position != 'ENGINEER STAFF')
         <div class="row margin-top">
-          <div class="col-md-6">
-            <div class="box">
-              <div class="box-header with-border">
-                <h3 class="box-title">Solution Design</h3>
-                  @if($tampilkanc->result == 'SD' && Auth::User()->id_division == 'SALES')
-                    <div class="pull-right">
-                      <button type="button" class="btn btn-md btn-success float-right margin-bottom" data-toggle="modal" data-target="#formResult">Result</button>
-                    </div>
-                  @endif
-                  {{-- <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                  </div> --}}
-              </div>
+	      <div class="col-md-6">
+	            	<div class="box box-solid box-default">
+	              <div class="box-header with-border">
+	                <h3 class="box-title">Solution Design</h3>
+	                  @if($tampilkanc->result == 'SD' && Auth::User()->id_division == 'SALES')
+	                    <div class="pull-right">
+	                      <button type="button" class="btn btn-md btn-success float-right margin-bottom" data-toggle="modal" data-target="#formResult">Result</button>
+	                    </div>
+	                  @endif
+	              </div>
 
-              <div class="box-body">
-              @csrf
-              <form action="{{ url('update_sd', $tampilkans->lead_id)}}" method="POST">
-                {!! csrf_field() !!}
-              @if(Auth::User()->id_company == '1')
-                @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
-                <fieldset>
-                @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-                <fieldset>
-                @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-                <fieldset>
-                @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->id_position == 'MANAGER')
-                <fieldset>
-                @else
-                <fieldset disabled>
-                @endif
-              @elseif(Auth::User()->id_company == '2')
-                @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
-                <fieldset>
-                @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-                <fieldset>
-                @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-                <fieldset>
-                @else
-                <fieldset disabled>
-                @endif
-        <!-- 
-                <fieldset disabled> -->
-              @endif
-                <input type="" name="lead_id" id="lead_id" value="{{$tampilkans->lead_id}}" hidden>
-                <div class="form-group margin-left-right">
-                  <label for="assesment">-- Assessment --</label>
-                  <input type="" name="assesment_before" id="assesment_before" value="{{$tampilkans->assessment}}" hidden>
-                  <input type="" name="assesment_date_before" id="assesment_date_before" value="{{$tampilkans->assessment_date}}" hidden>
-                  <textarea class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter assesment" name="assesment" id="assesment" >{{$tampilkans->assessment}}</textarea>
-                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('assesment'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}"/> -->
-                @if($tampilkans->assessment_date == '')
-                  <h6>Last Date Updated : -- / -- / ---- </h6>
-                  @else
-                  <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->assessment_date))}}</h6>
-                  @endif
-                  <h6>Last Time Updated : {!!substr($tampilkans->assessment_date,11)!!}</h6>
-                </div>
-                  
-                
-                <div class="form-group margin-left-right">
-                  <label for="proof of value">-- Proposed Design--</label>
-                  <input type="" name="pd_before" id="pd_before" value="{{$tampilkans->pd}}" hidden>
-                  <input type="" name="pd_date_before" id="pd_date_before" value="{{$tampilkans->pd_date}}" hidden>
-                   <textarea class="form-control" type="email" aria-describedby="" placeholder="Enter Propossed Design" name="propossed_design"  id="propossed_design">{{$tampilkans->pd}}</textarea>
-                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('propossed_design'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
-                 @if($tampilkans->pd_date == '')
-                 <h6>Last Date Updated : -- / -- / ---- </h6>
-                 @else
-                 <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pd_date))}}</h6>
-                 @endif
-                 <h6>Last Time Updated : {!!substr($tampilkans->pd_date,11)!!}</h6>
-                </div>
+	              <div class="box-body">
+	              @csrf
+	              <form action="{{ url('update_sd', $tampilkans->lead_id)}}" method="POST">
+	                {!! csrf_field() !!}
+	              @if(Auth::User()->id_company == '1')
+	                @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
+	                <fieldset>
+	                @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+	                <fieldset>
+	                @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+	                <fieldset>
+	                @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->id_position == 'MANAGER')
+	                <fieldset>
+	                @else
+	                <fieldset disabled>
+	                @endif
+	              @elseif(Auth::User()->id_company == '2')
+	                @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
+	                <fieldset>
+	                @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+	                <fieldset>
+	                @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+	                <fieldset>
+	                @else
+	                <fieldset disabled>
+	                @endif
+	        		<!-- 
+	                <fieldset disabled> -->
+		              @endif
+		                <input type="" name="lead_id" id="lead_id" value="{{$tampilkans->lead_id}}" hidden>
+		                <div class="form-group margin-left-right">
+			                  <label for="assesment">-- Assessment --</label>
+			                  <input type="" name="assesment_before" id="assesment_before" value="{{$tampilkans->assessment}}" hidden>
+			                  <input type="" name="assesment_date_before" id="assesment_date_before" value="{{$tampilkans->assessment_date}}" hidden>
+			                  <textarea class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter assesment" name="assesment" id="assesment" >{{$tampilkans->assessment}}</textarea>
+			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('assesment'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}"/> -->
+			                  @if($tampilkans->assessment_date == '')
+			                  <h6>Last Date Updated : -- / -- / ---- </h6>
+			                  @else
+			                  <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->assessment_date))}}</h6>
+			                  @endif
+			                  <h6>Last Time Updated : {!!substr($tampilkans->assessment_date,11)!!}</h6>
+		                </div>
 
-                 <div class="form-group margin-left-right">
-                  <label for="propossed_design" class="margin-top-form">--Proof Of Value --</label>
-                  <input type="" name="pov_before" id="pov_before" value="{{$tampilkans->pov}}" hidden>
-                  <input type="" name="pov_date_before" id="pov_date_before" value="{{$tampilkans->pov_date}}" hidden>
-                  <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" placeholder="Enter Proof Of Value" name="pov"  id="pov" >{{$tampilkans->pov}}</textarea>
-                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('pov'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
-                @if($tampilkans->pov_date == '')
-                <h6>Last Date Updated : -- / -- / ---- </h6>
-                @else
-                <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pov_date))}}</h6>
-                @endif
-                <h6>Last Time Updated : {!!substr($tampilkans->pov_date,11)!!}</h6>
-                </div>
+		                <div class="form-group margin-left-right">
+			                 <label for="proof of value">-- Proposed Design--</label>
+			                 <input type="" name="pd_before" id="pd_before" value="{{$tampilkans->pd}}" hidden>
+			                 <input type="" name="pd_date_before" id="pd_date_before" value="{{$tampilkans->pd_date}}" hidden>
+		                   	 <textarea class="form-control" type="email" aria-describedby="" placeholder="Enter Propossed Design" name="propossed_design"  id="propossed_design">{{$tampilkans->pd}}</textarea>
+			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('propossed_design'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
+			                 @if($tampilkans->pd_date == '')
+			                 <h6>Last Date Updated : -- / -- / ---- </h6>
+			                 @else
+			                 <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pd_date))}}</h6>
+			                 @endif
+			                 <h6>Last Time Updated : {!!substr($tampilkans->pd_date,11)!!}</h6>
+			            </div>
 
-                <div class="form-group margin-left-right">
-                  @if ($message = Session::get('warning'))
-                  <div class="alert alert-warning alert-block">
-                    <button type="button" class="close" data-dismiss="alert">×</button> 
-                    <strong>{{ $message }}</strong>
-                  </div>
-                  @endif
-                </div>
+			            <div class="form-group margin-left-right">
+			                <label for="propossed_design" class="margin-top-form">--Proof Of Value --</label>
+			                <input type="" name="pov_before" id="pov_before" value="{{$tampilkans->pov}}" hidden>
+			                <input type="" name="pov_date_before" id="pov_date_before" value="{{$tampilkans->pov_date}}" hidden>
+			                <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" placeholder="Enter Proof Of Value" name="pov"  id="pov" >{{$tampilkans->pov}}</textarea>
+			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('pov'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
+			                @if($tampilkans->pov_date == '')
+			                <h6>Last Date Updated : -- / -- / ---- </h6>
+			                @else
+			                <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pov_date))}}</h6>
+			                @endif
+			                <h6>Last Time Updated : {!!substr($tampilkans->pov_date,11)!!}</h6>
+			                </div>
 
-                <div class="form-group margin-left-right inputWithIcon inputIconBg">
-                  <label for="project_budget" class="margin-top-form">-- Project Budget --</label>
-                  <input type="text" name="project_budget_before" id="project_budget_before" value="{{$tampilkans->pb}}" hidden>
-                  <input type="text" name="amount_check" id="amount_check" value="{{$tampilkan->amount}}" hidden>
-                  <input class="form-control float-left money" type="text" aria-describedby="emailHelp" placeholder="Enter Project Budget" name="project_budget"  id="project_budget" value="{{$tampilkans->pb}}" />
-                  <i class="" style="margin-top: -7px" aria-hidden="true">Rp.</i>
-                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('project_budget'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
-                </div>
+			                <div class="form-group margin-left-right">
+			                  @if ($message = Session::get('warning'))
+			                  <div class="alert alert-warning alert-block">
+			                    <button type="button" class="close" data-dismiss="alert">×</button> 
+			                    <strong>{{ $message }}</strong>
+			                  </div>
+			                  @endif
+			                </div>
 
-                 <div class="form-group margin-left-right">
-                  <label for="priority" class="margin-top-form">-- Priority --</label>
-                  
-                  <select class="form-control float-left" id="priority"  name="priority">
-                    @if($tampilkans->priority == 'Contribute')
-                    <option value="">-- Choose Priority --</option>
-                    <option value="Contribute" selected>Contribute</option>
-                    <option value="Fight" >Fight</option>
-                    <option value="Foot Print" >Foot Print</option>
-                    <option value="Guided" >Guided</option>
-                    @elseif($tampilkans->priority == 'Fight')
-                    <option value="">-- Choose Priority --</option>
-                    <option value="Contribute">Contribute</option>
-                    <option value="Fight" selected>Fight</option>
-                    <option value="Foot Print" >Foot Print</option>
-                    <option value="Guided" >Guided</option>
-                    @elseif($tampilkans->priority == 'Foot Print')
-                    <option value="">-- Choose Priority --</option>
-                    <option value="Contribute" >Contribute</option>
-                    <option value="Fight" >Fight</option>
-                    <option value="Foot Print" selected>Foot Print</option>
-                    <option value="Guided" >Guided</option>
-                    @elseif($tampilkans->priority == 'Guided')
-                    <option value="">-- Choose Priority --</option>
-                    <option value="Contribute" >Contribute</option>
-                    <option value="Fight" >Fight</option>
-                    <option value="Foot Print" >Foot Print</option>
-                    <option value="Guided" selected>Guided</option>
-                    @else
-                    <option value="" >-- Choose Priority --</option>
-                    <option value="Contribute" >Contribute</option>
-                    <option value="Fight" >Fight</option>
-                    <option value="Foot Print" >Foot Print</option>
-                    <option value="Guided" >Guided</option>
-                    @endif
-                  </select>
-              <!--     <input type="checkbox" class="float-right" onclick="var input = document.getElementById('priority'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
-                </div>
+			                <div class="form-group margin-left-right inputWithIcon inputIconBg">
+			                  <label for="project_budget" class="margin-top-form">-- Project Budget --</label>
+			                  <input type="text" name="project_budget_before" id="project_budget_before" value="{{$tampilkans->pb}}" hidden>
+			                  <input type="text" name="amount_check" id="amount_check" value="{{$tampilkan->amount}}" hidden>
+			                  <input class="form-control float-left money" type="text" aria-describedby="emailHelp" placeholder="Enter Project Budget" name="project_budget"  id="project_budget" value="{{$tampilkans->pb}}" />
+			                  <i class="" style="margin-top: -7px" aria-hidden="true">Rp.</i>
+			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('project_budget'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
+		                </div>
 
-                <div class="form-group margin-left-right ">
-                  <label for="proyek_size" class="margin-top-form">-- Project size --</label>
-                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size" >
+		                <div class="form-group margin-left-right">
+		                  <label for="priority" class="margin-top-form">-- Priority --</label>
+		                  
+		                  <select class="form-control float-left" id="priority"  name="priority">
+		                    @if($tampilkans->priority == 'Contribute')
+		                    <option value="">-- Choose Priority --</option>
+		                    <option value="Contribute" selected>Contribute</option>
+		                    <option value="Fight" >Fight</option>
+		                    <option value="Foot Print" >Foot Print</option>
+		                    <option value="Guided" >Guided</option>
+		                    @elseif($tampilkans->priority == 'Fight')
+		                    <option value="">-- Choose Priority --</option>
+		                    <option value="Contribute">Contribute</option>
+		                    <option value="Fight" selected>Fight</option>
+		                    <option value="Foot Print" >Foot Print</option>
+		                    <option value="Guided" >Guided</option>
+		                    @elseif($tampilkans->priority == 'Foot Print')
+		                    <option value="">-- Choose Priority --</option>
+		                    <option value="Contribute" >Contribute</option>
+		                    <option value="Fight" >Fight</option>
+		                    <option value="Foot Print" selected>Foot Print</option>
+		                    <option value="Guided" >Guided</option>
+		                    @elseif($tampilkans->priority == 'Guided')
+		                    <option value="">-- Choose Priority --</option>
+		                    <option value="Contribute" >Contribute</option>
+		                    <option value="Fight" >Fight</option>
+		                    <option value="Foot Print" >Foot Print</option>
+		                    <option value="Guided" selected>Guided</option>
+		                    @else
+		                    <option value="" >-- Choose Priority --</option>
+		                    <option value="Contribute" >Contribute</option>
+		                    <option value="Fight" >Fight</option>
+		                    <option value="Foot Print" >Foot Print</option>
+		                    <option value="Guided" >Guided</option>
+		                    @endif
+		                  </select>
+		                </div>
 
-                    @if($tampilkans->project_size == 'Small')
-                    <option value="">-- Choose Project Size --</option>
-                    <option value="Small" selected>Small</option>
-                    <option value="Medium" >Medium</option>
-                    <option value="Advance" >Advance</option>
+		                <div class="form-group margin-left-right ">
+		                  <label for="proyek_size" class="margin-top-form">-- Project size --</label>
+		                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size" >
 
-                    @elseif($tampilkans->project_size == 'Medium')
-                    <option value="">-- Choose Project Size --</option>
-                    <option value="Small">Small</option>
-                    <option value="Medium" selected>Medium</option>
-                    <option value="Advance" >Advance</option>
-                    @elseif($tampilkans->project_size == 'Advance')
-                    <option value="">-- Choose Project Size --</option>
-                    <option value="Small">Small</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Advance" selected>Advance</option>
+		                    @if($tampilkans->project_size == 'Small')
+		                    <option value="">-- Choose Project Size --</option>
+		                    <option value="Small" selected>Small</option>
+		                    <option value="Medium" >Medium</option>
+		                    <option value="Advance" >Advance</option>
 
-                    @else
-                    <option value="">-- Choose Project Size --</option>
-                    <option value="Small">Small</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Advance">Advance</option>
+		                    @elseif($tampilkans->project_size == 'Medium')
+		                    <option value="">-- Choose Project Size --</option>
+		                    <option value="Small">Small</option>
+		                    <option value="Medium" selected>Medium</option>
+		                    <option value="Advance" >Advance</option>
+		                    @elseif($tampilkans->project_size == 'Advance')
+		                    <option value="">-- Choose Project Size --</option>
+		                    <option value="Small">Small</option>
+		                    <option value="Medium">Medium</option>
+		                    <option value="Advance" selected>Advance</option>
 
-                    @endif
-                    </select>
-                </div>
+		                    @else
+		                    <option value="">-- Choose Project Size --</option>
+		                    <option value="Small">Small</option>
+		                    <option value="Medium">Medium</option>
+		                    <option value="Advance">Advance</option>
 
-                <div class="margin-left-right margin-top">
-                @if(Auth::User()->id_company == '1')
-                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
-                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-                  @endif
-              </form>
-                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
-                  <!-- <form action="{{url('raise_to_tender')}}" method="POST"> -->
-                     <!-- {!! csrf_field() !!} -->
-     <!--                <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button> -->
-                  <!-- </form> -->
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' && $tampilkans->status != 'closed')
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @endif
-                @elseif(Auth::User()->id_company == '2')
-                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
-                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-                  @endif
-              </form>
-                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' && $tampilkans->status != 'closed')
-                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-                  @endif
-                @endif
+		                    @endif
+		                    </select>
+		                </div>
 
-                </div>
-                </fieldset>
-              </div>
-            </div>
+		                <div class="margin-left-right margin-top">
+		                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
+		                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
+		                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+		                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
+		                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+		                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
+		                  @endif
+		              	  </form>
+		                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
+		                  <!-- <form action="{{url('raise_to_tender')}}" method="POST"> -->
+		                     <!-- {!! csrf_field() !!} -->
+		    			  <!--                <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button> -->
+		                  <!-- </form> -->
+		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+		                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+		                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+		                  @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' && $tampilkans->status != 'closed')
+		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+		                  @endif
+		                </div>
 
-          </div>
+		                </fieldset>
+		              </div>
+		            </div>
+	      </div>
 
           <div class="col-md-6">
-            <div class="box">
+            <div class="box box-solid box-default">
               <div class="box-header with-border">
                 <h3 class="box-title">Tender Process</h3>
               </div>
@@ -709,45 +677,40 @@
           </div>
 
           <div class="col-md-6">
-          <!--Contribute-->
-            <div class="box box-body">
-              <table class="table table-bordered" id="data_Table" width="100%" cellspacing="0">
-                <tr>
-                  <div for="assessment" style="background-color: blue">
-                    <div class="box box-header with-border">
-                      <h3 class="box-title">As Contribute</h3>
-                      <!-- <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                        </button>
-                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                      </div> -->
-                      @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
-                        <button class="btn btn-xs btn-primary margin-bottom float-right" style="width: 100px" id="btn_add_sales" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
-                      @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-                        <button class="btn btn-xs btn-primary margin-bottom float-right" style="width: 100px" id="btn_add_sales" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
-                      @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-                        <button class="btn btn-xs btn-primary margin-bottom float-right" style="width: 100px" id="btn_add_sales" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
-                      </div>
-                    
-                    @endif
-                  </div>
-                </tr>
-                 @foreach($tampilkana as $data)
-                 @if($data->name != $sd_id->name)
-                  <tr>
-                    <td>
-                      <i class="fa fa-user"></i>&nbsp {{ $data->name }}
-                      @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->name == $tampilkans->name)  
-                      <a href="{{ url('delete_contribute_sd?id_sd='. $data->id_sd) }}"><button class="transparant pull-right" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')"><i class="fa fa-times fa-lg" style="color: red"></i></button></a>
-                      @endif
-                    </td>
-                  </tr>
-                 @endif
-                 @endforeach
-              </table>
-            </div>
+          		<!--Contribute-->
+	            <div class="box box-body">
+	              <table class="table table-bordered" id="data_Table" width="100%" cellspacing="0">
+	                <tr>
+	                  <div for="assessment" style="background-color: blue">
+	                    <div class="box box-header with-border">
+	                      <h3 class="box-title">As Contribute</h3>
+	                      @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
+	                        <button class="btn btn-xs btn-primary margin-bottom float-right" style="width: 100px" id="btn_add_sales" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
+	                      @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+	                        <button class="btn btn-xs btn-primary margin-bottom float-right" style="width: 100px" id="btn_add_sales" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
+	                      @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+	                        <button class="btn btn-xs btn-primary margin-bottom float-right" style="width: 100px" id="btn_add_sales" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
+	                      </div>
+	                    
+	                    @endif
+	                  </div>
+	                </tr>
+	                 @foreach($tampilkana as $data)
+	                 @if($data->name != $sd_id->name)
+	                  <tr>
+	                    <td>
+	                      <i class="fa fa-user"></i>&nbsp {{ $data->name }}
+	                      @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->name == $tampilkans->name)  
+	                      <a href="{{ url('delete_contribute_sd?id_sd='. $data->id_sd) }}"><button class="transparant pull-right" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')"><i class="fa fa-times fa-lg" style="color: red"></i></button></a>
+	                      @endif
+	                    </td>
+	                  </tr>
+	                 @endif
+	                 @endforeach
+	              </table>
+	            </div>
           </div>
-        @endif
+    	@endif
 
 
         <div class="col-md-6">
@@ -792,34 +755,34 @@
           </div>
 
           <div class="col-md-12">
-           <div class="col-md-6">
-              <!--Contribute-->
-            <div class="card-mb-3">
-              <table  class="table table-bordered" id="data_Table" width="100%" cellspacing="0">
-                <tr>
-                  <div for="assessment" style="background-color: blue">
-                    <b class="float-left"><legend>Contribute</legend></b>
-                    @if(Auth::User()->name == $pmo_id->name || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $tampilkan->result == 'WIN' && $tampilkan->status_sho == 'PMO' || Auth::User()->id_position == 'DIRECTOR' && $tampilkan->result == 'WIN' && $tampilkan->status_sho == 'PMO')
-                    <button class="btn btn-primary-sd margin-bottom float-right" id="btn_add_sales" data-target="#contributeModalPMO" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
-                    @endif
-                  </div>
-                </tr>
-                @foreach($pmo_contribute as $data)
-                    @if($data->name != $pmo_id->name)
-                    <tr>
-                      <td>
-                        <i class="fa fa-user"></i>&nbsp{{ $data->name }}
-                        @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO' || Auth::User()->name == $pmo_id->name)  
-                        <a href="{{ url('delete_contribute_pmo', $data->id_pmo) }}"><button class="transparant pull-right" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')"><i class="fa fa-times fa-lg" style="color: red"></i></button>
-                        @endif
-                      </td>
-                    </tr>
-                    @endif
-                @endforeach
-              </table>
-            </div>
+	           <div class="col-md-6">
+	              <!--Contribute-->
+	            <div class="card-mb-3">
+	                <table  class="table table-bordered" id="data_Table" width="100%" cellspacing="0">
+		                <tr>
+		                  <div for="assessment" style="background-color: blue">
+		                    <b class="float-left"><legend>Contribute</legend></b>
+		                    @if(Auth::User()->name == $pmo_id->name || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $tampilkan->result == 'WIN' && $tampilkan->status_sho == 'PMO' || Auth::User()->id_position == 'DIRECTOR' && $tampilkan->result == 'WIN' && $tampilkan->status_sho == 'PMO')
+		                    <button class="btn btn-primary-sd margin-bottom float-right" id="btn_add_sales" data-target="#contributeModalPMO" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
+		                    @endif
+		                  </div>
+		                </tr>
+		                @foreach($pmo_contribute as $data)
+		                    @if($data->name != $pmo_id->name)
+		                    <tr>
+		                      <td>
+		                        <i class="fa fa-user"></i>&nbsp{{ $data->name }}
+		                        @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO' || Auth::User()->name == $pmo_id->name)  
+		                        <a href="{{ url('delete_contribute_pmo', $data->id_pmo) }}"><button class="transparant pull-right" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')"><i class="fa fa-times fa-lg" style="color: red"></i></button>
+		                        @endif
+		                      </td>
+		                    </tr>
+		                    @endif
+		                @endforeach
+	                </table>
+	            </div>
+	           </div>
           </div>
-        </div>
         @endif
 
         @if(Auth::User()->id_position == 'ENGINEER MANAGER' || Auth::User()->id_position == 'ENGINEER STAFF' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $tampilkan->result == 'WIN' && $tampilkan->status_sho == 'PMO' && $tampilkan->status_engineer == 'v' || Auth::User()->id_position == 'DIRECTOR' && $tampilkan->result == 'WIN' && $tampilkan->status_sho == 'PMO' && $tampilkan->status_engineer == 'v')
@@ -893,68 +856,68 @@
           @endif
 
           
-          <div class="col-md-12">
-          @if($tampilkanc->project_class != 'blanket')
-          <tooltip title="Please Submit TP For Fill this Form!" style="font-size: 14px" placement="top">
-          <fieldset disabled="">
-          <div class="box" id="purchase-order" style="display: none">
-          </tooltip>
-          @else
-          <fieldset >
-          <div class="box" id="purchase-order">
-          @endif
-            <div class="box-header with-border">
-              <h3 class="box-title">Purchase Order Customer</h3>
-                <div class="box-tools pull-right">
-                  @if($tampilkanc->project_class != 'blanket')
-                  <button type="button" class="btn btn-primary" style="width: 150px" data-target="#modal_add_po" data-toggle="modal"><i class="fa fa-plus"></i> Purchase Order</button>
-                  </button>
-                  @else
-                  <button type="button" class="btn btn-primary" style="width: 150px" disabled><i class="fa fa-plus"></i> Purchase Order</button>
-                  </button>
-                  @endif
-                </div>
-            </div>
-           
-            <div class="box-body">
-            <div class="table-responsive">
-              <table class="table table-bordered display nowrap" id="data_po" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th width="5%"><center>No</center></th>
-                    <th><center>Date</center></th>
-                    <th><center>No. Purchase Order</center></th>
-                    <th><center>Nominal IDR</center></th>
-                    <th><center>Keterangan</center></th>
-                    <th><center>Action</center></th>
-                  </tr>
-                </thead>
-                <tbody id="products-list" name="products-list" class="purchase">
-                  @foreach($tampilkan_po as $data)
-                  <tr>
-                    <td></td>
-                    <td><center>{{$data->date}}</center></td>
-                    <td><center>{{$data->no_po}}</center></td>
-                    <td class="money"><center>{{$data->nominal}}</center></td>
-                    <td><center>{{$data->note}}</center></td>
-                    <td><center><button class="btn btn-sm btn-warning" style="width: 30px;margin-right: 10px" data-target="#modal_edit_po" data-toggle="modal" onclick="edit_po('{{$data->id_tb_po_cus}}','{{$data->no_po}}','{{$data->nominal}}','{{$data->date}}','{{$data->note}}')"><i class="fa fa-pencil"></i></button><a href="{{url('delete_po_customer',$data->id_tb_po_cus)}}"><button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure want to delete this data?')" style="width: 30px"><i class="fa fa-trash"></i></button></a></center></td>
-                  </tr>
-                  @endforeach
-                </tbody>
-                <tfoot>
-                  <td colspan="3"><center>Total Nominal</center></td>
-                  <th></th>
-                  <td colspan="2"></td>
-                </tfoot>
-               </table>
-	          </div>  
-	         </div>
-	        </div>
-          </fieldset>
-          </div>
+	    <div class="col-md-12">
+	          @if($tampilkanc->project_class != 'blanket')
+	          <tooltip title="Please Submit TP For Fill this Form!" style="font-size: 14px" placement="top">
+	          <fieldset disabled="">
+	          <div class="box" id="purchase-order" style="display: none">
+	          </tooltip>
+	          @else
+	          <fieldset >
+			      <div class="box" id="purchase-order">
+			          @endif
+				      <div class="box-header with-border">
+				          <h3 class="box-title">Purchase Order Customer</h3>
+				            <div class="box-tools pull-right">
+				              @if($tampilkanc->project_class != 'blanket')
+				              <button type="button" class="btn btn-primary" style="width: 150px" data-target="#modal_add_po" data-toggle="modal"><i class="fa fa-plus"></i> Purchase Order</button>
+				              </button>
+				              @else
+				              <button type="button" class="btn btn-primary" style="width: 150px" disabled><i class="fa fa-plus"></i> Purchase Order</button>
+				              </button>
+				              @endif
+				            </div>
+				      </div>
+			       
+				      <div class="box-body">
+				      	  <div class="table-responsive">
+					          <table class="table table-bordered display nowrap" id="data_po" width="100%" cellspacing="0">
+					            <thead>
+					              <tr>
+					                <th width="5%"><center>No</center></th>
+					                <th><center>Date</center></th>
+					                <th><center>No. Purchase Order</center></th>
+					                <th><center>Nominal IDR</center></th>
+					                <th><center>Keterangan</center></th>
+					                <th><center>Action</center></th>
+					              </tr>
+					            </thead>
+					            <tbody id="products-list" name="products-list" class="purchase">
+					              @foreach($tampilkan_po as $data)
+					              <tr>
+					                <td></td>
+					                <td><center>{{$data->date}}</center></td>
+					                <td><center>{{$data->no_po}}</center></td>
+					                <td class="money"><center>{{$data->nominal}}</center></td>
+					                <td><center>{{$data->note}}</center></td>
+					                <td><center><button class="btn btn-sm btn-warning" style="width: 30px;margin-right: 10px" data-target="#modal_edit_po" data-toggle="modal" onclick="edit_po('{{$data->id_tb_po_cus}}','{{$data->no_po}}','{{$data->nominal}}','{{$data->date}}','{{$data->note}}')"><i class="fa fa-pencil"></i></button><a href="{{url('delete_po_customer',$data->id_tb_po_cus)}}"><button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure want to delete this data?')" style="width: 30px"><i class="fa fa-trash"></i></button></a></center></td>
+					              </tr>
+					              @endforeach
+					            </tbody>
+					            <tfoot>
+					              <td colspan="3"><center>Total Nominal</center></td>
+					              <th></th>
+					              <td colspan="2"></td>
+					            </tfoot>
+					          </table>
+				          </div>  
+				      </div>
+			      </div>
+	          </fieldset>
+	    </div>
           
 
-          <div class="col-md-12">
+        <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
             <h3 class="box-title">Change Log</h3>
@@ -1000,8 +963,6 @@
             </div>  
             </div>
           </div>
-
-         
         </div>
 
  <!-- Modal PO Blanket-->
@@ -1885,6 +1846,11 @@
           }else if($(this).val() == 'normal'){
             $("#tahun_jumlah").css("display", "none");
             $("#total_price_deal").css("display", "none");
+          }else{
+          	$("#tahun_jumlah").css("display", "none");
+            $("#total_price_deal").css("display", "none");
+            $("#price_deal").css("display", "none");
+            $("#purchase-order").css("display", "none");
           }
         console.log($(this).val());
         });
