@@ -451,14 +451,13 @@
     $('#customer_quote').select2();
     $("#backdate_num").select2();
     $("#customer_quote_backdate").select2();
-    function edit_quote(quote_number,to,attention,title,project,description, project_id,note) {
+    function edit_quote(quote_number,customer_legal_name,attention,title,project,description, project_id,note) {
       $('#modalEdit').modal('show');
       $('#edit_quote_number').val(quote_number);
-      if (to == "null") {
-        '';
+      if (customer_legal_name == "null") {
+        ''
       } else {
-        $('#edit_to').val(to);
-
+        $('#edit_to').val(customer_legal_name);
       }
       if (attention == "null") {
         '';
@@ -508,7 +507,7 @@
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.nik) {
-                var x = '"' + data.quote_number + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
+                var x = '"' + data.quote_number + '","' + data.customer_legal_name + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_quote(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
@@ -525,7 +524,7 @@
           { "data": "type_of_letter" },
           { "data": "month" },
           { "data": "date" },
-          { "data": "to" },
+          { "data": "customer_legal_name" },
           { "data": "attention"},
           { "data": "title" },
           { "data": "project" },

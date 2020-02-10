@@ -212,7 +212,8 @@ class QuoteController extends Controller
                         ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         // ->orderBy('tb_quote.created_at', 'desc')
                         ->where('status_backdate', 'A')
-                        ->orWhere('status_backdate', 'F')
+                        // ->where('status_backdate', '!=', 'T')
+                        // ->orWhere('status_backdate', 'F')
                         ->where('date','like',$tahun."%")
                         ->get());
     }
