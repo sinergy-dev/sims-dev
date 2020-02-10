@@ -49,6 +49,8 @@ class QuoteController extends Controller
 
         $customer = TB_Contact::select('customer_legal_name', 'id_customer')->get();
 
+        $status_quote = Quote::select('status_backdate')->where('status_backdate', '!=', 'T')->groupBy('status_backdate')->get();
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -193,13 +195,53 @@ class QuoteController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer'));
+        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote'));
 	}
 
 	public function create()
 	{
 
 	}
+
+    public function getdataquote(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => Quote::join('users', 'users.nik', '=', 'tb_quote.nik')
+                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        // ->orderBy('tb_quote.created_at', 'desc')
+                        ->where('status_backdate', 'A')
+                        // ->where('status_backdate', '!=', 'T')
+                        // ->orWhere('status_backdate', 'F')
+                        ->where('date','like',$tahun."%")
+                        ->get());
+    }
+
+    public function getdatabackdate(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => Quote::join('users', 'users.nik', '=', 'tb_quote.nik')
+                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        ->where('status_backdate', 'F')
+                        ->where('date','like',$tahun."%")
+                        ->get());
+    }
+
+
+    public function getfilteryear(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => Quote::join('users', 'users.nik', '=', 'tb_quote.nik')
+                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        ->where('status_backdate', 'A')
+                        ->where('date','like',$request->data."%")
+                        ->get());
+    }
 
     public function store(Request $request)
     {
@@ -282,7 +324,7 @@ class QuoteController extends Controller
                         if ($i == 0) {
                             $tambah->id_quote = $nom->id_quote+1;
                             $tambah->quote_number = $no;
-                            $tambah->status_backdate = NULL;
+                            $tambah->status_backdate = 'A';
                         } else{
                             $tambah->id_quote = $nom->id_quote+2;
                             $tambah->quote_number = $no9;
@@ -372,6 +414,7 @@ class QuoteController extends Controller
                     $tambah->division = $request['division'];
                     $tambah->project_id = $request['project_id'];
                     $tambah->project_type = $request['project_type'];
+                    $tambah->status_backdate = 'A';
                     $tambah->save();
 
                     return redirect('quote')->with('success', 'Create Quote Number Successfully!');
@@ -436,6 +479,7 @@ class QuoteController extends Controller
             $tambah->division = $request['division'];
             $tambah->project_id = $request['project_id'];
             $tambah->project_type = $request['project_type'];
+            $tambah->status_backdate = 'A';
             $tambah->save();
 
             return redirect('quote')->with('success', 'Create Quote Number Successfully!');

@@ -256,6 +256,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('delete', 'QuoteController@destroy_quote');
 	Route::post('/store_quotebackdate', 'QuoteController@store_backdate');
 	Route::get('/downloadExcelQuote', 'QuoteController@donwloadExcelQuote');
+	Route::get('/getdataquote', 'QuoteController@getdataquote');
+	Route::get('/getdatabackdatequote', 'QuoteController@getdatabackdate');
+	Route::get('/getfilteryearquote', 'QuoteController@getfilteryear');
 
 	Route::get('/delete_detail_sho/{id_transaction}', 'SHOController@destroy_detail');
 
