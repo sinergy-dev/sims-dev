@@ -10,8 +10,10 @@ use App\Cuti;
 use App\Task;
 use App\User;
 use App\CutiDetil;
-use App\Notifications\CutiKaryawan;
-use Notification;
+// use App\Notifications\CutiKaryawan;
+use App\Mail\CutiKaryawan;
+use Mail;
+// use Notification;
 use Excel;
 use GuzzleHttp\Client;
 use PDF;
@@ -315,6 +317,7 @@ class HRGAController extends Controller
                     ->whereMonth('tb_cuti.date_req',date('m'))
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
+                    ->where('id_territory', $ter)
                     ->groupby('nik')
                     ->get();
             } elseif($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG'){
@@ -340,6 +343,8 @@ class HRGAController extends Controller
                     ->whereMonth('tb_cuti.date_req',date('m'))
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DPG')
                     ->groupby('nik')
                     ->get();
             } elseif($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER'){
@@ -366,6 +371,8 @@ class HRGAController extends Controller
                     ->whereMonth('tb_cuti.date_req',date('m'))
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DVG')
                     ->groupby('nik')
                     ->get();
 
@@ -398,6 +405,7 @@ class HRGAController extends Controller
                     ->whereMonth('tb_cuti.date_req',date('m'))
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','PMO')
                     ->groupby('nik')
                     ->get();
             } else{
@@ -423,6 +431,7 @@ class HRGAController extends Controller
                     ->whereMonth('tb_cuti.date_req',date('m'))
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
+                    ->where('users.nik',$nik)
                     ->groupby('nik')
                     ->get();
 
@@ -455,6 +464,7 @@ class HRGAController extends Controller
                 ->whereMonth('tb_cuti.date_req',date('m'))
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
+                ->where('users.id_division','TECHNICAL PRESALES','users.id_territory')
                 ->groupby('nik')
                 ->get();
         }elseif($div == 'FINANCE' && $pos == 'MANAGER'){
@@ -479,6 +489,7 @@ class HRGAController extends Controller
                 ->whereYear('tb_cuti.date_req','2020')
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
+                ->where('users.id_division','FINANCE')
                 ->groupby('nik')
                 ->get();
         }elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF'){
@@ -535,14 +546,14 @@ class HRGAController extends Controller
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
 	            ->join('tb_position','tb_position.id_position','=','users.id_position')
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
-	            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email')
+	            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','tahun_cuti')
 	            ->groupby('tb_cuti.nik')
 	            ->get();
 
 	        $cuti_list = DB::table('users')
 	            ->join('tb_position','tb_position.id_position','=','users.id_position')
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
-	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email')
+	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','tahun_cuti')
 	            ->whereNotIn('nik',function($query) { 
 	            	$query->select('nik')->from('tb_cuti');
 	            })
@@ -818,7 +829,20 @@ class HRGAController extends Controller
         	
     		$kirim = User::where('email', $nik_kirim->email)->get();
 
-    		Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
+    		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
+            $name_cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->select('users.name')
+                ->where('id_cuti', $id_cuti)->first();
+
+            $hari = DB::table('tb_cuti')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status')
+                    ->groupby('tb_cuti_detail.id_cuti')
+                    ->where('tb_cuti.id_cuti', $id_cuti)
+                    ->first();
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari));
             
         }else{
             if ($div == 'HR') {
@@ -833,9 +857,22 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
         	
-    		$kirim = User::where('email', $nik_kirim->email)->get();
+    		$kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
 
-    		Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
+    		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
+            $name_cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->select('users.name')
+                ->where('id_cuti', $id_cuti)->first();
+
+            $hari = DB::table('tb_cuti')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status')
+                    ->groupby('tb_cuti_detail.id_cuti')
+                    ->where('tb_cuti.id_cuti', $id_cuti)
+                    ->first();
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari));
         	
         }
 
@@ -887,7 +924,21 @@ class HRGAController extends Controller
         $kirim = User::where('email',$nik_kirim->email)
                         ->get();
 
-        Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
+        $name_cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->select('users.name')
+                ->where('id_cuti', $id_cuti)->first();
+
+        $hari = DB::table('tb_cuti')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status')
+                ->groupby('tb_cuti_detail.id_cuti')
+                ->where('tb_cuti.id_cuti', $id_cuti)
+                ->first();
+
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari));        
+
+        // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
         return redirect()->back();
     }

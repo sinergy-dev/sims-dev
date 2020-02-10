@@ -60,7 +60,7 @@
   </section>
 
   <section class="content">
-    <div class="callout callout-info" style="margin-top: 30px!important;">
+    <div class="callout callout-success" style="margin-top: 30px!important;background-color:">
 	    <h4>(<i class="fa fa-info"></i>) <b>Lead id :</b></h4>
 	    <h4>{{$tampilkan->lead_id}} - {{$tampilkan->opp_name}}</h4>
 	</div>

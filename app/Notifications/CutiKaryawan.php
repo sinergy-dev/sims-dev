@@ -58,8 +58,8 @@ class CutiKaryawan extends Notification
 
         if ($this->status == 'v') {
             return (new MailMessage)
-                    ->line('Cuti Kamu di Approved Si Bos!.')
-                    ->line('Gunakan cuti kamu selama '. $hari->days .' hari sebaik mungkin ya '.$cuti->name.' !!' )
+                    ->line('Hore Cuti '.$cuti->name.' sudah di Approve si Bos!.')
+                    ->line('Gunakan cuti kamu selama '. $hari->days .' hari sebaik mungkin ya ')
                     ->line('Untuk lihat detail Klik link di bawah ini')
                     ->action('Perizinan Cuti', url('/show_cuti'))
                     ->line('Thank you for using our application!');

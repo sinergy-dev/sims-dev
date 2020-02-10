@@ -169,7 +169,7 @@
                         </tr>
                         <tr>
                           @if(Auth::User()->id_position == 'HR MANAGER')
-                            <th>{{$tahun_lalu}}</th>
+                            <th>{{$tahun_lalu}}<small>(*s/d 31 maret {{$tahun_ini}})</small></th>
                             <th>{{$tahun_ini}}</th>
                           @else  
                             <th></th>
