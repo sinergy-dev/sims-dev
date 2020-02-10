@@ -49,6 +49,8 @@ class QuoteController extends Controller
 
         $customer = TB_Contact::select('customer_legal_name', 'id_customer')->get();
 
+        $status_quote = Quote::select('status_backdate')->where('status_backdate', '!=', 'T')->groupBy('status_backdate')->get();
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -193,7 +195,7 @@ class QuoteController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer'));
+        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote'));
 	}
 
 	public function create()
@@ -210,6 +212,7 @@ class QuoteController extends Controller
                         ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         // ->orderBy('tb_quote.created_at', 'desc')
                         ->where('status_backdate', 'A')
+                        ->orWhere('status_backdate', 'F')
                         ->where('date','like',$tahun."%")
                         ->get());
     }
@@ -223,6 +226,19 @@ class QuoteController extends Controller
                         ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         ->where('status_backdate', 'F')
                         ->where('date','like',$tahun."%")
+                        ->get());
+    }
+
+
+    public function getfilteryear(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => Quote::join('users', 'users.nik', '=', 'tb_quote.nik')
+                        ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        ->where('status_backdate', 'A')
+                        ->where('date','like',$request->data."%")
                         ->get());
     }
 

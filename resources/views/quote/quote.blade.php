@@ -562,27 +562,10 @@
       $('#data_all').DataTable().ajax.url("{{url('getdataquote')}}?_=").load();
     }
 
-    
+    /*$("#year_filter").change(function(){
+      $('#data_all').DataTable().ajax.url("{{url('getfilteryearquote')}}?data=" + this.value).load();
+    });*/
 
-    /*$('#data_all').DataTable( {
-      "order": [[ 4, "desc" ]],
-      fixedColumns:   {
-          leftColumns: 1
-      },
-      scrollX:true,
-      pageLength: 20,
-    });
-
-    $('#data_backdate').DataTable({
-      "order": [[ 0, "desc" ]],
-      scrollX:true,
-      // scrollCollapse: true,
-      "pageLength": 20,
-      fixedColumns:   {
-        leftColumns: 1,
-      }
-    });
-*/
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
       $("#alert").slideUp(300);
     });
