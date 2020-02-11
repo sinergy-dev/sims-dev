@@ -59,11 +59,23 @@
       <div class="box-body">
         <div class="nav-tabs-custom">
           <ul class="nav nav-tabs" id="myTab">
-            <li class="nav-item active">
+            <!-- <li class="nav-item active">
                 <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changetabPaneAll()" >All</a>
             <li class="nav-item">
                 <a class="nav-link" id="backdate-tab" data-toggle="tab" href="#backdate" role="tab" aria-controls="backdate" aria-selected="true" onclick="changetabPane()" >Backdate</a>
-            </li>
+            </li> -->
+
+            @foreach($status_quote as $data)
+                @if($data->status_backdate == 'A')
+                    <li class="nav-item active">
+                        <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status_backdate }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status_backdate}}')">All</a>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status_backdate }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status_backdate}}')"> Backdate
+                @endif
+                        </a>
+                    </li>
+            @endforeach
           </ul>
 
           <div class="tab-content">
@@ -553,17 +565,13 @@
       })
     }
 
-    function changetabPane() {
-      $('#data_all').DataTable().ajax.url("{{url('getdatabackdatequote')}}?data=").load();
+    function changetabPane(status_backdate) {
+      $('#data_all').DataTable().ajax.url("{{url('getfilteryearquote')}}?status=" + status_backdate + "&year=" + $('#year_filter').val()).load();
     }
 
-    function changetabPaneAll() {
-      $('#data_all').DataTable().ajax.url("{{url('getdataquote')}}?_=").load();
-    }
-
-    /*$("#year_filter").change(function(){
-      $('#data_all').DataTable().ajax.url("{{url('getfilteryearquote')}}?data=" + this.value).load();
-    });*/
+    $("#year_filter").change(function(){
+      $('#data_all').DataTable().ajax.url("{{url('getfilteryearquote')}}?status=A&year=" + this.value).load();
+    });
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
       $("#alert").slideUp(300);
