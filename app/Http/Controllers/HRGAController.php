@@ -289,7 +289,9 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $cek_cuti = User::select('nik','cuti','status_karyawan')->where('nik',$nik)->first();
+        $cek_cuti = User::select('nik','cuti','cuti2','status_karyawan')->where('nik',$nik)->first();
+
+        $total_cuti = $cek_cuti->cuti + $cek_cuti->cuti2;
 
         $year = date('Y');
 
@@ -725,7 +727,7 @@ class HRGAController extends Controller
                             ->get();
         }
 
-        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu','cuti2'));
+        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','total_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu','cuti2'));
     }
 
     public function detil_cuti(Request $request)
@@ -994,32 +996,30 @@ class HRGAController extends Controller
 
             foreach ($nik as $data) {
                 if ($request['pengurangan_cuti'] == NULL) {
+
                     $update = User::where('nik',$data->nik)->first();
                     if ($data->status_karyawan == 'cuti') {
                         if ($data->date_of_entrys < 365) {
                             $update->cuti = NULL;
                         }else{
                             $update->cuti = $request['set_cuti'];
-                        }
-                        
+                        } 
                     }else{
                         $update->cuti = NULL;
                     }
                     $update->update();
                 }else{
                     $update = User::where('nik',$data->nik)->first();
-                    if ($data->status_karyawan == 'cuti') {
-                        if ($data->date_of_entrys < 365) {
-                            $update->cuti = NULL;
-                        }else{
-                            $update->cuti = $request['set_cuti'] - $request['pengurangan_cuti'];
-                        }
-                        
+                    if ($request['set_cuti'] == NULL) {
+                        $update->cuti = $nik->cuti - $request['pengurangan_cuti'];
                     }else{
-                        $update->cuti = NULL;
+                        if ($data->status_karyawan == 'cuti') {
+                            $update->cuti = $request['set_cuti'] - $request['pengurangan_cuti'];
+                        }else{
+                            $update->cuti = NULL;
+                        }
                     }
                     $update->update();
-
                 }
             }
         }else{
@@ -1029,7 +1029,14 @@ class HRGAController extends Controller
                 $update->update();
             }else{
                 $update = User::where('nik',$request->users)->first();
-                $update->cuti = $request['set_cuti'] - $request['pengurangan_cuti'];
+                if ($request['set_cuti'] == NULL) {
+
+                    $update->cuti = $nik->cuti - $request['pengurangan_cuti'];
+                }else{
+                    
+                    $update->cuti = $request['set_cuti'] - $request['pengurangan_cuti'];
+                }
+                
                 $update->update();
             }
             
@@ -1137,14 +1144,14 @@ class HRGAController extends Controller
 
     public function getCutiUsers(Request $request){
 
-        $getcuti = User::select('nik',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'cuti','date_of_entry')->where('nik',$request->nik)->get();
+        $getcuti = User::select('nik',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),DB::raw('(CASE WHEN (cuti IS NULL) THEN 0 ELSE cuti END) as cuti'),DB::raw('(CASE WHEN (cuti2 IS NULL) THEN 0 ELSE cuti2 END) as cuti2'),DB::raw('sum(cuti + cuti2) AS total_cuti'),'date_of_entry')->where('nik',$request->nik)->groupby('users.nik')->get();
 
         return $getcuti;
     }
 
     public function getCutiAuth(Request $request){
 
-        $getcuti = User::select('nik','name',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),DB::raw('(CASE WHEN (cuti IS NULL) THEN 0 ELSE cuti END) as cuti'),'date_of_entry','gambar')->where('nik',Auth::User()->nik)->get();
+        $getcuti = User::select('nik','name',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),DB::raw('(CASE WHEN (cuti IS NULL) THEN 0 ELSE cuti END) as cuti'),DB::raw('(CASE WHEN (cuti2 IS NULL) THEN 0 ELSE cuti2 END) as cuti2'),DB::raw('sum(cuti + cuti2) AS total_cuti'),'date_of_entry','gambar')->where('nik',Auth::User()->nik)->groupby('users.nik')->get();
 
         return $getcuti;
     }

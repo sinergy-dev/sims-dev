@@ -30,6 +30,23 @@ class Kernel extends ConsoleKernel
             ->weekly()
             ->thursdays()
             ->at('07:00');
+
+        $schedule->call(function() {
+            if (date("m") == 3 && date("j") == 31) {
+                Artisan::call('CutiRestart:cutirestart');
+            }
+            // syslog(1, 'helooo');
+        })
+        ->monthly()
+        ->at('01:00');
+
+        $schedule->call(function() {
+            if (date("m") == 1 && date("j") == 1) {
+                Artisan::call('ResetAwalTahun:resetawaltahun');
+            }
+            // syslog(1, 'helooo');
+        })->yearly()
+        ->at('01:00');
         // $schedule->call(function() {
         //     syslog(1, 'helooo');
         // })->everyMinute();

@@ -95,10 +95,10 @@
     <div class="box">
       <div class="box-header">
           <div class="pull-right">
-          <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
           @if($cek_cuti->status_karyawan == 'cuti')
-            @if($cek_cuti->cuti > 0)
+            @if($total_cuti > 0)
             <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+            <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
             @else
             <button type="button" class="btn btn-sm btn-primary pull-right disabled" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
             @endif
@@ -860,7 +860,7 @@
         type:"GET",
         url:"getCutiAuth",
         success: function(result){
-          if (result[0].cuti == 0 || result[0].cuti == null) {
+          if (result[0].total_cuti == 0 || result[0].total_cuti == null) {
             swal({
               title: "Hello "+result[0].name+" !!!",
               text: "Cuti kamu Habis Sorry Ya ga bisa cuti dulu !! ",
@@ -873,7 +873,7 @@
           }else{
             swal({
               title: "Hello "+result[0].name+" !!!",
-              text: "Cuti kamu tahun ini tersisa " + result[0].cuti + " Kamu Mau menggunakan Cuti?",
+              text: "Cuti kamu tahun ini tersisa " + result[0].total_cuti + " Kamu Mau menggunakan Cuti?",
               confirmButtonColor: "#22542f",
               confirmButtonText: "OK!",
               closeOnConfirm: true,
@@ -1371,7 +1371,7 @@
           success: function(result){
             $.each(result, function(key, value){
               $("#lama_kerja").val(Math.floor(value.date_of_entrys / 365) + ' Tahun ' + value.date_of_entrys % 365 +' Hari');
-              $("#current_cuti").val(value.cuti);
+              $("#current_cuti").val(value.total_cuti);
               $("#tahun_masuk").val(moment(value.date_of_entry).format('ll'));
             });
           },
@@ -1388,11 +1388,11 @@
           },
           success: function(result){
             $.each(result, function(key, value){
-              if (value.cuti == null) {
+              if (value.total_cuti == null) {
                 $("#sisa_cuti").text(0).style.color = "#ff0000";
               }else{
-                $("#sisa_cuti").text(value.cuti);
-                if (value.cuti > 5) {
+                $("#sisa_cuti").text(value.total_cuti);
+                if (value.total_cuti > 5) {
                   document.getElementById("sisa_cuti").style.color = "blue";
                 }else{
                   document.getElementById("sisa_cuti").style.color = "#ff0000";
