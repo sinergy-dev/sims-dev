@@ -41,13 +41,13 @@ class ResetAwalTahun extends Command
     public function handle()
     {
         //
-        $reset = User::select('nik','name')->get();
+        $reset = User::select('nik','name')->where('status_karyawan','cuti')->get();
 
         foreach ($reset as $data) {
             // print_r($data->name . $data->nik . "\n");
             
             $update = User::where('nik',$data->nik)->first();
-            $data->cuti2 = 12 - 4;
+            $data->cuti2 = 8;
             $data->update();
 
         }

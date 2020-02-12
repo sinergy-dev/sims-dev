@@ -45,7 +45,15 @@ class Kernel extends ConsoleKernel
                 Artisan::call('ResetAwalTahun:resetawaltahun');
             }
             // syslog(1, 'helooo');
-        })->yearly()
+        })->monthly()
+        ->at('01:00');
+
+        $schedule->call(function() {
+            if (date("m") == 12 && date("j") == 31) {
+                Artisan::call('HandoverCuti:handovercuti');
+            }
+            // syslog(1, 'helooo');
+        })->monthly()
         ->at('01:00');
         // $schedule->call(function() {
         //     syslog(1, 'helooo');
