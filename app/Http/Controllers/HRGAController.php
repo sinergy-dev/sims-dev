@@ -829,8 +829,8 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
         	
-    		// $kirim = User::where('email', $nik_kirim->email)->first()->email;
-            $kirim = User::where('email', 'ladinar@sinergy.co.id')->first()->email;
+    		$kirim = User::where('email', $nik_kirim->email)->first()->email;
+            // $kirim = User::where('email', 'ladinar@sinergy.co.id')->first()->email;
 
     		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
             $name_cuti = DB::table('tb_cuti')
@@ -860,8 +860,8 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
         	
-    		$kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
-            // $kirim = User::where('email', $nik_kirim->email)->first()->email;
+    		// $kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
+            $kirim = User::where('email', $nik_kirim->email)->first()->email;
 
     		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
             $name_cuti = DB::table('tb_cuti')
@@ -894,11 +894,6 @@ class HRGAController extends Controller
         $pos = $position->id_position; 
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
-
-        $cek_cuti = User::select('cuti','cuti2')->where('nik',$nik)->first();
-
-        $cuti = $cek_cuti->cuti;
-        $cuti2 = $cek_cuti->cuti2;
         
         $id_cuti = $request['id_cuti_detil'];
         $nik = $request['nik_cuti'];
@@ -923,30 +918,23 @@ class HRGAController extends Controller
         $hitung = sizeof($array);
 
         $update_cuti = User::where('nik',$nik)->first();
-        if ($cuti == 0) {
-            $update_cuti->cuti2 = $cuti2 - $hitung;
-        }else{
-            if ($hitung >= $cuti) {
+        
+        if ($hitung >= $update_cuti->cuti) {
+            $ambil2020 = $hitung - $update_cuti->cuti;
 
-                // $update_cuti->cuti = 0;
+            $hasilsisa = $update_cuti->cuti2 - $ambil2020;
 
-                $ambil2020 = $update_cuti->cuti - $hitung;
-                $hasilsisa = $cuti2 - $ambil2020;
-
-                if ($ambil2020 == 0) {
-                    $update_cuti->cuti = $update_cuti->cuti - $hitung;
-                }else{
-                    $update_cuti->cuti = 0;
-                    $update_cuti->cuti2 = $hasilsisa;
-                }
-
-            }else{
-                // $update_cuti->cuti = 0;
+            if ($ambil2020 == 0) {
                 $update_cuti->cuti = $update_cuti->cuti - $hitung;
+            }else{
+                $update_cuti->cuti = 0;
+                $update_cuti->cuti2 = $hasilsisa;
             }
+
+        }else{
+            $update_cuti->cuti = $update_cuti->cuti - $hitung;
         }
         
-        // $update_cuti->cuti = $update_cuti->cuti - $hitung;
         $update_cuti->update();
 
         $getStatus  = Cuti::select('status')->where('id_cuti',$id_cuti)->first();
@@ -968,7 +956,7 @@ class HRGAController extends Controller
                 ->where('tb_cuti.id_cuti', $id_cuti)
                 ->first();
 
-        Mail::to($kirim)->cc('faiqoh@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari));        
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari));        
 
         // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
