@@ -357,8 +357,8 @@
                 </div>
                 @endif 
 
-                @if(Auth::User()->id_position == 'STAFF')  
-                <div class="tab-pane active" id="staff">
+                  @if(Auth::User()->id_position == 'STAFF' || Auth::User()->id_position == 'ENGINEER STAFF')  
+                  <div class="tab-pane active" id="staff">
                   @else
                   <div class="tab-pane" id="staff">
                   @endif
@@ -896,7 +896,15 @@
     // });
 
     var tables = $('#datatables').DataTable();
-    var tablew = $("#datatablew").DataTable();
+    var tablew = $("#datatablew").DataTable({
+      "columnDefs":[
+            {"width": "20%", "targets":0},
+            {"width": "10%", "targets":2},
+            {"width": "10%", "targets":3},
+            {"width": "10%", "targets":4},
+           ],
+        "order": [[ "4", "desc" ]],
+    });
     var table  = $('#datatable').DataTable({
        "columnDefs":[
             {"width": "30%", "targets":0},
