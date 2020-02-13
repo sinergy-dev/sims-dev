@@ -912,7 +912,11 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           }else{
             $("#inputDate").val(result.date_po)
           }
-          $("#inputAmount").val(result.amount_pid)
+          if (result.amount_pid == null) {
+            $("#inputAmount").val(result.amount)
+          }else{
+            $("#inputAmount").val(result.amount_pid)
+          }
           $("#inputNote").val(result.note)
         }
       })
