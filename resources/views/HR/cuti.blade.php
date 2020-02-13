@@ -96,11 +96,11 @@
       <div class="box-header">
           <div class="pull-right">
           @if($cek_cuti->status_karyawan == 'cuti')
-            @if($total_cuti > 0)
+            @if($total_cuti > 0 && $cek_cuti->status == 'v')
             <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
             <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
             @else
-            <button type="button" class="btn btn-sm btn-primary pull-right disabled" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+            <button type="button" class="btn btn-sm btn-primary pull-right disabled disabled-permission" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
             @endif
           @else
           @endif
@@ -1428,6 +1428,10 @@
     {
       window.print();
     }
+
+    $(".disabled-permission").hover(function(){
+      alert('Sorry! kamu belum bisa cuti. [Cuti mu Habis / masih ada yang pending]');
+    })
     
 
   </script>
