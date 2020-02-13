@@ -3671,7 +3671,7 @@ class SALESController extends Controller
                         'tb_quote_msp.project',
                         'tb_quote_msp.quote_number',
                         'users.name',
-                        'tb_quote_msp.amount'
+                        'tb_quote_msp.amount',
                         'tb_pid_request.date_quotation',
                         'tb_pid_request.note',
                         'tb_pid_request.status',
