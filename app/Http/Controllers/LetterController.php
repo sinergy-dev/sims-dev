@@ -290,7 +290,7 @@ class LetterController extends Controller
                         if ($i == 0) {
                             $tambah->no = $nom->no+1;
                             $tambah->no_letter = $no;
-                            $tambah->status = NULL;
+                            $tambah->status = 'A';
                         }else{
                             $tambah->no = $nom->no+2;
                             $tambah->no_letter = $no9;
@@ -368,6 +368,7 @@ class LetterController extends Controller
                     $tambah->project = $request['project'];
                     $tambah->description = $request['description'];
                     $tambah->nik = Auth::User()->nik;
+                    $tambah->status = 'A';
                     // $tambah->from = $request['from'];
                     $tambah->division = $request['division'];
                     $tambah->project_id = $request['project_id'];
@@ -432,6 +433,7 @@ class LetterController extends Controller
             $tambah->description = $request['description'];
             // $tambah->from = $request['from'];
             $tambah->nik = Auth::User()->nik;
+            $tambah->status = 'A';
             $tambah->division = $request['division'];
             $tambah->project_id = $request['project_id'];
             $tambah->save();
