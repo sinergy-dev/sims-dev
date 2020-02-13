@@ -459,7 +459,13 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                               {{$pids->date_po}}
                               @endif
                             </td>
-                            <td><i class="money">{{$pids->amount_pid}}</i></td>
+                            <td>
+                              @if($pids->amount_pid == '')
+                              <i class="money">{{$pids->amount_pid}}</i>
+                              @else
+                              <i class="money">{{$pids->amount}}</i>
+                              @endif
+                            </td>
                             <td>{{$pids->note}}</td>
                             <td>
                               <button class="btn btn-xs btn-primary" data-target="#showRequestProjectID" style="width: 100%" data-toggle="modal" onclick="acceptProjectID('{{$pids->id_pid}}')">Show</button>
