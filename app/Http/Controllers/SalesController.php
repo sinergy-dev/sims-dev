@@ -4375,11 +4375,8 @@ class SALESController extends Controller
         $id_project = $request['id_pro'];
 
         $update = SalesProject::where('id_pro', $id_project)->first();
-        if (Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'PM') {
-            $update->progres = $request['status'];
-        }else{
+        $update->progres = $request['status'];
 
-        }
         $update->update();//
 
         return redirect('salesproject')->with('warning', 'Update Status Successfully!');;
