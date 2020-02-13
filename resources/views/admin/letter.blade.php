@@ -5,7 +5,7 @@
   		overflow: hidden;
 	}
 
-	.data tr:nth-child(1){
+	/*.data tr:nth-child(1){
 	  counter-reset: rowNumber;
 	  }
 	.data tr {
@@ -16,7 +16,7 @@
 	      min-width: 1em;
 	      margin-left: 1.5em;
 	      text-align: center;
-	}
+	}*/
 </style>
 <section class="content-header">
   <h1>
@@ -52,6 +52,14 @@
 
   <div class="box">
     <div class="box-header with-border">
+
+        <div class="pull-left">
+          <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+          <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
+              <option value="2020">&#xf073 &nbsp2020</option>
+              <option value="2019">&#xf073 &nbsp2019</option>
+          </select>
+        </div>
       
         <div class="pull-right">
           <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 100px; color: white"><i class="fa fa-plus"> </i>&nbsp Letter</button>
@@ -68,18 +76,26 @@
     	<div class="col-md-12">
 	      <div class="nav-tabs-custom">
 	        <ul class="nav nav-tabs" id="myTab">
-	          <li class="active"><a href="#tab_1" data-toggle="tab">All</a></li>
-	          <li><a href="#tab_2" data-toggle="tab">Backdate</a></li>
+	          @foreach($status_letter as $data)
+                @if($data->status == 'A')
+                    <li class="nav-item active">
+                        <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')">All</a>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')"> Backdate
+                @endif
+                        </a>
+                    </li>
+            @endforeach
 	        </ul>
 	        
 	        <div class="tab-content">
 
-	          <div class="tab-pane active" id="tab_1">
+	          <div class="tab-pane active">
 	          	<div class="table-responsive DTFC_LeftBodyLiner">
-		                <table class="table table-bordered nowrap table-striped dataTable data" id="data_all" width="100%" cellspacing="0">
+		                <table class="table table-bordered nowrap table-striped dataTable" id="data_all" width="100%" cellspacing="0">
 		                  <thead>
 		                    <tr>
-		                      <th>No</th>
 		                      <th>No Letter</th>
 		                      <th>Position</th>
 		                      <th>Type of Letter</th>
@@ -97,101 +113,8 @@
 		                      <th>Action</th>
 		                    </tr>
 		                  </thead>
-		                  <tbody id="products-list" name="products-list">
-		                    @foreach($datas as $data)
-		                   <tr>
-		                   	  <td></td>
-		                      <td>{{$data->no_letter}}</td>
-		                      <td>{{$data->position}}</td>
-		                      <td>{{$data->type_of_letter}}</td>
-		                      <td>{{$data->month}}</td>
-		                      <td>{{$data->date}}</td>
-		                      <td>{{$data->to}}</td>
-		                      <td>{{$data->attention}}</td>
-		                      <td>{{$data->title}}</td>
-		                      <td>{{$data->project}}</td>
-		                      <td>{{$data->description}}</td>
-		                      <td>{{$data->name}}</td>
-		                      <td>{{$data->division}}</td>
-		                      <td>{{$data->project_id}}</td>
-		                      <td>{{$data->note}}</td>
-		                      <td>
-		                        @if(Auth::User()->nik == $data->nik)
-		                        <button class="btn btn-xs btn-primary" style="vertical-align: top; width: 60px" data-target="#modaledit" data-toggle="modal" onclick="edit_po('{{$data->no_letter}}','{{$data->no}}','{{$data->position}}','{{$data->type_of_letter}}','{{$data->date}}','{{$data->to}}','{{$data->attention}}','{{$data->title}}','{{$data->project}}','{{$data->description}}', '{{$data->project_id}}', '{{$data->note}}')">&nbsp Edit
-		                        </button>
-		                        @else
-		                        <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px">&nbsp Edit
-		                        </button>
-		                        @endif
-		                        <!-- <a href="{{url('/delete_letter', $data->no)}}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-		                        </button></a> -->
-		                      </td>
-		                    </tr>
-		                    @endforeach
-		                  </tbody>
 		                </table>
-		        </div>
-	          </div>
-
-	          <div class="tab-pane" id="tab_2">
-	          	<div class="table-responsive">
-		                <table class="table table-bordered nowrap table-striped dataTable data" id="data_backdate" width="100%"  cellspacing="0">
-		                  <thead>
-		                    <tr>
-		                      <th>No</th>
-		                      <th>No Letter</th>
-		                      <th>Position</th>
-		                      <th>Type of Letter</th>
-		                      <th>Month</th>
-		                      <th>Date</th>
-		                      <th>To</th>
-		                      <th>Attention</th>
-		                      <th>Title</th>
-		                      <th>Project</th>
-		                      <th>Description</th>
-		                      <th>From</th>
-		                      <th>Division</th>
-		                      <th>Project ID</th>
-		                      <th>Note</th>
-		                      <th>Action</th>
-		                    </tr>
-		                  </thead>
-		                  <tbody id="products-list" name="products-list">
-		                    @foreach($data_backdate as $data)
-		                   <tr>
-		                   	  <td></td>
-		                      <td>{{$data->no_letter}}</td>
-		                      <td>{{$data->position}}</td>
-		                      <td>{{$data->type_of_letter}}</td>
-		                      <td>{{$data->month}}</td>
-		                      <td>{{$data->date}}</td>
-		                      <td>{{$data->to}}</td>
-		                      <td>{{$data->attention}}</td>
-		                      <td>{{$data->title}}</td>
-		                      <td>{{$data->project}}</td>
-		                      <td>{{$data->description}}</td>
-		                      <td>{{$data->name}}</td>
-		                      <td>{{$data->division}}</td>
-		                      <td>{{$data->project_id}}</td>
-		                      <td>{{$data->note}}</td>
-		                      <td>
-		                        @if(Auth::User()->nik == $data->nik)
-		                        <button class="btn btn-xs btn-primary" data-target="#modaledit" data-toggle="modal" onclick="edit_po('{{$data->no_letter}}','{{$data->no}}','{{$data->position}}','{{$data->type_of_letter}}','{{$data->date}}','{{$data->to}}','{{$data->attention}}','{{$data->title}}','{{$data->project}}','{{$data->description}}', '{{$data->project_id}}', '{{$data->note}}')">&nbsp Edit
-		                        </button>
-		                        @else
-		                        <button class="btn btn-xs btn-primary disabled" style="text-align: center;">&nbsp Edit
-		                        </button>
-		                        @endif
-		                        <!-- <a href="{{url('/delete_letter', $data->no)}}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-		                        </button></a> -->
-		                      </td>
-		                    </tr>
-		                    @endforeach
-		                  </tbody>
-		                  <tfoot>
-		                  </tfoot>
-		                </table>
-		        </div>
+		          </div>
 	          </div>
 
 	        </div>
@@ -381,32 +304,6 @@
           <form method="POST" action="{{url('/update_letter')}}" id="modaledit" name="modaledit">
             @csrf
           <input type="text" placeholder="Enter No Letter" name="edit_no_letter" id="edit_no_letter" hidden>
-          <input type="text" name="no_letter_edit" id="no_letter_edit" hidden> 
-          <div class="form-group">
-            <label for="">Position</label>
-            <select type="text" class="form-control" placeholder="Select Position" name="edit_position" id="edit_position" required>
-                <option value="PMO">PMO</option>
-                <option value="TEC">TEC</option>
-                <option value="MSM">MSM</option>
-                <option value="DIR">DIR</option>
-                <option value="TAM">TAM</option>
-                <option value="HRD">HRD</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="">Type of Letter</label>
-            <select type="text" class="form-control" placeholder="Select Type of Letter" name="edit_type" id="edit_type" required>
-                <option value="LTR">LTR (Surat Umum)</option>
-                <option value="PKS">PKS (Perjanjian Kerja Sama)</option>
-                <option value="BST">BST (Berita Acara Serah Terima)</option>
-                <option value="ADM">ADM (Surat Administrasi & Backdate)</option>
-                <option value="SGB">SBG (Surat Garansi Bank)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="">Date</label>
-            <input type="date" class="form-control" name="edit_date" id="edit_date" required>
-          </div>
           <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="edit_to" id="edit_to">
@@ -427,10 +324,6 @@
             <label for="">Description</label>
             <textarea type="text" class="form-control" placeholder="Enter Description" name="edit_description" id="edit_description"> </textarea>
           </div>
-          <!-- <div class="form-group">
-            <label for="">From</label>
-            <input type="text" class="form-control" placeholder="Enter From" name="edit_from" id="edit_from">
-          </div> -->
           <div class="form-group">
             <label for="">Project ID</label>
             <input type="text" class="form-control" placeholder="Enter Project ID" name="edit_project_id" id="edit_project_id">
@@ -480,19 +373,99 @@
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
-    function edit_po(no_letter,no,position,type_of_letter,date,to,attention,title,project,description,project_id,note) {
-      $('#no_letter_edit').val(no_letter);
-      $('#edit_no_letter').val(no);
-      $('#edit_position').val(position);
-      $('#edit_type').val(type_of_letter);
-      $('#edit_date').val(date);
+    function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
+      $('#modaledit').modal('show');
+      $('#edit_no_letter').val(no_letter);
       $('#edit_to').val(to);
-      $('#edit_attention').val(attention);
-      $('#edit_title').val(title);
-      $('#edit_project').val(project);
-      $('#edit_description').val(description);
-      $('#edit_project_id').val(project_id);
-      $('#edit_note').val(note);
+      if (attention == "null") {
+        '';
+      } else {
+        $('#edit_attention').val(attention);
+      }
+      if (title == "null") {
+        '';
+      } else {
+        $('#edit_title').val(title);
+      }
+      if (project == "null") {
+        '';
+      } else {
+        $('#edit_project').val(project);
+      }
+
+      if (description == "null") {
+        '';
+      } else {
+        $('#edit_description').val(description);
+      }
+
+      if (project_id == "null") {
+        '';
+      } else {
+        $('#edit_project_id').val(project_id);
+      }
+
+      if (note == "null") {
+        '';
+      } else {
+        $('#edit_note').val(note);
+      }
+    }
+
+    initLetterTable();
+
+    function initLetterTable() {
+      $("#data_all").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('getdataletter')}}",
+          "dataSrc": function (json){
+
+            json.data.forEach(function(data,index){
+              if("{{Auth::User()->nik}}" == data.nik) {
+                var x = '"' + data.no_letter + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
+                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_letter(" + x + ")'>&nbsp Edit</button>";
+              } else {
+                data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+              }
+                
+            });
+            return json.data;
+            
+          }
+        },
+        "columns": [
+          { "data": "no_letter" },
+          { "data": "position" },
+          { "data": "type_of_letter" },
+          { "data": "month" },
+          { "data": "date" },
+          { "data": "to" },
+          { "data": "attention"},
+          { "data": "title" },
+          { "data": "project" },
+          { "data": "description" },
+          { "data": "name" },
+          { "data": "division" },
+          { "data": "project_id" },
+          { "data": "note" },
+          {
+            "className": 'btn_edit',
+            "orderable": false,
+            "data": "btn_edit",
+            "defaultContent": ''
+          },
+        ],
+        "searching": true,
+        "lengthChange": false,
+        "info":false,
+        "scrollX": true,
+        "order": [[ 0, "desc" ]],
+        "fixedColumns":   {
+            leftColumns: 1
+        },
+        "pageLength": 20,
+      })
     }
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
@@ -501,29 +474,15 @@
 
     $("#backdate_num").select2();
 
-    $('#data_all').DataTable({
-      "order": [[ 1, "desc" ]],
-      "scrollX":true,
-      scrollCollapse: true,
-      "pageLength": 20,
-      fixedColumns:   {
-       leftColumns: 2,
-      }
-    });
+    function changetabPane(status) {
+      $('#data_all').DataTable().ajax.url("{{url('getfilteryearletter')}}?status=" + status + "&year=" + $('#year_filter').val()).load();
+    }
 
-    $('#data_backdate').DataTable({
-      "order": [[ 1, "desc" ]],
-      "scrollX":true,
-      scrollCollapse: true,
-      "pageLength": 20,
-      fixedColumns:   {
-       leftColumns: 2,
-      }
+    $("#year_filter").change(function(){
+      $('#data_all').DataTable().ajax.url("{{url('getfilteryearletter')}}?status=A&year=" + this.value).load();
     });
 
     $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
-        // var target = $(e.target).attr("href"); // activated tab
-        // alert (target);
         $($.fn.dataTable.tables( true ) ).css('width', '100%');
         $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
     }); 

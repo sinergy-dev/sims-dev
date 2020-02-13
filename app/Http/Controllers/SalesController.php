@@ -2565,7 +2565,7 @@ class SALESController extends Controller
                             // return "$pid_info";
 
                         // Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
-                        // Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));
+                        Mail::to('faiqoh@sinergy.co.id')->send(new MailResult($users,$pid_info));
                         Mail::to($users->email)->send(new MailResult($users,$pid_info));
                     }
 
@@ -4387,7 +4387,7 @@ class SALESController extends Controller
 
         $users = User::select('name')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
         
-        // Mail::to('faiqoh@sinergy.co.id')->send(new MailResult($users,$pid_info));
+        Mail::to('faiqoh@sinergy.co.id')->send(new MailResult($users,$pid_info));
         // Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));
 
         Mail::to($users->email)->send(new MailResult($users,$pid_info));

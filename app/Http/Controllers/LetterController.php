@@ -25,7 +25,7 @@ class LetterController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position; 
 
-        $pops = letter::select('no_letter')->where('status',NULL)->orderBy('created_at','desc')->first();
+        $pops = letter::select('no_letter')->where('status','A')->orderBy('created_at','desc')->first();
 
         $pops2 = Letter::select('no_letter')->where('status', 'F')->orderBy('updated_at', 'desc')->first();
 
@@ -163,7 +163,7 @@ class LetterController extends Controller
 
         $datas = DB::table('tb_letter')
                         ->join('users', 'users.nik', '=', 'tb_letter.nik')
-                        ->select('no','no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
                         ->where('status',NULL)
                         // ->orwhere('status', 'F')
                         ->where('date','like',$tahun."%")
@@ -171,10 +171,12 @@ class LetterController extends Controller
 
         $data_backdate = DB::table('tb_letter')
                         ->join('users', 'users.nik', '=', 'tb_letter.nik')
-                        ->select('no','no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
                         // ->where('status',NULL)
                         ->where('status', 'F')
                         ->get();
+
+        $status_letter = Letter::select('status')->where('status', '!=', 'T')->groupBy('status')->get();
 
         $count = DB::table('tb_letter')
                     ->where('status', 'T')
@@ -202,8 +204,28 @@ class LetterController extends Controller
         $sidebar_collapse = true;
 
 
-        return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse'));
+        return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter'));
 	}
+
+    public function getdataletter(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => Letter::join('users', 'users.nik', '=', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik', 'no')
+                        ->where('status','A')
+                        ->where('date','like',$tahun."%")
+                        ->get());
+    }
+
+    public function getfilteryear(Request $request)
+    {
+        return array("data" => Letter::join('users', 'users.nik', '=', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik', 'no')
+                        ->where('status', $request->status)
+                        ->where('date','like',$request->year."%")
+                        ->get());
+    }
 
 	public function store(Request $request)
     {
@@ -290,7 +312,7 @@ class LetterController extends Controller
                         if ($i == 0) {
                             $tambah->no = $nom->no+1;
                             $tambah->no_letter = $no;
-                            $tambah->status = NULL;
+                            $tambah->status = 'A';
                         }else{
                             $tambah->no = $nom->no+2;
                             $tambah->no_letter = $no9;
@@ -368,6 +390,7 @@ class LetterController extends Controller
                     $tambah->project = $request['project'];
                     $tambah->description = $request['description'];
                     $tambah->nik = Auth::User()->nik;
+                    $tambah->status = 'A';
                     // $tambah->from = $request['from'];
                     $tambah->division = $request['division'];
                     $tambah->project_id = $request['project_id'];
@@ -432,6 +455,7 @@ class LetterController extends Controller
             $tambah->description = $request['description'];
             // $tambah->from = $request['from'];
             $tambah->nik = Auth::User()->nik;
+            $tambah->status = 'A';
             $tambah->division = $request['division'];
             $tambah->project_id = $request['project_id'];
             $tambah->save();
@@ -443,40 +467,9 @@ class LetterController extends Controller
 	public function edit(Request $request)
 	{
 		$no = $request['edit_no_letter'];
-        $position = $request['edit_position'];
-        $type_of_letter = $request['edit_type'];
-        $month_pr = substr($request['edit_date'],5,2);
-        $year_pr = substr($request['edit_date'],0,4);
 
-        $array_bln = array('01' => "I",
-                            '02' => "II",
-                            '03' => "III",
-                            '04' => "IV",
-                            '05' => "V",
-                            '06' => "VI",
-                            '07' => "VII",
-                            '08' => "VIII",
-                            '09' => "IX",
-                            '10' => "X",
-                            '11' => "XI",
-                            '12' => "XII");
-        $bln = $array_bln[$month_pr];
-
-        if($no < 10){
-           $akhirnomor = '000' . $no;
-        }elseif($no > 9 && $no < 100){
-           $akhirnomor = '00' . $no;
-        }elseif($no >= 100){
-           $akhirnomor = '0' . $no;
-        }
-
-        $no = $akhirnomor.'/'.$position .'/'. $type_of_letter.'/' . $bln .'/'. $year_pr;
-
-        $update = Letter::where('no',$no)->first();
+        $update = Letter::where('no_letter',$no)->first();
         $update->to = $request['edit_to'];
-        $update->date = $request['edit_date'];
-        $update->position = $position;
-        $update->type_of_letter = $type_of_letter;
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
         $update->project = $request['edit_project'];
