@@ -424,21 +424,6 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                         </tr>
                       </thead>
                       <tbody>
-                        <!-- @foreach($pid_request as $pid)
-                          <tr>
-                            <td>{{$pid->created_at}}</td>
-                            <td>{{$pid->code_company}}</td>
-                            <td>{{$pid->no_quotation}}</td>
-                            <td>{{$pid->project}}</td>
-                            <td>{{$pid->name}}</td>
-                            <td>{{$pid->date_quotation}}</td>
-                            <td><i class="money">{{$pid->amount}}</i></td>
-                            <td>{{$pid->note}}</td>
-                            <td>
-                              <button class="btn btn-xs btn-primary" data-target="#showRequestProjectID" style="width: 100%" data-toggle="modal" onclick="showRequestProjectID('{{$pid->id_pid_request}}')">Show</button>
-                            </td>
-                          </tr>
-                        @endforeach -->
                         @foreach($pid_request_lead as $pids)
                           <tr>
                             <td>{{$pids->created_at}}</td>
