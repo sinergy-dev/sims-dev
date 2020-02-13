@@ -550,14 +550,9 @@
               @csrf
 
               <div class="form-group hidden">
-                <span name="sisa_cuti" hidden id="sisa_cuti"></span><!-- 
+                <label>Sisa Cuti : </label>
+                <span name="sisa_cuti" id="sisa_cuti"></span><!-- 
                 <input type="text" name="sisa_cuti" id="sisa_cuti" style="width: 50px;color: black;text-decoration: bold" class="form-control sisa_cuti" value="" readonly=""> -->
-              </div>
-
-              <div class="form-group">
-                <table>
-                  <tbody id="list_cutiku"></tbody>
-                </table>
               </div>
 
               <div class="form-group">
@@ -1386,26 +1381,7 @@
           },
           success: function(result){
             $.each(result, function(key, value){
-              $('#list_cutiku').empty();
-
-              table = table + '<tr>';
-
-              table = table + '<td>' + 'Total Cuti 2019' + '</td>';
-              table = table + '<td>' +value.cuti+ '</td>';
-
-              table = table + '</tr>';
-
-              table = table + '<tr>';
-
-              table = table + '<td>' + 'Total Cuti 2020' + '</td>';
-              table = table + '<td>' + value.cuti2+ '</td>';
-
-              table = table + '</tr>';
-
-              $('#list_cutiku').append(table);
-
-
-              if (value.total_cuti == null) {
+              if (value.total_cuti == 0) {
                 $("#sisa_cuti").text(0).style.color = "#ff0000";
               }else{
                 $("#sisa_cuti").text(value.total_cuti);
@@ -1416,6 +1392,7 @@
                 }
                 
               }
+
             });
           },
         });
