@@ -213,11 +213,13 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                           @if(Auth::User()->id_position == 'MANAGER')
                           <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->amount_idr}}','{{$data->note}}','{{$data->invoice}}','{{$data->lead_id}}','{{$data->opp_name}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                           <button class="btn btn-xs btn-danger" style="width: 70px" data-toggle="modal" data-target="#modal_delete" onclick="delete_project('{{$data->lead_id}}','{{$data->id_pro}}')"><i class="fa fa-trash"></i>&nbspDelete</button>
+                          @else
+                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                           @endif
                       </td>
                       @elseif(Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'PMO')
                       <td>
-                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
+                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#modal_status" data-toggle="modal" onclick="Edit_sp('{{$data->id_pro}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                       </td>
                       @endif
                     </tr>
