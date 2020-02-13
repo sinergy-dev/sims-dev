@@ -2446,6 +2446,12 @@ class SALESController extends Controller
         
             $lead_id = $request['lead_id_result'];
 
+            if ($request['quote_number_final'] != NULL) {
+                $id_quotes = QuoteMSP::where('quote_number', $request['quote_number_final'])->first()->id_quote;
+
+                $amount_quo = QuoteMSP::where('quote_number', $request['quote_number_final'])->first()->amount;
+            }
+
             if ($request['result'] == 'WIN' && $request['deal_price_result'] == null) {
                 return back()->with('submit-price','Deal Price Wajib Diisi!');
             } else{
@@ -2475,10 +2481,18 @@ class SALESController extends Controller
 		            $tambahpid = new PID();
 		            $tambahpid->lead_id     = $request['lead_id_result'];
 		            $tambahpid->no_po       = $request['no_po'];
-		            $tambahpid->amount_pid  = str_replace(',', '',$request['amount_pid']);
-		            $edate                  = strtotime($_POST['date_po']); 
-		            $edate                  = date("Y-m-d",$edate);
-		            $tambahpid->date_po     = $edate;
+		            $tambahpid->no_quo      = $id_quotes;
+                    if ($request['amount_pid'] != NULL) {
+                        $tambahpid->amount_pid  = str_replace(',', '',$request['amount_pid']);
+                    }else{
+                        $tambahpid->amount_pid  = $amount_quo;
+                    }
+                    
+		            if ($request['date_po'] != NULL) {
+                        $edate                  = strtotime($_POST['date_po']); 
+                        $edate                  = date("Y-m-d",$edate);
+                        $tambahpid->date_po     = $edate;
+                    }  
                     // return $request['request_id'];
                     if (!empty($request['request_id'])) {
                         $tambahpid->status = 'requested';
