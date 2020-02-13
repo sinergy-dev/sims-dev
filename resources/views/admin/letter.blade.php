@@ -79,10 +79,10 @@
 	          @foreach($status_letter as $data)
                 @if($data->status == 'A')
                     <li class="nav-item active">
-                        <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true">All</a>
+                        <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')">All</a>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true"> Backdate
+                        <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')"> Backdate
                 @endif
                         </a>
                     </li>
@@ -474,25 +474,9 @@
 
     $("#backdate_num").select2();
 
-    /*$('#data_all').DataTable({
-      "order": [[ 1, "desc" ]],
-      "scrollX":true,
-      scrollCollapse: true,
-      "pageLength": 20,
-      fixedColumns:   {
-       leftColumns: 2,
-      }
-    });
-
-    $('#data_backdate').DataTable({
-      "order": [[ 1, "desc" ]],
-      "scrollX":true,
-      scrollCollapse: true,
-      "pageLength": 20,
-      fixedColumns:   {
-       leftColumns: 2,
-      }
-    });*/
+    function changetabPane(status) {
+      $('#data_all').DataTable().ajax.url("{{url('getfilteryearletter')}}?status=" + status + "&year=" + $('#year_filter').val()).load();
+    }
 
     $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
         $($.fn.dataTable.tables( true ) ).css('width', '100%');

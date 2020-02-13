@@ -218,6 +218,15 @@ class LetterController extends Controller
                         ->get());
     }
 
+    public function getfilteryear(Request $request)
+    {
+        return array("data" => Letter::join('users', 'users.nik', '=', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik', 'no')
+                        ->where('status', $request->status)
+                        ->where('date','like',$request->year."%")
+                        ->get());
+    }
+
 	public function store(Request $request)
     {
         // $getno = Letter::orderBy('no', 'asc')->first();
