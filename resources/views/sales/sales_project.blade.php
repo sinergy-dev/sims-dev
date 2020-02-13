@@ -446,9 +446,9 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                             </td>
                             <td>
                               @if($pids->amount_pid == '')
-                              <i class="money">{{$pids->amount_pid}}</i>
-                              @else
                               <i class="money">{{$pids->amount}}</i>
+                              @else
+                              <i class="money">{{$pids->amount_pid}}</i>
                               @endif
                             </td>
                             <td>{{$pids->note}}</td>
