@@ -3671,8 +3671,8 @@ class SALESController extends Controller
                         'tb_quote_msp.project',
                         'tb_quote_msp.quote_number',
                         'users.name',
+                        'tb_quote_msp.amount'
                         'tb_pid_request.date_quotation',
-                        'tb_pid_request.amount',
                         'tb_pid_request.note',
                         'tb_pid_request.status',
                         'tb_pid_request.no_quotation',
@@ -3684,6 +3684,16 @@ class SALESController extends Controller
         $pid_request_lead = PID::join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_pid.lead_id')
                         ->join('users','users.nik','=','sales_lead_register.nik')
                         ->join('tb_company','tb_company.id_company','=','users.id_company')
+                        ->select('tb_quote_msp.project',
+                        'tb_quote_msp.quote_number',
+                        'users.name',
+                        'tb_quote_msp.amount',
+                        'tb_company.code_company',
+                        'tb_pid.no_po',
+                        'tb_pid.created_at',
+                        'sales_lead_register.opp_name',
+                        'users.name','tb_pid.date_po',
+                        'tb_quote_msp.date')
                         ->where('tb_pid.status','requested')
                         ->get(); 
 
