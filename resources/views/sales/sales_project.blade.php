@@ -176,7 +176,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                         {{$data->opp_name}}
                         @endif
                       </td>
-                      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position != 'STAFF')
+                      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
                       <td>
                           <i class="">{{$data->amount_idr}}</i>
                       </td>
@@ -208,14 +208,16 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                              {{$data->progres}}
                             @endif
                         </td>
-                        @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_division == 'PMO')
+                      @if(Auth::User()->id_division == 'FINANCE')
                       <td>
                           @if(Auth::User()->id_position == 'MANAGER')
                           <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->amount_idr}}','{{$data->note}}','{{$data->invoice}}','{{$data->lead_id}}','{{$data->opp_name}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                           <button class="btn btn-xs btn-danger" style="width: 70px" data-toggle="modal" data-target="#modal_delete" onclick="delete_project('{{$data->lead_id}}','{{$data->id_pro}}')"><i class="fa fa-trash"></i>&nbspDelete</button>
-                          @elseif(Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'PMO')
-                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                           @endif
+                      </td>
+                      @elseif(Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'PMO')
+                      <td>
+                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                       </td>
                       @endif
                     </tr>
@@ -365,16 +367,18 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                         {{$data->name}}
                         @endif
                       </td>
-                      @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_division == 'PMO')
+                    @if(Auth::User()->id_division == 'FINANCE')
                     <td>
                         @if(Auth::User()->id_position == 'MANAGER')
                         <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->amount_idr}}','{{$data->note}}','{{$data->invoice}}','{{$data->lead_id}}','{{$data->opp_name}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                         <button class="btn btn-xs btn-danger" style="width: 70px" data-toggle="modal" data-target="#modal_delete" onclick="delete_project('{{$data->lead_id}}','{{$data->id_pro}}')"><i class="fa fa-trash"></i>&nbspDelete</button>
-                        @elseif(Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'PMO')
-                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                         @endif
                     </td>
-                  @endif
+                    @elseif(Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'PMO')
+                      <td>
+                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
+                      </td>
+                    @endif
                     </tr>
                     @endforeach
                   </tbody>
