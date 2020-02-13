@@ -549,10 +549,15 @@
             <form method="POST" action="{{url('/store_cuti')}}" id="modalAddCuti" name="modalAddCuti">
               @csrf
 
-              <div class="form-group">
-                <label>Sisa Cuti : </label>
-                <span name="sisa_cuti" id="sisa_cuti"></span><!-- 
+              <div class="form-group hidden">
+                <span name="sisa_cuti" hidden id="sisa_cuti"></span><!-- 
                 <input type="text" name="sisa_cuti" id="sisa_cuti" style="width: 50px;color: black;text-decoration: bold" class="form-control sisa_cuti" value="" readonly=""> -->
+              </div>
+
+              <div class="form-group">
+                <table>
+                  <tbody id="list_cutiku"></tbody>
+                </table>
               </div>
 
               <div class="form-group">
@@ -854,33 +859,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script type="text/javascript">
 
+
   
     $(".show-sisa-cuti").click(function(){
       $.ajax({
         type:"GET",
         url:"getCutiAuth",
         success: function(result){
-          if (result[0].total_cuti == 0 || result[0].total_cuti == null) {
-            swal({
-              title: "Hello "+result[0].name+" !!!",
-              text: "Cuti kamu Habis Sorry Ya ga bisa cuti dulu !! ",
-              confirmButtonColor: "#22542f",
-              confirmButtonText: "OK!",
-              closeOnConfirm: true,
-              type:"warning"
-
-            });
-          }else{
-            swal({
-              title: "Hello "+result[0].name+" !!!",
-              text: "Cuti kamu tahun ini tersisa " + result[0].total_cuti + " Kamu Mau menggunakan Cuti?",
-              confirmButtonColor: "#22542f",
-              confirmButtonText: "OK!",
-              closeOnConfirm: true,
-              type:"warning"
-
-            });
-          }
+          var d = new Date().getFullYear() - 1;
+          var dd = new Date().getFullYear();
+          var swal_html = '<div class="panel" style="background:aliceblue;font-weight:bold"><div class="panel-heading panel-info text-center btn-info"> <b>Berikut Info total cuti : </b> </div> <div class="panel-body"><table class="text-center"><b><p style="font-weight:bold">Total cuti '+ d +' (*digunakan s/d 31 Maret) : '+result[0].cuti+'</p><p style="font-weight:bold">Total cuti '+ dd +' : '+result[0].cuti2+'</p></b></div></div></div>';
+          swal({title: "Hai "+result[0].name+" !!", html: swal_html})
+          
         },
       });
     });
@@ -1396,6 +1386,25 @@
           },
           success: function(result){
             $.each(result, function(key, value){
+              $('#list_cutiku').empty();
+
+              table = table + '<tr>';
+
+              table = table + '<td>' + 'Total Cuti 2019' + '</td>';
+              table = table + '<td>' +value.cuti+ '</td>';
+
+              table = table + '</tr>';
+
+              table = table + '<tr>';
+
+              table = table + '<td>' + 'Total Cuti 2020' + '</td>';
+              table = table + '<td>' + value.cuti2+ '</td>';
+
+              table = table + '</tr>';
+
+              $('#list_cutiku').append(table);
+
+
               if (value.total_cuti == null) {
                 $("#sisa_cuti").text(0).style.color = "#ff0000";
               }else{
