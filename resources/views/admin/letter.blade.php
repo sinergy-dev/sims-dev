@@ -478,6 +478,10 @@
       $('#data_all').DataTable().ajax.url("{{url('getfilteryearletter')}}?status=" + status + "&year=" + $('#year_filter').val()).load();
     }
 
+    $("#year_filter").change(function(){
+      $('#data_all').DataTable().ajax.url("{{url('getfilteryearletter')}}?status=A&year=" + this.value).load();
+    });
+
     $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
         $($.fn.dataTable.tables( true ) ).css('width', '100%');
         $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
