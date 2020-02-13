@@ -79,10 +79,10 @@
 	          @foreach($status_letter as $data)
                 @if($data->status == 'A')
                     <li class="nav-item active">
-                        <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')">All</a>
+                        <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true">All</a>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')"> Backdate
+                        <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true"> Backdate
                 @endif
                         </a>
                     </li>
@@ -304,32 +304,6 @@
           <form method="POST" action="{{url('/update_letter')}}" id="modaledit" name="modaledit">
             @csrf
           <input type="text" placeholder="Enter No Letter" name="edit_no_letter" id="edit_no_letter" hidden>
-          <input type="text" name="no_letter_edit" id="no_letter_edit" hidden> 
-          <div class="form-group">
-            <label for="">Position</label>
-            <select type="text" class="form-control" placeholder="Select Position" name="edit_position" id="edit_position" required>
-                <option value="PMO">PMO</option>
-                <option value="TEC">TEC</option>
-                <option value="MSM">MSM</option>
-                <option value="DIR">DIR</option>
-                <option value="TAM">TAM</option>
-                <option value="HRD">HRD</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="">Type of Letter</label>
-            <select type="text" class="form-control" placeholder="Select Type of Letter" name="edit_type" id="edit_type" required>
-                <option value="LTR">LTR (Surat Umum)</option>
-                <option value="PKS">PKS (Perjanjian Kerja Sama)</option>
-                <option value="BST">BST (Berita Acara Serah Terima)</option>
-                <option value="ADM">ADM (Surat Administrasi & Backdate)</option>
-                <option value="SGB">SBG (Surat Garansi Bank)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="">Date</label>
-            <input type="date" class="form-control" name="edit_date" id="edit_date" required>
-          </div>
           <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="edit_to" id="edit_to">
@@ -350,10 +324,6 @@
             <label for="">Description</label>
             <textarea type="text" class="form-control" placeholder="Enter Description" name="edit_description" id="edit_description"> </textarea>
           </div>
-          <!-- <div class="form-group">
-            <label for="">From</label>
-            <input type="text" class="form-control" placeholder="Enter From" name="edit_from" id="edit_from">
-          </div> -->
           <div class="form-group">
             <label for="">Project ID</label>
             <input type="text" class="form-control" placeholder="Enter Project ID" name="edit_project_id" id="edit_project_id">
@@ -403,19 +373,43 @@
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
-    function edit_letter(no_letter,no,position,type_of_letter,date,to,attention,title,project,description,project_id,note) {
-      $('#no_letter_edit').val(no_letter);
-      $('#edit_no_letter').val(no);
-      $('#edit_position').val(position);
-      $('#edit_type').val(type_of_letter);
-      $('#edit_date').val(date);
+    function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
+      $('#modaledit').modal('show');
+      $('#edit_no_letter').val(no_letter);
       $('#edit_to').val(to);
-      $('#edit_attention').val(attention);
-      $('#edit_title').val(title);
-      $('#edit_project').val(project);
-      $('#edit_description').val(description);
-      $('#edit_project_id').val(project_id);
-      $('#edit_note').val(note);
+      if (attention == "null") {
+        '';
+      } else {
+        $('#edit_attention').val(attention);
+      }
+      if (title == "null") {
+        '';
+      } else {
+        $('#edit_title').val(title);
+      }
+      if (project == "null") {
+        '';
+      } else {
+        $('#edit_project').val(project);
+      }
+
+      if (description == "null") {
+        '';
+      } else {
+        $('#edit_description').val(description);
+      }
+
+      if (project_id == "null") {
+        '';
+      } else {
+        $('#edit_project_id').val(project_id);
+      }
+
+      if (note == "null") {
+        '';
+      } else {
+        $('#edit_note').val(note);
+      }
     }
 
     initLetterTable();
@@ -428,12 +422,12 @@
           "dataSrc": function (json){
 
             json.data.forEach(function(data,index){
-              /*if("{{Auth::User()->nik}}" == data.nik) {
+              if("{{Auth::User()->nik}}" == data.nik) {
                 var x = '"' + data.no_letter + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_letter(" + x + ")'>&nbsp Edit</button>";
-              } else {*/
+              } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
-              // }
+              }
                 
             });
             return json.data;

@@ -458,40 +458,9 @@ class LetterController extends Controller
 	public function edit(Request $request)
 	{
 		$no = $request['edit_no_letter'];
-        $position = $request['edit_position'];
-        $type_of_letter = $request['edit_type'];
-        $month_pr = substr($request['edit_date'],5,2);
-        $year_pr = substr($request['edit_date'],0,4);
 
-        $array_bln = array('01' => "I",
-                            '02' => "II",
-                            '03' => "III",
-                            '04' => "IV",
-                            '05' => "V",
-                            '06' => "VI",
-                            '07' => "VII",
-                            '08' => "VIII",
-                            '09' => "IX",
-                            '10' => "X",
-                            '11' => "XI",
-                            '12' => "XII");
-        $bln = $array_bln[$month_pr];
-
-        if($no < 10){
-           $akhirnomor = '000' . $no;
-        }elseif($no > 9 && $no < 100){
-           $akhirnomor = '00' . $no;
-        }elseif($no >= 100){
-           $akhirnomor = '0' . $no;
-        }
-
-        $no = $akhirnomor.'/'.$position .'/'. $type_of_letter.'/' . $bln .'/'. $year_pr;
-
-        $update = Letter::where('no',$no)->first();
+        $update = Letter::where('no_letter',$no)->first();
         $update->to = $request['edit_to'];
-        $update->date = $request['edit_date'];
-        $update->position = $position;
-        $update->type_of_letter = $type_of_letter;
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
         $update->project = $request['edit_project'];
