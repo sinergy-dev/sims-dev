@@ -25,7 +25,7 @@ class LetterController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position; 
 
-        $pops = letter::select('no_letter')->where('status',NULL)->orderBy('created_at','desc')->first();
+        $pops = letter::select('no_letter')->where('status','A')->orderBy('created_at','desc')->first();
 
         $pops2 = Letter::select('no_letter')->where('status', 'F')->orderBy('updated_at', 'desc')->first();
 
@@ -163,7 +163,7 @@ class LetterController extends Controller
 
         $datas = DB::table('tb_letter')
                         ->join('users', 'users.nik', '=', 'tb_letter.nik')
-                        ->select('no','no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
                         ->where('status',NULL)
                         // ->orwhere('status', 'F')
                         ->where('date','like',$tahun."%")
@@ -171,10 +171,12 @@ class LetterController extends Controller
 
         $data_backdate = DB::table('tb_letter')
                         ->join('users', 'users.nik', '=', 'tb_letter.nik')
-                        ->select('no','no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik')
                         // ->where('status',NULL)
                         ->where('status', 'F')
                         ->get();
+
+        $status_letter = Letter::select('status')->where('status', '!=', 'T')->groupBy('status')->get();
 
         $count = DB::table('tb_letter')
                     ->where('status', 'T')
@@ -202,8 +204,19 @@ class LetterController extends Controller
         $sidebar_collapse = true;
 
 
-        return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse'));
+        return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter'));
 	}
+
+    public function getdataletter(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => Letter::join('users', 'users.nik', '=', 'tb_letter.nik')
+                        ->select('no_letter', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'project_id', 'status', 'note', 'name', 'tb_letter.nik', 'no')
+                        ->where('status','A')
+                        ->where('date','like',$tahun."%")
+                        ->get());
+    }
 
 	public function store(Request $request)
     {

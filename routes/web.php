@@ -387,6 +387,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/delete_letter/{id}', 'LetterController@destroy');
 	Route::get('/downloadExcelLetter', 'LetterController@downloadExcel');
 	Route::post('/store_letterbackdate', 'LetterController@store_backdate');
+	Route::get('/getdataletter', 'LetterController@getdataletter');
+
 
 	Route::get('/do', 'DONumberController@index');
 	Route::post('/store_do', 'DONumberController@store');
