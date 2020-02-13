@@ -3693,7 +3693,8 @@ class SALESController extends Controller
                         'tb_pid.created_at',
                         'sales_lead_register.opp_name',
                         'users.name','tb_pid.date_po',
-                        'tb_quote_msp.date')
+                        'tb_quote_msp.date',
+                        'tb_pid.amount_pid')
                         ->where('tb_pid.status','requested')
                         ->get(); 
 
