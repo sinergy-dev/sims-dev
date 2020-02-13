@@ -3708,7 +3708,7 @@ class SALESController extends Controller
     }
 
     public function getAcceptProjectID(Request $request){
-        $po_number = PID::join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')->join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_pid.lead_id')->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->join('sales_tender_process', 'sales_lead_register.lead_id', '=', 'sales_tender_process.lead_id')->select('sales_lead_register.opp_name', 'name', 'no_po', 'date_po', 'amount_pid', 'quote_number2', 'sales_lead_register.lead_id', 'tb_contact.code','tb_quote_msp.quote_number','tb_quote_msp.date')->where('id_pid',$request->id)
+        $po_number = PID::join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')->join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_pid.lead_id')->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->join('sales_tender_process', 'sales_lead_register.lead_id', '=', 'sales_tender_process.lead_id')->select('sales_lead_register.opp_name', 'name', 'no_po', 'date_po', 'amount_pid', 'quote_number2', 'sales_lead_register.lead_id', 'tb_contact.code','tb_quote_msp.quote_number','tb_quote_msp.date','tb_quote_msp.amount')->where('id_pid',$request->id)
             ->first();
 
         return $po_number;
