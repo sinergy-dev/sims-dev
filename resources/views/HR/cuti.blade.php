@@ -556,7 +556,7 @@
             <form method="POST" action="{{url('/store_cuti')}}" id="modalAddCuti" name="modalAddCuti">
               @csrf
 
-              <div class="form-group hidden">
+              <div class="form-group ">
                 <label>Sisa Cuti : </label>
                 <span name="sisa_cuti" id="sisa_cuti"></span><!-- 
                 <input type="text" name="sisa_cuti" id="sisa_cuti" style="width: 50px;color: black;text-decoration: bold" class="form-control sisa_cuti" value="" readonly=""> -->
