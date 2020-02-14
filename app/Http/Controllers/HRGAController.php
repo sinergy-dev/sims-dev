@@ -289,10 +289,19 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $cek_cuti = User::join('tb_cuti','tb_cuti.nik','=','users.nik','left')
+        $cek = User::join('tb_cuti','tb_cuti.nik','=','users.nik','left')
                 ->select('users.nik','cuti','cuti2','status_karyawan','status')->where('users.nik',$nik)->first();
 
-        $total_cuti = $cek_cuti->cuti + $cek_cuti->cuti2;
+        // return $cek;
+
+        if ($cek->status == null) {
+            $cek_cuti = User::select('users.nik','status_karyawan')->where('users.nik',$nik)->first();
+        }else{
+            $cek_cuti = User::join('tb_cuti','tb_cuti.nik','=','users.nik','left')
+                ->select('users.nik','cuti','cuti2','status_karyawan','status')->where('users.nik',$nik)->first();
+        }
+
+        $total_cuti = $cek->cuti + $cek->cuti2;
 
         $year = date('Y');
 
@@ -754,7 +763,7 @@ class HRGAController extends Controller
                             ->get();
         }
 
-        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','total_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu','cuti2'));
+        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','total_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu','cuti2','cek'));
     }
 
     public function detil_cuti(Request $request)
@@ -818,6 +827,7 @@ class HRGAController extends Controller
 	        $tambah->date_req = $date_now;
 	        $tambah->reason_leave = $request['reason'];
             $tambah->jenis_cuti = $request['jenis_cuti'];
+            $tambah->status = 'n';
 	        $tambah->save();
         // }
 
