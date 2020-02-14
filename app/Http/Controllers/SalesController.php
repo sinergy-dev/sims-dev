@@ -2481,7 +2481,6 @@ class SALESController extends Controller
 		            $tambahpid = new PID();
 		            $tambahpid->lead_id     = $request['lead_id_result'];
 		            $tambahpid->no_po       = $request['no_po'];
-		            $tambahpid->no_quo      = $id_quotes;
                     if ($request['amount_pid'] != NULL) {
                         $tambahpid->amount_pid  = str_replace(',', '',$request['amount_pid']);
                     }else{
