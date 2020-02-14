@@ -161,7 +161,13 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                       <td>{{date( "d-m-Y", strtotime($data->date))}}</td>
                       <td>{{$data->id_project}}</td>
                       <td>{{$data->lead_id}}</td>
-                      <td>{{$data->no_po_customer}}</td>
+                      <td>
+                        @if($data->no_po_customer == NULL)
+                        {{$data->quote_number_final}}
+                        @else
+                        {{$data->no_po_customer}}
+                        @endif
+                      </td>
                       <td>
                         @if($data->lead_id == 'SIPPO2020')
                         {{$data->customer_name}}
@@ -906,7 +912,12 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           $("#inputPO").val(result.no_po)
           $("#inputProject").val(result.opp_name)
           $("#inputSales").val(result.name)
-          $("#inputQuo").val(result.quote_number)
+          if (result.quote_number_final == null) {
+            $("#inputQuo").val(result.quote_number)
+          }else{
+            $("#inputQuo").val(result.quote_number_final)
+          }
+
           if (result.date_po == null) {
             $("#inputDate").val(result.date)
           }else{
