@@ -2447,9 +2447,9 @@ class SALESController extends Controller
             $lead_id = $request['lead_id_result'];
 
             if ($request['quote_number_final'] != NULL) {
-                $id_quotes = QuoteMSP::where('quote_number', $request['quote_number_final'])->first()->id_quote;
+                $id_quotes = Quote::where('quote_number', $request['quote_number_final'])->first()->id_quote;
 
-                $amount_quo = QuoteMSP::where('quote_number', $request['quote_number_final'])->first()->amount;
+                $amount_quo = Quote::where('quote_number', $request['quote_number_final'])->first()->amount;
             }
 
             if ($request['result'] == 'WIN' && $request['deal_price_result'] == null) {
