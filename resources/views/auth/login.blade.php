@@ -71,7 +71,7 @@
                       <div class="col-md-12" style="margin-top: 5px">
                         <a class="pull-left" href="{{ route('password.request') }}" target="_blank">
                           <i class="fa fa-lock"></i>
-                            Forgot Your Password?
+                            Forgot Password?
                         </a>
                       </div>
                   </div>
