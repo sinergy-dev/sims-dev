@@ -893,8 +893,8 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
         	
-    		$kirim = User::where('email', $nik_kirim->email)->first()->email;
-            // $kirim = User::where('email', 'ladinar@sinergy.co.id')->first()->email;
+    		// $kirim = User::where('email', $nik_kirim->email)->first()->email;
+            $kirim = User::where('email', 'ladinar@sinergy.co.id')->first()->email;
 
     		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
             $name_cuti = DB::table('tb_cuti')
@@ -924,8 +924,9 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
         	
-    		// $kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
-            $kirim = User::where('email', $nik_kirim->email)->first()->email;
+    		$kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
+            //
+            // $kirim = User::where('email', $nik_kirim->email)->first()->email;
 
     		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
             $name_cuti = DB::table('tb_cuti')
@@ -1020,7 +1021,7 @@ class HRGAController extends Controller
                 ->where('tb_cuti.id_cuti', $id_cuti)
                 ->first();
 
-        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari));        
+        Mail::to('agastya@sinergy.co.id')->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari));        
 
         // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
