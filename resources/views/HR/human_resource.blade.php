@@ -560,6 +560,8 @@
                           <th>NIK</th>
                           <th>Employees Name</th>
                           <th>Position</th>
+                          <th>Mulai Bekerja</th>
+                          <th>Status Karyawan</th>
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <th>Action</th>
                           @endif
@@ -573,161 +575,169 @@
                           <td>{{ucwords(strtolower($data->name))}}</td>
                           @if($data->id_position != '')
                           <td>
-                            @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
-                              President Director
-                            @elseif($data->id_division == 'TECHNICAL')
-                              @if($data->id_territory == 'DPG')
-                                @if($data->id_position == 'ENGINEER MANAGER')
-                                  Dept. Implementation Manager
-                                @elseif($data->id_position == 'ENGINEER STAFF')
-                                  Staff. Systems Engineer
-                                @endif
-                              @elseif($data->id_territory == 'DVG')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Development Manager
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Dev Ops
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @elseif($data->id_territory == 'SPECIALIST')
-                                @if($data->id_position == 'EXPERT ENGINEER')
-                                  Expert Engineer
-                                @endif
-                              @else
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Technical Head
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'TECHNICAL PRESALES')
-                              @if($data->id_position == 'MANAGER')
-                                Dept. Presales Manager
-                              @elseif($data->id_position == 'STAFF')
-                                Staff. Presales Engineer
-                              @endif
-                            @elseif($data->id_division == 'SALES')
-                              @if($data->id_territory == 'TERRITORY 1')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (First)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM1
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 2')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Second)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM2
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 3')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Third)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM3
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 4')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fourth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM4
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 5')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fifth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM5
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 6')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Sixth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM6
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'SPECIALIST')
-                                @if($data->id_position == 'EXPERT SALES')
-                                  Expert Sales
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'FINANCE')
-                              @if($data->id_position != 'FINANCE DIRECTOR')
-                                @if($data->id_territory == 'FINANCE')
-                                  @if($data->id_position == 'STAFF')
-                                    Staff. Finance
-                                  @elseif($data->id_position == 'COURIER')
-                                    Staff. Courier
-                                  @endif
-                                @elseif($data->id_territory == 'ACC')
-                                  @if($data->id_position == 'MANAGER')
-                                    Div. Accounting
-                                  @elseif($data->id_position == 'STAFF')
-                                    Staff. Accounting
-                                  @endif
-                                @endif
-                              @else
-                                Finance Director
-                              @endif
-                            @elseif($data->id_territory == 'OPERATION')
-                              @if($data->id_division == 'OPERATION')
-                                Operation Director
-                              @elseif($data->id_division == 'PMO')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Project Management Office
-                                @elseif($data->id_position == 'PM')
-                                  Staff. Project Manager
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. PMO Admin
-                                @endif
-                              @elseif($data->id_division == 'MSM')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Managed Services & Maintenance
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. MSM Admin
-                                @elseif($data->id_position == 'CALL SO')
-                                  Staff. Call Center Operator
-                                @elseif($data->id_position == 'HELP DESK')
-                                  Staff. Dedicated Help Desk
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
-                                  Dept. Technical Support
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
-                                  Staff. Support Engineer
-                                @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
-                                  Dept. Services Project Manager
-                                @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
-                                  Staff. Services Project Coordinator
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'HR')
-                              @if($data->id_position == 'HR MANAGER')
-                                Div. Human Resource Head
-                              @elseif($data->id_position == 'STAFF GA')
-                                Staff. General Affair
-                              @elseif($data->id_position == 'STAFF HR')
-                                Staff. Human Resource
-                              @endif
-                            @else
-                              {{ $data->id_position }}
-                            @endif
+	                            @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
+	                              President Director
+	                            @elseif($data->id_division == 'TECHNICAL')
+	                              @if($data->id_territory == 'DPG')
+	                                @if($data->id_position == 'ENGINEER MANAGER')
+	                                  Dept. Implementation Manager
+	                                @elseif($data->id_position == 'ENGINEER STAFF')
+	                                  Staff. Systems Engineer
+	                                @endif
+	                              @elseif($data->id_territory == 'DVG')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Dept. Development Manager
+	                                @elseif($data->id_position == 'STAFF')
+	                                  Staff. Dev Ops
+	                                @elseif($data->id_position == 'INTERNAL IT')
+	                                  Staff. Internal IT Engineer
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. TEC Admin
+	                                @endif
+	                              @elseif($data->id_territory == 'SPECIALIST')
+	                                @if($data->id_position == 'EXPERT ENGINEER')
+	                                  Expert Engineer
+	                                @endif
+	                              @else
+	                                @if($data->id_position == 'MANAGER')
+	                                  Div. Technical Head
+	                                @elseif($data->id_position == 'INTERNAL IT')
+	                                  Staff. Internal IT Engineer
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. TEC Admin
+	                                @endif
+	                              @endif
+	                            @elseif($data->id_division == 'TECHNICAL PRESALES')
+	                              @if($data->id_position == 'MANAGER')
+	                                Dept. Presales Manager
+	                              @elseif($data->id_position == 'STAFF')
+	                                Staff. Presales Engineer
+	                              @endif
+	                            @elseif($data->id_division == 'SALES')
+	                              @if($data->id_territory == 'TERRITORY 1')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Dept. Account Manager (First)
+	                                @elseif($data->id_position == 'STAFF')
+	                                  Staff. Account Executive AM1
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. Admin Sales
+	                                @endif
+	                              @elseif($data->id_territory == 'TERRITORY 2')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Dept. Account Manager (Second)
+	                                @elseif($data->id_position == 'STAFF')
+	                                  Staff. Account Executive AM2
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. Admin Sales
+	                                @endif
+	                              @elseif($data->id_territory == 'TERRITORY 3')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Dept. Account Manager (Third)
+	                                @elseif($data->id_position == 'STAFF')
+	                                  Staff. Account Executive AM3
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. Admin Sales
+	                                @endif
+	                              @elseif($data->id_territory == 'TERRITORY 4')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Dept. Account Manager (Fourth)
+	                                @elseif($data->id_position == 'STAFF')
+	                                  Staff. Account Executive AM4
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. Admin Sales
+	                                @endif
+	                              @elseif($data->id_territory == 'TERRITORY 5')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Dept. Account Manager (Fifth)
+	                                @elseif($data->id_position == 'STAFF')
+	                                  Staff. Account Executive AM5
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. Admin Sales
+	                                @endif
+	                              @elseif($data->id_territory == 'TERRITORY 6')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Dept. Account Manager (Sixth)
+	                                @elseif($data->id_position == 'STAFF')
+	                                  Staff. Account Executive AM6
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. Admin Sales
+	                                @endif
+	                              @elseif($data->id_territory == 'SPECIALIST')
+	                                @if($data->id_position == 'EXPERT SALES')
+	                                  Expert Sales
+	                                @endif
+	                              @endif
+	                            @elseif($data->id_division == 'FINANCE')
+	                              @if($data->id_position != 'FINANCE DIRECTOR')
+	                                @if($data->id_territory == 'FINANCE')
+	                                  @if($data->id_position == 'STAFF')
+	                                    Staff. Finance
+	                                  @elseif($data->id_position == 'COURIER')
+	                                    Staff. Courier
+	                                  @endif
+	                                @elseif($data->id_territory == 'ACC')
+	                                  @if($data->id_position == 'MANAGER')
+	                                    Div. Accounting
+	                                  @elseif($data->id_position == 'STAFF')
+	                                    Staff. Accounting
+	                                  @endif
+	                                @endif
+	                              @else
+	                                Finance Director
+	                              @endif
+	                            @elseif($data->id_territory == 'OPERATION')
+	                              @if($data->id_division == 'OPERATION')
+	                                Operation Director
+	                              @elseif($data->id_division == 'PMO')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Div. Project Management Office
+	                                @elseif($data->id_position == 'PM')
+	                                  Staff. Project Manager
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. PMO Admin
+	                                @endif
+	                              @elseif($data->id_division == 'MSM')
+	                                @if($data->id_position == 'MANAGER')
+	                                  Div. Managed Services & Maintenance
+	                                @elseif($data->id_position == 'ADMIN')
+	                                  Staff. MSM Admin
+	                                @elseif($data->id_position == 'CALL SO')
+	                                  Staff. Call Center Operator
+	                                @elseif($data->id_position == 'HELP DESK')
+	                                  Staff. Dedicated Help Desk
+	                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+	                                  Dept. Technical Support
+	                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
+	                                  Staff. Support Engineer
+	                                @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
+	                                  Dept. Services Project Manager
+	                                @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
+	                                  Staff. Services Project Coordinator
+	                                @endif
+	                              @endif
+	                            @elseif($data->id_division == 'HR')
+	                              @if($data->id_position == 'HR MANAGER')
+	                                Div. Human Resource Head
+	                              @elseif($data->id_position == 'STAFF GA')
+	                                Staff. General Affair
+	                              @elseif($data->id_position == 'STAFF HR')
+	                                Staff. Human Resource
+	                              @endif
+	                            @else
+	                              {{ $data->id_position }}
+	                            @endif
                           </td>
                           @else
                           <td>&#8212</td>
                           @endif
+                          <td>{{date('d-m-Y', strtotime($data->date_of_entry))}}</td>
+                          <td>
+                          	@if($data->status_karyawan == 'cuti')
+                          	Karyawan Tetap 
+                          	@elseif($data->status_karyawan == 'belum_cuti')
+                          	Karyawan Kontrak <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i>
+                          	@endif
+                          </td>
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <td>
                             <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
@@ -2514,6 +2524,25 @@
 	    </div>
 
   	</div>
+
+  	<div class="modal fade" id="modal_edit_status" role="dialog">
+  		<div class="modal-dialog modal-md">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <h4 class="modal-title">Ubah Status Employees</h4>
+	        </div>
+		        <div class="modal-body">
+		        	<div class="form-group row">
+                        <label for="Entry" class="col-md-4 col-form-label text-md-right">{{ __('Mulai Bekerja') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="mulai_kerja" type="text" class="form-control" name="mulai_kerja" required>
+                        </div>
+                    </div>
+		        </div>
+		    </div>
+		</div>
+  	</div>
     
   </section>
 
@@ -2538,6 +2567,10 @@
   	<script src="{{url('js/pagination.js')}}"></script>
   	<script src="{{url('js/pagination.min.js')}}"></script>
     <script type="">
+
+       $(".modal_edit_status").click(function(){
+       	$("#modal_edit_status").modal("show");
+       })
 
        function update_HR(nik,name,email,date_of_entry,date_of_birth,address,phone){
          $("#nik_update").val(nik);

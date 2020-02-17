@@ -139,14 +139,14 @@
                   </li>
                   @if(Auth::User()->id_position != 'STAFF')
                   <li class="active">
-                    <a href="#cuti" data-toggle="tab">Report Cuti {{$bulan}}</a>
+                    <a href="#cuti" data-toggle="tab">Request Cuti {{$bulan}}</a>
                   </li>
                   @endif
                   <li>
                     @if(Auth::User()->id_position == 'HR MANAGER')
                     <a href="#staff" data-toggle="tab">Report Cuti</a>
                     @else
-                    <a href="#staff" data-toggle="tab">STAFF</a>
+                    <a href="#staff" data-toggle="tab">History Cuti</a>
                     @endif
                   </li>
               </ul>

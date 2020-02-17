@@ -4715,7 +4715,7 @@ class SALESController extends Controller
                 if ($data->lead_id == 'SIPPO2020') {
                     $datasheet[$i] = array(
                             $i,
-                            $data['date'],
+                            date_format(date_create($data['date']),'d-M-Y'),
                             $data['id_project'],
                             $data['no_po_customer'],
                             $data['customer_name'],
@@ -4729,7 +4729,7 @@ class SALESController extends Controller
                 } else {
                     $datasheet[$i] = array(
                             $i,
-                            $data['date'],
+                            date_format(date_create($data['date']),'d-M-Y'),
                             $data['id_project'],
                             $data['no_po_customer'],
                             $data['customer_legal_name'],
