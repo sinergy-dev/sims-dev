@@ -298,7 +298,7 @@ class HRGAController extends Controller
             $cek_cuti = User::select('users.nik','status_karyawan')->where('users.nik',$nik)->first();
         }else{
             $cek_cuti = User::join('tb_cuti','tb_cuti.nik','=','users.nik','left')
-                ->select('users.nik','cuti','cuti2','status_karyawan','status')->where('users.nik',$nik)->first();
+                ->select('users.nik','cuti','cuti2','status_karyawan','status')->where('users.nik',$nik)->orderBy('tb_cuti.id_cuti','desc')->first();
         }
 
         $total_cuti = $cek->cuti + $cek->cuti2;
