@@ -3455,7 +3455,7 @@ class SALESController extends Controller
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','sales_lead_register.lead_id',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','sales_lead_register.lead_id',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final')
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.created_at',date('Y'))
                     ->get();
