@@ -324,7 +324,7 @@
                                   @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
                                   <td>
                                     @if(Auth::User()->id_position == 'HR MANAGER')
-                                        @if($data->status == NULL)
+                                        @if($data->status == NULL || $data->status == 'n')
                                             <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
                                             <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
                                           @else
@@ -333,7 +333,7 @@
                                         @endif
                                       @else
                                         @if(Auth::User()->id_territory == $data->id_territory)
-                                          @if($data->status == NULL)
+                                          @if($data->status == NULL || $data->status == 'n')
                                             <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
                                             <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
                                           @else
@@ -364,7 +364,7 @@
                 </div>
                 @endif 
 
-                  @if(Auth::User()->id_position == 'STAFF' || Auth::User()->id_position == 'ENGINEER STAFF')  
+                  @if(Auth::User()->id_position != 'MANAGER' || Auth::User()->id_position != 'ENGINEER MANAGER' || Auth::User()->id_position != 'DIRECTOR')  
                   <div class="tab-pane active" id="staff">
                   @else
                   <div class="tab-pane" id="staff">
@@ -670,7 +670,7 @@
                       </tbody>
                     </table>
 
-                    <input type="text" id="cuti_fix" name="cuti_fix" hidden="">
+                    <input type="text" id="cuti_fix" name="cuti_fix" hidden>
                 </div>
 
                 <div class="form-group">
@@ -1424,7 +1424,7 @@
 
     $(".disabled-permission").hover(function(){
       alert('Sorry! kamu belum bisa cuti. [Cuti mu Habis / masih ada yang pending]');
-    })
+    });
     
 
   </script>
