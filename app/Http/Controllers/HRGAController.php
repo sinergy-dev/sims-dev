@@ -330,7 +330,7 @@ class HRGAController extends Controller
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('id_territory', $ter)
-                    ->where('tb_cuti','n')
+                    ->where('tb_cuti.status','n')
                     ->groupby('nik')
                     ->get();
             } elseif($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG'){
@@ -358,7 +358,7 @@ class HRGAController extends Controller
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','TECHNICAL')
                     ->where('users.id_territory','DPG')
-                    ->where('tb_cuti','n')
+                    ->where('tb_cuti.status','n')
                     ->groupby('nik')
                     ->get();
             } elseif($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER'){
@@ -387,7 +387,7 @@ class HRGAController extends Controller
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','TECHNICAL')
                     ->where('users.id_territory','DVG')
-                    ->where('tb_cuti','n')
+                    ->where('tb_cuti.status','n')
                     ->groupby('nik')
                     ->get();
 
@@ -421,7 +421,7 @@ class HRGAController extends Controller
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','PMO')
-                    ->where('tb_cuti','n')
+                    ->where('tb_cuti.status','n')
                     ->groupby('nik')
                     ->get();
             } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
@@ -449,7 +449,7 @@ class HRGAController extends Controller
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','MSM')
-                    ->where('tb_cuti','n')
+                    ->where('tb_cuti.status','n')
                     ->groupby('nik')
                     ->get();
             } else{
@@ -475,7 +475,7 @@ class HRGAController extends Controller
                     ->whereMonth('tb_cuti.date_req',date('m'))
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
-                    ->where('tb_cuti','n')
+                    ->where('tb_cuti.status','n')
                     ->where('users.nik',$nik)
                     ->groupby('nik')
                     ->get();
@@ -509,7 +509,7 @@ class HRGAController extends Controller
                 ->whereMonth('tb_cuti.date_req',date('m'))
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
-                ->where('tb_cuti','n')
+                ->where('tb_cuti.status','n')
                 ->where('users.id_division','TECHNICAL PRESALES','users.id_territory')
                 ->groupby('nik')
                 ->get();
@@ -537,7 +537,7 @@ class HRGAController extends Controller
                 ->where('users.id_division','TECHNICAL')
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
-                ->where('tb_cuti','n')
+                ->where('tb_cuti.status','n')
                 ->groupby('nik')
                 ->get();
         }elseif($div == 'FINANCE' && $pos == 'MANAGER'){
@@ -564,7 +564,7 @@ class HRGAController extends Controller
                 ->groupby('tb_cuti.id_cuti')
                 ->where('users.id_division','FINANCE')
                 ->groupby('nik')
-                ->where('tb_cuti','n')
+                ->where('tb_cuti.status','n')
                 ->get();
         }elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF'){
         	$cuti = DB::table('tb_cuti')
@@ -611,7 +611,7 @@ class HRGAController extends Controller
                     ->whereMonth('tb_cuti.date_req',date('m'))
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
-                ->where('tb_cuti','n')
+                ->where('tb_cuti.status','n')
                 ->groupby('nik')
                 ->get();
 
@@ -655,7 +655,7 @@ class HRGAController extends Controller
                     ->whereYear('tb_cuti.date_req',date('Y'))
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
-                    ->where('tb_cuti','n')
+                    ->where('tb_cuti.status','n')
                     ->groupby('nik')
                     ->get();
 
