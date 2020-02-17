@@ -4661,7 +4661,7 @@ class SALESController extends Controller
 
     public function export(Request $request)
     {
-        $nama = 'ID PROJECT '.date('Y-m-d');
+        $nama = 'ID PROJECT SIP '.date('Y-m-d');
         Excel::create($nama, function ($excel) use ($request) {
         $excel->sheet('Data ID Project', function ($sheet) use ($request) {
         
@@ -4768,7 +4768,7 @@ class SALESController extends Controller
 
     public function export_msp(Request $request)
     {
-         $nama = 'ID PROJECT '.date('Y-m-d');
+         $nama = 'ID PROJECT MSP '.date('Y-m-d');
         Excel::create($nama, function ($excel) use ($request) {
         $excel->sheet('Data ID Project', function ($sheet) use ($request) {
         
@@ -4814,7 +4814,7 @@ class SALESController extends Controller
               if ($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO') {
                   $datasheet[$i] = array(
                     $i,
-                    $data['date'],
+                    date_format(date_create($data['date']),'d-M-Y'),
                     $data['id_project'],
                     $data['no_po_customer'],
                     $data['customer_name'],
@@ -4828,7 +4828,7 @@ class SALESController extends Controller
                 }else{
                 $datasheet[$i] = array(
                     $i,
-                    $data['date'],
+                    date_format(date_create($data['date']),'d-M-Y'),
                     $data['id_project'],
                     $data['no_po_customer'],
                     $data['customer_legal_name'],
