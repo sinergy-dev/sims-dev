@@ -100,7 +100,7 @@
             	@if($cek->status == null)
 	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
 	            <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
-	            @elseif($cek_cuti->status == 'v')
+	            @elseif($cek_cuti->status != 'n')
 	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
 	            <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
 	            @else
@@ -539,9 +539,6 @@
         </div>
       </div>
 
-      
-
-    
 
     <!--MODAL ADD-->  
     <div class="modal fade" id="modalCuti" role="dialog">
@@ -798,7 +795,7 @@
     </div>
 
 
-     <div class="modal fade" id="reason_decline" role="dialog">
+    <div class="modal fade" id="reason_decline" role="dialog">
         <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
@@ -823,7 +820,7 @@
         </div>
     </div>
 
-     <div class="modal fade" id="decline_reason" role="dialog">
+    <div class="modal fade" id="decline_reason" role="dialog">
         <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
@@ -1296,7 +1293,6 @@
       }
     })
 
-  
     @if(Auth::User()->id_position == 'HR MANAGER') {
       $(document).on('click',"button[class^='date_off']",function(e) {
       console.log($(".date_off").val());
