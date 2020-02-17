@@ -346,7 +346,7 @@
                                   </td>
                                   @else
                                       <td>
-                                        @if($data->status == NULL)
+                                        @if($data->status == NULL || $data->status == 'n')
                                         <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
                                         <a href="{{ url('delete_sales', $data->lead_id) }}">
                                           <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
@@ -454,7 +454,7 @@
                                     @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
                                     <td>
                                       @if(Auth::User()->id_territory == $data->id_territory)
-                                        @if($data->status == NULL)
+                                        @if($data->status == NULL || $data->status == 'n')
                                           @if(Auth::User()->id_territory == '')
                                             @if($data->id_position == 'MANAGER')
                                             <button tname="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
@@ -475,7 +475,7 @@
                                     </td>
                                     @else
                                         <td>
-                                          @if($data->status == NULL)
+                                          @if($data->status == NULL || $data->status == 'n')
                                           <button class="btn btn-primary btn-xs" id="btn-edit" style="width: 60px;" value="{{$data->id_cuti}}">Edit</button>
                                           <a href="{{ url('delete_cuti', $data->id_cuti) }}">
                                           <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
@@ -507,7 +507,7 @@
                                   </td>
                                   @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER')
                                   <td>
-                                      @if($data->status == NULL)
+                                      @if($data->status == NULL || $data->status == 'n')
                                         <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
                                         <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
                                       @else
@@ -517,7 +517,7 @@
                                   </td>
                                   @else
                                       <td>
-                                        @if($data->status == NULL)
+                                        @if($data->status == NULL || $data->status == 'n')
                                         <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
                                         <a href="{{ url('delete_sales', $data->lead_id) }}">
                                           <button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
