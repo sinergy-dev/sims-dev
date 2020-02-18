@@ -120,7 +120,6 @@
                 <thead>
                   <tr>
                     <th>No</th>
-                    <!-- <th>No Peminjaman</th> -->
                     <th>Nama Barang</th>
                     <th>Qty</th>
                     <th>Description</th>
@@ -135,7 +134,6 @@
                   @foreach($assetsd as $data)
                   <tr>
                     <td>{{$no++}}</td>
-                    <!-- <td>{{$data->no_transac}}</td> -->
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty_akhir}}</td>
                     <td>{{$data->keterangan}}</td>
@@ -174,7 +172,6 @@
                 <thead>
                   <tr>
                     <th>No</th>
-                    <!-- <th>No Peminjaman</th> -->
                     <th>Nama Barang</th>
                     <th>Qty</th>
                     <th>Description</th>
@@ -187,7 +184,6 @@
                   @foreach($pinjaman as $data)
                   <tr>
                     <td>{{$no++}}</td>
-                    <!-- <td>{{$data->no_transac}}</td> -->
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty_akhir}}</td>
                     <td>{{$data->keterangan}}</td>

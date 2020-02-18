@@ -93,27 +93,27 @@
 
 	          <div class="tab-pane active">
 	          	<div class="table-responsive DTFC_LeftBodyLiner">
-		                <table class="table table-bordered nowrap table-striped dataTable" id="data_all" width="100%" cellspacing="0">
-		                  <thead>
-		                    <tr>
-		                      <th>No Letter</th>
-		                      <th>Position</th>
-		                      <th>Type of Letter</th>
-		                      <th>Month</th>
-		                      <th>Date</th>
-		                      <th>To</th>
-		                      <th>Attention</th>
-		                      <th>Title</th>
-		                      <th>Project</th>
-		                      <th>Description</th>
-		                      <th>From</th>
-		                      <th>Division</th>
-		                      <th>Project ID</th>
-		                      <th>Note</th>
-		                      <th>Action</th>
-		                    </tr>
-		                  </thead>
-		                </table>
+	                <table class="table table-bordered nowrap table-striped dataTable" id="data_all" width="100%" cellspacing="0">
+	                  <thead>
+	                    <tr>
+	                      <th>No Letter</th>
+	                      <th>Position</th>
+	                      <th>Type of Letter</th>
+	                      <th>Month</th>
+	                      <th>Date</th>
+	                      <th>To</th>
+	                      <th>Attention</th>
+	                      <th>Title</th>
+	                      <th>Project</th>
+	                      <th>Description</th>
+	                      <th>From</th>
+	                      <th>Division</th>
+	                      <th>Project ID</th>
+	                      <th>Note</th>
+	                      <th>Action</th>
+	                    </tr>
+	                  </thead>
+	                </table>
 		          </div>
 	          </div>
 
@@ -376,7 +376,12 @@
     function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
       $('#modaledit').modal('show');
       $('#edit_no_letter').val(no_letter);
-      $('#edit_to').val(to);
+      // $('#edit_to').val(to);
+      if (to == "null") {
+        '';
+      } else {
+        $('#edit_to').val(to);
+      }
       if (attention == "null") {
         '';
       } else {

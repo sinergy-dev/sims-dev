@@ -1,6 +1,9 @@
 @extends('template.template_admin-lte')
 @section('content')
   <style type="text/css">
+    .hari_libur {
+      color: red !important;
+    }
     .swal-wide{
         width:850px !important;
     }
@@ -558,10 +561,19 @@
                 <span name="sisa_cuti" id="sisa_cuti"></span><!-- 
                 <input type="text" name="sisa_cuti" id="sisa_cuti" style="width: 50px;color: black;text-decoration: bold" class="form-control sisa_cuti" value="" readonly=""> -->
               </div>
-
-              <div class="form-group">
-                  <label>Date</label>
-                  <input type="text" class="form-control" id="date_start" name="date_start" autocomplete="Off" required>
+              <div class="row">
+                <div class="col-md-9">
+                  <div class="form-group">
+                      <label>Date</label>
+                      <input type="text" class="form-control" id="date_start" name="date_start" autocomplete="Off" required>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                      <label>Avaliable Days</label>
+                      <input type="text" class="form-control" id="avaliableDays">
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">
@@ -905,27 +917,6 @@
     });
 
     $(".users").select2();
-
-    
-    $('#date_start').datepicker({
-      daysOfWeekHighlighted: [0,6],
-      multidate: true,
-    }).on('changeDate', function(e) {
-        // `e` here contains the extra attributes
-        $('#lihat_hasil').val(' ' + e.dates.length)
-        var cutis = $("#sisa_cuti").text();
-        var cutiss = $(".lihat_hasil").val();
-        if (parseFloat(cutis) >= parseFloat(cutiss)) {
-           e.preventDefault();     
-           $(".btn-submit").prop('disabled', false);
-           $("#tooltip").hide();
-        }else if (parseFloat(cutis) < parseFloat(cutiss)) {
-           $(".btn-submit").prop('disabled', true);
-           $("#tooltip").show();
-        }
-       ;
-    });
-
 
     $("#date_end").on("change",function(e){
       var start = $('#date_start').datepicker('getDate');
@@ -1359,48 +1350,99 @@
     
     $("#users").change(function(){
       $.ajax({
-          type:"GET",
-          url:"getCutiUsers",
-          data:{
-            nik:this.value,
-          },
-          success: function(result){
-            $.each(result, function(key, value){
-              $("#lama_kerja").val(Math.floor(value.date_of_entrys / 365) + ' Tahun ' + value.date_of_entrys % 365 +' Hari');
-              $("#current_cuti").val(value.total_cuti);
-              $("#tahun_masuk").val(moment(value.date_of_entry).format('ll'));
-            });
-          },
-        });
+        type:"GET",
+        url:"getCutiUsers",
+        data:{
+          nik:this.value,
+        },
+        success: function(result){
+          $.each(result, function(key, value){
+            $("#lama_kerja").val(Math.floor(value.parameterCuti.date_of_entrys / 365) + ' Tahun ' + value.parameterCuti.date_of_entrys % 365 +' Hari');
+            $("#current_cuti").val(value.parameterCuti.total_cuti);
+            $("#tahun_masuk").val(moment(value.parameterCuti.date_of_entry).format('ll'));
+          });
+        },
+      });
     });
+
+    var hari_libur_nasional = []
+    var hari_libur_nasional_tooltip = []
+    $.ajax({
+      type:"GET",
+      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY')}}",
+      success: function(result){
+        $.each(result.items,function(key,value){
+          hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
+          hari_libur_nasional_tooltip.push(value.summary)
+        })
+      }
+    })
 
     $(".add_cuti").click(function(){
       console.log(this.value)
       $.ajax({
-          type:"GET",
-          url:"getCutiUsers",
-          data:{
-            nik:this.value,
-          },
-          success: function(result){
-            $.each(result, function(key, value){
-              if (value.total_cuti == 0) {
-                $("#sisa_cuti").text(0).style.color = "#ff0000";
-              }else{
-                $("#sisa_cuti").text(value.total_cuti);
-                if (value.total_cuti > 5) {
-                  document.getElementById("sisa_cuti").style.color = "blue";
-                }else{
-                  document.getElementById("sisa_cuti").style.color = "#ff0000";
-                }
-                
+        type:"GET",
+        url:"getCutiUsers",
+        data:{
+          nik:this.value,
+        },
+        success: function(result){
+          if (result.parameterCuti.total_cuti == 0) {
+            $("#sisa_cuti").text(0).style.color = "#ff0000";
+          } else {
+            $("#sisa_cuti").text(result.parameterCuti.total_cuti);
+            if (result.parameterCuti.total_cuti > 5) {
+              document.getElementById("sisa_cuti").style.color = "blue";
+            } else {
+              document.getElementById("sisa_cuti").style.color = "#ff0000";
+            }
+          }
+
+          var disableDate = []
+          $.each(result.allCutiDate,function(key,value){
+            disableDate.push(moment( value).format("MM/DD/YYYY"))
+          })
+
+          $('#date_start').datepicker({
+            weekStart: 1,
+            daysOfWeekDisabled: "0,6",
+            daysOfWeekHighlighted: [0,6],
+            startDate: "02/18/2020",
+            todayHighlight: true,
+            multidate: true,
+            datesDisabled: disableDate,
+            beforeShowDay: function(date){
+              var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+              if(index > 0){
+                return {
+                  enabled: false,
+                  tooltip: hari_libur_nasional_tooltip[index],
+                  classes: 'hari_libur'
+                };
               }
+            },
+          }).on('changeDate', function(e) {
+            $('#lihat_hasil').val(' ' + e.dates.length)
+            var cutis = $("#sisa_cuti").text();
+            var cutiss = $(".lihat_hasil").val();
+            // console.log(cutis + " " + cutiss)
 
-            });
-          },
-        });
+            $("#avaliableDays").val(result.parameterCuti.total_cuti - cutiss)
+            if (parseFloat(cutis) >= parseFloat(cutiss)) {
+              e.preventDefault();     
+              $(".btn-submit").prop('disabled', false);
+              $("#tooltip").hide();
+            } else if (parseFloat(cutis) < parseFloat(cutiss)) {
+              $(".btn-submit").prop('disabled', true);
+              $("#tooltip").show();
+            }
+          });
 
-        $("#modalCuti").modal("show");
+          
+        },
+      });
+
+      $("#modalCuti").modal("show");
     })
 
     $(".toggle-arrow").click(function(){
