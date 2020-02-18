@@ -829,6 +829,16 @@ class HRGAController extends Controller
 
     public function store_cuti(Request $request)
     {
+        // $hari = DB::table('tb_cuti')
+        //             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+        //             ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
+        //             ->groupby('tb_cuti_detail.id_cuti')
+        //             ->first();
+
+        // $array = explode(',',$hari->dates);
+
+        // return $array;
+
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -841,33 +851,18 @@ class HRGAController extends Controller
 
         $nik = Auth::User()->nik;
         $date_now = date('Y-m-d');
-
-        
         
         $array =  explode(',', $_POST['date_start']);
 
         $hitung = sizeof($array);
 
-        // if (Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER' || Auth::User()->id_position == 'HR MANAGER') {
-        // 	$tambah = new Cuti();
-	       //  $tambah->nik = $nik;
-	       //  $tambah->date_req = $date_now;
-	       //  $tambah->reason_leave = $request['reason'];
-        //     $tambah->jenis_cuti = $request['jenis_cuti'];
-	       //  $tambah->save();
-
-	       //  $update_cuti = User::where('nik',$nik)->first();
-	       //  $update_cuti->cuti = $update_cuti->cuti - $hitung;
-	       //  $update_cuti->update();
-        // }else{
-        	$tambah = new Cuti();
-	        $tambah->nik = $nik;
-	        $tambah->date_req = $date_now;
-	        $tambah->reason_leave = $request['reason'];
-            $tambah->jenis_cuti = $request['jenis_cuti'];
-            $tambah->status = 'n';
-	        $tambah->save();
-        // }
+    	$tambah = new Cuti();
+        $tambah->nik = $nik;
+        $tambah->date_req = $date_now;
+        $tambah->reason_leave = $request['reason'];
+        $tambah->jenis_cuti = $request['jenis_cuti'];
+        $tambah->status = 'n';
+        $tambah->save();
 
         foreach ($array as $dates) {
             $store = new CutiDetil();
@@ -880,14 +875,6 @@ class HRGAController extends Controller
         $id_cuti    = $tambah->id_cuti;
         $getStatus  = Cuti::select('status')->where('id_cuti',$id_cuti)->first();
         $status     = $getStatus->status;
-
-        // if ($div == 'TECHNICAL' && $ter == 'DVG' || $div == 'TECHNICAL' && $ter == 'DPG') {
-        //     $kirim = User::where('email', 'ladinar@sinergy.co.id')
-        //                     ->get();
-
-        //     Notification::send($kirim, new CutiKaryawan());
-        // }
-
 
         if ($ter != NULL) {
             if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER') {
@@ -904,10 +891,9 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
         	
-    		// $kirim = User::where('email', $nik_kirim->email)->first()->email;
-            $kirim = User::where('email', 'ladinar@sinergy.co.id')->first()->email;
+    		$kirim = User::where('email', $nik_kirim->email)->first()->email;
+            // $kirim = User::where('email', 'ladinar@sinergy.co.id')->first()->email;
 
-    		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
             $name_cuti = DB::table('tb_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
                 ->select('users.name')
@@ -915,12 +901,14 @@ class HRGAController extends Controller
 
             $hari = DB::table('tb_cuti')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status')
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
                     ->groupby('tb_cuti_detail.id_cuti')
                     ->where('tb_cuti.id_cuti', $id_cuti)
                     ->first();
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari));
+            $ardetil = explode(',',$hari->dates);
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
             
         }else{
             if ($div == 'HR') {
@@ -935,11 +923,10 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
         	
-    		$kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
+    		// $kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
             //
-            // $kirim = User::where('email', $nik_kirim->email)->first()->email;
+            $kirim = User::where('email', $nik_kirim->email)->first()->email;
 
-    		// Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
             $name_cuti = DB::table('tb_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
                 ->select('users.name')
@@ -947,12 +934,16 @@ class HRGAController extends Controller
 
             $hari = DB::table('tb_cuti')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status')
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
                     ->groupby('tb_cuti_detail.id_cuti')
                     ->where('tb_cuti.id_cuti', $id_cuti)
                     ->first();
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari));
+            $ardetil = explode(',',$hari->dates);
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
+
+
         	
         }
 
@@ -1027,12 +1018,14 @@ class HRGAController extends Controller
 
         $hari = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status')
+                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
                 ->groupby('tb_cuti_detail.id_cuti')
                 ->where('tb_cuti.id_cuti', $id_cuti)
                 ->first();
 
-        Mail::to('agastya@sinergy.co.id')->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari));        
+        $ardetil = explode(',', $hari->dates); 
+
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil));        
 
         // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
@@ -1047,6 +1040,27 @@ class HRGAController extends Controller
         $update->decline_reason = $request['keterangan'];
         $update->status = 'd';
         $update->update();
+
+        // $kirim = User::where('email', 'ladinar@sinergy.co.id')->get();
+        $nik_kirim = DB::table('tb_cuti')->join('users','users.nik','=','tb_cuti.nik')->select('users.email')->where('id_cuti',$id_cuti)->first();
+            //
+        $kirim = User::where('email', $nik_kirim->email)->first()->email;
+
+        $name_cuti = DB::table('tb_cuti')
+            ->join('users','users.nik','=','tb_cuti.nik')
+            ->select('users.name')
+            ->where('id_cuti', $id_cuti)->first();
+
+        $hari = DB::table('tb_cuti')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status','tb_cuti.decline_reason',DB::raw('group_concat(date_off) as dates'))
+                ->groupby('tb_cuti_detail.id_cuti')
+                ->where('tb_cuti.id_cuti', $id_cuti)
+                ->first();
+
+        $ardetil = explode(',', $hari->dates); 
+
+        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
 
         return redirect()->back();
     }
