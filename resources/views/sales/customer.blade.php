@@ -44,7 +44,7 @@
       <div class="box-header">
 
           <div class="pull-right">
-            @if(Auth::User()->id_position == 'SALES' || Auth::User()->id_division == 'SALES' && Auth::User()->id_company == '2')
+            @if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'SALES' && Auth::User()->id_company == '2')
             <button style="width: 100px" class="btn btn-success btn-md margin-bottom float-right" id="btn_add_customer" data-target="#modal_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
             @elseif(Auth::User()->id_position == 'DIRECTOR')
             <button style="width: 100px" class="btn btn-success btn-md margin-bottom float-right" id="btn_add_customer" data-target="#modal_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
