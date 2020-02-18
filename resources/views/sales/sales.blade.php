@@ -1131,7 +1131,12 @@
                 @elseif(Auth::User()->id_territory == 'OPERATION')
                   @foreach($leads as $data)
                   <tr>
-                    <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td>
+                    <!-- <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td> -->
+                    @if($data->result != 'OPEN')
+                    <a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a>
+                    @else
+                    {{ $data->lead_id }}
+                    @endif
                     <td>{{ $data->brand_name}}</td>
                     <td>{{ $data->opp_name}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
@@ -1194,7 +1199,14 @@
                 @elseif(Auth::User()->id_division == 'SALES')
                   @foreach($lead as $data)
                     <tr>
-                      <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td>
+                      <!-- <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td> -->
+                      <td>
+                        @if($data->result != 'OPEN')
+                          <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
+                        @else
+                          {{ $data->lead_id }}
+                        @endif
+                      </td>
                       <td>{{ $data->brand_name}}</td>
                       <td>{{ $data->opp_name}}</td>
                       <td>{!!substr($data->created_at,0,10)!!}</td>
@@ -1958,7 +1970,14 @@
                   @if($data->year == $year_now-1)
                     @if($data->result != 'WIN' && $data->result != 'LOSE' && $data->result != 'CANCEL')
                       <tr>
-                        <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td>
+                        <!-- <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td> -->
+                        <td>
+                        @if($data->result != 'OPEN')
+                          <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
+                        @else
+                          {{ $data->lead_id }}
+                        @endif
+                        </td>
                         <td>{{ $data->brand_name}}</td>
                         <td>{{ $data->opp_name}}</td>
                         <td>{!!substr($data->created_at,0,10)!!}</td>
@@ -2050,7 +2069,13 @@
                     @endif
                   @elseif($data->year == $year_now)
                     <tr>
-                        <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td>
+                        <td>
+                        @if($data->result != 'OPEN')
+                          <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
+                        @else
+                          {{ $data->lead_id }}
+                        @endif
+                        </td>
                         <td>{{ $data->brand_name}}</td>
                         <td>{{ $data->opp_name}}</td>
                         <td>{!!substr($data->created_at,0,10)!!}</td>

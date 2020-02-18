@@ -4350,8 +4350,8 @@ class SALESController extends Controller
         $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->first();
 
         Mail::to($users->email)->send(new mailPID($users,$pid_info));
-        /*Mail::to('faiqoh@sinergy.co.id')->send(new mailPID($pid_info));
-        Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info));
+        Mail::to('faiqoh@sinergy.co.id')->send(new mailPID($pid_info));
+        /*Mail::to('ladinar@sinergy.co.id')->send(new mailPID($pid_info));
         Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));*/
 
         return redirect()->to('/salesproject')->with('success', 'Create PID Successfully!');
