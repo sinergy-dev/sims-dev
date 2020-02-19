@@ -571,7 +571,7 @@
                 <div class="col-md-3">
                   <div class="form-group">
                       <label>Avaliable Days</label>
-                      <input type="text" class="form-control" id="avaliableDays">
+                      <input type="text" class="form-control" id="avaliableDays" readonly="true">
                   </div>
                 </div>
               </div>
