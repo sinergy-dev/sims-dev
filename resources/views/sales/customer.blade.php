@@ -23,19 +23,19 @@
 </section>
 
 <section class="content">
-  @if (session('update'))
-    <div class="alert alert-warning" id="alert">
+    @if (session('update'))
+    <div class="alert alert-warning" style="background-color: yellow" id="alert">
         {{ session('update') }}
     </div>
-      @endif
+    @endif
 
-      @if (session('success'))
-    <div class="alert alert-primary" id="alert">
+    @if (session('success'))
+    <div class="alert alert-primary" style="background-color: green;color: white" id="alert">
         {{ session('success') }}
     </div>
-      @endif
+    @endif
 
-      @if (session('alert'))
+    @if (session('alert'))
     <div class="alert alert-success" id="alert">
         {{ session('alert') }}
     </div>

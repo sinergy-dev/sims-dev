@@ -1,3 +1,5 @@
+<style type="text/css">
+</style>
 <div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;">
 	@if($hari->status == 'v')
 	<p>
@@ -13,17 +15,84 @@
 		<tr>
 			<th>Lama Cuti</th>
 			<th> : </th>
-			<td>{{$hari->days}}</td>
+			<td>{{$hari->days}} hari</td>
+		</tr>
+		<tr>
+			<th>Tanggal Off cuti sbb</th>
+			<th> : </th>
+		</tr>
+		<tr>
+			<td>
+				@foreach($ardetil as $data)
+				<ul>
+					
+					<li>
+						{{date('d-M-Y', strtotime($data))}}
+					</li>
+					
+				</ul>
+				@endforeach
+			</td>
 		</tr>
 		<tr>
 			<th>Tanggal Request Cuti</th>
 			<th> : </th>
-			<td>{{$hari->date_req}}</td>
+			<td>{{date('d-M-Y', strtotime($hari->date_req))}}</td>
 		</tr>
 		<tr>
 			<th>Note</th>
 			<th> : </th>
 			<td>{{$hari->reason_leave}}</td>
+		</tr>
+	</table>
+	<br>
+	@elseif($hari->status == 'd')
+	<p>
+		Hello Sinergy,
+		<br>Sorry Cuti Kamu di Decline sama Bos! Berikut Detail cuti kamu:
+	</p>
+	<table style="text-align: left;margin: 5px;">
+		<tr>
+			<th>Nama</th>
+			<th> : </th>
+			<td>{{$name_cuti->name}}</td>
+		</tr>
+		<tr>
+			<th>Lama Cuti</th>
+			<th> : </th>
+			<td>{{$hari->days}} hari</td>
+		</tr>
+		<tr>
+			<th>Tanggal Off cuti sbb</th>
+			<th> : </th>
+		</tr>
+		<tr>
+			<td>
+				@foreach($ardetil as $data)
+				<ul>
+					
+					<li>
+						{{date('d-M-Y', strtotime($data))}}
+					</li>
+					
+				</ul>
+				@endforeach
+			</td>
+		</tr>
+		<tr>
+			<th>Tanggal Request Cuti</th>
+			<th> : </th>
+			<td>{{date('d-M-Y', strtotime($hari->date_req))}}</td>
+		</tr>
+		<tr>
+			<th>Note</th>
+			<th> : </th>
+			<td>{{$hari->reason_leave}}</td>
+		</tr>
+		<tr>
+			<th>Note decline</th>
+			<th> : </th>
+			<td>{{$hari->decline_reason}}</td>
 		</tr>
 	</table>
 	<br>
@@ -41,12 +110,29 @@
 		<tr>
 			<th>Lama Cuti</th>
 			<th> : </th>
-			<td>{{$hari->days}}</td>
+			<td>{{$hari->days}} hari</td>
+		</tr>
+		<tr>
+			<th>Tanggal Off cuti sbb</th>
+			<th> : </th>
+		</tr>
+		<tr>
+			<td>
+				@foreach($ardetil as $data)
+				<ul>
+					
+					<li>
+						{{date('d-M-Y', strtotime($data))}}
+					</li>
+					
+				</ul>
+				@endforeach
+			</td>
 		</tr>
 		<tr>
 			<th>Tanggal Request Cuti</th>
 			<th> : </th>
-			<td>{{$hari->date_req}}</td>
+			<td>{{date('d-M-Y', strtotime($hari->date_req))}}</td>
 		</tr>
 		<tr>
 			<th>Note</th>
