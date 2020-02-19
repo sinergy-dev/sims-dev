@@ -908,7 +908,8 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Permohonan Cuti'));
+            
             
         }else{
             if ($div == 'HR') {
@@ -941,7 +942,9 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
+
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Approve - Permohonan Cuti'));
 
 
         	
@@ -1025,7 +1028,7 @@ class HRGAController extends Controller
 
         $ardetil = explode(',', $hari->dates); 
 
-        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil));        
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Approve - Permohonan Cuti'));        
 
         // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
@@ -1060,7 +1063,7 @@ class HRGAController extends Controller
 
         $ardetil = explode(',', $hari->dates); 
 
-        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
+        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Decline - Permohonan Cuti'));
 
         return redirect()->back();
     }
