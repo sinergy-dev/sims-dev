@@ -55,6 +55,10 @@ class Kernel extends ConsoleKernel
             // syslog(1, 'helooo');
         })->monthly()
         ->at('01:00');
+
+        $schedule->call(function() {
+            Artisan::call('UpdateStatusKaryawan:updatestatuskaryawan');
+        })->dailyAt('17:35');
         // $schedule->call(function() {
         //     syslog(1, 'helooo');
         // })->everyMinute();
