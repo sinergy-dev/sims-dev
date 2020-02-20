@@ -4093,6 +4093,7 @@ class SALESController extends Controller
                     $tambah->save();
 
                     $update = PID::where('lead_id',$request['customer_name'])->first();
+                    $update->no_po  = $request['p_order'];
                     $update->status = 'done';
                     $update->save();
 

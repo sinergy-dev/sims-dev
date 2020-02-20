@@ -23,19 +23,19 @@
 </section>
 
 <section class="content">
-  @if (session('update'))
-    <div class="alert alert-warning" id="alert">
+    @if (session('update'))
+    <div class="alert alert-warning" style="background-color: yellow" id="alert">
         {{ session('update') }}
     </div>
-      @endif
+    @endif
 
-      @if (session('success'))
-    <div class="alert alert-primary" id="alert">
+    @if (session('success'))
+    <div class="alert alert-primary" style="background-color: green;color: white" id="alert">
         {{ session('success') }}
     </div>
-      @endif
+    @endif
 
-      @if (session('alert'))
+    @if (session('alert'))
     <div class="alert alert-success" id="alert">
         {{ session('alert') }}
     </div>
@@ -44,13 +44,15 @@
       <div class="box-header">
 
           <div class="pull-right">
-            @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division != 'FINANCE' || Auth::User()->id_division == 'SALES' && Auth::User()->id_company == '2')
+            @if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'SALES' && Auth::User()->id_company == '2')
             <button style="width: 100px" class="btn btn-success btn-md margin-bottom float-right" id="btn_add_customer" data-target="#modal_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
             @elseif(Auth::User()->id_position == 'DIRECTOR')
             <button style="width: 100px" class="btn btn-success btn-md margin-bottom float-right" id="btn_add_customer" data-target="#modal_customer" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspCustomer</button>
             @endif
           </div>
       </div>
+      <!---->
+      <!---->
 
       <div class="box-body">
         <div class="table-responsive">

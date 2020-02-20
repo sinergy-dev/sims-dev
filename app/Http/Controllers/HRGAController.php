@@ -908,7 +908,8 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Permohonan Cuti'));
+            
             
         }else{
             if ($div == 'HR') {
@@ -941,7 +942,9 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
+
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Approve - Permohonan Cuti'));
 
 
         	
@@ -1025,7 +1028,7 @@ class HRGAController extends Controller
 
         $ardetil = explode(',', $hari->dates); 
 
-        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil));        
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Approve - Permohonan Cuti'));        
 
         // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
@@ -1060,7 +1063,7 @@ class HRGAController extends Controller
 
         $ardetil = explode(',', $hari->dates); 
 
-        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil));
+        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Decline - Permohonan Cuti'));
 
         return redirect()->back();
     }
@@ -1252,9 +1255,28 @@ class HRGAController extends Controller
 
     public function getCutiUsers(Request $request){
 
-        $getcuti = User::select('nik',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),DB::raw('(CASE WHEN (cuti IS NULL) THEN 0 ELSE cuti END) as cuti'),DB::raw('(CASE WHEN (cuti2 IS NULL) THEN 0 ELSE cuti2 END) as cuti2'),DB::raw('sum(cuti + cuti2) AS total_cuti'),'date_of_entry')->where('nik',$request->nik)->groupby('users.nik')->get();
-        //$tesss
-        return $getcuti;
+        $getcuti = User::select(
+            'nik',
+            DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),
+            DB::raw('(CASE WHEN (cuti IS NULL) THEN 0 ELSE cuti END) as cuti'),
+            DB::raw('(CASE WHEN (cuti2 IS NULL) THEN 0 ELSE cuti2 END) as cuti2'),
+            DB::raw('sum(cuti + cuti2) AS total_cuti'),
+            'date_of_entry'
+        )->where('nik',$request->nik)
+        ->groupby('users.nik')
+        ->get();
+
+
+        $getAllCutiDate = DB::table('tb_cuti_detail')
+            ->select('date_off')
+            ->whereIn('id_cuti',function($query){
+                $query->select('id_cuti')
+                    ->from('tb_cuti')
+                    ->where('nik','=',Auth::user()->nik);
+            })
+            ->pluck('date_off');
+
+        return collect(["parameterCuti" => $getcuti[0],"allCutiDate" => $getAllCutiDate]);
     }
 
     public function getCutiAuth(Request $request){
