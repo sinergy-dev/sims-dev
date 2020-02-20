@@ -447,12 +447,12 @@ class AssetAtkController extends Controller
         $update->status     = 'ACCEPT';
         $update->update();
 
-        /*$qty_awal = AssetAtk::select('qty')->where('id_barang', $id_barang)->first();
+        $qty_awal = AssetAtk::select('qty')->where('id_barang', $id_barang)->first();
         $qty_pinjam = AssetAtkTransaction::select('qty_akhir')->where('id_transaction', $id_transaction)->first();
 
        	$update_qty = AssetAtk::where('id_barang', $id_barang)->first();
        	$update_qty->qty = $qty - $qty_akhir;
-       	$update_qty->update();*/
+       	$update_qty->update();
 
        	return redirect()->back()->with('update', 'Successfully!');
     }

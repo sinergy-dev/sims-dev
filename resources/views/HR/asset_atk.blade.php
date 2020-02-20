@@ -500,7 +500,7 @@
 
          $.ajax({
           type:"GET",
-          url:'get_qty_atk',
+          url:'asset_atk/get_qty_atk',
           data:{
             atk:this.value,
           },
