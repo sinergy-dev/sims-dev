@@ -376,6 +376,18 @@ class AssetAtkController extends Controller
         return redirect()->back();
     }
 
+    public function update_stok(Request $request)
+    {
+        $id_barang = $request['id_barang_restok'];
+        $qty_awal = AssetAtk::select('qty')->where('id_barang', $id_barang)->first();
+
+        $update = AssetAtk::where('id_barang', $id_barang)->first();
+        $update->qty = $qty_awal->qty + $request['qty_masuk_restok'];
+        $update->update();
+
+        return redirect()->back();
+    }
+
     public function getqtyatk(Request $request)
     {
     	$atk = $request['atk'];
@@ -412,9 +424,9 @@ class AssetAtkController extends Controller
 		$store->save();
 
 
-        $update         = AssetAtk::where('id_barang', $request->atk)->first();
+        /*$update         = AssetAtk::where('id_barang', $request->atk)->first();
         $update->qty    = $count_qty->qty - $qty_akhir;
-        $update->update();
+        $update->update();*/
 
 		return redirect()->back()->with('update', 'Request ATK akan diproses!');
     }

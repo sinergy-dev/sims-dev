@@ -64,7 +64,7 @@
             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="kategori" aria-selected="false">List Asset</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#peminjaman_asset" role="tab" aria-controls="home" aria-selected="true">Request Asset</a>
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#peminjaman_asset" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
           </li>
           @if(Auth::User()->id_division == 'HR')
           <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
@@ -98,11 +98,9 @@
                     <td>{{$data->description}}</td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
-                      <a href="{{url('/detail_asset_atk', $data->id_barang) }}"><button class="btn btn-sm" style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button></a>
-                      <button class="btn btn-sm btn-primary" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->description}}')">Edit</button>
-                      <!-- <button class="btn btn-sm btn-danger" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#delete_modal" onclick="delete_asset('{{$data->id_barang}}')">Hapus</button> -->
-                      <!-- <button class="btn btn-sm btn-primary" style="width: 70px; height: 25px;" disabled>Edit</button>
-                      <button class="btn btn-sm btn-danger" style="width: 70px; height: 25px;" disabled>Hapus</button> -->
+                      <a href="{{url('/asset_atk/detail_asset_atk', $data->id_barang) }}"><button class="btn btn-xs" style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button></a>
+                      <button class="btn btn-xs btn-primary" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->description}}')">Edit</button>
+                      <button class="btn btn-xs btn-warning" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modalrestock" onclick="update_stok('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->qty}}', '{{$data->description}}')">Restock</button>
                     </td>
                     @endif
                   </tr>
@@ -150,11 +148,11 @@
                     </td>
                     <td>
                       @if($data->status == 'PENDING')
-                      <button class="btn btn-sm btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
-                      <button class="btn btn-sm btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
+                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
+                      <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
                       @else
-                      <button class="btn btn-sm btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
-                      <button class="btn btn-sm btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
+                      <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
+                      <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
                       @endif
                     </td>
                   </tr>
@@ -233,7 +231,7 @@
           <h4 class="modal-title">Add Asset HR/GA</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('store_asset_atk')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/store_asset_atk')}}" id="modalProgress" name="modalProgress">
             @csrf
           <div class="form-group">
             <label for="sow">Nama Barang</label>
@@ -244,12 +242,12 @@
             <input name="qty" id="qty" type="number" class="form-control" required="">
           </div>
           <div class="form-group">
-            <label for="sow">Keterangan</label>
+            <label for="sow">Deskripsi</label>
             <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -265,7 +263,7 @@
           <h4 class="modal-title">Update Asset</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('edit_atk')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/edit_atk')}}" id="modalProgress" name="modalProgress">
             @csrf
           <input type="" name="id_barang_edit" id="id_barang_edit" hidden>
           <div class="form-group">
@@ -277,8 +275,44 @@
             <textarea name="deskripsi_edit" id="deskripsi_edit" class="form-control" required=""></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-warning"><i class="fa fa-check"></i>&nbsp Update</button>
+              <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-xs btn-warning" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Update</button>
+            </div>
+        </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalrestock" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Update Stok Asset</h4>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{{url('asset_atk/update_stok')}}" id="modalProgress" name="modalProgress">
+            @csrf
+          <input type="" name="id_barang_restok" id="id_barang_restok" hidden>
+          <div class="form-group">
+            <label>Nama Barang</label>
+            <input type="text" name="nama_barang_restok" id="nama_barang_restok" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+           <label>Qty Awal</label>
+            <input type="text" name="qty_awal_restok" id="qty_awal_restok" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+           <label>Qty Masuk</label>
+            <input type="number" name="qty_masuk_restok" id="qty_masuk_restok" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="sow">Deskripsi</label>
+            <textarea name="deskripsi_restok" id="deskripsi_restok" class="form-control" readonly></textarea>
+          </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-xs btn-warning" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Update</button>
             </div>
         </form>
         </div>
@@ -290,10 +324,10 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Peminjaman</h4>
+          <h4 class="modal-title">Request ATK</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('request_atk')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/request_atk')}}" id="modalProgress" name="modalProgress">
             @csrf
           <input type="text" name="id_barang" id="id_barang" hidden>
           <div class="form-group">
@@ -327,8 +361,8 @@
             <textarea class="form-control" name="keterangan"></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -341,7 +375,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('accept_request')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/accept_request')}}" id="modalProgress" name="modalProgress">
             @csrf
           <input type="text" name="id_barang_update" id="id_barang_update" hidden>
           <input type="text" name="id_transaction_update" id="id_transaction_update" hidden>
@@ -352,8 +386,8 @@
           </div>
           
           <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-            <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-check"></i>&nbsp YES</button>
+            <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+            <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
           </div>
         </form>
         </div>
@@ -366,7 +400,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('reject_request')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/reject_request')}}" id="modalProgress" name="modalProgress">
             @csrf
           <input type="text" name="id_barang_reject" id="id_barang_reject" hidden>
           <input type="text" name="id_transaction_reject" id="id_transaction_reject" hidden>
@@ -380,8 +414,8 @@
           	<textarea class="form-control" name="note_reject" id="note_reject" required></textarea>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-            <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-check"></i>&nbsp YES</button>
+            <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+            <button type="submit" class="btn btn-xs btn-danger" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
           </div>
         </form>
         </div>
@@ -401,7 +435,7 @@
           	<textarea class="form-control" name="note_reject" id="note_reject2" readonly></textarea>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+            <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
           </div>
         </form>
         </div>
@@ -462,7 +496,7 @@
 
          $.ajax({
           type:"GET",
-          url:'/get_qty_atk',
+          url:'get_qty_atk',
           data:{
             atk:this.value,
           },
@@ -485,6 +519,13 @@
       $('#id_barang_edit').val(id_barang);
       $('#nama_barang_edit').val(nama_barang);
       $('#deskripsi_edit').val(description);
+    }
+
+    function update_stok(id_barang,nama_barang,qty,description){
+      $('#id_barang_restok').val(id_barang);
+      $('#nama_barang_restok').val(nama_barang);
+      $('#qty_awal_restok').val(qty);
+      $('#deskripsi_restok').val(description);
     }
 
     $('#myTab a').click(function(e) {
