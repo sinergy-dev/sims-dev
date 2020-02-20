@@ -172,7 +172,7 @@ class AssetAtkController extends Controller
         }
 
         $asset = DB::table('tb_asset_atk')->join('users', 'users.nik', '=', 'tb_asset_atk.nik')
-                ->select('nama_barang', 'id_barang', 'name', 'qty', 'description')
+                ->select('nama_barang', 'tb_asset_atk.id_barang', 'name', 'qty', 'description','status')
                 ->get();
 
         $assetsd    = DB::table('tb_asset_atk_transaction')
@@ -190,7 +190,10 @@ class AssetAtkController extends Controller
 
         $atk = AssetAtk::select('id_barang','nama_barang')->get();
 
-    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','atk'));
+        $cek = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk_transaction.id_barang', '=', 'tb_asset_atk.id_barang', 'left')->select('tb_asset_atk_transaction.id_barang')->get();
+        // return $cek;
+
+    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek'));
     }
 
     public function detail($id_barang)
@@ -371,6 +374,7 @@ class AssetAtkController extends Controller
         $tambah->nama_barang    = $request['nama_barang'];
         $tambah->qty            = $request['qty'];
         $tambah->description    = $request['keterangan'];
+        $tambah->status         = 'NEW';
         $tambah->save();
 
         return redirect()->back();
@@ -424,9 +428,10 @@ class AssetAtkController extends Controller
 		$store->save();
 
 
-        /*$update         = AssetAtk::where('id_barang', $request->atk)->first();
-        $update->qty    = $count_qty->qty - $qty_akhir;
-        $update->update();*/
+        $update         = AssetAtk::where('id_barang', $request->atk)->first();
+        // $update->qty    = $count_qty->qty - $qty_akhir;
+        $update->status = 'NN';
+        $update->update();
 
 		return redirect()->back()->with('update', 'Request ATK akan diproses!');
     }

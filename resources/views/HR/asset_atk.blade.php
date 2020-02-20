@@ -98,7 +98,11 @@
                     <td>{{$data->description}}</td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
+                      @if($data->status == 'NN')
                       <a href="{{url('/asset_atk/detail_asset_atk', $data->id_barang) }}"><button class="btn btn-xs" style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button></a>
+                      @else
+                      <button class="btn btn-xs" disabled style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button>
+                      @endif
                       <button class="btn btn-xs btn-primary" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->description}}')">Edit</button>
                       <button class="btn btn-xs btn-warning" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modalrestock" onclick="update_stok('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->qty}}', '{{$data->description}}')">Restock</button>
                     </td>
