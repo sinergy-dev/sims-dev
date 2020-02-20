@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Artisan;
 
 class Kernel extends ConsoleKernel
 {
@@ -35,7 +36,6 @@ class Kernel extends ConsoleKernel
             if (date("m") == 3 && date("j") == 31) {
                 Artisan::call('CutiRestart:cutirestart');
             }
-            // syslog(1, 'helooo');
         })
         ->monthly()
         ->at('01:00');
@@ -44,7 +44,6 @@ class Kernel extends ConsoleKernel
             if (date("m") == 1 && date("j") == 1) {
                 Artisan::call('ResetAwalTahun:resetawaltahun');
             }
-            // syslog(1, 'helooo');
         })->monthly()
         ->at('01:00');
 
@@ -52,16 +51,12 @@ class Kernel extends ConsoleKernel
             if (date("m") == 12 && date("j") == 31) {
                 Artisan::call('HandoverCuti:handovercuti');
             }
-            // syslog(1, 'helooo');
         })->monthly()
         ->at('01:00');
 
         $schedule->call(function() {
             Artisan::call('UpdateStatusKaryawan:updatestatuskaryawan');
-        })->dailyAt('17:35');
-        // $schedule->call(function() {
-        //     syslog(1, 'helooo');
-        // })->everyMinute();
+        })->daily();
     }
 
     /**

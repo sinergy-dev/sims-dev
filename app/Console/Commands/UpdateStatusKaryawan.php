@@ -46,12 +46,16 @@ class UpdateStatusKaryawan extends Command
             // print_r($data->name . $data->nik . "\n");
             if ($data->date_of_entrys >= '365') {
                 if ($data->status_karyawan == 'belum_cuti') {
-                   $update = User::where('nik',$data->nik)->first();
-                   $data->status_karyawan = 'cuti';
-                   $data->update();
+                    $update = User::where('nik',$data->nik)->first();
+                    $data->status_karyawan = 'cuti';
+                    $data->update();
+                    syslog(LOG_ERR, $update->nik . " - " . $update->name . "leaving permit permission updated ");
                 }
             }
             
         }
+
+        syslog(LOG_ERR, "All user has been check for leaving permit");
+
     }
 }
