@@ -1407,7 +1407,7 @@
             weekStart: 1,
             daysOfWeekDisabled: "0,6",
             daysOfWeekHighlighted: [0,6],
-            startDate: "02/18/2020",
+            startDate: moment().format("MM/DD/YYYY"),
             todayHighlight: true,
             multidate: true,
             datesDisabled: disableDate,
@@ -1418,6 +1418,11 @@
                   enabled: false,
                   tooltip: hari_libur_nasional_tooltip[index],
                   classes: 'hari_libur'
+                };
+              } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
+                return {
+                  enabled: false,
+                  tooltip: 'Cuti Pribadi',
                 };
               }
             },
