@@ -3955,7 +3955,7 @@
 
         $.ajax({
           type:"GET",
-          url:'/getleadpid',
+          url:'getleadpid',
           data:{
             lead_sp:cn,
           },
