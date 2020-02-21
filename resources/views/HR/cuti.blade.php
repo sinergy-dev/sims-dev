@@ -367,7 +367,7 @@
                 </div>
                 @endif 
 
-                  @if(Auth::User()->id_position == 'STAFF' || Auth::User()->id_position == 'ENGINEER STAFF' || Auth::User()->id_position == 'PM' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position != 'MANAGER')  
+                  @if(Auth::User()->id_position == 'STAFF' || Auth::User()->id_position == 'ENGINEER STAFF' || Auth::User()->id_position == 'PM' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position != 'MANAGER' || Auth::User()->id_position == "WAREHOUSE")  
                   <div class="tab-pane active" id="staff">
                   @else
                   <div class="tab-pane" id="staff">
