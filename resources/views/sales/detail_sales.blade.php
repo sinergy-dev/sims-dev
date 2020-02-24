@@ -124,7 +124,11 @@
       		  	</tr>
       		  	<tr>
       		  		<th>Amount</th>
+      		  		@if($tampilkan->deal_price == null)
       		  		<td>Rp <b class="money">{{ $tampilkan->amount }}</b></td>
+      		  		@else
+      		  		<td>Rp <b class="money">{{ $tampilkan->deal_price }}</b></td>
+      		  		@endif
       		  	</tr>
       		  	<tr>
       		  		<th>Closing date</th>
@@ -516,6 +520,7 @@
                       <i class="" aria-hidden="true">Rp.</i>
                     </div>
                 </div>
+                <input type="text" name="amount_cek_tp" value="{{$tampilkanc->amount}}" hidden>
                 <div class="form-group margin-left-right inputsp inputIconBg">
                   <label class="margin-top-form">--Deal Price--</label>
                   <input class="form-control float-left money" type="text" aria-describedby="" placeholder="Enter Deal Price" name="deal_price" id="deal_price" value="{{$tampilkanc->deal_price}}" />

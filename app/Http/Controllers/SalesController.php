@@ -566,7 +566,69 @@ class SALESController extends Controller
 
                 $total_leads = count($lead);
             
-            } else {
+            } else if ($ter == 'DVG' && $pos == 'MANAGER'){
+                $leads = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory')
+                ->where('result','!=','hmm')
+                ->orderBy('created_at','desc')
+                ->get();
+
+                $dates = Date('Y');
+
+                $lead = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory')
+                ->where('result','!=','hmm')
+                ->whereYear('sales_lead_register.created_at', '=', $dates-1)
+                ->orwhere('year',$dates)
+                ->orderBy('created_at','desc')
+                ->get();
+
+                $total_lead = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->where('sales_lead_register.year',$dates)
+                        ->count('lead_id');
+
+                $total_open = DB::table('sales_lead_register')
+                            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                            ->where('sales_lead_register.result','')
+                            ->where('sales_lead_register.year',$dates)
+                            ->count('lead_id');
+
+                $total_sd = DB::table('sales_lead_register')
+                            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                            ->where('sales_lead_register.result','SD')
+                            ->where('sales_lead_register.year',$dates)
+                            ->count('lead_id');
+
+                $total_tp = DB::table('sales_lead_register')
+                            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                            ->where('sales_lead_register.result','TP')
+                            ->where('sales_lead_register.year',$dates)
+                            ->count('lead_id');
+
+                $total_win = DB::table('sales_lead_register')
+                            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                            ->where('sales_lead_register.result','WIN')
+                            ->where('sales_lead_register.year',$dates)
+                            ->count('lead_id');
+
+                $total_lose = DB::table('sales_lead_register')
+                            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                            ->where('sales_lead_register.result','LOSE')
+                            ->where('sales_lead_register.year',$dates)
+                            ->count('lead_id');
+
+            }else {
                 if ($pos == 'ADMIN') {
                     $lead = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -1759,7 +1821,7 @@ class SALESController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->select('sales_lead_register.lead_id','sales_lead_register.nik','tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.result2','sales_lead_register.result3','sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.status_engineer', 'sales_lead_register.id_customer','sales_lead_register.closing_date')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.result2','sales_lead_register.result3','sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.status_engineer', 'sales_lead_register.id_customer','sales_lead_register.closing_date', 'sales_lead_register.deal_price')
                     ->where('lead_id',$lead_id)
                     ->first();
 
@@ -2982,11 +3044,17 @@ class SALESController extends Controller
            $update_lead->deal_price = str_replace(',', '', $request['deal_price']); 
         }
 
-        if ($request['submit_price'] != '') {
+        if ($request['deal_price'] == '') {
+           $update_lead->amount = $request['amount_cek_tp'];
+        }else{
+           $update_lead->amount = str_replace(',', '', $request['deal_price']); 
+        }
+
+        /*if ($request['submit_price'] != '') {
             $update_lead->amount = str_replace(',', '', $request['submit_price']);
         } elseif ($request['submit_price'] == '') {
             $update_lead->amount = $request['amount_before'];
-        }
+        }*/
 
         if ( is_null($request['project_class'])) {
             $update_lead->project_class = $request['project_class'];
