@@ -2,7 +2,7 @@
 @section('content')
 <section class="content-header">
   <h1>
-    SIP Detail Asset Management
+    Detail Asset Management
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -40,7 +40,7 @@
 
   <div class="box">
     <div class="box-header">
-      <a href="{{url('/asset_hr')}}"><button button class="btn btn-xs btn-danger pull-left" style="width: 150px"><i class="fa fa-arrow-circle-o-left"></i>&nbsp back to Asset</button></a>
+      <a href="{{url('/asset_hr')}}"><button button class="btn btn-xs btn-danger pull-left"><i class="fa fa-arrow-circle-o-left"></i>&nbsp Back</button></a>
     </div>
 
     <div class="box-body">
@@ -76,9 +76,9 @@
                 <td>{{$data->keterangan}}</td>
                 <td>
                  @if($data->status == 'PENDING')
-                    <label class="status-open" style="width: 150px;">SUDAH DI AMBIL</label>
+                 	<span class="label label-danger">SUDAH DI AMBIL</span>
                   @elseif($data->status == 'RETURN')
-                   <label class="status-win" style="width: 90px;height: 25px">RETURNED</label>
+                  	<span class="label label-success">SUDAH KEMBALI</span>
                   @endif
                 </td>
               </tr>

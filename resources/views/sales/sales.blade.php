@@ -1685,144 +1685,144 @@
                 @foreach($lead as $data)
                   @if($data->year == $year_now-1)
                     @if($data->result != 'WIN' && $data->result != 'LOSE' && $data->result != 'CANCEL')
-                    <tr>
-                        <td hidden>
-                          {{$data->code_company}}
-                        </td>
-                        <td>
-                        @if($data->result != 'OPEN')
-                          <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
-                        @else
-                          {{ $data->lead_id }}
-                        @endif
-                        </td>
-                        <td>{{ $data->brand_name}}</td>
-                        <td>{{ $data->opp_name}}</td>
-                        <td>{!!substr($data->created_at,0,10)!!}</td>
-                        <td>{{ $data->closing_date}}</td>
-                        <td>{{ $data->name }}</td>
-                        <td>
-                          @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
-                            @if($data->deal_price == NULL)
-                              <i class="money">{{$data->amount}}</i>
-                            @else
-                              <i class="money">{{$data->deal_price}}</i>
-                            @endif
+                      <tr>
+                          <td hidden>
+                            {{$data->code_company}}
+                          </td>
+                          <td>
+                          @if($data->result != 'OPEN')
+                            <a href="{{ url ('/detail_project', $data->lead_id) }}">{{ $data->lead_id }}</a>
                           @else
-                            @if($data->amount == '')
-                              <i class="money"></i>
-                            @elseif($data->amount != '')
-                              <i class="money">{{$data->amount}}</i>
-                            @endif
+                            {{ $data->lead_id }}
                           @endif
-                        </td>
-                        <td>
-                            @if($data->result == 'OPEN')
-                              <label class="btn-xs status-initial">INITIAL</label>
-                            @elseif($data->result == '')
-                              <label class="btn-xs status-open">OPEN</label>
-                            @elseif($data->result == 'SD')
-                              <label class="btn-xs status-sd">SD</label>
-                            @elseif($data->result == 'TP')
-                              <label class="btn-xs status-tp">TP</label>
-                            @elseif($data->result == 'WIN')
-                              <label class="btn-xs status-win">WIN</label>
-                            @elseif($data->result == 'LOSE')
-                              <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
-                            @elseif($data->result == 'CANCEL')
-                            <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
-                            @elseif($data->result == 'HOLD')
-                              <label class="btn-xs status-initial" style="background-color: #919e92">HOLD</label>
-                            @elseif($data->result == 'SPECIAL')
-                              <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
+                          </td>
+                          <td>{{ $data->brand_name}}</td>
+                          <td>{{ $data->opp_name}}</td>
+                          <td>{!!substr($data->created_at,0,10)!!}</td>
+                          <td>{{ $data->closing_date}}</td>
+                          <td>{{ $data->name }}</td>
+                          <td>
+                            @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
+                              @if($data->deal_price == NULL)
+                                <i class="money">{{$data->amount}}</i>
+                              @else
+                                <i class="money">{{$data->deal_price}}</i>
+                              @endif
+                            @else
+                              @if($data->amount == '')
+                                <i class="money"></i>
+                              @elseif($data->amount != '')
+                                <i class="money">{{$data->amount}}</i>
+                              @endif
                             @endif
-                        </td>
-                        <td>
-                          @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES')
-                            @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result != 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN' || Auth::User()->id_division == 'SALES')
-                              @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' || Auth::User()->id_division == 'SALES')
-                                @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_division == 'SALES')
-                                  @if($data->status_sho != 'PMO')
-                                   	<!-- <button data-target="#salesproject" data-toggle="modal" class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}')">ID Project</button> -->
-                                   	<button class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}','{{$data->status}}')">ID Project</button>
-                                    @if($data->status_handover != 'handover')
-                                      <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                          </td>
+                          <td>
+                              @if($data->result == 'OPEN')
+                                <label class="btn-xs status-initial">INITIAL</label>
+                              @elseif($data->result == '')
+                                <label class="btn-xs status-open">OPEN</label>
+                              @elseif($data->result == 'SD')
+                                <label class="btn-xs status-sd">SD</label>
+                              @elseif($data->result == 'TP')
+                                <label class="btn-xs status-tp">TP</label>
+                              @elseif($data->result == 'WIN')
+                                <label class="btn-xs status-win">WIN</label>
+                              @elseif($data->result == 'LOSE')
+                                <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                              @elseif($data->result == 'CANCEL')
+                              <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
+                              @elseif($data->result == 'HOLD')
+                                <label class="btn-xs status-initial" style="background-color: #919e92">HOLD</label>
+                              @elseif($data->result == 'SPECIAL')
+                                <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
+                              @endif
+                          </td>
+                          <td>
+                            @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES')
+                              @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result != 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN' || Auth::User()->id_division == 'SALES')
+                                @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' || Auth::User()->id_division == 'SALES')
+                                  @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_division == 'SALES')
+                                    @if($data->status == 'pending')
+                                     	<!-- <button data-target="#salesproject" data-toggle="modal" class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}')">ID Project</button> -->
+                                     	<button class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}','{{$data->status}}')">ID Project</button>
+                                      @if($data->status_handover != 'handover')
+                                        <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                                      @endif
+                                  @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover == 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover == 'handover')
+                                    @if($data->status_sho != 'PMO')
+                                        <button type="button" class="btn btn-xs btn-primary" onclick="assignPMO('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModalPMO">Assign</button>
+                                      @elseif($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
+                                        <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
+                                        <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
+                                      @else
+                                        <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
+                                            @if($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
+                                            <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
+                                          @else
+                                            <button onclick="reassignEngineer('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignEngineer">Re-Assign</button></a>
+                                            @endif
+                                      @endif
                                     @endif
-                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover == 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover == 'handover')
-                                  @if($data->status_sho != 'PMO')
-                                      <button type="button" class="btn btn-xs btn-primary" onclick="assignPMO('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModalPMO">Assign</button>
-                                    @elseif($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
-                                      <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
-                                      <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
-                                    @else
-                                      <button onclick="reassignPMO('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignModalPMO">Re-Assign</button></a>
-                                          @if($data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || $data->status_sho == 'PMO' && $data->status_engineer == '' && Auth::User()->id_position == 'DIRECTOR')
-                                          <button type="button" class="btn btn-xs btn-primary" onclick="assignEngineer('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignEngineer">Assign</button>
-                                        @else
-                                          <button onclick="reassignEngineer('{{$data->lead_id}}')" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#reassignEngineer">Re-Assign</button></a>
-                                          @endif
-                                    @endif
+                                  @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover != 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover != 'handover')
+                                    <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
                                   @endif
-                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_handover != 'handover' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_handover != 'handover')
-                                  <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
+                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'LOSE' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
+                                <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'TP' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
+                                <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                                @else
+                                <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
                                 @endif
-                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'LOSE' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
-                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                              @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'TP' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
-                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
                               @else
-                              <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                                <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}', '{{$data->nik}}', '{{$data->created_at}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                               @endif
-                            @else
-                              <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}', '{{$data->nik}}', '{{$data->created_at}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
-                            @endif
-                          @elseif(Auth::User()->id_position == 'DIRECTOR')
-                            @if(Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN')
-                              @if(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN')
-                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                              @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
-                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
-                              @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
-                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                            @elseif(Auth::User()->id_position == 'DIRECTOR')
+                              @if(Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN')
+                                @if(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN')
+                                <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                                @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'LOSE')
+                                <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                                @elseif(Auth::User()->id_position == 'DIRECTOR' && $data->result == 'TP')
+                                <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                                @else
+                                <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                                @endif
                               @else
-                              <button type="button" class="btn btn-xs btn-primary" onclick="reassign('{{$data->lead_id}}')" data-toggle="modal" data-target="#reassignModal" >Re-Assign</button>
+                                <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                               @endif
-                            @else
-                              <button type="button" class="btn btn-xs btn-primary" onclick="assign('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModal">Assign</button>
                             @endif
-                          @endif
-                        </td>
-                        <td>
-                          @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
-                            <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
-                          @endif
-                          @if(Auth::User()->name == $data->name && $data->result == 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'OPEN' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && $data->result == 'OPEN')
-                            <a href="{{ url('delete_sales', $data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
-                            </button></a>
-                          @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-                            @if($data->result == 'WIN')
-                              <a href="{{ url('delete_update_status',$data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')" type="submit">&nbspDelete
+                          </td>
+                          <td>
+                            @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
+                              <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
+                            @endif
+                            @if(Auth::User()->name == $data->name && $data->result == 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'OPEN' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && $data->result == 'OPEN')
+                              <a href="{{ url('delete_sales', $data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
                               </button></a>
+                            @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                              @if($data->result == 'WIN')
+                                <a href="{{ url('delete_update_status',$data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')" type="submit">&nbspDelete
+                                </button></a>
+                              @endif
                             @endif
-                          @endif
-                        </td>
-                        <td>
-                          @if($data->keterangan != '')
-                          <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
-                          @else
+                          </td>
+                          <td>
+                            @if($data->keterangan != '')
+                            <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
+                            @else
 
-                          @endif
-                        </td>
-                        <td hidden>
-                          {{$data->year}}
-                        </td>
-                        <td hidden>
-                          @if($data->result != 'CANCEL' && $data->result != 'LOSE')
-                          {{$data->amount}}
-                          @endif
-                        </td>
-                        <td hidden>{{$data->id_territory}}</td>
-                    </tr>
+                            @endif
+                          </td>
+                          <td hidden>
+                            {{$data->year}}
+                          </td>
+                          <td hidden>
+                            @if($data->result != 'CANCEL' && $data->result != 'LOSE')
+                            {{$data->amount}}
+                            @endif
+                          </td>
+                          <td hidden>{{$data->id_territory}}</td>
+                      </tr>
                     @endif
                   @else
                     <tr>
@@ -1882,7 +1882,7 @@
                             @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result != 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result != 'OPEN' || Auth::User()->id_division == 'SALES')
                               @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' || Auth::User()->id_division == 'SALES')
                                 @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'WIN' && $data->status_sho != 'SHO' || Auth::User()->id_division == 'SALES')
-                                  @if($data->status_sho != 'PMO')
+                                  @if($data->status == 'pending')
                                     <!-- <button data-target="#salesproject" data-toggle="modal" class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}')">ID Project</button> -->
                                     <button class="btn btn-xs btn-primary lead_id_pro" value="{{$data->lead_id}}" onclick="id_pro('{{$data->lead_id}}','{{$data->nik}}','{{$data->opp_name}}','{{$data->status}}')">ID Project</button>
                                     @if($data->status_handover != 'handover')
