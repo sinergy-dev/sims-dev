@@ -282,37 +282,23 @@
                                      <label class="btn-sm btn-warning">Pending</label> 
                                     @endif
                                   </td>
-                                  @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'ENGINEER MANAGER' || Auth::User()->id_position == 'OPERATION DIRECTOR')
                                   <td>
-                                    @if(Auth::User()->id_position == 'HR MANAGER')
-                                        @if($data->status == NULL || $data->status == 'n')
-                                            <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
-                                            <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
-                                          @else
-                                            <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
-                                            <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
-                                        @endif
+                                    @if(Auth::User()->nik == $data->nik)
+                                      @if($data->status == NULL || $data->status == 'n')
+                                      <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
+                                      <a href="{{ url('delete_cuti', $data->id_cuti) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this?')">&nbspDelete
+                                      </button></a>
+                                      @endif
+                                    @else
+                                      @if($data->status == NULL || $data->status == 'n')
+                                          <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
+                                          <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
                                       @else
-                                        @if(Auth::User()->id_territory == $data->id_territory)
-                                          @if($data->status == NULL || $data->status == 'n')
-                                            <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
-                                            <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
-                                          @else
-                                            <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
-                                            <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
-                                          @endif
-                                        @else
-                                        <i>no action</i>
+                                          <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
+                                          <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
                                       @endif
                                     @endif
                                   </td>
-                                  @else
-                                      <td>
-                                        @if($data->status == NULL || $data->status == 'n')
-                                        <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
-                                        @endif
-                                      </td>
-                                  @endif
                               </tr>
                               @endif
                             @endforeach
