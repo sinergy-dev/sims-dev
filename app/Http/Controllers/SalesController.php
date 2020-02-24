@@ -4389,11 +4389,11 @@ class SALESController extends Controller
             $pid_info->url_create = "/salesproject#acceptProjectID?" . $pid_info->id_pid;
         }
 
-        $users = User::select('name')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+        $users = User::select('name','email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
         
-        Mail::to('faiqoh@sinergy.co.id')->send(new MailResult($users,$pid_info));
+        // Mail::to('faiqoh@sinergy.co.id')->send(new MailResult($users,$pid_info));
         // Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));
-
+        // return $users
         Mail::to($users->email)->send(new MailResult($users,$pid_info));
 
 

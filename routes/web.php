@@ -625,13 +625,14 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/edit_asset', 'AssetHRController@edit_asset');
 
 	Route::get('asset_atk', 'AssetAtkController@index');
-	Route::post('store_asset_atk', 'AssetAtkController@store');
-	Route::get('get_qty_atk','AssetAtkController@getqtyatk');
-	Route::post('request_atk', 'AssetAtkController@request_atk');
-	Route::post('accept_request', 'AssetAtkController@accept_request');
-	Route::post('edit_atk', 'AssetAtkController@edit_atk');
-	Route::post('reject_request', 'AssetAtkController@reject_request');
-	Route::get('/detail_asset_atk/{id_barang}','AssetAtkController@detail');
+	Route::post('asset_atk/store_asset_atk', 'AssetAtkController@store');
+	Route::get('asset_atk/get_qty_atk','AssetAtkController@getqtyatk');
+	Route::post('asset_atk/request_atk', 'AssetAtkController@request_atk');
+	Route::post('asset_atk/accept_request', 'AssetAtkController@accept_request');
+	Route::post('asset_atk/edit_atk', 'AssetAtkController@edit_atk');
+	Route::post('asset_atk/reject_request', 'AssetAtkController@reject_request');
+	Route::get('asset_atk/detail_asset_atk/{id_barang}','AssetAtkController@detail');
+	Route::post('asset_atk/update_stok', 'AssetAtkController@update_stok');
 
 	//PMO
 	Route::get('PMO/detail/{lead_id}','PMOController@detail');
