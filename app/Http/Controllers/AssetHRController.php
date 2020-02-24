@@ -15,6 +15,7 @@ class AssetHRController extends Controller
 {
     public function index()
     {
+        //testestes
 
     	$nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
