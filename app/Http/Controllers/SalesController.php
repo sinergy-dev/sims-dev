@@ -1821,7 +1821,7 @@ class SALESController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                     ->select('sales_lead_register.lead_id','sales_lead_register.nik','tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.result2','sales_lead_register.result3','sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.status_engineer', 'sales_lead_register.id_customer','sales_lead_register.closing_date')
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.result2','sales_lead_register.result3','sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.status_engineer', 'sales_lead_register.id_customer','sales_lead_register.closing_date', 'sales_lead_register.deal_price')
                     ->where('lead_id',$lead_id)
                     ->first();
 
@@ -3044,11 +3044,17 @@ class SALESController extends Controller
            $update_lead->deal_price = str_replace(',', '', $request['deal_price']); 
         }
 
-        if ($request['submit_price'] != '') {
+        if ($request['deal_price'] == '') {
+           $update_lead->amount = $request['amount_cek_tp'];
+        }else{
+           $update_lead->amount = str_replace(',', '', $request['deal_price']); 
+        }
+
+        /*if ($request['submit_price'] != '') {
             $update_lead->amount = str_replace(',', '', $request['submit_price']);
         } elseif ($request['submit_price'] == '') {
             $update_lead->amount = $request['amount_before'];
-        }
+        }*/
 
         if ( is_null($request['project_class'])) {
             $update_lead->project_class = $request['project_class'];
