@@ -263,6 +263,7 @@
                         </thead>
                           <tbody>
                             @foreach($cuti2 as $data)
+                              @if($data->status == 'n')
                               <tr>
                                   <td>{{$data->name}}</td>
                                   <td>{{$data->id_division}}</td>
@@ -313,6 +314,7 @@
                                       </td>
                                   @endif
                               </tr>
+                              @endif
                             @endforeach
                           </tbody>
                   </table>
