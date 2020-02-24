@@ -680,7 +680,7 @@
     }
 
     $('#data_table').DataTable({
-      "order": [[ 0, "desc" ]],
+      "order": [[ 0, "asc" ]],
     });
 
     $('#datatable').DataTable({

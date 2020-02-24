@@ -205,7 +205,13 @@
                                   {{$datas->cuti}} Hari
                                   @endif
                                 </td>
-                                <td></td>
+                                <td>
+                                  @if($datas->status_karyawan == 'belum_cuti')
+                                  -
+                                  @else
+                                  {{$datas->cuti2}} Hari
+                                  @endif
+                                </td>
                               </tr>
                             @endforeach
                             @foreach($cuti_list as $data)
@@ -233,7 +239,13 @@
                                   {{$data->cuti}} Hari
                                   @endif
                                 </td>
-                                <td></td>
+                                <td>
+                                  @if($data->status_karyawan == 'belum_cuti')
+                                  -
+                                  @else
+                                  {{$data->cuti2}} Hari
+                                  @endif
+                                </td>
                               </tr>
                             @endforeach
                           @endif

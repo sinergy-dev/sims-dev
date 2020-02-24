@@ -451,6 +451,7 @@ class HRGAController extends Controller
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory') 
                     ->where('users.id_position','MANAGER')
                     ->where('users.id_territory','OPERATION')
+                    ->orwhere('users.id_position','OPERATION DIRECTOR')
                     ->orwhere('users.id_division','WAREHOUSE')
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->groupby('id_cuti')
@@ -468,6 +469,7 @@ class HRGAController extends Controller
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_position','MANAGER')
                     ->where('users.id_territory','OPERATION')
+                    ->orwhere('users.id_position','OPERATION DIRECTOR')
                     ->orwhere('users.id_division','WAREHOUSE')
                     ->where('tb_cuti.status','n')
                     ->groupby('nik')
@@ -636,14 +638,14 @@ class HRGAController extends Controller
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
 	            ->join('tb_position','tb_position.id_position','=','users.id_position')
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
-	            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email')
+	            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
 	            ->groupby('tb_cuti.nik')
 	            ->get();
 
 	        $cuti_list = DB::table('users')
 	            ->join('tb_position','tb_position.id_position','=','users.id_position')
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
-	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email')
+	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
 	            ->whereNotIn('nik',function($query) { 
 	            	$query->select('nik')->from('tb_cuti');
 	            })
