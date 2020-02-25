@@ -124,6 +124,7 @@
                     <th>No</th>
                     <th>Nama Barang</th>
                     <th>Qty</th>
+                    <th>Qty Request</th>
                     <th>Description</th>
                     <th>Nama</th>
                     <th>Tgl Request</th>
@@ -138,16 +139,25 @@
                     <td>{{$no++}}</td>
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty_akhir}}</td>
+                    <td>
+                      @if($data->qty_request != null)
+                      {{$data->qty_request}}
+                      @else 
+                      -
+                      @endif
+                    </td>
                     <td>{{$data->keterangan}}</td>
                     <td>{{$data->name}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
                     <td>
                       @if($data->status == 'PENDING')
-                        <label class="status-open">PENDING</label>
+                        <label class="status-open" style="width: 90px">PENDING</label>
                       @elseif($data->status == 'ACCEPT')
                         <label class="status-win" style="width: 90px">ACCEPTED</label>
                       @elseif($data->status == 'REJECT')
                         <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                      @elseif($data->status == 'PROSES')
+                        <label class="status-sd" style="width: 90px">PROSES PR</label>
                       @endif
                     </td>
                     <td>
@@ -176,6 +186,7 @@
                     <th>No</th>
                     <th>Nama Barang</th>
                     <th>Qty</th>
+                    <th>Qty Request</th>
                     <th>Description</th>
                     <th>Tgl Request</th>
                     <th>Status</th>
@@ -188,6 +199,13 @@
                     <td>{{$no++}}</td>
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty_akhir}}</td>
+                    <td>
+                      @if($data->qty_request != null)
+                      {{$data->qty_request}}
+                      @else 
+                      -
+                      @endif
+                    </td>
                     <td>{{$data->keterangan}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
                     <td>
@@ -469,7 +487,7 @@
     $('#atk').select2();
 
 
-    $(document).on('keyup keydown', "input[id^='quantity']", function(e){
+    /*$(document).on('keyup keydown', "input[id^='quantity']", function(e){
       var qty_before  = $(".qty").val();
       console.log(qty_before);
           if ($(this).val() > parseFloat(qty_before)
@@ -479,7 +497,7 @@
              e.preventDefault();     
              $(this).val(qty_before);
           }
-    });
+    });*/
 
     $(".detail-product").select2({
       closeOnSelect : false,
