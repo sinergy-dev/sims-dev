@@ -25,6 +25,7 @@ Route::post('/update_result5', 'SalesController@update_result');
 //dinar cantik2
 //dinar cantik4
 //dinar cantik5555
+//dinar syantik
 
 
 //coba git lagi
