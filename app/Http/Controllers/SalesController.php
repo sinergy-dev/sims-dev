@@ -3773,8 +3773,7 @@ class SALESController extends Controller
 
         $pid_request_done = PIDRequest::where('status','=','done')->get();   
 
-        $pid_request_lead_done = PID::where('status','=','done')->get();     
-
+        $pid_request_lead_done = PID::where('status','=','done')->get();  
 
       return view('sales/sales_project',compact('hitung_msp','salessp','salesmsp','lead_sp','lead_msp','notif','notifOpen','notifsd','notiftp', 'notifClaim','pops','datas','pid_request','pid_request_done','pid_request_lead','pid_request_lead_done'));
     }

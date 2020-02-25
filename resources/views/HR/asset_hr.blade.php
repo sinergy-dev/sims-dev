@@ -29,6 +29,7 @@
       color:#aaa;
       transition:.3s;
     }
+
 </style>
 <section class="content">
 
@@ -69,11 +70,12 @@
           <li class="nav-item active">
             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="kategori" aria-selected="false">List Asset</a>
           </li>
-          <li class="nav-item">
+        <!--   <li class="nav-item">
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#peminjaman_asset" role="tab" aria-controls="home" aria-selected="true">Peminjaman Asset</a>
-          </li>
+          </li> -->
           @if(Auth::User()->id_division == 'HR')
           <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
+          <button class="btn btn-sm btn-warning pull-right" data-toggle="modal" data-target="#modaledit" style="margin-right: 5px" ><i class="fa fa-edit"> </i>&nbsp Edit Asset</button>
           @endif
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -83,35 +85,39 @@
               <table class="table table-bordered nowrap " id="data_table" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>No</th>
+                    <th>Code Asset</th>
                     <th>Name</th>
                     <th>Quantity</th>
                     <th>Description</th>
-                    <th>Action</th>
+                    <th>Status</th>
                     @if(Auth::User()->id_division == 'HR')
                     <th>Action</th>
                     @endif
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
-                  <?php $no = 1 ?>
                   @foreach($asset as $data)
                   <tr>
-                    <td>{{$no++}}<input type="" name="id_barang_update" hidden></td>
+                    <td>{{$data->code_name}}<input type="" name="id_barang_update" hidden></td>
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty}}</td>
                     <td>{{$data->description}}</td>
                     <td>
                       @if($data->qty == 0)
-                      <button class="btn btn-sm disabled" style="background-color: grey">Peminjaman</button>
+                      <span class="label label-info">UnAvailable</span>
                       @else
-                      <button class="btn btn-sm btn-warning" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}','{{$data->qty}}')" data-target="#peminjaman" data-toggle="modal" >Peminjaman 
-                      </button>
+                      <span class="label label-default">Available</span>
                       @endif
                     </td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
-                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-sm" style="width: 150px;background-color: black;color: white ">Detail Peminjaman</button></a>
+                      @if($data->qty == 0)
+                      <button class="btn btn-xs btn-danger btn-pengembalian" value="{{$data->id_barang}}">Pengembalian</button>
+                      @else
+                      <button class="btn btn-xs btn-warning" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}','{{$data->qty}}')" data-target="#peminjaman" data-toggle="modal" >Peminjaman 
+                      </button>
+                      @endif
+                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary">History</button></a>
                     </td>
                     @endif
                   </tr>
@@ -229,9 +235,19 @@
             <input name="nama_barang" id="nama_barang" class="form-control"></input>
           </div>
           <div class="form-group">
+            <label for="sow">Kategori</label>
+            <select class="form-control" id="category_asset" name="category_asset" required>
+              <option value="LPT">Laptop</option>
+              <option value="PRN">Printer</option>
+              <option value="HDD">Harddisk</option>
+              <option value="PRY">Proyektor</option>
+              <option value="OTH">Other</option>
+            </select>
+          </div>
+       <!--    <div class="form-group">
             <label for="sow">Qty</label>
             <input name="qty" id="qty" type="number" class="form-control" required="">
-          </div>
+          </div> -->
           <div class="form-group">
             <label for="sow">Keterangan</label>
             <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
@@ -251,15 +267,18 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Update Asset Engineer</h4>
+          <h4 class="modal-title">Update Asset HR/GA</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('edit_pinjam')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('edit_asset')}}" id="modalProgress" name="modalProgress">
             @csrf
-          <input type="" name="id_barang_edit" id="id_barang_edit">
           <div class="form-group">
-            <label for="sow">Qty</label>
-            <input name="qty_edit" id="qty_edit" type="number" class="form-control" required="">
+            <label for="sow">Nama barang</label>
+            <select class="form-control" id="barang_asset_edit" name="barang_asset_edit" style="width: 100%!important" required>
+              @foreach($asset as $data)
+              <option value="{{$data->id_barang}}">{{$data->nama_barang}}</option>
+              @endforeach
+            </select>
           </div>
           <div class="form-group">
             <label for="sow">Keterangan</label>
@@ -290,7 +309,7 @@
             <select name="users" id="users" class="form-control" style="width: 270px;" required >
               <option>Select Name</option>
               @foreach($users as $user)
-              <option value="{{$user->nik}}">{{$user->name}}</option>
+                <option value="{{$user->nik}}">{{$user->name}}</option>
               @endforeach
             </select>
           </div>
@@ -310,11 +329,11 @@
               </div>
               @endif
             </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label>Masukkan kebutuhan</label><br>
             <input type="text" name="qtys" id="qtys" class="qtys" hidden>
             <input type='number' name='quantity' id="quantity" value='0' class="form-control" style="width: 270px;" />
-          </div>
+          </div> -->
           <div class="form-group">
             <label>Keperluan</label>
             <textarea class="form-control" name="keperluan"></textarea>
@@ -488,19 +507,37 @@
   
   <!--kembali-->
   <div class="modal fade" id="kembali_modal" role="dialog">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-md">
       <div class="modal-content">
         <div class="modal-body">
           <form method="POST" action="{{url('kembali_pinjam_hr')}}" id="modalProgress" name="modalProgress">
             @csrf
-          <input type="text" name="id_barang_kembali" id="id_barang_kembali" hidden>
-          <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" hidden>
+          <input type="text" name="id_barang_kembali" id="id_barang_kembali" hidden="">
+          <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" hidden="">
           <div class="form-group">
             <h3 style="text-align: center;"><b>RETURN NOW!</b></h3>
+            <table class="table table-bordered">
+              <tr>
+                <th>Nama Barang</th>
+                <th>Nama Peminjam</th>
+                <th>Tanggal Kembali</th>
+              </tr>
+              <tr>
+                <td>
+                  <span id="nama_barang_kembali"></span>
+                </td>
+                <td>
+                  <span id="nama_peminjam_kembali"></span>
+                </td>
+                <td>
+                  <input type="date" name="tanggal_kembali" id="tanggal_kembali" class="form-control">
+                </td>
+              </tr>
+            </table>
           </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-              <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-check"></i>&nbsp YES</button>
+              <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -514,6 +551,50 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript">
+
+    $("#barang_asset_edit").select2();
+
+    var now = new Date();
+ 
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    var today = now.getFullYear()+"-"+(month)+"-"+(day);
+
+    $('#tanggal_kembali').val(today);
+
+    $(document).on('change',"#barang_asset_edit",function(e) { 
+        console.log(this.value);
+        $.ajax({
+            type:"GET",
+            url:"{{url('/getEditAsset')}}",
+            data:{
+              id_barang:this.value,
+            },
+            success: function(result){
+              $('#keterangan_edit').val(result[0].description);
+            },
+        });
+    });
+
+    $(document).on('click',".btn-pengembalian",function(e) { 
+        console.log(this.value);
+        $.ajax({
+            type:"GET",
+            url:"{{url('/getPengembalian')}}",
+            data:{
+              id_barang:this.value,
+            },
+            success: function(result){
+              $('#id_transaction_kembali').val(result[0].id_transaction);
+              $('#id_barang_kembali').val(result[0].id_barang);
+              $('#nama_barang_kembali').text(result[0].nama_barang);
+              $('#nama_peminjam_kembali').text(result[0].name);
+            },
+        });
+
+        $('#kembali_modal').modal('show')
+    });
 
     function id_accept_update(id_transaction,id_barang,nama_barang,no_transac,name){
       $('#id_transaction_update').val(id_transaction);
@@ -599,6 +680,7 @@
     }
 
     $('#data_table').DataTable({
+      "order": [[ 0, "asc" ]],
     });
 
     $('#datatable').DataTable({
@@ -662,9 +744,11 @@
       $('#id_barang_ambil').val(id_barang);
     }
 
-    function kembali(id_transaction,id_barang){
+    function kembali(id_transaction,id_barang,nama_barang,name){
       $('#id_transaction_kembali').val(id_transaction);
       $('#id_barang_kembali').val(id_barang);
+      $('#nama_barang_kembali').text(nama_barang);
+      $('#nama_peminjam_kembali').text(name);
     }
 
     function edit_asset(id_barang,qty,description){

@@ -884,6 +884,24 @@
           </li>
         </ul>
       </li>
+
+      <li class="treeview">
+        <a href="#HRPages" data-parent="#exampleAccordion">
+          <i class="fa fa-book"></i>
+          <span class="nav-link-text" style="font-size: 14px">General Affair</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="treeview-menu" id="HRPages">
+          <li>
+            <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
+          </li>
+          <li>
+            <a href="" style="font-size: 14px"></i>ATK</a>
+          </li>
+        </ul>
+      </li>
       
       @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_company == '1')
       <li class="treeview">

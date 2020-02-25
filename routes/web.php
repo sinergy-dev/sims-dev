@@ -24,6 +24,9 @@ Route::post('/update_result5', 'SalesController@update_result');
 //dinar cantik
 //dinar cantik2
 //dinar cantik4
+//dinar cantik5555
+//dinar syantik
+//dinar tambah syantik
 
 
 //coba git lagi
@@ -620,6 +623,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/detail_peminjaman_hr/{id_barang}', 'AssetHRController@detail_asset');
 	Route::get('/get_detail_hr', 'AssetHRController@getdetail');
 	Route::get('/get_detail_hr2', 'AssetHRController@getdetail2');
+	Route::get('/getPengembalian', 'AssetHRController@getPengembalian');
+	Route::get('/getEditAsset', 'AssetHRController@getEditAsset');
+	Route::post('/edit_asset', 'AssetHRController@edit_asset');
 
 	Route::get('asset_atk', 'AssetAtkController@index');
 	Route::post('asset_atk/store_asset_atk', 'AssetAtkController@store');
