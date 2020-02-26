@@ -234,6 +234,16 @@
             <label for="sow">Nama Barang</label>
             <input name="nama_barang" id="nama_barang" class="form-control"></input>
           </div>
+
+          <div class="form-group">
+            <label for="sow">Company</label>
+            <select class="form-control" id="company_asset" name="company_asset" required>
+              <option value="">Select Company</option>
+              <option value="SIP">PT. SIP</option>
+              <option value="MSP">PT. MSP</option>
+            </select>
+          </div>
+
           <div class="form-group">
             <label for="sow">Kategori</label>
             <select class="form-control" id="category_asset" name="category_asset" required>

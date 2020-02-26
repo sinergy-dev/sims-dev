@@ -257,7 +257,11 @@ class AssetHRController extends Controller
         $bln = $array_bln[date('n')];
 
     	$tambah                 = new AssetHR();
-        $tambah->code_name      = $nomor . '/' . $request['category_asset'] .'/' . 'SIP' . '/' . $bln . '/' .  date('Y');
+        if ($request['company_asset'] == 'MSP') {
+            $tambah->code_name      = $nomor . '/' . $request['category_asset'] .'/' . 'MSP' . '/' . $bln . '/' .  date('Y');
+        }else{
+            $tambah->code_name      = $nomor . '/' . $request['category_asset'] .'/' . 'SIP' . '/' . $bln . '/' .  date('Y');
+        }
         $tambah->nik            = Auth::User()->nik;
         $tambah->nama_barang    = $request['nama_barang'];
         $tambah->qty            = 1;

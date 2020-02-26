@@ -245,6 +245,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getCutiUsers','HRGAController@getCutiUsers');
 	Route::get('/getCutiAuth','HRGAController@getCutiAuth');
 	Route::get('/delete_cuti/{id_cuti}', 'HRGAController@delete_cuti');
+	Route::get('/follow_up/{id_cuti}', 'HRGAController@follow_up');
 	Route::get('/downloadPdfcuti', 'HRGAController@cutipdf');
 
 	Route::post('/store_sho','SHOController@store');
