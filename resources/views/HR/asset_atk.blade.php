@@ -56,6 +56,13 @@
     </div>
   @endif
 
+  @if ($message = Session::get('qty-done'))
+  <div class="alert alert-danger alert-block" id="alert">
+    <button type="button" class="close" data-dismiss="alert">×</button> 
+    <strong style="">{{ $message }}</strong>
+  </div>
+  @endif
+
   <div class="box">
     <div class="box-body">
       <div class="nav-tabs-custom active" id="asset" role="tabpanel">
@@ -65,6 +72,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#peminjaman_asset" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="home-tab" data-toggle="tab" href="#request_pr" role="tab" aria-controls="home" aria-selected="true">Request PR</a>
           </li>
           @if(Auth::User()->id_division == 'HR')
           <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
@@ -138,12 +148,18 @@
                   <tr>
                     <td>{{$no++}}</td>
                     <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->qty_akhir}}</td>
+                    <td>
+                      @if($data->qty_akhir != null)
+                      {{$data->qty_akhir}}
+                      @else 
+                      0
+                      @endif
+                    </td>
                     <td>
                       @if($data->qty_request != null)
                       {{$data->qty_request}}
                       @else 
-                      -
+                      0
                       @endif
                     </td>
                     <td>{{$data->keterangan}}</td>
@@ -158,12 +174,18 @@
                         <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @elseif($data->status == 'PROSES')
                         <label class="status-sd" style="width: 90px">PROSES PR</label>
+                      @elseif($data->status == 'DONE')
+                        <label class="status-tp" style="width: 90px">DONE</label>
                       @endif
                     </td>
                     <td>
                       @if($data->status == 'PENDING')
                       <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
                       <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
+                      @elseif($data->status == 'PROSES')
+                      <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
+                      @elseif($data->status == 'DONE')
+                      <button class="btn btn-xs btn-primary disabled" style="width: 90px; height: 25px">DONE</button>
                       @else
                       <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
                       <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
@@ -198,7 +220,13 @@
                   <tr>
                     <td>{{$no++}}</td>
                     <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->qty_akhir}}</td>
+                    <td>
+                      @if($data->qty_akhir != null)
+                      {{$data->qty_akhir}}
+                      @else 
+                      0
+                      @endif
+                    </td>
                     <td>
                       @if($data->qty_request != null)
                       {{$data->qty_request}}
@@ -215,6 +243,143 @@
                         <label class="status-win" style="width: 90px">ACCEPTED</label>
                       @elseif($data->status == 'REJECT')
                         <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                      @elseif($data->status == 'PROSES')
+                        <label class="status-sd" style="width: 90px">PROSES PR</label>
+                      @elseif($data->status == 'DONE')
+                        <label class="status-tp" style="width: 90px">DONE</label>
+                      @endif
+                    </td>
+                  </tr>
+                  @endforeach
+                </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          @endif
+          @if(Auth::User()->id_division == 'HR')
+          <div class="tab-pane fade" id="request_pr" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="table-responsive" style="margin-top: 15px">
+              <table class="table table-bordered nowrap DataTable" id="pr_request" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Barang</th>
+                    <!-- <th>Qty</th> -->
+                    <th>Qty Request</th>
+                    <th>Description</th>
+                    <th>Nama</th>
+                    <th>Tgl Request</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="products-list" name="products-list">
+                  <?php $no = 1 ?>
+                  @foreach($pr_request as $data)
+                  <tr>
+                    <td>{{$no++}}</td>
+                    <td>{{$data->nama_barang}}</td>
+                    <!-- <td>
+                      @if($data->qty_akhir != null)
+                      {{$data->qty_akhir}}
+                      @else 
+                      0
+                      @endif
+                    </td> -->
+                    <td>
+                      @if($data->qty_request != null)
+                      {{$data->qty_request}}
+                      @else 
+                      0
+                      @endif
+                    </td>
+                    <td>{{$data->keterangan}}</td>
+                    <td>{{$data->name}}</td>
+                    <td>{!!substr($data->created_at,0,10)!!}</td>
+                    <td>
+                      @if($data->status == 'PENDING')
+                        <label class="status-open" style="width: 90px">PENDING</label>
+                      @elseif($data->status == 'ACCEPT')
+                        <label class="status-win" style="width: 90px">ACCEPTED</label>
+                      @elseif($data->status == 'REJECT')
+                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                      @elseif($data->status == 'PROSES')
+                        <label class="status-sd" style="width: 90px">PROSES PR</label>
+                      @elseif($data->status == 'DONE')
+                        <label class="status-tp" style="width: 90px">DONE</label>
+                      @endif
+                    </td>
+                    <td>
+                      @if($data->status == 'PENDING')
+                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
+                      <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
+                      @elseif($data->status == 'PROSES')
+                      <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
+                      @elseif($data->status == 'DONE')
+                      <button class="btn btn-xs btn-primary disabled" style="width: 90px; height: 25px">DONE</button>
+                      @else
+                      <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
+                      <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
+                      @endif
+                    </td>
+                  </tr>
+                  @endforeach
+                </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          @else
+          <div class="tab-pane fade" id="request_pr" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="table-responsive" style="margin-top: 15px">
+              <table class="table table-bordered nowrap DataTable" id="pr_request" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Barang</th>
+                    <!-- <th>Qty</th> -->
+                    <th>Qty Request</th>
+                    <th>Description</th>
+                    <th>Tgl Request</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="products-list" name="products-list">
+                  <?php $no = 1 ?>
+                  @foreach($pr_request2 as $data)
+                  <tr>
+                    <td>{{$no++}}</td>
+                    <td>{{$data->nama_barang}}</td>
+                    <!-- <td>
+                      @if($data->qty_akhir != null)
+                      {{$data->qty_akhir}}
+                      @else 
+                      0
+                      @endif
+                    </td> -->
+                    <td>
+                      @if($data->qty_request != null)
+                      {{$data->qty_request}}
+                      @else 
+                      0
+                      @endif
+                    </td>
+                    <td>{{$data->keterangan}}</td>
+                    <td>{!!substr($data->created_at,0,10)!!}</td>
+                    <td>
+                      @if($data->status == 'PENDING')
+                        <label class="status-open" style="width: 90px">PENDING</label>
+                      @elseif($data->status == 'ACCEPT')
+                        <label class="status-win" style="width: 90px">ACCEPTED</label>
+                      @elseif($data->status == 'REJECT')
+                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                      @elseif($data->status == 'PROSES')
+                        <label class="status-sd" style="width: 90px">PROSES PR</label>
+                      @elseif($data->status == 'DONE')
+                        <label class="status-tp" style="width: 90px">DONE</label>
                       @endif
                     </td>
                   </tr>
@@ -464,6 +629,38 @@
       </div>
     </div>
 </div>
+
+<div class="modal fade" id="done_modal" role="dialog">
+ <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form method="POST" action="{{url('asset_atk/done_request_pr')}}" id="modalProgress" name="modalProgress">
+          @csrf
+        <input type="text" name="id_barang_done" id="id_barang_done" hidden>
+        <input type="text" name="id_transaction_done" id="id_transaction_done" hidden>
+        <input type="text" name="qty_done" id="qty_done" hidden> 
+        <input type="text" name="qty_request_done" id="qty_request_done" hidden>
+        <div class="form-group">
+          <h4 style="text-align: center;"><b>PR Done?</b></h4>
+        </div>
+        <div class="form-group"> 
+          <label>Nama Barang</label>
+          <input name="nama_barang_done" id="nama_barang_done" class="form-control" readonly>
+        </div>
+        <div class="form-group"> 
+          <label>Qty Request</label>
+          <input name="qty_request_done_field" class="form-control" id="qty_request_done_field" readonly>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+          <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('script')
@@ -482,6 +679,15 @@
       $('#id_barang_update').val(id_barang);
       $('#qty_awal_accept').val(qty);
       $('#qty_akhir_accept').val(qty_akhir);
+    }
+
+    function update_done_pr(id_transaction,id_barang,qty,qty_request,nama_barang) {
+      $('#id_transaction_done').val(id_transaction);
+      $('#id_barang_done').val(id_barang);
+      $('#qty_done').val(qty);
+      $('#qty_request_done').val(qty_request);
+      $('#nama_barang_done').val(nama_barang);
+      $('#qty_request_done_field').val(qty_request);
     }
 
     $('#atk').select2();
@@ -507,6 +713,9 @@
     });
 
     $('#datatable').DataTable({
+    });
+
+    $('#pr_request').DataTable({
     });
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
