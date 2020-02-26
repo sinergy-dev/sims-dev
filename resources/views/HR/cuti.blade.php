@@ -1,5 +1,6 @@
 @extends('template.template_admin-lte')
 @section('content')
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <style type="text/css">
     .hari_libur {
       color: red !important;
@@ -84,6 +85,10 @@
   </section>
 
   <section class="content">
+  	@if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+     @endif
+<!-- 
     <div class="box">
       <div class="box-header with-border">
         <h3 class="box-title">Hari Libur Nasional Tahun {{$year}}</h3>
@@ -94,7 +99,7 @@
         <div class="box-body div-libur" style="display: none;">
 
         </div>
-      </div>
+    </div> -->
 
     <div class="box">
       <div class="box-header">
@@ -102,16 +107,16 @@
           @if($cek_cuti->status_karyawan == 'cuti')
             @if($total_cuti > 0)
             	@if($cek->status == null)
-	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
 	            <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
 	            @elseif($cek_cuti->status != 'n')
-	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
 	            <button class="btn btn-sm btn-success show-sisa-cuti">Show Sisa Cuti</button>
 	            @else
-	            <button type="button" class="btn btn-sm btn-primary pull-right disabled disabled-permission" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+	            <button type="button" class="btn btn-sm btn-primary pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
             	@endif
             @else
-            <button type="button" class="btn btn-sm btn-primary pull-right disabled disabled-permission" style="margin-left: 10px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+            <button type="button" class="btn btn-sm btn-primary pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
             @endif
           @else
           @endif
@@ -287,19 +292,19 @@
                                   </td>                                  
                                   <td>
                                     @if($data->status == 'v')
-                                     <label class="btn-sm btn-success">Approved</label>
+                                     <span class="label label-success">Approved</span>
                                     @elseif($data->status == 'd')
-                                     <label class="btn-sm btn-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</label>
+                                     <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
                                     @else
-                                     <label class="btn-sm btn-warning">Pending</label> 
+                                     <span class="label label-warning">Pending</span> 
                                     @endif
                                   </td>
                                   <td>
                                     @if(Auth::User()->nik == $data->nik)
                                       @if($data->status == NULL || $data->status == 'n')
-                                      <button class="btn btn-primary btn-xs" style="width: 60px;" id="btn-edit" value="{{$data->id_cuti}}">Edit</button>
-                                      <a href="{{ url('delete_cuti', $data->id_cuti) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this?')">&nbspDelete
-                                      </button></a>
+                                      <button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="{{$data->id_cuti}}" type="button"></button>
+                                      <a href="{{ url('delete_cuti', $data->id_cuti) }}"><button class="btn btn-sm btn-danger fa fa-trash" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="return confirm('Are you sure want to delete this?')" data-toggle="tooltip" title="Delete" data-placement="bottom" type="button"></button></a>
+                                      <a href="{{ url('follow_up',$data->id_cuti)}}"><button class="btn btn-sm btn-success fa fa-paper-plane" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" type="button"></button></a>
                                       @endif
                                     @else
                                       @if($data->status == NULL || $data->status == 'n')
@@ -386,11 +391,11 @@
                                 </td>
                                 <td>
                                   @if($data->status == 'v')
-                                   <label class="btn-sm btn-success">Approved</label>
+                                   <span class="label label-success">Approved</span>
                                   @elseif($data->status == 'd')
-                                   <label class="btn-sm btn-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</label>
+                                   <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
                                   @else
-                                   <label class="btn-sm btn-warning">Pending</label> 
+                                   <span class="label label-warning">Pending</span> 
                                   @endif
                                 </td>
                             </tr>
@@ -1328,7 +1333,18 @@
     }
 
     $(".disabled-permission").hover(function(){
-      alert('Sorry! kamu belum bisa cuti. [Cuti mu Habis / masih ada yang pending]');
+      swal({
+		  text: "Sorry Cuti kamu lagi nggak bisa di pake!",
+	  });
+    });
+
+    $(document).ready(function(){
+	  $('[data-toggle="tooltip"]').tooltip();   
+	});
+
+
+    $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+         $(".alert").slideUp(300);
     });
     
 
