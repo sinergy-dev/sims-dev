@@ -179,6 +179,18 @@ class AssetAtkController extends Controller
                     ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
                     ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
                     ->select('tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','tb_asset_atk.nama_barang','tb_asset_atk_transaction.qty_akhir','tb_asset_atk.description','users.name','tb_asset_atk.qty','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.status', 'tb_asset_atk_transaction.keterangan','no_transac', 'tb_asset_atk_transaction.created_at', 'tb_asset_atk_transaction.note', 'qty_request')
+                    ->where('tb_asset_atk_transaction.status', 'PENDING')
+                    ->orWhere('tb_asset_atk_transaction.status', 'ACCEPT')
+                    ->orWhere('tb_asset_atk_transaction.status', 'REJECT')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+        $pr_request    = DB::table('tb_asset_atk_transaction')
+                    ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
+                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
+                    ->select('tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','tb_asset_atk.nama_barang','tb_asset_atk_transaction.qty_akhir','tb_asset_atk.description','users.name','tb_asset_atk.qty','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.status', 'tb_asset_atk_transaction.keterangan','no_transac', 'tb_asset_atk_transaction.created_at', 'tb_asset_atk_transaction.note', 'qty_request')
+                    ->where('tb_asset_atk_transaction.status', 'PROSES')
+                    ->orWhere('tb_asset_atk_transaction.status', 'DONE')
                     ->orderBy('created_at', 'desc')
                     ->get();
 
@@ -189,12 +201,21 @@ class AssetAtkController extends Controller
                     ->where('tb_asset_atk_transaction.nik_peminjam',Auth::User()->nik)
                     ->get();
 
+        $pr_request2 = DB::table('tb_asset_atk_transaction')
+                    ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
+                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
+                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note', 'qty_request')
+                    ->where('tb_asset_atk_transaction.nik_peminjam',Auth::User()->nik)
+                    ->where('tb_asset_atk_transaction.status', 'PROSES')
+                    ->orWhere('tb_asset_atk_transaction.status', 'DONE')
+                    ->get();
+
         $atk = AssetAtk::select('id_barang','nama_barang')->get();
 
         $cek = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk_transaction.id_barang', '=', 'tb_asset_atk.id_barang', 'left')->select('tb_asset_atk_transaction.id_barang')->get();
         // return $cek;
 
-    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek'));
+    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2'));
     }
 
     public function detail($id_barang)
@@ -418,7 +439,7 @@ class AssetAtkController extends Controller
 
         $no_peminjaman = date('ymd').$nomor;
 
-        $store                   = new AssetAtkTransaction();
+        /*$store                   = new AssetAtkTransaction();
         $store->no_transac	 	 = $no_peminjaman;
         $store->id_barang		 = $request['atk'];
 		$store->nik_peminjam	 = Auth::User()->nik;
@@ -426,9 +447,30 @@ class AssetAtkController extends Controller
         $store->qty_awal         = $count_qty->qty;
         $store->keterangan       = $request['keterangan'];
         $store->status           = 'PENDING';
-		$store->save();
+		$store->save();*/
 
 
+        if ($count_qty->qty == 0) {
+            $store                   = new AssetAtkTransaction();
+            $store->no_transac       = $no_peminjaman;
+            $store->id_barang        = $request['atk'];
+            $store->nik_peminjam     = Auth::User()->nik;
+            $store->qty_request        = $qty_akhir;
+            $store->qty_awal         = $count_qty->qty;
+            $store->keterangan       = $request['keterangan'];
+            $store->status           = 'PROSES';
+            $store->save();
+        } else {
+            $store                   = new AssetAtkTransaction();
+            $store->no_transac       = $no_peminjaman;
+            $store->id_barang        = $request['atk'];
+            $store->nik_peminjam     = Auth::User()->nik;
+            $store->qty_akhir        = $qty_akhir;
+            $store->qty_awal         = $count_qty->qty;
+            $store->keterangan       = $request['keterangan'];
+            $store->status           = 'PENDING';
+            $store->save();
+        }
 
         if ($count_qty->status == 'NEW') {
             $update         = AssetAtk::where('id_barang', $request->atk)->first();
@@ -512,6 +554,30 @@ class AssetAtkController extends Controller
         $update_qty->qty    = $qty_akhir + $qty;
         $update_qty->update();*/
 
+        return redirect()->back()->with('update', 'Successfully!');
+    }
+
+    public function done_request_pr(Request $request)
+    {
+        $id_transaction = $request['id_transaction_done'];
+        $id_barang = $request['id_barang_done'];
+        $qty = $request['qty_done'];
+        $qty_request = $request['qty_request_done'];
+
+        if ($qty == 0) {
+            return back()->with('qty-done','Quantity Habis');
+        } else {
+            $update = AssetAtkTransaction::where('id_transaction', $id_transaction)->first();
+            $update->status = 'DONE';
+            $update->update();
+
+            $update_qty = AssetAtk::where('id_barang', $id_barang)->first();
+            $update_qty->qty = $qty - $qty_request;
+            $update_qty->update();
+
+        }
+
+        
         return redirect()->back()->with('update', 'Successfully!');
     }
 }

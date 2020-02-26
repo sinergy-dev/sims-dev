@@ -95,6 +95,18 @@ class DASHBOARDController extends Controller
                 ->get();
             $counts = count($count);
         
+        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $count = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('id_company', '1')
+                ->where('year',$year_now)
+                ->get();
+            $counts = count($count);
+        
         } elseif ($pos == 'ADMIN') {
             $count = DB::table('dvg_esm')
                     ->join('users', 'users.nik', '=', 'dvg_esm.personnel')
@@ -222,6 +234,18 @@ class DASHBOARDController extends Controller
                 ->where('year',$year_now)
                 ->get();
             $opens = count($open);
+        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $open = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('result', '')
+                ->where('year',$year_now)
+                ->where('id_company','1')
+                ->get();
+            $opens = count($open);
         } elseif ($div == 'FINANCE' && $pos == 'MANAGER') {
             $open = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -297,6 +321,18 @@ class DASHBOARDController extends Controller
                 ->where('year',$year_now)
                 ->get();
             $sds = count($sd);
+        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $sd = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('result', 'SD')
+                ->where('id_company','1')
+                ->where('year',$year_now)
+                ->get();
+            $sds = count($sd);
         } elseif ($div == 'FINANCE') {
             $sd = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -368,6 +404,18 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'TP')
                 ->where('sales_solution_design.nik', $nik)
+                ->where('year',$year_now)
+                ->get();
+            $tps = count($tp);
+        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $tp = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('result', 'TP')
+                ->where('id_company', '1')
                 ->where('year',$year_now)
                 ->get();
             $tps = count($tp);
@@ -457,6 +505,29 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
                 ->where('year',$year_now)
+                ->get();
+            $win2 = count($winss);
+        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $win = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('result', 'WIN')
+                ->where('id_company','1')
+                ->where('year',$year_now)
+                ->get();
+            $wins = count($win);
+
+            $winss = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('result','WIN')
+                ->where('year',$year_now)
+                ->where('id_company', '1')
                 ->get();
             $win2 = count($winss);
         } elseif ($div == 'FINANCE') {
@@ -582,6 +653,29 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
+                ->where('year',$year_now)
+                ->get();
+            $lose2 = count($losess);
+        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $lose = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('result', 'LOSE')
+                ->where('id_company','1')
+                ->where('year',$year_now)
+                ->get();
+            $loses = count($lose);
+
+            $losess = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+                ->where('result','LOSE')
+                ->where('id_company', '1')
                 ->where('year',$year_now)
                 ->get();
             $lose2 = count($losess);
