@@ -898,7 +898,7 @@
             <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
           </li>
           <li>
-            <a href="" style="font-size: 14px"></i>ATK</a>
+            <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
           </li>
         </ul>
       </li>
