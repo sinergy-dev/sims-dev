@@ -61,8 +61,8 @@
                   <td>{{ $data->created_at}}</td>
                   <td>{{ $data->name }}</td>
                     @if($data->deal_price == NULL)
-                      <td align="right" c>
-                        <i lass="money">{{ $data->amount }}</i>
+                      <td align="right" >
+                        <i class="money">{{ $data->amount }}</i>
                       </td>
                     @else
                       <td align="right" >
@@ -83,17 +83,13 @@
                   <td>{{ $data->opp_name }}</td>
                   <td>{{ $data->created_at}}</td>
                   <td>{{ $data->name }}</td>
-                    @if($data->deal_price == NULL)
+                   @if($data->deal_price == NULL)
                       <td align="right" >
-                      	<i class="money">
-                      		{{ $data->amount }}
-                      	</i>
+                        <i class="money">{{ $data->amount }}</i>
                       </td>
                     @else
-                      <td align="right">
-                      	<i class="money">
-                      		{{ $data->deal_price }}	
-                      	</i>
+                      <td align="right" >
+                        <i class="money">{{ $data->deal_price }}</i>
                       </td>
                     @endif
                   <td>
@@ -108,14 +104,13 @@
                   <td>{{ $data->opp_name }}</td>
                   <td>{{ $data->created_at}}</td>
                   <td>{{ $data->name }}</td>
-                    @if($data->deal_price == NULL)
-                      <td align="right">
-                      	<i class="money"> {{ $data->amount }}</i>
+                   @if($data->deal_price == NULL)
+                      <td align="right" >
+                        <i class="money">{{ $data->amount }}</i>
                       </td>
                     @else
                       <td align="right" >
-                      	<i class="money">
-                        {{ $data->deal_price }}</i>
+                        <i class="money">{{ $data->deal_price }}</i>
                       </td>
                     @endif
                   <td>

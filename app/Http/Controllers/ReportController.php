@@ -753,6 +753,28 @@ class ReportController extends Controller
                     ->where('id_company', '1')
                     ->where('year',$year)
                     ->get();
+            } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+                $sd = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                    ->select('sales_lead_register.lead_id','tb_contact.brand_name', 'sales_lead_register.opp_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
+                    ->where('sales_solution_design.nik', $nik)
+                    ->where('year',$year)
+                    ->where('result', 'SD')
+                    ->get();
+            }elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+                $sd = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                    ->select('sales_lead_register.lead_id','tb_contact.brand_name', 'sales_lead_register.opp_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
+                    ->where('year',$year)
+                    ->where('id_company', '1')
+                    ->where('result', 'SD')
+                    ->get();
             } else {
                 $sd = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -764,17 +786,6 @@ class ReportController extends Controller
                     ->where('year',$year)
                     ->get();
             }
-        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $sd = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id','tb_contact.brand_name', 'sales_lead_register.opp_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
-                ->where('sales_solution_design.nik', $nik)
-                ->where('year',$year)
-                ->where('result', 'SD')
-                ->get();
         }elseif ($div == 'FINANCE') {
             $sd = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -807,6 +818,28 @@ class ReportController extends Controller
                     ->where('id_company', '1')
                     ->where('year',$year)
                     ->get();
+            } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+                $tp = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                    ->select('sales_lead_register.lead_id','tb_contact.brand_name', 'sales_lead_register.opp_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
+                    ->where('sales_solution_design.nik', $nik)
+                    ->where('result', 'TP')
+                    ->where('year',$year)
+                    ->get();
+            }  elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+                $tp = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                    ->select('sales_lead_register.lead_id','tb_contact.brand_name', 'sales_lead_register.opp_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
+                    ->where('id_company', '1')
+                    ->where('result', 'TP')
+                    ->where('year',$year)
+                    ->get();
             } else {
                 $tp = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -818,17 +851,6 @@ class ReportController extends Controller
                     ->where('year',$year)
                     ->get();
             }
-        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $tp = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id','tb_contact.brand_name', 'sales_lead_register.opp_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
-                ->where('sales_solution_design.nik', $nik)
-                ->where('result', 'TP')
-                ->where('year',$year)
-                ->get();
         }elseif ($div == 'FINANCE') {
             $tp = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
