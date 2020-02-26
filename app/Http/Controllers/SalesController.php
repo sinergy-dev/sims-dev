@@ -251,8 +251,7 @@ class SALESController extends Controller
                     'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year')
                 ->where('sales_solution_design.nik', $nik)
                 ->where('users.id_company','1')
-                ->whereYear('sales_lead_register.created_at', '=', $dates-1)
-                ->orwhere('year',$dates)
+                ->where('year',date('Y'))
                 ->where('result','!=','hmm')
                 ->get();
 
