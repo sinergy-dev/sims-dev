@@ -1661,7 +1661,7 @@
                   <th></th>
                   <th hidden></th>
                   <th hidden=""></th>
-                  <th hidden></th>
+                  <!-- <th hidden></th> -->
                 </tr>
                 @elseif(Auth::User()->id_territory == 'OPERATION')
                 <tr id="sekarang">
@@ -2966,7 +2966,7 @@
                 @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                   <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
                 @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
-                  <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+                  <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
                 @else
                   <th></th>
                   <th></th>
