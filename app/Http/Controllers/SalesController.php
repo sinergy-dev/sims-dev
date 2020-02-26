@@ -167,8 +167,6 @@ class SALESController extends Controller
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->select('sales_lead_register.lead_id', 'sales_lead_register.nik', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year')
-                ->whereYear('sales_lead_register.created_at', '=', $dates-1)
-                ->orwhere('year',$dates)
                 ->where('id_company','1')
                 ->where('result','!=','hmm')
                 ->get();
@@ -320,6 +318,20 @@ class SALESController extends Controller
                     ->whereYear('sales_lead_register.created_at', '=', $dates-1)
                     ->orwhere('year',$dates)
                     ->get();
+
+                $leadsnow = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year', 
+                    'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year')
+                ->where('sales_solution_design.nik', $nik)
+                ->where('users.id_company','1')
+                ->whereYear('sales_lead_register.created_at', '=', $dates-1)
+                ->orwhere('year',$dates)
+                ->where('result','!=','hmm')
+                ->get();
 
                 $total_lead = count($leads);
 

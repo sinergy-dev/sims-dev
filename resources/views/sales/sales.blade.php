@@ -312,7 +312,7 @@
     <div class="box-header">
       @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR'  || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
 
-        @if(Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF')
+        @if(Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')
         <div class="dropdown pull-right" style="margin-left: 5px">
           <button type="button" class="dropbtn-add" id="btn_add_sales" data-toggle="modal" data-target="#modal_lead"><i class="fa fa-plus"> </i>&nbsp Lead Register</button>
         </div>
@@ -2479,7 +2479,7 @@
                   @endif
                 @endforeach
               @else
-                @foreach($leads as $data)
+                @foreach($leadsnow as $data)
                   @if($data->year == $year_now-1)
                     @if($data->result != 'WIN' && $data->result != 'LOSE' && $data->result != 'CANCEL')
                     <tr>
