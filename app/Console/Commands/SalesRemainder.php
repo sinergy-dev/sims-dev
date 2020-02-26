@@ -7,14 +7,14 @@ use DB;
 use Mail;
 use App\Mail\EmailRemainderWeekly;
 
-class CustomRemainder extends Command
+class SalesRemainder extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'CustomRemainder:all_remainder';
+    protected $signature = 'SalesRemainder:weekly';
 
     /**
      * The console command description.

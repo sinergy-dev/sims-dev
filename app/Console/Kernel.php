@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('closedate:mail')->dailyAt('02:10');
 
-        $schedule->command('CustomRemainder:all_remainder')
+        $schedule->command('SalesRemainder:weekly')
             ->weekly()
             ->thursdays()
             ->at('07:00');

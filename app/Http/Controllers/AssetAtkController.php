@@ -178,13 +178,14 @@ class AssetAtkController extends Controller
         $assetsd    = DB::table('tb_asset_atk_transaction')
                     ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
                     ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','tb_asset_atk.nama_barang','tb_asset_atk_transaction.qty_akhir','tb_asset_atk.description','users.name','tb_asset_atk.qty','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.status', 'tb_asset_atk_transaction.keterangan','no_transac', 'tb_asset_atk_transaction.created_at', 'tb_asset_atk_transaction.note')
+                    ->select('tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','tb_asset_atk.nama_barang','tb_asset_atk_transaction.qty_akhir','tb_asset_atk.description','users.name','tb_asset_atk.qty','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.status', 'tb_asset_atk_transaction.keterangan','no_transac', 'tb_asset_atk_transaction.created_at', 'tb_asset_atk_transaction.note', 'qty_request')
+                    ->orderBy('created_at', 'desc')
                     ->get();
 
         $pinjaman = DB::table('tb_asset_atk_transaction')
                     ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
                     ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note')
+                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note', 'qty_request')
                     ->where('tb_asset_atk_transaction.nik_peminjam',Auth::User()->nik)
                     ->get();
 
@@ -405,7 +406,7 @@ class AssetAtkController extends Controller
     public function request_atk(Request $request)
     {
 
-    	$count_qty = AssetAtk::select('qty')->where('id_barang', $request->atk)->first();
+    	$count_qty = AssetAtk::select('qty','status')->where('id_barang', $request->atk)->first();
         $qty_akhir = $request['quantity'];
 
     	$inc = DB::table('tb_asset_atk_transaction')->select('id_transaction')->get();
@@ -428,10 +429,14 @@ class AssetAtkController extends Controller
 		$store->save();
 
 
-        $update         = AssetAtk::where('id_barang', $request->atk)->first();
-        // $update->qty    = $count_qty->qty - $qty_akhir;
-        $update->status = 'NN';
-        $update->update();
+
+        if ($count_qty->status == 'NEW') {
+            $update         = AssetAtk::where('id_barang', $request->atk)->first();
+            // $update->qty    = $count_qty->qty - $qty_akhir;
+            $update->status = 'NN';
+            $update->update();
+        }
+        
 
 		return redirect()->back()->with('update', 'Request ATK akan diproses!');
     }
@@ -443,16 +448,38 @@ class AssetAtkController extends Controller
     	$qty = $request['qty_awal_accept'];
     	$qty_akhir = $request['qty_akhir_accept'];
 
-    	$update             = AssetAtkTransaction::where('id_transaction',$id_transaction)->first();
-        $update->status     = 'ACCEPT';
-        $update->update();
+        $cek_status = AssetAtkTransaction::select('id_barang', 'id_transaction')->where('id_barang', $id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $id_transaction)->first();
+        $count_status = AssetAtkTransaction::select('id_barang', 'id_transaction')->where('id_barang', $id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $id_transaction)->count();
 
-        $qty_awal = AssetAtk::select('qty')->where('id_barang', $id_barang)->first();
-        $qty_pinjam = AssetAtkTransaction::select('qty_akhir')->where('id_transaction', $id_transaction)->first();
+        $cek_qty = AssetAtkTransaction::select('qty_awal', 'qty_akhir')->where('id_transaction', $id_transaction)->where('id_barang', $id_barang)->first();
+        // $cek_qty2 = AssetAtkTransaction::select('qty_awal', 'qty_akhir')->where('id_transaction', '!=' , $id_transaction)->where('id_barang', $id_barang)->first();
 
-       	$update_qty = AssetAtk::where('id_barang', $id_barang)->first();
-       	$update_qty->qty = $qty - $qty_akhir;
-       	$update_qty->update();
+        if ($count_status > 0) {
+            $update_qty_transaction = AssetAtkTransaction::where('id_transaction',$cek_status->id_transaction)->first();
+            $update_qty_transaction->qty_awal = $qty - $qty_akhir;;
+            $update_qty_transaction->update();
+        }
+        
+
+        if ($cek_qty->qty_akhir > $cek_qty->qty_awal) {
+            $update_status = AssetAtkTransaction::where('id_transaction', $id_transaction)->first();
+            $update_status->status = 'PROSES';
+            $update_status->qty_request = $cek_qty->qty_akhir - $cek_qty->qty_awal;
+            $update_status->update();
+
+            $update_qty_asset = AssetAtk::where('id_barang', $id_barang)->first();
+            $update_qty_asset->qty = '0';
+            $update_qty_asset->update();
+        } else {
+            $update             = AssetAtkTransaction::where('id_transaction',$id_transaction)->first();
+            $update->status     = 'ACCEPT';
+            $update->update();
+
+            $update_qty = AssetAtk::where('id_barang', $id_barang)->first();
+            $update_qty->qty = $qty - $qty_akhir;
+            $update_qty->update();
+        }
+        
 
        	return redirect()->back()->with('update', 'Successfully!');
     }
@@ -481,9 +508,9 @@ class AssetAtkController extends Controller
         $update->note       = $request['note_reject'];
         $update->update();
 
-        $update_qty         = AssetAtk::where('id_barang', $id_barang)->first();
+        /*$update_qty         = AssetAtk::where('id_barang', $id_barang)->first();
         $update_qty->qty    = $qty_akhir + $qty;
-        $update_qty->update();
+        $update_qty->update();*/
 
         return redirect()->back()->with('update', 'Successfully!');
     }
