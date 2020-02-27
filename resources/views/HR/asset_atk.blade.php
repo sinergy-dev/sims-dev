@@ -73,9 +73,11 @@
           <li class="nav-item">
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#peminjaman_asset" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
           </li>
+          @if(Auth::User()->id_division == 'HR')
           <li class="nav-item">
             <a class="nav-link" id="home-tab" data-toggle="tab" href="#request_pr" role="tab" aria-controls="home" aria-selected="true">Request PR</a>
           </li>
+          @endif
           @if(Auth::User()->id_division == 'HR')
           <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
           @else
@@ -134,7 +136,6 @@
                     <th>No</th>
                     <th>Nama Barang</th>
                     <th>Qty</th>
-                    <th>Qty Request</th>
                     <th>Description</th>
                     <th>Nama</th>
                     <th>Tgl Request</th>
@@ -154,14 +155,7 @@
                       @else 
                       0
                       @endif
-                    </td>
-                    <td>
-                      @if($data->qty_request != null)
-                      {{$data->qty_request}}
-                      @else 
-                      0
-                      @endif
-                    </td>
+                    </td>>
                     <td>{{$data->keterangan}}</td>
                     <td>{{$data->name}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
@@ -207,7 +201,7 @@
                   <tr>
                     <th>No</th>
                     <th>Nama Barang</th>
-                    <th>Qty</th>
+                    <th>Qty Available</th>
                     <th>Qty Request</th>
                     <th>Description</th>
                     <th>Tgl Request</th>
@@ -221,17 +215,19 @@
                     <td>{{$no++}}</td>
                     <td>{{$data->nama_barang}}</td>
                     <td>
-                      @if($data->qty_akhir != null)
+                      @if($data->status == 'PROSES' || $data->status == 'DONE')
+                      {{$data->qty_awal}}
+                      @elseif($data->status == 'PENDING' || $data->status == 'ACCEPT' || $data->status == 'REJECT')
                       {{$data->qty_akhir}}
-                      @else 
+                      @elseif($data->qty_awal == 0) 
                       0
                       @endif
                     </td>
                     <td>
                       @if($data->qty_request != null)
                       {{$data->qty_request}}
-                      @else 
-                      -
+                      @else
+                      0
                       @endif
                     </td>
                     <td>{{$data->keterangan}}</td>
@@ -266,7 +262,6 @@
                   <tr>
                     <th>No</th>
                     <th>Nama Barang</th>
-                    <!-- <th>Qty</th> -->
                     <th>Qty Request</th>
                     <th>Description</th>
                     <th>Nama</th>
@@ -281,13 +276,6 @@
                   <tr>
                     <td>{{$no++}}</td>
                     <td>{{$data->nama_barang}}</td>
-                    <!-- <td>
-                      @if($data->qty_akhir != null)
-                      {{$data->qty_akhir}}
-                      @else 
-                      0
-                      @endif
-                    </td> -->
                     <td>
                       @if($data->qty_request != null)
                       {{$data->qty_request}}
@@ -322,64 +310,6 @@
                       @else
                       <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
                       <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
-                      @endif
-                    </td>
-                  </tr>
-                  @endforeach
-                </tbody>
-                <tfoot>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-          @else
-          <div class="tab-pane fade" id="request_pr" role="tabpanel" aria-labelledby="profile-tab">
-            <div class="table-responsive" style="margin-top: 15px">
-              <table class="table table-bordered nowrap DataTable" id="pr_request" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Nama Barang</th>
-                    <!-- <th>Qty</th> -->
-                    <th>Qty Request</th>
-                    <th>Description</th>
-                    <th>Tgl Request</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="products-list" name="products-list">
-                  <?php $no = 1 ?>
-                  @foreach($pr_request2 as $data)
-                  <tr>
-                    <td>{{$no++}}</td>
-                    <td>{{$data->nama_barang}}</td>
-                    <!-- <td>
-                      @if($data->qty_akhir != null)
-                      {{$data->qty_akhir}}
-                      @else 
-                      0
-                      @endif
-                    </td> -->
-                    <td>
-                      @if($data->qty_request != null)
-                      {{$data->qty_request}}
-                      @else 
-                      0
-                      @endif
-                    </td>
-                    <td>{{$data->keterangan}}</td>
-                    <td>{!!substr($data->created_at,0,10)!!}</td>
-                    <td>
-                      @if($data->status == 'PENDING')
-                        <label class="status-open" style="width: 90px">PENDING</label>
-                      @elseif($data->status == 'ACCEPT')
-                        <label class="status-win" style="width: 90px">ACCEPTED</label>
-                      @elseif($data->status == 'REJECT')
-                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
-                      @elseif($data->status == 'PROSES')
-                        <label class="status-sd" style="width: 90px">PROSES PR</label>
-                      @elseif($data->status == 'DONE')
-                        <label class="status-tp" style="width: 90px">DONE</label>
                       @endif
                     </td>
                   </tr>

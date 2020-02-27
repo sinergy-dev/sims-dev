@@ -197,7 +197,7 @@ class AssetAtkController extends Controller
         $pinjaman = DB::table('tb_asset_atk_transaction')
                     ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
                     ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note', 'qty_request')
+                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note', 'qty_request', 'qty_awal')
                     ->where('tb_asset_atk_transaction.nik_peminjam',Auth::User()->nik)
                     ->get();
 
@@ -206,8 +206,6 @@ class AssetAtkController extends Controller
                     ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
                     ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note', 'qty_request')
                     ->where('tb_asset_atk_transaction.nik_peminjam',Auth::User()->nik)
-                    ->where('tb_asset_atk_transaction.status', 'PROSES')
-                    ->orWhere('tb_asset_atk_transaction.status', 'DONE')
                     ->get();
 
         $atk = AssetAtk::select('id_barang','nama_barang')->get();
