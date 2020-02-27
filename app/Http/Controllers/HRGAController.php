@@ -292,8 +292,6 @@ class HRGAController extends Controller
         $cek = User::join('tb_cuti','tb_cuti.nik','=','users.nik','left')
                 ->select('users.nik','cuti','cuti2','status_karyawan','status')->where('users.nik',$nik)->first();
 
-        // return $cek;
-
         if ($cek->status == null) {
             $cek_cuti = User::select('users.nik','status_karyawan')->where('users.nik',$nik)->first();
         }else{
@@ -676,9 +674,10 @@ class HRGAController extends Controller
         }
 
         $client = new Client();
-        // $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_KEY'));
-        // $json = (string)$api_response->getBody();
-        // $datas_nasional = json_decode($json, true);
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_YEY'));
+        $json = (string)$api_response->getBody();
+        $datas_nasional = json_decode($json, true);
+       
 
         $bulan = date('F');
         $tahun_ini = date('Y');
@@ -1391,13 +1390,27 @@ class HRGAController extends Controller
 
     public function CutiExcel(Request $request)
     {
+    	$client = new Client();
+        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=AIzaSyAf8ww4lC-hR6mDPf4RA4iuhhGI2eEoEiI');
+        $variable = json_decode($client->getBody())->items;
+
+        $hitung_cuti_bersama = 0;
+        foreach ($variable as $key => $value) {
+          if(strpos($value->summary,'Cuti Bersama') === 0){
+            if(strpos($value->start->date ,date('Y')) === 0){
+              // echo $value->start->date . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
+              $hitung_cuti_bersama++;
+            }
+          }
+        }
+        $hitung_cuti_bersama;
         // $nama = 'Report Cuti SIP & MSP '. $request->date_start . ' sampai ' . $request->date_end;
         $nama = 'Report Cuti SIP & MSP '. date('F') .' '. date('Y');
-        Excel::create($nama, function ($excel) use ($request) {
-            $excel->sheet('Sinergy informasi Pratama', function ($sheet) use ($request) {
+        Excel::create($nama, function ($excel) use ($request,$hitung_cuti_bersama) {
+            $excel->sheet('Sinergy informasi Pratama', function ($sheet) use ($request,$hitung_cuti_bersama) {
         
-                $sheet->mergeCells('A1:F1');
-                $sheet->setBorder('A1:F1', 'thin');
+                $sheet->mergeCells('A1:H1');
+                $sheet->setBorder('A1:H1', 'thin');
 
                 $sheet->row(1, function ($row) {
                     $row->setFontFamily('Calibri');
@@ -1420,7 +1433,7 @@ class HRGAController extends Controller
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
 			            ->join('tb_position','tb_position.id_position','=','users.id_position')
 			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
 			            ->groupby('tb_cuti.nik')
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
@@ -1431,7 +1444,7 @@ class HRGAController extends Controller
 
 			            $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
 			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
 			            ->where('status_karyawan','!=','dummy')
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
@@ -1444,17 +1457,18 @@ class HRGAController extends Controller
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
 			            ->join('tb_position','tb_position.id_position','=','users.id_position')
 			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
 			            ->groupby('tb_cuti.nik')
 			            ->where('tb_cuti.status','v')
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
+                        ->whereYear('date_req',date('Y'))
 			            ->where('tb_division.id_division',$request->division)
 			            ->get();
 
 			             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
 			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
 			            ->where('status_karyawan','!=','dummy')
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
@@ -1468,16 +1482,17 @@ class HRGAController extends Controller
                             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                             ->join('tb_position','tb_position.id_position','=','users.id_position')
                             ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
                             ->groupby('tb_cuti.nik')
                             ->where('id_company','1')
+                            ->whereYear('date_req',date('Y'))
                             ->orderBy('users.id_division')
                             ->where('tb_cuti.status','v')
                             ->get();
 
                              $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
 				            ->join('tb_division','tb_division.id_division','=','users.id_division')
-				            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+				            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
 				            ->where('status_karyawan','!=','dummy')
                             ->where('id_company','1')
                             ->orderBy('users.id_division')
@@ -1490,17 +1505,18 @@ class HRGAController extends Controller
                             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                             ->join('tb_position','tb_position.id_position','=','users.id_position')
                             ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
                             ->groupby('tb_cuti.nik')
                             ->where('tb_cuti.status','v')
                             ->orderBy('users.id_division')
+                            ->whereYear('date_req',date('Y'))
                             ->where('tb_division.id_division',$request->division)
                             ->where('id_company','1')
                             ->get();
 
-                             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
+                            $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
 				            ->join('tb_division','tb_division.id_division','=','users.id_division')
-				            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+				            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
 				            ->where('status_karyawan','!=','dummy')
                             ->where('id_company','1')
                             ->orderBy('users.id_division')
@@ -1515,16 +1531,17 @@ class HRGAController extends Controller
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
 			            ->join('tb_position','tb_position.id_position','=','users.id_position')
 			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
 			            ->groupby('tb_cuti.nik')
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
 			            ->where('tb_cuti.status','v')
+			            ->whereYear('tb_cuti.date_req',date('Y'))
 			            ->get();
 
 			             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
 			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
 			            ->where('status_karyawan','!=','dummy')
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
@@ -1534,29 +1551,53 @@ class HRGAController extends Controller
 			            })->get();
                 	}
 	                
-
+                	$tahun_lalu = date('Y') - 1;
                     $datasheetcuti = array();
-                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti");
+                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ".$tahun_lalu , "Sisa Cuti ".date('Y'),"Status Hak Cuti Karyawan");
                     $i=1;
 
                     foreach ($cuti_index as $data) {
+                    	if ($data->status_karyawan == 'belum_cuti') {
+                    		$habis = "Belum 1 tahun";
+                    	}else{
+                    		if ($data->cuti == 0) {
+                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
+                    		}else if($data->cuti2 == 0){
+                    			$habis = "Sisa Cuti ".date('Y')." Habis";
+                    		}
+                    		$habis = "-";
+                    	}
                         $datasheetcuti[$i] = array($i,
                                     $data['name'],
-                                    $data['']."",
-                                    $data['']."",
+                                    $data['']."12 hari",
+                                    $hitung_cuti_bersama." hari",
                                     $data['niks']." Hari",
-                                    $data['cutis']." Hari"
+                                    $data['cuti']." Hari",
+                                    $data['cuti2']." Hari",
+                                    $habis
                                 );
                         $i++;
                     }
 
                     foreach ($cuti_list as $datas ) {
+                    	if ($datas->status_karyawan == 'belum_cuti') {
+                    		$habis = "Belum 1 tahun";
+                    	}else{
+                    		if ($datas->cuti == 0) {
+                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
+                    		}else if($datas->cuti2 == 0){
+                    			$habis = "Sisa Cuti ".date('Y')." Habis";
+                    		}
+                    		$habis = "-";
+                    	}
                     	$datasheetcuti[$i] = array($i,
                                     $datas['name'],
-                                    $data['']."",
-                                    $data['']."",
+                                    $datas['']."12 hari",
+                                    $hitung_cuti_bersama." hari",
                                     $datas['']."0 Hari",
-                                    $datas['cutis']." Hari"
+                                    $datas['cuti']." Hari",
+                                    $datas['cuti2']." Hari",
+                                    $habis
                                 );
                         $i++;
                     }
@@ -1565,10 +1606,10 @@ class HRGAController extends Controller
                     
             });
 
-            $excel->sheet('Multi Solusindo Perkasa', function ($sheet) use ($request) {
+            $excel->sheet('Multi Solusindo Perkasa', function ($sheet) use ($request,$hitung_cuti_bersama) {
         
-                $sheet->mergeCells('A1:F1');
-                $sheet->setBorder('A1:F1', 'thin');
+                $sheet->mergeCells('A1:H1');
+                $sheet->setBorder('A1:h1', 'thin');
 
                 $sheet->row(1, function ($row) {
                     $row->setFontFamily('Calibri');
@@ -1591,7 +1632,7 @@ class HRGAController extends Controller
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
                         ->groupby('tb_cuti.nik')
                         ->where('tb_cuti.status','v')
                         ->where('status_karyawan','!=','dummy')
@@ -1601,7 +1642,7 @@ class HRGAController extends Controller
 
                         $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
                         ->where('status_karyawan','!=','dummy')
                         ->where('id_company','2')
                         ->orderBy('users.id_division')
@@ -1614,17 +1655,18 @@ class HRGAController extends Controller
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
                         ->groupby('tb_cuti.nik')
                         ->where('tb_cuti.status','v')
                         ->where('id_company','2')
                         ->orderBy('users.id_division')
+                        ->whereYear('date_req',date('Y'))
                         ->where('tb_division.id_division',$request->division)
                         ->get();
 
                          $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
                         ->where('status_karyawan','!=','dummy')
                         ->where('id_company','2')
                         ->orderBy('users.id_division')
@@ -1638,16 +1680,17 @@ class HRGAController extends Controller
                             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                             ->join('tb_position','tb_position.id_position','=','users.id_position')
                             ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
                             ->groupby('tb_cuti.nik')
                             ->where('id_company','2')
                             ->orderBy('users.id_division')
+                            ->whereYear('date_req',date('Y'))
                             ->where('tb_cuti.status','v')
                             ->get();
 
                              $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
                             ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
                             ->where('status_karyawan','!=','dummy')
                             ->where('id_company','2')
                             ->orderBy('users.id_division')
@@ -1660,17 +1703,18 @@ class HRGAController extends Controller
                             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                             ->join('tb_position','tb_position.id_position','=','users.id_position')
                             ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
                             ->groupby('tb_cuti.nik')
                             ->where('tb_cuti.status','v')
                             ->where('id_company','2')
+                            ->whereYear('date_req',date('Y'))
                             ->orderBy('users.id_division')
                             ->where('tb_division.id_division',$request->division)
                             ->get();
 
                              $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
                             ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
                             ->where('status_karyawan','!=','dummy')
                             ->where('id_company','2')
                             ->orderBy('users.id_division')
@@ -1685,16 +1729,17 @@ class HRGAController extends Controller
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"))
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'cuti','cuti2','status_karyawan')
                         ->groupby('tb_cuti.nik')
                         ->orderBy('users.id_division')
                         ->where('tb_cuti.status','v')
+                        ->whereYear('date_req',date('Y'))
                         ->where('id_company','2')
                         ->get();
 
                          $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'cuti2','status_karyawan','cuti')
                         ->where('status_karyawan','!=','dummy')
                         ->where('id_company','2')
                         ->orderBy('users.id_division')
@@ -1705,29 +1750,54 @@ class HRGAController extends Controller
                     }
                     
 
+                    $tahun_lalu = date('Y') -1;
                     $datasheetcuti = array();
-                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti");
+                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ".$tahun_lalu , "Sisa Cuti".date('Y'), "Status Hak Cuti Karyawan");
                     $i=1;
 
                     foreach ($cuti_index as $data) {
+                    	if ($data->status_karyawan == 'belum_cuti') {
+                    		$habis = "Belum 1 tahun";
+                    	}else{
+                    		if ($data->cuti == 0) {
+                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
+                    		}else if($data->cuti2 == 0){
+                    			$habis = "Sisa Cuti ".date('Y')." Habis";
+                    		}
+                    		$habis = "-";
+                    	}
 
                         $datasheetcuti[$i] = array($i,
                                     $data['name'],
-                                    $data['']."",
-                                    $data['']."",
+                                    $data['']."12 Hari",
+                                    $hitung_cuti_bersama. " Hari",
                                     $data['niks']." Hari",
-                                    $data['cutis']." Hari"
+                                    $data['cuti']." Hari",
+                                    $data['cuti2']." Hari",
+                                    $habis
                                 );
                         $i++;
                     }
 
                     foreach ($cuti_list as $datas ) {
+                    	if ($datas->status_karyawan == 'belum_cuti') {
+                    		$habis = "Belum 1 tahun";
+                    	}else{
+                    		if ($datas->cuti == 0) {
+                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
+                    		}else if($datas->cuti2 == 0){
+                    			$habis = "Sisa Cuti ".date('Y')." Habis";
+                    		}
+                    		$habis = "-";
+                    	}
                         $datasheetcuti[$i] = array($i,
                                     $datas['name'],
-                                    $datas['']."",
-                                    $datas['']."",
+                                    $datas['']."12 Hari",
+                                    $hitung_cuti_bersama. " Hari",
                                     $datas['']."0 Hari",
-                                    $datas['cutis']." Hari"
+                                    $datas['cutis']." Hari",
+                                    $datas['cuti2']." Hari",
+                                    $habis
                                 );
                         $i++;
                     }
