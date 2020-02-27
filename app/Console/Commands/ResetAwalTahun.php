@@ -42,7 +42,7 @@ class ResetAwalTahun extends Command
     public function handle()
     {
         $client = new Client();
-        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=AIzaSyAf8ww4lC-hR6mDPf4RA4iuhhGI2eEoEiI');
+        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_YEY'));
         $variable = json_decode($client->getBody())->items;
         echo "<pre>";
         $i = 0;
@@ -65,7 +65,7 @@ class ResetAwalTahun extends Command
             
             $update = User::where('nik',$data->nik)->first();
             $data->cuti2 = 12 - $i;
-            $data->update();
+            // $data->update();
 
         }
     }
