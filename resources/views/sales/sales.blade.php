@@ -310,10 +310,13 @@
 
 <div class="box">
     <div class="box-header">
-      @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR'  || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
+      @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR'  || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
+
+        @if(Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')
         <div class="dropdown pull-right" style="margin-left: 5px">
           <button type="button" class="dropbtn-add" id="btn_add_sales" data-toggle="modal" data-target="#modal_lead"><i class="fa fa-plus"> </i>&nbsp Lead Register</button>
         </div>
+        @endif
 
         <div class="dropdown pull-right">
             <select name="year_dif" id="year_dif" class="btn btn-md btn-success fa" style="font-size: 14px;background-color:#4CAF50;border-style: none;height: 30px;width: 145px">
@@ -326,7 +329,7 @@
           </select>
         </div>
 
-        @if(Auth::User()->id_division != 'SALES' && Auth::User()->id_territory != 'OPERATION')
+        @if(Auth::User()->id_division != 'SALES' && Auth::User()->id_territory != 'OPERATION' && Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF')
         <select id="table-filter" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
           <option value="">Filter By Territory</option>
           <option>TERRITORY 1</option>
@@ -340,7 +343,7 @@
     </div>
  
     <div class="box-body">
-      <div id="div_2019" style="display: none"> 
+      <div id="div_2019" style="display: none;"> 
         <div class="table-responsive">
             <p id="TotalPage"></p>
             <table class="table table-bordered table-striped no-wrap" id="datas2019" width="100%" cellspacing="0">
@@ -367,7 +370,9 @@
                   @endif 
                   <th>Note</th>
                   <th hidden></th>
+                  @if(Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF')
                   <th hidden>15</th>
+                  @endif
                 </tr>
                 @if(Auth::User()->id_territory == 'OPERATION')
                 <tr id="status">
@@ -400,7 +405,7 @@
                   <th hidden></th>
                   <th hidden></th>
                 </tr>
-                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
+                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                 <tr id="status">
                   <th></th>
                   <th></th>
@@ -420,6 +425,20 @@
                   <th></th>
                   <th hidden></th>
                   <th hidden></th>
+                  <th hidden></th>
+                </tr>
+                @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
+                <tr id="status">
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
                   <th hidden></th>
                 </tr>
                 @else
@@ -1131,11 +1150,13 @@
                 @elseif(Auth::User()->id_territory == 'OPERATION')
                   @foreach($leads as $data)
                   <tr>
-                    <!-- <td><a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a></td> -->
+                    <!-- <a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a> -->
                     @if($data->result != 'OPEN')
+                    <td>
                     <a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a>
                     @else
                     {{ $data->lead_id }}
+                    </td>
                     @endif
                     <td>{{ $data->brand_name}}</td>
                     <td>{{ $data->opp_name}}</td>
@@ -1298,7 +1319,7 @@
                   @endforeach
                 @else
                   @foreach($leads as $data)
-                    <tr>
+                  <tr>
                     <td>
                       @if(Auth::User()->id_division == 'PMO')
                         @if($data->result != 'OPEN')
@@ -1524,7 +1545,7 @@
                     <td hidden>
                       {{$data->year}}
                     </td>
-                    </tr>
+                  </tr>
                   @endforeach
                 @endif
               </tbody>
@@ -1560,7 +1581,7 @@
                 @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                   <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
                 @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
-                  <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+                  <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th hidden></th>
                 @else
                   <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
                 @endif
@@ -1641,7 +1662,7 @@
                   <th hidden></th>
                   <th hidden=""></th>
                 </tr>
-                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
+                @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                 <tr id="sekarang">
                   <th></th>
                   <th></th>
@@ -1649,19 +1670,29 @@
                   <th></th>
                   <th></th>
                   <th></th>
-                  @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_company == '1')
-                  <th></th>
-                  @endif
                   <th></th>
                   <th></th>
                   <th></th>
-                  @if(Auth::User()->id_company == '1' && Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR')
                   <th></th>
-                  @endif 
                   <th></th>
                   <th hidden></th>
-                  <th hidden=""></th>
-                  <!-- <th hidden></th> -->
+                  <th hidden></th>
+                  <th hidden></th>
+                </tr>
+                @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
+                <tr id="sekarang">
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th hidden></th>
+                  <th hidden></th>
                 </tr>
                 @elseif(Auth::User()->id_territory == 'OPERATION')
                 <tr id="sekarang">
@@ -2359,7 +2390,6 @@
                         <td>{!!substr($data->created_at,0,10)!!}</td>
                         <td>{{ $data->closing_date}}</td>
                         <td>{{ $data->name }}</td>
-                        @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')
                         <td>
                           @if($data->nik == $st->nik)
                             Satria Teguh Sentosa Mulyono
@@ -2375,7 +2405,6 @@
                             Johan Ardi Wibisono
                           @endif
                         </td>
-                        @endif
                         @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
                           @if($data->deal_price == NULL)
                             <td><i></i><i class="money">{{$data->amount}}</i></td>
@@ -2434,17 +2463,6 @@
                             @endif
                           @endif
                         </td>
-                        @if(Auth::User()->id_division == 'SALES' || Auth::User()->id_company == '1' && Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_company == '2' && Auth::User()->id_division != 'TECHNICAL')
-                          <td>
-                            @if($data->result != 'LOSE' && $data->result != 'WIN' && $data->result != 'CANCEL')
-                            <button class="btn btn-xs btn-primary " data-target="#edit_lead_register" data-toggle="modal" onclick="lead_id('{{$data->lead_id}}','{{$data->id_customer}}','{{$data->opp_name}}','{{$data->amount}}','{{$data->created_at}}','{{$data->closing_date}}','{{$data->keterangan}}')" style="width: 60px;">&nbspEdit</button>
-                            @endif
-                            @if(Auth::User()->name == $data->name && $data->result == 'OPEN' || Auth::User()->id_position == 'DIRECTOR' && $data->result == 'OPEN' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && $data->result == 'OPEN')
-                            <a href="{{ url('delete_sales', $data->lead_id) }}"><button class="btn btn-xs btn-danger" style="width: 60px;" onclick="return confirm('Are you sure want to delete this Lead Register? And this data is not used in other table')">&nbspDelete
-                            </button></a>
-                            @endif
-                          </td>
-                        @endif
                         <td>
                           @if($data->keterangan != '')
                           <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
@@ -2461,7 +2479,7 @@
                   @endif
                 @endforeach
               @else
-                @foreach($leads as $data)
+                @foreach($leadsnow as $data)
                   @if($data->year == $year_now-1)
                     @if($data->result != 'WIN' && $data->result != 'LOSE' && $data->result != 'CANCEL')
                     <tr>
@@ -2964,7 +2982,20 @@
                   <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
                   @endif
                 @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES')
-                  <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th hidden=""></th>
+                  <th hidden=""></th>
+                  <th hidden=""></th>
                 @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                   <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
                 @else
@@ -4655,13 +4686,7 @@
 
       @endif
 
-      @if(Auth::User()->email == 'tech@sinergy.co.id')
-      
-      
-      @endif
-
       @if (Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_territory == 'DPG')
-
         $.fn.dataTable.ext.search.push(
           function(settings, data, dataIndex) {
               var years = parseInt($('#year_dif').val());

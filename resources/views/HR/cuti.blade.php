@@ -943,7 +943,7 @@
                         {"width": "10%", "targets":3},
                         {"width": "10%", "targets":4},
                        ],
-                    "order": [[ "5", "desc" ]],
+                    "order": [[ "2", "desc" ]],
                     "lengthChange": false,
                     "paging": false,
                 });
@@ -986,7 +986,7 @@
                   {"width": "10%", "targets":3},
                   {"width": "10%", "targets":4},
                  ],
-              "order": [[ "5", "desc" ]],
+              "order": [[ "2", "desc" ]],
               "lengthChange": false,
               "paging": false,
           });
@@ -1041,7 +1041,7 @@
                       {"width": "10%", "targets":3},
                       {"width": "10%", "targets":4},
                      ],
-                  "order": [[ "5", "desc" ]],
+                  "order": [[ "2", "desc" ]],
                   "lengthChange": false,
                   "paging": false,
               });
@@ -1080,7 +1080,7 @@
               {"width": "10%", "targets":3},
               {"width": "10%", "targets":4},
              ],
-          "order": [[ "5", "desc" ]],
+          "order": [[ "2", "desc" ]],
           "lengthChange": true,
           "paging": true,
       });
@@ -1088,7 +1088,7 @@
         $("#division_cuti").change(function(){
           $.ajax({
               type:"GET",
-              url:"/getfilterCutiByDiv",
+              url:"{{url('/getfilterCutiByDiv')}}",
               data:{
                 division:this.value,
               },
@@ -1101,7 +1101,7 @@
                         {"width": "10%", "targets":3},
                         {"width": "10%", "targets":4},
                        ],
-                    "order": [[ "5", "desc" ]],
+                    "order": [[ "2", "desc" ]],
                     "lengthChange": false,
                     "paging": false,
                 });
@@ -1144,7 +1144,7 @@
               {"width": "10%", "targets":3},
               {"width": "10%", "targets":4},
              ],
-          "order": [[ "5", "desc" ]],
+          "order": [[ "2", "desc" ]],
           "lengthChange": true,
           "paging": true,
       });
