@@ -1978,6 +1978,7 @@ class HRGAController extends Controller
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
 	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti')
 	            ->where('status','v')
+	            ->whereYear('date_req',date('Y'))
 	            ->groupby('tb_cuti.id_cuti')
 	            ->get();
     	}else{
@@ -1988,6 +1989,7 @@ class HRGAController extends Controller
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
 	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti')
 	            ->where('status','v')
+	            ->whereYear('date_req',date('Y'))
 	            ->where('tb_division.id_division',$request->division)
 	            ->groupby('tb_cuti.id_cuti')
 	            ->get();
