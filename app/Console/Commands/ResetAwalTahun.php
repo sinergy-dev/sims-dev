@@ -44,7 +44,6 @@ class ResetAwalTahun extends Command
         $client = new Client();
         $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_YEY'));
         $variable = json_decode($client->getBody())->items;
-        echo "<pre>";
         $i = 0;
         foreach ($variable as $key => $value) {
           if(strpos($value->summary,'Cuti Bersama') === 0){
@@ -54,18 +53,13 @@ class ResetAwalTahun extends Command
             }
           }
         }
-        echo $i;
-        // print_r(json_decode($client->getBody())) ;
-        echo "</pre>";
-        //
+        
         $reset = User::select('nik','name')->where('status_karyawan','cuti')->get();
 
         foreach ($reset as $data) {
-            // print_r($data->name . $data->nik . "\n");
-            
             $update = User::where('nik',$data->nik)->first();
             $data->cuti2 = 12 - $i;
-            // $data->update();
+            $data->update();
 
         }
     }
