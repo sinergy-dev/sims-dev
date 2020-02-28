@@ -1090,15 +1090,6 @@
           <div class="form-group" id="result-win" style="display: none;">
             <label><u>Mohon Isi input di bawah sebelum submit!</u></label>
 
-            <label>Date PO</label>
-            <input type="text" name="date_po" id="date_po" class="form-control date" ><br>
-            
-            <label>No. PO</label>
-            <input type="text" name="no_po" id="no_po" class="form-control"><br>
-            
-            <label>Amount PO <sup><b>(Grand Total)</b></sup></label>
-            <input type="text" name="amount_pid" id="amount_pid" class="form-control money" ><br>
-            
             <label>Project Type</label>
             <select class="form-control" id="project_type" name="project_type" >
               <option value="">-- Choose Result --</option>
@@ -1107,7 +1098,12 @@
               <option value="Maintenance">Maintenance</option>
               <option value="Managed-Services">Managed-Services</option>
               <option value="Services">Services</option>
-            </select> 
+            </select><br>
+
+            <div class="form-group">
+	            <label><b>Closing Date</b></label>
+	            <input type="text" class="form-control" name="update_closing_date" id="update_closing_date" required>
+	         </div>
 
             <label style="padding-top: 15px;">No. Quote</label>
             <select class="form-control" id="quote_number_final" name="quote_number_final" style="width: 100%; ">
@@ -1115,26 +1111,23 @@
               @foreach($get_quote_number as $data)
               <option value="{{$data->quote_number}}">{{$data->quote_number}} - {{$data->customer_legal_name}}</option>
               @endforeach
-            </select> 
+            </select><br><br> 
 
-            <label class="checkbox" style="padding-left: 25px; padding-top: 10px;">
+            <label>Date PO</label>
+            <input type="text" name="date_po" id="date_po_result" class="form-control date" ><br>
+            
+            <label>No. PO</label>
+            <input type="text" name="no_po" id="no_po_result" class="form-control" disabled=""><br>
+            
+            <label>Amount PO <sup><b>(Grand Total)</b></sup></label>
+            <input type="text" name="amount_pid" id="amount_pid_result" class="form-control money" disabled=""><br>
+
+            <label class="checkbox" style="padding-left: 25px; padding-top: 10px;" id="checkbox_result">
               <input type="checkbox" name="request_id" id="request_id" style="width: 7px;height: 7px">
               <span>Request ID Project <sup>(Optional)</sup></span>
             </label>
 
           </div>
-
-          <div class="form-group">
-            <label><b>Closing Date</b></label>
-            <input type="text" class="form-control" name="update_closing_date" id="update_closing_date" required>
-          </div>
-
-          <!-- <div class="form-group" style="padding-left: 25px">
-            <label class="checkbox">
-              <input type="checkbox" name="request_id" id="request_id" value="pending" style="width: 7px;height: 7px">
-              <span>Request ID Project <sup>(Optional)</sup></span>
-            </label>
-          </div> -->
           
           <div class="form-group" id="result-lose" style="display: none;">
             <label><b>Description</b></label>
@@ -1546,8 +1539,28 @@
         autoclose: true
       });
 
-      $('.date').datepicker({
-        autoclose: true
+      $('#date_po_result').datepicker({
+        autoclose: true,
+      }).on('changeDate', function(date) {
+
+      	if (moment(date.date).format("YYYY") < 2020) {
+      		swal("<h3>Warning Pembuatan PID!!!</h3>", "<h4>lead dengan tanggal PO tahun lalu (backdate) harap kirim email manual pada Bu Anne untuk pembuatan PID seperti proses manual terdahulu! Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</h4>")
+
+      		if ($('.date').datepicker('setDate', null)) {
+      			$("#no_po_result").prop( "disabled", true );
+	      		$("#amount_pid_result").prop( "disabled", true );
+	      		$("#quote_number_final").prop( "disabled", true );
+	      		$("#checkbox_result").css("display", "none");
+      		}
+      		console.log($('#date').val())
+      	}else{
+      		$("#no_po_result").prop( "disabled", false );
+	      	$("#amount_pid_result").prop( "disabled", false );
+	      	$("#checkbox_result").css("display", "block");
+	      	$("#quote_number_final").prop( "disabled", false );
+      	}
+
+      	
       });
 
       $(document).ready(function(){
