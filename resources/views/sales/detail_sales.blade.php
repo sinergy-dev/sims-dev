@@ -1087,6 +1087,11 @@
             <br>
           </div>
 
+          <div class="form-group">
+	            <label><b>Closing Date</b></label>
+	            <input type="text" class="form-control" name="update_closing_date" id="update_closing_date" required>
+	       </div>
+
           <div class="form-group" id="result-win" style="display: none;">
             <label><u>Mohon Isi input di bawah sebelum submit!</u></label>
 
@@ -1098,12 +1103,7 @@
               <option value="Maintenance">Maintenance</option>
               <option value="Managed-Services">Managed-Services</option>
               <option value="Services">Services</option>
-            </select><br>
-
-            <div class="form-group">
-	            <label><b>Closing Date</b></label>
-	            <input type="text" class="form-control" name="update_closing_date" id="update_closing_date" required>
-	         </div>
+            </select><br>            
 
             <label style="padding-top: 15px;">No. Quote</label>
             <select class="form-control" id="quote_number_final" name="quote_number_final" style="width: 100%; ">
