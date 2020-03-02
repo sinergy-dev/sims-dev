@@ -155,7 +155,7 @@
                       @else 
                       0
                       @endif
-                    </td>>
+                    </td>
                     <td>{{$data->keterangan}}</td>
                     <td>{{$data->name}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
