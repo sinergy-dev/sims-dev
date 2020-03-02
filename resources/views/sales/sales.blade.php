@@ -310,13 +310,10 @@
 
 <div class="box">
     <div class="box-header">
-      @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR'  || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-
-        @if(Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')
+      @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR'  || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
         <div class="dropdown pull-right" style="margin-left: 5px">
           <button type="button" class="dropbtn-add" id="btn_add_sales" data-toggle="modal" data-target="#modal_lead"><i class="fa fa-plus"> </i>&nbsp Lead Register</button>
         </div>
-        @endif
 
         <div class="dropdown pull-right">
             <select name="year_dif" id="year_dif" class="btn btn-md btn-success fa" style="font-size: 14px;background-color:#4CAF50;border-style: none;height: 30px;width: 145px">
@@ -341,6 +338,19 @@
         @endif
       @endif
     </div>
+
+    @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'STAFF')
+    <div class="dropdown pull-right">
+            <select name="year_dif" id="year_dif" class="btn btn-md btn-success fa" style="font-size: 14px;background-color:#4CAF50;border-style: none;height: 30px;width: 145px">
+            @foreach($year as $years)
+              @if($years->year < $year_now)
+                <option value="{{$years->year}}"> &#xf073 &nbsp&nbsp{{$years->year}}</option>
+              @endif
+            @endforeach
+            <option selected value="{{$year_now}}"> &#xf073 &nbsp&nbsp{{$year_now}}</option>
+          </select>
+        </div>
+    @endif
  
     <div class="box-body">
       <div id="div_2019" style="display: none;"> 

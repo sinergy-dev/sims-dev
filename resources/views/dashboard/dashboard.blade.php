@@ -1182,6 +1182,9 @@
                       <li>Submitted Price adalah harga nego.<br></li>
                       <li>Deal Price adalah harga sesuai PO.<br><br></li>
                     </ul>
+                    <b>Penyesuaian untuk Request PID :</b><br>
+                    <p>Lead yang memiliki tanggal PO tahun lalu (backdate) harap email manual pada Bu Anee seperti proses manual sebelumnya, re:<i>yuliane@sinergy.co.id</i>. Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</p>
+                    <br>
                     Untuk pengisian proses "Tender Process" terdapat beberapa perubahan:<br><br>
                     <ul>
                       <li>Terdapat penambahan status Project Class (Multiyears / Blanket / Normal) yang wajib diisi.<br></li>
@@ -1191,6 +1194,7 @@
                       <li>Untuk status Multiyears / Blanket, Deal Price adalah PO tahun ini dan Deal Price Total adalah total nominal PO keseluruhan<br><br></li>
                     </ul>
                     <b>Mohon Deal Price diisi untuk perhitungan dan report.</b><br><br>
+                    
                     Terkait perubahan tersebut, Lead Register yang ber-status Win bisa di edit kembali untuk pengisian Deal Price.<br><br>
                     Terimakasih.
                   </h4>
@@ -1644,6 +1648,14 @@
         });
       }
     });
+    @endif
+
+    @if (Auth::User()->id_division == 'SALES') {
+      if (sessionStorage.getItem('dontLoad') == null){
+          $("#popUp").modal("show");
+        }
+        sessionStorage.setItem('dontLoad', 'true');
+      }
     @endif
    
 </script>
