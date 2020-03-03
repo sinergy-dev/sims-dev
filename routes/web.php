@@ -629,6 +629,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getPengembalian', 'AssetHRController@getPengembalian');
 	Route::get('/getEditAsset', 'AssetHRController@getEditAsset');
 	Route::post('/edit_asset', 'AssetHRController@edit_asset');
+	Route::get('/exportExcelAsset', 'AssetHRController@export_excel');
 
 	Route::get('asset_atk', 'AssetAtkController@index');
 	Route::post('asset_atk/store_asset_atk', 'AssetAtkController@store');

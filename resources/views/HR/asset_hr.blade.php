@@ -76,6 +76,7 @@
           @if(Auth::User()->id_division == 'HR')
           <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
           <button class="btn btn-sm btn-warning pull-right" data-toggle="modal" data-target="#modaledit" style="margin-right: 5px" ><i class="fa fa-edit"> </i>&nbsp Edit Asset</button>
+          <a href="{{action('AssetHRController@export_excel')}}"><button class="btn btn-sm btn-warning pull-right" style="margin-right: 5px" ><i class="fa fa-print"> </i>&nbsp Excel</button></a>
           @endif
         </ul>
         <div class="tab-content" id="myTabContent">
