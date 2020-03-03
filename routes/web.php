@@ -84,6 +84,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('update_customer', 'SalesController@update_customer');
 
 	Route::get('/show/{lead_id}','SalesController@show');
+	Route::get('/getBtnFilter','salescontroller@getBtnFilter');
 
 	Route::get('/warehouse', 'WarehouseController@index');
 	Route::post('/warehouse/store', 'WarehouseController@store');
@@ -247,6 +248,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/delete_cuti/{id_cuti}', 'HRGAController@delete_cuti');
 	Route::get('/follow_up/{id_cuti}', 'HRGAController@follow_up');
 	Route::get('/downloadPdfcuti', 'HRGAController@cutipdf');
+	Route::get('/index_delivery_person', 'HRGAController@index_delivery_person');
 
 	Route::post('/store_sho','SHOController@store');
 	Route::post('/store_sho_transac','SHOController@store_sho_transac');
