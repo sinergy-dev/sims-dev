@@ -179,7 +179,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                         @if($data->lead_id == 'SIPPO2020')
                         {{$data->name_project}}
                         @else
-                        {{$data->opp_name}}
+                        {{$data->name_project}}
                         @endif
                       </td>
                       @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
@@ -350,7 +350,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                         @if($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO')
                         {{$data->name_project}}
                         @else
-                        {{$data->opp_name}}
+                        {{$data->name_project}}
                         @endif
                       </td>
                       @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position != 'STAFF')
