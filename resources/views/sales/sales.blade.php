@@ -559,6 +559,12 @@
                             @else
                               <a href="#"><button class="btn btn-xs btn-primary" disabled>Detail</button></a>
                             @endif
+                          @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM')
+                            @if($data->result != 'OPEN')
+                              <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                            @else
+                              <a href="#"><button class="btn btn-xs btn-primary" disabled>Detail</button></a>
+                            @endif
                           @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'SALES')
                             @if($data->result != 'OPEN')
                               <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
@@ -1331,7 +1337,7 @@
                   @foreach($leads as $data)
                   <tr>
                     <td>
-                      @if(Auth::User()->id_division == 'PMO')
+                      @if(Auth::User()->id_territory == 'OPERATION')
                         @if($data->result != 'OPEN')
                           @if($data->status_sho == 'PMO')
                             <a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a>
@@ -1525,17 +1531,17 @@
                       @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO' && $data->result == 'WIN' && $data->status_handover == 'handover' && $data->status_sho != 'PMO')
                         <button type="button" class="btn btn-xs btn-primary" onclick="assignPMO('{{$data->lead_id}}')" data-toggle="modal" data-target="#assignModalPMO">Assign</button>
                       @elseif(Auth::User()->id_division != 'PMO')
-                      @if(Auth::User()->id_position == 'OPERATION DIRECTOR')
-                        <button class="btn btn-xs disabled" style="background-color: black;color: white">No Action</button>
-                      @else
-                        <!-- status win dulu -->
-                        <!-- PMO mau nambah progress -->
-                        @if($data->result == 'WIN')
-                        <a href="{{url('PMO/detail',$data->lead_id)}}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                        @if(Auth::User()->id_position == 'OPERATION DIRECTOR')
+                          <button class="btn btn-xs disabled" style="background-color: black;color: white">No Action</button>
                         @else
-                        <a href="#"><button class="btn btn-xs btn-primary">Detail</button></a>
+                          <!-- status win dulu -->
+                          <!-- PMO mau nambah progress -->
+                          @if($data->result == 'WIN')
+                          <a href="{{url('PMO/detail',$data->lead_id)}}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                          @else
+                          <a href="#"><button class="btn btn-xs btn-primary">Detail</button></a>
+                          @endif
                         @endif
-                      @endif
                       @else
                         @if($data->status_sho == 'PMO' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO')
                           
@@ -2602,6 +2608,12 @@
                           @else
                             <a href="#"><button class="btn btn-xs btn-primary" disabled>Detail</button></a>
                           @endif
+                        @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM')
+                          @if($data->result != 'OPEN')
+                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                          @else
+                            <a href="#"><button class="btn btn-xs btn-primary" disabled>Detail</button></a>
+                          @endif
                         @elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'SALES')
                           @if($data->result != 'OPEN')
                             <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
@@ -2830,6 +2842,12 @@
                         @if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'SALES' && $data->result == 'WIN' && $data->status_handover != 'handover')
                         <button data-target="#modal_sho" data-toggle="modal" class="btn btn-xs btn-primary" onclick="sho('{{$data->lead_id}}')">Handover</button>
                         @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'SALES')
+                          @if($data->result != 'OPEN')
+                            <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
+                          @else
+                            <a href="#"><button class="btn btn-xs btn-primary" disabled>Detail</button></a>
+                          @endif
+                        @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM')
                           @if($data->result != 'OPEN')
                             <a href="{{ url ('/detail_project', $data->lead_id) }}"><button class="btn btn-xs btn-primary">Detail</button></a>
                           @else
