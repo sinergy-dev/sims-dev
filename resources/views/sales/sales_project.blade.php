@@ -378,10 +378,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                     @if(Auth::User()->id_division == 'FINANCE')
                     <td>
                         @if(Auth::User()->id_position == 'MANAGER')
-                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->amount_idr}}','{{$data->note}}','{{$data->invoice}}','{{$data->lead_id}}','{{$data->opp_name}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
+                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po}}','{{$data->name_project}}','{{$data->amount_idr}}','{{$data->note}}','{{$data->invoice}}','{{$data->lead_id}}','{{$data->opp_name}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                         <button class="btn btn-xs btn-danger" style="width: 70px" data-toggle="modal" data-target="#modal_delete" onclick="delete_project('{{$data->lead_id}}','{{$data->id_pro}}')"><i class="fa fa-trash"></i>&nbspDelete</button>
                         @else
-                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
+                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
                         @endif
                     </td>
                     </tr>
@@ -1184,10 +1184,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       }
     }
     @else
-    function Edit_sp(id_project,no_po_customer,name_project,amount_idr,note,invoice,lead_id,opp_name)
+    function Edit_sp(id_project,no_po,name_project,amount_idr,note,invoice,lead_id,opp_name)
     {
       $('#id_project_edit').val(id_project);
-      $('#po_customer_edit').val(no_po_customer);
+      $('#po_customer_edit').val(no_po);
       $('#name_project_edit').val(name_project);
       $('#amount_edit').val(amount_idr);
       $('#note_edit').val(note);

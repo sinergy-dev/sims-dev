@@ -964,6 +964,20 @@ class SALESController extends Controller
         
     }
 
+    public function getBtnFilter(Request $request)
+    {
+        if($request->id_assign=='company'){
+            return array(DB::table('tb_company')
+                ->select('code_company')
+                ->get(),$request->id_assign);
+        } else if ($request->id_assign == 'territory') {
+            return array(DB::table('tb_territory')
+                ->select('name_territory')
+                ->where('name_territory', 'like', 'TERRITORY%')
+                ->get(),$request->id_assign);
+        }
+    }
+
     public function getLeadByCompany(Request $request)
     {
         $leadsnow  = array("data" => DB::table('sales_lead_register')
@@ -4700,6 +4714,16 @@ class SALESController extends Controller
         $update->note = $request['note_edit'];
         $update->invoice = $request['invoice'];
         $update->update();//
+
+        $lead_id = Salesproject::select('lead_id')->where('id_project',$id_project)->first()->lead_id;
+
+        if ($lead_id != 'MSPQUO' && $lead_id != 'MSPPO' && $lead_id != 'SIPPO' && $lead_id != 'SIPQUO') {
+            $update2 = PID::where('lead_id',$lead_id)->first();
+            $update2->no_po = $request['po_customer_edit'];
+            $update2->update();
+        }else{
+            return redirect('salesproject');
+        }
 
         return redirect('salesproject');
     }
