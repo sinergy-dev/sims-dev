@@ -326,6 +326,15 @@
           </select>
         </div>
 
+<!--         <select id="btn-filter" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
+          <option value="">Select Filter</option>
+          <option value="company">Company</option>
+          <option value="territory">Territory</option>
+        </select>
+
+        <select id="btn-filter-child" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
+        </select>
+ -->
         @if(Auth::User()->id_division != 'SALES' && Auth::User()->id_territory != 'OPERATION' && Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF')
         <select id="table-filter" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
           <option value="">Filter By Territory</option>
@@ -4760,6 +4769,49 @@
     {
         $('.kat_drop').select2();
     }
+
+    $("#btn-filter").change(function(){
+      console.log($("#btn-filter").val());
+      $.ajax({
+          type:"GET",
+          url:'{{url("/getBtnFilter")}}',
+          data:{
+            id_assign:this.value,
+          },
+          success: function(result){
+            $('#btn-filter-child').html(append)
+                var append = "<option value=''>-- Select Option --</option>";
+
+                if (result[1] == 'company') {
+                  $.each(result[0], function(key, value){
+                    append = append + "<option>" + value.code_company + "</option>";
+                  });
+
+                  $('#btn-filter-child').on('change', function(){
+                    if (this.value == null) {
+                      datasnow.reload();
+                    }else{
+                      datasnow.columns(0).search(this.value).draw();
+                    }
+                     
+                     console.log(this.value);
+                  });
+
+                } else if (result[1] == 'territory') {
+                  $.each(result[0], function(key, value){
+                    append = append + "<option>" + value.name_territory + "</option>";
+                  });
+
+                  $('#btn-filter-child').on('change', function(){
+                     datasnow.columns(14).search(this.value).draw();
+                     console.log(this.value);
+                  });
+                }
+
+                $('#btn-filter-child').html(append);
+          },
+      });
+    })
 
   </script>
 @endsection
