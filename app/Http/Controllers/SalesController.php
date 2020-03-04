@@ -4717,15 +4717,22 @@ class SALESController extends Controller
 
         $lead_id = Salesproject::select('lead_id')->where('id_project',$id_project)->first()->lead_id;
 
+        $cek_company = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->join('tb_company','tb_company.id_company','=','users.id_company')->where('id_project',$id_project)->first()->id_company;
+
         if ($lead_id != 'MSPQUO' && $lead_id != 'MSPPO' && $lead_id != 'SIPPO' && $lead_id != 'SIPQUO') {
             $update2 = PID::where('lead_id',$lead_id)->first();
             $update2->no_po = $request['po_customer_edit'];
             $update2->update();
+
+            if ($cek_company == '1') {
+                return redirect('salesproject#tab_1');
+            }else{
+                return redirect('salesproject#tab_2');
+            }
+            
         }else{
             return redirect('salesproject');
         }
-
-        return redirect('salesproject');
     }
 
     public function destroy_sp(Request $request)
