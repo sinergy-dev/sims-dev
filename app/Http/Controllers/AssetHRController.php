@@ -570,61 +570,125 @@ class AssetHRController extends Controller
 
     }
 
-    public function export_excel(Request $request)
+    public function export(Request $request)
     {
-         $nama = 'List Asset '.date('Y-m-d');
+        $nama = 'List Asset '.date('Y-m-d');
         Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('List Asset', function ($sheet) use ($request) {
-        
-        $sheet->mergeCells('A1:G1');
+            $excel->sheet('List Asset', function ($sheet) use ($request) {
+            
+                $sheet->mergeCells('A1:F1');
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
+               // $sheet->setAllBorders('thin');
+                $sheet->row(1, function ($row) {
+                    $row->setFontFamily('Calibri');
+                    $row->setFontSize(12);
+                    $row->setAlignment('center');
+                    $row->setFontWeight('bold');
+                });
 
-        $sheet->row(1, array('LIST ASSET'));
+                $sheet->row(1, array('LIST ASSET'));
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
+                $sheet->row(2, function ($row) {
+                    $row->setFontFamily('Calibri');
+                    $row->setFontSize(12);
+                    $row->setFontWeight('bold');
+                });
 
+                $asset = AssetHR::select('nama_barang', 'id_barang', 'qty', 'description','code_name')->get();
+                
 
-        $datas    = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                    ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
-                    ->select('tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','tb_asset_hr.nama_barang','tb_asset_hr_transaction.qty_akhir','tb_asset_hr.description','users.name','tb_asset_hr.qty','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.status', 'tb_asset_hr_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'no_transac', 'code_name')
-                    ->get();
-        
+               // $sheet->appendRow(array_keys($datas[0]));
+                $sheet->row($sheet->getHighestRow(), function ($row) {
+                    $row->setFontWeight('bold');
+                });
 
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
+                $datasheet = array();
+                $datasheet[0]  =   array("No","Kode Asset","Nama Barang", "Quantity", "Deskripsi", "Status");
+                 $i=1;
+
+                foreach ($asset as $data) {
+                    if ($data->qty == 0) {
+                      $datasheet[$i] = array(
+                        $i,
+                        $data['code_name'],
+                        $data['nama_barang'],
+                        '0',
+                        $data['description'],
+                        'UnAvailable'
+                        
+                        );
+                      
+                      $i++;
+                    }else{
+                    $datasheet[$i] = array(
+                        $i,
+                        $data['code_name'],
+                        $data['nama_barang'],
+                        $data['qty'],
+                        $data['description'],
+                        'Available'
+                        
+                    );
+                  
+                    $i++;
+                    }
+                    
+                }
+
+                $sheet->fromArray($datasheet);
             });
 
-             $datasheet = array();
-             $datasheet[0]  =   array("Kode Asset", "Nama Barang", "Deskripsi", "Nama Peminjam", "Tgl Pinjam", "Tgl Kembali", "Note");
-             $i=1;
+            $excel->sheet('Detail Peminjaman Asset', function ($sheet) use ($request) {
+            
+                $sheet->mergeCells('A1:H1');
 
-            foreach ($datas as $data) {
-                $datasheet[$i] = array(
-                            $data['code_name'],
-                            $data['nama_barang'],
-                            $data['description'],
-                            $data['name'],
-                            $data['tgl_peminjaman'],
-                            $data['tgl_pengembalian'],
-                            $data['keterangan']
-                        );
-                $i++;
-            }
+               // $sheet->setAllBorders('thin');
+                $sheet->row(1, function ($row) {
+                    $row->setFontFamily('Calibri');
+                    $row->setFontSize(12);
+                    $row->setAlignment('center');
+                    $row->setFontWeight('bold');
+                });
 
-            $sheet->fromArray($datasheet);
-        });
+                $sheet->row(1, array('LIST ASSET'));
+
+                $sheet->row(2, function ($row) {
+                    $row->setFontFamily('Calibri');
+                    $row->setFontSize(12);
+                    $row->setFontWeight('bold');
+                });
+
+                $datas    = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+                            ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang', 'left')
+                            ->select('tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','tb_asset_hr.nama_barang','tb_asset_hr_transaction.qty_akhir','tb_asset_hr.description','users.name','tb_asset_hr.qty','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.status', 'tb_asset_hr_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'no_transac', 'code_name')
+                            ->get();
+                
+
+               // $sheet->appendRow(array_keys($datas[0]));
+                $sheet->row($sheet->getHighestRow(), function ($row) {
+                    $row->setFontWeight('bold');
+                });
+
+                $datasheet = array();
+                $datasheet[0]  =   array("No","Kode Asset", "Nama Barang", "Deskripsi", "Nama Peminjam", "Tgl Pinjam", "Tgl Kembali", "Note");
+                 $i=1;
+
+                foreach ($datas as $data) {
+                    $datasheet[$i] = array($i,
+                                $data['code_name'],
+                                $data['nama_barang'],
+                                $data['description'],
+                                $data['name'],
+                                $data['tgl_peminjaman'],
+                                $data['tgl_pengembalian'],
+                                $data['keterangan']
+                            );
+                    $i++;
+                    
+                }
+
+                $sheet->fromArray($datasheet);
+            });
 
         })->export('xls');
     }
