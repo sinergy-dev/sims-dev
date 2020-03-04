@@ -55,7 +55,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
 <section class="content-header">
   <h1>
-    ID Project
+    ID Project SIP & MSP
   </h1>
   <ol class="breadcrumb">
     <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -73,6 +73,8 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   @elseif (session('gagal'))
   <div class="alert alert-danger notification-bar" id="alert"><span>Warning : </span> {{ session('gagal') }}.</div>
   @endif
+
+  <!--tes-->
 
   <div class="box">
     <div class="box-header">
