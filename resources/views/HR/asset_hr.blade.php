@@ -120,7 +120,7 @@
               </table>
             </div>
           </div>
-          <!-- @if(Auth::User()->id_division == 'HR')
+          @if(Auth::User()->id_division == 'HR')
           <div class="tab-pane fade" id="peminjaman_asset" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered nowrap DataTable" id="datatable" width="100%" cellspacing="0">
@@ -170,7 +170,7 @@
               </table>
             </div>
           </div>
-          @endif -->
+          @endif
         </div>
       </div>
     </div>
