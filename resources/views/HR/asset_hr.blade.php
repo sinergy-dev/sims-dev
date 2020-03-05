@@ -208,6 +208,7 @@
           <div class="form-group">
             <label for="sow">Kategori</label>
             <select class="form-control" id="category_asset" name="category_asset" required>
+              <option value="">Select Kategori</option>
               <option value="LPT">Laptop</option>
               <option value="PRN">Printer</option>
               <option value="HDD">Harddisk</option>
@@ -218,7 +219,7 @@
 
           <div class="form-group">
             <label for="sow">Company</label>
-            <select class="form-control" id="company_asset" name="company_asset" required onkeyup="copytextbox();">
+            <select class="form-control" id="company_asset" name="company_asset" required">
               <option value="">Select Company</option>
               <option value="SIP">PT. SIP</option>
               <option value="MSP">PT. MSP</option>
