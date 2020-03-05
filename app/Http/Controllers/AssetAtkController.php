@@ -448,7 +448,7 @@ class AssetAtkController extends Controller
 		$store->save();*/
 
 
-        if ($count_qty->qty == 0) {
+        if ($count_qty->qty == 0 || $count_qty->qty < $qty_akhir) {
             $store                   = new AssetAtkTransaction();
             $store->no_transac       = $no_peminjaman;
             $store->id_barang        = $request['atk'];
