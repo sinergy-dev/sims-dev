@@ -443,8 +443,8 @@ REJECT
         <div class="modal-body">
           <form method="POST" action="{{url('kembali_pinjam_hr')}}" id="modal_kembali" name="modalProgress">
             @csrf
-          <input type="text" name="id_barang_kembali" id="id_barang_kembali" >
-          <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" >
+          <input type="text" name="id_barang_kembali" id="id_barang_kembali" hidden>
+          <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" hidden>
           <div class="form-group">
             <h3 style="text-align: center;"><b>RETURN NOW!</b></h3>
             <table class="table table-bordered">
