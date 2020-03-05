@@ -448,13 +448,24 @@ class AssetAtkController extends Controller
 		$store->save();*/
 
 
-        if ($count_qty->qty == 0 || $count_qty->qty < $qty_akhir) {
+        if ($count_qty->qty == 0 ) {
             $store                   = new AssetAtkTransaction();
             $store->no_transac       = $no_peminjaman;
             $store->id_barang        = $request['atk'];
             $store->nik_peminjam     = Auth::User()->nik;
-            $store->qty_request        = $qty_akhir;
+            $store->qty_request      = $qty_akhir;
             $store->qty_awal         = $count_qty->qty;
+            $store->keterangan       = $request['keterangan'];
+            $store->status           = 'PROSES';
+            $store->save();
+        } elseif ($count_qty->qty < $qty_akhir) {
+            $store                   = new AssetAtkTransaction();
+            $store->no_transac       = $no_peminjaman;
+            $store->id_barang        = $request['atk'];
+            $store->nik_peminjam     = Auth::User()->nik;
+            $store->qty_awal         = $count_qty->qty;
+            $store->qty_akhir        = $count_qty->qty;
+            $store->qty_request      = $qty_akhir - $count_qty->qty;
             $store->keterangan       = $request['keterangan'];
             $store->status           = 'PROSES';
             $store->save();
