@@ -67,17 +67,12 @@
                 <td>{{$data->nama_barang}}</td>
                 <td>{{$data->name}}</td>
                 <td>{{$data->tgl_peminjaman}}</td>
-                <td>@if($data->status == 'RETURN')
-                  {{$data->tgl_pengembalian}}
-                  @elseif($data->status != 'RETURN')
-                  -
-                  @endif
-                </td>
+                <td>{{$data->tgl_pengembalian}}</td>
                 <td>{{$data->keterangan}}</td>
                 <td>
-                 @if($data->status == 'PENDING')
+                 @if($data->tgl_pengembalian == "")
                  	<span class="label label-danger">SUDAH DI AMBIL</span>
-                  @elseif($data->status == 'RETURN')
+                  @else
                   	<span class="label label-success">SUDAH KEMBALI</span>
                   @endif
                 </td>

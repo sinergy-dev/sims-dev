@@ -66,7 +66,6 @@
           </li>
           @if(Auth::User()->id_division == 'HR')
           <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
-          <button class="btn btn-sm btn-warning pull-right" data-toggle="modal" data-target="#modaledit" style="margin-right: 5px" ><i class="fa fa-edit"> </i>&nbsp Edit Asset</button>
           <a href="{{url('exportExcelAsset')}}" class="btn btn-info btn-sm pull-right" style="margin-right: 5px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
           @endif
         </ul>
@@ -79,8 +78,8 @@
                   <tr>
                     <th>Code Asset</th>
                     <th>Name</th>
-                    <th>Quantity</th>
                     <th>Description</th>
+                    <th>Serial Number</th>
                     <th>Status</th>
                     @if(Auth::User()->id_division == 'HR')
                     <th>Action</th>
@@ -92,10 +91,16 @@
                   <tr>
                     <td>{{$data->code_name}}<input type="" name="id_barang_update" hidden></td>
                     <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->qty}}</td>
                     <td>{{$data->description}}</td>
                     <td>
-                      @if($data->qty == 0)
+                      @if($data->serial_number != "-")
+                      {{$data->serial_number}}
+                      @else
+                      -
+                      @endif
+                    </td>
+                    <td>
+                      @if($data->status == "PENDING")
                       <span class="label label-info">UnAvailable</span>
                       @else
                       <span class="label label-default">Available</span>
@@ -103,12 +108,14 @@
                     </td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
-                      @if($data->qty == 0)
+                      <button class="btn btn-xs btn-warning" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit"></i> Edit Asset 
+                      </button>
+                      @if($data->status == "PENDING")
                       <button class="btn btn-xs btn-danger btn-pengembalian" value="{{$data->id_barang}}">Pengembalian</button>
                       @else
-                      <button class="btn btn-xs btn-warning" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}','{{$data->qty}}')" data-target="#peminjaman" data-toggle="modal" >Peminjaman 
+                      <button class="btn btn-xs btn-success" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-target="#peminjaman" data-toggle="modal" >Peminjaman 
                       </button>
-                      @endif
+                      @endif                      
                       <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary">History</button></a>
                     </td>
                     @endif
@@ -129,7 +136,6 @@
                     <th>No</th>
                     <th>No Peminjaman</th>
                     <th>Nama Barang</th>
-                    <th>Qty</th>
                     <th>Description</th>
                     <th>Nama Peminjam</th>
                     <th>Tgl Peminjaman</th>
@@ -144,7 +150,6 @@
                     <td>{{$no++}}</td>
                     <td>{{$data->no_transac}}</td>
                     <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->qty_akhir}}</td>
                     <td>{{$data->keterangan}}</td>
                     <td>{{$data->name}}</td>
                     <td>{{$data->tgl_peminjaman}}</td>
@@ -201,20 +206,6 @@
           <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">
             @csrf
           <div class="form-group">
-            <label for="sow">Nama Barang</label>
-            <input name="nama_barang" id="nama_barang" class="form-control"></input>
-          </div>
-
-          <div class="form-group">
-            <label for="sow">Company</label>
-            <select class="form-control" id="company_asset" name="company_asset" required>
-              <option value="">Select Company</option>
-              <option value="SIP">PT. SIP</option>
-              <option value="MSP">PT. MSP</option>
-            </select>
-          </div>
-
-          <div class="form-group">
             <label for="sow">Kategori</label>
             <select class="form-control" id="category_asset" name="category_asset" required>
               <option value="LPT">Laptop</option>
@@ -224,19 +215,53 @@
               <option value="OTH">Other</option>
             </select>
           </div>
+
+          <div class="form-group">
+            <label for="sow">Company</label>
+            <select class="form-control" id="company_asset" name="company_asset" required onkeyup="copytextbox();">
+              <option value="">Select Company</option>
+              <option value="SIP">PT. SIP</option>
+              <option value="MSP">PT. MSP</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sow">Nama Barang</label>
+            <input name="nama_barang" id="nama_barang" class="form-control"></input>
+          </div>
+
+          <div class="form-group">
+            <label for="sow">Nomor SN</label>
+            <input name="asset_sn" id="asset_sn" class="form-control"></input>
+          </div>
+          
           <div class="form-group">
             <label for="sow">Keterangan</label>
             <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
           </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
-            </div>
+
+          <div class="form-group">
+            <label for="sow">Asset Date</label>
+            <input type="date" name="asset_date" id="asset_date" class="form-control" ></input>
+          </div>
+
+          <div class="form-group">
+            <label for="sow">Asset Code</label>
+            <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden=></input>
+            <input name="asset_code" id="asset_code" class="form-control" value="{{$nomor}}" readonly></input>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+            <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+          </div>
         </form>
         </div>
       </div>
     </div>
 </div>
+
+<!--edit asset-->
 
 <!--edit asset-->
 <div class="modal fade" id="modaledit" role="dialog">
@@ -248,22 +273,26 @@
         <div class="modal-body">
           <form method="POST" action="{{url('edit_asset')}}" id="modal_update" name="modalProgress">
             @csrf
+          <input type="" name="id_barang_asset_edit" id="id_barang_asset_edit" hidden>
           <div class="form-group">
             <label for="sow">Nama barang</label>
-            <select class="form-control" id="barang_asset_edit" name="barang_asset_edit" style="width: 100%!important" required>
-              @foreach($asset as $data)
-              <option value="{{$data->id_barang}}">{{$data->nama_barang}}</option>
-              @endforeach
-            </select>
+            <input class="form-control" type="text" name="nama_barang_asset_edit" id="nama_barang_asset_edit">
           </div>
+
           <div class="form-group">
             <label for="sow">Keterangan</label>
             <textarea name="keterangan_edit" id="keterangan_edit" class="form-control" required=""></textarea>
           </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-warning"><i class="fa fa-check"></i>&nbsp Update</button>
-            </div>
+
+          <div class="form-group">
+            <label for="sow">Nomor SN</label>
+            <input class="form-control" type="text" name="asset_sn_edit" id="asset_sn_edit">
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+            <button type="submit" class="btn btn-sm btn-warning"><i class="fa fa-check"></i>&nbsp Update</button>
+          </div>
         </form>
         </div>
       </div>
@@ -292,10 +321,6 @@
           <div class="form-group">
             <label for="sow">Nama Barang</label>
             <input name="nama_barang" id="nama_barang_pinjam" class="form-control" readonly></input>
-          </div>
-          <div class="form-group">
-            <label for="sow">Jumlah Stock</label>
-            <input name="qty" id="qty_pinjam" type="number" class="form-control" readonly>
           </div>
           <div class="form-group margin-left-right">
               @if ($message = Session::get('warning'))
@@ -418,8 +443,8 @@ REJECT
         <div class="modal-body">
           <form method="POST" action="{{url('kembali_pinjam_hr')}}" id="modal_kembali" name="modalProgress">
             @csrf
-          <input type="text" name="id_barang_kembali" id="id_barang_kembali" hidden="">
-          <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" hidden="">
+          <input type="text" name="id_barang_kembali" id="id_barang_kembali" >
+          <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" >
           <div class="form-group">
             <h3 style="text-align: center;"><b>RETURN NOW!</b></h3>
             <table class="table table-bordered">
@@ -453,12 +478,12 @@ REJECT
 @endsection
 
 @section('script')
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+  <script type="text/javascript" src="{{asset('js/roman.js')}}"></script>
   <script type="text/javascript">
-
-    $("#barang_asset_edit").select2();
 
     var now = new Date();
  
@@ -469,7 +494,7 @@ REJECT
 
     $('#tanggal_kembali').val(today);
 
-    $(document).on('change',"#barang_asset_edit",function(e) { 
+    $(document).on('click',"#barang_asset_edit",function(e) { 
         // console.log(this.value);
         $.ajax({
             type:"GET",
@@ -478,13 +503,18 @@ REJECT
               id_barang:this.value,
             },
             success: function(result){
+              $('#id_barang_asset_edit').val(result[0].id_barang);
+              $('#nama_barang_asset_edit').val(result[0].nama_barang);
+              $('#asset_sn_edit').val(result[0].serial_number);
               $('#keterangan_edit').val(result[0].description);
             },
         });
+
+        $('#modaledit').modal('show')
     });
 
     $(document).on('click',".btn-pengembalian",function(e) { 
-        // console.log(this.value);
+        console.log(this.value);
         $.ajax({
             type:"GET",
             url:"{{url('/getPengembalian')}}",
@@ -517,11 +547,9 @@ REJECT
          $("#alert").slideUp(300);
     });
 
-    function pinjam(id_barang,nama_barang,qty){
+    function pinjam(id_barang,nama_barang){
       $('#id_barang').val(id_barang);
       $('#nama_barang_pinjam').val(nama_barang);
-      $('#qty_pinjam').val(qty);
-      $('#qtys').val(qty);
     }
 
     function kembali(id_transaction,id_barang,nama_barang,name){
@@ -530,6 +558,43 @@ REJECT
       $('#nama_barang_kembali').text(nama_barang);
       $('#nama_peminjam_kembali').text(name);
     } 
+
+    function edit(id_barang,nama_barang,description,serial_number){
+      $('#id_barang_asset_edit').val(id_barang);
+      $('#nama_barang_asset_edit').val(nama_barang);
+      $('#keterangan_edit').val(description);
+      $('#asset_sn_edit').val(serial_number);
+    } 
+
+    $(document).on('change',"#category_asset",function(e) { 
+        var code = $("#kode_asset").val();
+        var company = $("#company_asset").val();
+
+        $(document).on('change',"#company_asset",function(e) { 
+          var code = $("#kode_asset").val();
+          var category = $("#category_asset").val();
+
+          $('#asset_code').val(code + "/" + category + "/" + this.value + "/" + roman.toRoman(parseInt(moment().format("M"))) + "/" + moment().format("YYYY"));
+
+          $(document).on('change',"#asset_date",function(e) { 
+
+            var code = $("#kode_asset").val();
+            var category = $("#category_asset").val();
+            var company = $("#company_asset").val();
+
+            $('#asset_code').val(code + "/" + category + "/" + company + "/" + roman.toRoman(parseInt(moment($("#asset_date").val()).format("M"))) + "/" + moment($("#asset_date").val()).format("YYYY"));
+
+          });
+
+        });
+
+        if (company == "") {
+          $('#asset_code').val(code + "/" + this.value + "/" + "-" + "/" + roman.toRoman(parseInt(moment().format("M"))) + "/" + moment().format("YYYY"));
+        }else{
+          $('#asset_code').val(code + "/" + this.value + "/" + company + "/" + roman.toRoman(parseInt(moment().format("M"))) + "/" + moment().format("YYYY"));
+        }
+        
+    });
 
     /*$('#myTab a').click(function(e) {
       e.preventDefault();
