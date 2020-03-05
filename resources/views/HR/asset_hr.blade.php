@@ -46,7 +46,7 @@
   @endif
 
   @if (session('success'))
-    <div class="alert alert-primary" id="alert">
+    <div class="alert alert-success" id="alert">
       {{ session('success') }}
     </div>
   @endif
@@ -569,27 +569,36 @@ REJECT
     $(document).on('change',"#category_asset",function(e) { 
         var code = $("#kode_asset").val();
         var company = $("#company_asset").val();
+        var asset_date = $("#asset_date").val();
 
         $(document).on('change',"#company_asset",function(e) { 
           var code = $("#kode_asset").val();
           var category = $("#category_asset").val();
+          var asset_date = $("#asset_date").val();
 
-          $('#asset_code').val(code + "/" + category + "/" + this.value + "/" + roman.toRoman(parseInt(moment().format("M"))) + "/" + moment().format("YYYY"));
+          if (asset_date == "") {
+            $('#asset_code').val(code + "/" + category + "/" + this.value + "/" + roman.toRoman(parseInt(moment().format("M"))) + "/" + moment().format("YYYY"));
+          }else{
+            $('#asset_code').val(code + "/" + category + "/" + this.value + "/" + roman.toRoman(parseInt(moment(asset_date).format("M"))) + "/" + moment(asset_date).format("YYYY"));
+          }
 
           $(document).on('change',"#asset_date",function(e) { 
 
             var code = $("#kode_asset").val();
             var category = $("#category_asset").val();
             var company = $("#company_asset").val();
+            var asset_date = $("#asset_date").val();
 
-            $('#asset_code').val(code + "/" + category + "/" + company + "/" + roman.toRoman(parseInt(moment($("#asset_date").val()).format("M"))) + "/" + moment($("#asset_date").val()).format("YYYY"));
+            $('#asset_code').val(code + "/" + category + "/" + company + "/" + roman.toRoman(parseInt(moment(asset_date).format("M"))) + "/" + moment(asset_date).format("YYYY"));
 
           });
 
         });
 
-        if (company == "") {
+        if (company == "" && asset_date == "") {
           $('#asset_code').val(code + "/" + this.value + "/" + "-" + "/" + roman.toRoman(parseInt(moment().format("M"))) + "/" + moment().format("YYYY"));
+        }else if(asset_date != ""){
+          $('#asset_code').val(code + "/" + this.value + "/" + company + "/" + roman.toRoman(parseInt(moment(asset_date).format("M"))) + "/" + moment(asset_date).format("YYYY"));
         }else{
           $('#asset_code').val(code + "/" + this.value + "/" + company + "/" + roman.toRoman(parseInt(moment().format("M"))) + "/" + moment().format("YYYY"));
         }
