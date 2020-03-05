@@ -259,6 +259,7 @@ class AssetHRController extends Controller
         $tambah->nama_barang    = $request['nama_barang'];
         $tambah->status         = "NEW";
         $tambah->tgl_tambah     = $request['asset_date'];
+        $tambah->serial_number  = $request['asset_sn'];
         $tambah->description    = $request['keterangan'];
         $tambah->save();
 
