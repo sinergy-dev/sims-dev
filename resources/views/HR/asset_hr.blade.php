@@ -1,5 +1,6 @@
 @extends('template.template_admin-lte')
 @section('content')
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
 <style type="text/css">
   .modalIconsubject input[type=text]{
       padding-left:115px;
@@ -73,7 +74,7 @@
           <div class="tab-pane active" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
             <br>
             <div class="table-responsive" >
-              <table class="table table-bordered nowrap " id="data_table" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped " id="data_table" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Code Asset</th>
@@ -108,15 +109,13 @@
                     </td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
-                      <button class="btn btn-xs btn-warning" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit"></i> Edit Asset 
-                      </button>
+                      <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
                       @if($data->status == "PENDING")
-                      <button class="btn btn-xs btn-danger btn-pengembalian" value="{{$data->id_barang}}">Pengembalian</button>
+                      <button class="btn btn-xs btn-danger btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-hourglass-end"></i></button>
                       @else
-                      <button class="btn btn-xs btn-success" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-target="#peminjaman" data-toggle="modal" >Peminjaman 
-                      </button>
+                      <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
                       @endif                      
-                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary">History</button></a>
+                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
                     </td>
                     @endif
                   </tr>
@@ -243,7 +242,7 @@
 
           <div class="form-group">
             <label for="sow">Asset Date</label>
-            <input type="date" name="asset_date" id="asset_date" class="form-control" ></input>
+            <input type="text" name="asset_date" id="asset_date" class="form-control" ></input>
           </div>
 
           <div class="form-group">
@@ -480,11 +479,14 @@ REJECT
 
 @section('script')
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> 
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/roman.js')}}"></script>
   <script type="text/javascript">
+
+    $('#asset_date').datepicker();
 
     var now = new Date();
  
@@ -531,6 +533,11 @@ REJECT
         });
 
         $('#kembali_modal').modal('show')
+    });
+
+    $(document).on('click',".btn-peminjaman",function(e) { 
+
+        $('#peminjaman').modal('show')
     });
 
     $('#users').select2();
