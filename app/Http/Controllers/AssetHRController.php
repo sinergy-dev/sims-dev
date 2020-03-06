@@ -227,6 +227,8 @@ class AssetHRController extends Controller
                 ->get();
 
         return $asset;
+
+        //tambahhhhh
     }
 
     public function getdetail(Request $request)
