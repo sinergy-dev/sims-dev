@@ -585,19 +585,20 @@ class AssetAtkController extends Controller
         $id_barang = $request['id_barang_done'];
         $qty = $request['qty_done'];
         $qty_request = $request['qty_request_done'];
+        $qty_restock = $request['qty_restock_pr'];
 
-        if ($qty == 0) {
+        /*if ($qty == 0) {
             return back()->with('qty-done','Quantity Habis');
-        } else {
+        } else {*/
             $update = AssetAtkTransaction::where('id_transaction', $id_transaction)->first();
             $update->status = 'DONE';
             $update->update();
 
             $update_qty = AssetAtk::where('id_barang', $id_barang)->first();
-            $update_qty->qty = $qty - $qty_request;
+            $update_qty->qty = $qty_restock - $qty_request;
             $update_qty->update();
 
-        }
+        // }
 
         
         return redirect()->back()->with('update', 'Successfully!');

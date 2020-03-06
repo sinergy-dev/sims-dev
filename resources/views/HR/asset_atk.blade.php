@@ -593,7 +593,14 @@
           <label>Qty Request</label>
           <input name="qty_request_done_field" class="form-control" id="qty_request_done_field" readonly>
         </div>
-        
+        <div class="form-group">
+          <label>Qty Now</label>
+          <input name="qty_now_pr" id="qty_now_pr" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label>Qty Restock</label>
+          <input type="number" name="qty_restock_pr" id="qty_restock_pr" class="form-control">
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
           <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
@@ -630,6 +637,7 @@
       $('#qty_request_done').val(qty_request);
       $('#nama_barang_done').val(nama_barang);
       $('#qty_request_done_field').val(qty_request);
+      $('#qty_now_pr').val(qty);
     }
 
     $('#atk').select2();
