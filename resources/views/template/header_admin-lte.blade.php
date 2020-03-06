@@ -934,6 +934,9 @@
           <li>
             <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
           </li>
+          <li>
+            <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
+          </li>
         </ul>
       </li>
       @endif

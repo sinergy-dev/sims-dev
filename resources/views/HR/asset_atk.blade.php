@@ -94,6 +94,7 @@
                     <th>No</th>
                     <th>Name</th>
                     <th>Quantity</th>
+                    <th>Unit</th>
                     <th>Description</th>
                     @if(Auth::User()->id_division == 'HR')
                     <th>Action</th>
@@ -107,6 +108,7 @@
                     <td>{{$no++}}<input type="" name="id_barang_update" hidden></td>
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty}}</td>
+                    <td>{{$data->unit}}</td>
                     <td>{{$data->description}}</td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
@@ -357,6 +359,16 @@
           <div class="form-group">
             <label for="sow">Qty</label>
             <input name="qty" id="qty" type="number" class="form-control" required="">
+          </div>
+          <div class="form-group">
+            <label>Unit</label>
+            <select class="form-control" name="unit" id="unit">
+              <option value="">Select Unit</option>
+              @foreach($unit_assets as $unit_asset)
+              <option value="{{$unit_asset->unit}}">{{$unit_asset->unit}}</option>
+              @endforeach
+            </select>
+            <label class="hover-biru" style="color:#002280;">Unit belum ada?</label>
           </div>
           <div class="form-group">
             <label for="sow">Deskripsi</label>
@@ -634,6 +646,11 @@
              $(this).val(qty_before);
           }
     });*/
+
+    $('.hover-biru').click(function(){
+      var new_unit = prompt("Enter unit :");
+      $("#unit").append($('<option>', { value: new_unit, text: new_unit, selected:true }));
+    })
 
     $(".detail-product").select2({
       closeOnSelect : false,
