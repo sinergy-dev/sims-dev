@@ -922,7 +922,7 @@
         </ul>
       </li>
       @else
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
           <i class="fa fa-users"></i>
           <span class="nav-link-text" style="font-size: 14px">Human Resource</span>

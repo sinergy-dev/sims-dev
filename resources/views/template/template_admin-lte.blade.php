@@ -333,6 +333,8 @@
 <!-- DataTables -->
 <script>
   $(function () {
+    $(".activeable").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+
     $('#example1').DataTable()
     $('#example2').DataTable({
       'paging'      : true,
