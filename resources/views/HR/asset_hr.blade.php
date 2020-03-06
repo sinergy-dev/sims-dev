@@ -116,6 +116,8 @@
                       <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
                       @endif                      
                       <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
+                      <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
+                      
                     </td>
                     @endif
                   </tr>
@@ -242,7 +244,7 @@
 
           <div class="form-group">
             <label for="sow">Asset Date</label>
-            <input type="text" name="asset_date" id="asset_date" class="form-control" ></input>
+            <input type="text" name="asset_date" id="asset_date" class="form-control" data-date-end-date="0d"></input>
           </div>
 
           <div class="form-group">
@@ -461,7 +463,7 @@ REJECT
                   <span id="nama_peminjam_kembali"></span>
                 </td>
                 <td>
-                  <input type="date" name="tanggal_kembali" id="tanggal_kembali" class="form-control">
+                  <input type="date" name="tanggal_kembali" id="tanggal_kembali" readonly class="form-control">
                 </td>
               </tr>
             </table>
@@ -486,7 +488,35 @@ REJECT
   <script type="text/javascript" src="{{asset('js/roman.js')}}"></script>
   <script type="text/javascript">
 
-    $('#asset_date').datepicker();
+    var hari_libur_nasional = []
+    var hari_libur_nasional_tooltip = []
+    $.ajax({
+      type:"GET",
+      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_YEY')}}",
+      success: function(result){
+        $.each(result.items,function(key,value){
+          hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
+          hari_libur_nasional_tooltip.push(value.summary)
+        })
+      }
+    })
+
+    $('#asset_date').datepicker({
+      weekStart: 1,
+      daysOfWeekDisabled: "0,6",
+      daysOfWeekHighlighted: [0,6],
+      todayHighlight: true,
+      beforeShowDay: function(date){
+        var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+        if(index > 0){
+          return {
+            enabled: false,
+            tooltip: hari_libur_nasional_tooltip[index],
+            classes: 'hari_libur'
+          };
+        }
+      }
+    });
 
     var now = new Date();
  
@@ -514,6 +544,24 @@ REJECT
         });
 
         $('#modaledit').modal('show')
+    });
+
+    $(document).on('click',"#btn_info_asset",function(e) { 
+        // console.log(this.value);
+        $.ajax({
+            type:"GET",
+            url:"{{url('/getEditAsset')}}",
+            data:{
+              id_barang:this.value,
+            },
+            success: function(result){
+              var swal_html = '<div class="panel" style="background:aliceblue;font-weight:bold;font-size:12px"> Berikut informasi terkait : </br></br> Umur Asset : '+ result[0].umur_asset +' hari </div>';
+              // swal({title: "Asset "+ result[0].nama_barang +" !!", html: swal_html})
+              swal({
+                title: "Asset "+ result[0].nama_barang +" !!", html: swal_html
+              });
+            },
+        });
     });
 
     $(document).on('click',".btn-pengembalian",function(e) { 

@@ -222,7 +222,7 @@ class AssetHRController extends Controller
 
     public function getEditAsset(Request $request){
         $asset = DB::table('tb_asset_hr')
-                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','serial_number')
+                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','serial_number',DB::raw('DATEDIFF(created_at,tgl_tambah) AS umur_asset'))
                 ->where('tb_asset_hr.id_barang',$request->id_barang)
                 ->get();
 
