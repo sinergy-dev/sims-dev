@@ -204,7 +204,7 @@ class AssetHRController extends Controller
             $nomor = '0' . $nomor;
         }
 
-    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor'));
+    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam'));
     }
 
     public function getPengembalian(Request $request){
@@ -214,7 +214,7 @@ class AssetHRController extends Controller
                 ->join('users', 'users.nik', '=', 'tb_asset_hr_transaction.nik_peminjam')
                 ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','tb_asset_hr_transaction.id_transaction','name')
                 ->where('tb_asset_hr_transaction.id_barang',$request->id_barang)
-                ->orderBy('tb_asset_hr_transaction.id_barang','desc')
+                ->orderBy('tb_asset_hr_transaction.id_transaction','desc')
                 ->get();
 
         return $asset;
@@ -259,6 +259,7 @@ class AssetHRController extends Controller
         $tambah->nama_barang    = $request['nama_barang'];
         $tambah->status         = "NEW";
         $tambah->tgl_tambah     = $request['asset_date'];
+        $tambah->serial_number  = $request['asset_sn'];
         $tambah->description    = $request['keterangan'];
         $tambah->save();
 
@@ -480,7 +481,7 @@ class AssetHRController extends Controller
         $store->no_transac		= $no_peminjaman;
         $store->save();
 
-        return redirect()->back()->with('alert', 'Peminjaman Akan di Proses!');
+        return redirect()->back()->with('alert', 'Peminjaman Barang Berhasil!');
     }
 
     public function accept_pinjam(Request $request)
@@ -526,7 +527,15 @@ class AssetHRController extends Controller
         $update->tgl_pengembalian = $request['tanggal_kembali'];
         $update->update();
 
-        return redirect()->back()->with('success', 'Barang Telah di Kembalikan !');
+        $asset = DB::table('tb_asset_hr')
+                ->join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang','inner')
+                ->join('users', 'users.nik', '=', 'tb_asset_hr_transaction.nik_peminjam')
+                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','tb_asset_hr_transaction.id_transaction','name')
+                ->where('tb_asset_hr_transaction.id_barang',$request->id_barang)
+                ->orderBy('tb_asset_hr_transaction.id_transaction','desc')
+                ->first();
+
+        return redirect()->back()->with('success','Barang sudah dikembalikan!');
     }
 
     public function edit_asset(Request $request){

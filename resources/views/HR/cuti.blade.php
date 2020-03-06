@@ -1,6 +1,6 @@
 @extends('template.template_admin-lte')
 @section('content')
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
   <style type="text/css">
     .hari_libur {
       color: red !important;
@@ -1236,7 +1236,7 @@
     var hari_libur_nasional_tooltip = []
     $.ajax({
       type:"GET",
-      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY')}}",
+      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_YEY')}}",
       success: function(result){
         $.each(result.items,function(key,value){
           hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
