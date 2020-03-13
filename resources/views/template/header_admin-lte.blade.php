@@ -902,25 +902,6 @@
           </li>
         </ul>
       </li>
-      
-      @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_company == '1')
-      <li class="activeable treeview">
-        <a href="#HRPages" data-parent="#exampleAccordion">
-          <i class="fa fa-users"></i>
-          <span class="nav-link-text" style="font-size: 14px">Human Resource</span>
-          <span class="pull-right-container">
-            <i class="fa fa-angle-left pull-right"></i>
-          </span>
-        </a>
-        <ul class="activeable treeview-menu" id="HRPages">
-          <li>
-            <a href="{{url('/hu_rec')}}" style="font-size: 14px"></i>Employees</a>
-          </li>
-          <li>
-            <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
-          </li>
-        </ul>
-      </li>
       @else
       <li class="activeable treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
@@ -940,13 +921,6 @@
         </ul>
       </li>
       @endif
-      <li class="activeable treeview">
-        <ul class="activeable treeview-menu" id="HRPages">
-          <li>
-            <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
-          </li>
-        </ul>
-      </li>
 
 
       @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG')
