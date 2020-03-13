@@ -1029,7 +1029,7 @@ class HRGAController extends Controller
 
         if ($ter != NULL) {
             if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER') {
-                if ($div == 'PMO') {
+                if ($div == 'PMO' || $ter == 'OPERATION') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','firman@sinergy.co.id')->where('id_company','1')->first();
                 }else if ($div == 'FINANCE' || $div == 'SALES') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
@@ -1071,7 +1071,7 @@ class HRGAController extends Controller
                 }else{
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
                 }
-            }else if($div == 'MANAGER'){
+            }else if($pos == 'MANAGER'){
                 $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
             }else{
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
@@ -1097,7 +1097,7 @@ class HRGAController extends Controller
 
 
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Approve - Permohonan Cuti'));
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Permohonan Cuti'));
 
 
         	
