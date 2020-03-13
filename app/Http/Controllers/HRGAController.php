@@ -718,7 +718,7 @@ class HRGAController extends Controller
                 ->groupby('nik')
                 ->where('tb_cuti.status','n')
                 ->get();
-        }elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN'){
+        }elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA'){
         	$cuti = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
@@ -788,6 +788,36 @@ class HRGAController extends Controller
 	            })
 	            ->get();
 
+        }elseif ($pos == 'DIRECTOR') {
+            $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
+                    ->groupby('id_cuti')
+                    ->orderBy('id_cuti','desc')
+                    ->where('users.id_position','MANAGER')
+                    ->where('users.id_division','!=','MSM')
+                    ->orwhere('users.id_position','=','OPERATION DIRECTOR')
+                    ->orwhere('users.id_position','=','HR MANAGER')
+                    ->get();
+
+            $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('tb_cuti.status','n')
+                    ->where('users.id_position','MANAGER')
+                    ->where('users.id_division','!=','MSM')
+                    ->orwhere('users.id_position','=','OPERATION DIRECTOR')
+                    ->orwhere('users.id_position','=','HR MANAGER')
+                    ->groupby('nik')
+                    ->get();
         }else{
         	$cuti = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
@@ -815,8 +845,7 @@ class HRGAController extends Controller
         $client = new Client();
         $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_YEY'));
         $json = (string)$api_response->getBody();
-        $datas_nasional = json_decode($json, true);
-       
+        $datas_nasional = json_decode($json, true);     
 
         $bulan = date('F');
         $tahun_ini = date('Y');
@@ -1028,10 +1057,10 @@ class HRGAController extends Controller
         $status     = $getStatus->status;
 
         if ($ter != NULL) {
-            if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER') {
-                if ($div == 'PMO' || $ter == 'OPERATION') {
+            if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
+                if ($div == 'PMO' || $div == 'MSM') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','firman@sinergy.co.id')->where('id_company','1')->first();
-                }else if ($div == 'FINANCE' || $div == 'SALES') {
+                }else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
                 }else{
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
