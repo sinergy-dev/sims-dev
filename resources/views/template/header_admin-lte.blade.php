@@ -617,7 +617,7 @@
         </a>
       </li>
       @if(Auth::User()->id_territory == 'DVG' && Auth::User()->id_position != 'ADMIN')
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#DVGPages" data-parent="#exampleAccordion">
           <i class="fa fa-fw fa-folder-open"></i>
           <span class="nav-link-text" style="font-size: 14px">DVG</span>
@@ -625,7 +625,7 @@
             <i class="fa fa-angle-left pull-right"></i>
           </span>
         </a>
-        <ul class="treeview-menu" id="DVGPages">
+        <ul class="activeable treeview-menu" id="DVGPages">
           <li>
             <a href="{{ url('/config_management') }}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>Config Management</a>
           </li>
@@ -643,7 +643,7 @@
 
 
 
-      <li class="treeview">
+      <li class="activeable treeview">
       	<a href="#SalesPages" data-parent="#exampleAccordion">
       		<i class="fa fa-fw fa-calendar"></i>
       		<span class="nav-link-text" style="font-size: 14px">Sales</span>
@@ -651,7 +651,7 @@
       			<i class="fa fa-angle-left pull-right"></i>
       		</span>
       	</a>
-      	<ul class="treeview-menu" id="SalesPages">
+      	<ul class="activeable treeview-menu" id="SalesPages">
       		@if(Auth::User()->id_position == 'DIRECTOR')
       		<li>
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
@@ -683,14 +683,14 @@
       		</li>
       		@endif
       		@if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
-      		<li class="treeview">
+      		<li class="activeable treeview">
       			<a href="#ReportLead" data-parent="#exampleAccordion">
       				<span class="nav-link-text" style="font-size: 14px">Report Lead Register</span>
       				<span class="pull-right-container">
       					<i class="fa fa-angle-left pull-right"></i>
       				</span>
       			</a>
-      			<ul class="treeview-menu" id="ReportLead">
+      			<ul class="activeable treeview-menu" id="ReportLead">
       			<li>
       				<a href="{{url('/report_range')}}" style="font-size: 14px">Report Range</a>
       			</li>
@@ -734,7 +734,7 @@
 
 
       @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(HEAD)' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(STAFF)' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'HR' || Auth::User()->name == 'Felicia Debi Noor')
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#ADMINPages" data-parent="#exampleAccordion">
           <i class="fa fa-fw fa-user"></i>
           <span class="nav-link-text" style="font-size: 14px">Admin</span>
@@ -742,7 +742,7 @@
             <i class="fa fa-angle-left pull-right"></i>
           </span>
         </a>
-        <ul class="treeview-menu" id="ADMINPages">
+        <ul class="activeable treeview-menu" id="ADMINPages">
           @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR')
           <li>
             <a href="{{url('/pr')}}" style="font-size: 14px"></i>Purchase Request</a>
@@ -780,7 +780,7 @@
         </ul>
       </li>
       @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_company == '1')
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#ADMINPages" data-parent="#exampleAccordion">
           <i class="fa fa-user"></i>
           <span class="nav-link-text" style="font-size: 14px">Admin</span>
@@ -788,7 +788,7 @@
             <i class="fa fa-angle-left pull-right"></i>
           </span>
         </a>
-        <ul class="treeview-menu" id="ADMINPages">
+        <ul class="activeable treeview-menu" id="ADMINPages">
           <li>
             <a href="{{url('/pr')}}" style="font-size: 14px"></i>Purchase Request</a>
           </li>
@@ -812,7 +812,7 @@
 
 
 
-      <li class="treeview">
+      <li class="activeable treeview">
       	<a href="#Finance" data-parent="#exampleAccordion">
       		<i class="fa fa-fw fa-credit-card"></i>
       		<span class="nav-link-text" style="font-size: 14px">Finance</span>
@@ -820,7 +820,7 @@
       			<i class="fa fa-angle-left pull-right"></i>
       		</span>
       	</a>
-      	<ul class="treeview-menu" id="HumanResource">
+      	<ul class="activeable treeview-menu" id="HumanResource">
       	  @if(Auth::User()->id_position == 'HR MANAGER')
       	  <li>
             <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
@@ -848,7 +848,7 @@
 
 
 
-      <li class="treeview">
+      <li class="activeable treeview">
       	<a href="#PMO" data-parent="#exampleAccordion">
       		<i class="fa fa-user"></i>
       		<span class="nav-link-text" style="font-size: 14px">PMO</span>
@@ -856,7 +856,7 @@
       			<i class="fa fa-angle-left pull-right"></i>
       		</span>
       	</a>
-      	<ul class="treeview-menu" id="PMO">
+      	<ul class="activeable treeview-menu" id="PMO">
       		<li>
       			<a href="{{url('PMO/index')}}" style="font-size: 14px">Project</a>
       		</li>
@@ -867,7 +867,7 @@
 
 
       @if(Auth::User()->id_position == 'HR MANAGER')
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
           <i class="fa fa-users"></i>
           <span class="nav-link-text" style="font-size: 14px">Human Resource</span>
@@ -875,7 +875,7 @@
             <i class="fa fa-angle-left pull-right"></i>
           </span>
         </a>
-        <ul class="treeview-menu" id="HRPages">
+        <ul class="activeable treeview-menu" id="HRPages">
           <li>
             <a href="{{url('/hu_rec')}}" style="font-size: 14px"></i>Employees</a>
           </li>
@@ -885,7 +885,7 @@
         </ul>
       </li>
 
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
           <i class="fa fa-book"></i>
           <span class="nav-link-text" style="font-size: 14px">General Affair</span>
@@ -893,7 +893,7 @@
             <i class="fa fa-angle-left pull-right"></i>
           </span>
         </a>
-        <ul class="treeview-menu" id="HRPages">
+        <ul class="activeable treeview-menu" id="HRPages">
           <li>
             <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
           </li>
@@ -904,7 +904,7 @@
       </li>
       
       @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_company == '1')
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
           <i class="fa fa-users"></i>
           <span class="nav-link-text" style="font-size: 14px">Human Resource</span>
@@ -912,7 +912,7 @@
             <i class="fa fa-angle-left pull-right"></i>
           </span>
         </a>
-        <ul class="treeview-menu" id="HRPages">
+        <ul class="activeable treeview-menu" id="HRPages">
           <li>
             <a href="{{url('/hu_rec')}}" style="font-size: 14px"></i>Employees</a>
           </li>
@@ -922,7 +922,7 @@
         </ul>
       </li>
       @else
-      <li class="treeview">
+      <li class="activeable treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
           <i class="fa fa-users"></i>
           <span class="nav-link-text" style="font-size: 14px">Human Resource</span>
@@ -930,15 +930,18 @@
             <i class="fa fa-angle-left pull-right"></i>
           </span>
         </a>
-        <ul class="treeview-menu" id="HRPages">
+        <ul class="activeable treeview-menu" id="HRPages">
           <li>
             <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
+          </li>
+          <li>
+            <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
           </li>
         </ul>
       </li>
       @endif
-      <li class="treeview">
-        <ul class="treeview-menu" id="HRPages">
+      <li class="activeable treeview">
+        <ul class="activeable treeview-menu" id="HRPages">
           <li>
             <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
           </li>
@@ -994,7 +997,7 @@
       @endif -->
 
       @if(Auth::User()->id_division == 'WAREHOUSE')
-        <li class="treeview">
+        <li class="activeable treeview">
           <a href="#INPages" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-folder-open"></i>
             <span class="nav-link-text" style="font-size: 14px">Warehouse</span>
@@ -1002,7 +1005,7 @@
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
-          <ul class="treeview-menu" id="INPages">
+          <ul class="activeable treeview-menu" id="INPages">
             <li>
               <a href="{{url('/inventory')}}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>&nbspInventory</a>
             </li>

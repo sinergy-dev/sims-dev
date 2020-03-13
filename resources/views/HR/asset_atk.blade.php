@@ -94,6 +94,7 @@
                     <th>No</th>
                     <th>Name</th>
                     <th>Quantity</th>
+                    <th>Unit</th>
                     <th>Description</th>
                     @if(Auth::User()->id_division == 'HR')
                     <th>Action</th>
@@ -107,6 +108,7 @@
                     <td>{{$no++}}<input type="" name="id_barang_update" hidden></td>
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty}}</td>
+                    <td>{{$data->unit}}</td>
                     <td>{{$data->description}}</td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
@@ -359,6 +361,16 @@
             <input name="qty" id="qty" type="number" class="form-control" required="">
           </div>
           <div class="form-group">
+            <label>Unit</label>
+            <select class="form-control" name="unit" id="unit">
+              <option value="">Select Unit</option>
+              @foreach($unit_assets as $unit_asset)
+              <option value="{{$unit_asset->unit}}">{{$unit_asset->unit}}</option>
+              @endforeach
+            </select>
+            <label class="hover-biru" style="color:#002280;">Unit belum ada?</label>
+          </div>
+          <div class="form-group">
             <label for="sow">Deskripsi</label>
             <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
           </div>
@@ -581,7 +593,14 @@
           <label>Qty Request</label>
           <input name="qty_request_done_field" class="form-control" id="qty_request_done_field" readonly>
         </div>
-        
+        <div class="form-group">
+          <label>Qty Now</label>
+          <input name="qty_now_pr" id="qty_now_pr" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label>Qty Restock</label>
+          <input type="number" name="qty_restock_pr" id="qty_restock_pr" class="form-control">
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
           <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
@@ -618,6 +637,7 @@
       $('#qty_request_done').val(qty_request);
       $('#nama_barang_done').val(nama_barang);
       $('#qty_request_done_field').val(qty_request);
+      $('#qty_now_pr').val(qty);
     }
 
     $('#atk').select2();
@@ -634,6 +654,11 @@
              $(this).val(qty_before);
           }
     });*/
+
+    $('.hover-biru').click(function(){
+      var new_unit = prompt("Enter unit :");
+      $("#unit").append($('<option>', { value: new_unit, text: new_unit, selected:true }));
+    })
 
     $(".detail-product").select2({
       closeOnSelect : false,
