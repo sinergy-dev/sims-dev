@@ -57,6 +57,14 @@ class Kernel extends ConsoleKernel
         $schedule->call(function() {
             Artisan::call('UpdateStatusKaryawan:updatestatuskaryawan');
         })->daily();
+
+        $schedule->call(function() {
+            Artisan::call('RejectCuti:rejectCuti');
+        })->daily();
+
+        $schedule->call(function() {
+            Artisan::call('FollowUpCuti:followupcuti');
+        })->daily();
     }
 
     /**
