@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\User;
 use GuzzleHttp\Client;
+use DB;
 
 
 class ResetAwalTahun extends Command
@@ -53,12 +54,18 @@ class ResetAwalTahun extends Command
             }
           }
         }
+
+        $cuti_custom = DB::table('tb_cuti_custom')->count();
+
+        $total_cuti = $i + $cuti_custom;
+
+        print_r(12  - $total_cuti);
         
         $reset = User::select('nik','name')->where('status_karyawan','cuti')->get();
 
         foreach ($reset as $data) {
             $update = User::where('nik',$data->nik)->first();
-            $data->cuti2 = 12 - $i;
+            $data->cuti2 = 12 - $total_cuti;
             $data->update();
 
         }
