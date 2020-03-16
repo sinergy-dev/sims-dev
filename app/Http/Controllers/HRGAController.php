@@ -1009,16 +1009,6 @@ class HRGAController extends Controller
 
     public function store_cuti(Request $request)
     {
-        // $hari = DB::table('tb_cuti')
-        //             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-        //             ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
-        //             ->groupby('tb_cuti_detail.id_cuti')
-        //             ->first();
-
-        // $array = explode(',',$hari->dates);
-
-        // return $array;
-
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -1090,7 +1080,9 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Permohonan Cuti'));
+            $ardetil_after = "";
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti'));
             
             
         }else{
@@ -1124,7 +1116,9 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Permohonan Cuti'));
+            $ardetil_after = "";
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti'));
 
 
         	
@@ -1208,7 +1202,9 @@ class HRGAController extends Controller
 
         $ardetil = explode(',', $hari->dates); 
 
-        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Approve - Permohonan Cuti'));        
+        $ardetil_after = "";
+
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));        
 
         // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
@@ -1243,7 +1239,9 @@ class HRGAController extends Controller
 
         $ardetil = explode(',', $hari->dates); 
 
-        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Decline - Permohonan Cuti'));
+        $ardetil_after = "";
+
+        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Decline - Permohonan Cuti'));
 
         return redirect()->back();
     }
@@ -1268,6 +1266,12 @@ class HRGAController extends Controller
 
         $array =  explode(',', $dates_after);
 
+        $array2 =  explode(',', $dates_before);
+
+        foreach ($array2 as $dates2) {
+            $delete = CutiDetil::where('date_off',$dates2)->delete();
+        }
+
         foreach ($array as $dates) {
             $add = new CutiDetil();
             $add->id_cuti = $id_cuti;
@@ -1276,11 +1280,9 @@ class HRGAController extends Controller
             $add->save();
         }
 
-        // $update = Cuti::where('id_cuti',$id_cuti)->first();
-        // $update->reason_leave = $request['reason_edit'];
-        // $update->update();
-
-        // $delete = CutiDetil::where('id_cuti',$id_cuti)->delete();
+        $update = Cuti::where('id_cuti',$id_cuti)->first();
+        $update->reason_leave = $request['reason_edit'];
+        $update->update();
 
         if ($ter != NULL) {
             if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
@@ -1303,19 +1305,25 @@ class HRGAController extends Controller
 
             $name_cuti = DB::table('tb_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
-                ->select('users.name')
+                ->select('users.name','status')
                 ->where('id_cuti', $id_cuti)->first();
 
             $hari = DB::table('tb_cuti')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave',DB::raw("(CASE WHEN (status = 'n') THEN 'R' ELSE status END) as status"),DB::raw('group_concat(date_off) as dates'))
                     ->groupby('tb_cuti_detail.id_cuti')
                     ->where('tb_cuti.id_cuti', $id_cuti)
                     ->first();
 
-            $ardetil = explode(',',$hari->dates);
+            $hari_before = $_POST['dates_before'];
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Reschedule - Permohonan Cuti'));            
+            $ardetil = explode(',',$hari_before);
+
+            $hari_after = $_POST['dates_after'];
+
+            $ardetil_after = explode(',',$hari_after);
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Reschedule - Permohonan Cuti'));            
         
         }else{
             if ($div == 'HR') {
@@ -1335,33 +1343,27 @@ class HRGAController extends Controller
 
             $name_cuti = DB::table('tb_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
-                ->select('users.name')
+                ->select('users.name','status')
                 ->where('id_cuti', $id_cuti)->first();
 
             $hari = DB::table('tb_cuti')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
+                    ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave',DB::raw("(CASE WHEN (status = 'n') THEN 'R' ELSE status END) as status"),DB::raw('group_concat(date_off) as dates'))
                     ->groupby('tb_cuti_detail.id_cuti')
                     ->where('tb_cuti.id_cuti', $id_cuti)
                     ->first();
 
-            $ardetil = explode(',',$hari->dates);
+            $hari_before = $_POST['dates_before'];
+
+            $ardetil = explode(',',$hari_before);
+
+            $hari_after = $_POST['dates_after'];
+
+            $ardetil_after = explode(',',$hari_after);
             
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Reschedule - Permohonan Cuti'));
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Reschedule - Permohonan Cuti'));
         
         }
-
-        // foreach ($array as $dates) {
-        //     $update = new CutiDetil();
-        //     $update->id_cuti = $id_cuti;
-        //     $format_start_s = strtotime($dates);
-        //     $update->date_off = date("Y-m-d",$format_start_s);
-        //     $update->save();
-        // }
-
-        // $update = Cuti::where('id_cuti',$id_cuti)->first();
-        // $update->reason_leave = $request['reason_edit'];
-        // $update->update();
 
         // return redirect()->back();
     }
@@ -1387,10 +1389,10 @@ class HRGAController extends Controller
         $com = $company->id_company;
 
         if ($ter != NULL) {
-            if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER') {
+            if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
                 if ($div == 'PMO') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','firman@sinergy.co.id')->where('id_company','1')->first();
-                }else if ($div == 'FINANCE' || $div == 'SALES') {
+                }else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
                 }else{
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
@@ -1420,7 +1422,9 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Permohonan Cuti (Follow Up)'));
+            $ardetil_after = "";
+
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti (Follow Up)'));
             
             
         }else{
@@ -1454,9 +1458,9 @@ class HRGAController extends Controller
 
             $ardetil = explode(',',$hari->dates);
 
+            $ardetil_after = "";
 
-
-            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,'[SIMS-App] Approve - Permohonan Cuti (Follow Up)'));
+            Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti (Follow Up)'));
         }
 
         return redirect()->back()->with('success','Cuti Kamu udah di follow up ke Bos! Thanks.');
