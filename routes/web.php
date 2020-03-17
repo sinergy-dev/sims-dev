@@ -233,7 +233,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	//cuti
 	Route::get('/show_cuti', 'HRGAController@show_cuti');
 	Route::post('/store_cuti','HRGAController@store_cuti');
-	Route::post('/update_cuti','HRGAController@update_cuti');
+	Route::POST('/update_cuti','HRGAController@update_cuti');
 	Route::post('/approve_cuti','HRGAController@approve_cuti');
 	Route::post('/decline_cuti','HRGAController@decline_cuti');
 	Route::get('/detilcuti','HRGAController@detil_cuti');

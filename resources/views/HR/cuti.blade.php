@@ -450,9 +450,9 @@
                   <input type="radio" name="jenis_cuti" value="other"> Other<br> 
               </div>
 
-                <div id="tooltip">
+              <div id="tooltip">
               Kamu melewati batas sisa cuti.
-          </div>
+              </div>
 
               <div class="form-group">
                   <label>Note</label>
@@ -483,35 +483,35 @@
               <h4 class="modal-title">Leaving Permit</h4>
             </div>
             <div class="modal-body">
-              <form method="POST" action="{{url('/update_cuti')}}" id="modaleditCuti" name="modaleditCuti">
                 @csrf
                 <input type="" name="id_cuti" id="id_cuti" value="" hidden>
 
                 <div class="form-group">
                     <label>Reason For Leave</label>
                     <textarea class="form-control" type="text" id="reason_edit" name="reason_edit" required></textarea>
-                </div>   
+                </div>  
 
                 <div class="form-group">
-                    <label>Date Off</label>
+                    <label>Date Off Before</label>
 
-                    <table class="table table-bordered">
-                      <tbody id="tanggal_cuti_coba" class="tanggal_cuti_coba">
-                        
-                      </tbody>
-                    </table>
-                </div>
-
-                <div class="input-group date form-group" id="datepicker">
-                  <input type="text" class="form-control" id="Dates" name="Dates" autocomplete="off" placeholder="Select days" required />
-                  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><span class="count"></span></span>
+                    <div class="input-group date form-group" id="datepicker">
+                      <input type="text" class="form-control" id="Dates_update" name="Dates" autocomplete="off" placeholder="Select days" readonly/>
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><span class="count"></span></span>
+                    </div> 
                 </div> 
+
+                <div class="form-group">
+                    <label>Date Off After</label>
+                    <div class="input-group date form-group" id="datepicker">
+                      <input type="text" class="form-control" id="Dates" name="Dates" id="date-tooltip" data-toggle="tooltip" title="Jumlah hari yang kamu masukkan melebihi Date Off Before!" autocomplete="off" placeholder="Select days" required />
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><span class="count"></span></span>
+                    </div> 
+                </div>
                  
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-                  <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-check"> </i>&nbspSubmit</button>
+                  <button type="submit" class="btn btn-primary btn-sm btn-submit-update" id="btn-submit-update"><i class="fa fa-check"> </i>&nbspSubmit</button>
                 </div>
-            </form>
             </div>
           </div>
         </div>
@@ -736,9 +736,6 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script type="text/javascript">
-
-
-  
     $(".show-sisa-cuti").click(function(){
       $.ajax({
         type:"GET",
@@ -752,16 +749,6 @@
         },
       });
     });
-
-    // $(function() {
-    //   $('#calendar').fullCalendar({
-    //     googleCalendarApiKey: 'AIzaSyAf8ww4lC-hR6mDPf4RA4iuhhGI2eEoEiI',
-    //     events: {
-    //       googleCalendarId: 'en.indonesian#holiday@group.v.calendar.google.com',
-    //       className: 'gcal-event' // an option!
-    //     }
-    //   });
-    // });
 
     var tables = $('#datatables').DataTable();
     var tablew = $("#datatablew").DataTable({
@@ -793,8 +780,79 @@
       $('#lihat_hasil').val(e.dates.length);
     });
 
+    $(".add_cuti").click(function(){
+      console.log(this.value)
+      $.ajax({
+        type:"GET",
+        url:"getCutiUsers",
+        data:{
+          nik:this.value,
+        },
+        success: function(result){
+          if (result.parameterCuti.total_cuti == 0) {
+            $("#sisa_cuti").text(0).style.color = "#ff0000";
+          } else {
+            $("#sisa_cuti").text(result.parameterCuti.total_cuti);
+            if (result.parameterCuti.total_cuti > 5) {
+              document.getElementById("sisa_cuti").style.color = "blue";
+            } else {
+              document.getElementById("sisa_cuti").style.color = "#ff0000";
+            }
+          }
 
-     $(document).on('click',"button[class^='approve_date']",function(e) {
+          var disableDate = []
+          $.each(result.allCutiDate,function(key,value){
+            disableDate.push(moment( value).format("MM/DD/YYYY"))
+          })
+
+          $('#date_start').datepicker({
+            weekStart: 1,
+            daysOfWeekDisabled: "0,6",
+            daysOfWeekHighlighted: [0,6],
+            startDate: moment().format("MM/DD/YYYY"),
+            todayHighlight: true,
+            multidate: true,
+            datesDisabled: disableDate,
+            beforeShowDay: function(date){
+              var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+              if(index > 0){
+                return {
+                  enabled: false,
+                  tooltip: hari_libur_nasional_tooltip[index],
+                  classes: 'hari_libur'
+                };
+              } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
+                return {
+                  enabled: false,
+                  tooltip: 'Cuti Pribadi',
+                };
+              }
+            },
+          }).on('changeDate', function(e) {
+            $('#lihat_hasil').val(' ' + e.dates.length)
+            var cutis = $("#sisa_cuti").text();
+            var cutiss = $(".lihat_hasil").val();
+            // console.log(cutis + " " + cutiss)
+
+            $("#avaliableDays").val(result.parameterCuti.total_cuti - cutiss)
+            if (parseFloat(cutis) >= parseFloat(cutiss)) {
+              e.preventDefault();     
+              $(".btn-submit").prop('disabled', false);
+              $("#tooltip").hide();
+            } else if (parseFloat(cutis) < parseFloat(cutiss)) {
+              $(".btn-submit").prop('disabled', true);
+              $("#tooltip").show();
+            }
+          });
+
+          
+        },
+      });
+
+      $("#modalCuti").modal("show");
+    })
+
+    $(document).on('click',"button[class^='approve_date']",function(e) {
 
         $.ajax({
           type:"GET",
@@ -825,12 +883,9 @@
         });
 
         $("#detail_cuti").modal("show");
-     });
+    });
     
     $(document).on('click',"button[id^='btn-edit']",function(e) {
-
-      console.log('coba');
-
       $.ajax({
           type:"GET",
           url:'{{url("/detilcuti")}}',
@@ -847,18 +902,74 @@
               $("#reason_edit").val(value.reason_leave);
               array.push(value.date_off);
 
+              $("#Dates_update").val(array);
+
               console.log(array);
 
-              $("#Dates").datepicker({format: 'yyyy-mm-dd',daysOfWeekHighlighted: [0,6],multidate: true,}).datepicker('setDate', array);
-            });
+              $('#Dates').tooltip("disable");
 
-            $('#tanggal_cuti_coba').append(table);
+              var disableDate = []
+                $.each(result.allCutiDate,function(key,value){
+                  disableDate.push(moment( value).format("MM/DD/YYYY"))
+              })
+
+              $("#Dates").datepicker({
+                weekStart: 1,
+                daysOfWeekDisabled: "0,6",
+                daysOfWeekHighlighted: [0,6],
+                startDate: moment().format("MM/DD/YYYY"),
+                todayHighlight: true,
+                multidate: true,
+                datesDisabled: disableDate,
+                beforeShowDay: function(date){
+                  var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+                  if(index > 0){
+                    return {
+                      enabled: false,
+                      tooltip: hari_libur_nasional_tooltip[index],
+                      classes: 'hari_libur'
+                    };
+                  } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
+                    return {
+                      enabled: false,
+                      tooltip: 'Cuti Pribadi',
+                    };
+                  }
+                },
+              }).datepicker('setDate', array).on('changeDate', function(e) {
+                  if (parseFloat(array.length) >= parseFloat(e.dates.length)) {
+                    e.preventDefault();     
+                    $(".btn-submit-update").prop('disabled', false);
+                    $('#Dates').tooltip("disable");
+                  } else if (parseFloat(array.length) < parseFloat(e.dates.length)) {
+                    $(".btn-submit-update").prop('disabled', true);
+                    $('#Dates').tooltip("enable");
+                  }
+              });
+            });
 
         $("#modalCuti_edit").modal("show");
         }
       });
 
-
+      $(document).on('click',"button[id^='btn-submit-update']",function(e){
+        console.log($("#Dates").val());
+        $.ajax({
+          type:"POST",
+          url:"{{url('/update_cuti')}}",
+          data:{
+             _token: "{{ csrf_token() }}",
+            id_cuti:$("#id_cuti").val(),
+            dates_after:$("#Dates").val(),
+            dates_before:$("#Dates_update").val(),
+            reason_edit:$("#reason_edit").val(),
+            status_update:'R',
+          },
+          success:function(result){
+            location.reload()
+          }
+        })
+      })
     });
 
     function edit_cuti(id_cuti,date_start,date_end,reason_leave){
@@ -1245,78 +1356,6 @@
       }
     })
 
-    $(".add_cuti").click(function(){
-      console.log(this.value)
-      $.ajax({
-        type:"GET",
-        url:"getCutiUsers",
-        data:{
-          nik:this.value,
-        },
-        success: function(result){
-          if (result.parameterCuti.total_cuti == 0) {
-            $("#sisa_cuti").text(0).style.color = "#ff0000";
-          } else {
-            $("#sisa_cuti").text(result.parameterCuti.total_cuti);
-            if (result.parameterCuti.total_cuti > 5) {
-              document.getElementById("sisa_cuti").style.color = "blue";
-            } else {
-              document.getElementById("sisa_cuti").style.color = "#ff0000";
-            }
-          }
-
-          var disableDate = []
-          $.each(result.allCutiDate,function(key,value){
-            disableDate.push(moment( value).format("MM/DD/YYYY"))
-          })
-
-          $('#date_start').datepicker({
-            weekStart: 1,
-            daysOfWeekDisabled: "0,6",
-            daysOfWeekHighlighted: [0,6],
-            startDate: moment().format("MM/DD/YYYY"),
-            todayHighlight: true,
-            multidate: true,
-            datesDisabled: disableDate,
-            beforeShowDay: function(date){
-              var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
-              if(index > 0){
-                return {
-                  enabled: false,
-                  tooltip: hari_libur_nasional_tooltip[index],
-                  classes: 'hari_libur'
-                };
-              } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
-                return {
-                  enabled: false,
-                  tooltip: 'Cuti Pribadi',
-                };
-              }
-            },
-          }).on('changeDate', function(e) {
-            $('#lihat_hasil').val(' ' + e.dates.length)
-            var cutis = $("#sisa_cuti").text();
-            var cutiss = $(".lihat_hasil").val();
-            // console.log(cutis + " " + cutiss)
-
-            $("#avaliableDays").val(result.parameterCuti.total_cuti - cutiss)
-            if (parseFloat(cutis) >= parseFloat(cutiss)) {
-              e.preventDefault();     
-              $(".btn-submit").prop('disabled', false);
-              $("#tooltip").hide();
-            } else if (parseFloat(cutis) < parseFloat(cutiss)) {
-              $(".btn-submit").prop('disabled', true);
-              $("#tooltip").show();
-            }
-          });
-
-          
-        },
-      });
-
-      $("#modalCuti").modal("show");
-    })
-
     $(".toggle-arrow").click(function(){
       $(this).toggleClass("fa-angle-down");
 
@@ -1334,7 +1373,7 @@
 
     $(".disabled-permission").hover(function(){
       swal({
-		  text: "Sorry Cuti kamu lagi nggak bisa di pake!",
+		  text: "Not Allowed to Leaving Permit Access!",
 	  });
     });
 
