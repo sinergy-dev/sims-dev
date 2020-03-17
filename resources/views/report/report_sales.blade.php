@@ -77,9 +77,7 @@
                   <tr>
                       <td>{{ $no_sip++ }}</td>
                       <td>{{ $tops->name }}</td>
-                      <td align="right" class="money">
-                        {{ $tops->deal_prices }}
-                      </td>
+                      <td align="right" ><i class="money">{{ $tops->deal_prices }}</i></td>
                       <td><center>( {{ $tops->leads }} )</center></td>
                   </tr>
                 @endforeach
@@ -113,9 +111,7 @@
                   <tr>
                       <td>{{ $no_msp++ }}</td>
                       <td>{{ $topm->name }}</td>
-                      <td align="right" class="money">
-                        {{ $topm->deal_prices }}
-                      </td>
+                      <td align="right"> <i class="money">{{ $topm->deal_prices }}</i></td>
                       <td><center>( {{ $topm->leads }} )</center></td>
                   </tr>
                 @endforeach
