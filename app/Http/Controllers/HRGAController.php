@@ -636,7 +636,32 @@ class HRGAController extends Controller
                     ->where('users.id_territory','PRESALES')
                     ->groupby('nik')
                     ->get();
-            } else{
+            } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                $cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
+                ->where('users.id_division','FINANCE')
+                ->groupby('id_cuti')
+                ->orderBy('id_cuti','desc')
+                ->get();
+
+
+                $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','FINANCE')
+                    ->groupby('nik')
+                    ->where('tb_cuti.status','n')
+                    ->get();
+            }else{
                 $cuti = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
@@ -676,6 +701,8 @@ class HRGAController extends Controller
             ->join('tb_division','tb_division.id_division','=','users.id_division')
             ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
             ->where('users.id_division','TECHNICAL')
+            ->where('users.id_position','MANAGER')
+            ->orwhere('users.id_position','ENGINEER MANAGER')
             ->groupby('id_cuti')
             ->orderBy('id_cuti','desc')
             ->get();
@@ -688,35 +715,12 @@ class HRGAController extends Controller
                 ->join('tb_division','tb_division.id_division','=','users.id_division')
                 ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
                 ->where('users.id_division','TECHNICAL')
+                ->where('users.id_position','MANAGER')
+                ->orwhere('users.id_position','ENGINEER MANAGER')
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
                 ->where('tb_cuti.status','n')
                 ->groupby('nik')
-                ->get();
-        }elseif($div == 'FINANCE' && $pos == 'MANAGER'){
-        	$cuti = DB::table('tb_cuti')
-            ->join('users','users.nik','=','tb_cuti.nik')
-            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-            ->join('tb_position','tb_position.id_position','=','users.id_position')
-            ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory')
-            ->where('users.id_division','FINANCE')
-            ->groupby('id_cuti')
-            ->orderBy('id_cuti','desc')
-            ->get();
-
-
-            $cuti2 = DB::table('tb_cuti')
-                ->join('users','users.nik','=','tb_cuti.nik')
-                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->join('tb_position','tb_position.id_position','=','users.id_position')
-                ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
-                ->orderBy('date_req','DESC')
-                ->groupby('tb_cuti.id_cuti')
-                ->where('users.id_division','FINANCE')
-                ->groupby('nik')
-                ->where('tb_cuti.status','n')
                 ->get();
         }elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA'){
         	$cuti = DB::table('tb_cuti')
