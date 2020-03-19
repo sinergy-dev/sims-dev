@@ -193,6 +193,12 @@ class PONumberController extends Controller
         return view('admin/po', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse', 'no_pr'));
     }
 
+    public function getPRNumber(){
+        $tahun = Date('Y');
+
+        return array(DB::table('tb_pr')->select('no_pr', 'to', 'no')->where('date','like',$tahun."%")->where('result', '!=', 'used')->orderBy('created_at', 'desc')->get());
+    }
+
     public function getdatapr(Request $request)
     {
         $cek_pro  = PR::select('project_id')->where('no',$request->data)->first();
