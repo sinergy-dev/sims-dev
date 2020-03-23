@@ -549,6 +549,12 @@
                     <input type="text" id="cuti_fix" name="cuti_fix" hidden>
                 </div>
 
+                <div class="form-group" style="display: none;" id="alasan_reject">
+                	<span style="color: red"><sup>*harus diisi</sup></span>
+                	<label>Notes Reject Cuti (Pengurangan tanggal cuti)</label>
+                	<textarea class="form-control" class="reason_reject" name="reason_reject" id="reason_reject"></textarea>
+                </div>
+
                 <div class="form-group">
                     <label>Jenis Cuti/Keterangan</label>
                     <textarea class="form-control" type="text" id="reason_detil" name="reason_detil" readonly></textarea>
@@ -853,7 +859,6 @@
     })
 
     $(document).on('click',"button[class^='approve_date']",function(e) {
-
         $.ajax({
           type:"GET",
           url:'{{url("/detilcuti")}}',
@@ -871,13 +876,34 @@
               $("#time_off").val(value.days);
               $('#tanggal_cuti').empty();
               table = table + '<tr>';
-              table = table + '<td>' + '<input type="checkbox" checked name="check_date[]"' +'</td>';
+              table = table + '<td>' + '<input type="checkbox" class="check_date" checked name="check_date[]"' +'</td>';
               table = table + '<td hidden>' + value.date_off +'</td>';
               table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
               table = table + '</tr>';
+              
             });
 
+            console.log(result[0].length);
+            var date_check = result[0].length;
+
             $('#tanggal_cuti').append(table);
+
+            var countChecked = function() {
+			  var n = $( ".check_date:checked" ).length;
+			  console.log( n + (n === 1 ? " is" : " are") + " checked!")
+
+			  if (date_check != $( ".check_date:checked" ).length) {
+			  	$("#alasan_reject").css("display", "block");
+			  	$("#reason_reject").prop('required',true);
+			  }else{
+			  	$("#alasan_reject").css("display", "none");
+			  	$("#reason_reject").prop('required',false);
+			  }
+
+			};
+			countChecked();
+			 
+			$( ".check_date" ).on( "click", countChecked );
 
           }
         });
@@ -1006,7 +1032,6 @@
 
 
     $('#submit_approve').click(function(){
-
       var updates = [];
       var selector = '#detil_cuy tr input:checked'; 
       $.each($(selector), function(idx, val) {
@@ -1017,8 +1042,6 @@
       $("#cuti_fix").val(updates.join(","));
 
       // document.getElementById("cuti_fix").innerHTML = updates.join(",") ;
-
-
     })
 
     var url = {!! json_encode(url('/')) !!}

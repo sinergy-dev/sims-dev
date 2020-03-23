@@ -1147,7 +1147,7 @@ class HRGAController extends Controller
         $nik = $request['nik_cuti'];
 
         $update = Cuti::where('id_cuti',$id_cuti)->first();
-        $update->decline_reason = null;
+        $update->decline_reason = $request['reason_reject'];
         $update->status = 'v';
         $update->update();
 
@@ -1199,7 +1199,7 @@ class HRGAController extends Controller
 
         $hari = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'))
+                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
                 ->groupby('tb_cuti_detail.id_cuti')
                 ->where('tb_cuti.id_cuti', $id_cuti)
                 ->first();
