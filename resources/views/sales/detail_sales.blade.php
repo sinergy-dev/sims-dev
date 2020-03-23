@@ -49,9 +49,8 @@
 
 
 </style>
-
   <section class="content-header">
-  	<a href="{{url('/project')}}"><button button class="btn btn-s btn-danger pull-left"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
+  	<a href="{{url('/project')}}"><button button class="btn btn-s btn-danger"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
     <ol class="breadcrumb">
       <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
       <li class="active"><a href="/project">Lead Register</a></li>
@@ -60,10 +59,6 @@
   </section>
 
   <section class="content">
-    <div class="callout callout-success" style="margin-top: 30px!important;background-color:">
-	    <h4>(<i class="fa fa-info"></i>) <b>Lead id :</b></h4>
-	    <h4>{{$tampilkan->lead_id}} - {{$tampilkan->opp_name}}</h4>
-	</div>
 
     <div class="row">
       <div class="col-md-6">
@@ -96,7 +91,23 @@
       <div class="col-md-6">
       	<div class="box box-solid box-default">
       		<div class="box-header">
-      			<h3 class="box-title">Details</h3>
+      			<h3 class="box-title"><i class="fa fa-info"></i>) Details - 
+      				@if($tampilkan->result == "")
+      				<span class="label" style="background-color: #f2562b;color: white">{{$tampilkan->lead_id}}</span>
+      				@elseif($tampilkan->result == "SD")
+      				<span class="label" style="background-color: #04dda3;color: white">{{$tampilkan->lead_id}}</span>
+      				@elseif($tampilkan->result == "TP")
+      				<span class="label" style="background-color: #f7e127;color: white">{{$tampilkan->lead_id}}</span>
+      				@elseif($tampilkan->result == "WIN")
+      				<span class="label" style="background-color: #246d18;color: white">{{$tampilkan->lead_id}}</span>
+      				@elseif($tampilkan->result == "LOSE")
+      				<span class="label" style="background-color: #e5140d;color: white">{{$tampilkan->lead_id}}</span>
+      				@elseif($tampilkan->result == "HOLD")
+      				<span class="label" style="background-color: #919e92;color: white">{{$tampilkan->lead_id}}</span>
+      				@elseif($tampilkan->result == "CANCEL")
+      				<span class="label" style="background-color: #071108;color: white">{{$tampilkan->lead_id}}</span>
+      				@endif
+      			</h3>
       		</div>
       		<div class="box-body">
       		  <table class="table table-bordered">

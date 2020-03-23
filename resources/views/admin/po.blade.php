@@ -40,7 +40,7 @@
           </div>
           <div class="pull-right">
           	@if(Auth::User()->name == 'Felicia Debi Noor' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
-            <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
+            <button type="button" class="btn btn-success margin-bottom pull-right add-po" id="" style="width: 200px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
             <a href="{{url('/downloadExcelPO')}}"><button class="btn btn-warning" style="height: 40px; margin-right: 10px;"> EXCEL </button></a>
             @endif
           </div>
@@ -121,10 +121,10 @@
           <div class="form-group">
           	<label>NO PR</label>
           	<select class="form-control" name="no_pr" id="no_pr" style="width: 100%">
-              <option value="">--Choose No PR--</option>
+              <!-- <option value="">--Choose No PR--</option>
           		@foreach($no_pr as $data)
           		<option value="{{$data->no}}">{{$data->no_pr}} - {{$data->to}}</option>
-          		@endforeach
+          		@endforeach -->
           	</select>
           </div>  
           <div class="form-group">
@@ -410,6 +410,26 @@
         });
          console.log($('#no_pr').val());
     });
+
+    $(".add-po").click(function(){
+      $.ajax({
+        type:"GET",
+        url:'getPRNumber',
+        success: function(result){
+          
+            $('#no_pr').html(append)
+              var append = "<option>-- Select Option --</option>";
+              $.each(result[0], function(key, value){
+                append = append + "<option value='"+value.no+"'>" + value.no_pr +  "-" + value.to + "</option>";
+              });
+            $('#no_pr').html(append);
+          
+        }
+      });
+
+      $("#modal_pr").modal("show");
+      
+    })
 
     $("#year_filter").change(function(){
       $('#data_po').DataTable().ajax.url("{{url('getfilteryearpo')}}?data=" + this.value).load();

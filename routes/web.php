@@ -130,6 +130,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getdatapr', 'PrController@getdatapr');
 
 	Route::get('/po', 'PONumberController@index');
+	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
 	Route::post('/store_po', 'PONumberController@store');
 	Route::post('/update_po','PONumberController@update');
 	Route::get('/delete_po/{id_po}','PONumberController@destroy');
