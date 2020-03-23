@@ -1004,7 +1004,7 @@ class HRGAController extends Controller
             return array(DB::table('tb_cuti_detail')
                 ->join('tb_cuti','tb_cuti.id_cuti','=','tb_cuti_detail.id_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
-                ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik')
+                ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik','decline_reason','status')
                 ->where('tb_cuti_detail.id_cuti',$cuti)
                 ->get(),(int)$request->$cuti);
         }

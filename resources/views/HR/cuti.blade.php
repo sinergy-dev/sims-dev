@@ -390,7 +390,9 @@
                                 Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
                                 </td>
                                 <td>
-                                  @if($data->status == 'v')
+                                  @if($data->status == 'v' && $data->decline_reason != "")
+                                   <span class="label label-info">Approved with cancelation</span>
+                                  @elseif($data->status == 'v')
                                    <span class="label label-success">Approved</span>
                                   @elseif($data->status == 'd')
                                    <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
@@ -596,11 +598,17 @@
                         </tbody>
                       </table>
                 </div>
-
+                
                 <div class="form-group">
                     <label>Jenis Cuti/Keterangan</label>
                     <textarea class="form-control" type="text" id="reason_detils" name="reason_detil" readonly></textarea>
-                </div>      
+                </div>   
+
+                <div class="form-group" style="display: none;" id="alasan_reject_detail">
+                	<label>Notes <span style="color: red">(Pengurangan jumlah cuti)</span></label>
+                	<textarea class="form-control" class="reason_reject" readonly="" id="reason_reject_detil"></textarea>
+                </div>
+   
                  
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
@@ -693,7 +701,7 @@
               <input type="" name="id_cuti_decline" id="id_cuti_decline" hidden="">
               <div class="form-group">
                 <label for="sow">Decline reason</label>
-                <textarea name="keterangan" id="keterangan" class="form-control"></textarea>
+                <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
               </div>
 
                 <div class="modal-footer">
@@ -1336,6 +1344,13 @@
               table = table + '<tr>';
               table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
               table = table + '</tr>';
+
+              if (value.decline_reason != null) {
+              	$("#alasan_reject_detail").css("display","block");
+              	$("#reason_reject_detil").val(value.decline_reason);
+              }else if(value.status == 'v'){
+              	$("#alasan_reject_detail").css("display","none");
+              }
             });
 
             $('#tanggal_cutis').append(table);
