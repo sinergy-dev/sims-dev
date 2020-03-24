@@ -164,6 +164,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getfiltertopmsp', 'ReportController@getfiltertopmsp');
 	Route::get('/report_presales', 'ReportController@report_presales');
 	Route::get('/report_territory', 'ReportController@report_territory');
+	Route::get('/getreportterritory', 'ReportController@getreportterritory');
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
 
 	Route::get('/downloadPdfreport', 'ReportController@downloadPdfreport');
