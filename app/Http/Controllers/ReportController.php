@@ -3846,7 +3846,7 @@ class ReportController extends Controller
             ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
             ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
             ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-            ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
+            ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', DB::raw('`result` AS `results`'), 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
             ->where('sales_solution_design.nik',"1110492070")
             ->where('presales.id_company', '1')
             ->where('sales_lead_register.year', date("Y"))
