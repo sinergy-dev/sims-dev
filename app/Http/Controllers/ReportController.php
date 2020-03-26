@@ -3378,6 +3378,174 @@ class ReportController extends Controller
 
     }
 
+    public function report_territory(){
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        $territory_loop = DB::table("tb_territory")->select('id_territory',DB::raw("(CASE WHEN (name_territory = 'TERRITORY 1') THEN 'ter_1' WHEN (name_territory = 'TERRITORY 2') THEN 'ter_2' WHEN (name_territory = 'TERRITORY 3') THEN 'ter_3' WHEN (name_territory = 'TERRITORY 4') THEN 'ter_4' WHEN (name_territory = 'TERRITORY 5') THEN 'ter_5' WHEN (name_territory = 'TERRITORY 6') THEN 'ter_6' WHEN (name_territory = 'TERRITORY 7') THEN 'ter_7' END) as territory"))->where('id_territory', 'like', 'TERRITORY%')->get();
+
+        $datas = DB::table('sales_lead_register')
+                ->join('users','users.nik','=','sales_lead_register.nik')
+                ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                ->select('users.name','users.id_territory','tb_contact.brand_name',
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)) AS "INITIAL"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)) AS "OPEN"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SD",1,NULL)) AS "SD"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPESIAL",1,NULL)) AS "SPESIAL"'),
+                    DB::raw('COUNT(*) AS `All`'))
+                ->whereYear('sales_lead_register.created_at',date("Y"))
+                ->groupBy('users.nik')
+                ->groupBy('sales_lead_register.id_customer')
+                ->get();
+
+        if ($ter != null) {
+            $notif = DB::table('sales_lead_register')
+            ->select('opp_name','nik')
+            ->where('result','OPEN')
+            ->orderBy('created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notif = DB::table('sales_lead_register')
+            ->select('opp_name','nik')
+            ->where('result','OPEN')
+            ->orderBy('created_at','desc')
+            ->get();
+        }else{
+            $notif = DB::table('sales_lead_register')
+            ->select('opp_name','nik')
+            ->where('result','OPEN')
+            ->orderBy('created_at','desc')
+            ->get();
+        }
+
+        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' ) {
+            $notifOpen= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notifOpen= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }else{
+            $notifOpen= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }
+
+        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $notifsd= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_lead_register.lead_id')
+            ->where('result','SD')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notifsd= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_lead_register.lead_id')
+            ->where('result','SD')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
+            $notifsd= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','SD')
+            ->orderBy('created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'STAFF') {
+            $notifsd= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','SD')
+            ->orderBy('created_at','desc')
+            ->get();
+        }else{
+            $notifsd= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_lead_register.lead_id')
+            ->where('result','SD')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }
+
+        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $notiftp= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','TP')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notiftp= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','TP')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
+            $notiftp= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','TP')
+            ->orderBy('created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'STAFF') {
+            $notiftp= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','TP')
+            ->orderBy('created_at','desc')
+            ->get();
+        }else{
+            $notiftp= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','TP')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }
+
+
+        return view('report/report_territory', compact('notif', 'notifOpen', 'notifsd', 'notiftp','territory_loop','datas'));
+
+    }
+
+    public function getreportterritory(){
+        return array("data" => Sales2::join('users','users.nik','=','sales_lead_register.nik')
+                ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                ->select('users.name','users.id_territory','tb_contact.brand_name',
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)) AS "INITIAL"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)) AS "OPEN"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SD",1,NULL)) AS "SD"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPESIAL",1,NULL)) AS "SPESIAL"'),
+                    DB::raw('COUNT(*) AS `All`'))
+                ->whereYear('sales_lead_register.created_at',date("Y"))
+                ->groupBy('users.nik')
+                ->groupBy('sales_lead_register.id_customer')
+                ->get());
+    }
+
     public function download_excel_presales_win(Request $request)
     {
     	$nama = 'Report Presales '.date("d-m-Y");
@@ -3716,7 +3884,7 @@ class ReportController extends Controller
             ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
             ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
             ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-            ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
+            ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', DB::raw('`result` AS `results`'), 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
             ->where('sales_solution_design.nik',"1110492070")
             ->where('presales.id_company', '1')
             ->where('sales_lead_register.year', date("Y"))

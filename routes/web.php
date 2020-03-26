@@ -13,6 +13,7 @@
 
 Auth::routes();
 
+
 Route::post('/update_result', 'SalesController@update_result');
 Route::post('/update_result2', 'SalesController@update_result');
 Route::post('/update_result2a', 'SalesController@update_result');
@@ -129,6 +130,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getdatapr', 'PrController@getdatapr');
 
 	Route::get('/po', 'PONumberController@index');
+	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
 	Route::post('/store_po', 'PONumberController@store');
 	Route::post('/update_po','PONumberController@update');
 	Route::get('/delete_po/{id_po}','PONumberController@destroy');
@@ -161,6 +163,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getfiltertop', 'ReportController@getfiltertop');
 	Route::get('/getfiltertopmsp', 'ReportController@getfiltertopmsp');
 	Route::get('/report_presales', 'ReportController@report_presales');
+	Route::get('/report_territory', 'ReportController@report_territory');
+	Route::get('/getreportterritory', 'ReportController@getreportterritory');
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
 
 	Route::get('/downloadPdfreport', 'ReportController@downloadPdfreport');

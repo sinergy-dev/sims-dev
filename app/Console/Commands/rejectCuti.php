@@ -46,6 +46,7 @@ class rejectCuti extends Command
                     ->join('users','users.nik','=','tb_cuti.nik')
                     ->join("tb_cuti_detail",'tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->select(DB::raw('MAX(date_off) as date_off'),'users.nik','tb_cuti.id_cuti','users.email','decline_reason')
+                    ->where('tb_cuti.status','n')
                     ->groupby('tb_cuti.id_cuti')
                     ->having(DB::raw("DATEDIFF(date_off, now())"), '=', '0')
                     ->get();

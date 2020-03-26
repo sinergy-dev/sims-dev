@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+ 
 Route::prefix('implementation/{id}')->group(function () {
     Route::resource('task', 'GanttTaskController');
     Route::resource('link', 'GanttLinkController');
