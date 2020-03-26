@@ -1657,6 +1657,12 @@
         sessionStorage.setItem('dontLoad', 'true');
       }
     @endif
+
+    $(document).keyup(function(e) {
+      if (e.keyCode == 27) {
+          $('#popUp').modal('hide');
+      }
+    });
    
 </script>
 @endsection
