@@ -43,6 +43,12 @@
     background-color: #f5f3ed;
   }
 
+  tr.group,
+  tr.group:hover {
+      font-style: bold;
+      background-color: #ddd !important;
+  }
+
   
 </style>
   <section class="content-header">
@@ -64,67 +70,25 @@
             <h3 class="box-title"><i>Report Customer By Territory</i></h3>
           </div>
           <div class="box-body">
-             <div class="table-responsive">
-                <table class="table table-bordered display nowrap" id="report_territory" width="100%" cellspacing="0">
-                    <thead>
-                      <tr class="header">
-                        <th>Territory-Customer</th>
-                        <th>INITIAL</th>
-                        <th>OPEN</th>
-                        <th>SD</th>
-                        <th>TP</th>
-                        <th>WIN</th>
-                        <th>LOSE</th>
-                        <th>TOTAL</th>
-                      </tr>
-                    </thead>
-                    @foreach($territory_loop as $terr)
-                      <tr class="header-child">
-                        <th colspan="8">{{$terr->id_territory}}</th>
-                        <td style="display: none"></td>
-                        <td style="display: none"></td>
-                        <td style="display: none"></td>
-                        <td style="display: none"></td>
-                        <td style="display: none"></td>
-                        <td style="display: none"></td>
-                        <td style="display: none"></td>
-                      </tr>
-                      @foreach($datas as $data)
-                          @if($data->id_territory == $terr->id_territory)
-                          <tbody id="territory" name="territory">
-                            <tr>
-                              <td>
-                                [{{$data->brand_name}}] - [{{$data->name}}]
-                              </td>
-                              <td>
-                                {{$data->INITIAL}}
-                              </td>
-                              <td>
-                                {{$data->OPEN}}
-                              </td>
-                              <td>
-                                {{$data->SD}}
-                              </td>
-                              <td>
-                                {{$data->TP}}
-                              </td>
-                              <td>
-                                {{$data->WIN}}
-                              </td>
-                              <td>
-                                {{$data->LOSE}}
-                              </td>
-                              <td>
-                                {{$data->All}}
-                              </td>
-                            </tr>
-                            
-                          </tbody>
-                      @endif
-                        @endforeach
-                    @endforeach
-                </table>
-              
+            <div class="table-responsive">
+              <table class="table table-bordered display nowrap" id="report_territory" width="100%" cellspacing="0">
+                  <thead>
+                    <tr class="header">
+                      <th>Customer - Sales</th>
+                      <th>territory</th>
+                      <th>INITIAL</th>
+                      <th>OPEN</th>
+                      <th>SD</th>
+                      <th>TP</th>
+                      <th>WIN</th>
+                      <th>LOSE</th>
+                      <th>TOTAL</th>
+                    </tr>
+                  </thead>
+                    <tbody id="territory" name="territory">
+                      
+                    </tbody>
+              </table>
             </div>  
           </div>
         </div>  
@@ -134,22 +98,72 @@
 @endsection
 @section('script')
   <script type="text/javascript">
-    $('#report_territory').DataTable({
-      "bLengthChange": false,
-      // "ordering":false,
-      "pageLength": 20,
-      "columnDefs": [
-        { "width": "10%", "targets": 1,
-          "width": "10%", "targets": 2,
-          "width": "10%", "targets": 3,
-          "width": "10%", "targets": 4,
-          "width": "10%", "targets": 5,
-          "width": "10%", "targets": 6,
-          "width": "10%", "targets": 7
+    initReportTerritory();
+    // $('#report_territory').DataTable({
+    //   "bLengthChange": false,
+    //   "pageLength": 5,
+    //   "columnDefs": [
+    //     { "width": "10%", "targets": 1,
+    //       "width": "10%", "targets": 2,
+    //       "width": "10%", "targets": 3,
+    //       "width": "10%", "targets": 4,
+    //       "width": "10%", "targets": 5,
+    //       "width": "10%", "targets": 6,
+    //       "width": "10%", "targets": 7
+
+    //     }
+    //   ]
+    // });
+
+    function initReportTerritory(){
+      $("#report_territory").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('getreportterritory')}}",
+        },
+        "columns": [
+          // { "data": "name" },
+          { "data": "name" },
+          { "data": "id_territory" },
+          { "data": "INITIAL" },
+          { "data": "OPEN" },
+          { "data": "SD" },
+          { "data": "TP" },
+          { "data": "WIN" },
+          { "data": "LOSE" },
+          { "data": "All" },
+        ],
+        "searching": true,
+        "lengthChange": false,
+        // "paging": false,
+        "info":false,
+        "scrollX": false,
+        "order": [[ 1, "desc" ]],
+        "columnDefs": [
+            { "visible": false, "targets": 1 }
+        ],
+        "drawCallback": function ( settings ) {
+
+          var api = this.api(),data;
+
+          var rows = api.rows( {page:'current'} ).nodes();
+
+          var last=null;
+
+          api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                if ( last !== group ) {
+                    $(rows).eq( i ).before(
+                        '<tr class="group"><td colspan="8">'+'<b>'+group+'</b>'+'</td></tr>'
+                    );
+ 
+                    last = group;
+                }
+          });
 
         }
-      ]
-    });
+
+      })
+    }
 
     // $('#ter_2').DataTable({
     //   "bLengthChange": false,

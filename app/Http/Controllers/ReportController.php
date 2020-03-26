@@ -3529,7 +3529,7 @@ class ReportController extends Controller
     public function getreportterritory(){
         return array("data" => Sales2::join('users','users.nik','=','sales_lead_register.nik')
                 ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                ->select('users.name','users.id_territory','tb_contact.brand_name',
+                ->select('users.name','users.id_territory','tb_contact.brand_name','users.id_territory',
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)) AS "INITIAL"'), 
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)) AS "OPEN"'), 
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SD",1,NULL)) AS "SD"'),
@@ -3541,8 +3541,10 @@ class ReportController extends Controller
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPESIAL",1,NULL)) AS "SPESIAL"'),
                     DB::raw('COUNT(*) AS `All`'))
                 ->whereYear('sales_lead_register.created_at',date("Y"))
+                ->where('id_territory', 'like', 'TERRITORY%')
                 ->groupBy('users.nik')
                 ->groupBy('sales_lead_register.id_customer')
+                ->orderBy('id_territory','desc')
                 ->get());
     }
 
