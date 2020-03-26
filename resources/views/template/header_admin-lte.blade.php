@@ -706,6 +706,9 @@
       			<li>
       				<a href="{{url('/report_presales')}}" style="font-size: 14px">Report Presales</a>
       			</li>
+      			<li>
+      				<a href="{{url('/report_territory')}}" style="font-size: 14px">Report Territory</a>
+      			</li>
       			@endif
       		</ul>
       		</li>
