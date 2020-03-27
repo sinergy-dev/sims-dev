@@ -165,6 +165,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/report_presales', 'ReportController@report_presales');
 	Route::get('/report_territory', 'ReportController@report_territory');
 	Route::get('/getreportterritory', 'ReportController@getreportterritory');
+	Route::get('/getFilterDateTerritory','ReportController@getFilterDateTerritory');
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
 
 	Route::get('/downloadPdfreport', 'ReportController@downloadPdfreport');
@@ -241,10 +242,10 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/approve_cuti','HRGAController@approve_cuti');
 	Route::post('/decline_cuti','HRGAController@decline_cuti');
 	Route::get('/detilcuti','HRGAController@detil_cuti');
-	Route::get('downloadCutiReport','HRGAController@CutiExcel');
-	Route::get('getfilterCutiByDate','HRGAController@filterByDate');
-	Route::get('getfilterCutiByDateDiv','HRGAController@filterByDateDiv');
-	Route::get('getfilterCutiByDiv','HRGAController@filterByDiv');
+	Route::get('/downloadCutiReport','HRGAController@CutiExcel');
+	Route::get('/getfilterCutiByDate','HRGAController@filterByDate');
+	Route::get('/getfilterCutiByDateDiv','HRGAController@filterByDateDiv');
+	Route::get('/getfilterCutiByDiv','HRGAController@filterByDiv');
 	Route::post('/setting_total_cuti','HRGAController@setting_total_cuti');
 	Route::post('/set_total_cuti','HRGAController@set_total_cuti');
 	Route::get('/getCutiUsers','HRGAController@getCutiUsers');
