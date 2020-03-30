@@ -88,6 +88,46 @@
           
 
           <div class="box-body">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs" id="myTab">
+                    <li class="nav-item active">
+                        <a class="nav-link" id="all" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changeTerritory('all')">
+                            All
+                        </a>
+                    </li>
+                  @foreach($territory_loop as $data)
+                    <li class="nav-item">
+                        <a class="nav-link" id="{{ $data->code_ter }}" data-toggle="tab" href="#{{ $data->code_ter }}" role="tab" aria-controls="{{ $data->code_ter }}" aria-selected="true" onclick="changeTerritory('{{$data->id_territory}}')">
+                            {{ $data->id_territory }}
+                        </a>
+                    </li>
+                  @endforeach
+                </ul>
+
+                <div class="tab-content">
+                  <div class="tab-pane active"  role="tabpanel" >
+                  
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
+                        <thead>
+                          <tr class="header">
+                            <th>Customer - Sales</th>
+                            <th>territory</th>
+                            <th>INITIAL</th>
+                            <th>OPEN</th>
+                            <th>SD</th>
+                            <th>TP</th>
+                            <th>WIN</th>
+                            <th>LOSE</th>
+                            <th>TOTAL</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
               <table class="table table-bordered display nowrap" id="report_territory" width="100%" cellspacing="0">
                   <thead>
@@ -122,6 +162,69 @@
     initReportTerritory();
 
     function initReportTerritory(){
+      $("#data_lead").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('getreportterritory')}}",
+        },
+        "columns": [
+          // { "data": "name" },
+          {
+            render: function ( data, type, row ) {
+              return '<b>' + row.brand_name + '</b>' + '<br>(' + row.name + ')';
+            }
+          },
+          { "data": "id_territory" },
+          { "data": "INITIAL" },
+          { "data": "OPEN" },
+          { "data": "SD" },
+          { "data": "TP" },
+          { "data": "WIN" },
+          { "data": "LOSE" },
+          { "data": "All" },
+          
+        ],
+        "searching": true,
+        "lengthChange": false,
+        // "paging": false,
+        "info":false,
+        "scrollX": false,
+        "order": [[ 1, "asc" ]],
+        "processing": true,
+        "columnDefs": [
+            { "visible": false, "targets": 1},
+            { 
+              "width": "5%", "targets": 2,
+              "width": "5%", "targets": 3,
+              "width": "5%", "targets": 4,
+              "width": "5%", "targets": 5,
+              "width": "5%", "targets": 6,
+              "width": "5%", "targets": 7,
+              "width": "5%", "targets": 8
+            }
+        ],
+        "drawCallback": function ( settings ) {
+
+          var api = this.api(),data;
+
+          var rows = api.rows( {page:'current'} ).nodes();
+
+          var last=null;
+
+          api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+                if ( last !== group ) {
+                    $(rows).eq( i ).before(
+                        '<tr class="group"><td colspan="8">'+'<b>'+group+'</b>'+'</td></tr>'
+                    );
+ 
+                    last = group;
+                }
+          });
+
+        }
+      })
+
+
       $("#report_territory").DataTable({
         "ajax":{
           "type":"GET",
@@ -226,6 +329,10 @@
           $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
         }
       )
+    }
+
+    function changeTerritory(id_territory) {
+      $('#data_lead').DataTable().ajax.url("{{url('getFilterTerritoryTabs')}}?id_ter='" + id_territory + "'").load();
     }
     
   </script>

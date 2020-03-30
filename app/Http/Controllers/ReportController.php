@@ -3387,6 +3387,8 @@ class ReportController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $territory_loop = DB::table("tb_territory")->select("id_territory","code_ter")->where('id_territory','like','TERRITORY%')->get();
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -3499,10 +3501,7 @@ class ReportController extends Controller
             ->orderBy('sales_lead_register.created_at','desc')
             ->get();
         }
-
-
-        return view('report/report_territory', compact('notif', 'notifOpen', 'notifsd', 'notiftp'));
-
+        return view('report/report_territory', compact('notif', 'notifOpen', 'notifsd', 'notiftp','territory_loop'));
     }
 
     public function getreportterritory(){
@@ -3529,7 +3528,6 @@ class ReportController extends Controller
     }
 
     public function getFilterDateTerritory(Request $request){
-    
         $data = array("data" => Sales2::join('users','users.nik','=','sales_lead_register.nik')
                 ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                 ->select('users.name','users.id_territory','tb_contact.brand_name','users.id_territory',
@@ -3549,6 +3547,33 @@ class ReportController extends Controller
                 ->where('sales_lead_register.created_at', '>=', $request->start_date)
                 ->where('sales_lead_register.created_at', '<=', $request->end_date)
                 ->where('id_territory','like','TERRITORY%')
+                ->where('sales_lead_register.result','!=','hmm')
+                ->groupBy('sales_lead_register.nik')
+                ->groupBy('sales_lead_register.id_customer')
+                ->get());
+
+        return $data;
+    }
+
+    public function getFilterTerritoryTabs(Request $request){
+        $data = array("data" => Sales2::join('users','users.nik','=','sales_lead_register.nik')
+                ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
+                ->select('users.name','users.id_territory','tb_contact.brand_name','users.id_territory',
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)) AS "INITIAL"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)) AS "OPEN"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SD",1,NULL)) AS "SD"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
+                    // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
+                    // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
+                    // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPECIAL",1,NULL)) AS "SPECIAL"'),
+                    DB::raw('COUNT(*) AS `All`'))
+                ->where('result','!=','CANCEL')
+                ->where('result','!=','HOLD')
+                ->where('result','!=','SPECIAL')
+                ->where('users.id_territory',$request->id_territory)
                 ->where('sales_lead_register.result','!=','hmm')
                 ->groupBy('sales_lead_register.nik')
                 ->groupBy('sales_lead_register.id_customer')
