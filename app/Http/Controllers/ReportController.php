@@ -3574,6 +3574,7 @@ class ReportController extends Controller
                 ->where('result','!=','HOLD')
                 ->where('result','!=','SPECIAL')
                 ->where('users.id_territory',$request->id_territory)
+                ->whereYear('sales_lead_register.created_at',date("Y"))
                 ->where('sales_lead_register.result','!=','hmm')
                 ->groupBy('sales_lead_register.nik')
                 ->groupBy('sales_lead_register.id_customer')
@@ -3581,6 +3582,8 @@ class ReportController extends Controller
 
         return $data;
     }
+
+    
 
     public function download_excel_presales_win(Request $request)
     {
