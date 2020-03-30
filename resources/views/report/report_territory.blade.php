@@ -150,6 +150,7 @@
         "info":false,
         "scrollX": false,
         "order": [[ 1, "asc" ]],
+        "processing": true,
         "columnDefs": [
             { "visible": false, "targets": 1},
             { 
