@@ -3530,7 +3530,7 @@ class ReportController extends Controller
 
     public function getFilterDateTerritory(Request $request){
     
-        $data = Sales2::join('users','users.nik','=','sales_lead_register.nik')
+        $data = array("data" => Sales2::join('users','users.nik','=','sales_lead_register.nik')
                 ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                 ->select('users.name','users.id_territory','tb_contact.brand_name','users.id_territory',
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)) AS "INITIAL"'), 
@@ -3539,16 +3539,20 @@ class ReportController extends Controller
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
-                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
-                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
-                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPECIAL",1,NULL)) AS "SPECIAL"'),
+                    // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
+                    // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
+                    // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPECIAL",1,NULL)) AS "SPECIAL"'),
                     DB::raw('COUNT(*) AS `All`'))
+                ->where('result','!=','CANCEL')
+                ->where('result','!=','HOLD')
+                ->where('result','!=','SPECIAL')
                 ->where('sales_lead_register.created_at', '>=', $request->start_date)
                 ->where('sales_lead_register.created_at', '<=', $request->end_date)
                 ->where('id_territory','like','TERRITORY%')
-                ->groupBy('users.nik')
+                ->where('sales_lead_register.result','!=','hmm')
+                ->groupBy('sales_lead_register.nik')
                 ->groupBy('sales_lead_register.id_customer')
-                ->get();
+                ->get());
 
         return $data;
     }

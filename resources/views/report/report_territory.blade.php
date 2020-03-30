@@ -71,15 +71,18 @@
 
           <div class="row">
             <div class="col-md-12" style="margin-top: 10px">
-              <div class="col-md-4 pull-left">
-                <div class="input-group">
-                  <div class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
+              <div class="col-md-8">
+                <div class="pull-left">
+                  <div class="input-group" style="float: left">
+                    <div class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+                    <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
+                    <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
+                    <button class="btn btn-info reload-table" style="float: right;margin-left: 5px"><i class="fa fa-refresh"></i> Refresh</button>
                   </div>
-                  <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
-                  <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
-                </div>
-              </div>  
+                </div> 
+              </div>
             </div>         
           </div>
           
@@ -184,7 +187,6 @@
       },function (start, end) {
           start: moment();
           end  : moment();
-          $('.dates').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 
           start_date  = start.format("YYYY-MM-DD HH:mm:ss");
           end_date    = end.format("YYYY-MM-DD HH:mm:ss");
@@ -194,6 +196,11 @@
           // $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
 
       });
+
+      $('.reload-table').click(function(){
+        console.log("clicked")
+        $('#report_territory').DataTable().ajax.url("{{url('getreportterritory')}}").load();
+      })
 
       $('#daterange-btn').daterangepicker(
         {
@@ -209,7 +216,13 @@
           endDate  : moment()
         },
         function (start, end) {
-          $('#reportrange').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+          console.log(start)
+          $('#reportrange').val(start.format('MM/DD/YYYY') + ' - ' + end.format('MM/DD/YYYY'))
+
+          start_date  = start.format("YYYY-MM-DD HH:mm:ss");
+          end_date    = end.format("YYYY-MM-DD HH:mm:ss");
+
+          $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
         }
       )
     }
