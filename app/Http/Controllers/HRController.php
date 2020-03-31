@@ -359,6 +359,7 @@ class HRController extends Controller
             'company' => 'required',
             'date_of_entry' => 'required',
             'date_of_birth' => 'required',
+            'no_npw' => 'required',
         ]); 
 
 
@@ -469,6 +470,7 @@ class HRController extends Controller
         $tambah->date_of_birth = $request['date_of_birth'];
         $tambah->address = $request['address'];
         $tambah->phone = $request['phone_number'];
+        $tambah->no_npw = $request['no_npw'];
         $tambah->save();
 
         $userCompany = DB::table('tb_company')

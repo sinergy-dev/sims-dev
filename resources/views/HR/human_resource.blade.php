@@ -562,6 +562,7 @@
                           <th>Position</th>
                           <th>Mulai Bekerja</th>
                           <th>Status Karyawan</th>
+                          <th>NPWP</th>
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <th>Action</th>
                           @endif
@@ -738,6 +739,7 @@
                           	Karyawan Kontrak <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i>
                           	@endif
                           </td>
+                          <td></td>
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <td>
                             <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
@@ -2031,6 +2033,15 @@
 	                                @endif
 	                            </div>
 	                        </div>
+
+	                        <div class="form-group row">
+	                            <label for="npw" class="col-md-4 col-form-label text-md-right">{{ __('NPW') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="npw" type="number" class="form-control" name="npw" autofocus>
+	                            </div>
+	                        </div>
+
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	                  <button type="submit" class="btn btn-primary">
