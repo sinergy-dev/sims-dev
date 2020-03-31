@@ -739,7 +739,7 @@
                           	Karyawan Kontrak <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i>
                           	@endif
                           </td>
-                          <td></td>
+                          <td>{{ $data->no_npwp }}</td>
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <td>
                             <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
@@ -2035,10 +2035,10 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="npw" class="col-md-4 col-form-label text-md-right">{{ __('NPW') }}</label>
+	                            <label for="npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="npw" type="number" class="form-control" name="npw" autofocus>
+	                                <input id="npwp" type="text" class="form-control" name="no_npwp" autofocus>
 	                            </div>
 	                        </div>
 
