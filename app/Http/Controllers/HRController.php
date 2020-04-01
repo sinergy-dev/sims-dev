@@ -45,7 +45,7 @@ class HRController extends Controller
 
         $hr = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
@@ -53,7 +53,7 @@ class HRController extends Controller
 
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','2')
@@ -359,7 +359,7 @@ class HRController extends Controller
             'company' => 'required',
             'date_of_entry' => 'required',
             'date_of_birth' => 'required',
-            'no_npw' => 'required',
+            'no_npwp' => 'required',
         ]); 
 
 
@@ -470,7 +470,7 @@ class HRController extends Controller
         $tambah->date_of_birth = $request['date_of_birth'];
         $tambah->address = $request['address'];
         $tambah->phone = $request['phone_number'];
-        $tambah->no_npw = $request['no_npw'];
+        $tambah->no_npwp = $request['no_npwp'];
         $tambah->save();
 
         $userCompany = DB::table('tb_company')
@@ -699,6 +699,7 @@ class HRController extends Controller
         $update->date_of_entry = $request['date_of_entry_update'];
         $update->address = $request['address'];
         $update->phone = $request['phone_number'];
+        $update->no_npwp = $request['no_npwp'];
 
         $update->update();
 
