@@ -699,6 +699,7 @@ class HRController extends Controller
         $update->date_of_entry = $request['date_of_entry_update'];
         $update->address = $request['address'];
         $update->phone = $request['phone_number'];
+        $update->no_npwp = $request['no_npwp'];
 
         $update->update();
 
