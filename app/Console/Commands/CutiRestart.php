@@ -45,8 +45,8 @@ class CutiRestart extends Command
         foreach ($totalcuti as $data) {
             // print_r($data->name . $data->nik . "\n");
             $update = User::where('nik',$data->nik)->first();
-            $data->cuti = 0;
-            $data->save();
+            $update->cuti = 0;
+            $update->save();
         }
     }
 }
