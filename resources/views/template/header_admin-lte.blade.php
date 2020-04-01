@@ -780,6 +780,22 @@
             <a href="{{url('pr_asset')}}" style="font-size: 14px"></i>PR Asset Management</a>
           </li>
           @endif
+
+          @if(Auth::User()->id_position == 'HR MANAGER')
+      	  <li>
+            <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
+          </li>
+          @elseif(Auth::User()->id_position == 'ADMIN')
+          <li>
+            <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
+          </li>
+          @elseif(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_company == '1')
+          <li class="nav-item">
+        	<a class="nav-link" href="{{url('/esm')}}">
+          		<span class="nav-link-text" style="font-size: 14px">Claim Management</span>
+        	</a>
+      	  </li>
+          @endif
         </ul>
       </li>
       @elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_company == '1')
@@ -824,22 +840,6 @@
       		</span>
       	</a>
       	<ul class="activeable treeview-menu" id="HumanResource">
-      	  @if(Auth::User()->id_position == 'HR MANAGER')
-      	  <li>
-            <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
-          </li>
-          @elseif(Auth::User()->id_position == 'ADMIN')
-          <li>
-            <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
-          </li>
-          @elseif(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_company == '1')
-          <li class="nav-item">
-        	<a class="nav-link" href="{{url('/esm')}}">
-          		<span class="nav-link-text" style="font-size: 14px">Claim Management</span>
-        	</a>
-      	  </li>
-          @endif
-
           @if(Auth::User()->id_position != 'HR MANAGER')
           <li>
             <a href="{{url('/salesproject')}}" style="font-size: 14px"></i>ID Project</a>
