@@ -2035,10 +2035,10 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
+	                            <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="npwp" type="text" class="form-control" name="no_npwp" autofocus>
+	                                <input id="no_npwp" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" autofocus>
 	                            </div>
 	                        </div>
 
@@ -2522,6 +2522,17 @@
 	                                @endif
 	                            </div>
 	                        </div>
+
+
+	                        <div class="form-group row">
+	                            <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="no_npwp_update" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" autofocus>
+	                            </div>
+	                        </div>
+
+
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	                  <button type="submit" class="btn btn-primary">
@@ -2583,7 +2594,7 @@
        	$("#modal_edit_status").modal("show");
        })
 
-       function update_HR(nik,name,email,date_of_entry,date_of_birth,address,phone){
+       function update_HR(nik,name,email,date_of_entry,date_of_birth,address,phone,no_npwp){
          $("#nik_update").val(nik);
          $("#name_update").val(name);
          $("#email_update").val(email);
@@ -2592,6 +2603,7 @@
          $("#address_update").val(address);
          $("#phone_number_update").val(phone);
          $("#password_update").val(password);
+         $("#no_npwp_update").val(no_npwp);
        } 
 
        $('.btn-editan').click(function(){
@@ -2610,6 +2622,7 @@
                $("#date_of_birth_update").val(value.date_of_birth);
                $("#address_update").val(value.address);
                $("#phone_number_update").val(value.phone);
+               $("#no_npwp_update").val(value.no_npwp);
                $("#password_update").val(value.password);
                $("#divisi_view_update").val(value.id_division);
                $("#subdivisi_view_update").val(value.id_territory);
