@@ -117,6 +117,34 @@
               </div>
             </div>
           </div>
+          <div class="box">
+            <div class="box-header with-border">
+              <h2>Input Data Excel</h2>
+            </div>
+
+            <div class="box-body">
+              <form action="{{ url('import_claim') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="file" class="form-control">
+                <br>
+                <button class="btn btn-success pull-left">Import Data</button>
+              </form>
+            </div>
+          </div>
+          <div class="box">
+            <div class="box-header with-border">
+              <h2>Input Data Excel</h2>
+            </div>
+
+            <div class="box-body">
+              <form action="{{ url('import_claim_progress') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="file" class="form-control">
+                <br>
+                <button class="btn btn-success pull-left">Import Data</button>
+              </form>
+            </div>
+          </div>
       </div>
 
       <div class="box-body">
