@@ -845,6 +845,10 @@
             <a href="{{url('/salesproject')}}" style="font-size: 14px"></i>ID Project</a>
           </li>
           @endif
+
+      	  <li>
+            <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
+          </li>
       	</ul>
       </li>
 
