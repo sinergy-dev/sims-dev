@@ -2,8 +2,9 @@
 @section('content')
 
 <style type="text/css">
-  .DTFC_LeftBodyLiner{overflow-y:unset !important}
-  .DTFC_RightBodyLiner{overflow-y:unset !important}
+  .DTFC_LeftBodyLiner {
+    overflow: hidden;
+  }
 
   .dropbtn {
   background-color: #4CAF50;
@@ -94,434 +95,85 @@
     <div class="box">
       <div class="box-header">
         
-            @if(Auth::User()->id_position == 'ADMIN')
-            <button type="button" class="btn btn-success-engineer float-right  margin-left-custom" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"><b> </i> &nbspAdd Claim </b></button>
-            <button type="button" class="btn btn-warning-eksport dropdown-toggle float-right  margin-left-custom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <b><i class="fa fa-download"></i> Export</b>
-            </button>
-            @endif
-            <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-              <a class="dropdown-item" href="{{url('/downloadPdfESM')}}"> PDF </a>
-              <a class="dropdown-item" href="{{url('/downloadExcelESM')}}"> EXCEL </a>
-            </div>
-          <div class="dropdown btn btn-md pull-right">
-            <button class="dropbtn"><i class="fa fa-filter"></i>&nbspFilter Year</button>
-            <div class="dropdown-content">
-              <div class="year">
-                <span class="fa fa-calendar"></span>
-                <input type="button" name="answer" value="2018" onclick="show2018()" class="transparant-filter" />
-              </div>
-              <div class="year">
-                  <span class="fa fa-calendar"></span>
-                  <input type="button" name="answer" value="2019" onclick="show2019()" class="transparant-filter" />
-              </div>
-            </div>
+          @if(Auth::User()->id_position == 'ADMIN')
+          <button type="button" class="btn btn-success btn-sm float-right  margin-left-custom" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"></i> &nbspClaim</button>
+          <button type="button" class="btn btn-warning btn-sm dropdown-toggle float-right  margin-left-custom" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-download"></i> Export
+          </button>
+          @endif
+          <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
+            <a class="dropdown-item" href="{{url('/downloadPdfESM')}}"> PDF </a>
+            <a class="dropdown-item" href="{{url('/downloadExcelESM')}}"> EXCEL </a>
           </div>
+          <select class="btn btn-sm btn-default fa pull-right" id="year_filter" style="font-size: 14px">
+              @foreach($year as $data)
+                @if($data->year == date("Y"))
+                <option value="{{$data->year}}" selected>&#xf073 &nbsp{{date("Y")}}</option>
+                @else
+                <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
+                @endif
+              @endforeach
+          </select>
+
+          <select class="btn btn-sm btn-default fa pull-right" id="status_filter" style="font-size: 14px">
+              <option value="ADMIN">&nbsp PENDING</option>
+              <option value="HRD">&nbsp HRD</option>
+              <option value="FINANCE">&nbsp FINANCE</option>
+              <option value="TRANSFER">&nbsp TRANSFER</option>
+          </select>
+            
       </div>
 
       <div class="box-body">
-        <div class="table-responsive" id="div_2018" style="display: none">
-            <table class="table table-bordered table-striped dataTable display nowrap" id="data_all2018" width="100%" cellspacing="0">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Date</th>
-                    @if(Auth::User()->id_position == 'ADMIN')
-                    <th>Create Date</th>
-                    @endif
-                  <th>Personnel</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Amount</th>
-                  <th>ID Project</th>
-                  <th>Remarks</th>
+       <!--    <div class="nav-tabs-custom">
+                  <ul class="nav nav-tabs" id="myTab">
+                      <li class="nav-item active" style="background-color: #dd4b39;color: white">
+                          <a class="nav-link" id="all" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changeTerritory('Pending')">
+                              PENDING
+                          </a>
+                      </li>
+                      <li class="nav-item " style="background-color: #f39c12;color: white">
+                          <a class="nav-link" id="all" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changeTerritory('hrd')">
+                              HRD
+                          </a>
+                      </li>
+                      <li class="nav-item " style="background-color: #5bc0de;color: white">
+                          <a class="nav-link" id="all" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changeTerritory('finance')">
+                              FINANCE
+                          </a>
+                      </li>
+                      <li class="nav-item " style="background-color: #4cae4c;color: white">
+                          <a class="nav-link" id="all" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changeTerritory('done')">
+                              TRANSFER
+                          </a>
+                      </li>
+                  </ul>
+          <div class="tab-content">
+            <div class="tab-pane active"  role="tabpanel" > -->
 
-                    @if(Auth::User()->id_position == 'ADMIN')
-                    <th>Action</th>
-                    @endif
-                    
-                    @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF')
-                    <th>Action</th>
-                    @endif
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="data_esm" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Date</th>
+                      <th>Create Date</th>
+                      <th>Personnel</th>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th>Amount</th>
+                      <th>ID Project</th>
+                      <th>Remarks</th>
+                      <th>Action</th>
+                      <th>Progress</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+          <!--   </div>
+          </div>
+        </div> -->
 
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="products-list" name="products-list">
-                
-                @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF')
-
-                  @if(Auth::User()->id_position == 'ADMIN')
-                  @foreach($datas_2018 as $data)
-                  <tr>
-                    <td name="no_submit" id="no_submit">
-                      <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                    </td>
-                    <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                    <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{{$data->type}}</td>
-                    <td>{{$data->description}}</td>
-                    <td class="money">{{$data->amount}}</td>
-                    <td>{{$data->id_project}}</td>
-                    <td>{{$data->remarks}}</td>
-
-                    @if($data->status == 'ADMIN')
-                    <td>
-                      <button class="btn btn-xs btn-primary" data-target="#modaledit" data-toggle="modal" style="vertical-align: top; width: 60px" onclick="esm('{{$data->no}}','{{$data->type}}','{{$data->description}}','{{$data->amount}}','{{$data->id_project}}','{{$data->remarks}}')">
-                      <i class="fa fa-search"></i>&nbspEdit</button>
-                      <a href="{{url('delete_esm', $data->no)}}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')"><i class="fa fa-trash"></i>&nbspDelete</button></a>
-                    </td>
-                    @else
-                    <td>
-                      <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px">
-                      <i class="fa fa-search"></i>&nbspEdit</button>
-                      <a><button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px">
-                      <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                    </td>
-                    @endif
-
-                    @if($data->status == 'ADMIN')
-                      <td>
-                        <button data-target="#keterangan" data-toggle="modal" name="assign_to_hrd" id="assign_to_hrd" onclick="number('{{$data->no}}','{{$data->amount}}')" class="btn btn-xs btn-warning">Submit</button>
-                      </td>
-                    @elseif($data->status != 'ADMIN')
-                      <td>
-                        <button name="assign_to_hrd" class="btn btn-xs btn-warning disabled">Submit</button>
-                      </td>
-                    @endif
-
-                    <td>
-                      @if($data->status == 'ADMIN')
-                      <label class="status-pending-claim">PENDING</label>
-                      @elseif($data->status == 'HRD')
-                      <label class="status-initial">HRD</label>
-                      @elseif($data->status == 'FINANCE')
-                      <label class="status-open">FINANCE</label>
-                      @elseif($data->status == 'TRANSFER')
-                      <label class="status-sd">TRANSFER</label>
-                      @endif
-                    </td>
-
-                  </tr>
-                  @endforeach
-                  @endif
-
-                  @if(Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER')
-                  @foreach($datas_2018 as $data)
-                  <tr>
-                    <td name="no_submit" id="no_submit">
-                      <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                    </td>
-                    <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{{$data->type}}</td>
-                    <td>{{$data->description}}</td>
-                    <td class="money">{{$data->amount}}</td>
-                    <td>{{$data->id_project}}</td>
-                    <td>{{$data->remarks}}</td>
-
-                    @if($data->status == 'HRD')
-                      <td>
-                        <button data-target="#keterangan" data-toggle="modal" name="assign_to_fnc" value="{{$data->no}}" onclick="number_fnc('{{$data->no}}','{{$data->amount}}')" class="btn btn-xs btn-warning">Submit</button>
-                      </td>
-                    @elseif($data->status != 'HRD')
-                      <td>
-                        <button class="btn btn-xs btn-warning disabled">Submit</button>
-                      </td>
-                    @endif
-
-                    <td>
-                      @if($data->status == 'ADMIN')
-                      <label class="status-initial">ADMIN</label>
-                      @elseif($data->status == 'HRD')
-                      <label class="status-pending-claim">PENDING</label>
-                      @elseif($data->status == 'FINANCE')
-                      <label class="status-open">FINANCE</label>
-                      @elseif($data->status == 'TRANSFER')
-                      <label class="status-sd">TRANSFER</label>
-                      @endif
-                    </td>
-
-                  </tr>
-                  @endforeach
-                  @endif
-
-                  @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF')
-                  @foreach($datas_2018 as $data)
-                  @if($data->status == 'HRD' || $data->status == 'FINANCE' || $data->status == 'TRANSFER')
-                  <tr>
-                    <td name="no_submit" id="no_submit">
-                      <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                    </td>
-                    <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{{$data->type}}</td>
-                    <td>{{$data->description}}</td>
-                    <td class="money">{{$data->amount}}</td>
-                    <td>{{$data->id_project}}</td>
-                    <td>{{$data->remarks}}</td>
-
-                    @if($data->status == 'FINANCE')
-                      <td>
-                        <button data-target="#keterangan" data-toggle="modal" name="assign_to_adm" onclick="number_adm('{{$data->no}}')" value="{{$data->no}}" class="btn btn-xs btn-warning">Submit</button>
-                      </td>
-                    @elseif($data->status != 'FINANCE')
-                      <td>
-                        <button class="btn btn-xs btn-warning disabled">Submit</button>
-                      </td>
-                    @endif
-
-                    <td>
-                      @if($data->status == 'HRD')
-                      <label class="status-initial">HRD</label>
-                      @elseif($data->status == 'FINANCE')
-                      <label class="status-pending-claim">PENDING</label>
-                      @elseif($data->status == 'TRANSFER')
-                      <label class="status-sd">TRANSFER</label>
-                      @endif
-                    </td>
-
-                  </tr>
-                  @endif
-                  @endforeach
-                  @endif
-
-                @else
-
-                  @foreach($datas_2018 as $data)
-                  <tr>
-                    <td name="no_submit" id="no_submit">
-                      <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                    </td>
-                    <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{{$data->type}}</td>
-                    <td>{{$data->description}}</td>
-                    <td class="money">{{$data->amount}}</td>
-                    <td>{{$data->id_project}}</td>
-                    <td>{{$data->remarks}}</td>
-                    <td>
-                      @if($data->status == 'ADMIN')
-                      <label class="status-pending-claim">ADMIN</label>
-                      @elseif($data->status == 'HRD')
-                      <label class="status-initial">HRD</label>
-                      @elseif($data->status == 'FINANCE')
-                      <label class="status-open">FINANCE</label>
-                      @elseif($data->status == 'TRANSFER')
-                      <label class="status-sd">TRANSFER</label>
-                      @endif
-                    </td>
-                  </tr>
-                  @endforeach
-
-                @endif
-
-              </tbody>
-            </table>
-        </div>
-        <div class="table-responsive" id="div_2019">
-          <table class="table table-bordered table-striped display nowrap" id="data_all2019" width="100%" cellspacing="0">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Date</th>
-                  @if(Auth::User()->id_position == 'ADMIN')
-                  <th>Create Date</th>
-                  @endif
-                <th>Personnel</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>ID Project</th>
-                <th>Remarks</th>
-
-                  @if(Auth::User()->id_position == 'ADMIN')
-                  <th>Action</th>
-                  @endif
-                  
-                  @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF')
-                  <th>Action</th>
-                  @endif
-
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="products-list" name="products-list">
-              
-              @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF')
-
-                @if(Auth::User()->id_position == 'ADMIN')
-                @foreach($datas_2019 as $data)
-                <tr>
-                  <td name="no_submit" id="no_submit">
-                    <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                  </td>
-                  <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                  <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                  <td>{{$data->name}}</td>
-                  <td>{{$data->type}}</td>
-                  <td>{{$data->description}}</td>
-                  <td class="money">{{$data->amount}}</td>
-                  <td>{{$data->id_project}}</td>
-                  <td>{{$data->remarks}}</td>
-
-                  @if($data->status == 'ADMIN')
-                  <td>
-                    <button class="btn btn-xs btn-primary" data-target="#modaledit" data-toggle="modal" style="vertical-align: top; width: 60px" onclick="esm('{{$data->no}}','{{$data->type}}','{{$data->description}}','{{$data->amount}}','{{$data->id_project}}','{{$data->remarks}}')">
-                    <i class="fa fa-search"></i>&nbspEdit</button>
-                    <!-- <a data-id="{{$data->no}}" name="delete_esm" id="delete_esm" class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px"><i class="fa fa-trash"></i>&nbspDelete
-                    </a> -->
-                    <a href="{{url('delete_esm', $data->no)}}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')"><i class="fa fa-trash"></i>&nbspDelete</button></a>
-                  </td>
-                  @else
-                  <td>
-                    <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px">
-                    <i class="fa fa-search"></i>&nbspEdit</button>
-                    <a><button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px">
-                    <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                  </td>
-                  @endif
-
-                  @if($data->status == 'ADMIN')
-                    <td>
-                      <button data-target="#keterangan" data-toggle="modal" name="assign_to_hrd" id="assign_to_hrd" onclick="number('{{$data->no}}','{{$data->amount}}')" class="btn btn-xs btn-warning">Submit</button>
-                    </td>
-                  @elseif($data->status != 'ADMIN')
-                    <td>
-                      <button name="assign_to_hrd" class="btn btn-xs btn-warning disabled">Submit</button>
-                    </td>
-                  @endif
-
-                  <td>
-                    @if($data->status == 'ADMIN')
-                    <label class="status-pending-claim">PENDING</label>
-                    @elseif($data->status == 'HRD')
-                    <label class="status-initial">HRD</label>
-                    @elseif($data->status == 'FINANCE')
-                    <label class="status-open">FINANCE</label>
-                    @elseif($data->status == 'TRANSFER')
-                    <label class="status-sd">TRANSFER</label>
-                    @endif
-                  </td>
-
-                </tr>
-                @endforeach
-                @endif
-
-                @if(Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER')
-                @foreach($datas_2019 as $data)
-                <tr>
-                  <td name="no_submit" id="no_submit">
-                    <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                  </td>
-                  <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                  <td>{{$data->name}}</td>
-                  <td>{{$data->type}}</td>
-                  <td>{{$data->description}}</td>
-                  <td class="money">{{$data->amount}}</td>
-                  <td>{{$data->id_project}}</td>
-                  <td>{{$data->remarks}}</td>
-
-                  @if($data->status == 'HRD')
-                    <td>
-                      <button data-target="#keterangan" data-toggle="modal" name="assign_to_fnc" value="{{$data->no}}" onclick="number_fnc('{{$data->no}}','{{$data->amount}}')" class="btn btn-xs btn-warning">Submit</button>
-                    </td>
-                  @elseif($data->status != 'HRD')
-                    <td>
-                      <button class="btn btn-xs btn-warning disabled">Submit</button>
-                    </td>
-                  @endif
-
-                  <td>
-                    @if($data->status == 'ADMIN')
-                    <label class="status-initial">ADMIN</label>
-                    @elseif($data->status == 'HRD')
-                    <label class="status-pending-claim">PENDING</label>
-                    @elseif($data->status == 'FINANCE')
-                    <label class="status-open">FINANCE</label>
-                    @elseif($data->status == 'TRANSFER')
-                    <label class="status-sd">TRANSFER</label>
-                    @endif
-                  </td>
-
-                </tr>
-                @endforeach
-                @endif
-
-                @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF')
-                @foreach($datas_2019 as $data)
-                @if($data->status == 'HRD' || $data->status == 'FINANCE' || $data->status == 'TRANSFER')
-                <tr>
-                  <td name="no_submit" id="no_submit">
-                    <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                  </td>
-                  <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                  <td>{{$data->name}}</td>
-                  <td>{{$data->type}}</td>
-                  <td>{{$data->description}}</td>
-                  <td class="money">{{$data->amount}}</td>
-                  <td>{{$data->id_project}}</td>
-                  <td>{{$data->remarks}}</td>
-
-                  @if($data->status == 'FINANCE')
-                    <td>
-                      <button data-target="#keterangan" data-toggle="modal" name="assign_to_adm" onclick="number_adm('{{$data->no}}')" value="{{$data->no}}" class="btn btn-xs btn-warning">Submit</button>
-                    </td>
-                  @elseif($data->status != 'FINANCE')
-                    <td>
-                      <button class="btn btn-xs btn-warning disabled">Submit</button>
-                    </td>
-                  @endif
-
-                  <td>
-                    @if($data->status == 'HRD')
-                    <label class="status-initial">HRD</label>
-                    @elseif($data->status == 'FINANCE')
-                    <label class="status-pending-claim">PENDING</label>
-                    @elseif($data->status == 'TRANSFER')
-                    <label class="status-sd">TRANSFER</label>
-                    @endif
-                  </td>
-
-                </tr>
-                @endif
-                @endforeach
-                @endif
-
-              @else
-
-                @foreach($datas_2019 as $data)
-                <tr>
-                  <td name="no_submit" id="no_submit">
-                    <a href="{{ url ('/detail_esm', $data->no) }}">{{ $data->no }}</a>
-                  </td>
-                  <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                  <td>{{$data->name}}</td>
-                  <td>{{$data->type}}</td>
-                  <td>{{$data->description}}</td>
-                  <td class="money">{{$data->amount}}</td>
-                  <td>{{$data->id_project}}</td>
-                  <td>{{$data->remarks}}</td>
-                  <td>
-                    @if($data->status == 'ADMIN')
-                    <label class="status-pending-claim">ADMIN</label>
-                    @elseif($data->status == 'HRD')
-                    <label class="status-initial">HRD</label>
-                    @elseif($data->status == 'FINANCE')
-                    <label class="status-open">FINANCE</label>
-                    @elseif($data->status == 'TRANSFER')
-                    <label class="status-sd">TRANSFER</label>
-                    @endif
-                  </td>
-                </tr>
-                @endforeach
-
-              @endif
-
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
 
@@ -545,23 +197,29 @@
             </div>
             <div class="form-group">
               <label for="">Personnel</label>
-              <select type="text" class="form-control" placeholder="Enter Personnel" name="personnel" id="personnel" required>
+              <select type="text" class="form-control" placeholder="Enter Personnel" name="personnel" id="personnel" style="width: 100%" required>
                 @if(Auth::User()->id_division == 'TECHNICAL')
                   @foreach($owner as $data)
                     @if($data->id_division == 'TECHNICAL' || $data->id_division == 'TECHNICAL PRESALES')
+                      @if($data->id_company == '1' && $data->status_karyawan != 'dummy')
                       <option value="{{$data->nik}}">{{$data->name}}</option>
+                      @endif
                     @endif
                   @endforeach
                 @elseif(Auth::User()->id_division == 'PMO')
                   @foreach($owner as $data)
                     @if($data->id_division == 'PMO')
+                      @if($data->id_company == '1' && $data->status_karyawan != 'dummy')
                       <option value="{{$data->nik}}">{{$data->name}}</option>
+                      @endif
                     @endif
                   @endforeach
                 @elseif(Auth::User()->id_division == 'MSM')
                   @foreach($owner as $data)
                     @if($data->id_division == 'MSM')
+                      @if($data->id_company == '1' && $data->status_karyawan != 'dummy')
                       <option value="{{$data->nik}}">{{$data->name}}</option>
+                      @endif
                     @endif
                   @endforeach
                 @endif
@@ -627,30 +285,36 @@
               <label>No</label>
               <input class="form-control" id="edit_no" name="edit_no" readonly>
             </div>
-            <div class="form-group">
+     <!--        <div class="form-group">
               <label for="">Personnel</label>
-              <select type="text" class="form-control" placeholder="Enter Personnel" name="edit_personnel" id="edit_personnel" required>
+              <select type="text" class="form-control" placeholder="Enter Personnel" name="edit_personnel" id="edit_personnel" style="width: 100%" required>
                 @if(Auth::User()->id_division == 'TECHNICAL')
                   @foreach($owner as $data)
                     @if($data->id_division == 'TECHNICAL' || $data->id_division == 'TECHNICAL PRESALES')
+                      @if($data->id_company == '1' && $data->status_karyawan != 'dummy')
                       <option value="{{$data->nik}}">{{$data->name}}</option>
+                      @endif
                     @endif
                   @endforeach
                 @elseif(Auth::User()->id_division == 'PMO')
                   @foreach($owner as $data)
                     @if($data->id_division == 'PMO')
+                      @if($data->id_company == '1' && $data->status_karyawan != 'dummy')
                       <option value="{{$data->nik}}">{{$data->name}}</option>
+                      @endif
                     @endif
                   @endforeach
                 @elseif(Auth::User()->id_division == 'MSM')
                   @foreach($owner as $data)
                     @if($data->id_division == 'MSM')
+                      @if($data->id_company == '1' && $data->status_karyawan != 'dummy')
                       <option value="{{$data->nik}}">{{$data->name}}</option>
+                      @endif
                     @endif
                   @endforeach
                 @endif
               </select>
-            </div> 
+            </div>  -->
             <div class="form-group">
               <label for="">Type</label>
               <input type="text" class="form-control" name="edit_type" id="edit_type" >
@@ -684,7 +348,7 @@
   </div>
 
 @if(Auth::User()->id_position == 'ADMIN')
-  <div class="modal fade" id="keterangan" role="dialog">
+  <div class="modal fade" id="modalassignhrd" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
@@ -709,7 +373,7 @@
     </div>
   </div>
 @elseif(Auth::User()->id_position == 'HR MANAGER')
-  <div class="modal fade" id="keterangan" role="dialog">
+  <div class="modal fade" id="modalassignfinance" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
@@ -726,7 +390,7 @@
           </div>
           <div class="form-group modalIcon inputIconBg">
               <label for="">Revised Amount</label>
-              <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="amount" required>
+              <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="amount_revised" required>
               <i class="" aria-hidden="true">Rp.</i>
           </div> 
           <div class="form-group">
@@ -742,8 +406,8 @@
       </div>
     </div>
   </div>
-@elseif(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF')
-  <div class="modal fade" id="keterangan" role="dialog">
+@elseif(Auth::User()->id_division == 'FINANCE')
+  <div class="modal fade" id="modalassigntransfer" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
@@ -753,9 +417,14 @@
           <form method="POST" action="{{url('/assign_to_adm')}}" id="modalProgress" name="modalProgress">
             @csrf
           <input type="" id="assign_to_adm_edit" name="assign_to_adm_edit" value="" hidden>
+          <div class="form-group  modalIcon inputIconBg">
+            <label for="">Amount</label>
+            <input type="text" class="form-control money" name="amount_edit" id="amount_req" readonly>
+            <i class="" aria-hidden="true">Rp.</i>
+          </div>
           <div class="form-group modalIcon inputIconBg">
-              <label for="">Amount</label>
-              <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="amount" required>
+              <label for="">Amount Transfer</label>
+              <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="amount_tf" required>
               <i class="" aria-hidden="true">Rp.</i>
           </div> 
           <div class="form-group">
@@ -784,104 +453,237 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
+  initReportTerritory();
 
-    // $('#data_all2018').DataTable( {
-    //     "scrollX": true,
-    //     "order": [[ 0, "desc" ]],
-    //     fixedColumns:   {
-    //       leftColumns: 3
-    //     },
-    // });
-
-    // $('#data_all2019').DataTable( {
-    //     "scrollX": true,
-    //     "order": [[ 0, "desc" ]],
-    //     fixedColumns:   {
-    //       leftColumns: 3
-    //     },
-    // });
-
-  @if(Auth::User()->id_position == 'ADMIN') {
-    $('#data_all2018').DataTable( {
-        "order": [[ 11, "desc" ]],
-        fixedColumns:   {
-            leftColumns: 3
+    function initReportTerritory(){
+      var table = $("#data_esm").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('getESM')}}",
         },
-        scrollX:true,
+        "columns": [
+          // { "data": "name" },
+          { "data": "no" },
+          { "data": "date" },
+          { "data": "created_at" },
+          { "data": "name" },
+          { "data": "type" },
+          { "data": "description" },
+          { "data": "amount" },
+          { "data": "id_project" },
+          { "data": "remarks" },
+          
+          { 
+            render: function ( data, type, row ) {
+              @if (Auth::User()->id_division == 'HR')
+                if (row.status == 'HRD') {
+                  return '<button class="btn btn-xs btn-warning btn-submit-finance" value="'+row.id_ems+'" style="width:60px">Submit</button>';
+                }else{
+                  return '<button class="btn btn-xs btn-primary disabled" style="width:60px"><i class="fa fa-edit"></i> Edit</button>'+'<button class="btn btn-xs btn-danger disabled"  style="width:60px"><i class="fa fa-trash"></i> Delete</button>'+'<button class="btn btn-xs btn-warning disabled" style="width:60px">Submit</button>';
+                } 
+              @elseif(Auth::User()->id_position == 'ADMIN')
+                if (row.status == 'ADMIN') {
+                  return '<button class="btn btn-xs btn-primary btn-edit" id="btn-edit" style="width:60px" value="'+row.id_ems+'"><i class="fa fa-edit"></i> Edit</button>'+'<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_ems+'"  style="width:60px"><i class="fa fa-trash"></i> Delete</button>'+'<button class="btn btn-xs btn-warning btn-submit-hrd" value="'+row.id_ems+'" style="width:60px">Submit</button>';
+                }else{
+                  return '<button class="btn btn-xs btn-primary disabled" style="width:60px"><i class="fa fa-edit"></i> Edit</button>'+'<button class="btn btn-xs btn-danger disabled" style="width:60px"><i class="fa fa-trash"></i> Delete</button>'+'<button class="btn btn-xs btn-warning disabled" style="width:60px">Submit</button>';
+                } 
+              @elseif(Auth::User()->id_division == 'FINANCE')
+                if (row.status == 'FINANCE') {
+                  return '<button class="btn btn-xs btn-warning btn-submit-transfer" value="'+row.id_ems+'" style="width:60px">Submit</button>';
+                }else{
+                  return '<button class="btn btn-xs btn-primary disabled" style="width:60px"><i class="fa fa-edit"></i> Edit</button>'+'<button class="btn btn-xs btn-danger disabled" style="width:60px"><i class="fa fa-trash"></i> Delete</button>'+'<button class="btn btn-xs btn-warning disabled" style="width:60px">Submit</button>';
+                } 
+              @else
+               return '<i>No Action</i>'
+              @endif
+              
+            } 
+          },
+          { 
+            render: function ( data, type, row ) {
+                if (row.status == "ADMIN") {
+                  return '<span class="label label-danger">Pending</span>';
+                }else if (row.status == "HRD") {
+                  return '<span class="label label-warning">HRD</span>';
+                }else if (row.status == "FINANCE") {
+                  return '<span class="label label-info">FINANCE</span>';
+                }else if (row.status == "TRANSFER") {
+                  return '<span class="label label-success">TRANSFER</span>';
+                }
+            } 
+          },
+          
+        ],
+        "searching": true,
+        // "paging": false,
+        "info":false,
+        "scrollX": true,
+        fixedColumns:   {
+          leftColumns: 3
+        },
+        "processing": true,
+        "columnDefs": [
+            { 
+              "width": "5%", "targets": 2,
+              "width": "5%", "targets": 3,
+              "width": "5%", "targets": 4,
+              "width": "5%", "targets": 5,
+              "width": "5%", "targets": 6,
+              "width": "5%", "targets": 7,
+              "width": "5%", "targets": 8
+            }
+        ],
+      })
+
+      $('#data_esm').on('click', '.btn-edit', function(){
+        console.log(this.value);
+        $.ajax({
+          type:"GET",
+          url:'{{url("getEditEsm")}}',
+          data:{
+            id_ems:this.value,
+          },
+          success: function(result){
+              console.log(result)
+              $('#edit_no').val(result[0].no);
+              $('#edit_type').val(result[0].type);
+              $('#edit_description').val(result[0].description);
+              $('#edit_amountclaim').val(result[0].amount);
+              $('#edit_id_project').val(result[0].id_project);
+              $('#edit_remarks').val(result[0].remarks);
+            }
+        })
+        $("#modaledit").modal("show");
       });
-  }@else{
-    $('#data_all2018').DataTable( {
-        fixedColumns:   {
-            leftColumns: 3
-        },
-        // scrollX:true,
-      });
-  }
-  @endif
 
-  @if(Auth::User()->id_position == 'ADMIN') {
-    $('#data_all2019').DataTable( {
-        "order": [[ 11, "desc" ]],
-        fixedColumns:   {
-            leftColumns: 3,
-            
-        },
-        scrollX:true,
-    });
-  }@else{
-    $('#data_all2019').DataTable( {
-        fixedColumns:   {
-            leftColumns: 3
-        },
-        scrollX:true,
-    });
-  }
-  @endif
+      $('#data_esm').on('click', '.btn-submit-hrd', function(){
+        $.ajax({
+          type:"GET",
+          url:'{{url("getEditEsm")}}',
+          data:{
+            id_ems:this.value,
+          },
+          success: function(result){
+              console.log(result)
+              $('#assign_to_hrd_edit').val(result[0].id_ems);
+            }
+        })
+        $("#modalassignhrd").modal("show");
+      })
+
+      $('#data_esm').on('click', '.btn-submit-finance', function(){
+        $.ajax({
+          type:"GET",
+          url:'{{url("getEditEsm")}}',
+          data:{
+            id_ems:this.value,
+          },
+          success: function(result){
+              console.log(result)
+              $('#assign_to_fnc_edit').val(result[0].id_ems);
+              $('#amount_edit').val(result[0].amount);
+            }
+        })
+        $("#modalassignfinance").modal("show");
+      })
+
+      $('#data_esm').on('click', '.btn-submit-transfer', function(){
+        $.ajax({
+          type:"GET",
+          url:'{{url("getEditEsm")}}',
+          data:{
+            id_ems:this.value,
+          },
+          success: function(result){
+              console.log(result)
+              $('#assign_to_adm_edit').val(result[0].id_ems);
+              $('#amount_req').val(result[0].amount);
+            }
+        })
+        $("#modalassigntransfer").modal("show");
+      })
+
+      $('#data_esm').on('click', '.btn-delete', function(e){
+        console.log(this.value)
+        var id_ems = this.value;
+        $.ajax({
+          type:"GET",
+          url:"{{url('delete_esm/')}}?id_ems="+id_ems,
+          data:{
+            id_ems:this.value,
+          },
+          beforeSend:function(){
+            return confirm("Want to delete?") 
+          },
+          success: function(result){
+              setTimeout(function(){
+                $('#data_esm').DataTable().ajax.url("{{url('getESM')}}").load();
+              },2000);
+          }
+        })
+        $("#modalassigntransfer").modal("show");
+      })
+
+      $('#year_filter').change(function(){
+        console.log(this.value)
+        $('#data_esm').DataTable().ajax.url("{{url('getFilterESMbyYear')}}?year=" + this.value).load();
+      })
+
+      $('#status_filter').change(function(){
+        console.log(this.value)
+        $('#data_esm').DataTable().ajax.url("{{url('getFilterESMbyStatus')}}?year=" + $("#year_filter").val() + "&status=" + this.value).load();
+      })
+    }
+
+
+
+  $("#personnel").select2();
+
+  $("#edit_personnel").select2();
      
+  function esm(no, personnel, type, description, amount, id_project, remarks) {
+    $('#edit_no').val(no);
+    $('#edit_type').val(type);
+    $('#edit_description').val(description);
+    $('#edit_amountclaim').val(amount);
+    $('#edit_id_project').val(id_project);
+    $('#edit_remarks').val(remarks);
+    $('#edit_personnel').val(personnel);
+  }
 
-    function esm(no, type, description, amount, id_project, remarks, personnel) {
-      $('#edit_no').val(no);
-      $('#edit_type').val(type);
-      $('#edit_description').val(description);
-      $('#edit_amountclaim').val(amount);
-      $('#edit_id_project').val(id_project);
-      $('#edit_remarks').val(remarks);
-      $('#edit_personnel').val(personnel);
-    }
+  function number(no, amount) {
+    $('#assign_to_hrd_edit').val(no);
+    $('#amount_edit').val(amount);
+  }
 
-    function number(no, amount) {
-      $('#assign_to_hrd_edit').val(no);
-      $('#amount_edit').val(amount);
-    }
+  function number_fnc(no, amount) {
+    $('#amount_edit').val(amount);
+    $('#assign_to_fnc_edit').val(no);
+  }
 
-    function number_fnc(no, amount) {
-      $('#amount_edit').val(amount);
-      $('#assign_to_fnc_edit').val(no);
-    }
+  function number_adm(no){
+    $('#assign_to_adm_edit').val(no);
+  }
 
-    function number_adm(no){
-      $('#assign_to_adm_edit').val(no);
-    }
+  /*$('.money').mask('000,000,000,000,000', {reverse: true});
+    $(document).ready(function() {
+        $('#contact').select2();
+  });*/
 
-    /*$('.money').mask('000,000,000,000,000', {reverse: true});
-      $(document).ready(function() {
-          $('#contact').select2();
-    });*/
+  $('.money').mask('000,000,000,000,000', {reverse: true});
 
-    $('.money').mask('000,000,000,000,000', {reverse: true});
+  $("#alert").fadeTo(2000, 500).slideUp(500, function(){
+       $("#alert").slideUp(300);
+  });
 
-    $("#alert").fadeTo(2000, 500).slideUp(500, function(){
-         $("#alert").slideUp(300);
-    });
+  function show2019() {
+       document.getElementById('div_2018').style.display = "none";
+       document.getElementById('div_2019').style.display = "inherit";
+  }
 
-    function show2019() {
-         document.getElementById('div_2018').style.display = "none";
-         document.getElementById('div_2019').style.display = "inherit";
-    }
-
-    function show2018() {
-         document.getElementById('div_2018').style.display = "inherit";
-         document.getElementById('div_2019').style.display = "none";
-    }
-  </script>
+  function show2018() {
+       document.getElementById('div_2018').style.display = "inherit";
+       document.getElementById('div_2019').style.display = "none";
+  }
+</script>
 @endsection

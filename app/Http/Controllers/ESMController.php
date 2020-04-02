@@ -32,6 +32,8 @@ class ESMController extends Controller
                     ->select('nik', 'id_company', 'id_position', 'id_division', 'id_territory', 'name', 'email', 'password', 'date_of_entry', 'date_of_birth', 'address', 'phone')
                     ->first();
 
+        $year = DB::table("dvg_esm")->select("year")->groupby('year')->get();
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -178,11 +180,12 @@ class ESMController extends Controller
                     ->where('year', '2018')
                     ->get();
 
-            $datas_2019 = DB::table('dvg_esm')
+            $datas = DB::table('dvg_esm')
                     ->join('users', 'users.nik', '=', 'dvg_esm.personnel')
-                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year')
-                    ->where('nik_admin',$nik)
-                    ->where('year', '2019')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("no","desc")
+                    ->where('year','2020')
+                    ->where('personnel','1190500060')
                     ->get();
         } else {
             $datas_2018 = DB::table('dvg_esm')
@@ -222,7 +225,127 @@ class ESMController extends Controller
                     ->where('no', $no)
                     ->first();*/
 
-        return view('DVG/esm/esm', compact('datas','notif','notifOpen','notifsd','notiftp','owner2','newDate', 'notifClaim','datas_2018', 'datas_2019'));
+        return view('DVG/esm/esm', compact('datas','notif','notifOpen','notifsd','notiftp','owner2','newDate', 'notifClaim','datas_2018', 'datas_2019','year'));
+    }
+
+    public function getESM(){
+        $nik = Auth::User()->nik;
+
+        if (Auth::User()->id_position == 'ADMIN') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("status","ADMIN")
+                    ->where('year','2020')
+                    ->where('nik_admin',$nik)
+                    ->get());
+        }elseif (Auth::User()->id_division == 'HR') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->where('status','HRD')
+                    ->orwhere('status','FINANCE')
+                    ->orwhere('status','TRANSFER')
+                    ->where('year','2020')
+                    ->orderBy("dvg_esm.updated_at","desc")
+                    ->get());
+        }elseif (Auth::User()->id_division == 'FINANCE') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->where('status','FINANCE')
+                    ->orwhere('status','TRANSFER')
+                    ->where('year','2020')
+                    ->orderBy("dvg_esm.updated_at","asc")
+                    ->get());
+        }else{
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("no","desc")
+                    ->where('year','2020')
+                    ->where('personnel',$nik)
+                    ->get());
+        }
+    }
+
+    public function getFilterESMbyYear(Request $request){
+        $nik = Auth::User()->nik;
+
+        if (Auth::User()->id_position == 'ADMIN') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("no","desc")
+                    ->where('nik_admin',$nik)
+                    ->where('year',$request->year)
+                    ->get());
+        }elseif (Auth::User()->id_division == 'HR') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->where('status','HRD')
+                    ->orwhere('status','FINANCE')
+                    ->orwhere('status','TRANSFER')
+                    ->where('year',$request->year)
+                    ->orderBy("dvg_esm.updated_at","desc")
+                    ->get());
+        }elseif (Auth::User()->id_division == 'FINANCE') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->where('status','FINANCE')
+                    ->orwhere('status','TRANSFER')
+                    ->where('year',$request->year)
+                    ->orderBy("dvg_esm.updated_at","asc")
+                    ->get());
+        }else{
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("no","desc")
+                    ->where('year',$request->year)
+                    ->where('personnel',$nik)
+                    ->get());
+        }
+    }
+
+    public function getFilterESMbyStatus(Request $request){
+        $nik = Auth::User()->nik;
+
+        if (Auth::User()->id_position == 'ADMIN') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("no","desc")
+                    ->where('nik_admin',$nik)
+                    ->where('year',$request->year)
+                    ->where('status',$request->status)
+                    ->get());
+        }elseif (Auth::User()->id_division == 'HR') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->where('status','HRD')
+                    ->where('year',$request->year)
+                    ->where('status',$request->status)
+                    ->orderBy("dvg_esm.updated_at","desc")
+                    ->get());
+        }elseif (Auth::User()->id_division == 'FINANCE') {
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->where('year',$request->year)
+                    ->where('status',$request->status)
+                    ->orderBy("dvg_esm.updated_at","asc")
+                    ->get());
+        }else{
+            return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("no","desc")
+                    ->where('year',$request->year)
+                    ->where('status',$request->status)
+                    ->where('personnel',$nik)
+                    ->get());
+        }
+    }
+
+    public function getEditEsm(Request $request){
+
+        return EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
+                    ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
+                    ->orderBy("no","desc")
+                    ->where('id_ems',$request->id_ems)
+                    ->get();
     }
 
     public function detail_esm($no)
@@ -439,14 +562,14 @@ class ESMController extends Controller
         $number = $request['assign_to_hrd_edit'];
 
         $tambah = new ESMProgress();
-        $tambah->no = $number;
+        $tambah->id_ems = $number;
         $tambah->nik = Auth::User()->nik;
         $tambah->keterangan = $request['keterangan'];
         $tambah->status = 'HRD';
         $tambah->save();
 
 
-        $update = EngineerSpent::where('no', $number)->first();
+        $update = EngineerSpent::where('id_ems', $number)->first();
         $update->status = 'HRD';
         $update->update();
 
@@ -459,14 +582,14 @@ class ESMController extends Controller
         // $no = $request['no_return_fnc'];
 
         $tambah = new ESMProgress();
-        $tambah->no = $number;
+        $tambah->id_ems = $number;
         $tambah->nik = Auth::User()->nik;
         $tambah->keterangan = $request['keterangan'];
         $tambah->status = 'FINANCE';
         $tambah->amount = str_replace(',', '', $request['amount']);
         $tambah->save();
 
-        $update = EngineerSpent::where('no', $number)->first();
+        $update = EngineerSpent::where('id_ems', $number)->first();
         $update->status = 'FINANCE';
         $update->update();
 
@@ -478,14 +601,14 @@ class ESMController extends Controller
         $number = $request['assign_to_adm_edit'];
 
         $tambah = new ESMProgress();
-        $tambah->no = $number;
+        $tambah->id_ems = $number;
         $tambah->nik = Auth::User()->nik;
         $tambah->keterangan = $request['keterangan'];
         $tambah->amount = str_replace(',', '', $request['amount']);
         $tambah->status = 'TRANSFER';
         $tambah->save();
 
-        $update = EngineerSpent::where('no', $number)->first();
+        $update = EngineerSpent::where('id_ems', $number)->first();
         $update->status = 'TRANSFER';
         $update->update();
 
@@ -527,6 +650,7 @@ class ESMController extends Controller
         $tambah->save();
 
         $tambahprogress = new ESMProgress();
+        $tambahprogress->id_ems = $tambah->id_ems;
         $tambahprogress->no = $request['no'];
         $tambahprogress->nik = Auth::User()->nik;
         $tambahprogress->keterangan = $request['description'];
@@ -549,15 +673,14 @@ class ESMController extends Controller
         $update->amount = $request['edit_amountclaim'];
         $update->id_project = $request['edit_id_project'];
         $update->remarks = $request['edit_remarks'];
-        $update->personnel = $request['edit_personnel'];
         $update->update();
 
         return redirect('/esm')->with('success', 'Update Successfully!');
     }
 
-    public function destroy($no)
+    public function destroy($id_ems)
     {
-        $hapus = EngineerSpent::find($no);
+        $hapus = EngineerSpent::find($id_ems);
         $hapus->delete();
 
         return redirect()->back()->with('alert', 'Deleted!');
