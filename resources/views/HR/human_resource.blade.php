@@ -1613,7 +1613,7 @@
 	          <h4 class="modal-title">Add Employees</h4>
 	        </div>
 	        <div class="modal-body">
-	        <form method="POST" action="{{url('hu_rec/store')}}">
+	        <form method="POST" action="{{url('hu_rec/store')}}" enctype="multipart/form-data">
 	                        @csrf
 
 	                        <!-- <div class="form-group row" hidden>
@@ -2053,7 +2053,7 @@
 	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="inputgambar" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" enctype="multipart/form-data" autofocus>
+	                                <input id="inputgambar" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
 	                        </div>
 
