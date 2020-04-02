@@ -54,6 +54,17 @@
   <!-- <script src="codebase/dhtmlxgantt.js"></script> -->
   <script src="https://export.dhtmlx.com/gantt/api.js"></script>
 
+  <!-- upload gambar -->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="{{asset('js/materialize.min.js')}}"></script>
+  <script type="text/javascript">
+    (function($){
+      $(function(){
+        $('.button-collapse').sideNav();
+      });
+    })(jQuery);
+  </script>
+
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="{{asset('template2/dist/css/skins/_all-skins.min.css')}}">

@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
             }
         })
         ->monthly()
-        ->at('01:00');
+        ->at('01:30');
 
         $schedule->call(function() {
             if (date("n") == 1 && date("j") == 1) {

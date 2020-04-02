@@ -393,6 +393,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/claim_pending', 'ESMController@claim_pending');
 	Route::get('/claim_transfer', 'ESMController@claim_transfer');
 	Route::get('/claim_admin', 'ESMController@claim_admin');
+	Route::post('import_claim', 'ESMController@import_claim');
+	Route::post('import_claim_progress', 'ESMController@import_claim_progress');
 
 	Route::get('/downloadExcelPO', 'PONumberController@downloadExcelPO');
 	Route::get('/downloadExcelPr', 'PrController@downloadExcelPr');

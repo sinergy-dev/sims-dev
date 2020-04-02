@@ -1613,7 +1613,7 @@
 	          <h4 class="modal-title">Add Employees</h4>
 	        </div>
 	        <div class="modal-body">
-	        <form method="POST" action="{{url('hu_rec/store')}}">
+	        <form method="POST" action="{{url('hu_rec/store')}}" enctype="multipart/form-data">
 	                        @csrf
 
 	                        <!-- <div class="form-group row" hidden>
@@ -2039,6 +2039,21 @@
 
 	                            <div class="col-md-8">
 	                                <input id="no_npwp" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" autofocus>
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <div class="col-md-8">
+	                                <!-- <input id="file_npwp" type="text" class="form-control" name="file_npwp" value="{{ old('file_npwp') }}" autofocus> -->
+	                                <img src="http://placehold.it/100x100" id="showgambar" style="max-width: 200px;max-height: 100px;float: left;"/>
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="inputgambar" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
 	                        </div>
 
@@ -3475,5 +3490,22 @@
         function posisiSelect(id){
         	$("#posisi_view_update").val(id.value);
         }
+
+        function readURL(input) {
+  		if (input.files && input.files[0]) {
+  			var reader = new FileReader();
+
+  			reader.onload = function (e) {
+  				$('#showgambar').attr('src', e.target.result);
+  			}
+
+  			reader.readAsDataURL(input.files[0]);
+  		}
+  	}
+
+  	$("#inputgambar").change(function () {
+  		readURL(this);
+  	});
+
     </script>
   @endsection

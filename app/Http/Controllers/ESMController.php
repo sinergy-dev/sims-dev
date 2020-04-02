@@ -348,6 +348,42 @@ class ESMController extends Controller
                     ->get();
     }
 
+    public function import_claim(Request $request)
+    {
+        $path = $request->file('file')->getRealPath();
+        $data = Excel::load($path)->get();
+ 
+        if($data->count()){
+            foreach ($data as $key => $value) {
+                $arr[] = ['id_ems' => $value->id_ems, 'no' => $value->no, 'date' => $value->date, 'month' => $value->month, 'nik_admin' => $value->nik_admin, 'personnel' => $value->personnel, 'type' => $value->type, 'description' => $value->description, 'amount' => $value->amount, 'id_project' => $value->id_project, 'remarks' => $value->remarks, 'status' => $value->status, 'year' => $value->year];
+            }
+ 
+            if(!empty($arr)){
+                EngineerSpent::insert($arr);
+            }
+        }
+
+        return back()->with('success', 'Insert Record Successfully');
+    }
+
+    public function import_claim_progress(Request $request)
+    {
+        $path = $request->file('file')->getRealPath();
+        $data = Excel::load($path)->get();
+ 
+        if($data->count()){
+            foreach ($data as $key => $value) {
+                $arr[] = ['id' => $value->id, 'id_ems' => $value->id_ems, 'no' => $value->no, 'nik' => $value->nik, 'keterangan' => $value->keterangan, 'status' => $value->status, 'amount' => $value->amount];
+            }
+ 
+            if(!empty($arr)){
+                ESMProgress::insert($arr);
+            }
+        }
+
+        return back()->with('success', 'Insert Record Successfully');
+    }
+
     public function detail_esm($no)
     {
         $nik = Auth::User()->nik;
