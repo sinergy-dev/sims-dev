@@ -3501,7 +3501,24 @@ class ReportController extends Controller
             ->orderBy('sales_lead_register.created_at','desc')
             ->get();
         }
-        return view('report/report_territory', compact('notif', 'notifOpen', 'notifsd', 'notiftp','territory_loop'));
+
+        if (Auth::User()->id_position == 'ADMIN') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'ADMIN')
+                            ->get();
+        } elseif (Auth::User()->id_position == 'HR MANAGER') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'HRD')
+                            ->get();
+        } elseif (Auth::User()->id_division == 'FINANCE') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
+        }
+        return view('report/report_territory', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim' ,'territory_loop'));
     }
 
     public function getreportterritory(){
