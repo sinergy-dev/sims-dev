@@ -922,6 +922,23 @@
           <li>
             <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
           </li>
+          <!-- <li>
+            <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
+          </li> -->
+        </ul>
+      </li>
+      <li class="activeable treeview">
+        <a href="#HRPages" data-parent="#exampleAccordion">
+          <i class="fa fa-users"></i>
+          <span class="nav-link-text" style="font-size: 14px">General Affair</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="activeable treeview-menu" id="HRPages">
+          <li>
+            <a href="{{url('/asset_pinjam')}}" style="font-size: 14px"></i>Asset</a>
+          </li>
           <li>
             <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
           </li>
