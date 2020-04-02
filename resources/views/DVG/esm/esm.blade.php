@@ -608,10 +608,7 @@
         var id_ems = this.value;
         $.ajax({
           type:"GET",
-          url:"{{url('delete_esm/')}}?id_ems="+id_ems,
-          data:{
-            id_ems:this.value,
-          },
+          url:"{{url('delete_esm/')}}/"+id_ems,
           beforeSend:function(){
             return confirm("Want to delete?") 
           },
