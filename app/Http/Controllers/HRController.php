@@ -471,6 +471,15 @@ class HRController extends Controller
         $tambah->address = $request['address'];
         $tambah->phone = $request['phone_number'];
         $tambah->no_npwp = $request['no_npwp'];
+
+        //upload file gambar npwp user
+
+        $file = $request->file('npwp_file');
+        $fileName = $file->getClientOriginalName();
+        $request->file('npwp_file')->move("image/", $fileName);
+
+        $tambah->npwp_file = $fileName;
+        
         $tambah->save();
 
         $userCompany = DB::table('tb_company')
