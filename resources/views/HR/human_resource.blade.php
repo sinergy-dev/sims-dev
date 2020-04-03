@@ -563,6 +563,7 @@
                           <th>Mulai Bekerja</th>
                           <th>Status Karyawan</th>
                           <th>NPWP</th>
+                          <!-- <th>NPWP File</th> -->
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <th>Action</th>
                           @endif
@@ -740,6 +741,7 @@
                           	@endif
                           </td>
                           <td>{{ $data->no_npwp }}</td>
+                          <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <td>
                             <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
@@ -2044,8 +2046,7 @@
 
 	                        <div class="form-group row">
 	                            <div class="col-md-8">
-	                                <!-- <input id="file_npwp" type="text" class="form-control" name="file_npwp" value="{{ old('file_npwp') }}" autofocus> -->
-	                                <img src="http://placehold.it/100x100" id="showgambar" style="max-width: 200px;max-height: 100px;float: left;"/>
+	                                <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
 	                            </div>
 	                        </div>
 
@@ -2053,7 +2054,7 @@
 	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="inputgambar" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+	                                <input id="inputgambarnpwp" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
 	                        </div>
 
@@ -2079,7 +2080,7 @@
 	        </div>
 	        <div class="modal-body">
 
-	          <form method="POST" action="{{url('hu_rec/update')}}">
+	          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
 	                        @csrf
 	                        <div class="form-group row hidden">
 	                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
@@ -2547,6 +2548,20 @@
 	                            </div>
 	                        </div>
 
+	                        <div class="form-group row">
+	                            <div class="col-md-8">
+	                                <img src="" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;float:left;" />
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+	                            </div>
+	                        </div>
+
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -2581,7 +2596,7 @@
 		</div>
   	</div>
     
-  </section>
+  </section>f
 
   <style type="text/css">
     .margin-left-custom2{
@@ -2609,7 +2624,7 @@
        	$("#modal_edit_status").modal("show");
        })
 
-       function update_HR(nik,name,email,date_of_entry,date_of_birth,address,phone,no_npwp){
+       function update_HR(nik,name,email,date_of_entry,date_of_birth,address,phone,no_npwp,npwp_file){
          $("#nik_update").val(nik);
          $("#name_update").val(name);
          $("#email_update").val(email);
@@ -2619,6 +2634,7 @@
          $("#phone_number_update").val(phone);
          $("#password_update").val(password);
          $("#no_npwp_update").val(no_npwp);
+         $("#inputgambarnpwp_update").val(npwp_file);
        } 
 
        $('.btn-editan').click(function(){
@@ -2638,6 +2654,7 @@
                $("#address_update").val(value.address);
                $("#phone_number_update").val(value.phone);
                $("#no_npwp_update").val(value.no_npwp);
+               $("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
                $("#password_update").val(value.password);
                $("#divisi_view_update").val(value.id_division);
                $("#subdivisi_view_update").val(value.id_territory);
@@ -3496,14 +3513,14 @@
   			var reader = new FileReader();
 
   			reader.onload = function (e) {
-  				$('#showgambar').attr('src', e.target.result);
+  				$('#showgambarnpwp').attr('src', e.target.result);
   			}
 
   			reader.readAsDataURL(input.files[0]);
   		}
   	}
 
-  	$("#inputgambar").change(function () {
+  	$("#inputgambarnpwp").change(function () {
   		readURL(this);
   	});
 
