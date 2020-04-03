@@ -45,7 +45,7 @@ class HRController extends Controller
 
         $hr = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
@@ -53,7 +53,7 @@ class HRController extends Controller
 
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','2')
@@ -201,7 +201,7 @@ class HRController extends Controller
 
         $hr = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','users.no_npwp','users.npwp_file')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
@@ -210,7 +210,7 @@ class HRController extends Controller
 
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','users.no_npwp','users.npwp_file')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','2')
@@ -269,7 +269,7 @@ class HRController extends Controller
     	$id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company')
+                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_npwp','npwp_file')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -360,6 +360,7 @@ class HRController extends Controller
             'date_of_entry' => 'required',
             'date_of_birth' => 'required',
             'no_npwp' => 'required',
+            'npwp_file' => 'required',
         ]); 
 
 
@@ -709,6 +710,19 @@ class HRController extends Controller
         $update->address = $request['address'];
         $update->phone = $request['phone_number'];
         $update->no_npwp = $request['no_npwp'];
+        $update->npwp_file = $request['npwp_file'];
+
+        if($request->file('npwp_file') == "")
+        {
+            $update->npwp_file = $update->npwp_file;
+        } 
+        else
+        {
+            $file       = $request->file('npwp_file');
+            $fileName   = $file->getClientOriginalName();
+            $request->file('npwp_file')->move("image/", $fileName);
+            $update->npwp_file = $fileName;
+        }
 
         $update->update();
 
