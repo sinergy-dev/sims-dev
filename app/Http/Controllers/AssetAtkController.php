@@ -8,6 +8,8 @@ use Auth;
 use App\AssetAtk;
 use App\AssetAtkTransaction;
 use App\User;
+use App\Mail\RequestATK;
+use Mail;
 
 class AssetAtkController extends Controller
 {
@@ -431,6 +433,7 @@ class AssetAtkController extends Controller
 
     	$count_qty = AssetAtk::select('qty','status')->where('id_barang', $request->atk)->first();
         $qty_akhir = $request['quantity'];
+        // $id_barang = $request['id_barang_atk'];
 
     	$inc = DB::table('tb_asset_atk_transaction')->select('id_transaction')->get();
         $increment = count($inc);
@@ -500,6 +503,17 @@ class AssetAtkController extends Controller
             // $update->status = 'NN';
             $update->update();
         }
+
+        $get_id_transac = AssetAtkTransaction::select('id_transaction')->where('id_barang', $request['atk'])->orderBy('created_at','desc')->first();
+
+        $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
+                    ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
+                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'keterangan', 'tb_asset_atk_transaction.created_at')
+                    ->where('tb_asset_atk_transaction.id_transaction', $get_id_transac->id_transaction)
+                    ->first();
+        // return $req_atk;
+
+        Mail::to('franki@sinergy.co.id')->cc('yudhi@sinergy.co.id')->send(new RequestATK('[SIMS-App] Request ATK', $req_atk));
         
 
 		return redirect()->back()->with('update', 'Request ATK akan diproses!');

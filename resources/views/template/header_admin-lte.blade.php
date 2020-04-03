@@ -937,7 +937,7 @@
         </a>
         <ul class="activeable treeview-menu" id="HRPages">
           <li>
-            <a href="{{url('/asset_pinjam')}}" style="font-size: 14px"></i>Asset</a>
+            <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
           </li>
           <li>
             <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
