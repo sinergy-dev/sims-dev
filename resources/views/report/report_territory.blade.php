@@ -183,65 +183,65 @@
 
     function initReportTerritory(){
       $("#data_lead").DataTable({
-        "ajax":{
-          "type":"GET",
-          "url":"{{url('getreportterritory')}}",
-        },
-        "columns": [
-          // { "data": "name" },
-          {
-            render: function ( data, type, row ) {
-              return '<b>' + row.brand_name + '</b>' + '<br>(' + row.name + ')';
-            }
-          },
-          { "data": "id_territory" },
-          { "data": "INITIAL" },
-          { "data": "OPEN" },
-          { "data": "SD" },
-          { "data": "TP" },
-          { "data": "WIN" },
-          { "data": "LOSE" },
-          { "data": "All" },
-          
-        ],
-        // "searching": true,
-        // "lengthChange": false,
-        // "paging": false,
-        "info":false,
-        "scrollX": false,
-        "order": [[ 1, "asc" ]],
-        "processing": true,
-        "columnDefs": [
-            { "visible": false, "targets": 1},
-            { 
-              "width": "5%", "targets": 2,
-              "width": "5%", "targets": 3,
-              "width": "5%", "targets": 4,
-              "width": "5%", "targets": 5,
-              "width": "5%", "targets": 6,
-              "width": "5%", "targets": 7,
-              "width": "5%", "targets": 8
-            }
-        ],
-        "drawCallback": function ( settings ) {
+	        "ajax":{
+	          "type":"GET",
+	          "url":"{{url('getreportterritory')}}",
+	        },
+	        "columns": [
+	          // { "data": "name" },
+	          {
+	            render: function ( data, type, row ) {
+	              return '<b>' + row.brand_name + '</b>' + '<br>(' + row.name + ')';
+	            }
+	          },
+	          { "data": "id_territory" },
+	          { "data": "INITIAL" },
+	          { "data": "OPEN" },
+	          { "data": "SD" },
+	          { "data": "TP" },
+	          { "data": "WIN" },
+	          { "data": "LOSE" },
+	          { "data": "All" },
+	          
+	        ],
+	        // "searching": true,
+	        // "lengthChange": false,
+	        // "paging": false,
+	        "info":false,
+	        "scrollX": false,
+	        "order": [[ 1, "asc" ]],
+	        "processing": true,
+	        "columnDefs": [
+	            { "visible": false, "targets": 1},
+	            { 
+	              "width": "5%", "targets": 2,
+	              "width": "5%", "targets": 3,
+	              "width": "5%", "targets": 4,
+	              "width": "5%", "targets": 5,
+	              "width": "5%", "targets": 6,
+	              "width": "5%", "targets": 7,
+	              "width": "5%", "targets": 8
+	            }
+	        ],
+	        "drawCallback": function ( settings ) {
 
-          var api = this.api(),data;
+	          var api = this.api(),data;
 
-          var rows = api.rows( {page:'current'} ).nodes();
+	          var rows = api.rows( {page:'current'} ).nodes();
 
-          var last=null;
+	          var last=null;
 
-          api.column(1, {page:'current'} ).data().each( function ( group, i ) {
-                if ( last !== group ) {
-                    $(rows).eq( i ).before(
-                        '<tr class="group"><td colspan="8">'+'<b>'+group+'</b>'+'</td></tr>'
-                    );
- 
-                    last = group;
-                }
-          });
+	          api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+	                if ( last !== group ) {
+	                    $(rows).eq( i ).before(
+	                        '<tr class="group"><td colspan="8">'+'<b>'+group+'</b>'+'</td></tr>'
+	                    );
+	 
+	                    last = group;
+	                }
+	          });
 
-        }
+	        }
       })
 
 
@@ -323,6 +323,7 @@
           // $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
 
           $('#data_lead').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+          $('#data_leadmsp').DataTable().ajax.url("{{url('getfiltercustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
 
 
           // $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
@@ -331,6 +332,7 @@
 
       $('.reload-table').click(function(){
         $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}").load();
+        $('#data_leadmsp').DataTable().ajax.url("{{url('getreportcustomermsp')}}").load();
       })
 
       $('#daterange-btn').daterangepicker(
