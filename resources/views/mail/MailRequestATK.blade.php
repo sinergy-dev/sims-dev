@@ -67,6 +67,70 @@
 		</tr>
 	</table>
 	<br>
+	@elseif($req_atk->status == 'PROSES')
+		@if($get_divisi_hr2->id_position == 'STAFF GA' || $get_divisi_hr == 'HR MANAGER')
+		<p>
+		Hello Sinergy,
+		<br>Berikut request ATK yang harus dibuatkan PR oleh:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Nama</th>
+				<th> : </th>
+				<td>{{$req_atk->name}}</td>
+			</tr>
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama_barang}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty_akhir}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->keterangan}}</td>
+			</tr>
+		</table>
+		<br>
+		@endif
+		@if($get_divisi_hr2->id_position != 'STAFF GA' || $get_divisi_hr != 'HR MANAGER')
+		<p>
+			Hello Sinergy,
+			<br>Request ATK mu sedang dibuatkan PR, tunggu informasi lebih lanjut, berikut rinciannya:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama_barang}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty_request}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->note}}</td>
+			</tr>
+		</table>
+		<br>
+		@endif
 	@else
 	<p>
 		Hello Sinergy,
