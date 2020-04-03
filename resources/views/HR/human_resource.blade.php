@@ -2046,7 +2046,7 @@
 
 	                        <div class="form-group row">
 	                            <div class="col-md-8">
-	                                <img src="http://placehold.it/100x100" id="showgambar" style="max-width: 200px;max-height: 100px;float: left;"/>
+	                                <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
 	                            </div>
 	                        </div>
 
@@ -2054,7 +2054,7 @@
 	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="inputgambar" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+	                                <input id="inputgambarnpwp" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
 	                        </div>
 
@@ -2550,7 +2550,7 @@
 
 	                        <div class="form-group row">
 	                            <div class="col-md-8">
-	                                <img src="{{ asset('image/'.$update->npwp_file) }}" id="showgambar" style="max-width:200px;max-height:200px;float:left;" />
+	                                <img src="" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;float:left;" />
 	                            </div>
 	                        </div>
 
@@ -2558,7 +2558,7 @@
 	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="inputgambar_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+	                                <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
 	                        </div>
 
@@ -2634,7 +2634,7 @@
          $("#phone_number_update").val(phone);
          $("#password_update").val(password);
          $("#no_npwp_update").val(no_npwp);
-         $("#inputgambar_update").val(npwp_file);
+         $("#inputgambarnpwp_update").val(npwp_file);
        } 
 
        $('.btn-editan').click(function(){
@@ -2654,7 +2654,7 @@
                $("#address_update").val(value.address);
                $("#phone_number_update").val(value.phone);
                $("#no_npwp_update").val(value.no_npwp);
-               $("#inputgambar_update").val(value.npwp_file);
+               $("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
                $("#password_update").val(value.password);
                $("#divisi_view_update").val(value.id_division);
                $("#subdivisi_view_update").val(value.id_territory);
@@ -3513,14 +3513,14 @@
   			var reader = new FileReader();
 
   			reader.onload = function (e) {
-  				$('#showgambar').attr('src', e.target.result);
+  				$('#showgambarnpwp').attr('src', e.target.result);
   			}
 
   			reader.readAsDataURL(input.files[0]);
   		}
   	}
 
-  	$("#inputgambar").change(function () {
+  	$("#inputgambarnpwp").change(function () {
   		readURL(this);
   	});
 
