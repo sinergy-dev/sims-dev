@@ -557,7 +557,17 @@ class AssetAtkController extends Controller
             $update_qty->qty = $qty - $qty_akhir;
             $update_qty->update();
         }*/
-        
+
+        $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$id_transaction)->first();
+
+        $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
+                    ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
+                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'keterangan', 'tb_asset_atk_transaction.created_at')
+                    ->where('tb_asset_atk_transaction.id_transaction', $id_transaction)
+                    ->first();
+        // return $req_atk;
+
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new RequestATK('[SIMS-App] Approval Request ATK', $req_atk));
 
        	return redirect()->back()->with('update', 'Successfully!');
     }
@@ -589,6 +599,17 @@ class AssetAtkController extends Controller
         /*$update_qty         = AssetAtk::where('id_barang', $id_barang)->first();
         $update_qty->qty    = $qty_akhir + $qty;
         $update_qty->update();*/
+
+        $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$id_transaction)->first();
+
+        $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
+                    ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
+                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'note', 'tb_asset_atk_transaction.created_at')
+                    ->where('tb_asset_atk_transaction.id_transaction', $id_transaction)
+                    ->first();
+        // return $req_atk;
+
+        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new RequestATK('[SIMS-App] Reject Request ATK', $req_atk));
 
         return redirect()->back()->with('update', 'Successfully!');
     }

@@ -4,14 +4,14 @@
 	@if($req_atk->status == 'ACCEPT')
 	<p>
 		Hello Sinergy,
-		<br>Hore request ATK Kamu di Approve! Ayo ambil ATK yang kamu butuhkan:
+		<br>Request ATK diapprove, berikut rinciannya:
 	</p>
 	<table style="text-align: left;margin: 5px;">
-		<tr>
+		<!-- <tr>
 			<th>Nama</th>
 			<th> : </th>
 			<td>{{$req_atk->name}}</td>
-		</tr>
+		</tr> -->
 		<tr>
 			<th>Nama Barang</th>
 			<th> : </th>
@@ -23,14 +23,47 @@
 			<td>{{$req_atk->qty_akhir}}</td>
 		</tr>
 		<tr>
-			<th>Tanggal req_atk ATK</th>
+			<th>Tanggal Request ATK</th>
 			<th> : </th>
 			<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
 		</tr>
 		<tr>
 			<th>Note</th>
 			<th> : </th>
-			<td>{{$req_atk->reason_leave}}</td>
+			<td>{{$req_atk->keterangan}}</td>
+		</tr>
+	</table>
+	<br>
+	@elseif($req_atk->status == 'REJECT')
+	<p>
+		Hello Sinergy,
+		<br>Maaf request ATK direject, berikut rinciannya:
+	</p>
+	<table style="text-align: left;margin: 5px;">
+		<!-- <tr>
+			<th>Nama</th>
+			<th> : </th>
+			<td>{{$req_atk->name}}</td>
+		</tr> -->
+		<tr>
+			<th>Nama Barang</th>
+			<th> : </th>
+			<td>{{$req_atk->nama_barang}}</td>
+		</tr>
+		<tr>
+			<th>Quantity</th>
+			<th> : </th>
+			<td>{{$req_atk->qty_akhir}}</td>
+		</tr>
+		<tr>
+			<th>Tanggal Request ATK</th>
+			<th> : </th>
+			<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+		</tr>
+		<tr>
+			<th>Note</th>
+			<th> : </th>
+			<td>{{$req_atk->note}}</td>
 		</tr>
 	</table>
 	<br>
@@ -56,14 +89,14 @@
 			<td>{{$req_atk->qty_akhir}}</td>
 		</tr>
 		<tr>
-			<th>Tanggal request ATK</th>
+			<th>Tanggal Request ATK</th>
 			<th> : </th>
 			<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
 		</tr>
 		<tr>
 			<th>Note</th>
 			<th> : </th>
-			<td>{{$req_atk->reason_leave}}</td>
+			<td>{{$req_atk->keterangan}}</td>
 		</tr>
 	</table>
 	<br>
@@ -76,7 +109,7 @@
 					<tr>
 						<td style="border-radius: 2px;" bgcolor="#ED2939">
 							<a href="{{url('/asset_atk')}}" target="_blank" style="padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
-								Request ATK.
+								Request ATK
 							</a>
 						</td>
 					</tr>
