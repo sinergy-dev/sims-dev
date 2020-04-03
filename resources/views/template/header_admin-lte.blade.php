@@ -909,6 +909,42 @@
           </li>
         </ul>
       </li>
+      @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
+      <li class="activeable treeview">
+        <a href="#HRPages" data-parent="#exampleAccordion">
+          <i class="fa fa-users"></i>
+          <span class="nav-link-text" style="font-size: 14px">Human Resource</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="activeable treeview-menu" id="HRPages">
+          <li>
+            <a href="{{url('/hu_rec')}}" style="font-size: 14px"></i>Employees</a>
+          </li>
+          <li>
+            <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="activeable treeview">
+        <a href="#HRPages" data-parent="#exampleAccordion">
+          <i class="fa fa-book"></i>
+          <span class="nav-link-text" style="font-size: 14px">General Affair</span>
+          <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+          </span>
+        </a>
+        <ul class="activeable treeview-menu" id="HRPages">
+          <li>
+            <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
+          </li>
+          <li>
+            <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
+          </li>
+        </ul>
+      </li>
       @else
       <li class="activeable treeview">
         <a href="#HRPages" data-parent="#exampleAccordion">
