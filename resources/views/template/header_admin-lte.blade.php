@@ -694,6 +694,9 @@
       			<li>
       				<a href="{{url('/report_range')}}" style="font-size: 14px">Report Range</a>
       			</li>
+      			<li>
+      				<a href="{{url('/report_territory')}}" style="font-size: 14px">Report Customer</a>
+      			</li>
       			@if(Auth::User()->email == 'tech@sinergy.co.id')
       			<li>
       				<a href="{{url('/report_deal_price')}}" style="font-size: 14px">Report Range by Deal Price</a>
@@ -705,9 +708,6 @@
       			</li>
       			<li>
       				<a href="{{url('/report_presales')}}" style="font-size: 14px">Report Presales</a>
-      			</li>
-      			<li>
-      				<a href="{{url('/report_territory')}}" style="font-size: 14px">Report Territory</a>
       			</li>
       			@endif
       		</ul>

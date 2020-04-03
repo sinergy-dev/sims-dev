@@ -169,6 +169,10 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getFilterTerritoryTabs','ReportController@getFilterTerritoryTabs');
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
 
+	//route report customer msp
+	Route::get('/getreportcustomermsp','ReportController@getreportcustomermsp');
+	Route::get('/getfiltercustomermsp','ReportController@getfiltercustomermsp');
+
 	Route::get('/downloadPdfreport', 'ReportController@downloadPdfreport');
 	Route::get('/downloadPdflead', 'ReportController@downloadPdflead');
 	Route::get('/downloadPdfopen', 'ReportController@downloadPdfopen');
@@ -375,8 +379,12 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	//Engineer Management
 	Route::get('/esm', 'ESMController@index');
+	Route::get('/getESM','ESMController@getESM');
+	Route::get('/getEditEsm','ESMController@getEditEsm');
+	Route::get('/getFilterESMbyYear','ESMController@getFilterESMbyYear');
+	Route::get('/getFilterESMbyStatus','ESMController@getFilterESMbyStatus');
 	Route::post('/store_esm', 'ESMController@store');
-	Route::get('/delete_esm/{id}', 'ESMController@destroy');
+	Route::get('/delete_esm/{id_ems}', 'ESMController@destroy');
 	Route::post('/edit_esm', 'ESMController@edit');
 	Route::get('/downloadPdfESM', 'ESMController@downloadpdf');
 	Route::get('/downloadExcelESM', 'ESMController@downloadExcel');
