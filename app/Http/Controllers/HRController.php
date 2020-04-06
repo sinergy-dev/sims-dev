@@ -768,84 +768,84 @@ class HRController extends Controller
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'ADMIN'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'INTERNAL IT'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'SALES' && $ter == ''){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }
         else{
            $user_profile = DB::table('users')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }
@@ -1046,6 +1046,8 @@ class HRController extends Controller
         $update->date_of_birth  = $req['date_of_birth'];
         $update->date_of_entry  = $req['date_of_entry'];
         $update->phone          = $req['phone'];
+        $update->no_npwp        = $req['no_npwp'];
+        $update->npwp_file      = $req['npwp_file'];
 
         // Disini proses mendapatkan judul dan memindahkan letak gambar ke folder image
         // $this->validate($request, [
@@ -1069,6 +1071,18 @@ class HRController extends Controller
             
             $update->gambar = $fileName;
 
+        }
+
+        if($req->file('npwp_file') == "")
+        {
+            $update->npwp_file = $update->npwp_file;
+        } 
+        else
+        {
+            $file       = $request->file('npwp_file');
+            $fileName   = $file->getClientOriginalName();
+            $request->file('npwp_file')->move("image/", $fileName);
+            $update->npwp_file = $fileName;
         }
         
         $update->update();
