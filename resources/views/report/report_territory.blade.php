@@ -99,6 +99,9 @@
                         <a class="nav-link" id="{{ $data->code_ter }}" data-toggle="tab" href="#{{ $data->code_ter }}" role="tab" aria-controls="{{ $data->code_ter }}" aria-selected="true" onclick="changeTerritory('{{$data->id_territory}}')">{{ $data->id_territory }}</a>
                     </li>
                   @endforeach
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#msp" role="tab" aria-controls="msp" aria-selected="true" >MSP</a>
+                    </li>
                 </ul>
                 @endif
 
@@ -122,29 +125,37 @@
                         </thead>
                       </table>
                     </div>
+
                   </div>
+      @if(Auth::User()->id_division != 'SALES') 
+
+                  <div id="msp" class="tab-pane"  role="tabpanel" >
+                  
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped" id="data_leadmsp" width="100%" cellspacing="0">
+                        <thead>
+                          <tr class="header">
+                            <th>Customer - Sales (MSP)</th>
+                            <th>territory</th>
+                            <th>INITIAL</th>
+                            <th>OPEN</th>
+                            <th>SD</th>
+                            <th>TP</th>
+                            <th>WIN</th>
+                            <th>LOSE</th>
+                            <th>TOTAL</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                    
+                  </div>
+            @endif
+
                 </div>
             </div>
 
-			@if(Auth::User()->id_division != 'SALES') 
-        	<div class="table-responsive">
-              <table class="table table-bordered table-striped" id="data_leadmsp" width="100%" cellspacing="0">
-                <thead>
-                  <tr class="header">
-                    <th>Customer - Sales (MSP)</th>
-                    <th>territory</th>
-                    <th>INITIAL</th>
-                    <th>OPEN</th>
-                    <th>SD</th>
-                    <th>TP</th>
-                    <th>WIN</th>
-                    <th>LOSE</th>
-                    <th>TOTAL</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-            @endif
+        	
 
 
            <!--  <div class="table-responsive">
