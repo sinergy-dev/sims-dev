@@ -45,6 +45,7 @@
 	        font-style: bold;
 	        background-color: #ddd !important;
 	    }
+            .dataTables_filter {display: none;}
   	</style>
   
   <section class="content-header">
@@ -210,7 +211,9 @@
 	        "info":false,
 	        "scrollX": false,
 	        "order": [[ 1, "asc" ]],
+          "orderFixed": [[1, 'asc']],
 	        "processing": true,
+          "paging": false,
 	        "columnDefs": [
 	            { "visible": false, "targets": 1},
 	            { 
@@ -224,19 +227,14 @@
 	            }
 	        ],
 	        "drawCallback": function ( settings ) {
-
 	          var api = this.api(),data;
-
 	          var rows = api.rows( {page:'current'} ).nodes();
-
 	          var last=null;
-
 	          api.column(1, {page:'current'} ).data().each( function ( group, i ) {
 	                if ( last !== group ) {
 	                    $(rows).eq( i ).before(
 	                        '<tr class="group"><td colspan="8">'+'<b>'+group+'</b>'+'</td></tr>'
 	                    );
-	 
 	                    last = group;
 	                }
 	          });
@@ -272,7 +270,9 @@
 	        "info":false,
 	        "scrollX": false,
 	        "order": [[ 1, "asc" ]],
+          "orderFixed": [[1, 'asc']],
 	        "processing": true,
+          "paging": false,
 	        "columnDefs": [
 	            { "visible": false, "targets": 1},
 	            { 
@@ -365,11 +365,19 @@
 
     function changeTerritory(id_territory) {
       console.log(id_territory)
+      console.log( $('#reportrange').val())
+      start_date  = moment($('#reportrange').val().split(' - ')[0],'DD/MM/YYYY').format("YYYY-MM-DD HH:mm:ss");
+      end_date    = moment($('#reportrange').val().split(' - ')[1],'DD/MM/YYYY').format("YYYY-MM-DD HH:mm:ss");
       if (id_territory == "all") {
-        $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}").load();
+        $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
       }else{
-        $('#data_lead').DataTable().ajax.url("{{url('getFilterTerritoryTabs')}}?id_territory=" + id_territory).load();
+        $('#data_lead').DataTable().ajax.url("{{url('getFilterTerritoryTabs')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + id_territory).load();
       }
+      // if (id_territory == "all") {
+      //   $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}").load();
+      // }else{
+      //   $('#data_lead').DataTable().ajax.url("{{url('getFilterTerritoryTabs')}}?id_territory=" + id_territory).load();
+      // }
     }
     
   </script>

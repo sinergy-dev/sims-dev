@@ -175,6 +175,18 @@
                               </div>
                             </div>
 
+
+                            <div class="row">
+                              <div class="col-md-12">
+                                <div class="col-md-4">
+                                  <label style="margin: 12px">NPWP</label>
+                                </div>
+                                <div class="col-md-8">
+                                  <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="no_npwp" name="no_npwp" placeholder="Type NPWP" value="{{$user_profile->no_npwp}}" required>
+                                </div>  
+                              </div>
+                            </div>
+
                             <button class="btn btn-sm btn-warning pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
                       </form>
                     </div>
