@@ -1047,7 +1047,6 @@ class HRController extends Controller
         $update->date_of_entry  = $req['date_of_entry'];
         $update->phone          = $req['phone'];
         $update->no_npwp        = $req['no_npwp'];
-        $update->npwp_file      = $req['npwp_file'];
 
         // Disini proses mendapatkan judul dan memindahkan letak gambar ke folder image
         // $this->validate($request, [
@@ -1071,18 +1070,6 @@ class HRController extends Controller
             
             $update->gambar = $fileName;
 
-        }
-
-        if($req->file('npwp_file') == "")
-        {
-            $update->npwp_file = $update->npwp_file;
-        } 
-        else
-        {
-            $file       = $request->file('npwp_file');
-            $fileName   = $file->getClientOriginalName();
-            $request->file('npwp_file')->move("image/", $fileName);
-            $update->npwp_file = $fileName;
         }
         
         $update->update();

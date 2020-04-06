@@ -160,14 +160,15 @@
                               </div>
                             </div>
 
+
                             <div class="row">
                               <div class="col-md-12">
-                                  <div class="col-md-4">
-                                    <label style="margin: 12px">NPWP</label>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <input class="form-control" id="no_npwp" name="no_npwp" style="white-space: nowrap;margin: 12px;width: 300px" value="{{$user_profile->no_npwp}}">
-                                  </div>
+                                <div class="col-md-4">
+                                  <label style="margin: 12px">NPWP</label>
+                                </div>
+                                <div class="col-md-8">
+                                  <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="no_npwp" name="no_npwp" placeholder="Type NPWP" value="{{$user_profile->no_npwp}}" required>
+                                </div>  
                               </div>
                             </div>
 
