@@ -458,13 +458,13 @@
         <div class="modal-body">
           <form method="POST" action="{{url('asset_atk/request_atk')}}" id="modalProgress" name="modalProgress">
             @csrf
-          <input type="text" name="id_barang" id="id_barang" hidden>
+          <!-- <input type="text" name="id_barang" id="id_barang" hidden> -->
           <div class="form-group">
             <label>Nama Barang</label>
             <select name="atk" id="atk" class="form-control" style="width: 270px;" required >
               <option>Select Name</option>
               @foreach($atk as $atk)
-              <option value="{{$atk->id_barang}}">{{$atk->nama_barang}}</option>
+              <option value="{{$atk->id_barang}}" >{{$atk->nama_barang}}</option>
               @endforeach
             </select>
           </div>
@@ -482,7 +482,7 @@
             </div>
           <div class="form-group">
             <label>Masukkan kebutuhan</label><br>
-            <input type="text" name="qtys" id="qtys" class="qtys" hidden>
+            <!-- <input type="text" name="qtys" id="qtys" class="qtys" hidden> -->
             <input type='number' name='quantity' id="quantity" value='0' class="form-control" style="width: 270px;" />
           </div>
           <div class="form-group">
