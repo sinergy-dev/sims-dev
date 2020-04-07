@@ -521,15 +521,13 @@ class AssetAtkController extends Controller
 
             // $get_email = User::select('email')->where('id_division', 'HR')->get();
 
-            $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first()->email;
+            $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
 
             $get_email_manager = collect([$get_divisi_hr]);
 
             $get_divisi_hr2 = User::select('email','id_position')->where('id_position', 'STAFF GA')->first();
 
-            $get_email_staff = $get_divisi_hr2->email;
-
-            $receiver = $get_email_manager->concat([$get_email_staff]);
+            $receiver = $get_email_manager->concat([$get_divisi_hr2]);
 
             $receiver_final = $receiver->all();
 
@@ -541,7 +539,7 @@ class AssetAtkController extends Controller
             // return $req_atk;
 
             foreach ($receiver_final as $final) {
-                Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$get_divisi_hr,$get_divisi_hr2 ));
+                Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position ));
             }
         }
 
@@ -608,6 +606,14 @@ class AssetAtkController extends Controller
 
         $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$id_transaction)->first();
 
+        $get_email_user = collect([$kirim]);
+
+        $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
+
+        $receiver = $get_email_user->concat([$get_divisi_hr]);
+
+        $receiver_final = $receiver->all();
+
         $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
                     ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
                     ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'keterangan', 'tb_asset_atk_transaction.created_at')
@@ -615,7 +621,11 @@ class AssetAtkController extends Controller
                     ->first();
         // return $req_atk;
 
-        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new RequestATK('[SIMS-App] Approval Request ATK', $req_atk, $get_divisi_hr,$get_divisi_hr2));
+        foreach ($receiver_final as $final) {
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position ));
+        }
+
+        // Mail::to($kirim)->send(new RequestATK('[SIMS-App] Approval Request ATK', $req_atk));
 
        	return redirect()->back()->with('update', 'Successfully!');
     }
@@ -650,14 +660,24 @@ class AssetAtkController extends Controller
 
         $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$id_transaction)->first();
 
+        $get_email_user = collect([$kirim]);
+
+        $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
+
+        $receiver = $get_email_user->concat([$get_divisi_hr]);
+
+        $receiver_final = $receiver->all();
+
         $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
                     ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
-                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'note', 'tb_asset_atk_transaction.created_at')
+                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'keterangan', 'tb_asset_atk_transaction.created_at','note')
                     ->where('tb_asset_atk_transaction.id_transaction', $id_transaction)
                     ->first();
         // return $req_atk;
 
-        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new RequestATK('[SIMS-App] Reject Request ATK', $req_atk, $get_divisi_hr,$get_divisi_hr2));
+        foreach ($receiver_final as $final) {
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position ));
+        }
 
         return redirect()->back()->with('update', 'Successfully!');
     }
@@ -678,7 +698,7 @@ class AssetAtkController extends Controller
             $update->update();
 
             $update_qty = AssetAtk::where('id_barang', $id_barang)->first();
-            $update_qty->qty = $qty_restock - $qty_request;
+            $update_qty->qty = $qty_restock + $qty - $qty_request;
             $update_qty->update();
 
         // }
