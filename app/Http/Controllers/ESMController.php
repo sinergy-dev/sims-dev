@@ -685,8 +685,10 @@ class ESMController extends Controller
         $tambah->year = date("Y");
         $tambah->save();
 
+        $get_id = EngineerSpent::select('id_ems')->orderBy('created_at','desc')->first();
+
         $tambahprogress = new ESMProgress();
-        $tambahprogress->id_ems = $tambah->id_ems;
+        $tambahprogress->id_ems = $get_id->id_ems;
         $tambahprogress->no = $request['no'];
         $tambahprogress->nik = Auth::User()->nik;
         $tambahprogress->keterangan = $request['description'];

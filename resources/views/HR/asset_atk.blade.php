@@ -176,7 +176,7 @@
                     </td>
                     <td>
                       @if($data->status == 'PENDING')
-                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
+                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}')">ACCEPT</button>
                       <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
                       @elseif($data->status == 'PROSES')
                       <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
@@ -513,10 +513,22 @@
           <div class="form-group">
           	<h4 style="text-align: center;"><b>Are you sure to accept?</b></h4>
           </div>
+          <div class="form-group">
+            <label>Nama Barang</label>
+            <input type="text" name="nama_barang_accept" id="nama_barang_accept" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" name="qty_accept" id="qty_accept" readonly class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" name="description_accept" id="description_accept" class="form-control" readonly>
+          </div>
           
           <div class="modal-footer">
             <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-            <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
+            <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Accept</button>
           </div>
         </form>
         </div>
@@ -536,7 +548,7 @@
           <input type="" name="qty_awal_reject" id="qty_awal_reject" hidden>
           <input type="" name="qty_akhir_reject" id="qty_akhir_reject" hidden>
           <div class="form-group">
-          	<h3 style="text-align: center;"><b>Are you sure to reject?</b></h3>
+          	<h4 style="text-align: center;"><b>Are you sure to reject?</b></h4>
           </div>
           <div class="form-group">
           	<label>Note</label>
@@ -544,7 +556,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-            <button type="submit" class="btn btn-xs btn-danger" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
+            <button type="submit" class="btn btn-xs btn-danger" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Reject</button>
           </div>
         </form>
         </div>
@@ -623,11 +635,14 @@
   		$('#note_reject2').val(note);
   	}
 
-    function id_accept_update(id_transaction,id_barang,qty,qty_akhir){
+    function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan){
       $('#id_transaction_update').val(id_transaction);
       $('#id_barang_update').val(id_barang);
       $('#qty_awal_accept').val(qty);
       $('#qty_akhir_accept').val(qty_akhir);
+      $('#nama_barang_accept').val(nama_barang);
+      $('#qty_accept').val(qty_akhir);
+      $('#description_accept').val(keterangan);
     }
 
     function update_done_pr(id_transaction,id_barang,qty,qty_request,nama_barang) {
