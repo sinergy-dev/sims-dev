@@ -259,6 +259,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/follow_up/{id_cuti}', 'HRGAController@follow_up');
 	Route::get('/downloadPdfcuti', 'HRGAController@cutipdf');
 	Route::get('/index_delivery_person', 'HRGAController@index_delivery_person');
+	Route::get('/detail_delivery_person', 'HRGAController@detail_delivery_person');
+	Route::get('/getDateMessenger','HRGAController@getDateMessenger');
+	Route::get('/getMessenger','HRGAController@getMessenger');
 
 	Route::post('/store_sho','SHOController@store');
 	Route::post('/store_sho_transac','SHOController@store_sho_transac');
@@ -376,7 +379,6 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/read/{no}', 'INCIDENTController@show');
 	Route::get('/downloadPdfIM', 'INCIDENTController@downloadPDF');
 	Route::get('/exportExcelIM', 'INCIDENTController@exportExcelIM');
-
 	//Engineer Management
 	Route::get('/esm', 'ESMController@index');
 	Route::get('/getESM','ESMController@getESM');
