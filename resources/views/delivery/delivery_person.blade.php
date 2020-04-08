@@ -136,7 +136,6 @@
                       <span class="glyphicon glyphicon-calendar"></span>
                     </span>
                   </div>
-                  <!-- <input type="text" class="form-control" id="book_date" name="book_date" autocomplete="Off" required> -->
               </div>
 
               <div class="form-group">
@@ -156,11 +155,8 @@
               </table>
 
               <div class="form-group">
-                <label>Messenger Name</label>
+                <label>Available Messenger</label>
                 <select class="form-control" id="messenger" name="messenger" style="width: 100%">
-                  <option>Select Messenger</option>
-                  <option value="">Arifin</option>
-                  <option>Angga</option>
                 </select>
               </div>
 
@@ -282,12 +278,30 @@
                   table = table + '<tr>';
                   table = table + '<th colspan="3">' + "List Messenger" + '</th>';
                   table = table + '</tr>';
-              if (result[0] == "null") {
                   table = table + '<tr>';
-                  table = table + '<td>' + "Tes" + '</td>';
-                  table = table + '<td>' + "Available" + '</td>';
-                  table = table + '<td>' + "tes" + '</td>';
-                  table = table + '</tr>';  
+                  table = table + '<th >' + "Nama" + '</th>';
+                  table = table + '<th >' + "Status" + '</th>';
+                  table = table + '<th >' + "Sisa slot" + '</th>';
+                  table = table + '</tr>';
+              if (result[1] == "courier") {
+                  $.each(result[0], function(key, value){
+                    table = table + '<tr>';
+                    table = table + '<td>' + value.name + '</td>';
+                    table = table + '<td>' + "Available" + '</td>';
+                    table = table + '<td>' + "5" + '</td>';
+                    table = table + '</tr>'; 
+                  }); 
+
+                  $('#messenger').html(append)
+                  var append = "<option>-- Select Messenger --</option>";
+
+                  $.each(result[0], function(key, value){
+                    if (value.book_date != 5) {
+                      append = append + "<option value='"+value.nik+"'>" + value.name + "</option>";
+                    }
+                  });
+                
+                  $('#messenger').html(append);
               }else{
                   $.each(result[0], function(key, value){
                     table = table + '<tr>';
@@ -296,9 +310,29 @@
                     table = table + '<td>' + parseInt(5 - value.book_date) + '</td>';
                     table = table + '</tr>';             
                   });
+                  $.each(result[1][0], function(key, value){
+                    table = table + '<tr>';
+                    table = table + '<td>' + value.name + '</td>';
+                    table = table + '<td>' + "Available" + '</td>';
+                    table = table + '<td>' + "5" + '</td>';
+                    table = table + '</tr>'; 
+                  }); 
+
+                  $('#messenger').html(append)
+                  var append = "<option>-- Select Messenger --</option>";
+
+                  $.each(result[0], function(key, value){
+                    if (value.book_date != 5) {
+                      append = append + "<option value='"+value.nik+"'>" + value.name + "</option>";
+                    }
+                  });
+                  $.each(result[1][0], function(key, value){
+                      append = append + "<option value='"+value.nik+"'>" + value.name + "</option>";
+                  });
+                
+                  $('#messenger').html(append);
               }
               $('#tb_available').append(table);
-                            
             }
           })
 

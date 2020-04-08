@@ -437,7 +437,6 @@ class HRGAController extends Controller
                 ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name')
                 ->get();
 
-
         return view('delivery/delivery_person',compact('notif','notifOpen','notifsd','notiftp','notifClaim','data'));
     }
 
@@ -615,7 +614,7 @@ class HRGAController extends Controller
     public function getMessenger(Request $request){
         $cek = DB::table('users')
             ->join("tb_messenger","tb_messenger.nik","=","users.nik")
-            ->select('name','book_date',DB::raw('COUNT(`tb_messenger`.`book_date`) AS "book_date"'))
+            ->select('name','book_date',DB::raw('COUNT(`tb_messenger`.`book_date`) AS "book_date"'),'users.nik')
             ->whereIn('users.nik',function($query){
                 $query->select('users.nik')
                     ->from('tb_messenger');
@@ -625,10 +624,24 @@ class HRGAController extends Controller
             ->where("book_date",$request->tanggal)
             ->get();
 
+        $cek2 = array(DB::table('users')
+            ->select('name','nik')
+            ->where('id_position','courier')
+            ->whereNotIn('nik',function($query){
+                $query->select('nik')
+                    ->from('tb_messenger');
+            })
+            ->get());
+
+        $messenger = DB::table('users')
+            ->select('name')
+            ->where('id_position','courier')
+            ->get();
+
         if ($cek->isEmpty()) {
-            return array(['null']);
+            return array($messenger,"courier");
         }else{
-            return array($cek);
+            return array($cek,$cek2);
         }
        
     }
