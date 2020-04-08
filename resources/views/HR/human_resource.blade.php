@@ -2655,7 +2655,12 @@
                $("#address_update").val(value.address);
                $("#phone_number_update").val(value.phone);
                $("#no_npwp_update").val(value.no_npwp);
-               $("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+               if (value.npwp_file == null) {
+               	$("#showgambarnpwp_update").attr("src","http://placehold.it/100x100");
+               } else {
+               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+               }
+               
                $("#password_update").val(value.password);
                $("#divisi_view_update").val(value.id_division);
                $("#subdivisi_view_update").val(value.id_territory);
