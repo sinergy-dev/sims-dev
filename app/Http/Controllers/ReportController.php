@@ -3389,6 +3389,7 @@ class ReportController extends Controller
 
         $territory_loop = DB::table("tb_territory")->select("id_territory","code_ter")->where('id_territory','like','TERRITORY%')->get();
 
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')

@@ -1,6 +1,19 @@
 @extends('template.template_admin-lte')
 @section('content')
-
+  <style type="text/css">
+    #tes {
+    text-align: center;
+    background-color: #7c21a3;
+    color: white;
+    width: 4em;
+    height: 4em;
+    line-height: 4em;
+    border-radius: 50%;
+    font-size: 50px;
+    font-family: helvetica;
+    font-style: bold;
+    }
+  </style>
   <section class="content-header">
     <h1>
       Profile
@@ -20,11 +33,13 @@
         @endif
         <div class="row">
           <div class="col-md-12 col-xs-12">
-            <div class="photos-profile pull-left">
+            <div class="pull-left" style="padding-right: 10px">
               @if(Auth::User()->gambar == NULL)
-                <img class="profile-user img-responsive" src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" alt="Yuki" style="width: 100%;height:275px;position: relative;">
+                <div id="tes">
+                {!! strtoupper(substr($user_profile->name, 0, 2))!!}
+                </div>
               @elseif(Auth::User()->gambar != NULL)
-                <img class="profile-user img-responsive" src="{{ asset('image/'.$user_profile->gambar)}}" alt="Avatar" style="border:solid white;" data-toggle="modal" data-target="#pict_profile" onclick="nik_profile('{{$user_profile->nik}}')">
+                <img id="tes" class="profile-user img-responsive" src="{{ asset('image/'.$user_profile->gambar)}}" alt="Avatar" style="border:solid white;" data-toggle="modal" data-target="#pict_profile" onclick="nik_profile('{{$user_profile->nik}}')">
               @endif
             </div>
             <div class="pull-left">
@@ -377,12 +392,12 @@
     width: 250px;
     height: 250px;
     overflow: hidden;
-    border-radius: 100%;
+    border-radius: 50%;
     border: solid white 9px;
   }
 
   .photos-profile img{
-    width: 100%;
+    width: 50%;
     height: auto;
 
   }

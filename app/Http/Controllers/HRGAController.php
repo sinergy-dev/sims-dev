@@ -415,7 +415,222 @@ class HRGAController extends Controller
             ->get();
         }
 
-        return view('delivery/delivery_person',compact('notif','notifOpen','notifsd','notiftp'));
+        if (Auth::User()->id_position == 'ADMIN') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'ADMIN')
+                            ->get();
+        } elseif (Auth::User()->id_position == 'HR MANAGER') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'HRD')
+                            ->get();
+        } elseif (Auth::User()->id_division == 'FINANCE') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
+        }
+
+        $data = DB::table('tb_messenger')
+                ->join('users','users.nik','=','tb_messenger.nik')
+                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name')
+                ->get();
+
+
+        return view('delivery/delivery_person',compact('notif','notifOpen','notifsd','notiftp','notifClaim','data'));
+    }
+
+    public function detail_delivery_person()
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position; 
+
+         if ($ter != null) {
+            $notif = DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','OPEN')
+            ->orderBy('created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notif = DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik')
+            ->where('result','OPEN')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }else{
+             $notif = DB::table('sales_lead_register')
+            ->select('opp_name','nik')
+            ->where('result','OPEN')
+            ->orderBy('created_at','desc')
+            ->get();
+        }
+
+        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $notifOpen= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notifOpen= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
+            $notifOpen= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','')
+            ->orderBy('created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'STAFF') {
+            $notifOpen= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','')
+            ->orderBy('created_at','desc')
+            ->get();
+        }else{
+            $notifOpen= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }
+
+        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $notifsd= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','SD')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notifsd= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','SD')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
+            $notifsd= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','SD')
+            ->orderBy('created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'STAFF') {
+            $notifsd= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','SD')
+            ->orderBy('created_at','desc')
+            ->get();
+        }else{
+            $notifsd= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','SD')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }
+
+        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $notiftp= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','TP')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $notiftp= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','TP')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
+            $notiftp= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','TP')
+            ->orderBy('created_at','desc')
+            ->get();
+        }elseif ($div == 'SALES' && $pos == 'STAFF') {
+            $notiftp= DB::table('sales_lead_register')
+            ->select('opp_name','nik','lead_id')
+            ->where('result','TP')
+            ->orderBy('created_at','desc')
+            ->get();
+        }else{
+            $notiftp= DB::table('sales_lead_register')
+            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
+            ->where('result','TP')
+            ->orderBy('sales_lead_register.created_at','desc')
+            ->get();
+        }
+
+        if (Auth::User()->id_position == 'ADMIN') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'ADMIN')
+                            ->get();
+        } elseif (Auth::User()->id_position == 'HR MANAGER') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'HRD')
+                            ->get();
+        } elseif (Auth::User()->id_division == 'FINANCE') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
+        }
+
+
+        return view('delivery/detail_delivery_person',compact('notif','notifOpen','notifsd','notiftp','notifClaim'));
+    }
+
+    public function getDateMessenger(){
+        $getAllCutiDate = DB::table('tb_cuti_detail')
+            ->select('date_off')
+            ->whereIn('id_cuti',function($query){
+                $query->select('id_cuti')
+                    ->from('tb_cuti')
+                    ->where('nik','=','1171290010')
+                    ->orwhere('nik','=','1180400040');
+            })
+            ->pluck('date_off');
+
+        return collect(["allCutiDate" => $getAllCutiDate]);
+    }
+
+    public function getMessenger(Request $request){
+        $cek = DB::table('users')
+            ->join("tb_messenger","tb_messenger.nik","=","users.nik")
+            ->select('name','book_date',DB::raw('COUNT(`tb_messenger`.`book_date`) AS "book_date"'))
+            ->whereIn('users.nik',function($query){
+                $query->select('users.nik')
+                    ->from('tb_messenger');
+            })
+            ->groupby("users.nik")
+            ->groupby("book_date")
+            ->where("book_date",$request->tanggal)
+            ->get();
+
+        if ($cek->isEmpty()) {
+            return array(['null']);
+        }else{
+            return array($cek);
+        }
+       
     }
 
     public function show_cuti(Request $request)
