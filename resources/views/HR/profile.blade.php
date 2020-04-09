@@ -188,6 +188,31 @@
                               </div>
                             </div>
 
+                            <div class="row">
+                              <div class="col-md-12">
+                                <div class="col-md-8">
+                                  <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                                </div>  
+                              </div>
+                            </div>
+
+
+                            <div class="row">
+                              <div class="col-md-12">
+                                  <div class="col-md-4">
+                                    <label style="margin: 12px">NPWP File</label>
+                                  </div>
+                                  <div class="col-md-8">
+                                    
+                                    <div class="col-md-4">
+                                      <input type="file" id="inputgambarnpwp" name="npwp_file" value="{{$user_profile->npwp_file}}" required>
+                                    </div>
+
+
+                                  </div>
+                              </div>
+                            </div>
+
                             <button class="btn btn-sm btn-warning pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
                       </form>
                     </div>
@@ -528,9 +553,26 @@
       }
   }
 
+  function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $('#showgambarnpwp').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
   $("#inputgambar").change(function () {
       readURL(this);
   });
+
+
+  $("#inputgambarnpwp").change(function () {
+      readURL(this);
+    });
 
 
   function nik_profile(nik){
