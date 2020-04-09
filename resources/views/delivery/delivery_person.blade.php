@@ -55,6 +55,7 @@
                             <th>Date & Time</th>
                             <th>Location</th>
                             <th>PIC</th>
+                            <th>Requested By</th>
                             <th>Action</th>
                           </tr>
                         </thead>
@@ -98,7 +99,7 @@
               <div class="form-group">
                 <label>Booking Time</label>
                 <div class='input-group date' id='datetimepicker1'>
-                  <input type='text' class="form-control" name="book_time" required />
+                  <input type='text' class="form-control" name="book_time" required autocomplete="false" />
                   <span class="input-group-addon">
                     <span class="glyphicon glyphicon-time"></span>
                   </span>
@@ -172,9 +173,19 @@
               <input type="" name="id_messenger" id="id_messenger">
 
               <div class="form-group">
+                  <label>Booking Date Before</label>
+                  <div class='input-group date'>
+                    <input type='text' class="form-control" id="book_date_update" readonly />
+                    <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                  </div>
+              </div>
+
+              <div class="form-group">
                   <label>Booking Date</label>
                   <div class='input-group date' id='book_date_edit'>
-                    <input type='text' class="form-control" name="book_date_edit" id="book_date_update" required />
+                    <input type='text' class="form-control" name="book_date_edit" id="book_date_edit" required />
                     <span class="input-group-addon">
                       <span class="glyphicon glyphicon-calendar"></span>
                     </span>
@@ -215,7 +226,7 @@
 
               <div class="form-group">
                 <label>Lokasi Tujuan</label><br>
-                  <textarea class="form-control" id="location_edit" name="lokasi_edit" required></textarea>
+                  <textarea class="form-control" id="lokasi_edit" name="lokasi_edit" required></textarea>
               </div>
 
               <div class="form-group">
@@ -253,7 +264,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
 <script type="text/javascript">
   initialMessenger();
-
+  
+  var nik = "{{Auth::User()->nik}}"
   function initialMessenger(){
     $("#data_messenger").DataTable({
           "ajax":{
@@ -261,7 +273,7 @@
             "url":"{{url('getDataMessenger')}}",
           },
           "columns": [
-            { "data": "name" },
+            { "data": "name1" },
             { "data": "activity" },
             {
               render: function ( data, type, row ) {
@@ -276,7 +288,17 @@
             },
             {
               render: function ( data, type, row ) {
-                return  '<button class="btn btn-sm btn-primary fa fa-edit edit-messenger" value="'+row.id_messenger+'" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="" type="button"></button>'+'<button class="btn btn-sm btn-danger fa fa-trash" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Delete" data-placement="bottom" type="button"></button>'
+                return row.name2 + ' ' + "(" + row.id_division + ')';
+              }
+            },
+            {
+              render: function ( data, type, row ) {
+                if (row.nik_request == {{Auth::User()->nik}}) {
+                  return '<button value="'+row.id_messenger+'" class="btn btn-sm btn-danger fa fa-trash btn-delete" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Delete" data-placement="bottom" type="button"></button>'+ ' ' +'<button class="btn btn-sm btn-warning fa fa-info btn-detail" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Klik for more detail" data-placement="bottom" type="button" value="'+row.id_messenger+'"></button>'
+                }else{
+                  return '<button class="btn btn-sm btn-warning fa fa-info btn-detail" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Klik for more detail" data-placement="bottom" type="button" value="'+row.id_messenger+'"></button>'
+                }
+                
               }
             },
             
@@ -287,14 +309,18 @@
           "processing": true,
           "columnDefs": [
               { 
-                "width": "10%","targets": 0,
-                "width": "5%", "targets": 2,
+                "width": "5%","targets": 0,
+                "width": "10%", "targets": 2,
                 "width": "5%", "targets": 3,
                 "width": "5%", "targets": 4,
-                "width": "5%", "targets": 5,
+                "width": "15%", "targets": 5,
               }
           ],
     
+    })
+
+    $('#data_messenger').on('click', '.btn-detail', function(){
+        window.location.replace("{{url('/detail_delivery_person')}}/" + this.value)
     })
 
     var hari_libur_nasional = []
@@ -425,19 +451,28 @@
       });
       
       $("#modaltambahmessenger").modal("show");
-    })
+    });
 
     $('#data_messenger').on('click', '.edit-messenger', function(){
       $.ajax({
           type:"GET",
-          url:"getUpdateMessenger",
+          url:"getMessenger",
           data:{
             id_messenger:this.value,
           },
           success: function(result){
+          var disableDate = []
+          $.each(result.allCutiDate,function(key,value){
+            disableDate.push(moment( value).format("MM/DD/YYYY"))
+          })
+
+          var today = new Date();
+          var tomorrow = new Date();
+          tomorrow.setDate(today.getDate() + 1);
+
           console.log(result)
-          $.each(result[1], function(key, value){
-            $("#book_date_edit").datepicker({format: 'yyyy-mm-dd',autoclose:true}).datepicker('setDate', value.book_date)
+          $.each(result[3], function(key, value){
+            $("#book_date_update").datepicker({format: 'yyyy-mm-dd'}).datepicker('setDate', value.book_date);
             $("#book_time_edit").val(value.book_time);
             $("#pic_name_edit").val(value.pic_name);
             $("#pic_contact_edit").val(value.pic_contact);
@@ -448,15 +483,9 @@
             $("#id_messenger").val(value.id_messenger);
           })
 
-          var disableDate = []
-          $.each(result.allCutiDate,function(key,value){
-            disableDate.push(moment( value).format("MM/DD/YYYY"))
-          })
-
-          var today = new Date();
-          var tomorrow = new Date();
-          tomorrow.setDate(today.getDate() + 1);
+          
           $('#book_date_edit').datepicker({
+            setDate: result[3].book_date,
             autoclose: true,
             weekStart: 1,
             daysOfWeekDisabled: [0,6],
@@ -560,7 +589,23 @@
       })
       
       $("#modaleditmessenger").modal("show");
-    })
+    });
+
+    $('#data_messenger').on('click', '.btn-delete', function(){
+      var id_messenger = this.value;
+        $.ajax({
+          type:"GET",
+          url:"{{url('delete_messenger/')}}/"+id_messenger,
+          beforeSend:function(){
+            return confirm("Want to delete?") 
+          },
+          success: function(result){
+              setTimeout(function(){
+                $('#data_messenger').DataTable().ajax.url("{{url('getDataMessenger')}}").load();
+              });
+          }
+      })
+    });
     
 
     $('#messenger').select2();  
@@ -575,10 +620,26 @@
   function changeTabMessenger(id){
     if (id == 'done') {
       $('#data_messenger').DataTable().ajax.url("{{url('getDataMessenger')}}?id=" + id).load();
+
+      $('#data_messenger').on('click', '.btn-detail', function(){
+
+        window.location.replace("{{url('/detail_delivery_person')}}/" + this.value)
+
+      })
     }else if (id == 'requested') {
       $('#data_messenger').DataTable().ajax.url("{{url('getDataMessenger')}}?id=" + id).load();
+
+      $('#data_messenger').on('click', '.btn-detail', function(){
+        window.location.replace("{{url('/detail_delivery_person')}}/" + this.value)
+
+      })
     }else if (id == 'today') {
       $('#data_messenger').DataTable().ajax.url("{{url('getDataMessenger')}}?id=" + id).load();
+
+      $('#data_messenger').on('click', '.btn-detail', function(){
+        window.location.replace("{{url('/detail_delivery_person')}}/" + this.value)
+
+      })
     }
   }
   

@@ -445,56 +445,40 @@ class HRGAController extends Controller
     public function getDataMessenger(Request $request){
 
         if ($request->id == 'done') {
-            return array("data" => DB::table('tb_messenger')
-                ->join('users','users.nik','=','tb_messenger.nik')
-                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name','id_messenger')
+             return array("data" => DB::table('tb_messenger')
+                ->join('users as u1','u1.nik','=','tb_messenger.nik')
+                ->join('users as u2','u2.nik','=','tb_messenger.nik_request')
+                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','u1.nik','nik_request','u1.name as name1','id_messenger','u2.name as name2','u2.id_division')
                 ->where('status','done')
                 ->get());
         }else if ($request->id == 'requested') {
-            return array("data" => DB::table('tb_messenger')
-                ->join('users','users.nik','=','tb_messenger.nik')
-                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name','id_messenger')
+             return array("data" => DB::table('tb_messenger')
+                ->join('users as u1','u1.nik','=','tb_messenger.nik')
+                ->join('users as u2','u2.nik','=','tb_messenger.nik_request')
+                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','u1.nik','nik_request','u1.name as name1','id_messenger','u2.name as name2','u2.id_division')
+                ->where('book_date','!=',date("Y-m-d"))
                 ->get());
         }else if ($request->id == 'today') {
-            return array("data" => DB::table('tb_messenger')
-                ->join('users','users.nik','=','tb_messenger.nik')
-                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name','id_messenger')
+             return array("data" => DB::table('tb_messenger')
+                ->join('users as u1','u1.nik','=','tb_messenger.nik')
+                ->join('users as u2','u2.nik','=','tb_messenger.nik_request')
+                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','u1.nik','nik_request','u1.name as name1','id_messenger','u2.name as name2','u2.id_division')
                 ->where('book_date',date('Y-m-d'))
+                ->where('tb_messenger.status','!=','done')
                 ->get());
         }
 
         return array("data" => DB::table('tb_messenger')
-                ->join('users','users.nik','=','tb_messenger.nik')
-                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name','id_messenger')
+                ->join('users as u1','u1.nik','=','tb_messenger.nik')
+                ->join('users as u2','u2.nik','=','tb_messenger.nik_request')
+                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','u1.nik','nik_request','u1.name as name1','id_messenger','u2.name as name2','u2.id_division')
                 ->where('book_date',date('Y-m-d'))
+                ->where('tb_messenger.status','!=','done')
                 ->get());
         
     }
 
-    public function getUpdateMessenger(Request $req){
-
-        $getAllCutiDate = DB::table('tb_cuti_detail')
-            ->select('date_off')
-            ->whereIn('id_cuti',function($query){
-                $query->select('id_cuti')
-                    ->from('tb_cuti')
-                    ->where('nik','=','1171290010')
-                    ->orwhere('nik','=','1180400040');
-            })
-            ->pluck('date_off');   
-
-        $cutiAll = collect(["allCutiDate" => $getAllCutiDate]);     
-
-        $getOldData = DB::table('tb_messenger')
-                ->join('users','users.nik','=','tb_messenger.nik')
-                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name','id_messenger')
-                ->where('id_messenger',$req->id_messenger)
-                ->get();
-
-        return array($cutiAll,$getOldData);
-    }
-
-    public function detail_delivery_person()
+    public function detail_delivery_person($id_messenger)
     {
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -647,8 +631,24 @@ class HRGAController extends Controller
                             ->get();
         }
 
+        $datas = DB::table('tb_messenger')
+                ->join('users as u1','u1.nik','=','tb_messenger.nik')
+                ->join('users as u2','u2.nik','=','tb_messenger.nik_request')
+                ->join('tb_detail_messenger','tb_detail_messenger.id_messenger','=','tb_messenger.id_messenger')
+                ->select('book_date','activity','pic_name','pic_contact','tb_messenger.note','book_time','lokasi','item','u1.nik','u1.name as name1','u2.name as name2','finish_time','tb_detail_messenger.note as notes','tb_messenger.status as statusm','tb_detail_messenger.status as statusd','tb_messenger.id_messenger')
+                ->where('tb_messenger.id_messenger',$id_messenger)
+                ->orderBy('tb_detail_messenger.created_at','desc')
+                ->first();
 
-        return view('delivery/detail_delivery_person',compact('notif','notifOpen','notifsd','notiftp','notifClaim'));
+        $data = DB::table('tb_messenger')
+                ->join('users as u1','u1.nik','=','tb_messenger.nik')
+                ->join('users as u2','u2.nik','=','tb_messenger.nik_request')
+                ->join('tb_detail_messenger','tb_detail_messenger.id_messenger','=','tb_messenger.id_messenger')
+                ->select('book_date','activity','pic_name','pic_contact','tb_messenger.note','book_time','lokasi','item','u1.nik','u1.name as name1','u2.name as name2','finish_time','tb_detail_messenger.note as notes','tb_messenger.status as statusm','tb_detail_messenger.status as statusd','tb_messenger.id_messenger')
+                ->where('tb_messenger.id_messenger',$id_messenger)
+                ->get();
+
+        return view('delivery/detail_delivery_person',compact('notif','notifOpen','notifsd','notiftp','notifClaim','data','datas'));
     }
 
     public function getDateMessenger(){
@@ -687,15 +687,34 @@ class HRGAController extends Controller
             })
             ->get());
 
+        $getAllCutiDate = DB::table('tb_cuti_detail')
+            ->select('date_off')
+            ->whereIn('id_cuti',function($query){
+                $query->select('id_cuti')
+                    ->from('tb_cuti')
+                    ->where('nik','=','1171290010')
+                    ->orwhere('nik','=','1180400040');
+            })
+            ->pluck('date_off');   
+
+        $cutiAll = collect(["allCutiDate" => $getAllCutiDate]);     
+
+        $getOldData = DB::table('tb_messenger')
+                ->join('users','users.nik','=','tb_messenger.nik')
+                ->select('book_date','activity','status','pic_name','pic_contact','note','book_time','lokasi','item','users.nik','users.name','id_messenger')
+                ->where('id_messenger',$request->id_messenger)
+                ->get();
+
+
         $messenger = DB::table('users')
             ->select('name','nik')
             ->where('id_position','courier')
             ->get();
 
         if ($cek->isEmpty()) {
-            return array($messenger,"courier");
+            return array($messenger,"courier",$cutiAll,$getOldData);
         }else{
-            return array($cek,$cek2);
+            return array($cek,$cek2,$cutiAll,$getOldData);
         }
        
     }
@@ -706,7 +725,7 @@ class HRGAController extends Controller
         $format_start_s     = strtotime($request['book_date']);
         $store->book_date   = date("Y-m-d",$format_start_s);
         $store->activity    = $request['activity'];
-        $store->status      = 'onroad';
+        $store->status      = 'new';
         $store->pic_name    = $request['pic_name'];
         $store->pic_contact = $request['pic_contact'];
         $store->note        = $request['note'];
@@ -714,12 +733,14 @@ class HRGAController extends Controller
         $store->lokasi      = $request['lokasi'];
         $store->item        = $request['items'];
         $store->nik         = $request['messenger_name'];
+        $store->nik_request = Auth::User()->nik;
         $store->save();
 
         $store_detail = new DetailMessenger();
         $store_detail->id_messenger = $store->id_messenger;
         $store_detail->finish_time  = $request['book_time'];
         $store_detail->note         = 'Permintaan plan schedule messenger berhasil di buat';
+        $store_detail->status       = 'new';
         $store_detail->save();
 
         return redirect()->back();
@@ -732,7 +753,7 @@ class HRGAController extends Controller
         $format_start_s      = strtotime($request['book_date_edit']);
         $update->book_date   = date("Y-m-d",$format_start_s);
         $update->activity    = $request['activity_edit'];
-        $update->status      = 'onroad';
+        $update->status      = 'edited';
         $update->pic_name    = $request['pic_name_edit'];
         $update->pic_contact = $request['pic_contact_edit'];
         $update->note        = $request['note_edit'];
@@ -744,13 +765,48 @@ class HRGAController extends Controller
 
         $update_detail = new DetailMessenger();
         $update_detail->id_messenger = $update->id_messenger;
+        $update_detail->status       = "edited";
         $update_detail->note         = 'Terjadi perubahan plan schedule messenger';
         $update_detail->finish_time  = $request['book_time_edit'];
         $update_detail->save();
 
         return redirect()->back();
+    }
 
+    public function update_progress(Request $request){
+        if ($request['btn-submit'] == 'done') {
+            $update_detail = new DetailMessenger();
+            $update_detail->id_messenger = $request->id_messenger;
+            $update_detail->status       = "done";
+            $update_detail->note         = $request['note_edit'];
+            $update_detail->finish_time  = date("H:i:s");
+            $update_detail->save();
 
+            $update = Messenger::where('id_messenger',$request->id_messenger)->first();
+            $update->status      = 'done';
+            $update->update();
+        }else{
+            $update_detail = new DetailMessenger();
+            $update_detail->id_messenger = $request->id_messenger;
+            $update_detail->status       = "progress";
+            $update_detail->note         = $request['note_edit'];
+            $update_detail->finish_time  = date("H:i:s");
+            $update_detail->save();
+
+            $update = Messenger::where('id_messenger',$request->id_messenger)->first();
+            $update->status      = 'onroad';
+            $update->update();
+        }
+        
+
+        return redirect()->back();
+    }
+
+    public function delete_messenger($id_messenger){
+        $hapus = Messenger::find($id_messenger);
+        $hapus->delete();
+
+        return redirect()->back();
     }
 
     public function show_cuti(Request $request)
