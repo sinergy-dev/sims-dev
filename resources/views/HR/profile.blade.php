@@ -12,6 +12,7 @@
     font-size: 50px;
     font-family: helvetica;
     font-style: bold;
+    box-shadow: 3px 3px 5px 6px #ccc;
     }
   </style>
   <section class="content-header">
@@ -33,7 +34,7 @@
         @endif
         <div class="row">
           <div class="col-md-12 col-xs-12">
-            <div class="pull-left" style="padding-right: 10px">
+            <div class="pull-left" style="padding-right: 15px">
               @if(Auth::User()->gambar == NULL)
                 <div id="tes">
                 {!! strtoupper(substr($user_profile->name, 0, 2))!!}
@@ -44,7 +45,7 @@
             </div>
             <div class="pull-left">
               <div class="profile">
-                <h1>{{$user_profile->name}}</h1>
+                <h1>{{ucfirst(strtolower($user_profile->name))}}</h1>
                 <h6 class="pull-left"><i class="fa fa-address-card"></i><b>&nbsp&nbsp {{$user_profile->nik}} </b></h6>
                 <h6 class="pull-left"><i class="fa fa-envelope"></i><b>&nbsp&nbsp {{$user_profile->email}} </b></h6> 
                 <h6 class="pull-left"><i class="fa fa-phone"></i><b>&nbsp&nbsp +62{{$user_profile->phone}} </b></h6>
