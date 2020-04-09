@@ -8,6 +8,7 @@ use App\User;
 use Validator;
 use Response;
 use Illuminate\Support\Facades\input;
+use Illuminate\Support\Facades\Input;
 use App\http\Requests;
 use DB;
 use Auth;
@@ -476,7 +477,7 @@ class HRController extends Controller
         //upload file gambar npwp user
 
         $file = $request->file('npwp_file');
-        $fileName = $file->getClientOriginalName();
+        $fileName = Input::get('coba_npwp_namaya');
         $request->file('npwp_file')->move("image/", $fileName);
 
         $tambah->npwp_file = $fileName;
@@ -1047,6 +1048,20 @@ class HRController extends Controller
         $update->date_of_entry  = $req['date_of_entry'];
         $update->phone          = $req['phone'];
         $update->no_npwp        = $req['no_npwp'];
+        $update->npwp_file      = $req['npwp_file'];
+
+        if($req->file('npwp_file') == "")
+        {
+            $update->npwp_file = $update->npwp_file;
+        } 
+        else
+        {
+            $file       = $req->file('npwp_file');
+            $fileName   = $file->getClientOriginalName();
+
+            $req->file('npwp_file')->move("image/", $fileName);
+            $update->npwp_file = $fileName;
+        }
 
         // Disini proses mendapatkan judul dan memindahkan letak gambar ke folder image
         // $this->validate($request, [
