@@ -8,7 +8,6 @@ use App\User;
 use Validator;
 use Response;
 use Illuminate\Support\Facades\input;
-use Illuminate\Support\Facades\Input;
 use App\http\Requests;
 use DB;
 use Auth;
@@ -477,7 +476,7 @@ class HRController extends Controller
         //upload file gambar npwp user
 
         $file = $request->file('npwp_file');
-        $fileName = Input::get('coba_npwp_namaya');
+        $fileName = $file->getClientOriginalName();
         $request->file('npwp_file')->move("image/", $fileName);
 
         $tambah->npwp_file = $fileName;
