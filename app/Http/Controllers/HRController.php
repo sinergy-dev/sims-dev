@@ -476,7 +476,7 @@ class HRController extends Controller
         //upload file gambar npwp user
 
         $file = $request->file('npwp_file');
-        $fileName = $file->getClientOriginalName();
+        $fileName = $nik."_npwp_ver1".".jpg";
         $request->file('npwp_file')->move("image/", $fileName);
 
         $tambah->npwp_file = $fileName;
@@ -718,7 +718,8 @@ class HRController extends Controller
         else
         {
             $file       = $request->file('npwp_file');
-            $fileName   = $file->getClientOriginalName();
+            
+            $fileName   = $nik."_npwp_ver1".".jpg";
 
             $request->file('npwp_file')->move("image/", $fileName);
             $update->npwp_file = $fileName;
