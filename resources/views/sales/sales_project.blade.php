@@ -5,9 +5,9 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 ?>
 
 <style type="text/css">
-
-  .DTFC_LeftBodyLiner{overflow-y:unset !important}
-  .DTFC_RightBodyLiner{overflow-y:unset !important}
+  .DTFC_LeftBodyLiner {
+    overflow: hidden;
+  }
 
   .dataTables_filter {
   display: none;
@@ -135,7 +135,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                   </div>
                 </div>
               </div>
-              <table class="table table-bordered table-striped display nowrap row-border order-column" id="sip-data" style="width: 100%" cellspacing="0">
+              <table class="table table-bordered table-striped display row-border order-column" id="sip-data" style="width: 100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -292,7 +292,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 
               </div>
               <div class="table-responsive">
-                <table class="table table-bordered table-striped display no-wrap dataTable" id="msp-data" width="100%" cellspacing="0">
+                <table class="table table-bordered table-striped display dataTable row-border order-column" id="msp-data" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -417,7 +417,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
               <div class="row">
                 <div class="col-md-12">
                   <div class="table-responsive">
-                    <table class="table table-bordered table-striped display no-wrap dataTable" id="request_id" width="100%" cellspacing="0">
+                    <table class="table table-bordered table-striped dataTable" id="request_id" width="100%" cellspacing="0">
                       <thead>
                         <tr>
                           <th>Created</th>
@@ -983,11 +983,13 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         "pageLength": 25,
         "bLengthChange": false,
         fixedColumns:   {
-          leftColumns: 2
+          leftColumns: 2,
+          rightColumns: 1
         },
+        "scrollX":true,
         "autoWidth": false,
         responsive:true,
-        "scrollX":true,
+        // "scrollX":true,
          "fnInitComplete": function(){
               // Disable TBODY scoll bars
               $('.dataTables_scrollBody').css({
@@ -1054,7 +1056,8 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         "scrollX":true,
         "retrive" : true,
         fixedColumns:   {
-          leftColumns: 2
+          leftColumns: 2,
+          rightColumns: 2
         },
         "fnInitComplete": function(){
                   // Disable TBODY scoll bars
@@ -1112,6 +1115,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     })
 
     $('#request_id').DataTable({
+      "scrollX":true,
       "order": [[ 0, "desc" ]],
       "footerCallback": function( row, data, start, end, display ) {
             var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;

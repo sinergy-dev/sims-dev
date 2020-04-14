@@ -13,7 +13,6 @@
 
 Auth::routes();
 
-
 Route::post('/update_result', 'SalesController@update_result');
 Route::post('/update_result2', 'SalesController@update_result');
 Route::post('/update_result2a', 'SalesController@update_result');
@@ -259,9 +258,14 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/follow_up/{id_cuti}', 'HRGAController@follow_up');
 	Route::get('/downloadPdfcuti', 'HRGAController@cutipdf');
 	Route::get('/index_delivery_person', 'HRGAController@index_delivery_person');
-	Route::get('/detail_delivery_person', 'HRGAController@detail_delivery_person');
+	Route::get('/detail_delivery_person/{id_messenger}', 'HRGAController@detail_delivery_person');
+	Route::get('/getDataMessenger','HRGAController@getDataMessenger');
 	Route::get('/getDateMessenger','HRGAController@getDateMessenger');
 	Route::get('/getMessenger','HRGAController@getMessenger');
+	Route::get('/delete_messenger/{id_messenger}','HRGAController@delete_messenger');
+	Route::post('/update_messenger','HRGAController@update_messenger');
+	Route::post('/update_progress','HRGAController@update_progress');
+	Route::post('/store_messenger','HRGAController@store_messenger');
 
 	Route::post('/store_sho','SHOController@store');
 	Route::post('/store_sho_transac','SHOController@store_sho_transac');
