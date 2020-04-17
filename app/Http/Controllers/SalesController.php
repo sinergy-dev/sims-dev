@@ -4204,7 +4204,7 @@ class SALESController extends Controller
               $pid_info->no_quote = "-";
             }
 
-            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->where('id_pro',$tambah->id_pro)->first();
+            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->where('tb_id_project.id_pro',$tambah->id_pro)->first();
 
             Mail::to($users->email)->send(new mailPID($pid_info,$users));
 
@@ -4279,7 +4279,7 @@ class SALESController extends Controller
               $pid_info->no_quote = "-";
             }
 
-            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->where('id_pro',$tambah->id_pro)->first();
+            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->where('tb_id_project.id_pro',$tambah->id_pro)->first();
 
             Mail::to($users->email)->send(new mailPID($pid_info,$users));
         
