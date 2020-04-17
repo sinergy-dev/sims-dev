@@ -4680,7 +4680,7 @@ class SALESController extends Controller
                 'sales_name',
                 'no_po_customer',
                 'tb_id_project.id_project'
-            ->orderBy('id_pro',desc)
+            ->orderBy('created_at',desc)
             )->first();
 
             if($pid_info->lead_id == "MSPQUO"){
