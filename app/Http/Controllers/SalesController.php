@@ -4383,6 +4383,28 @@ class SALESController extends Controller
             
             }
 
+            $pid_info = DB::table('tb_id_project')
+            ->where('id_pro',$tambah->id_pro)
+            ->select(
+                'lead_id',
+                'name_project',
+                'no_po_customer',
+                'sales_name',
+                'no_po_customer',
+                'tb_id_project.id_project'
+            )->first();
+
+            if($pid_info->lead_id == "MSPQUO"){
+              $pid_info->no_quote = $pid_info->no_po_customer;
+              $pid_info->no_po_customer = "-";
+            }else {
+              $pid_info->no_quote = "-";
+            }
+
+            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->first();
+
+            Mail::to($users->email)->send(new mailPID($pid_info,$users));
+
         }else if($cek_sip->id_company == '2'){
 
             if ($countss > 0) {
@@ -4669,10 +4691,9 @@ class SALESController extends Controller
                 $update->save();
 
             }
-        
-        }
-        // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
+
             $pid_info = DB::table('tb_id_project')
+            ->where('id_pro',$tambah->id_pro)
             ->select(
                 'lead_id',
                 'name_project',
@@ -4680,7 +4701,6 @@ class SALESController extends Controller
                 'sales_name',
                 'no_po_customer',
                 'tb_id_project.id_project'
-            ->orderBy('created_at','desc')
             )->first();
 
             if($pid_info->lead_id == "MSPQUO"){
@@ -4693,6 +4713,10 @@ class SALESController extends Controller
             $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->first();
 
             Mail::to($users->email)->send(new mailPID($pid_info,$users));
+        
+        }
+        // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
+            
 
         return redirect()->to('/salesproject')->with('success', 'Create PID Successfully!');
         
