@@ -856,7 +856,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           _token: "{{ csrf_token() }}",
           customer_name:customer_name,
           // sales:$("#inputCustomer").val(),
-          date:moment($("#inputDate").val()).format('L'),
+          date:($("#inputDate").val()),
           amount:$("#inputAmount").val(),
           note:$("#inputNote").val(),
           p_order:$("#inputPO").val(),
