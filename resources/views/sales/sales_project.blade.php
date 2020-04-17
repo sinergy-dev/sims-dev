@@ -5,16 +5,19 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 ?>
 
 <style type="text/css">
+  div.dataTables_processing { z-index: 1; }
+
   .DTFC_LeftBodyLiner {
-    overflow: hidden;
+    overflow-y: hidden; // hide vertical
+	overflow-x: hidden; // hide horizontal
   }
 
   .dataTables_filter {
-  display: none;
+    display: none;
   }
 
   .dataTables_paging {
-  display: none;
+    display: none;
   }
 
   table.dataTable tbody th,
@@ -55,7 +58,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
 <section class="content-header">
   <h1>
-    ID Project SIP & MSP
+    ID Project
   </h1>
   <ol class="breadcrumb">
     <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -87,452 +90,126 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'DIRECTOR')
               @if(Auth::User()->id_position == 'MANAGER')
-              <li class="active"><a href="#tab_1" data-toggle="tab">SIP</a></li>
-              <li><a href="#tab_2" data-toggle="tab">MSP</a></li>
-              <li><a href="#tab_3" data-toggle="tab">ID Request</a></li>
-              <li><a href="#tab_4" data-toggle="tab">History Request</a></li>
+              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
+              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
+              <li><a href="#request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
+              <li><a href="#history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
               @else
-              <li class="active"><a href="#tab_1" data-toggle="tab">SIP</a></li>
-              <li><a href="#tab_2" data-toggle="tab">MSP</a></li>
+              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
+              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
               @endif
             @else
             @endif
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="tab_1">
+
+            <div class="tab-pane active" id="sip">
               <div class="box-header">
                 <div class="row">
-                  <div class="col-md-8">
+                  <div class="col-md-8" id="export-table">
                     @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-sm pull-left" style="margin-right: 10px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
-                    <!-- <button class="btn btn-sm btn-primary pull-left" hidden data-target="#salesproject" style="width: 150px;" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspAdd ID Project</button> -->
+                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-sm pull-left export" style="margin-right: 10px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+
+                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
                     @else
-                    <a href="{{action('SalesController@export')}}" style="margin-right: 10px" class="btn btn-warning btn-sm pull-left"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <a href="{{action('SalesController@export')}}" style="margin-right: 10px" class="btn btn-warning btn-sm pull-left export"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+
+                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
                     @endif
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-4" id="search-table">
                     <div class="input-group pull-right" style="margin-left: 10px">
                       <div class="input-group-btn">
-                <button type="button" id="btnShowEntryTicket" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                  Show 10 entries
-                  <span class="fa fa-caret-down"></span>
-                </button>
-                <ul class="dropdown-menu" id="selectShowEntryTicket">
-                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-                </ul>
-              </div>
-              <input id="searchBarTicket" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
-              <span class="input-group-btn">
-                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-sm" style="width: 40px">
-                  <i class="fa fa-fw fa-search"></i>
-                </button>
-              </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <table class="table table-bordered table-striped display row-border order-column" id="sip-data" style="width: 100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>ID Project</th>
-                      <th>Lead ID</th>
-                      <th>No. PO Customer</th>
-                      <th>Customer Name</th>
-                      <th>Project Name</th>
-                      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position != 'STAFF')
-                      <th>Amount IDR</th>
-                      <th>Amount Before Tax</th>
-                      @endif
-                      <th>Note</th>
-                      <th>Invoice</th>
-                      <th>Sales</th>
-                      <th>Status</th>
-                      @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_division == 'PMO')
-                      <th>Action</th>
-                      @endif
-                    </tr>
-                  </thead>
-                  <tbody id="products-list" name="products-list">
-                    @foreach($salessp as $data)
-                    <tr>
-                      <td>{{date( "d-m-Y", strtotime($data->date))}}</td>
-                      <td>{{$data->id_project}}</td>
-                      <td>{{$data->lead_id}}</td>
-                      <td>
-                        @if($data->no_po_customer == NULL)
-                        {{$data->quote_number_final}}
-                        @else
-                        {{$data->no_po_customer}}
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->lead_id == 'SIPPO2020')
-                        {{$data->customer_name}}
-                        @else
-                        {{$data->customer_legal_name}}
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->lead_id == 'SIPPO2020')
-                        {{$data->name_project}}
-                        @else
-                        {{$data->name_project}}
-                        @endif
-                      </td>
-                      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                      <td>
-                          <i class="">{{$data->amount_idr}}</i>
-                      </td>
-                      <td>
-                          <i class="">{{round($data->amount_idr_before_tax,2)}}</i>
-                      </td>
-                      @endif
-                        <td>{{$data->note}}</td>
-                        <td>
-                          @if($data->invoice == 'H')
-                            Setengah Bayar
-                          @elseif($data->invoice == 'F')
-                            Sudah Bayar
-                          @elseif($data->invoice == 'N')
-                            Belum Bayar
-                          @endif
-                        </td>
-                        <td>
-                          @if($data->lead_id == 'SIPPO2020')
-                            {{$data->sales_name}}
-                            @else
-                            {{$data->name}}
-                            @endif
-                        </td>
-                        <td>
-                          @if($data->progres == '')
-                             UnProgress
-                             @else
-                             {{$data->progres}}
-                            @endif
-                        </td>
-                      @if(Auth::User()->id_division == 'FINANCE')
-                      <td>
-                          @if(Auth::User()->id_position == 'MANAGER')
-                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->amount_idr}}','{{$data->note}}','{{$data->invoice}}','{{$data->lead_id}}','{{$data->opp_name}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
-                          <button class="btn btn-xs btn-danger" style="width: 70px" data-toggle="modal" data-target="#modal_delete" onclick="delete_project('{{$data->lead_id}}','{{$data->id_pro}}')"><i class="fa fa-trash"></i>&nbspDelete</button>
-                          @else
-                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po_customer}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
-                          @endif
-                      </td>
-                      @elseif(Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'PMO')
-                      <td>
-                          <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#modal_status" data-toggle="modal" onclick="Edit_sp('{{$data->id_pro}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
-                      </td>
-                      @endif
-                    </tr>
-                    @endforeach
-                  </tbody>
-                  <tfoot>                  
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position != 'STAFF')
-                    <th></th>
-                    <th></th>
-                    @endif
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_division == 'PMO')
-                    <th></th>
-                    @endif
-                  </tfoot>
-              </table>
+	                <button type="button" id="btnShowEntryTicket" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+	                  Show 10 entries
+	                  <span class="fa fa-caret-down"></span>
+	                </button>
+	                <ul class="dropdown-menu" id="selectShowEntryTicket">
+	                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+	                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+	                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+	                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+	                </ul>
+	              </div>
+	              <input id="searchBarTicket" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
+	              <span class="input-group-btn">
+	                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-sm" style="width: 40px">
+	                  <i class="fa fa-fw fa-search"></i>
+	                </button>
+	              </span>
+	                    </div>
+	                  </div>
+	                </div>
+	              </div>
+
+	           <div id="pid-table">
+	           	  <table class="table table-bordered table-striped display" id="table-pid">
+	                <thead>
+	                    <tr>
+	                      <th>Date</th>
+	                      <th>ID Project</th>
+	                      <th>Lead ID</th>
+	                      <th>No. PO Customer</th>
+	                      <th>No. Quotation</th>
+	                      <th>Customer Name</th>
+	                      <th>Project Name</th>
+	                      <th>Amount IDR</th>
+	                      <th>Amount Before Tax</th>
+	                      <th>Note</th>
+	                      <th>Invoice</th>
+	                      <th>Status</th>	
+	                      <th>Sales</th>
+	                      <th>Action</th>
+	                    </tr>
+	                </thead>
+	                <tfoot>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                </tfoot>
+	              </table>
+	           </div>
+              
+	           <div id="request-table" style="display:none">
+	              <table class="table table-bordered table-striped dataTable"  id="request_id" width="100%" cellspacing="0">
+	                  <thead>
+	                    <tr>
+	                      <th>Created</th>
+	                      <th>Company</th>
+	                      <th>Quote No.</th>
+	                      <th>Project</th>
+	                      <th>Sales</th>
+	                      <th>Date</th>
+	                      <th>Amount</th>
+	                      <th>Action</th>
+	                    </tr>
+	                  </thead>
+	                  <tfoot>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                    <th></th>
+	                  </tfoot>
+	              </table>
+          		</div>
             </div>
 
-            <div class="tab-pane" id="tab_2">
-              <div class="box-header">
-                <div class="row">
-                  <div class="col-md-8">
-                    @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left" style="margin-right: 10px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
-                    <button class="btn btn-sm btn-primary pull-left" data-target="#salesprojectmsp" style="width: 150px;display: none" data-toggle="modal"><i class="fa fa-plus"> </i>  &nbspAdd ID Project</button>
-                    @else
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left" style="margin-right: 10px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
-                    @endif
-                  </div>
-                  <div class="col-md-4">
-                    <div class="input-group pull-right" style="margin-left: 10px">
-                      <div class="input-group-btn">
-                <button type="button" id="btnShowEntryTicketmsp" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                  Show 10 entries
-                  <span class="fa fa-caret-down"></span>
-                </button>
-                <ul class="dropdown-menu" id="selectShowEntryTicket">
-                  <li><a href="#" onclick="changeNumberEntriesmsp(3)">10</a></li>
-                  <li><a href="#" onclick="changeNumberEntriesmsp(25)">25</a></li>
-                  <li><a href="#" onclick="changeNumberEntriesmsp(50)">50</a></li>
-                  <li><a href="#" onclick="changeNumberEntriesmsp(100)">100</a></li>
-                </ul>
-              </div>
-              <input id="searchBarTicketmsp" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
-              <span class="input-group-btn">
-                <button id="applyFilterTablePerformancemsp" type="button" class="btn btn-default btn-sm" style="width: 40px">
-                  <i class="fa fa-fw fa-search"></i>
-                </button>
-              </span>
-                    </div>
-                  </div>
-                </div>
-                
-              </div>
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped display dataTable row-border order-column" id="msp-data" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>ID Project</th>
-                      <th>Lead ID</th>
-                      <th>NO. PO Customer</th>
-                      <th>NO. Quotation</th>
-                      <th>Customer Name</th>
-                      <th>Project Name</th>
-                      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position != 'STAFF')
-                      <th>Amount IDR</th>
-                      <th>Amount Before Tax</th>
-                      @else
-                      @endif
-                      <th>Note</th>
-                      <th>Invoice</th>
-                      <th>Sales</th>
-                      @if(Auth::User()->id_division == 'FINANCE')
-                      <th>Action</th>
-                      @endif
-                    </tr>
-                  </thead>
-                  <tbody id="products-list" name="products-list">
-                    @foreach($salesmsp as $data)
-                    <tr>
-                      <td>{{date( "d-m-Y", strtotime($data->date))}}</td>
-                      <td>
-                        @if($data->status == 'SP')
-                      <a href="{{ url ('/detail_sales_project', $data->id_pro) }}">{{$data->id_project}}</a><i class="fa fa-umbrella"></i>
-                      @else
-                      {{$data->id_project}}
-                      @endif
-                      </td>
-                      <td>{{$data->lead_id}}</td>
-                      <td>
-                        @if($data->lead_id == "MSPPO")
-                        {{$data->no_po_customer}}
-                        @else
-                        {{$data->no_po}}
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->lead_id == "MSPQUO")
-                        {{$data->no_po_customer}}
-                        @else
-                        {{$data->quote_number}}
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO')
-                        {{$data->customer_name}}
-                        @else
-                        {{$data->customer_legal_name}}
-                        @endif
-                      </td>
-                      <td>
-                        @if($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO')
-                        {{$data->name_project}}
-                        @else
-                        {{$data->name_project}}
-                        @endif
-                      </td>
-                      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position != 'STAFF')
-                      <td><i class="">{{$data->amount_idr}}</i></td>
-                      <td><i class="">{{$data->amount_idr_before_tax}}</i></td>
-                      @else
-                      @endif
-                      <td>{{$data->note}}</td>
-                      <td>
-                      @if($data->invoice == 'H')
-                        Setengah Bayar
-                      @elseif($data->invoice == 'F')
-                        Sudah Bayar
-                      @elseif($data->invoice == 'N')
-                        Belum Bayar
-                      @endif
-                      </td>
-                      <td>
-                        @if($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO')
-                        {{$data->sales_name}}
-                        @else
-                        {{$data->name}}
-                        @endif
-                      </td>
-                    @if(Auth::User()->id_division == 'FINANCE')
-                    <td>
-                        @if(Auth::User()->id_position == 'MANAGER')
-                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po}}','{{$data->name_project}}','{{$data->amount_idr}}','{{$data->note}}','{{$data->invoice}}','{{$data->lead_id}}','{{$data->opp_name}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
-                        <button class="btn btn-xs btn-danger" style="width: 70px" data-toggle="modal" data-target="#modal_delete" onclick="delete_project('{{$data->lead_id}}','{{$data->id_pro}}')"><i class="fa fa-trash"></i>&nbspDelete</button>
-                        @else
-                        <button class="btn btn-xs btn-warning" style="width: 70px" data-target="#edit_salessp" data-toggle="modal" onclick="Edit_sp('{{$data->id_project}}','{{$data->no_po}}','{{$data->name_project}}','{{$data->note}}','{{$data->invoice}}')"><i class="fa fa-edit"></i>&nbspEdit</button>
-                        @endif
-                    </td>
-                    </tr>
-                    @endif
-                    @endforeach
-                  </tbody>
-                  <tfoot>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN'|| Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position != 'STAFF')
-                    <th></th>
-                    <th></th>
-                    @endif
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_division == 'PMO')
-                    <th></th>
-                    @endif
-                  </tfoot>
-                </table>
-              </div>
-            </div>
-
-            <div class="tab-pane" id="tab_3">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="table-responsive">
-                    <table class="table table-bordered table-striped dataTable" id="request_id" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>Created</th>
-                          <th>Company</th>
-                          <th>Quote No.</th>
-                          <th>Project</th>
-                          <th>Sales</th>
-                          <th>Date</th>
-                          <th>Amount</th>
-                          <th>Note</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($pid_request_lead as $pids)
-                          <tr>
-                            <td>{{$pids->created_at}}</td>
-                            <td>{{$pids->code_company}}</td>
-                            <td>
-                              @if($pids->no_po == '')
-                              {{$pids->quote_number}}
-                              @else
-                              {{$pids->no_po}}
-                              @endif
-                            </td>
-                            <td>{{$pids->opp_name}}</td>
-                            <td>{{$pids->name}}</td>
-                            <td>
-                              @if($pids->date_po == '')
-                              {{$pids->date}}
-                              @else
-                              {{$pids->date_po}}
-                              @endif
-                            </td>
-                            <td>
-                              @if($pids->amount_pid == '')
-                              <i class="money">{{$pids->amount}}</i>
-                              @else
-                              <i class="money">{{$pids->amount_pid}}</i>
-                              @endif
-                            </td>
-                            <td>{{$pids->note}}</td>
-                            <td>
-                              <button class="btn btn-xs btn-primary" data-target="#showRequestProjectID" style="width: 100%" data-toggle="modal" onclick="acceptProjectID('{{$pids->id_pid}}')">Show</button>
-                            </td>
-                          </tr>
-                        @endforeach
-                      </tbody>
-                      <tfoot>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                      </tfoot>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="tab-pane" id="tab_4">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="table-responsive">
-                    <table class="table table-bordered table-striped display no-wrap dataTable" id="history_pid" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>Quote No.</th>
-                          <th>Date</th>
-                          <th>Amount</th>
-                          <th>Note</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($pid_request_done as $pid)
-                          <tr>
-                            <td>{{$pid->no_quotation}}</td>
-                            <td>{{$pid->date_quotation}}</td>
-                            <td><i class="money">{{$pid->amount}}</i></td>
-                            <td>{{$pid->note}}</td>
-                            <td>
-                              <small class="label label-success"><i class="fa fa-clock-o"></i>Done</small>
-                            </td>
-                          </tr>
-                        @endforeach
-                        @foreach($pid_request_lead_done as $pid)
-                          <tr>
-                            <td>{{$pid->no_po}}</td>
-                            <td>{{$pid->date_po}}</td>
-                            <td><i class="money">{{$pid->amount_pid}}</i></td>
-                            <td>{{$pid->note}}</td>
-                            <td>
-                              <small class="label label-success"><i class="fa fa-clock-o"></i>Done</small>
-                            </td>
-                          </tr>
-                        @endforeach
-                      </tbody>
-                      <tfoot>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                      </tfoot>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
         </div>
       </div>
     </div>
@@ -860,7 +537,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 <div class="modal-content">
     <div class="modal-body">
       <div class="form-group">
-        <div class="">Project ID Sedang diProses. . .</div>
+        <div class="">Sedang memproses. . .</div>
       </div>
     </div>
   </div>
@@ -877,38 +554,406 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
-  <!-- <script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.20/sorting/numeric-comma.js"></script> -->
   <script type="text/javascript">
 
-    /*function showRequestProjectID(id){
+    initPID();
+
+    function initPID(){
+      var table = $("#table-pid").DataTable({
+      	"footerCallback": function( row, data, start, end, display ) {
+              var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
+
+              var api = this.api(),data;  
+              // Remove the formatting to get integer data for summation
+
+              var total = api.column(7, {page:'current'}).data().sum();
+
+              var filtered = api.column(7, {"filter": "applied"} ).data().sum();
+
+              var totalpage = api.column(7).data().sum();
+
+              var filteredgrand = api.column(8, {"filter": "applied"} ).data().sum();
+
+              var totalpagegrand = api.column(8).data().sum();
+
+              $( api.column( 6 ).footer() ).html("Total Amount");
+
+              $( api.column( 7 ).footer() ).html(totalpage);
+
+              $( api.column( 7 ).footer() ).html(filtered);
+
+              $( api.column( 8 ).footer() ).html(totalpagegrand);
+
+              $( api.column( 8 ).footer() ).html(filteredgrand);
+
+        },
+        "ajax":{
+            "type":"GET",
+            "url":"{{url('getPIDIndex')}}",
+          },
+          "columns": [
+            { "data": "date" },
+            { "data": "id_project" },
+            { "data": "lead_id" },
+            {
+              render: function ( data, type, row ) {
+                if (row.id_company == 1) {
+                  if (row.no_po_customer == null) {
+                    return row.quote_number_final;  
+                  }else{
+                    return row.no_po_customer;  
+                  }
+                }else{
+                  if (row.lead_id == "MSPPO") {
+                    return row.no_po_customer;
+                  }else{
+                    return row.no_po;  
+                  }
+                }
+              }
+            },
+            {
+              render: function ( data, type, row ) {
+                if (row.id_company == 1) {
+                  return "-";
+                }else{
+                  if (row.lead_id == "MSPQUO") {
+                    return row.no_po_customer;
+                  }else{
+                    return row.quote_number;  
+                  }
+                }
+              }
+            },
+            {
+              render: function ( data, type, row ) {
+                if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+                  return row.customer_name;  
+                }else{
+                  return row.customer_legal_name;  
+                }
+              }
+            },
+            { "data": "name_project" },
+            { "data": "amount_idr" },
+            { "data": "amount_idr_before_tax" },
+            { "data": "note" },
+            {
+              render: function ( data, type, row ) {
+                if (row.invoice == 'H') {
+                  return "Setengah Bayar";  
+                }else if (row.invoice == 'F') {
+                  return "Sudah Bayar";
+                }else if (row.invoice == 'N') {
+                  return "Belum Bayar";
+                }else{
+                  return "";
+                }
+              }
+            },
+            {
+              render: function ( data, type, row ) {
+                if (row.progres == null) {
+                  return "UnProgress";  
+                }else {
+                  return row.progres;
+                }
+              }
+            },
+            {
+              render: function ( data, type, row ) {
+                if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+                  return row.sales_name;  
+                }else{
+                  return row.name;  
+                }
+              }
+            },
+            {
+              render: function ( data, type, row ) {
+              	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+              		@if(Auth::User()->id_division == 'FINANCE')
+	              		@if(Auth::User()->id_position == 'MANAGER')
+	              			return '<i>No Action</i>';
+	              		@else
+	              			return '<i>No Action</i>';
+		              	@endif
+	              	@elseif(Auth::User()->id_division == 'PMO')
+	              		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+	              	@else
+	              	 return 'mbuh'; 
+	              	@endif  
+
+              	}else{
+
+              		@if(Auth::User()->id_division == 'FINANCE')
+	              		@if(Auth::User()->id_position == 'MANAGER')
+	              			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
+	              		@else
+	              			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
+	              		@endif
+	              	@elseif(Auth::User()->id_division == 'PMO')
+	              		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+	              	@else
+	              	 return 'mbuh'; 
+	              	@endif  
+
+              	}
+              	                
+              }
+            },
+          ],
+          "info":false,
+          "scrollX": true,
+          "pageLength": 25,
+          "order": [[ 1, "desc" ]],
+          "orderFixed": [[1, 'desc']],
+          "processing": true,
+          "language": {
+            'loadingRecords': '&nbsp;',
+            'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+          }, 
+          "paging": false,
+          fixedColumns:   {
+            leftColumns: 2,
+            rightColumns: 1
+          },  
+
+      });
+
+	  var request_table = $("#request_id").DataTable({
+      "footerCallback": function( row, data, start, end, display ) {
+              var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
+
+              var api = this.api(),data;
+              // Remove the formatting to get integer data for summation
+
+              var total = api.column(6, {page:'current'}).data().sum();
+
+              var filtered = api.column(6, {"filter": "applied"} ).data().sum();
+
+              var totalpage = api.column(6).data().sum();
+
+              $( api.column( 5 ).footer() ).html("Total Amount");
+
+              $( api.column( 6 ).footer() ).html(numFormat(totalpage));
+
+              $( api.column( 6 ).footer() ).html(numFormat(filtered));
+
+        },
+	    "ajax":{
+        "type":"GET",
+        "url":"{{url('getShowPIDReq')}}",
+	      },
+	      "columns": [
+	        { "data": "created_at" },
+	        { "data": "code_company" },
+	        {
+	          render: function ( data, type, row ) {
+	          	if (row.no_po == null) {
+	                return row.quote_number;
+	            }else{
+	                return row.no_po;  
+	            }
+	          }
+	        },
+	        { "data": "opp_name"},
+	        { "data": "name"},
+	        {
+	          render: function ( data, type, row ) {
+	          	if (row.date_po == null) {
+	                return row.date;
+	            }else{
+	                return row.date_po;  
+	            }
+	          }
+	        },
+	        { "data": "amount_pid"},
+	        {
+	          render: function ( data, type, row ) {
+	          	if (row.status == 'requested') {
+	          		return '<button class="btn btn-xs btn-primary btn-show" style="width: 100%" data-toggle="modal" value="'+row.id_pid+'">Show</button>'
+	          	}else if(row.status == 'done'){
+	          		return '<small class="label label-success"><i class="fa fa-clock-o"></i>Done</small>'
+	          	}
+	          	
+	          }
+	        },
+	      ],
+	      "info":false,
+	      "scrollX": true,
+	      "pageLength": 25,
+	      "order": [[ 1, "desc" ]],
+	      "orderFixed": [[1, 'desc']],
+	      "processing": true,
+	      "language": {
+            'loadingRecords': '&nbsp;',
+            'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+          },
+	      "paging": false,
+	      fixedColumns:   {
+	        rightColumns: 1
+	      }, 
+		});	
+
+	  @if(Auth::User()->id_division == 'PMO' || Auth::User()->id_division == 'MSM')
+
+		var column1 = table.column(7);
+	        // Toggle the visibility
+	    column1.visible( ! column1.visible() );
+
+	    var column2 = table.column(8);
+	        // Toggle the visibility
+	    column2.visible( ! column2.visible() );
+
+      @endif
+
+      @if(Auth::User()->id_division == "SALES" || Auth::User()->id_division == "TECHNICAL" || Auth::User()->id_division == "MSM" || Auth::User()->id_position == "DIRECTOR")
+      	var column3 = table.column(13);
+	        // Toggle the visibility
+	    column3.visible(! column3.visible());
+      @endif
+
+      	$('#searchBarTicket').keyup(function(){
+	      table.search($('#searchBarTicket').val()).draw();
+	    })
+
+	    $('#applyFilterTablePerformance').click(function(){
+	      table.search($('#searchBarTicket').val()).draw();
+	    })
+
+	    function changeNumberEntries(number){
+	      $("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
+	      $("#table-pid").DataTable().page.len( number ).draw();
+	    }
+
+	    $('#searchBarTicketmsp').keyup(function(){
+	      table.search($('#searchBarTicketmsp').val()).draw();
+	    })
+
+	    $('#applyFilterTablePerformancemsp').click(function(){
+	      table.search($('#searchBarTicketmsp').val()).draw();
+	    })
+      
+    }
+
+    function submitRequestID(){
+      if($("#inputCustomer").val() == ""){
+        customer_name = "MSPQUO"
+      } else {
+        customer_name = $("#inputCustomer").val()
+      }
+
+      $('#tunggu').modal('show');
+      $('#showRequestProjectID').modal('hide')
+
       $.ajax({
         type:"GET",
-        url:"{{url('/salesproject/getRequestProjectID')}}",
+        url:"{{url('/store_sp')}}",
         data:{
-          id:id
+          _token: "{{ csrf_token() }}",
+          customer_name:customer_name,
+          // sales:$("#inputCustomer").val(),
+          date:moment($("#inputDate").val()).format('L'),
+          amount:$("#inputAmount").val(),
+          note:$("#inputNote").val(),
+          p_order:$("#inputPO").val(),
+          quote:$("#inputQuo").val(),
+          id_cus:$("#code_name").val(),
+          // id_customer_quotation:$("#code_name").val(),
+          // payungs:$("#inputCustomer").val(),
         },
         success:function(result){
-          $("#code_name").val(result.id_customer)
-          $("#inputPO").val(result.no_po)
-          $("#inputProject").val(result.project)
-          $("#inputSales").val(result.name)
-          $("#inputQuo").val(result.no_quotation)
-          $("#inputDate").val(result.date)
-          $("#inputAmount").val(result.amount)
-          $("#inputNote").val(result.note)
+          $('#tunggu').modal('hide');
+      	  $('#showRequestProjectID').modal('hide')
+          location.reload()
         }
       })
-    }*/
+    }
 
-    function acceptProjectID(id){
-      $.ajax({
+    $('#table-pid').on('click', '.btn-edit', function(){
+    	$('#tunggu').modal('show');
+        console.log(this.value);
+        $.ajax({
+          type:"GET",
+          url:'{{url("getEditPID")}}',
+          data:{
+            id_pro:this.value,
+          },
+          success: function(result){
+          	  $('#tunggu').modal('hide');
+              console.log(result)
+              $.each(result[0], function(key, value){
+              $('#id_project_edit').val(value.id_project);
+	          $('#name_project_edit').val(value.name_project);
+	          $('#note_edit').val(value.note);
+              @if(Auth::User()->id_position == 'STAFF')
+		      	$('#po_customer_edit').val(value.no_po_customer);
+		      @else
+		      	$('#po_customer_edit').val(value.no_po_customer);
+		      	$('#amount_edit').val(value.amount_idr);
+		      @endif
+		      if (value.invoice == 'H') {
+		        $('#invoice_edit_h').prop('checked', true);
+		      }
+		      else if (invoice == 'F') {
+		        $('#invoice_edit_f').prop('checked', true);
+		      }else if (value.invoice == 'N') {
+		        $('#invoice_edit_n').prop('checked', true);
+		      }
+              })
+	          
+            }
+        })
+        $("#edit_salessp").modal("show");
+      });
+
+    $('#table-pid').on('click', '.btn-delete', function(e){
+    	Swal.fire({
+		  title: 'Are you sure?',
+		  text: "You won't be able to revert this!",
+		  icon: 'warning',
+		  showCancelButton: true,
+		  confirmButtonColor: '#3085d6',
+		  cancelButtonColor: '#d33',
+		  confirmButtonText: 'Yes!'
+		}).then((result) => {
+		  if (result.value) {
+		  	var id_pro = this.value;
+		  	$('#tunggu').modal('show');
+	        $.ajax({
+	          type:"GET",
+	          url:"{{url('delete_project/')}}/"+id_pro,
+	          success: function(result){
+	          	$('#tunggu').modal('hide');
+	          	Swal.fire(
+			      'Deleted!',
+			      'Your file has been deleted.',
+			      'success'
+			    ),
+	            setTimeout(function(){
+	                $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}").load();
+	            },2000);
+	          }
+	        })
+		  }
+		})
+        console.log(this.value)
+        
+      })
+
+	$('#request_id').on('click', '.btn-show', function(){
+		$('#tunggu').modal('show');
+    	$.ajax({
         type:"GET",
         url:"{{url('/salesproject/getAcceptProjectID')}}",
         data:{
-          id:id
+          id:this.value,
         },
         success:function(result){
+          $('#tunggu').modal('hide');
           $("#code_name").val(result.code)
           $("#inputCustomer").val(result.lead_id)
           $("#inputPO").val(result.no_po)
@@ -933,344 +978,93 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           $("#inputNote").val(result.note)
         }
       })
-    }
 
-    function submitRequestID(){
-      if($("#inputCustomer").val() == ""){
-        customer_name = "MSPQUO"
-      } else {
-        customer_name = $("#inputCustomer").val()
-      }
-      $.ajax({
-        type:"GET",
-        url:"{{url('/store_sp')}}",
-        data:{
-          _token: "{{ csrf_token() }}",
-          customer_name:customer_name,
-          // sales:$("#inputCustomer").val(),
-          date:moment($("#inputDate").val()).format('L'),
-          amount:$("#inputAmount").val(),
-          note:$("#inputNote").val(),
-          p_order:$("#inputPO").val(),
-          quote:$("#inputQuo").val(),
-          id_cus:$("#code_name").val(),
-          // id_customer_quotation:$("#code_name").val(),
-          // payungs:$("#inputCustomer").val(),
-        },
-        success:function(result){
-          location.reload()
-        }
-      })
-    }
-
-    $(".check-reset").click(function(){
-        $('input[type=radio]').prop('checked', false);
+      $("#showRequestProjectID").modal("show");
     });
 
-    $('#btn_submit').click(function(){
-      $('#tunggu').modal('show')
-      $('#showRequestProjectID').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 10000);
-    });
-
-    $('.date').datepicker("setDate",new Date());
-    $('.money2').mask("000,000,000,000,000", {reverse: true});
-    $('.money3').mask("000,000,000,000,000.00", {reverse: true});
-    $('.money').mask('000,000,000,000,000', {reverse: true});
-
-    var datasip = $('#sip-data').dataTable({
-        "order": [[ 1, "desc" ]],
-        "pageLength": 25,
-        "bLengthChange": false,
-        fixedColumns:   {
-          leftColumns: 2,
-          rightColumns: 1
-        },
-        "scrollX":true,
-        "autoWidth": false,
-        responsive:true,
-        // "scrollX":true,
-         "fnInitComplete": function(){
-              // Disable TBODY scoll bars
-              $('.dataTables_scrollBody').css({
-                  'overflow': 'hidden',
-                  'border': '0'
-              });
-              
-              // Enable TFOOT scoll bars
-              $('.dataTables_scrollFoot').css('overflow', 'auto');
-              
-              // Sync TFOOT scrolling with TBODY
-              $('.dataTables_scrollFoot').on('scroll', function () {
-                  $('.dataTables_scrollBody').scrollLeft($(this).scrollLeft());
-              });                    
-          },
-          @if (Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-        "footerCallback": function( row, data, start, end, display ) {
-              var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
-
-              var api = this.api(),data;  
-              // Remove the formatting to get integer data for summation
-
-              var total = api.column(6, {page:'current'}).data().sum();
-
-              var filtered = api.column(6, {"filter": "applied"} ).data().sum();
-
-              var totalpage = api.column(6).data().sum();
-
-              var filteredgrand = api.column(7, {"filter": "applied"} ).data().sum();
-
-              var totalpagegrand = api.column(7).data().sum();
-
-              $( api.column( 5 ).footer() ).html("Total Amount");
-
-              $( api.column( 6 ).footer() ).html(totalpage);
-
-              $( api.column( 6 ).footer() ).html(filtered);
-
-              $( api.column( 7 ).footer() ).html(totalpagegrand);
-
-              $( api.column( 7 ).footer() ).html(filteredgrand);
-
-        },
-        @endif
-    });
-
-    $('#searchBarTicket').keyup(function(){
-    datasip.search($('#searchBarTicket').val()).draw();
-    })
-
-    $('#applyFilterTablePerformance').click(function(){
-      datasip.search($('#searchBarTicket').val()).draw();
-    })
-
-    function changeNumberEntries(number){
-      $("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
-      $("#sip-data").DataTable().page.len( number ).draw();
-    }
-
-    var datamsp = $('#msp-data').DataTable({
-      "order": [[ 1, "desc" ]],
-        "pageLength": 25,
-        "bLengthChange": false, 
-        "scrollX":true,
-        "retrive" : true,
-        fixedColumns:   {
-          leftColumns: 2,
-          rightColumns: 2
-        },
-        "fnInitComplete": function(){
-                  // Disable TBODY scoll bars
-                  $('.dataTables_scrollBody').css({
-                      'overflow': 'hidden',
-                      'border': '0'
-                  });
-                  
-                  // Enable TFOOT scoll bars
-                  $('.dataTables_scrollFoot').css('overflow', 'auto');
-                  
-                  // Sync TFOOT scrolling with TBODY
-                  $('.dataTables_scrollFoot').on('scroll', function () {
-                      $('.dataTables_scrollBody').scrollLeft($(this).scrollLeft());
-                  });                    
-          },
-          @if (Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-          "footerCallback": function( row, data, start, end, display ) {
-                // var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
-
-                var api = this.api(),data;
-                // Remove the formatting to get integer data for summation
-
-                var total = api.column(6, {page:'current'}).data().sum();
-
-                var filtered = api.column(7, {"filter": "applied"} ).data().sum();
-
-                var totalpage = api.column(7).data().sum();
-
-                var filteredgrand = api.column(8, {"filter": "applied"} ).data().sum();
-
-                var totalpagegrand = api.column(8).data().sum();
-
-                $( api.column( 6 ).footer() ).html("Total Amount");
-
-                $( api.column( 7 ).footer() ).html(totalpage);
-
-                $( api.column( 7 ).footer() ).html(filtered);
-
-                $( api.column( 8 ).footer() ).html(totalpagegrand);
-
-                $( api.column( 8 ).footer() ).html(filteredgrand);
-
-
-          },
-           @endif
-    });
-
-    $('#searchBarTicketmsp').keyup(function(){
-      datamsp.search($('#searchBarTicketmsp').val()).draw();
-    })
-
-    $('#applyFilterTablePerformancemsp').click(function(){
-      datamsp.search($('#searchBarTicketmsp').val()).draw();
-    })
-
-    $('#request_id').DataTable({
-      "scrollX":true,
-      "order": [[ 0, "desc" ]],
-      "footerCallback": function( row, data, start, end, display ) {
-            var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
-
-            var api = this.api(),data;
-            // Remove the formatting to get integer data for summation
-
-            var total = api.column(6, {page:'current'}).data().sum();
-
-            var filtered = api.column(6, {"filter": "applied"} ).data().sum();
-
-            var totalpage = api.column(6).data().sum();
-
-            $( api.column( 5 ).footer() ).html("Total Amount");
-
-            $( api.column( 6 ).footer() ).html(numFormat(totalpage));
-
-            $( api.column( 6 ).footer() ).html(numFormat(filtered));
-
-      },
-    });
-
-    $('#history_pid').DataTable({
-      "order": [[ 0, "desc" ]],
-      "footerCallback": function( row, data, start, end, display ) {
-              var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
-
-              var api = this.api(),data;
-              // Remove the formatting to get integer data for summation
-
-              var total = api.column(2, {page:'current'}).data().sum();
-
-              var filtered = api.column(2, {"filter": "applied"} ).data().sum();
-
-              var totalpage = api.column(2).data().sum();
-
-              $( api.column( 1 ).footer() ).html("Total Amount");
-
-              $( api.column( 2 ).footer() ).html(numFormat(totalpage));
-
-              $( api.column( 2 ).footer() ).html(numFormat(filtered));
-
-        },
-    })
-
-
-    // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-   //      $($.fn.dataTable.tables(true)).DataTable()
-   //         .columns.adjust()
-   //         .responsive.recalc();
-   //  });
-
-    function changeNumberEntriesmsp(number){
-    $("#btnShowEntryTicketmsp").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
-    $("#msp-data").DataTable().page.len( number ).draw();
-  }
-
-    @if(Auth::User()->id_position == 'STAFF')
-    function Edit_sp(id_project,no_po_customer,name_project,note,invoice,lead_id,opp_name)
-    {
-      $('#id_project_edit').val(id_project);
-      $('#po_customer_edit').val(no_po_customer);
-      $('#name_project_edit').val(name_project);
-      $('#note_edit').val(note);
-      if (invoice == 'H') {
-        $('#invoice_edit_h').prop('checked', true);
+    function changeTabs(id) {
+      console.log(id)
+      if (id == "sip") {
+      	$('#export-table').css("display","block")
+      	$('#search-table').css("display","block")
+      	$('#request-table').css("display","none")
+      	$('#history-table').css("display","none")
+      	$('#pid-table').css("display","block")
+      	$('.export-msp').css("display","none")
+      	$('.export').css("display","block")
+        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
+      }else if(id == "msp"){
+      	$('.export-msp').css("display","block")
+      	$('.export').css("display","none")
+      	$('#export-table').css("display","block")
+      	$('#search-table').css("display","block")
+      	$('#request-table').css("display","none")
+      	$('#history-table').css("display","none")
+      	$('#pid-table').css("display","block")
+        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
+      }else if (id == "request") {
+      	$('#request-table').css("display","block")
+      	$('#pid-table').css("display","none")
+      	$('#export-table').css("display","none")
+      	$('#search-table').css("display","none")
+      	$('#request_id').DataTable().ajax.url("{{url('getShowPIDReq')}}?id="+id).load();
+      }else if (id == "history") {
+      	$('#request-table').css("display","block")
+      	$('#pid-table').css("display","none")
+      	$('#export-table').css("display","none")
+      	$('#search-table').css("display","none")
+      	$('#request_id').DataTable().ajax.url("{{url('getShowPIDReq')}}?id="+id).load();
       }
-      else if (invoice == 'F') {
-        $('#invoice_edit_f').prop('checked', true);
-      }else if (invoice == 'N') {
-        $('#invoice_edit_n').prop('checked', true);
-      }
-    }
-    @else
-    function Edit_sp(id_project,no_po,name_project,amount_idr,note,invoice,lead_id,opp_name)
-    {
-      $('#id_project_edit').val(id_project);
-      $('#po_customer_edit').val(no_po);
-      $('#name_project_edit').val(name_project);
-      $('#amount_edit').val(amount_idr);
-      $('#note_edit').val(note);
-      if (invoice == 'H') {
-        $('#invoice_edit_h').prop('checked', true);
-      }
-      else if (invoice == 'F') {
-        $('#invoice_edit_f').prop('checked', true);
-      }else if (invoice == 'N') {
-        $('#invoice_edit_n').prop('checked', true);
-      }
-    }
-    @endif
 
-  function delete_project(lead_id,id_pro)
-  {
-     $('#id_pro').val(lead_id);
-     $('#id_delete_pro').val(id_pro);
-  }
-
-  function status(id_pro)
-  {
-    $('#id_pro_status').val(id_pro);
-  }
-
-  $('#customer_name').select2();
-  $('#contact_msp').select2();
+    }   
 
   $("#alert").fadeTo(5000, 500).slideUp(500, function(){
   $("#alert").slideUp(300);
-  });
+  });	
 
-  $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
-        $($.fn.dataTable.tables( true ) ).css('width', '100%');
-        $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
-    }); 
-
-    $(".dismisbar").click(function(){
+  $(".dismisbar").click(function(){
       $(".notification-bar").slideUp(300);
-    }); 
+  }); 
 
-    $('#myTab a').click(function(e) {
+  $('#myTab a').click(function(e) {
     e.preventDefault();
     $(this).tab('show');
   });
 
   // store the currently selected tab in the hash value
-  $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
-    var id = $(e.target).attr("href").substr(1);
-    window.location.hash = id;
-  });
+  // $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+  //   var id = $(e.target).attr("href").substr(1);
+  //   window.location.hash = id;
+
+  //   console.log(id);
+
+  //   if (id == "sip") {
+  //   	$('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
+  //   }else if (id == "msp") {
+  //   	$('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
+  //   }else if (id == "request") {
+  //   	$('#request_id').DataTable().ajax.url("{{url('getShowPIDReq')}}?id="+id).load();
+  //   }else if (id == "history") {
+  //   	$('#request_id').DataTable().ajax.url("{{url('getShowPIDReq')}}?id="+id).load();
+  //   }
+  // });
 
   // on load of the page: switch to the currently selected tab
-  var hash = window.location.hash;
-  $('#myTab a[href="' + hash + '"]').tab('show');
+  // var hash = window.location.hash;
+  // $('#myTab a[href="' + hash + '"]').tab('show');
 
-  $(".cn").change(function(){
-    // var x = document.getElementById("customer_name").value;
-  //       console.log(x);
+  // $('#btn_submit').click(function(){
+  //     $('#tunggu').modal('show')
+  //     $('#showRequestProjectID').modal('hide')
+  //     setTimeout(function() {$('#tunggu').modal('hide');}, 10000);
+  //  });
 
-        var cn = this.value;
-        console.log(cn);
+   $('#table-pid').on('click', '.btn-status', function(){
 
-        $.ajax({
-          type:"GET",
-          url:'/getleadpid',
-          data:{
-            lead_sp:cn,
-          },
-          success: function(result){
-            $.each(result[0], function(key, value){
-              $('.date').val(moment(value.date_po).format('L'));
-              $('.amount_pid').val(value.amount_pid);
-            }); 
-          },
-        }); 
-  }) 
+   	$("#id_pro_status").val(this.value);
+   	$("#modal_status").modal("show");
+
+   })
 
   </script>
 @endsection

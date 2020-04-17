@@ -290,6 +290,12 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/profile','HRController@edit_password');
 	Route::post('/changePassword','HRController@changePassword');
 	Route::get('/salesproject', 'SalesController@sales_project_index');
+	
+	Route::get('/getPIDIndex','SalesController@getPIDIndex');
+	Route::get('/getEditPID','SalesController@getEditPID');
+	Route::get('/getShowPIDReq','SalesController@getShowPIDReq');
+
+
 	Route::get('/salesproject/getRequestProjectID', 'SalesController@getRequestProjectID');
 	Route::get('/salesproject/submitRequestID', 'SalesController@submitRequestID');
 
@@ -298,7 +304,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/store_sp', 'SalesController@store_sales_project');
 	Route::post('/update_sp', 'SalesController@update_sp');
 	Route::post('/update_status_sp', 'SalesController@update_status_sales_project');
-	Route::get('/delete_project', 'SalesController@destroy_sp');
+	Route::get('/delete_project/{id_pro}', 'SalesController@destroy_sp');
 	Route::get('/detail_sales_project/{id_pro}','SalesController@detail_sales_project');
 	Route::get('/getleadpid','SalesController@getleadpid');
 	Route::post('/update_result_idpro', 'SalesController@update_result_request_id');
