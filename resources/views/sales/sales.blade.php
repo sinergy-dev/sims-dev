@@ -3320,7 +3320,6 @@
               </div>
               <input type="text" class="form-control pull-right closing_date" name="closing_date" id="closing_date">
             </div>
-            {{-- <input type="date" class="form-control" name="closing_date" id="closing_date" required> --}}
           </div>
 
           @if(Auth::User()->email == "tech@sinergy.co.id")
@@ -3948,8 +3947,12 @@
       autoclose: true
     }).attr('readonly','readonly');
 
+    var nowDate = new Date();
+    var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+
     $('#closing_date').datepicker({
-      autoclose: true
+      autoclose: true,
+      startDate: today 
     }).attr('readonly','readonly').css('background-color','#fff');
 
     $('#date_po').datepicker({

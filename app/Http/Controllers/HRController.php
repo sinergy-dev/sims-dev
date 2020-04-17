@@ -476,7 +476,7 @@ class HRController extends Controller
         //upload file gambar npwp user
 
         $file = $request->file('npwp_file');
-        $fileName = $file->getClientOriginalName();
+        $fileName = $nik."_npwp_ver1".".jpg";
         $request->file('npwp_file')->move("image/", $fileName);
 
         $tambah->npwp_file = $fileName;
@@ -718,7 +718,8 @@ class HRController extends Controller
         else
         {
             $file       = $request->file('npwp_file');
-            $fileName   = $file->getClientOriginalName();
+            
+            $fileName   = $nik."_npwp_ver1".".jpg";
 
             $request->file('npwp_file')->move("image/", $fileName);
             $update->npwp_file = $fileName;
@@ -1040,7 +1041,7 @@ class HRController extends Controller
         // $nims = str_replace('/', '', $nim);
 
         $update = User::where('nik',$nik)->first();
-        $update->nik            = $nims;
+        $update->nik            = $nik;
         $update->name           = $req['name'];
         $update->email          = $req['email'];
         $update->date_of_birth  = $req['date_of_birth'];
@@ -1056,7 +1057,7 @@ class HRController extends Controller
         else
         {
             $file       = $req->file('npwp_file');
-            $fileName   = $file->getClientOriginalName();
+            $fileName   = $nik."_npwp_ver1".".jpg";
 
             $req->file('npwp_file')->move("image/", $fileName);
             $update->npwp_file = $fileName;
