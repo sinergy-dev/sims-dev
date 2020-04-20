@@ -2083,11 +2083,11 @@
 
 	          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
 	                        @csrf
-	                        <div class="form-group row hidden">
+	                        <div class="form-group row">
 	                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="nik_update" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" autofocus>
+	                                <input id="nik_update" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
 
 	                                @if ($errors->has('nik'))
 	                                    <span class="invalid-feedback">
@@ -2133,7 +2133,7 @@
 	                        	</div>
 
 	                            <div class="col-md-4">
-	                                <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onchange="companySelect(this)" required autofocus>
+	                                <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onchange="companySelect(this)" autofocus>
 	                                    <option value="">-- Select Company --</option>
 	                                    <option value="1" data-target="sip" id="1">SIP</option>
 	                                    <option value="2" data-target="msp" id="2">MSP</option>
@@ -2155,7 +2155,7 @@
 	                        	</div>
 
 	                            <div class="col-md-4">
-	                                <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="divisi_update" value="{{ old('company') }}"  required autofocus>
+	                                <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="divisi_update" value="{{ old('company') }}" autofocus>
 	                                </select>
 	                                @if ($errors->has('company'))
 	                                    <span class="invalid-feedback">
@@ -2175,7 +2175,7 @@
 	                        	</div>
 
 	                            <div class="col-md-4">
-	                                <select id="sub_divisi_update" onchange="subdivisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="sub_divisi_update" value="{{ old('company') }}" required autofocus>
+	                                <select id="sub_divisi_update" onchange="subdivisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="sub_divisi_update" value="{{ old('company') }}" autofocus>
 	                                </select>
 	                                @if ($errors->has('company'))
 	                                    <span class="invalid-feedback">
@@ -2195,7 +2195,7 @@
 	                        	</div>
 
 	                            <div class="col-md-4">
-	                                <select id="posisi_update" onchange="posisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="posisi_update" value="{{ old('company') }}"  required autofocus>
+	                                <select id="posisi_update" onchange="posisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="posisi_update" value="{{ old('company') }}" autofocus>
 	                                </select>
 	                                @if ($errors->has('company'))
 	                                    <span class="invalid-feedback">
@@ -2625,18 +2625,18 @@
        	$("#modal_edit_status").modal("show");
        })
 
-       function update_HR(nik,name,email,date_of_entry,date_of_birth,address,phone,no_npwp,npwp_file){
-         $("#nik_update").val(nik);
-         $("#name_update").val(name);
-         $("#email_update").val(email);
-         $("#date_of_entry_update").val(date_of_entry);
-         $("#date_of_birth_update").val(date_of_birth);
-         $("#address_update").val(address);
-         $("#phone_number_update").val(phone);
-         $("#password_update").val(password);
-         $("#no_npwp_update").val(no_npwp);
-         $("#inputgambarnpwp_update").val(npwp_file);
-       } 
+       // function update_HR(nik,name,email,date_of_entry,date_of_birth,address,phone,no_npwp,npwp_file){
+       //   $("#nik_update").val(nik);
+       //   $("#name_update").val(name);
+       //   $("#email_update").val(email);
+       //   $("#date_of_entry_update").val(date_of_entry);
+       //   $("#date_of_birth_update").val(date_of_birth);
+       //   $("#address_update").val(address);
+       //   $("#phone_number_update").val(phone);
+       //   $("#password_update").val(password);
+       //   $("#no_npwp_update").val(no_npwp);
+       //   $("#inputgambarnpwp_update").val(npwp_file);
+       // } 
 
        $('.btn-editan').click(function(){
         $.ajax({
@@ -2644,6 +2644,11 @@
           url:"{{url('/hu_rec/get_hu')}}",
           data:{
             id_hu:this.value,
+          },
+          "processing": true,
+	      "language": {
+            'loadingRecords': '&nbsp;',
+            'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
           },
           success: function(result){
             $.each(result[0], function(key, value){

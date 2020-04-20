@@ -533,7 +533,7 @@ class HRController extends Controller
      */
     public function update_humanresource(Request $request)
     {
-        $id_company = $request['company_update'];
+        $id_company = substr($request['nik_update'],0,1);
         $year_entry = substr($request['date_of_entry_update'],2,2);
         $month_entry = substr($request['date_of_entry_update'],5,2);
         $year_birth = substr($request['date_of_birth_update'],2,2);
@@ -580,46 +580,49 @@ class HRController extends Controller
         }
         $update->name = $request['name'];
         $update->email = $request['email'];
-        $update->id_company = $request['company_update'];
+        if ($request['company_update'] != "") {
+            $update->id_company = $request['company_update'];
 
-        if ($request['divisi_update'] == 'OPERATION') {
-           if ($request['sub_divisi_update'] == 'OPERATION') {
-               $update->id_position = 'OPERATION DIRECTOR';
-           }
-        }else if ($request['divisi_update'] == 'TECHNICAL') {
-            if ($request['sub_divisi_update'] == 'DPG') {
-                if ($request['posisi_update'] == 'MANAGER') {
-                   $update->id_position = 'ENGINEER MANAGER';
+            if ($request['divisi_update'] == 'OPERATION') {
+               if ($request['sub_divisi_update'] == 'OPERATION') {
+                   $update->id_position = 'OPERATION DIRECTOR';
+               }
+            }else if ($request['divisi_update'] == 'TECHNICAL') {
+                if ($request['sub_divisi_update'] == 'DPG') {
+                    if ($request['posisi_update'] == 'MANAGER') {
+                       $update->id_position = 'ENGINEER MANAGER';
+                    }else{
+                       $update->id_position = 'ENGINEER STAFF'; 
+                    }
+                }if ($request['sub_divisi_update'] == 'PRESALES') {
+                    $update->id_territory = 'TECHNICAL PRESALES';
                 }else{
-                   $update->id_position = 'ENGINEER STAFF'; 
+                    $update->id_position = $request['posisi_update'];
                 }
-            }if ($request['sub_divisi_update'] == 'PRESALES') {
-                $update->id_territory = 'TECHNICAL PRESALES';
+                
             }else{
                 $update->id_position = $request['posisi_update'];
+                $update->id_division = $request['divisi_update'];
+                $update->id_territory = $request['sub_divisi_update'];
             }
             
-        }else{
-            $update->id_position = $request['posisi_update'];
-            $update->id_division = $request['divisi_update'];
-            $update->id_territory = $request['sub_divisi_update'];
+
+            if ($request['sub_divisi_update'] == 'MSM') {
+                $update->id_division = 'MSM';
+                $update->id_territory = 'OPERATION';
+            }else if ($request['sub_divisi_update'] == 'PMO') {
+                $update->id_division = 'PMO';
+                $update->id_territory = 'OPERATION';
+            }else if ($request['sub_divisi_update'] == 'OPERATION') {
+                $update->id_division = 'PMO';
+                $update->id_territory = 'OPERATION';
+            }else if ($request['sub_divisi_update'] == 'WAREHOUSE') {
+                $update->id_position = 'WAREHOUSE';
+                $update->id_territory = '';
+                $update->id_division = '-';
+            }
         }
         
-
-        if ($request['sub_divisi_update'] == 'MSM') {
-            $update->id_division = 'MSM';
-            $update->id_territory = 'OPERATION';
-        }else if ($request['sub_divisi_update'] == 'PMO') {
-            $update->id_division = 'PMO';
-            $update->id_territory = 'OPERATION';
-        }else if ($request['sub_divisi_update'] == 'OPERATION') {
-            $update->id_division = 'PMO';
-            $update->id_territory = 'OPERATION';
-        }else if ($request['sub_divisi_update'] == 'WAREHOUSE') {
-            $update->id_position = 'WAREHOUSE';
-            $update->id_territory = '';
-            $update->id_division = '-';
-        }
         
         
 
