@@ -1,6 +1,6 @@
 @extends('template.template_admin-lte')
 @section('content')
-  	<style type="text/css">
+  <style type="text/css">
 
 	    .header th:first-child{
 	      background-color: #dddddd;
@@ -46,7 +46,7 @@
 	        background-color: #ddd !important;
 	    }
             .dataTables_filter {display: none;}
-  	</style>
+  </style>
   
   <section class="content-header">
     <h1>
@@ -100,13 +100,13 @@
                     </li>
                   @endforeach
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#msp" role="tab" aria-controls="msp" aria-selected="true" >MSP</a>
+                        <a class="nav-link" data-toggle="tab" href="#msp" role="tab" aria-controls="msp" aria-selected="true" onclick="changeTerritory('msp')">MSP</a>
                     </li>
                 </ul>
                 @endif
 
                 <div class="tab-content">
-                  <div class="tab-pane active"  role="tabpanel" >
+                  <div class="tab-pane active"  role="tabpanel" id="sip">
                   
                     <div class="table-responsive">
                       <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
@@ -388,8 +388,16 @@
       end_date    = moment($('#reportrange').val().split(' - ')[1],'DD/MM/YYYY').format("YYYY-MM-DD HH:mm:ss");
       if (id_territory == "all") {
         $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+        $('#msp').css("display","none");
+        $('#sip').css("display","block");
+      }else if (id_territory == "msp") {
+        $('#data_leadmsp').DataTable().ajax.url("{{url('getreportcustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+        $('#msp').css("display","block");
+        $('#sip').css("display","none");
       }else{
         $('#data_lead').DataTable().ajax.url("{{url('getFilterTerritoryTabs')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + id_territory).load();
+        $('#msp').css("display","none");
+        $('#sip').css("display","block");
       }
       // if (id_territory == "all") {
       //   $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}").load();
