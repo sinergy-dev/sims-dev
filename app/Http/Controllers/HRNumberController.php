@@ -155,13 +155,7 @@ class HRNumberController extends Controller
             ->get();
         }
 
-        $tahun = date("Y");
-
-        $datas = DB::table('tb_hr_number')
-                        ->join('users', 'users.nik', '=', 'tb_hr_number.from')
-                        ->select('no','no_letter', 'type_of_letter', 'divsion', 'pt', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'name', 'note')
-                        ->where('date','like',$tahun."%")
-                        ->get();
+        
 
         if (Auth::User()->id_position == 'ADMIN') {
             $notifClaim = DB::table('dvg_esm')
@@ -182,8 +176,20 @@ class HRNumberController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('admin/hr_number', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse'));
+        return view('admin/hr_number', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'notifClaim','pops', 'sidebar_collapse'));
     }
+
+
+    public function getdata(Request $request)
+    {
+        $tahun = date("Y");
+
+       return array("data" => HRNumber::join('users', 'users.nik', '=', 'tb_hr_number.from')
+                        ->select('no','no_letter', 'type_of_letter', 'divsion', 'pt', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'name', 'note')
+                        ->where('date','like',$tahun."%")
+                        ->get());
+    }
+
 
     public function store(Request $request)
     {
