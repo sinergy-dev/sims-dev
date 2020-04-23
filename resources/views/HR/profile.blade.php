@@ -60,7 +60,7 @@
    						<a data-toggle="tab" href="#profile">Profile</a>
    					</li>
     				<li>
-    					<a data-toggle="tab" href="#editprofile">Edit Profile</a>
+    					<a data-toggle="tab" href="#attachfile">Attach File</a>
     				</li>
   				</ul>
 
@@ -75,141 +75,6 @@
                       </div><br>
 
                     	<form action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
-                        <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
-                          @csrf
-                            <div class="form-group row">
-                                <div class="col-md-2">
-                                  <label style="margin: 12px">Employee Name</label>
-                                </div>
-                                <div class="col-md-8">
-                                  <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="name" name="name" placeholder="Type Name" value="{{$user_profile->name}}" disabled>
-                                </div>  
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-md-2">
-                                  <label style="margin: 12px">Email</label>
-                                </div>
-                                <div class="col-md-8">
-                                  <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="email" name="email"  placeholder="Type Email" value="{{$user_profile->email}}" disabled>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                  <div class="col-md-2">
-                                    <label style="margin: 12px">Date of Birth</label>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <input type="date" style="width: 300px;margin: 12px;" class="form-control"required id="date_of_birth" name="date_of_birth" value="{{$user_profile->date_of_birth}}" disabled>
-                                  </div>
-                            </div>
-
-                            <div class="form-group row">
-                                  <div class="col-md-2">
-                                    <label style="margin: 12px">Date of Entry</label>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <input type="date" style="width: 300px;margin: 12px;" class="form-control" required id="date_of_entry" name="date_of_entry" value="{{$user_profile->date_of_entry}}" disabled>
-                                  </div>
-                            </div>
-
-                            <div class="form-group row">
-                                  <div class="col-md-2">
-                                    <label style="margin: 12px">Lama Bekerja</label>
-                                  </div>
-                                  <div class="col-md-8" style="margin-top: 12px">
-                                  	<span style="margin-left: 12px;">
-                                    @if($user_profile->date_of_entrys > 365)
-                                    {{ floor($user_profile->date_of_entrys / 365) }} Tahun {{ round($user_profile->date_of_entrys % 365 / 30 )}} Bulan
-                                    @elseif($user_profile->date_of_entrys > 31)
-                                    {{ floor($user_profile->date_of_entrys / 30)}} Bulan
-                                    @else
-                                    {{$user_profile->date_of_entrys}} Hari
-                                    @endif
-                                      <!-- {{ floor($user_profile->date_of_entrys / 365) }} tahun {{ $user_profile->date_of_entrys % 365 }} hari</span> -->
-                                  </div>
-                            </div>
-
-                            <div class="form-group row">
-                                  <div class="col-md-2">
-                                    <label style="margin: 12px">Phone</label>
-                                  </div>
-                                  
-                                  <div class="col-md-8">
-                                  	@if($user_profile->phone != null)
-                                    <input type="number" style="width: 300px;margin: 12px;" class="form-control" id="phone" name="phone" value="0{{$user_profile->phone}}" onKeyPress="if(this.value.length==12) return false;" disabled>
-                                    @else
-                                    <input type="number" style="width: 300px;margin: 12px;" class="form-control" id="phone" name="phone" value="" onKeyPress="if(this.value.length==12) return false;" disabled>
-                                    @endif
-                                  </div>
-                            </div>
-
-                            <div class="form-group row">
-                                  <div class="col-md-2">
-                                    <label style="margin: 12px">Address</label>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <input type="text-area" class="form-control" id="address" name="address" style="white-space: nowrap;margin: 12px;width: 300px" value="{{$user_profile->address}}" disabled>
-                                  </div>
-                            </div>
-
-                            <div class="form-group row">
-                                  <div class="col-md-2">
-                                    <label style="margin: 12px">Image</label>
-                                  </div>
-                                  <div class="col-md-8">
-                                    
-                                    <div class="col-md-4">
-                                      <input type="file" id="inputgambar" name="gambar" class="validate" / >
-                                      <span class="help-block">*<b>Max 2MB</b></span>  
-                                    </div>
-                                  </div>
-                            </div>
-
-
-                            <div class="form-group row">
-                                <div class="col-md-2">
-                                  <label style="margin: 12px">NPWP</label>
-                                </div>
-                                <div class="col-md-8">
-                                  <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="no_npwp" name="no_npwp" placeholder="Type NPWP" value="{{$user_profile->no_npwp}}" disabled>
-                                </div>  
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-md-8">
-                                  <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
-                                </div>
-                            </div>
-
-
-                            <div class="form-group row">
-                                  <div class="col-md-2">
-                                    <label style="margin: 12px">NPWP File</label>
-                                  </div>
-                                  <div class="col-md-8">
-                                    
-                                    <div class="col-md-4">
-                                      <input type="file" id="inputgambarnpwp" name="npwp_file" value="{{$user_profile->npwp_file}}" disabled>
-                                    </div>
-                                  </div>
-                            </div>
-                            <!-- <button class="btn btn-sm btn-warning pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button> -->
-                      </form>
-                    </div>
-                    <div class="tab-pane" id="">
-                    </div>
-                </div>
-    				</div>
-
-
-    				<div id="editprofile" class="tab-pane fade">
-      					<div class="tab-content">
-                     <div class="tab-pane fade in active" id="editprofile">
-                      <div class="content-header" style="font-size: 24px;"><b>Edit Profile</b>
-                      </div><br>
-
-                      <form action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
                         <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
                           @csrf
                             <div class="form-group row">
@@ -244,7 +109,24 @@
                                     <label style="margin: 12px">Date of Entry</label>
                                   </div>
                                   <div class="col-md-8">
-                                    <input type="date" style="width: 300px;margin: 12px;" class="form-control" required id="date_of_entry" name="date_of_entry" value="{{$user_profile->date_of_entry}}" disabled>
+                                    <input type="date" style="width: 300px;margin: 12px;" class="form-control" required id="date_of_entry" name="date_of_entry" value="{{$user_profile->date_of_entry}}">
+                                  </div>
+                            </div>
+
+                            <div class="form-group row">
+                                  <div class="col-md-2">
+                                    <label style="margin: 12px">Lama Bekerja</label>
+                                  </div>
+                                  <div class="col-md-8" style="margin-top: 12px">
+                                  	<span style="margin-left: 12px;">
+                                    @if($user_profile->date_of_entrys > 365)
+                                    {{ floor($user_profile->date_of_entrys / 365) }} Tahun {{ round($user_profile->date_of_entrys % 365 / 30 )}} Bulan
+                                    @elseif($user_profile->date_of_entrys > 31)
+                                    {{ floor($user_profile->date_of_entrys / 30)}} Bulan
+                                    @else
+                                    {{$user_profile->date_of_entrys}} Hari
+                                    @endif
+                                      <!-- {{ floor($user_profile->date_of_entrys / 365) }} tahun {{ $user_profile->date_of_entrys % 365 }} hari</span> -->
                                   </div>
                             </div>
 
@@ -254,7 +136,7 @@
                                   </div>
                                   
                                   <div class="col-md-8">
-                                    @if($user_profile->phone != null)
+                                  	@if($user_profile->phone != null)
                                     <input type="number" style="width: 300px;margin: 12px;" class="form-control" id="phone" name="phone" value="0{{$user_profile->phone}}" onKeyPress="if(this.value.length==12) return false;">
                                     @else
                                     <input type="number" style="width: 300px;margin: 12px;" class="form-control" id="phone" name="phone" value="" onKeyPress="if(this.value.length==12) return false;">
@@ -295,6 +177,29 @@
                             </div>
 
                             <div class="form-group row">
+                              <div class="col-md-6">
+                                <button class="btn btn-sm btn-warning pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
+                              </div>
+                            </div>
+                      </form>
+                    </div>
+                    <div class="tab-pane" id="">
+                    </div>
+                </div>
+    				</div>
+
+
+    				<div id="attachfile" class="tab-pane fade">
+      					<div class="tab-content">
+                     <div class="tab-pane fade in active" id="attachfile">
+                      <div class="content-header" style="font-size: 24px;"><b>Attach file</b>
+                      </div><br>
+
+                      <form action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
+                        <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
+                          @csrf
+
+                            <div class="form-group row">
                                 <div class="col-md-8">
                                   <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
                                 </div>
@@ -312,6 +217,28 @@
                                     </div>
                                   </div>
                             </div>
+
+
+                            <div class="form-group row">
+                                <div class="col-md-8">
+                                  <img src="http://placehold.it/100x100" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row">
+                                  <div class="col-md-2">
+                                    <label style="margin: 12px">KTP</label>
+                                  </div>
+                                  <div class="col-md-8">
+                                    
+                                    <div class="col-md-4">
+                                      <input type="file" id="inputgambarktp" name="ktp_file" value="">
+                                    </div>
+                                  </div>
+                            </div>
+
+
                             <div class="form-group row">
                               <div class="col-md-6">
                                 <button class="btn btn-sm btn-warning pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
