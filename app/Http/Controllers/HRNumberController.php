@@ -176,7 +176,11 @@ class HRNumberController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('admin/hr_number', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'notifClaim','pops', 'sidebar_collapse'));
+        $year = date("Y");
+
+        $tahun = HRNumber::select('created_at')->whereYear('created_at', $year)->groupBy('created_at')->get();
+
+        return view('admin/hr_number', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'notifClaim','pops', 'sidebar_collapse', 'tahun'));
     }
 
 
@@ -184,9 +188,17 @@ class HRNumberController extends Controller
     {
         $tahun = date("Y");
 
-       return array("data" => HRNumber::join('users', 'users.nik', '=', 'tb_hr_number.from')
+        return array("data" => HRNumber::join('users', 'users.nik', '=', 'tb_hr_number.from')
                         ->select('no','no_letter', 'type_of_letter', 'divsion', 'pt', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'name', 'note')
                         ->where('date','like',$tahun."%")
+                        ->get());
+    }
+
+    public function getfilteryear(Request $request)
+    {
+        return array("data" => HRNumber::join('users', 'users.nik', '=', 'tb_hr_number.from')
+                        ->select('no','no_letter', 'type_of_letter', 'divsion', 'pt', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'project_id', 'name', 'note')
+                        ->where('date','like',$request->year."%")
                         ->get());
     }
 

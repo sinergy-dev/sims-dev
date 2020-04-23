@@ -444,6 +444,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/delete_admin_hr', 'HRNumberController@destroy');
 	Route::get('/downloadExcelAdminHR', 'HRNumberController@downloadExcelAdminHR');
 	Route::get('/getdatahrnumber', 'HRNumberController@getdata');
+	Route::get('/getfilteryearhrnumber', 'HRNumberController@getFilteryear');
 
 	//Inventory
 	Route::post('/inventory/store', 'WarehouseController@inventory_store');

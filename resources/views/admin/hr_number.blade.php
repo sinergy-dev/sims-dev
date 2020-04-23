@@ -37,6 +37,14 @@
     <div class="box">
       <div class="box-header with-border">
 
+        <div class="pull-left">
+          <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+          <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
+              <option value="2020">&#xf073 &nbsp2020</option>
+              <option value="2019">&#xf073 &nbsp2019</option>
+          </select>
+        </div>
+
         <div class="pull-right">
           <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 150px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Penomoran HR</button>
           <a href="{{url('/downloadExcelAdminHR')}}"><button class="btn btn-warning" style="height: 40px; margin-right: 10px;"> EXCEL </button></a>
@@ -325,14 +333,9 @@
          $("#alert").slideUp(300);
     });
 
-    /*$('#data_Table').DataTable( {
-      "scrollX": true,
-      "order": [[ 0, "desc" ]],
-      fixedColumns:   {
-        leftColumns: 1,
-      },
-      pageLength: 20,
-    });*/
+    $("#year_filter").change(function(){
+      $('#data_Table').DataTable().ajax.url("{{url('getfilteryearhrnumber')}}?data=" + this.value).load();
+    });
 
     $(".dismisbar").click(function(){
          $(".notification-bar").slideUp(300);
