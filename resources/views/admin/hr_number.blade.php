@@ -172,7 +172,7 @@
         <div class="modal-body">
           <form method="POST" action="{{url('/update_admin_hr')}}" id="modaledit" name="modaledit">
             @csrf
-          <input type="text" placeholder="Enter No PR" name="edit_no_letter" id="edit_no_letter" hidden="">
+          <input type="text" placeholder="Enter No PR" name="edit_no_letter" id="edit_no_letter">
           <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="edit_to" id="edit_to" >
@@ -236,13 +236,34 @@
   <script type="text/javascript">
 
     function edit_hr_number(no,to,attention,title,project,description,from) {
+      $('#modaledit').modal('show');
       $('#edit_no_letter').val(no);
-      $('#edit_to').val(to);
-      $('#edit_attention').val(attention);
-      $('#edit_title').val(title);
-      $('#edit_project').val(project);
-      $('#edit_description').val(description);
-      $('#edit_from').val(from);
+      if (to == "null") {
+        '';
+      } else {
+        $('#edit_to').val(to);
+      }
+      if (attention == "null") {
+        '';
+      } else {
+        $('#edit_attention').val(attention);
+      }
+      if (title == "null") {
+        '';
+      } else {
+        $('#edit_title').val(title);
+      }
+      if (project == "null") {
+        '';
+      } else {
+        $('#edit_project').val(project);
+      }
+
+      if (description == "null") {
+        '';
+      } else {
+        $('#edit_description').val(description);
+      }
     }
 
     initHRTable();
@@ -256,7 +277,7 @@
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.from) {
-                var x = '"' + data.no_letter + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '"'
+                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_hr_number(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
