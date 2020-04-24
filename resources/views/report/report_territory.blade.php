@@ -149,13 +149,13 @@
                           <tr class="header">
                             <th>Customer - Sales (MSP)</th>
                             <th>territory</th>
-                            <th>INITIAL</th>
-                            <th>OPEN</th>
-                            <th>SD</th>
-                            <th>TP</th>
-                            <th>WIN</th>
-                            <th>LOSE</th>
-                            <th>TOTAL</th>
+                            <th><center>INITIAL</center></th>
+                            <th><center>OPEN</center></th>
+                            <th><center>SD</center></th>
+                            <th><center>TP</center></th>
+                            <th><center>WIN</center></th>
+                            <th><center>LOSE</center></th>
+                            <th><center>TOTAL</center></th>
                           </tr>
                         </thead>
                       </table>
@@ -166,30 +166,6 @@
 
                 </div>
             </div>
-
-        	
-
-
-           <!--  <div class="table-responsive">
-              <table class="table table-bordered display nowrap" id="report_territory" width="100%" cellspacing="0">
-                  <thead>
-                    <tr class="header">
-                      <th>Customer - Sales</th>
-                      <th>territory</th>
-                      <th>INITIAL</th>
-                      <th>OPEN</th>
-                      <th>SD</th>
-                      <th>TP</th>
-                      <th>WIN</th>
-                      <th>LOSE</th>
-                      <th>TOTAL</th>
-                    </tr>
-                  </thead>
-                  <tbody id="territory" name="territory">
-                      
-                  </tbody>
-              </table>
-            </div>  --> 
           </div>
         </div>  
       </div>
@@ -217,70 +193,70 @@
 	          // { "data": "name" },
 	          {
 	            render: function ( data, type, row ) {
-	              return '<b>' + row.brand_name + '</b>' + '<br>(' + row.name + ')';
+	              return '<b>[' + row.brand_name + ']</b>' + '<br>(' + row.name + ')';
 	            }
 	          },
 	          { "data": "id_territory" },
             {
               render: function ( data, type, row ) {
                 if (row.amount_INITIAL == null) {
-                  return '<center> <b>' + row.INITIAL + '</center> </b>';
+                  return '<center> <b>[' + row.INITIAL + ']</center> </b>';
                 }else{
-                  return '<center> <b>' + row.INITIAL + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_INITIAL) + '</p></center>';
+                  return '<center> <b>[' + row.INITIAL + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_INITIAL) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_OPEN == null) {
-                  return '<center> <b>' + row.OPEN + '</b> </center>';
+                  return '<center> <b>[' + row.OPEN + ']</b> </center>';
                 }else{
-                  return '<center> <b>' + row.OPEN + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_OPEN) + '</p><c/enter>';
+                  return '<center> <b>[' + row.OPEN + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_OPEN) + '</p><c/enter>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_SD == null) {
-                  return '<center><b>' + row.SD + '</b></center>';
+                  return '<center><b>[' + row.SD + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.SD + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_SD) + '</p></center>';
+                  return '<center><b>[' + row.SD + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_SD) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_TP == null) {
-                  return '<center><b>' + row.TP + '</b></<center>';
+                  return '<center><b>[' + row.TP + ']</b></<center>';
                 }else{
-                  return '<center><b>' + row.TP + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_TP) + '</p></center>';
+                  return '<center><b>[' + row.TP + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_TP) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_WIN == null) {
-                  return '<center><b>' + row.WIN + '</b></center>';
+                  return '<center><b>[' + row.WIN + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.WIN + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_WIN) + '</p></center>';
+                  return '<center><b>[' + row.WIN + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_WIN) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_LOSE == null) {
-                  return '<center><b>' + row.LOSE + '</b></center>';
+                  return '<center><b>[' + row.LOSE + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.LOSE + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_LOSE) + '</p></center>';
+                  return '<center><b>[' + row.LOSE + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_LOSE) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_All == null) {
-                  return '<center><b>' + row.All + '</b></center>';
+                  return '<center><b>[' + row.All + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.All + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_All) + '</p></center>';
+                  return '<center><b>[' + row.All + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_All) + '</p></center>';
                 }
               }
             },	          
@@ -363,7 +339,7 @@
                         return intVal(a) + intVal(b);
                     }, 0 );
 
-                return $('<tr class="group-end"><td>' + '<b style="color:white;">' + 'Total Amount : ' + '</td>' + '<td>' + '<center><p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_INITIAL ) + ']<p style="color:white"></center>' + '</td>' + '<td>' + '<center><p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_OPEN )+ ']</p></center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_SD )+ ']</p> </center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_TP ) + ']</p>' + '</td>' + '<td> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_WIN )+ ']</p> </center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_LOSE )+ ']</p> </center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_All )+ ']</p> </center>' + '</td>' + '</tr>');
+                return $('<tr class="group-end"><td>' + '<b style="color:white;">' + 'Total Amount : ' + '</td>' + '<td>' + '<center><p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_INITIAL ) + '<p style="color:white"></center>' + '</td>' + '<td>' + '<center><p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_OPEN )+ '</p></center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_SD )+ '</p> </center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_TP ) + '</p>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_WIN )+ '</p> </center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_LOSE )+ '</p> </center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_All )+ '</p> </center>' + '</td>' + '</tr>');
             },
             dataSrc: 'id_territory',
             startRender: function(rows, group) {
@@ -409,63 +385,63 @@
 	          {
               render: function ( data, type, row ) {
                 if (row.amount_INITIAL == null) {
-                  return '<center> <b>' + row.INITIAL + '</center> </b>';
+                  return '<center> <b>[' + row.INITIAL + ']</center> </b>';
                 }else{
-                  return '<center> <b>' + row.INITIAL + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_INITIAL) + '</p></center>';
+                  return '<center> <b>[' + row.INITIAL + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_INITIAL) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_OPEN == null) {
-                  return '<center> <b>' + row.OPEN + '</b> </center>';
+                  return '<center> <b>[' + row.OPEN + ']</b> </center>';
                 }else{
-                  return '<center> <b>' + row.OPEN + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_OPEN) + '</p><c/enter>';
+                  return '<center> <b>[' + row.OPEN + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_OPEN) + '</p><c/enter>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_SD == null) {
-                  return '<center><b>' + row.SD + '</b></center>';
+                  return '<center><b>[' + row.SD + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.SD + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_SD) + '</p></center>';
+                  return '<center><b>[' + row.SD + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_SD) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_TP == null) {
-                  return '<center><b>' + row.TP + '</b></<center>';
+                  return '<center><b>[' + row.TP + ']</b></<center>';
                 }else{
-                  return '<center><b>' + row.TP + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_TP) + '</p></center>';
+                  return '<center><b>[' + row.TP + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_TP) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_WIN == null) {
-                  return '<center><b>' + row.WIN + '</b></center>';
+                  return '<center><b>[' + row.WIN + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.WIN + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_WIN) + '</p></center>';
+                  return '<center><b>[' + row.WIN + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_WIN) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_LOSE == null) {
-                  return '<center><b>' + row.LOSE + '</b></center>';
+                  return '<center><b>[' + row.LOSE + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.LOSE + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_LOSE) + '</p></center>';
+                  return '<center><b>[' + row.LOSE + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_LOSE) + '</p></center>';
                 }
               }
             },
             {
               render: function ( data, type, row ) {
                 if (row.amount_All == null) {
-                  return '<center><b>' + row.All + '</b></center>';
+                  return '<center><b>[' + row.All + ']</b></center>';
                 }else{
-                  return '<center><b>' + row.All + '</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display(row.amount_All) + '</p></center>';
+                  return '<center><b>[' + row.All + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_All) + '</p></center>';
                 }
               }
             },  
@@ -552,7 +528,7 @@
                         return intVal(a) + intVal(b);
                     }, 0 );
 
-                return $('<tr class="group-end"><td>' + '<b style="color:white;">' + 'Total Amount : ' + '</td>' + '<td>' + '<center><p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_INITIAL ) + ']<p style="color:white"></center>' + '</td>' + '<td>' + '<center><p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_OPEN )+ ']</p></center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_SD )+ ']</p> </center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_TP ) + ']</p>' + '</td>' + '<td> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_WIN )+ ']</p> </center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_LOSE )+ ']</p> </center>' + '</td>' + '<td> <center> <p style="color:white">[' + $.fn.dataTable.render.number(',', '.', 0, 'Rp').display( amount_All )+ ']</p> </center>' + '</td>' + '</tr>');
+                return $('<tr class="group-end"><td>' + '<b style="color:white;">' + 'Total Amount : ' + '</td>' + '<td>' + '<center><p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_INITIAL ) + '<p style="color:white"></center>' + '</td>' + '<td>' + '<center><p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_OPEN )+ '</p></center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_SD )+ '</p> </center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_TP ) + '</p>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_WIN )+ '</p> </center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_LOSE )+ '</p> </center>' + '</td>' + '<td> <center> <p style="color:white">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_All )+ '</p> </center>' + '</td>' + '</tr>');
             },
             dataSrc: 'name',
             startRender: function(rows, group) {
@@ -594,15 +570,13 @@
           start_date  = start.format("YYYY-MM-DD 00:00:00");
           end_date    = end.format("YYYY-MM-DD 00:00:00");
 
-          $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+          // $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
 
-          // territory = $(".nav-item.active").contents().text().trim();
-          // if(territory !== "ALL"){
-          //   $('#data_lead').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + territory).load();
-          // } else {
-          //   $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
-          // }
-          // $('#data_leadmsp').DataTable().ajax.url("{{url('getfiltercustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+          territory = $(".nav-item.active").contents().text().trim();
+          if(territory !== "ALL"){
+            $('#data_lead').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + territory).load();
+          }          
+          $('#data_leadmsp').DataTable().ajax.url("{{url('getfiltercustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
 
 
           // $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
