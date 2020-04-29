@@ -4087,7 +4087,7 @@ class SALESController extends Controller
                     ->where('nik', $sales)
                     ->first();
 
-        if (substr($request['date'], 6,4) != $year) {
+        if (substr($request['date'], 0,4) != $year) {
             return redirect()->back()->with('gagal', 'Tanggal Yang Kamu Input Tidak Valid!');
         }
                     
