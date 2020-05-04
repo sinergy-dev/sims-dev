@@ -532,8 +532,6 @@ class SALESController extends Controller
 
                 $rz = user::select('nik')->where('email','rizaldo@sinergy.co.id')->first();
 
-                $nt = user::select('nik')->where('email','aura@sinergy.co.id')->first();
-
                 $jh = user::select('nik')->where('email','johan@sinergy.co.id')->first();
 
 
@@ -957,7 +955,7 @@ class SALESController extends Controller
 
         }else{
 
-            return view('sales/sales', compact('lead','leads', 'total_ter','total_ters','notif','notifOpen','notifsd','notiftp','id_pro','contributes','users','pmo_nik','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose','total_leads','total_opens','total_sds','total_tps','total_wins','total_loses', 'notifClaim','cek_note','cek_initial','datas','rk','gp','st','rz','nt','jh','leadspre','year','year_now','year_dif','coba','leadsprenow','leadsnow','leadnow'));
+            return view('sales/sales', compact('lead','leads', 'total_ter','total_ters','notif','notifOpen','notifsd','notiftp','id_pro','contributes','users','pmo_nik','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose','total_leads','total_opens','total_sds','total_tps','total_wins','total_loses', 'notifClaim','cek_note','cek_initial','datas','rk','gp','st','rz','jh','leadspre','year','year_now','year_dif','coba','leadsprenow','leadsnow','leadnow'));
 
         }
 
@@ -4087,7 +4085,7 @@ class SALESController extends Controller
                     ->where('nik', $sales)
                     ->first();
 
-        if (substr($request['date'], 6,4) != $year) {
+        if (substr($request['date'], 0,4) != $year) {
             return redirect()->back()->with('gagal', 'Tanggal Yang Kamu Input Tidak Valid!');
         }
                     

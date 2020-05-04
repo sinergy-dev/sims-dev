@@ -3378,7 +3378,7 @@ class ReportController extends Controller
 
     }
 
-    public function report_territory(){
+    public function report_customer(){
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -3534,7 +3534,15 @@ class ReportController extends Controller
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
-                        DB::raw('COUNT(*) AS `All`'))
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                        DB::raw('SUM(amount) AS `amount_All`')
+                    )
                     ->where('result','!=','CANCEL')
                     ->where('result','!=','HOLD')
                     ->where('result','!=','SPECIAL')
@@ -3556,13 +3564,22 @@ class ReportController extends Controller
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
-                        DB::raw('COUNT(*) AS `All`'))
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                        DB::raw('SUM(amount) AS `amount_All`')
+                    )
                     ->where('result','!=','CANCEL')
                     ->where('result','!=','HOLD')
                     ->where('result','!=','SPECIAL')
                     // ->whereYear('sales_lead_register.created_at',date("Y"))
                     ->where('sales_lead_register.created_at', '>=', $request->start_date)
                     ->where('sales_lead_register.created_at', '<=', $request->end_date)
+                    ->where('id_territory',$request->id_territory)
                     ->where('id_territory','like','TERRITORY%')
                     ->where('sales_lead_register.result','!=','hmm')
                     ->groupBy('sales_lead_register.nik')
@@ -3581,7 +3598,15 @@ class ReportController extends Controller
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
-                        DB::raw('COUNT(*) AS `All`'))
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                        DB::raw('SUM(amount) AS `amount_All`')
+                    )
                     ->where('result','!=','CANCEL')
                     ->where('result','!=','HOLD')
                     ->where('result','!=','SPECIAL')
@@ -3601,12 +3626,21 @@ class ReportController extends Controller
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
                         DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
-                        DB::raw('COUNT(*) AS `All`'))
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                        DB::raw('SUM(amount) AS `amount_All`')
+                        )
                     ->where('result','!=','CANCEL')
                     ->where('result','!=','HOLD')
                     ->where('result','!=','SPECIAL')
                     ->whereYear('sales_lead_register.created_at',date("Y"))
-                    ->where('id_territory','like','TERRITORY%')
+                    ->where('id_territory',$request->id_territory)
+                    // ->where('id_territory','like','TERRITORY%')
                     ->where('sales_lead_register.result','!=','hmm')
                     ->groupBy('sales_lead_register.nik')
                     ->groupBy('sales_lead_register.id_customer')
@@ -3626,10 +3660,18 @@ class ReportController extends Controller
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
-                    DB::raw('COUNT(*) AS `All`'))
-                ->where('result','!=','CANCEL')
+                    DB::raw('COUNT(*) AS `All`'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                    DB::raw('SUM(amount) AS `amount_All`')
+                )
                 ->where('result','!=','HOLD')
                 ->where('result','!=','SPECIAL')
+                ->where('result','!=','CANCEL')
                 ->whereYear('sales_lead_register.created_at',date("Y"))
                 ->where('id_company',2)
                 ->where('sales_lead_register.result','!=','hmm')
@@ -3652,7 +3694,15 @@ class ReportController extends Controller
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPECIAL",1,NULL)) AS "SPECIAL"'),
-                        DB::raw('COUNT(*) AS `All`'))
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                        DB::raw('SUM(amount) AS `amount_All`')
+                    )
                     ->where('result','!=','CANCEL')
                     ->where('result','!=','HOLD')
                     ->where('result','!=','SPECIAL')
@@ -3681,7 +3731,15 @@ class ReportController extends Controller
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
-                    DB::raw('COUNT(*) AS `All`'))
+                    DB::raw('COUNT(*) AS `All`'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                    DB::raw('SUM(amount) AS `amount_All`')
+                )
                 ->where('result','!=','CANCEL')
                 ->where('result','!=','HOLD')
                 ->where('result','!=','SPECIAL')
@@ -3709,7 +3767,16 @@ class ReportController extends Controller
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPECIAL",1,NULL)) AS "SPECIAL"'),
-                        DB::raw('COUNT(*) AS `All`'))
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                        DB::raw('SUM(amount) AS `amount_All`')
+                    )
                     ->where('result','!=','CANCEL')
                     ->where('result','!=','HOLD')
                     ->where('result','!=','SPECIAL')
@@ -3737,7 +3804,15 @@ class ReportController extends Controller
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)) AS "HOLD"'),
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)) AS "CANCEL"'),
                         // DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SPECIAL",1,NULL)) AS "SPECIAL"'),
-                        DB::raw('COUNT(*) AS `All`'))
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('COUNT(*) AS `All`'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                        DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"')
+                    )
                     ->where('result','!=','CANCEL')
                     ->where('result','!=','HOLD')
                     ->where('result','!=','SPECIAL')

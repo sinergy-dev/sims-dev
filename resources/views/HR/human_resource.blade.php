@@ -563,6 +563,7 @@
                           <th>Mulai Bekerja</th>
                           <th>Status Karyawan</th>
                           <th>NPWP</th>
+                          <th>Attach File</th>
                           <!-- <th>NPWP File</th> -->
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <th>Action</th>
@@ -741,6 +742,10 @@
                           	@endif
                           </td>
                           <td>{{ $data->no_npwp }}</td>
+                          <td>
+                          	<button class="btn btn-xs btn-primary" style="margin-bottom: 5px" id="btnAdd" data-toggle="modal" data-target="#modalAttachFile"><i class="fa fa-upload"></i></button>
+                          </td>
+
                           <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
                           @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                           <td>
@@ -2596,8 +2601,62 @@
 		    </div>
 		</div>
   	</div>
+
+
+  	<div class="modal fade" id="modalAttachFile" role="dialog">
+	    <div class="modal-dialog modal-md">
+	    
+	      <!-- Modal content-->
+	      <div class="modal-content modal-md">
+	        <div class="modal-header">
+	          <h4 class="modal-title">Attach File</h4>
+	        </div>
+	        <div class="modal-body">
+	        <form method="POST" action="{{url('hu_rec/store')}}" enctype="multipart/form-data">
+	                        @csrf
+
+	                        <div class="form-group row">
+	                            <div class="col-md-8">
+	                                <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="inputgambarnpwp" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <div class="col-md-8">
+	                                <img src="http://placehold.it/100x100" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('KTP File') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="inputgambarktp" type="file" class="form-control" name="ktp_file" value="{{ old('ktp_file') }}" class="validate" autofocus>
+	                            </div>
+	                        </div>
+
+	                <div class="modal-footer">
+	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	                  <button type="submit" class="btn btn-primary">
+	                      {{ __('Register') }}
+	                  </button>
+	                </div>
+	          </form>
+	        </div>
+	      </div>
+	    </div>
+	</div>
+
     
-  </section>f
+  </section>
 
   <style type="text/css">
     .margin-left-custom2{
