@@ -39,7 +39,7 @@ class QuoteController extends Controller
                         ->orderBy('tb_quote.created_at', 'desc')
                         ->get();
 
-        $backdate_num = Quote::select('quote_number','id_quote')->where('status_backdate', 'T')->get();
+        $backdate_num = Quote::select('quote_number','id_quote')->where('status_backdate', 'T')->whereYear('created_at', $tahun)->orderBy('created_at','asc')->get();
 
         $count = DB::table('tb_quote')
                     ->where('status_backdate', 'T')
