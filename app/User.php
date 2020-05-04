@@ -18,7 +18,7 @@ class User extends Authenticatable
     protected $primaryKey = 'nik';
 
     protected $fillable = [
-        'nik', 'id_company', 'id_position', 'id_division', 'id_territory', 'name', 'email', 'password', 'date_of_entry', 'date_of_birth', 'address', 'phone', 'no_npwp', 'npwp_file',
+        'nik', 'id_company', 'id_position', 'id_division', 'id_territory', 'name', 'email', 'password', 'date_of_entry', 'date_of_birth', 'address', 'phone', 'no_npwp', 'npwp_file', 'ktp_file'
     ];
 
     /**
