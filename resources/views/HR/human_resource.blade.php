@@ -743,7 +743,7 @@
                           </td>
                           <td>{{ $data->no_npwp }}</td>
                           <td>
-                          	<button class="btn btn-xs btn-primary" style="margin-bottom: 5px" id="btnAdd" data-toggle="modal" data-target="#modalAttachFile"><i class="fa fa-upload"></i></button>
+                          	<button class="btn btn-xs btn-primary btn-attach" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
                           </td>
 
                           <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
@@ -2554,20 +2554,6 @@
 	                            </div>
 	                        </div>
 
-	                        <div class="form-group row">
-	                            <div class="col-md-8">
-	                                <img src="" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;float:left;" />
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
-	                            </div>
-	                        </div>
-
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -2603,21 +2589,36 @@
   	</div>
 
 
-  	<div class="modal fade" id="modalAttachFile" role="dialog">
-	    <div class="modal-dialog modal-md">
+  	<div class="modal fade" id="modal_update_file" role="dialog">
+	    <div class="modal-dialog modal-lg">
 	    
 	      <!-- Modal content-->
-	      <div class="modal-content modal-md">
+	      <div class="modal-content">
 	        <div class="modal-header">
 	          <h4 class="modal-title">Attach File</h4>
 	        </div>
 	        <div class="modal-body">
-	        <form method="POST" action="{{url('hu_rec/store')}}" enctype="multipart/form-data">
+
+	          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
 	                        @csrf
 
 	                        <div class="form-group row">
+	                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
+
 	                            <div class="col-md-8">
-	                                <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
+	                                <input id="nik_update_attach" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
+
+	                                @if ($errors->has('nik'))
+	                                    <span class="invalid-feedback">
+	                                        <strong>{{ $errors->first('nik') }}</strong>
+	                                    </span>
+	                                @endif
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <div class="col-md-8">
+	                                <img src="" class="zoom center" id="showgambarnpwp_update" style="max-width:800px;max-height:800px;" />
 	                            </div>
 	                        </div>
 
@@ -2625,35 +2626,24 @@
 	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="inputgambarnpwp" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+	                                <input id="inputgambarnpwp_update" type="file" value= class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
 	                        </div>
 
-	                        <div class="form-group row">
-	                            <div class="col-md-8">
-	                                <img src="http://placehold.it/100x100" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('KTP File') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="inputgambarktp" type="file" class="form-control" name="ktp_file" value="{{ old('ktp_file') }}" class="validate" autofocus>
-	                            </div>
-	                        </div>
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	                  <button type="submit" class="btn btn-primary">
-	                      {{ __('Register') }}
+	                      {{ __('Update') }}
 	                  </button>
 	                </div>
 	          </form>
 	        </div>
 	      </div>
+	      
 	    </div>
-	</div>
+
+  	</div>
 
     
   </section>
@@ -2670,6 +2660,21 @@
       margin-top: 40px;
     }
 
+    .zoom{
+    	padding: 50px;
+  		transition: transform .2s;
+  		margin: 0 auto;
+    }
+
+    .zoom:hover{
+    	-ms-transform: scale(1.5); /* IE 9 */
+  		-webkit-transform: scale(1.5); /* Safari 3-8 */
+  		transform: scale(1.5); 
+    }
+
+    .img-hover-zoom{
+    	overflow: hidden;
+    }
     
   </style>
 
@@ -2696,6 +2701,33 @@
        //   $("#no_npwp_update").val(no_npwp);
        //   $("#inputgambarnpwp_update").val(npwp_file);
        // } 
+
+       $('.btn-attach').click(function(){
+        $.ajax({
+          type:"GET",
+          url:"{{url('/hu_rec/get_hu')}}",
+          data:{
+            id_hu:this.value,
+          },
+          "processing": true,
+	      "language": {
+            'loadingRecords': '&nbsp;',
+            'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+          },
+          success: function(result){
+            $.each(result[0], function(key, value){
+            	$("#nik_update_attach").val(value.nik);
+               if (value.npwp_file == null) {
+               	$("#showgambarnpwp_update").attr("src","http://placehold.it/100x100");
+               } else {
+               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+               }
+            });
+
+          }
+        }); 
+        $("#modal_update_file").modal("show");
+    });
 
        $('.btn-editan').click(function(){
         $.ajax({
