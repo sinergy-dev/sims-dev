@@ -536,7 +536,7 @@ class QuoteController extends Controller
         $update->month = $bln;
         $update->date = $request['date'];
         // $update->to = $request['to'];
-        $tambah->id_customer = $request['customer_quote_backdate'];
+        $update->id_customer = $request['customer_quote_backdate'];
         $update->attention = $request['attention'];
         $update->title = $request['title'];
         $update->project = $request['project'];
