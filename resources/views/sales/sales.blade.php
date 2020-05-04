@@ -4006,7 +4006,7 @@
       $('#amount_edit').val(amount);
       $('#amount_edit_before').val(amount);
       $('#create_date_edit').val(created_at.substring(0,10));
-      $("#closing_date_edit").datepicker({format: 'yyyy-mm-dd'}).datepicker('setDate', closing_date).attr('readonly','readonly');
+      $("#closing_date_edit").datepicker({format: 'yyyy-mm-dd', startDate:today}).datepicker('setDate', closing_date).attr('readonly','readonly');
       $('#note_edit').val(keterangan);
     }
 
