@@ -38,4 +38,5 @@ app/Http/Controllers/firebase-key.json
 
 # Ignore Image
 public/img
+public/image
 
