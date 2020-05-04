@@ -518,8 +518,6 @@
                           Ganjar Pramudya Wijaya
                         @elseif($data->nik == $rz->nik)
                           Rizaldo Frendy Kurniawan
-                        @elseif($data->nik == $nt->nik)
-                          Aura Anugrah Pranata
                         @elseif($data->nik == $jh->nik)
                           Johan Ardi Wibisono
                         @endif
@@ -782,8 +780,6 @@
                           Ganjar Pramudya Wijaya
                         @elseif($data->nik == $rz->nik)
                           Rizaldo Frendy Kurniawan
-                        @elseif($data->nik == $nt->nik)
-                          Aura Anugrah Pranata
                         @elseif($data->nik == $jh->nik)
                           Johan Ardi Wibisono
                         @endif
@@ -2424,8 +2420,6 @@
                             Ganjar Pramudya Wijaya
                           @elseif($data->nik == $rz->nik)
                             Rizaldo Frendy Kurniawan
-                          @elseif($data->nik == $nt->nik)
-                            Aura Anugrah Pranata
                           @elseif($data->nik == $jh->nik)
                             Johan Ardi Wibisono
                           @endif
