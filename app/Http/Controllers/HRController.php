@@ -543,12 +543,7 @@ class HRController extends Controller
                     ->where('id_company', $id_company)
                     ->first();
 
-
-        if ($request['nik_update'] != "") {
-            $nik = $request['nik_update'];
-        }else {
-            $nik = $request['nik_update_attach'];
-        }         
+        $nik = $request['nik_update'];
 
         $check_nik = User::select('date_of_entry','date_of_birth')->where('nik',$nik)->first();
 
@@ -571,24 +566,31 @@ class HRController extends Controller
                     ->orderBy('name')
                     ->get();
 
-        if ($cek < 2) {
+        if ($cek < 1) {
         	$nomor = '0';
         }else{
-            $nomor = $cek-1;
+            $nomor = $cek;
         }
         
         $nims = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth. $nomor;
 
         $update = User::where('nik',$nik)->first();
-        if ($check_nik->date_of_entry !=  $request['date_of_entry_update'] && $check_nik->date_of_entry !=  $request['date_of_birth_update']) {
-            $update->nik =  $nims;
+        if ($request['date_of_entry_update'] != "" && $request['date_of_birth_update'] != "") {
+            if ($check_nik->date_of_entry !=  $request['date_of_entry_update'] && $check_nik->date_of_entry !=  $request['date_of_birth_update']) {
+                $update->nik =  $nims;
+            }
+            $update->date_of_birth = $request['date_of_birth_update'];
+            $update->date_of_entry = $request['date_of_entry_update'];
+        }else{
+            $update->nik =  $nik;
         }
+        
 
         
-        if ($update->name != "") {
-            $update->name = $request['name'];
-        } elseif ($update->email != "") {
-            $update->email = $request['email'];
+        if ($request['name_update'] != "") {
+            $update->name = $request['name_update'];
+        } elseif ($request['email_update'] != "") {
+            $update->email = $request['email_update'];
         }
         
         
@@ -721,36 +723,32 @@ class HRController extends Controller
         // }
 
 
-        if ($update->date_of_birth != "") {
-            $update->date_of_birth = $request['date_of_birth_update'];
-        }elseif ($update->date_of_entry != "") {
-            $update->date_of_entry = $request['date_of_entry_update'];
-        }elseif ($update->address != "") {
+        if ($request['address'] != "") {
             $update->address = $request['address'];
-        }elseif ($update->phone != "") {
+        }elseif ($request['phone_number'] != "") {
             $update->phone = $request['phone_number'];
-        }elseif ($update->no_npwp != "") {
+        }elseif ($request['no_npwp'] != "") {
             $update->no_npwp = $request['no_npwp'];
         }
         
+        $file       = $request->file('npwp_file');
 
-        if($request->file('npwp_file') == "")
-        {
-            $update->npwp_file = $update->npwp_file;
-        } 
-        else
-        {
-            $file       = $request->file('npwp_file');
+        if ($file == "") {
             
+        }else{
+
             $fileName   = $nik."_npwp_ver1".".jpg";
 
             $request->file('npwp_file')->move("image/", $fileName);
             $update->npwp_file = $fileName;
+
+            
         }
 
         $update->update();
 
         return redirect('hu_rec')->with('update', 'Updated Employee Data Successfully!');
+        
     }
 
     /**

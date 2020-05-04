@@ -743,7 +743,7 @@
                           </td>
                           <td>{{ $data->no_npwp }}</td>
                           <td>
-                          	<button class="btn btn-xs btn-primary btn-attach" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
+                          	<button class="btn btn-xs btn-primary btn-attach" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-upload"></i>&nbspUpload</button>
                           </td>
 
                           <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
@@ -2106,7 +2106,7 @@
 	                            <label for="name" class="col-md-4 col-form-label">{{ __('Employees Name') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" autofocus>
+	                                <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name_update" value="{{ old('name') }}" autofocus>
 
 	                                @if ($errors->has('name'))
 	                                    <span class="invalid-feedback">
@@ -2120,7 +2120,7 @@
 	                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
+	                                <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email_update" value="{{ old('email') }}" required>
 
 	                                @if ($errors->has('email'))
 	                                    <span class="invalid-feedback">
@@ -2557,7 +2557,7 @@
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	                  <button type="submit" class="btn btn-primary">
+	                  <button type="submit" class="btn btn-primary btn-submit-update">
 	                      {{ __('Update') }}
 	                  </button>
 	                </div>
@@ -2618,7 +2618,7 @@
 
 	                        <div class="form-group row">
 	                            <div class="col-md-8">
-	                                <img src="" class="zoom center" id="showgambarnpwp_update" style="max-width:800px;max-height:800px;" />
+	                                <img src="" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;" />
 	                            </div>
 	                        </div>
 
@@ -2633,7 +2633,7 @@
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	                  <button type="submit" class="btn btn-primary">
+	                  <button type="submit" class="btn btn-primary btn-submit-update">
 	                      {{ __('Update') }}
 	                  </button>
 	                </div>
@@ -2684,6 +2684,16 @@
   	<script src="{{url('js/pagination.js')}}"></script>
   	<script src="{{url('js/pagination.min.js')}}"></script>
     <script type="">
+
+       $(".btn-submit-update").click(function(){
+       	 $('#modal_update_file').delay(1000).fadeOut(450);
+
+		 setTimeout(function(){
+		    $('#modal_update_file').modal("hide");
+		 }, 1500);
+       	  // $("#modal_update_file").modal("hide");
+       	  // $("#modal_update").modal("hide");
+       })
 
        $(".modal_edit_status").click(function(){
        	$("#modal_edit_status").modal("show");
