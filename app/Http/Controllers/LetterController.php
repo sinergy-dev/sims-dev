@@ -32,7 +32,7 @@ class LetterController extends Controller
         $tahun = date("Y");
 
         // $backdate_num = Quote::select('quote_number','id_quote')->where('status_backdate', 'T')->where('date','like',$tahun."%")->get();
-        $backdate_num = Letter::select('no_letter','no')->where('status', 'T')->get();
+        $backdate_num = Letter::select('no_letter','no')->where('status', 'T')->whereYear('created_at', $tahun)->orderBy('created_at','asc')->get();
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
