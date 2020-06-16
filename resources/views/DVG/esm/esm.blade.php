@@ -605,10 +605,12 @@
 
       $('#data_esm').on('click', '.btn-delete', function(e){
         console.log(this.value)
-        var id_ems = this.value;
         $.ajax({
           type:"GET",
-          url:"{{url('delete_esm/')}}/"+id_ems,
+          // data:{
+          //   id_ems:this.value,
+          // },
+          url:"{{url('/delete_esm')}}"+"/"+this.value,
           beforeSend:function(){
             return confirm("Want to delete?") 
           },

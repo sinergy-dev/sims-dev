@@ -718,7 +718,7 @@ class ESMController extends Controller
 
     public function destroy($id_ems)
     {
-        $hapus = EngineerSpent::find($id_ems);
+        $hapus = EngineerSpent::where('id_ems',$id_ems);
         $hapus->delete();
 
         return redirect()->back()->with('alert', 'Deleted!');
