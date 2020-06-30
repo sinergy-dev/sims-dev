@@ -597,7 +597,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
             { "data": "date" },
             { "data": "id_project" },
             { "data": "lead_id" },
-            {
+            { // No Po
               render: function ( data, type, row ) {
                 if (row.id_company == 1) {
                   if (row.no_po_customer == null) {
@@ -614,7 +614,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 }
               }
             },
-            {
+            { // No Quotation
               render: function ( data, type, row ) {
                 if (row.id_company == 1) {
                   return "-";
@@ -627,7 +627,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 }
               }
             },
-            {
+            { // Customer Name
               render: function ( data, type, row ) {
                 if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
                   return row.customer_name;  
@@ -640,7 +640,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
             { "data": "amount_idr" },
             { "data": "amount_idr_before_tax" },
             { "data": "note" },
-            {
+            { // Invoice
               render: function ( data, type, row ) {
                 if (row.invoice == 'H') {
                   return "Setengah Bayar";  
@@ -653,7 +653,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 }
               }
             },
-            {
+            { // Status
               render: function ( data, type, row ) {
                 if (row.progres == null) {
                   return "UnProgress";  
@@ -662,7 +662,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 }
               }
             },
-            {
+            { // Sales
               render: function ( data, type, row ) {
                 if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
                   return row.sales_name;  
@@ -671,7 +671,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 }
               }
             },
-            {
+            { // Action
               render: function ( data, type, row ) {
               	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
               		@if(Auth::User()->id_division == 'FINANCE')
@@ -798,25 +798,22 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 	      }, 
 		});	
 
-	  @if(Auth::User()->id_division == 'PMO' || Auth::User()->id_division == 'MSM')
-
-		var column1 = table.column(7);
-	        // Toggle the visibility
-	    column1.visible( ! column1.visible() );
-
-	    var column2 = table.column(8);
-	        // Toggle the visibility
-	    column2.visible( ! column2.visible() );
-
+	    @if(Auth::User()->id_division == 'MSM')
+  		  // Column Amount IDR
+        var column1 = table.column(7);
+  	    column1.visible( ! column1.visible() );
+        // Column Amount IDR Before Tax
+  	    var column2 = table.column(8);
+  	    column2.visible( ! column2.visible() );
       @endif
 
       @if(Auth::User()->id_division == "SALES" || Auth::User()->id_division == "TECHNICAL" || Auth::User()->id_division == "MSM" || Auth::User()->id_position == "DIRECTOR")
-      	var column3 = table.column(13);
-	        // Toggle the visibility
-	    column3.visible(! column3.visible());
+      	// Column Action
+        var column3 = table.column(13);
+	      column3.visible(! column3.visible());
       @endif
 
-      	$('#searchBarTicket').keyup(function(){
+      $('#searchBarTicket').keyup(function(){
 	      table.search($('#searchBarTicket').val()).draw();
 	    })
 
