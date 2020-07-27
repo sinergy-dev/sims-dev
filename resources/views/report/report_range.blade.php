@@ -238,8 +238,6 @@
                           Ganjar Pramudya Wijaya
                         @elseif($data->nik_presales == $rz->nik)
                           Rizaldo Frendy Kurniawan
-                        @elseif($data->nik_presales == $nt->nik)
-                          Aura Anugrah Pranata
                         @endif
                       </td> 
                       <td hidden="">{{ $data->priority}}</td>

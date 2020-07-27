@@ -3619,7 +3619,7 @@ class SALESController extends Controller
             ->where('result','OPEN')
             ->orderBy('sales_lead_register.created_at','desc')
             ->get();
-        }else{
+        } else {
              $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
             ->where('result','OPEN')
@@ -3776,7 +3776,8 @@ class SALESController extends Controller
                         ->where('tb_pid_request.status','requested')
                         ->get(); 
 
-        $pid_request_lead = PID::join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')->join('sales_lead_register','sales_lead_register.lead_id','=','tb_pid.lead_id')
+        $pid_request_lead = PID::join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')
+                        ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_pid.lead_id')
                         ->join('users','users.nik','=','sales_lead_register.nik')
                         ->join('tb_company','tb_company.id_company','=','users.id_company')
                         ->select('tb_quote_msp.project',

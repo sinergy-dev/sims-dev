@@ -60,7 +60,7 @@
   <script type="text/javascript">
     (function($){
       $(function(){
-        $('.button-collapse').sideNav();
+        // $('.button-collapse').sideNav();
       });
     })(jQuery);
   </script>
