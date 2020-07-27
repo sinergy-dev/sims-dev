@@ -3823,7 +3823,8 @@ class SALESController extends Controller
                     ->join('users','users.nik','=','sales_lead_register.nik')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
-                    ->where('sales_lead_register.nik',$nik)
+                    // ->where('sales_lead_register.nik',$nik)
+                    ->where('id_territory', $ter)
                     ->orWhere('tb_id_project.sales_name',Auth::User()->name)
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.created_at',date('Y'))
@@ -4667,8 +4668,12 @@ class SALESController extends Controller
              $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name",  "Amount IDR", "Sales");
              $i=1;
 
+             $datasheet2 = array();
+             $datasheet2[0] = array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Sales");
+             $j = 1;
+
             foreach ($datas as $data) {
-                if ($data->lead_id == 'SIPPO2020') {
+                if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
                     $datasheet[$i] = array(
                             $i,
                             date_format(date_create($data['date']),'d-M-Y'),
@@ -4682,20 +4687,45 @@ class SALESController extends Controller
                         );
               
                     $i++;
-                } else {
+                } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
                     $datasheet[$i] = array(
                             $i,
                             date_format(date_create($data['date']),'d-M-Y'),
                             $data['id_project'],
                             $data['no_po_customer'],
-                            $data['customer_legal_name'],
-                            $data['opp_name'],
-                            $data['amount_idr'],
-                            $data['name']
+                            $data['customer_name'],
+                            $data['name_project'],
+                            $data['sales_name']
                             
                         );
               
                     $i++;
+                } else if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO'){
+                    $datasheet2[$j] = array(
+                            $j,
+                            date_format(date_create($data['date']),'d-M-Y'),
+                            $data['id_project'],
+                            $data['no_po_customer'],
+                            $data['customer_legal_name'],
+                            $data['opp_name'],
+                            $data['name']
+                            
+                        );
+              
+                    $j++;
+                } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO') {
+                    $datasheet2[$j] = array(
+                            $j,
+                            date_format(date_create($data['date']),'d-M-Y'),
+                            $data['id_project'],
+                            $data['no_po_customer'],
+                            $data['customer_legal_name'],
+                            $data['opp_name'],
+                            $data['name']
+                            
+                        );
+              
+                    $j++;
                 }
                 
             }
@@ -4717,6 +4747,7 @@ class SALESController extends Controller
             // }
 
             $sheet->fromArray($datasheet);
+            $sheet->fromArray($datasheet2);
         });
 
         })->export('xls');
