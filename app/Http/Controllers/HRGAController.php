@@ -1108,6 +1108,8 @@ class HRGAController extends Controller
                 ->where('users.id_division','TECHNICAL')
                 ->where('users.id_position','MANAGER')
                 ->orwhere('users.id_position','ENGINEER MANAGER')
+                ->orwhere('users.id_position','MANAGER')
+                ->orwhere('users.id_division','WAREHOUSE')
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
                 ->where('tb_cuti.status','n')
