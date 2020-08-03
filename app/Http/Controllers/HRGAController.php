@@ -1670,7 +1670,7 @@ class HRGAController extends Controller
         $array2 =  explode(',', $dates_before);
 
         foreach ($array2 as $dates2) {
-            $delete = CutiDetil::where('date_off',$dates2)->delete();
+            $delete = CutiDetil::where('date_off',$dates2)->where('id_cuti',$id_cuti)->delete();
         }
 
         foreach ($array as $dates) {
