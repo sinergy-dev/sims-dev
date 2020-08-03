@@ -10,19 +10,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class CutiKaryawan extends Mailable
 {
     use Queueable, SerializesModels;
-    public $name_cuti,$hari,$ardetil,$customSubject;
+    public $name_cuti,$hari,$ardetil,$ardetil_after,$customSubject;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($name_cuti,$hari,$ardetil,$customSubject)
+    public function __construct($name_cuti,$hari,$ardetil,$ardetil_after,$customSubject)
     {
         //
         $this->name_cuti = $name_cuti;
         $this->hari = $hari;
         $this->ardetil = $ardetil;
+        $this->ardetil_after = $ardetil_after;
         $this->customSubject = $customSubject;
     }
 
