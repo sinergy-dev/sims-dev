@@ -109,7 +109,7 @@
             	@if($cek->status == null)
 	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
 	            <button class="btn btn-sm btn-success show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
-	            @elseif($cek_cuti->status != 'n')
+	            @elseif($cek_cuti->status == 'v' || $cek_cuti->status == 'd')
 	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
 	            <button class="btn btn-sm btn-success show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
 	            @else
@@ -280,7 +280,7 @@
                         </thead>
                           <tbody>
                             @foreach($cuti2 as $data)
-                              @if($data->status == 'n')
+                              @if($data->status == 'n' || $data->status == 'R')
                               <tr>
                                   <td>{{$data->name}}</td>
                                   <td>{{$data->id_division}}</td>
@@ -301,13 +301,13 @@
                                   </td>
                                   <td>
                                     @if(Auth::User()->nik == $data->nik)
-                                      @if($data->status == NULL || $data->status == 'n')
+                                      @if($data->status == NULL || $data->status == 'n' || $data->status == 'R')
                                       <button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="{{$data->id_cuti}}" type="button"></button>
                                       <a href="{{ url('delete_cuti', $data->id_cuti) }}"><button class="btn btn-sm btn-danger fa fa-trash" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="return confirm('Are you sure want to delete this?')" data-toggle="tooltip" title="Delete" data-placement="bottom" type="button"></button></a>
                                       <a href="{{ url('follow_up',$data->id_cuti)}}"><button class="btn btn-sm btn-success fa fa-paper-plane" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" type="button"></button></a>
                                       @endif
                                     @else
-                                      @if($data->status == NULL || $data->status == 'n')
+                                      @if($data->status == NULL || $data->status == 'n' || $data->status == 'R')
                                           <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
                                           <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
                                       @else
@@ -738,7 +738,21 @@
         </div>
     </div>
 
-  </section>
+    <div class="modal fade" id="tunggu" role="dialog">
+      <div class="modal-dialog modal-sm">
+      <!-- Modal content-->
+      <div class="modal-content">
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="">Sedang memproses. . .</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+
 
 @endsection
 
@@ -987,19 +1001,28 @@
       });
 
       $(document).on('click',"button[id^='btn-submit-update']",function(e){
-        console.log($("#Dates").val());
+        
+        if ($("#Dates").val() == '') {
+          var dates_after = 'kosong';
+        }else{
+          var dates_after = $("#Dates").val();
+        }
+        console.log(dates_after);
+        $('#tunggu').modal('show');
         $.ajax({
           type:"POST",
           url:"{{url('/update_cuti')}}",
           data:{
              _token: "{{ csrf_token() }}",
             id_cuti:$("#id_cuti").val(),
-            dates_after:$("#Dates").val(),
+            dates_after:dates_after,
             dates_before:$("#Dates_update").val(),
             reason_edit:$("#reason_edit").val(),
             status_update:'R',
           },
           success:function(result){
+            $('#tunggu').modal('hide');
+            $('#modalCuti_edit').modal('hide');
             location.reload()
           }
         })
