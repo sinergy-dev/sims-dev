@@ -422,9 +422,8 @@
             <h4 class="modal-title">Leaving Permit</h4>
           </div>
           <div class="modal-body">
-            <form method="POST" action="{{url('/store_cuti')}}" id="modalAddCuti" name="modalAddCuti">
               @csrf
-
+              <form id="form-submit-cuti">
               <div class="form-group hidden">
                 <label>Sisa Cuti : </label>
                 <span name="sisa_cuti" id="sisa_cuti"></span><!-- 
@@ -466,9 +465,9 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
                <!--  <button type="submit" class="btn btn-primary" id="btn-save" value="add"  data-dismiss="modal" >Submit</button>
                 <input type="hidden" id="lead_id" name="lead_id" value="0"> -->
-                <button type="submit" class="btn btn-primary btn-submit" disabled data-placement="top"><i class="fa fa-check"> </i>&nbspSubmit</button>
+                <button type="button" class="btn btn-primary btn-submit" disabled data-placement="top" id="btn-submit"><i class="fa fa-check"> </i>&nbspSubmit</button>
               </div>
-          </form>
+              </form>
           </div>
         </div>
       </div>
@@ -759,10 +758,11 @@
 @section('script')
 <script src="{{asset('js/fullcalendar.js')}}"></script>
 <script type='text/javascript' src="{{asset('js/gcal.js')}}"></script>
-<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>   
+<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script type="text/javascript">
     $(".show-sisa-cuti").click(function(){
       $.ajax({
@@ -788,6 +788,7 @@
            ],
         "order": [[ "4", "desc" ]],
     });
+
     var table  = $('#datatable').DataTable({
        "columnDefs":[
             {"width": "30%", "targets":0},
@@ -817,6 +818,7 @@
           nik:this.value,
         },
         success: function(result){
+          $("#form-submit-cuti").trigger("reset");
           if (result.parameterCuti.total_cuti == 0) {
             $("#sisa_cuti").text(0).style.color = "#ff0000";
           } else {
@@ -878,6 +880,73 @@
       });
 
       $("#modalCuti").modal("show");
+
+      $(document).on('click',"button[id^='btn-submit']",function(e){
+          if($("input[name='jenis_cuti']:checked").val()){
+            Swal.fire({
+            title: 'Are you sure?',
+            text: "to submit your leaving permite",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            }).then((result) => {
+              if (result.value) {
+                Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                    popup: 'border-radius-0',
+                  },
+                  onOpen: () => {
+                    Swal.showLoading()
+                  }
+                })
+                $.ajax({
+                  type:"POST",
+                  url:"{{url('/store_cuti')}}",
+                  data:{
+                     _token: "{{ csrf_token() }}",
+                    reason:$("#reason").val(),
+                    jenis_cuti:$("input[name='jenis_cuti']:checked").val(),
+                    date_start:$("#date_start").val(),
+                    reason_edit:$("#reason_edit").val(),
+                    status_update:'R',
+                  },
+                  success: function(result){
+                    Swal.showLoading()
+                    Swal.fire(
+                      'Successfully!',
+                      'Leaving permite has been created.',
+                      'success'
+                    ).then((result) => {
+                      if (result.value) {
+                        $("#modalCuti").modal('hide');
+                        location.reload();
+                      }
+                    })
+                  }
+                })
+              }else if(
+                 result.dismiss === Swal.DismissReason.cancel
+                ){
+                $("#modalCuti").modal('hide');
+              }
+            }) 
+          }else{
+            // $("input[name='jenis_cuti']").prop('required',true);
+            Swal.fire(
+              'canceled',
+              'Silahkan pilih jenis cuti lebih dahulu!',
+              'error'
+              )
+          }
+      })
     })
 
     $(document).on('click',"button[class^='approve_date']",function(e) {
@@ -1007,27 +1076,62 @@
         }else{
           var dates_after = $("#Dates").val();
         }
-        console.log(dates_after);
-        $('#tunggu').modal('show');
-        $.ajax({
-          type:"POST",
-          url:"{{url('/update_cuti')}}",
-          data:{
-             _token: "{{ csrf_token() }}",
-            id_cuti:$("#id_cuti").val(),
-            dates_after:dates_after,
-            dates_before:$("#Dates_update").val(),
-            reason_edit:$("#reason_edit").val(),
-            status_update:'R',
-          },
-          success:function(result){
-            $('#tunggu').modal('hide');
-            $('#modalCuti_edit').modal('hide');
-            location.reload()
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "to update your leaving permite",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.value) {
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"POST",
+              url:"{{url('/update_cuti')}}",
+              data:{
+                 _token: "{{ csrf_token() }}",
+                id_cuti:$("#id_cuti").val(),
+                dates_after:dates_after,
+                dates_before:$("#Dates_update").val(),
+                reason_edit:$("#reason_edit").val(),
+                status_update:'R',
+              },
+              success: function(result){
+                Swal.showLoading()
+                Swal.fire(
+                  'Updated!',
+                  'Leaving permite has been update.',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    $("#modalCuti_edit").modal('hide');
+                    location.reload();
+                  }
+                })
+              }
+            })
           }
-        })
+        })        
       })
+
     });
+
 
     function edit_cuti(id_cuti,date_start,date_end,reason_leave){
       $("#id_cuti").val(id_cuti);
