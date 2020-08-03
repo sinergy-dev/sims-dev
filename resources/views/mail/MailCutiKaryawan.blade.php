@@ -96,6 +96,65 @@
 		</tr>
 	</table>
 	<br>
+	@elseif($hari->status == 'R')
+	<p>
+		Hai Bos,
+		<br>Berikut Re-schedule Perizinan Cuti oleh:
+	</p>
+	<table style="text-align: left;margin: 5px;">
+		<tr>
+			<th>Nama</th>
+			<th> : </th>
+			<td>{{$name_cuti->name}}</td>
+		</tr>
+		<tr>
+			<th>Lama Cuti</th>
+			<th> : </th>
+			<td>{{$hari->days}} hari</td>
+		</tr>
+		<tr>
+			<th>Tanggal Off cuti sebelumnya sbb</th>
+			<th> : </th>
+		</tr>
+		<tr>
+			<td>
+				@foreach($ardetil as $data)
+				<ul>
+					
+					<li>
+						{{date('d-M-Y', strtotime($data))}}
+					</li>
+					
+				</ul>
+				@endforeach
+			</td>
+		</tr>
+		@if($ardetil_after != "")
+		<tr>
+			<th>Tanggal Off cuti re-schedule sbb</th>
+			<th> : </th>
+		</tr>
+		<tr>
+			<td>
+				@foreach($ardetil_after as $data)
+				<ul>
+					
+					<li>
+						{{date('d-M-Y', strtotime($data))}}
+					</li>
+					
+				</ul>
+				@endforeach
+			</td>
+		</tr>
+		@endif
+		<tr>
+			<th>Tanggal Request Cuti</th>
+			<th> : </th>
+			<td>{{date('d-M-Y', strtotime($hari->date_req))}}</td>
+		</tr>
+	</table>
+	<br>
 	@else
 	<p>
 		Hai Bos,
