@@ -735,10 +735,13 @@
                           @endif
                           <td>{{date('d-m-Y', strtotime($data->date_of_entry))}}</td>
                           <td>
-                          	@if($data->status_karyawan == 'cuti')
+                          	@if($data->status_kerja == 'tetap')
                           	Karyawan Tetap 
-                          	@elseif($data->status_karyawan == 'belum_cuti')
-                          	Karyawan Kontrak <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i>
+                          	@elseif($data->status_kerja == 'kontrak')
+                          	Karyawan Kontrak 
+                          	@else
+                          	Karyawan Kontrak 
+                          	<!-- <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i> -->
                           	@endif
                           </td>
                           <td>{{ $data->no_npwp }}</td>
@@ -2087,480 +2090,494 @@
 	        <div class="modal-body">
 
 	          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
-	                        @csrf
-	                        <div class="form-group row">
-	                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="nik_update" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
-
-	                                @if ($errors->has('nik'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('nik') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="name" class="col-md-4 col-form-label">{{ __('Employees Name') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name_update" value="{{ old('name') }}" autofocus>
-
-	                                @if ($errors->has('name'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('name') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email_update" value="{{ old('email') }}" required>
-
-	                                @if ($errors->has('email'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('email') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company') }}</label>
-
-	                            <div class="col-md-4">
-	                            	<input id="company_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
-	                        	</div>
-
-	                            <div class="col-md-4">
-	                                <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onchange="companySelect(this)" autofocus>
-	                                    <option value="">-- Select Company --</option>
-	                                    <option value="1" data-target="sip" id="1">SIP</option>
-	                                    <option value="2" data-target="msp" id="2">MSP</option>
-	                                </select>
-	                                @if ($errors->has('company'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('company') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <!--tampilkan divisi berdasarkan divisi-->
-	                        <div class="form-group row">
-	                            <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
-
-	                            <div class="col-md-4">
-	                            	<input id="divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
-	                        	</div>
-
-	                            <div class="col-md-4">
-	                                <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="divisi_update" value="{{ old('company') }}" autofocus>
-	                                </select>
-	                                @if ($errors->has('company'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('company') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-
-	                        <!--tampilkan divisi berdasarkan sub-divisi-->
-	                        <div class="form-group row">
-	                            <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
-
-	                            <div class="col-md-4">
-	                            	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
-	                        	</div>
-
-	                            <div class="col-md-4">
-	                                <select id="sub_divisi_update" onchange="subdivisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="sub_divisi_update" value="{{ old('company') }}" autofocus>
-	                                </select>
-	                                @if ($errors->has('company'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('company') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-
-	                        <!--tampilkan divisi berdasarkan posisi-->
-	                        <div class="form-group row">
-	                            <label for="posisi" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-	                            <div class="col-md-4">
-	                            	<input id="posisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
-	                        	</div>
-
-	                            <div class="col-md-4">
-	                                <select id="posisi_update" onchange="posisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="posisi_update" value="{{ old('company') }}" autofocus>
-	                                </select>
-	                                @if ($errors->has('company'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('company') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-	                      <!--SIP-->
-
-	                        <!-- <div class="form-group row"  style="display:none;"  id="company_update-sip">
-	                            <label for="division" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="division_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select division --</option>
-	                                    <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
-	                                    <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
-	                                    <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
-	                                    <option value="SALES" data-target="sales" id="sales">SALES</option>
-	                                    <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
-	                                    <option value="NULL" data-target="director" id="director">NONE</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!--DIRECTOR-->
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-director">
-	                            <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="position-dir-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_dir_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Position --</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-	                        
-	                        <!-- Technical -->
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-technical">
-	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="subdivision-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Sub Division --</option>
-	                                    <option value="DPG" data-target="dvg" id="dvg">IMPLEMENTATION</option>
-	                                    <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-	                                    <option value="DVG" data-target="dvg" id="dvg">DEVELOPMENT</option>
-	                                    <option value="NONE" data-target="dpg" id="dpg">NONE</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-
-	                            <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8 margin-top">
-	                                <select id="position-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Position --</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!-- Sales -->
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-sales" >
-
-	                            <label for="territory" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="territory-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Territory --</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-
-	                            <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8 margin-top">
-	                                <select id="position-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Position --</option>
-	                                    <option value="MANAGER">MANAGER</option>
-	                                    <option value="STAFF">STAFF</option>
-	                                    <option value="ADMIN">ADMIN</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!-- Finance -->
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-finance">
-	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="subdivision-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_finance_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Sub Division --</option>
-	                                    <option value="FINANCE" data-target="dvg" id="dvg">FINANCE</option>
-	                                    <option value="ACC" data-target="dpg" id="dpg">ACCOUNTING</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-
-	                            <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8 margin-top">
-	                                <select id="position-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_finance_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Position --</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!-- Operation -->
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-operation">
-	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="subdivision-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Sub Division --</option>
-	                                    <option value="MSM" data-target="MSM" id="MSM">MSM</option>
-	                                    <option value="PMO" data-target="PMO" id="PMO">PMO</option>
-	                                    <option value="DIR" data-target="DIR" id="PMO">NONE</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-
-	                            <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8 margin-top">
-	                                <select id="position-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_operation_update" autofocus>
-	                                  <option value="">-- Select position --</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!-- HR -->
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division_update-hr">
-	                            <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="position-hr-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_hr_update" value="{{ old('division') }}" autofocus>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-
-	                        <!-- MSP -->
-
-	                       <!--  <div class="form-group row"  style="display:none;"  id="company_update-msp">
-	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Division --</option>
-	                                    <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
-	                                    <option value="ADMIN_MSP" >NONE</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-
-	                            <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Position --</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!-- <div class="form-group row"  style="display:none;"  id="company_update-msp">
-	                            <label for="division-msp" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Division --</option>
-	                                    <option value="SALES_MSP" data-target="sales_msp_update" id="sales_msp">SALES</option>
-	                                    <option value="TECHNICAL_MSP" data-target="technical_msp_update" id="TECHNICAL_MSP">TECHNICAL</option>
-	                                    <option value="WAREHOUSE_MSP" data-target="sales_msp_update" id="warehouse_msp">WAREHOUSE</option>
-	                                    <option value="OPERATION_MSP" data-target="sales_msp_update" id="operation_msp">OPERATION</option>
-	                                    <option value="ADMIN_MSP" data-target="sales_msp_update">NONE</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-sales_msp_update">
-	                          <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales" value="{{ old('division') }}" autofocus>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-technical_msp_update">
-	                            <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="subdivision-tech-msp_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Sub Division --</option>
-	                                    <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-	                                    <option value="NONE_MSP" data-target="dpg" id="dpg">NONE</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-
-	                            <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-	                            <div class="col-md-8">
-	                                <select id="position-tech-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp_update" value="{{ old('division') }}" autofocus>
-	                                    <option value="">-- Select Position --</option>
-	                                </select>
-	                                @if ($errors->has('division'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('division') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div> -->
-
-	                        <div class="form-group row">
-	                            <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="date_of_entry_update" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry_update" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
-
-	                                @if ($errors->has('date_of_entry'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('date_of_entry') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="date_of_birth_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth_update" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
-
-	                                @if ($errors->has('date_of_birth'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('date_of_birth') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
-
-	                            <div class="col-md-8">
-	                                <textarea id="address_update" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address" value="{{ old('address') }}" autofocus></textarea>
-
-	                                @if ($errors->has('address'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('address') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="phone_number" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="phone_number_update" type="number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
-
-	                                @if ($errors->has('phone_number'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('phone_number') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-
-	                        <div class="form-group row">
-	                            <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="no_npwp_update" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" autofocus>
-	                            </div>
-	                        </div>
-
-
-	                <div class="modal-footer">
-	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	                  <button type="submit" class="btn btn-primary btn-submit-update">
-	                      {{ __('Update') }}
-	                  </button>
-	                </div>
+                    @csrf
+                    <div class="form-group row">
+                        <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="nik_update" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
+
+                            @if ($errors->has('nik'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('nik') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="name" class="col-md-4 col-form-label">{{ __('Employees Name') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name_update" value="{{ old('name') }}" autofocus>
+
+                            @if ($errors->has('name'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('name') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email_update" value="{{ old('email') }}" required>
+
+                            @if ($errors->has('email'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('email') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="status_karyawan" class="col-md-4 col-form-label text-md-right">{{ __('Employee Status') }}</label>
+
+                        <div class="col-md-4">
+                        	<input id="status_karyawan_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+                    	</div>
+
+                        <div class="col-md-4">
+                            <select id="status_kerja_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="status_kerja_update" value="{{ old('company') }}" onchange="statusSelect(this)">
+                                <option value="">-- Select Status --</option>
+                                <option value="tetap">Karyawan Tetap</option>
+                                <option value="kontrak">Karyawan Kontrak</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company') }}</label>
+
+                        <div class="col-md-4">
+                        	<input id="company_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+                    	</div>
+
+                        <div class="col-md-4">
+                            <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onchange="companySelect(this)" autofocus>
+                                <option value="">-- Select Company --</option>
+                                <option value="1" data-target="sip" id="1">SIP</option>
+                                <option value="2" data-target="msp" id="2">MSP</option>
+                            </select>
+                            @if ($errors->has('company'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('company') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!--tampilkan divisi berdasarkan divisi-->
+                    <div class="form-group row">
+                        <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
+
+                        <div class="col-md-4">
+                        	<input id="divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+                    	</div>
+
+                        <div class="col-md-4">
+                            <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="divisi_update" value="{{ old('company') }}" autofocus>
+                            </select>
+                            @if ($errors->has('company'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('company') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!--tampilkan divisi berdasarkan sub-divisi-->
+                    <div class="form-group row">
+                        <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
+
+                        <div class="col-md-4">
+                        	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
+                    	</div>
+
+                        <div class="col-md-4">
+                            <select id="sub_divisi_update" onchange="subdivisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="sub_divisi_update" value="{{ old('company') }}" autofocus>
+                            </select>
+                            @if ($errors->has('company'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('company') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!--tampilkan divisi berdasarkan posisi-->
+                    <div class="form-group row">
+                        <label for="posisi" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+                        <div class="col-md-4">
+                        	<input id="posisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
+                    	</div>
+
+                        <div class="col-md-4">
+                            <select id="posisi_update" onchange="posisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="posisi_update" value="{{ old('company') }}" autofocus>
+                            </select>
+                            @if ($errors->has('company'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('company') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                  <!--SIP-->
+
+                    <!-- <div class="form-group row"  style="display:none;"  id="company_update-sip">
+                        <label for="division" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="division_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select division --</option>
+                                <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
+                                <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
+                                <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
+                                <option value="SALES" data-target="sales" id="sales">SALES</option>
+                                <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
+                                <option value="NULL" data-target="director" id="director">NONE</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!--DIRECTOR-->
+                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-director">
+                        <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="position-dir-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_dir_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Position --</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+                    
+                    <!-- Technical -->
+                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-technical">
+                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="subdivision-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Sub Division --</option>
+                                <option value="DPG" data-target="dvg" id="dvg">IMPLEMENTATION</option>
+                                <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
+                                <option value="DVG" data-target="dvg" id="dvg">DEVELOPMENT</option>
+                                <option value="NONE" data-target="dpg" id="dpg">NONE</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+                        <div class="col-md-8 margin-top">
+                            <select id="position-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Position --</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!-- Sales -->
+                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-sales" >
+
+                        <label for="territory" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="territory-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Territory --</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+                        <div class="col-md-8 margin-top">
+                            <select id="position-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Position --</option>
+                                <option value="MANAGER">MANAGER</option>
+                                <option value="STAFF">STAFF</option>
+                                <option value="ADMIN">ADMIN</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!-- Finance -->
+                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-finance">
+                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="subdivision-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_finance_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Sub Division --</option>
+                                <option value="FINANCE" data-target="dvg" id="dvg">FINANCE</option>
+                                <option value="ACC" data-target="dpg" id="dpg">ACCOUNTING</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+                        <div class="col-md-8 margin-top">
+                            <select id="position-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_finance_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Position --</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!-- Operation -->
+                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-operation">
+                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="subdivision-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Sub Division --</option>
+                                <option value="MSM" data-target="MSM" id="MSM">MSM</option>
+                                <option value="PMO" data-target="PMO" id="PMO">PMO</option>
+                                <option value="DIR" data-target="DIR" id="PMO">NONE</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+                        <div class="col-md-8 margin-top">
+                            <select id="position-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_operation_update" autofocus>
+                              <option value="">-- Select position --</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!-- HR -->
+                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-hr">
+                        <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="position-hr-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_hr_update" value="{{ old('division') }}" autofocus>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+
+                    <!-- MSP -->
+
+                   <!--  <div class="form-group row"  style="display:none;"  id="company_update-msp">
+                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Division --</option>
+                                <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
+                                <option value="ADMIN_MSP" >NONE</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Position --</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-group row"  style="display:none;"  id="company_update-msp">
+                        <label for="division-msp" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Division --</option>
+                                <option value="SALES_MSP" data-target="sales_msp_update" id="sales_msp">SALES</option>
+                                <option value="TECHNICAL_MSP" data-target="technical_msp_update" id="TECHNICAL_MSP">TECHNICAL</option>
+                                <option value="WAREHOUSE_MSP" data-target="sales_msp_update" id="warehouse_msp">WAREHOUSE</option>
+                                <option value="OPERATION_MSP" data-target="sales_msp_update" id="operation_msp">OPERATION</option>
+                                <option value="ADMIN_MSP" data-target="sales_msp_update">NONE</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-sales_msp_update">
+                      <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales" value="{{ old('division') }}" autofocus>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-technical_msp_update">
+                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="subdivision-tech-msp_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Sub Division --</option>
+                                <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
+                                <option value="NONE_MSP" data-target="dpg" id="dpg">NONE</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+                        <div class="col-md-8">
+                            <select id="position-tech-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp_update" value="{{ old('division') }}" autofocus>
+                                <option value="">-- Select Position --</option>
+                            </select>
+                            @if ($errors->has('division'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('division') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div> -->
+
+                    <div class="form-group row">
+                        <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="date_of_entry_update" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry_update" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
+
+                            @if ($errors->has('date_of_entry'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('date_of_entry') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="date_of_birth_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth_update" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
+
+                            @if ($errors->has('date_of_birth'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('date_of_birth') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
+
+                        <div class="col-md-8">
+                            <textarea id="address_update" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address" value="{{ old('address') }}" autofocus></textarea>
+
+                            @if ($errors->has('address'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('address') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="phone_number" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="phone_number_update" type="number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
+
+                            @if ($errors->has('phone_number'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('phone_number') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="no_npwp_update" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" autofocus>
+                        </div>
+                    </div>
+
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary btn-submit-update">
+                      {{ __('Update') }}
+                  </button>
+                </div>
 	          </form>
 	        </div>
 	      </div>
@@ -2761,12 +2778,20 @@
                $("#address_update").val(value.address);
                $("#phone_number_update").val(value.phone);
                $("#no_npwp_update").val(value.no_npwp);
+               if (value.status_kerja == 'tetap') {
+               	$("#status_karyawan_update").val("Karyawan Tetap");
+               }else if (value.status_kerja == 'kontrak') {
+               	$("#status_karyawan_update").val("Karyawan Kontrak");
+               }else{
+               	$("#status_karyawan_update").val("");
+               }
                if (value.npwp_file == null) {
                	$("#showgambarnpwp_update").attr("src","http://placehold.it/100x100");
                } else {
                	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
                }
                
+
                $("#password_update").val(value.password);
                $("#divisi_view_update").val(value.id_division);
                $("#subdivisi_view_update").val(value.id_territory);
@@ -3465,6 +3490,17 @@
 			 $(this).addClass("current");
 			 showPage(parseInt($(this).text()));
 		});
+
+		function statusSelect(id)
+		{
+			if (id.value == 'tetap') {
+				$("#status_karyawan_update").val("Karyawan Tetap");
+			}else if (id.value == 'kontrak') {
+				$("#status_karyawan_update").val("Karyawan Kontrak");
+			}else{
+				$("#status_karyawan_update").val("");
+			}
+		}
 
 		function companySelect(id)
 		{
