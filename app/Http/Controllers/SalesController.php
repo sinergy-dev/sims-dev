@@ -4781,10 +4781,12 @@ class SALESController extends Controller
         $datas = SalesProject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                 ->join('users','users.nik','=','sales_lead_register.nik')
                 ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','name_project','tb_id_project.created_at','sales_name','customer_legal_name')
+                ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
+                ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo')
+                ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','tb_pid.no_po','tb_quote_msp.quote_number')
                 ->where('id_company','2')
                 ->whereYear('tb_id_project.created_at',date('Y'))
-                ->where('status','!=','WO')
+                ->where('tb_id_project.status','!=','WO')
                 ->get();
 
 
@@ -4794,7 +4796,7 @@ class SALESController extends Controller
             });
 
              $datasheet = array();
-             $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Amount IDR", "Sales");
+             $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer","No. Quote","Customer Name", "Project Name", "Amount IDR", "Sales");
              $i=1;
 
 
@@ -4805,27 +4807,52 @@ class SALESController extends Controller
                     date_format(date_create($data['date']),'d-M-Y'),
                     $data['id_project'],
                     $data['no_po_customer'],
+                    [' - '],
                     $data['customer_name'],
                     $data['name_project'],
                     $data['amount_idr'],
                     $data['sales_name']
-                    
                     );
                   
                   $i++;
                 }else{
-                $datasheet[$i] = array(
-                    $i,
-                    date_format(date_create($data['date']),'d-M-Y'),
-                    $data['id_project'],
-                    $data['no_po_customer'],
-                    $data['customer_legal_name'],
-                    $data['opp_name'],
-                    $data['amount_idr'],
-                    $data['name']
+                    $datasheet[$i] = array(
+                        $i,
+                        date_format(date_create($data['date']),'d-M-Y'),
+                        $data['id_project'],
+                        $data['no_po'],
+                        $data['quote_number'],
+                        $data['customer_legal_name'],
+                        $data['opp_name'],
+                        $data['amount_idr'],
+                        $data['name']
                     
-                );
-              
+                    );
+                    // if ($data->no_po == null) {
+                    //     $datasheet[$i] = array(
+                    //         $i,
+                    //         date_format(date_create($data['date']),'d-M-Y'),
+                    //         $data['id_project'],
+                    //         $data['quote_number'],
+                    //         $data['customer_legal_name'],
+                    //         $data['opp_name'],
+                    //         $data['amount_idr'],
+                    //         $data['name']
+                        
+                    //     );
+                    // }else{
+                    //     $datasheet[$i] = array(
+                    //         $i,
+                    //         date_format(date_create($data['date']),'d-M-Y'),
+                    //         $data['id_project'],
+                    //         $data['no_po'],
+                    //         $data['customer_legal_name'],
+                    //         $data['opp_name'],
+                    //         $data['amount_idr'],
+                    //         $data['name']
+                        
+                    //     );
+                    // }              
                 $i++;
                 }
             }
