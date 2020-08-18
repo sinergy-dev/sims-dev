@@ -1200,11 +1200,9 @@
     }
 
     $('input[name="dates"]').daterangepicker({
-
     }, function(start, end, label) {
 
       // table.draw();
-
         $.ajax({
               type:"GET",
               url:"{{url('getfilterCutiByDate')}}",
@@ -1316,7 +1314,8 @@
          $('input[name="dates"]').daterangepicker({
 
         }, function(start, end, label) {
-
+            console.log(start.format('YYYY-MM-DD'))
+             console.log(end.format('YYYY-MM-DD'))
             $.ajax({
                   type:"GET",
                   url:"/getfilterCutiByDate",
@@ -1354,7 +1353,14 @@
                         table = table + '<td>' +value.updated_at+ '</td>';
                         table = table + '<td>' +value.pic+ '</td>';
                       }
-                      table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
+                      if (value.status == 'v') {
+                        table = table + '<td>' +'<label class="label-success">Approved</label>'+ '</td>';
+                      }else if (value.status == 'd') {
+                        table = table + '<td>' +'<label class="label-danger">Declined</label>'+ '</td>';
+                      }else{
+                        table = table + '<td>' +'<label class="label-warning">Pending</label>'+ '</td>';
+                      }
+                      
                       table = table + '<td>' +' '+ '</td>';
                       
                       table = table + '</tr>';
@@ -1422,7 +1428,13 @@
                     table = table + '<td>' +value.updated_at+ '</td>';
                     table = table + '<td>' +value.pic+ '</td>';
                   }
-                  table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
+                 if (value.status == 'v') {
+                    table = table + '<td>' +'<label class="label-success">Approved</label>'+ '</td>';
+                  }else if (value.status == 'd') {
+                    table = table + '<td>' +'<label class="label-danger">Declined</label>'+ '</td>';
+                  }else{
+                    table = table + '<td>' +'<label class="label-warning">Pending</label>'+ '</td>';
+                  }
                   table = table + '<td>' +' '+ '</td>';
                   
                   table = table + '</tr>';
