@@ -133,9 +133,7 @@
 
 
       <div class="box-body">
-        <div class="table-responsive">
-          
-          
+        <div class="table-responsive">          
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs" id="cutis">
                     <li>
@@ -373,6 +371,8 @@
                         <th>Division</th>
                         <th>Request Date</th>
                         <th>Date Off</th>
+                        <th>Approved Date</th>
+                        <th>Approved By</th>
                         <th>Status</th>
                       </tr>
                     </thead>
@@ -389,6 +389,8 @@
                                   border: none;">{{$data->days}}
                                 Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
                                 </td>
+                                <td>{{$data->updated_at}}</td>
+                                <td>{{$data->pic}}</td>
                                 <td>
                                   @if($data->status == 'v' && $data->decline_reason != "")
                                    <span class="label label-info">Approved with cancelation</span>
@@ -583,7 +585,7 @@
             <div class="modal-body">
               <form>
                 @csrf
-                <input type="" name="id_cuti_detil" id="id_cuti_detil" hidden="">
+                <input type="" name="id_cuti_detil" hidden="">
                 <div class="form-group">
                     <label>Date Of Request</label>
                     <input type="text" class="form-control" id="date_request_detils" name="date_request_detil" readonly>
@@ -756,13 +758,14 @@
 @endsection
 
 @section('script')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="{{asset('js/fullcalendar.js')}}"></script>
 <script type='text/javascript' src="{{asset('js/gcal.js')}}"></script>
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 <script type="text/javascript">
     $(".show-sisa-cuti").click(function(){
       $.ajax({
@@ -772,8 +775,7 @@
           var d = new Date().getFullYear() - 1;
           var dd = new Date().getFullYear();
           var swal_html = '<div class="panel" style="background:aliceblue;font-weight:bold"><div class="panel-heading panel-info text-center btn-info"> <b>Berikut Info total cuti : </b> </div> <div class="panel-body"><table class="text-center"><b><p style="font-weight:bold">Total cuti '+ d +' (*digunakan s/d 31 Maret) : '+result[0].cuti+'</p><p style="font-weight:bold">Total cuti '+ dd +' : '+result[0].cuti2+'</p></b></div></div></div>';
-          swal({title: "Hai "+result[0].name+" !!", html: swal_html})
-          
+          swal.fire({title: "Hai "+result[0].name+" !!", html: swal_html})
         },
       });
     });
