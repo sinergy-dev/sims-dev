@@ -2,6 +2,9 @@
 @section('content')
   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
   <style type="text/css">
+   /* #datatable_wrapper{
+      margin-top: 20px;
+    }*/
     .hari_libur {
       color: red !important;
     }
@@ -68,6 +71,10 @@
       letter-spacing: -0.05em;
       padding-top: 0.8em;
       color: #2f2f2f;
+    }
+
+    .dataTables_paging {
+      display: none;
     }
       
   </style>
@@ -323,91 +330,87 @@
 
 
                 <div class="tab-pane" id="staff">
-                @if(Auth::User()->id_position == 'HR MANAGER')
-                  <div style="width: 170px;margin-right: 10px" class="pull-left">
-                    <div class="input-group date">
-                        <select class="form-control" id="pilih" name="pilih">
-                          <option value="Select">-- Select Filter By --</option>
-                          <option value="date">Filter By Date</option>
-                          <option value="div">Filter By Division</option>
-                          <option value="all">Filter By Date & Div</option>
-                        </select>
-                    </div>
-                  </div> 
-
-                  <div style="width: 300px;margin-right: 10px" class="pull-left">
-                    <div class="input-group date">
-                        <div class="input-group-addon">
-                          <i class="fa fa-calendar"></i>
+                  @if(Auth::User()->id_position == 'HR MANAGER')
+                    <div class="row" style="margin-bottom: 10px">
+                        <div style="margin-left: 15px">
+                            <select class="form-control" style="width: 200px" id="pilih" name="pilih">
+                              <option value="Select">-- Select Filter By --</option>
+                              <option value="date">Filter By Date</option>
+                              <option value="div">Filter By Division</option>
+                              <option value="all">Filter By Date & Div</option>
+                            </select>
                         </div>
-                        <input type="text" class="form-control" id="dates" name="dates" disabled="">
-                    </div>
-                  </div> 
 
-                  <div style="width: 250px;margin-right: 10px" class="input-group date pull-left disabled">
-                    <div class="input-group-addon">
-                      <i class="fa fa-filter"></i>
-                    </div>
-                    <select class="form-control" id="division_cuti" name="division_cuti" disabled="">
-                      <option value="alldeh">ALL DIVISION</option>
-                      @foreach($division as $data)
-                        @if($data->id_division != 'NULL')
-                         @if($data->id_division == '-')
-                         <option value="{{$data->id_division}}">WAREHOUSE</option>
-                         @else
-                         <option value="{{$data->id_division}}">{{$data->id_division}}</option>
-                         @endif
-                        
-                        @endif
-                      @endforeach
-                    </select>
-                  </div>
-                @endif
+                        <div class="input-group date" style="width: 300px;margin-left: 15px">
+                            <div class="input-group-addon">
+                              <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control" id="dates" name="dates" disabled="">
+                        </div>
 
-                <table class="table table-bordered table-striped dataTable" id="datatable" width="100%" cellspacing="0">
-                    <thead>
-                      <tr>
-                        <th>Employees Name</th>
-                        <th>Division</th>
-                        <th>Request Date</th>
-                        <th>Date Off</th>
-                        <th>Approved Date</th>
-                        <th>Approved By</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                      <tbody id="report" name="report">
-                        @foreach($cuti as $data)
-                            <tr>
-                                <td>{{$data->name}}</td>
-                                <td>{{$data->name_division}}</td>
-                                <td>
-                                  {{$data->date_req}}
-                                </td>
-                                <td>
-                                  <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
-                                  border: none;">{{$data->days}}
-                                Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
-                                </td>
-                                <td>{{$data->updated_at}}</td>
-                                <td>{{$data->pic}}</td>
-                                <td>
-                                  @if($data->status == 'v' && $data->decline_reason != "")
-                                   <span class="label label-info">Approved with cancelation</span>
-                                  @elseif($data->status == 'v')
-                                   <span class="label label-success">Approved</span>
-                                  @elseif($data->status == 'd')
-                                   <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
-                                  @else
-                                   <span class="label label-warning">Pending</span> 
-                                  @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        <div  class="input-group date disabled" style="width: 300px;margin-left: 15px">
+                          <div class="input-group-addon">
+                            <i class="fa fa-filter"></i>
+                          </div>
+                          <select class="form-control" id="division_cuti" name="division_cuti" disabled="">
+                            <option value="alldeh">ALL DIVISION</option>
+                            @foreach($division as $data)
+                              @if($data->id_division != 'NULL')
+                               @if($data->id_division == '-')
+                               <option value="{{$data->id_division}}">WAREHOUSE</option>
+                               @else
+                               <option value="{{$data->id_division}}">{{$data->id_division}}</option>
+                               @endif
+                              
+                              @endif
+                            @endforeach
+                          </select>
+                        </div>
+                    </div>
+                  @endif
+                  <table class="table table-bordered table-striped dataTable" id="datatable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>Employees Name</th>
+                          <th>Division</th>
+                          <th>Request Date</th>
+                          <th>Date Off</th>
+                          <th>Approved Date</th>
+                          <th>Approved By</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                        <tbody id="report" name="report">
+                          @foreach($cuti as $data)
+                              <tr>
+                                  <td>{{$data->name}}</td>
+                                  <td>{{$data->name_division}}</td>
+                                  <td>
+                                    {{$data->date_req}}
+                                  </td>
+                                  <td>
+                                    <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
+                                    border: none;">{{$data->days}}
+                                  Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
+                                  </td>
+                                  <td>{{$data->updated_at}}</td>
+                                  <td>{{$data->pic}}</td>
+                                  <td>
+                                    @if($data->status == 'v' && $data->decline_reason != "")
+                                     <span class="label label-info">Approved with cancelation</span>
+                                    @elseif($data->status == 'v')
+                                     <span class="label label-success">Approved</span>
+                                    @elseif($data->status == 'd')
+                                     <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
+                                    @else
+                                     <span class="label label-warning">Pending</span> 
+                                    @endif
+                                  </td>
+                              </tr>
+                          @endforeach
+                      </tbody>
+                  </table>
                 </div>
-
               </div>
             </div>
           </div>
@@ -799,6 +802,10 @@
             {"width": "10%", "targets":4},
            ],
         "order": [[ "2", "desc" ]],
+        // // "bPaginate": false,
+        // "pageLength": 25,
+        // "paging": false,
+         // "bFilter": false,
     });
 
     $(".users").select2();
@@ -1228,6 +1235,13 @@
                   table = table + '<td>' +value.id_division+ '</td>';
                   table = table + '<td>' +'<button name="date_off" id="date_off" class="date_off" value="'+value.id_cuti+'" style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">'+ value.days + ' Hari' + '<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"/>'+'</button>'+'</td>';
                   table = table + '<td>' +value.date_req+ '</td>';
+                  if (value.updated_at == null) {
+                    table = table + '<td> - </td>';
+                    table = table + '<td> - </td>';
+                  }else{
+                    table = table + '<td>' +value.updated_at+ '</td>';
+                    table = table + '<td>' +value.pic+ '</td>';
+                  }
                   table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
                   table = table + '<td>' +' '+ '</td>';
                   
@@ -1271,6 +1285,13 @@
                   table = table + '<td>' +value.id_division+ '</td>';
                   table = table + '<td>' +'<button name="date_off" id="date_off" class="date_off" value="'+value.id_cuti+'"  style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">'+ value.days + ' Hari' + '<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"/>'+'</button>'+'</td>';
                   table = table + '<td>' +value.date_req+ '</td>';
+                  if (value.updated_at == null) {
+                    table = table + '<td> - </td>';
+                    table = table + '<td> - </td>';
+                  }else{
+                    table = table + '<td>' +value.updated_at+ '</td>';
+                    table = table + '<td>' +value.pic+ '</td>';
+                  }
                   table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
                   table = table + '<td>' +' '+ '</td>';
                   
@@ -1326,6 +1347,13 @@
                       table = table + '<td>' +value.id_division+ '</td>';
                       table = table + '<td>' +'<button name="date_off" id="date_off" class="date_off" value="'+value.id_cuti+'" style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">'+ value.days + ' Hari' + '<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"/>'+'</button>'+'</td>';
                       table = table + '<td>' +value.date_req+ '</td>';
+                      if (value.updated_at == null) {
+                        table = table + '<td> - </td>';
+                        table = table + '<td> - </td>';
+                      }else{
+                        table = table + '<td>' +value.updated_at+ '</td>';
+                        table = table + '<td>' +value.pic+ '</td>';
+                      }
                       table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
                       table = table + '<td>' +' '+ '</td>';
                       
@@ -1387,6 +1415,13 @@
                   table = table + '<td>' +value.id_division+ '</td>';
                   table = table + '<td>' +'<button name="date_off" id="date_off" class="date_off" value="'+value.id_cuti+'" style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">'+ value.days + ' Hari' + '<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"/>'+'</button>'+'</td>';
                   table = table + '<td>' +value.date_req+ '</td>';
+                  if (value.updated_at == null) {
+                    table = table + '<td> - </td>';
+                    table = table + '<td> - </td>';
+                  }else{
+                    table = table + '<td>' +value.updated_at+ '</td>';
+                    table = table + '<td>' +value.pic+ '</td>';
+                  }
                   table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
                   table = table + '<td>' +' '+ '</td>';
                   
