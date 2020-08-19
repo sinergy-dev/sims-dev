@@ -39,7 +39,7 @@ class TestController extends Controller
 
   public function testRemainderEmail(){
     $parameterEmail = collect([
-      "to" => DB::table('users')->where('nik',1150991080)->first()->name,
+      "to" => DB::table('users')->where('name','Rama Agastya')->first()->name,
       "proses_count" => DB::table('sales_lead_register')->where('nik',1150991080)->whereRaw('(`result` = "SD" OR `result` = "TP")')->count(),
       "tp_count" => DB::table('sales_lead_register')->where('nik',1150991080)->where('result' ,'TP')->count(),
       "tp_detail" => DB::table('sales_lead_register')
@@ -58,6 +58,7 @@ class TestController extends Controller
     ]);
 
     $return =  new EmailRemainderWeekly($parameterEmail);
+    Mail::to('agastya@sinergy.co.id')->send($return);
     return $return;
   }
 

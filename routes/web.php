@@ -231,7 +231,10 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	Route::get('/dropdownTech', 'HRController@getDropdownTech');
 	Route::get('/hu_rec','HRController@index')->middleware('HRMiddleware');
-	Route::post('/hu_rec/store', 'HRController@store')->middleware('HRMiddleware');
+	Route::post('/hu_rec/store', 'HRController@store');
+	// Route::get('/hu_rec/store', function(){
+	// 	return 'b';
+	// });
 	Route::post('/hu_rec/update', 'HRController@update_humanresource')->middleware('HRMiddleware');
 	Route::get('delete_hr/{nik}', 'HRController@destroy_hr')->middleware('HRMiddleware');
 	Route::get('/profile_user','HRController@user_profile');

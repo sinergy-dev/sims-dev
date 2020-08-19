@@ -740,7 +740,7 @@
                           	@elseif($data->status_kerja == 'kontrak')
                           	Karyawan Kontrak 
                           	@else
-                          	Karyawan Kontrak 
+                          	-
                           	<!-- <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i> -->
                           	@endif
                           </td>
