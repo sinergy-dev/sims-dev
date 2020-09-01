@@ -111,13 +111,15 @@
                     <td>
                       <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
                       @if($data->status == "PENDING")
-                      <button class="btn btn-xs btn-danger btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-hourglass-end"></i></button>
+                      <button class="btn btn-xs btn-default btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-hourglass-end"></i></button>
                       @else
                       <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
                       @endif                      
                       <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
                       <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
-                      
+                      @if($data->status != "PENDING")
+                      <button class="btn btn-xs btn-danger btn-hapus" onclick="hapus('{{$data->id_barang}}','{{$data->nama_barang}}')" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
+                      @endif
                     </td>
                     @endif
                   </tr>
@@ -339,6 +341,30 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
               <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+            </div>
+        </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="penghapusan" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Penghapusan</h4>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{{url('penghapusan_hr')}}" id="modal_peminjaman" name="modalProgress">
+            @csrf
+            <input type="text" name="id_barang" id="id_barang_hapus" hidden>
+            <div class="form-group">
+            <label>Apakah anda yakin untu menghapus Asset Ini?</label>
+            <input name="nama_barang" id="nama_barang_hapus" class="form-control" readonly></input>
+          </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-check"></i>&nbsp Hapus</button>
             </div>
         </form>
         </div>
@@ -590,6 +616,11 @@ REJECT
         $('#peminjaman').modal('show')
     });
 
+    $(document).on('click',".btn-hapus",function(e) { 
+
+        $('#penghapusan').modal('show')
+    });
+
     $('#users').select2();
 
     $('#data_table').DataTable({
@@ -608,6 +639,11 @@ REJECT
     function pinjam(id_barang,nama_barang){
       $('#id_barang').val(id_barang);
       $('#nama_barang_pinjam').val(nama_barang);
+    }
+
+    function hapus(id_barang,nama_barang){
+      $('#id_barang_hapus').val(id_barang);
+      $('#nama_barang_hapus').val(nama_barang);
     }
 
     function kembali(id_transaction,id_barang,nama_barang,name){
