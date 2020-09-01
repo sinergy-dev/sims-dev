@@ -86,6 +86,20 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/show/{lead_id}','SalesController@show');
 	Route::get('/getBtnFilter','salescontroller@getBtnFilter');
 
+	//tag product
+	Route::get('/sales/tag','ProductTechnologyTag@index');
+	Route::post('sales/store/product','ProductTechnologyTag@store_product');
+	Route::post('sales/store/tech','ProductTechnologyTag@store_tech');
+	Route::post('sales/update/product','ProductTechnologyTag@update_tag_product');
+	Route::post('sales/update/technology','ProductTechnologyTag@update_tag_tech');
+	Route::get('sales/detail_product','ProductTechnologyTag@detail_product');
+	Route::get('sales/detail_tech','ProductTechnologyTag@detail_tech');
+	Route::get('sales/getProductEdit','SalesController@getListProductLead');
+	Route::get('sales/getProductTag','SalesController@getProductTag');
+	Route::get('sales/getProductTechTag','SalesController@getProductTechTag');
+	Route::get('sales/getTechEdit','SalesController@getListTechTag');
+	Route::get('sales/getTechTag','SalesController@getTechTag');
+
 	Route::get('/warehouse', 'WarehouseController@index');
 	Route::post('/warehouse/store', 'WarehouseController@store');
 	Route::post('/warehouse/update_warehouse', 'WarehouseController@update_warehouse');
@@ -650,6 +664,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/asset_hr', 'AssetHRController@index');
 	Route::post('/store_asset_hr', 'AssetHRController@store');
 	Route::post('/peminjaman_hr', 'AssetHRController@peminjaman');
+	Route::post('/penghapusan_hr', 'AssetHRController@penghapusan');
 	Route::post('/accept_pinjam_hr', 'AssetHRController@accept_pinjam');
 	Route::post('/reject_pinjam_hr', 'AssetHRController@reject_pinjam');
 	Route::post('/kembali_pinjam_hr', 'AssetHRController@kembali');
