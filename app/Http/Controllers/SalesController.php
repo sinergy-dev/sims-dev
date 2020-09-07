@@ -4148,7 +4148,7 @@ class SALESController extends Controller
 
             if($nomor <= 9){
                 $nomor = '00' . $nomor;
-            }elseif($nomor > 9 && $nomor < 99){
+            }elseif($nomor > 9 && $nomor <= 99){
                 $nomor = '0' . $nomor;
             }
 
@@ -4219,7 +4219,7 @@ class SALESController extends Controller
 
             if($nomor <= 9){
                 $nomor = '00' . $nomor;
-            }elseif($nomor > 9 && $nomor < 99){
+            }elseif($nomor > 9 && $nomor <= 99){
                 $nomor = '0' . $nomor;
             }
 
