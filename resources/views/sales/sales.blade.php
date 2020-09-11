@@ -4,12 +4,8 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet"/>
 
 <style type="text/css">
-  .{
-
-    height:50px;
-    width:100px;
-    overflow-x: scroll;
-
+  .select2-selection__choice {
+    color: white;
   }
 
   .transparant{
@@ -308,6 +304,18 @@
     </div>
   @endif
 
+  @if (session('success'))
+  <div class="alert alert-success" id="alert">
+      {{ session('success') }}
+  </div>
+  @endif
+
+  @if (session('update'))
+  <div class="alert alert-warning" id="alert">
+      {{ session('update') }}
+  </div>
+  @endif
+
 <div class="box">
     <div class="box-header">
       @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR'  || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
@@ -326,15 +334,6 @@
           </select>
         </div>
 
-<!--         <select id="btn-filter" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
-          <option value="">Select Filter</option>
-          <option value="company">Company</option>
-          <option value="territory">Territory</option>
-        </select>
-
-        <select id="btn-filter-child" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
-        </select>
- -->
         @if(Auth::User()->id_division != 'SALES' && Auth::User()->id_territory != 'OPERATION' && Auth::User()->id_division != 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF')
         <select id="table-filter" class="btn btn-primary pull-right" style="margin-right: 5px;height: 30px">
           <option value="">Filter By Territory</option>
@@ -345,11 +344,16 @@
           <option>TERRITORY 5</option>
         </select>
         @endif
-      @endif
-    </div>
 
-    @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'STAFF')
-    <div class="dropdown pull-right">
+        @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position != 'STAFF' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' )
+        <div style="max-width: 250px;width: 220px" class="pull-left">
+          <select class="form-control" style="width: 50%" id="searchTags"></select>
+        </div>
+        @endif        
+      @endif
+
+      @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'STAFF')
+        <div class="dropdown pull-right">
             <select name="year_dif" id="year_dif" class="btn btn-md btn-success fa" style="font-size: 14px;background-color:#4CAF50;border-style: none;height: 30px;width: 145px">
             @foreach($year as $years)
               @if($years->year < $year_now)
@@ -359,8 +363,10 @@
             <option selected value="{{$year_now}}"> &#xf073 &nbsp&nbsp{{$year_now}}</option>
           </select>
         </div>
-    @endif
- 
+      @endif
+    </div>
+
+
     <div class="box-body">
       <div id="div_2019" style="display: none;"> 
         <div class="table-responsive">
@@ -1640,6 +1646,7 @@
                   <th>Note</th>
                   <th hidden="">14</th>
                   <th hidden>15</th>
+                  <th hidden></th>
                 </tr>
                 @if(Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_territory == 'DPG')
                 <tr id="sekarang">
@@ -1666,6 +1673,7 @@
                   <th hidden></th>
                   <th hidden></th>
                   <th hidden></th>
+                  <th hidden></th>
                 </tr>
                 @elseif( Auth::User()->id_division == 'SALES')
                 <tr id="sekarang">
@@ -1681,7 +1689,8 @@
                   <th></th>
                   <th></th>
                   <th hidden></th>
-                  <th hidden=""></th>
+                  <th hidden></th>
+                  <th hidden></th>
                 </tr>
                 @elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL PRESALES')
                 <tr id="sekarang">
@@ -1696,6 +1705,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th hidden></th>
                   <th hidden></th>
                   <th hidden></th>
                   <th hidden></th>
@@ -1714,6 +1724,7 @@
                   <th></th>
                   <th hidden></th>
                   <th hidden></th>
+                  <th hidden></th>
                 </tr>
                 @elseif(Auth::User()->id_territory == 'OPERATION')
                 <tr id="sekarang">
@@ -1728,7 +1739,8 @@
                   <th></th>
                   <th></th>
                   <th hidden></th>
-                  <th hidden=""></th>
+                  <th hidden></th>
+                  <th hidden></th>
                 </tr>
                 @endif
               </thead>
@@ -1874,6 +1886,10 @@
                             @endif
                           </td>
                           <td hidden>{{$data->id_territory}}</td>
+                          <td hidden>
+                          {{$data->result_concat}}
+                          {{$data->result_concat_2}}
+                        </td>
                       </tr>
                     @endif
                   @else
@@ -2014,6 +2030,10 @@
                           @endif
                         </td>
                         <td hidden>{{$data->id_territory}}</td>
+                        <td hidden>
+                          {{$data->result_concat}}
+                          {{$data->result_concat_2}}
+                        </td>
                     </tr>
                   @endif
                 @endforeach
@@ -2117,6 +2137,10 @@
                           {{$data->amount}}
                           @endif
                         </td>
+                        <td hidden>
+                          {{$data->result_concat}}
+                          {{$data->result_concat_2}}
+                        </td>
                       </tr>
                     @endif
                   @elseif($data->year == $year_now)
@@ -2214,6 +2238,10 @@
                           @if($data->result != 'CANCEL' && $data->result != 'LOSE')
                           {{$data->amount}}
                           @endif
+                        </td>
+                        <td hidden>
+                          {{$data->result_concat}}
+                          {{$data->result_concat_2}}
                         </td>
                     </tr>
                   @endif
@@ -2394,6 +2422,10 @@
                           @endif
                       </td>
                       <td hidden>{{$data->id_territory}}</td>
+                      <td hidden>
+                        {{$data->result_concat}}
+                        {{$data->result_concat_2}}
+                      </td>
                     </tr>
                 @endforeach
                 @foreach($leadspre as $key => $data)
@@ -2412,17 +2444,7 @@
                         <td>{{ $data->closing_date}}</td>
                         <td>{{ $data->name }}</td>
                         <td>
-                          @if($data->nik == $st->nik)
-                            Satria Teguh Sentosa Mulyono
-                          @elseif($data->nik == $rk->nik)
-                            Muhammad Rizki Kurniawan
-                          @elseif($data->nik == $gp->nik)
-                            Ganjar Pramudya Wijaya
-                          @elseif($data->nik == $rz->nik)
-                            Rizaldo Frendy Kurniawan
-                          @elseif($data->nik == $jh->nik)
-                            Johan Ardi Wibisono
-                          @endif
+                          {{ $data->name_presales }}
                         </td>
                         @if($data->result == 'TP' || $data->result == 'WIN' || $data->result == 'LOSE' || $data->result == 'CANCEL')
                           @if($data->deal_price == NULL)
@@ -2494,6 +2516,10 @@
                           @endif
                         </td>
                         <td hidden>{{$data->id_territory}}</td>
+                        <td hidden>
+                          {{$data->name_product}}
+                          {{$data->name_tech}}
+                        </td>
                       </tr>
                   @endif
                 @endforeach
@@ -2737,6 +2763,7 @@
                           {{$data->amount}}
                           @endif
                       </td>
+                      <td hidden></td>
                     </tr>
                     @endif
                   @else
@@ -2976,6 +3003,7 @@
                           {{$data->amount}}
                           @endif
                       </td>
+                      <td hidden></td>
                     </tr>
                   @endif
                 @endforeach
@@ -3004,6 +3032,7 @@
                     <th></th>
                     <th></th>
                     <th colspan="2"></th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -3225,9 +3254,9 @@
 
 <!--MODAL ADD PROJECT-->
 <div class="modal fade" id="modal_lead" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-md">
       <!-- Modal content-->
-      <div class="modal-content modal-md">
+      <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Add Lead Register</h4>
         </div>
@@ -3328,6 +3357,24 @@
               <input type="text" class="form-control" placeholder="Enter Note" name="note" id="note">
             </div>
 
+            <div class="form-group">
+              <label>Product Tag</label>
+              <select class="js-product-multiple" name="product[]" id="product" multiple="multiple">
+                @foreach($tag_product as $data)
+                <option value="{{$data->id}}">{{$data->name_product}}</option>
+                @endforeach
+              </select>
+            </div>
+
+            <div>
+              <label>Technology Tag</label>
+              <select class="js-technology-multiple" name="technology[]" id="technology" multiple="multiple">
+                @foreach($tag_technology as $data)
+                <option value="{{$data->id}}">{{$data->name_tech}}</option>
+                @endforeach
+              </select>
+            </div>
+
             <!-- @if(Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
             <div class="form-group" style="padding-left: 25px">
               <label class="checkbox">
@@ -3371,9 +3418,9 @@
 
 <!-- MODAL EDIT PROJECT-->
 <div class="modal fade" id="edit_lead_register" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-md">
       <!-- Modal content-->
-      <div class="modal-content modal-md">
+      <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Edit Lead Register</h4>
         </div>
@@ -3399,11 +3446,6 @@
           </textarea>
          </div>
 
-         <!-- <div class="form-group  modalIcon inputIconBg">
-            <label for="">Create Date</label>
-            <input type="date" name="create_date_edit" id="create_date_edit" class="form-control">
-          </div> -->
-
           <div class="form-group  modalIcon inputIconBg">
             <input type="text" name="amount_edit_before" id="amount_edit_before" hidden>
             <label for="">Amount</label>
@@ -3423,19 +3465,28 @@
           </div>
 
           <div class="form-group">
-          <label for="">Note (jika perlu)</label>
-          <input type="text" class="form-control" placeholder="Enter Note" name="note_edit" id="note_edit">
-         </div>
+            <label for="">Note (jika perlu)</label>
+            <input type="text" class="form-control" placeholder="Enter Note" name="note_edit" id="note_edit">
+          </div>
 
-          <!-- <div class="form-group modalIcon inputIconBg">
-            <label for="">Kurs To Dollar</label>
-            <input type="text" class="form-control" disabled="disabled" placeholder="Kurs">
-            <i class="" aria-hidden="true">&nbsp$&nbsp </i>
-          </div> -->     
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
-            </div>
+          <div class="form-group">
+            <label>Product Tag</label>
+            <select class="js-product-multiple" name="product_edit[]" id="product_edit" multiple="multiple">
+      
+            </select>
+          </div>
+
+          <div>
+            <label>Technology Tag</label>
+            <select class="js-technology-multiple" name="technology_edit[]" id="technology_edit" multiple="multiple">
+
+            </select>
+          </div>
+ 
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+          </div>
         </form>
         </div>
       </div>
@@ -3882,6 +3933,9 @@
   <!-- bootstrap datepicker -->
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="">
+    $('.js-product-multiple').select2();
+
+    $('.js-technology-multiple').select2();
 
     numeral.register('locale', 'id', {
         delimiters: {
@@ -3993,7 +4047,56 @@
       $('#owner_reassign').val(users.name);
     }
 
+    
+
+    $.ajax({
+      url:"sales/getProductTag",
+      type:"GET",
+      success:function(result){
+        $("#product_edit").select2().val("");
+        var arr = result.results;
+        var selectOption = [];
+        var otherOption;
+        $.each(arr,function(key,value){
+          if (value.text != "Others") {
+            selectOption.push(value)
+          }else{
+            otherOption = value
+          }
+        })
+        selectOption.push(otherOption)
+        $("#product_edit").select2({
+          multiple:true,
+          data:selectOption
+        })
+      }
+    })
+
+    $.ajax({
+      url:"sales/getTechTag",
+      type:"GET",
+      success:function(result){
+        $("#technology_edit").select2().val("");
+        var arr = result.results;
+        var selectOption = [];
+        var otherOption;
+        $.each(arr,function(key,value){
+          if (value.text != "Others") {
+            selectOption.push(value)
+          }else{
+            otherOption = value
+          }
+        })
+        selectOption.push(otherOption)
+        $("#technology_edit").select2({
+          multiple:true,
+          data:selectOption
+        })
+      }
+    })
+
     function lead_id(lead_id,id_customer,opp_name,amount,created_at,closing_date,keterangan){
+      console.log(lead_id)
       $('#lead_id_edit').val(lead_id);
       $('#contact_edit').val(id_customer);
       $('#opp_name_edit').val(opp_name);
@@ -4002,6 +4105,42 @@
       $('#create_date_edit').val(created_at.substring(0,10));
       $("#closing_date_edit").datepicker({format: 'yyyy-mm-dd', startDate:today}).datepicker('setDate', closing_date).attr('readonly','readonly');
       $('#note_edit').val(keterangan);
+
+      $("#product_edit").select2().val("");
+      $.ajax({
+        url:"sales/getProductEdit",
+        type:"GET",
+        data:{
+          lead_id:lead_id
+        },
+        success:function(result){
+          $("#product_edit").select2().val("");
+          $.each(result['results'], function(key, value){
+ 
+            var mainCategory   = $('#product_edit');
+            var option = new Option(value.text, value.id, true, true);
+            mainCategory.append(option).trigger('change');
+          })
+        }
+      })
+      
+      $("#technology_edit").select2().val("");
+      $.ajax({
+        url:"sales/getTechEdit",
+        type:"GET",
+        data:{
+          lead_id:lead_id
+        },
+        success:function(result){
+          $("#technology_edit").select2().val("");
+          $.each(result['results'], function(key, value){
+            var mainCategory   = $('#technology_edit');
+            var option = new Option(value.text, value.id, true, true);
+            mainCategory.append(option).trigger('change');
+          })
+        }
+      })
+
     }
 
     function lose(keterangan){
@@ -4106,6 +4245,55 @@
             }); 
           }
         });
+
+        $.ajax({
+            url:"sales/getProductTechTag",
+            type:"GET",
+            success:function(result){
+              console.log(result)
+              $("#searchTags").select2().val("");
+              var arr = result;
+              var selectOption = [];
+              var otherOption;
+              $.each(arr,function(key,value){
+                if (value.text != "Others") {
+                  selectOption.push(value)
+                }else{
+                  otherOption = value
+                }
+              })
+
+              selectOption.push(otherOption)
+              var TagProduct = $("#searchTags").select2({
+                placeholder: " Select #Tags#Product#Technology",
+                allowClear: true,
+                multiple:true,
+                data:selectOption,
+                templateSelection: function(selection,container) {
+                  var selectedOption = selection.id.slice(0,1);
+                  console.log(selection.id.slice(0,1))
+                    if(selectedOption == 'p') {
+                        $(container).css("background-color", "#32a852");
+                        $(container).css("border-color","#32a852");
+                        return selection.text;
+                    }
+                    else {
+                        return $.parseHTML('<span>' + selection.text + '</span>');
+                    }
+                }
+              })
+
+              $('#searchTags').on('change', function(){
+                  var search = "";
+
+                  $.each($('#searchTags').select2('data'), function(key,value){
+                      search = search+value.text+" "
+                  });
+                  datasnow.columns(14).search(search).draw(); 
+              });
+            }
+        
+        })
 
         var table = $('#datas2019').DataTable({
            "responsive":true,
@@ -4389,7 +4577,7 @@
           })
         
         @elseif(Auth::User()->id_division == 'SALES')
-          $('#datasnow').DataTable({
+          var datasnow = $('#datasnow').DataTable({
            "responsive":true,
            "order": [[ "3", "desc" ]],
            pageLength: 50,
@@ -4431,6 +4619,59 @@
                     
                 });
               },
+          })
+
+          $.ajax({
+            url:"sales/getProductTechTag",
+            type:"GET",
+            success:function(result){
+              console.log(result)
+              $("#searchTags").select2().val("");
+              var arr = result;
+              var selectOption = [];
+              var otherOption;
+              $.each(arr,function(key,value){
+                if (value.text != "Others") {
+                  selectOption.push(value)
+                }else{
+                  otherOption = value
+                }
+              })
+
+              selectOption.push(otherOption)
+              var TagProduct = $("#searchTags").select2({
+                placeholder: " Select #Tags#Product#Technology",
+                multiple:true,
+                allowClear: true,
+                data:selectOption,
+                templateSelection: function(selection,container) {
+                  var selectedOption = selection.id.slice(0,1);
+                  console.log(selection.id.slice(0,1))
+                    if(selectedOption == 'p') {
+                        $(container).css("background-color", "#32a852");
+                        $(container).css("border-color","#32a852");
+                        return selection.text;
+                    }
+                    else {
+                        return $.parseHTML('<span>' + selection.text + '</span>');
+                    }
+                }
+              })
+
+              $('#searchTags').on('change', function(){
+                  var search = "";
+
+                  $.each($('#searchTags').select2('data'), function(key,value){
+                      search = search+value.text+" "
+                  });
+                  datasnow.columns(13).search(search).draw(); 
+              });
+
+              $('#searchTagsProd').keyup(function(){
+                  // TagProduct.search($(this).val()).draw() ;
+                  datasnow.columns(13).search(this.value).draw(); 
+              })
+            }
           })
 
           var table =  $('#datas2019').DataTable({
@@ -4525,6 +4766,59 @@
                   initkat();
                   
               });
+
+              $.ajax({
+                url:"sales/getProductTechTag",
+                type:"GET",
+                success:function(result){
+                  console.log(result)
+                  $("#searchTags").select2().val("");
+                  var arr = result;
+                  var selectOption = [];
+                  var otherOption;
+                  $.each(arr,function(key,value){
+                    if (value.text != "Others") {
+                      selectOption.push(value)
+                    }else{
+                      otherOption = value
+                    }
+                  })
+
+                  selectOption.push(otherOption)
+                  var TagProduct = $("#searchTags").select2({
+                    placeholder: " Select #Tags#Product#Technology",
+                    multiple:true,
+                    data:selectOption,
+                    allowClear: true,
+                    templateSelection: function(selection,container) {
+                      var selectedOption = selection.id.slice(0,1);
+                      console.log(selection.id.slice(0,1))
+                        if(selectedOption == 'p') {
+                            $(container).css("background-color", "#32a852");
+                            $(container).css("border-color","#32a852");
+                            return selection.text;
+                        }
+                        else {
+                            return $.parseHTML('<span>' + selection.text + '</span>');
+                        }
+                    }
+                  })
+
+                  $('#searchTags').on('change', function(){
+                      var search = "";
+
+                      $.each($('#searchTags').select2('data'), function(key,value){
+                          search = search+value.text+" "
+                      });
+                      datasnow.columns(15).search(search).draw(); 
+                  });
+
+                  $('#searchTagsProd').keyup(function(){
+                      // TagProduct.search($(this).val()).draw() ;
+                      datasnow.columns(15).search(this.value).draw(); 
+                  })
+                }
+              })
 
               $('#table-filter').on('change', function(){
                   datasnow.columns(14).search( this.value ).draw(); 

@@ -19,16 +19,17 @@
       border: 1px double #d5d5da;
       vertical-align:top;
   }
+  
   .circle-container .dot
-  {
-    height: 25px;
-    width: 25px;
-    background-color: #939a9b;
-    border-radius: 50%;
-    display: inline-block;
-    border: 3px solid #FFF;
-    box-shadow: 0 0 2px #888;
-  }
+	  {
+	    height: 25px;
+	    width: 25px;
+	    background-color: #939a9b;
+	    border-radius: 50%;
+	    display: inline-block;
+	    border: 3px solid #FFF;
+	    box-shadow: 0 0 2px #888;
+	  }
 
   .inputsp i{
     top: 58px;
@@ -47,19 +48,40 @@
         text-align: center;
   }
 
+  .input-tags{
+     width: 50%;
+  	 padding: 0.2em;
+  	 border:  2px solid #555;
+  	 border-radius: 4px;
+  	 transition: width 0.9s ease-in-out!important;
+  }
 
+  .input-tags:focus{
+  	width: 100%!important;	
+  }
+
+  .input-tags-before{
+    width: 50%;
+  	padding: 0.2em;
+  	background: transparent;border: none;
+  }
+
+  .input-tags-before:focus{
+  	background: transparent;border: none;
+  }
+   
 </style>
-  <section class="content-header">
-  	<a href="{{url('/project')}}"><button button class="btn btn-s btn-danger"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
-    <ol class="breadcrumb">
-      <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li class="active"><a href="/project">Lead Register</a></li>
-      <li class="active">Detail - {{ $tampilkan->lead_id }}</li>
-    </ol>
-  </section>
+  
+<section class="content-header">
+	<a href="{{url('/project')}}"><button button class="btn btn-s btn-danger"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
+	<ol class="breadcrumb">
+		<li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+		<li class="active"><a href="/project">Lead Register</a></li>
+		<li class="active">Detail - {{ $tampilkan->lead_id }}</li>
+	</ol>
+</section>
 
   <section class="content">
-
     <div class="row">
       <div class="col-md-6">
       	<div class="box box-solid box-default">
@@ -84,6 +106,7 @@
 	              <div class="step-content">
 	              </div>
 		        </div>
+	    	
 	    	</div>
         </div>
       </div>
@@ -145,6 +168,24 @@
       		  		<th>Closing date</th>
       		  		<td>{{ $tampilkan->closing_date }}</td>
       		  	</tr>
+      		  	<tr>
+      		  		<th>Product</th>
+      		  		<td>
+      		  		@foreach($productTag as $data)
+      		  			&nbsp
+      		  			<span class="label label-primary">{{$data->name_product}}</span>
+      		  		@endforeach
+      		  		</td>
+      		  	</tr>
+      		  	<tr>
+      		  		<th>Technology</th>
+      		  		<td>
+      		  			@foreach($technologyTag as $data)
+      		  			&nbsp
+      		  			<span class="label label-default">{{$data->name_tech}}</span>
+      		  			@endforeach
+      		  		</td>
+      		  	</tr>
       		  </table>
 	         <!--  <div class="">
 	            <h5 class="pull-right">Owner : <i>{{$tampilkan->name}}</i></h5>
@@ -178,207 +219,243 @@
     	@if(Auth::User()->id_division != 'PMO' &&  Auth::User()->id_position != 'ENGINEER MANAGER' && Auth::User()->id_position != 'ENGINEER STAFF')
         <div class="row margin-top">
 	      <div class="col-md-6">
-	            	<div class="box box-solid box-default">
-	              <div class="box-header with-border">
-	                <h3 class="box-title">Solution Design</h3>
-	                  @if($tampilkanc->result == 'SD' && Auth::User()->id_division == 'SALES')
-	                    <div class="pull-right">
-	                      <button type="button" class="btn btn-md btn-success float-right margin-bottom" data-toggle="modal" data-target="#formResult">Result</button>
-	                    </div>
+	        <div class="box box-solid box-default">
+              <div class="box-header with-border">
+                <h3 class="box-title">Solution Design</h3>
+                  @if($tampilkanc->result == 'SD' && Auth::User()->id_division == 'SALES')
+                    <div class="pull-right">
+                      <button type="button" class="btn btn-md btn-success float-right margin-bottom" data-toggle="modal" data-target="#formResult">Result</button>
+                    </div>
+                  @endif
+              </div>
+
+          <div class="box-body">
+          @csrf
+          <form action="{{ url('update_sd', $tampilkans->lead_id)}}" method="POST">
+            {!! csrf_field() !!}
+          @if(Auth::User()->id_company == '1')
+            @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
+            <fieldset>
+            @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+            <fieldset>
+            @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+            <fieldset>
+            @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->id_position == 'MANAGER')
+            <fieldset>
+            @else
+            <fieldset disabled>
+            @endif
+          @elseif(Auth::User()->id_company == '2')
+            @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
+            <fieldset>
+            @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+            <fieldset>
+            @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+            <fieldset>
+            @else
+            <fieldset disabled>
+            @endif
+    		<!-- 
+            <fieldset disabled> -->
+              @endif
+                <input type="" name="lead_id" id="lead_id" value="{{$tampilkans->lead_id}}" hidden>
+                <div class="form-group margin-left-right">
+	                  <label for="assesment">-- Assessment --</label>
+	                  <input type="" name="assesment_before" id="assesment_before" value="{{$tampilkans->assessment}}" hidden>
+	                  <input type="" name="assesment_date_before" id="assesment_date_before" value="{{$tampilkans->assessment_date}}" hidden>
+	                  <textarea class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter assesment" name="assesment" id="assesment" >{{$tampilkans->assessment}}</textarea>
+	                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('assesment'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}"/> -->
+	                  @if($tampilkans->assessment_date == '')
+	                  <h6>Last Date Updated : -- / -- / ---- </h6>
+	                  @else
+	                  <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->assessment_date))}}</h6>
 	                  @endif
-	              </div>
+	                  <h6>Last Time Updated : {!!substr($tampilkans->assessment_date,11)!!}</h6>
+                </div>
 
-	              <div class="box-body">
-	              @csrf
-	              <form action="{{ url('update_sd', $tampilkans->lead_id)}}" method="POST">
-	                {!! csrf_field() !!}
-	              @if(Auth::User()->id_company == '1')
-	                @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
-	                <fieldset>
-	                @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-	                <fieldset>
-	                @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-	                <fieldset>
-	                @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->id_position == 'MANAGER')
-	                <fieldset>
+                <div class="form-group margin-left-right">
+	                 <label for="proof of value">-- Proposed Design--</label>
+	                 <input type="" name="pd_before" id="pd_before" value="{{$tampilkans->pd}}" hidden>
+	                 <input type="" name="pd_date_before" id="pd_date_before" value="{{$tampilkans->pd_date}}" hidden>
+                   	 <textarea class="form-control" type="email" aria-describedby="" placeholder="Enter Propossed Design" name="propossed_design"  id="propossed_design">{{$tampilkans->pd}}</textarea>
+	                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('propossed_design'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
+	                 @if($tampilkans->pd_date == '')
+	                 <h6>Last Date Updated : -- / -- / ---- </h6>
+	                 @else
+	                 <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pd_date))}}</h6>
+	                 @endif
+	                 <h6>Last Time Updated : {!!substr($tampilkans->pd_date,11)!!}</h6>
+	            </div>
+
+	            <div class="form-group margin-left-right">
+	                <label for="propossed_design" class="margin-top-form">--Proof Of Value --</label>
+	                <input type="" name="pov_before" id="pov_before" value="{{$tampilkans->pov}}" hidden>
+	                <input type="" name="pov_date_before" id="pov_date_before" value="{{$tampilkans->pov_date}}" hidden>
+	                <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" placeholder="Enter Proof Of Value" name="pov"  id="pov" >{{$tampilkans->pov}}</textarea>
+	                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('pov'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
+	                @if($tampilkans->pov_date == '')
+	                <h6>Last Date Updated : -- / -- / ---- </h6>
 	                @else
-	                <fieldset disabled>
+	                <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pov_date))}}</h6>
 	                @endif
-	              @elseif(Auth::User()->id_company == '2')
-	                @if(Auth::User()->id_division == 'TECHNICAL PRESALES' && $tampilkans->status != 'closed' && Auth::User()->name == $tampilkans->name)
-	                <fieldset>
-	                @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-	                <fieldset>
-	                @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-	                <fieldset>
-	                @else
-	                <fieldset disabled>
-	                @endif
-	        		<!-- 
-	                <fieldset disabled> -->
-		              @endif
-		                <input type="" name="lead_id" id="lead_id" value="{{$tampilkans->lead_id}}" hidden>
-		                <div class="form-group margin-left-right">
-			                  <label for="assesment">-- Assessment --</label>
-			                  <input type="" name="assesment_before" id="assesment_before" value="{{$tampilkans->assessment}}" hidden>
-			                  <input type="" name="assesment_date_before" id="assesment_date_before" value="{{$tampilkans->assessment_date}}" hidden>
-			                  <textarea class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter assesment" name="assesment" id="assesment" >{{$tampilkans->assessment}}</textarea>
-			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('assesment'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}"/> -->
-			                  @if($tampilkans->assessment_date == '')
-			                  <h6>Last Date Updated : -- / -- / ---- </h6>
-			                  @else
-			                  <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->assessment_date))}}</h6>
-			                  @endif
-			                  <h6>Last Time Updated : {!!substr($tampilkans->assessment_date,11)!!}</h6>
-		                </div>
+	                <h6>Last Time Updated : {!!substr($tampilkans->pov_date,11)!!}</h6>
+	            </div>
 
-		                <div class="form-group margin-left-right">
-			                 <label for="proof of value">-- Proposed Design--</label>
-			                 <input type="" name="pd_before" id="pd_before" value="{{$tampilkans->pd}}" hidden>
-			                 <input type="" name="pd_date_before" id="pd_date_before" value="{{$tampilkans->pd_date}}" hidden>
-		                   	 <textarea class="form-control" type="email" aria-describedby="" placeholder="Enter Propossed Design" name="propossed_design"  id="propossed_design">{{$tampilkans->pd}}</textarea>
-			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('propossed_design'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
-			                 @if($tampilkans->pd_date == '')
-			                 <h6>Last Date Updated : -- / -- / ---- </h6>
-			                 @else
-			                 <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pd_date))}}</h6>
-			                 @endif
-			                 <h6>Last Time Updated : {!!substr($tampilkans->pd_date,11)!!}</h6>
-			            </div>
+                <div class="form-group margin-left-right">
+                  @if ($message = Session::get('warning'))
+                  <div class="alert alert-warning alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button> 
+                    <strong>{{ $message }}</strong>
+                  </div>
+                  @endif
+                </div>
 
-			            <div class="form-group margin-left-right">
-			                <label for="propossed_design" class="margin-top-form">--Proof Of Value --</label>
-			                <input type="" name="pov_before" id="pov_before" value="{{$tampilkans->pov}}" hidden>
-			                <input type="" name="pov_date_before" id="pov_date_before" value="{{$tampilkans->pov_date}}" hidden>
-			                <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" placeholder="Enter Proof Of Value" name="pov"  id="pov" >{{$tampilkans->pov}}</textarea>
-			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('pov'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
-			                @if($tampilkans->pov_date == '')
-			                <h6>Last Date Updated : -- / -- / ---- </h6>
-			                @else
-			                <h6>Last Date Updated : {{date('d / m / Y', strtotime($tampilkans->pov_date))}}</h6>
-			                @endif
-			                <h6>Last Time Updated : {!!substr($tampilkans->pov_date,11)!!}</h6>
-			                </div>
+                <div class="form-group margin-left-right inputWithIcon inputIconBg">
+                  <label for="project_budget" class="margin-top-form">-- Project Budget --</label>
+                  <input type="text" name="project_budget_before" id="project_budget_before" value="{{$tampilkans->pb}}" hidden>
+                  <input type="text" name="amount_check" id="amount_check" value="{{$tampilkan->amount}}" hidden>
+                  <input class="form-control float-left money" type="text" aria-describedby="emailHelp" placeholder="Enter Project Budget" name="project_budget"  id="project_budget" value="{{$tampilkans->pb}}" />
+                  <i class="" style="margin-top: -7px" aria-hidden="true">Rp.</i>
+	                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('project_budget'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
+                </div>
 
-			                <div class="form-group margin-left-right">
-			                  @if ($message = Session::get('warning'))
-			                  <div class="alert alert-warning alert-block">
-			                    <button type="button" class="close" data-dismiss="alert">×</button> 
-			                    <strong>{{ $message }}</strong>
-			                  </div>
-			                  @endif
-			                </div>
+                <div class="form-group margin-left-right">
+                	<label for="product" class="margin-top-form">-- Product & Technology --</label><br>
+                	<table class="table" id="table-product">
+                		<tr>
+                			<th>Name</th>
+                			<th>List Price</th>
+                			<th>
+                			Setting    
+                			<button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;margin-left: 10px" onclick="addTagsProduct('{{$tampilkan->lead_id}}')"><i class="fa fa-plus"></i></button>
+                			</th>
+                		</tr>
+                    @foreach($productTech as $data)
+                      @foreach($data["product"] as $datasProduct)
+                        <tr>
+                          <td><span class="label label-primary">{{$datasProduct->name_product}}</span></td>
+                          <td><input type="" name="" value="{{$datasProduct->price}}" data-value="{{$datasProduct->id}}" disabled id="input-price" class="money input-tags-before"></td>
+                          <td>
+                            <button type="button" id="btnPrice" data-value="{{$datasProduct->id}}" class="btn btn-xs btn-warning" onclick="btnEditTags('{{$datasProduct->id}}')" style="width: 30px"><i class="btn-setting fa fa-pencil"></i></button>
+                            <button type="button" id="btnDelPrice" data-value="{{$datasProduct->id}}" class="btn btn-xs btn-danger" onclick="btnDeleteTags('{{$datasProduct->id}}')" style="width: 30px;"><i class="btn-trash fa fa-trash"></i></button>
+                          </td>
+                        </tr>
+                      @endforeach
+                      @foreach($data["technology"] as $datasTechnology)
+                        <tr>
+                          <td><span class="label label-default">{{$datasTechnology->name_tech}}</span></td>
+                          <td><input type="" name="" value="{{$datasTechnology->price}}" data-value="{{$datasTechnology->id}}" disabled id="input-price" class="money input-tags-before"></td>
+                          <td>
+                            <button type="button" id="btnPrice" data-value="{{$datasTechnology->id}}" class="btn btn-xs btn-warning" onclick="btnEditTags('{{$datasTechnology->id}}')" style="width: 30px"><i class="btn-setting fa fa-pencil"></i></button>
+                            <button type="button" id="btnDelPrice" data-value="{{$datasTechnology->id}}" class="btn btn-xs btn-danger" onclick="btnDeleteTags('{{$datasTechnology->id}}')" style="width:30px"><i class="btn-trash fa fa-trash"></i></button>
+                          </td>
+                        </tr>
+                      @endforeach
+                    @endforeach
+                	</table>
+                </div>
 
-			                <div class="form-group margin-left-right inputWithIcon inputIconBg">
-			                  <label for="project_budget" class="margin-top-form">-- Project Budget --</label>
-			                  <input type="text" name="project_budget_before" id="project_budget_before" value="{{$tampilkans->pb}}" hidden>
-			                  <input type="text" name="amount_check" id="amount_check" value="{{$tampilkan->amount}}" hidden>
-			                  <input class="form-control float-left money" type="text" aria-describedby="emailHelp" placeholder="Enter Project Budget" name="project_budget"  id="project_budget" value="{{$tampilkans->pb}}" />
-			                  <i class="" style="margin-top: -7px" aria-hidden="true">Rp.</i>
-			                 <!--  <input type="checkbox" class="float-right" onclick="var input = document.getElementById('project_budget'); if(this.checked){ input.disabled = false; input.focus();}else{input.disabled=true;}" /> -->
-		                </div>
+                <div class="form-group margin-left-right">
+                  <label for="priority" class="margin-top-form">-- Priority --</label>
+                  
+                  <select class="form-control float-left" id="priority"  name="priority">
+                    @if($tampilkans->priority == 'Contribute')
+                    <option value="">-- Choose Priority --</option>
+                    <option value="Contribute" selected>Contribute</option>
+                    <option value="Fight" >Fight</option>
+                    <option value="Foot Print" >Foot Print</option>
+                    <option value="Guided" >Guided</option>
+                    @elseif($tampilkans->priority == 'Fight')
+                    <option value="">-- Choose Priority --</option>
+                    <option value="Contribute">Contribute</option>
+                    <option value="Fight" selected>Fight</option>
+                    <option value="Foot Print" >Foot Print</option>
+                    <option value="Guided" >Guided</option>
+                    @elseif($tampilkans->priority == 'Foot Print')
+                    <option value="">-- Choose Priority --</option>
+                    <option value="Contribute" >Contribute</option>
+                    <option value="Fight" >Fight</option>
+                    <option value="Foot Print" selected>Foot Print</option>
+                    <option value="Guided" >Guided</option>
+                    @elseif($tampilkans->priority == 'Guided')
+                    <option value="">-- Choose Priority --</option>
+                    <option value="Contribute" >Contribute</option>
+                    <option value="Fight" >Fight</option>
+                    <option value="Foot Print" >Foot Print</option>
+                    <option value="Guided" selected>Guided</option>
+                    @else
+                    <option value="" >-- Choose Priority --</option>
+                    <option value="Contribute" >Contribute</option>
+                    <option value="Fight" >Fight</option>
+                    <option value="Foot Print" >Foot Print</option>
+                    <option value="Guided" >Guided</option>
+                    @endif
+                  </select>
+                </div>
 
-		                <div class="form-group margin-left-right">
-		                  <label for="priority" class="margin-top-form">-- Priority --</label>
-		                  
-		                  <select class="form-control float-left" id="priority"  name="priority">
-		                    @if($tampilkans->priority == 'Contribute')
-		                    <option value="">-- Choose Priority --</option>
-		                    <option value="Contribute" selected>Contribute</option>
-		                    <option value="Fight" >Fight</option>
-		                    <option value="Foot Print" >Foot Print</option>
-		                    <option value="Guided" >Guided</option>
-		                    @elseif($tampilkans->priority == 'Fight')
-		                    <option value="">-- Choose Priority --</option>
-		                    <option value="Contribute">Contribute</option>
-		                    <option value="Fight" selected>Fight</option>
-		                    <option value="Foot Print" >Foot Print</option>
-		                    <option value="Guided" >Guided</option>
-		                    @elseif($tampilkans->priority == 'Foot Print')
-		                    <option value="">-- Choose Priority --</option>
-		                    <option value="Contribute" >Contribute</option>
-		                    <option value="Fight" >Fight</option>
-		                    <option value="Foot Print" selected>Foot Print</option>
-		                    <option value="Guided" >Guided</option>
-		                    @elseif($tampilkans->priority == 'Guided')
-		                    <option value="">-- Choose Priority --</option>
-		                    <option value="Contribute" >Contribute</option>
-		                    <option value="Fight" >Fight</option>
-		                    <option value="Foot Print" >Foot Print</option>
-		                    <option value="Guided" selected>Guided</option>
-		                    @else
-		                    <option value="" >-- Choose Priority --</option>
-		                    <option value="Contribute" >Contribute</option>
-		                    <option value="Fight" >Fight</option>
-		                    <option value="Foot Print" >Foot Print</option>
-		                    <option value="Guided" >Guided</option>
-		                    @endif
-		                  </select>
-		                </div>
+                <div class="form-group margin-left-right ">
+                  <label for="proyek_size" class="margin-top-form">-- Project size --</label>
+                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size" >
 
-		                <div class="form-group margin-left-right ">
-		                  <label for="proyek_size" class="margin-top-form">-- Project size --</label>
-		                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size" >
+                    @if($tampilkans->project_size == 'Small')
+                    <option value="">-- Choose Project Size --</option>
+                    <option value="Small" selected>Small</option>
+                    <option value="Medium" >Medium</option>
+                    <option value="Advance" >Advance</option>
 
-		                    @if($tampilkans->project_size == 'Small')
-		                    <option value="">-- Choose Project Size --</option>
-		                    <option value="Small" selected>Small</option>
-		                    <option value="Medium" >Medium</option>
-		                    <option value="Advance" >Advance</option>
+                    @elseif($tampilkans->project_size == 'Medium')
+                    <option value="">-- Choose Project Size --</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Advance" >Advance</option>
+                    @elseif($tampilkans->project_size == 'Advance')
+                    <option value="">-- Choose Project Size --</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Advance" selected>Advance</option>
 
-		                    @elseif($tampilkans->project_size == 'Medium')
-		                    <option value="">-- Choose Project Size --</option>
-		                    <option value="Small">Small</option>
-		                    <option value="Medium" selected>Medium</option>
-		                    <option value="Advance" >Advance</option>
-		                    @elseif($tampilkans->project_size == 'Advance')
-		                    <option value="">-- Choose Project Size --</option>
-		                    <option value="Small">Small</option>
-		                    <option value="Medium">Medium</option>
-		                    <option value="Advance" selected>Advance</option>
+                    @else
+                    <option value="">-- Choose Project Size --</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Advance">Advance</option>
 
-		                    @else
-		                    <option value="">-- Choose Project Size --</option>
-		                    <option value="Small">Small</option>
-		                    <option value="Medium">Medium</option>
-		                    <option value="Advance">Advance</option>
+                    @endif
+                    </select>
+                </div>
 
-		                    @endif
-		                    </select>
-		                </div>
+                <div class="margin-left-right margin-top">
+                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
+                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
+                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
+                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
+                  @endif
+              	  </form>
+                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
+                  <!-- <form action="{{url('raise_to_tender')}}" method="POST"> -->
+                     <!-- {!! csrf_field() !!} -->
+    			  <!--                <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button> -->
+                  <!-- </form> -->
+                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
+                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
+                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                  @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' && $tampilkans->status != 'closed')
+                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                  @endif
+                </div>
 
-		                <div class="margin-left-right margin-top">
-		                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
-		                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-		                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-		                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-		                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-		                  <button class="btn btn-md btn-sd btn-primary float-left margin-bottom" type="submit">Submit</button>
-		                  @endif
-		              	  </form>
-		                  @if($tampilkans->status != 'closed' && Auth::User()->id_division != 'SALES' && Auth::User()->name == $tampilkans->name)
-		                  <!-- <form action="{{url('raise_to_tender')}}" method="POST"> -->
-		                     <!-- {!! csrf_field() !!} -->
-		    			  <!--                <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button> -->
-		                  <!-- </form> -->
-		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-		                  @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
-		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-		                  @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
-		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-		                  @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' && $tampilkans->status != 'closed')
-		                    <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-		                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
-		                  @endif
-		                </div>
-
-		                </fieldset>
-		              </div>
-		            </div>
+                </fieldset>
+              </div>
+            </div>
 	      </div>
 
           <div class="col-md-6">
@@ -981,7 +1058,7 @@
           </div>
         </div>
 
- <!-- Modal PO Blanket-->
+  <!-- Modal PO Blanket-->
   <div class="modal fade" id="modal_add_po" role="dialog">
     <div class="modal-dialog modal-md">
       <div class="modal-content">
@@ -1025,7 +1102,7 @@
       </div>
   </div>
 
-<!-- Modal edit PO Blanket-->
+  <!-- Modal edit PO Blanket-->
   <div class="modal fade" id="modal_edit_po" role="dialog">
     <div class="modal-dialog modal-md">
       <div class="modal-content">
@@ -1069,8 +1146,7 @@
   </div>
 
 
-  <!--MOdal Result-->
-
+  <!--Modal Result-->
   <div class="modal fade" id="formResult" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
@@ -1475,8 +1551,7 @@
   </div>
 
 
-   <!-- Add Progress ENGINEER-->
-
+  <!-- Add Progress ENGINEER-->
   <div class="modal fade" id="engineer_progress" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
@@ -1506,6 +1581,28 @@
       </div>
     </div>
   </div>
+
+  <!-- Add Product -->
+  @csrf
+  <div class="modal fade" id="addProductTags" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body">
+        	<div class="form-group">
+        		<label>-- Product --</label>
+        		<select class="form-control" id="searchTagsProduct" style="width: 100%!important"></select><br><br>
+        		<label>-- Price --</label>
+        		<input type="number" id="priceTagsProduct" class="form-control" name="">
+        	</div>
+
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+	          <button type="submit" class="btn btn-sm btn-success" onclick="submitProductTags('{{$tampilkan->lead_id}}')"><i class="fa fa-check"></i>&nbsp Submit</button>
+	        </div>
+        </div>
+      </div>
+    </div>
+  </div>
       
   </section>
 
@@ -1517,8 +1614,248 @@
     <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js"></script>
     <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
-    <script src="{{asset("template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script>
+    <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script type="text/javascript">
+      function addTagsProduct(lead_id){
+        $("#addProductTags").modal("show")
+        $.ajax({
+          url:"/sales/getProductTechTagDetail",
+          type:"GET",
+          data:{
+            lead_id:lead_id,
+          },
+          success:function(result){
+            $("#searchTagsProduct").empty("");
+            var arr = result;
+            var selectOption = [];
+            var otherOption;
+            $.each(arr,function(key,value){
+              if (value.text != "Others") {
+                selectOption.push(value)
+              }else{
+                otherOption = value
+              }
+            })
+
+            selectOption.push(otherOption)
+            var TagProduct = $("#searchTagsProduct").select2({
+              placeholder: " Select #Tags#Product",
+              data:selectOption,
+              templateSelection: function(selection,container) {
+                return $.parseHTML('<span>' + selection.text + '</span>');
+              }
+            })
+          }
+        })
+      }
+
+      function btnEditTags(id){
+        console.log(id)
+      	$("#input-price[data-value='"+id+"']").prop("disabled", false);
+      	$("#table-product #input-price[data-value='"+id+"']").removeClass("money input-tags-before")
+      	$("#table-product #input-price[data-value='"+id+"']").addClass("input-tags");
+
+        console.log($("#input-price[data-value='"+id+"']").attr('class'))
+      	if ($("#input-price[data-value='"+id+"']").attr('class') == "input-tags") {
+      		$("#btnPrice[data-value='"+id+"'] .btn-setting").removeClass("fa fa-pencil")
+          $("#btnPrice[data-value='"+id+"'] .btn-setting").addClass("fa fa-check")
+      		$("#btnPrice[data-value='"+id+"']").removeClass("btn-warning")
+      		$("#btnPrice[data-value='"+id+"']").addClass("btn-success")
+      		$("#btnPrice[data-value='"+id+"']").attr("onclick","btnSaveTags('"+id+"')")
+      		$("#btnDelPrice[data-value='"+id+"']").removeClass("btn-danger")
+          $("#btnDelPrice[data-value='"+id+"']").addClass("btn-default")
+          $("#btnDelPrice[data-value='"+id+"'] .btn-trash").removeClass("fa fa-trash")
+          $("#btnDelPrice[data-value='"+id+"'] .btn-trash").addClass("fa fa-times")
+          $("#btnDelPrice[data-value='"+id+"']").attr("onclick","btnCancel('"+id+"')")
+      	}
+      }
+
+      function btnSaveTags(id){
+        var valueId = id;
+        var paramId = id.substring(0,1);
+        var id = id.substring(1);
+        console.log($("#input-price[data-value='"+valueId+"']").val().replace(',','').replace(/\D/g, ""))
+        Swal.fire({
+            title: 'Confirmation',
+            text: "Please checking your input price before submit!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.value) {
+              Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+                url:"/sales/update_product_technology",
+                type:"GET",
+                data:{
+                  id:id,
+                  paramId:paramId,
+                  price:$("#input-price[data-value='"+valueId+"']").val().replace(',','').replace(/\D/g, "")
+                },
+                success:function(result){
+                    location.reload();
+                    Swal.showLoading()
+                    Swal.fire(
+                      'Successfully!',
+                      'Prices are updated.',
+                      'success'
+                    ).then((result) => {
+                      if (result.value) {
+                        $("#input-price[data-value='"+id+"']").prop("disabled", true);
+                        $("#table-product #input-price[data-value='"+id+"']").removeClass("input-tags")
+                        $("#table-product #input-price[data-value='"+id+"']").addClass("money input-tags-before");
+                        $("#btnPrice[data-value='"+id+"']").attr("onclick","btnEditTags('"+id+"')")
+                        $("#btnPrice[data-value='"+id+"']").html("Edit")
+                        $("#btnPrice[data-value='"+id+"']").removeClass("btn-success")
+                        $("#btnPrice[data-value='"+id+"']").addClass("btn-warning")
+                      }
+                    })
+                }
+            });
+          }
+        })
+      }
+
+      function btnCancel(id){
+        $("#input-price[data-value='"+id+"']").prop("disabled", true);
+        $("#table-product #input-price[data-value='"+id+"']").removeClass("input-tags")
+        $("#table-product #input-price[data-value='"+id+"']").addClass("money input-tags-before");
+        $("#btnPrice[data-value='"+id+"']").attr("onclick","btnEditTags('"+id+"')")
+        $("#btnPrice[data-value='"+id+"'] .btn-setting").removeClass("fa fa-check")
+        $("#btnPrice[data-value='"+id+"'] .btn-setting").addClass("fa fa-pencil")
+        $("#btnPrice[data-value='"+id+"']").removeClass("btn-success")
+        $("#btnPrice[data-value='"+id+"']").addClass("btn-warning")
+        $("#btnDelPrice[data-value='"+id+"']").removeClass("btn-default")
+        $("#btnDelPrice[data-value='"+id+"']").addClass("btn-danger")
+        $("#btnDelPrice[data-value='"+id+"'] .btn-trash").removeClass("fa fa-times")
+        $("#btnDelPrice[data-value='"+id+"'] .btn-trash").addClass("fa fa-trash")
+        $("#btnDelPrice[data-value='"+id+"']").attr("onclick","btnDeleteTags('"+id+"')")
+      }
+
+      function btnDeleteTags(id){
+        console.log(id)
+        var valueId = id;
+        var paramId = id.substring(0,1);
+        var id = id.substring(1);
+        Swal.fire({
+            title: 'Confirmation',
+            text: "Are you sure for delete it?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.value) {
+              Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+                url:"/sales/delete_product_technology",
+                type:"GET",
+                data:{
+                  id:id,
+                  paramId:paramId,
+                },
+                success:function(result){
+                    location.reload();
+                    Swal.showLoading()
+                    Swal.fire(
+                      'Successfully!',
+                      'Product has been deleted.',
+                      'success'
+                    ).then((result) => {
+                      if (result.value) {
+                      }
+                    })
+                }
+            });
+          }
+        })
+      
+      }
+
+      function submitProductTags(id){
+        var valueId = $("#searchTagsProduct").val();
+        var paramId = valueId.substring(0,1);
+        var idTag = valueId.substring(1);
+        if ($("#priceTagsProduct").val() == "") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Kalem bos!...',
+            text: 'Please fill the field of price!',
+          })
+        }else{
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+          })
+          var token =  $('input[name="csrfToken"]').attr('value')
+          $.ajax({
+              url:"/sales/add_product_technology",
+              type:"POST",
+              data:{
+                id:idTag,
+                paramId:paramId,
+                lead_id:id,
+                price:$("#priceTagsProduct").val(),
+                _token:"{{csrf_token()}}"
+              },
+              // beforeSend: function(xhr) {
+              //   xhr.setRequestHeader('Csrf-Token', token);
+              // }, 
+              success:function(result){
+                  location.reload();
+                  Swal.showLoading()
+                  Swal.fire(
+                    'Successfully!',
+                    'Product has been Added.',
+                    'success'
+                  ).then((result) => {
+                    if (result.value) {
+                    }
+                  })
+              }
+          });
+        }
+        console.log($("#priceTagsProduct").val())
+      }
 
       $("#quote_number_final").select2();
 
