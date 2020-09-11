@@ -51,7 +51,8 @@
           font-style: bold;
           background-color: #18113d !important;
       }
-            .dataTables_filter {display: none;}
+      
+      .dataTables_filter {display: none;}
   </style>
   
   <section class="content-header">
@@ -181,7 +182,6 @@
     initReportTerritory();
 
     function initReportTerritory(){
-
       var id_territory = $(".nav-item.active").contents().text().trim()
       console.log($(".nav-item.active").contents().text().trim());
       $("#data_lead").DataTable({
