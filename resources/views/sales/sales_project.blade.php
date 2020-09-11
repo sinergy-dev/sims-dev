@@ -217,7 +217,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
   <!--modal-->
 
-<div class="modal fade" id="showRequestProjectID" role="dialog">
+<div class="modal fade" tabindex="-1" id="showRequestProjectID" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

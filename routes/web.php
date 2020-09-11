@@ -97,8 +97,14 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('sales/getProductEdit','SalesController@getListProductLead');
 	Route::get('sales/getProductTag','SalesController@getProductTag');
 	Route::get('sales/getProductTechTag','SalesController@getProductTechTag');
+	Route::get('sales/getProductTechTagDetail','SalesController@getProductTechTagDetail');
 	Route::get('sales/getTechEdit','SalesController@getListTechTag');
 	Route::get('sales/getTechTag','SalesController@getTechTag');
+	Route::get('sales/getPersonaTags','SalesController@getPersonaTags');
+	Route::get('sales/report_product_technology_sip_msp','ReportController@report_product_technology_sip_msp');
+	Route::get('sales/update_product_technology','SalesController@update_product_technology');
+	Route::get('sales/delete_product_technology','SalesController@delete_product_technology');
+	Route::post('sales/add_product_technology','SalesController@add_product_technology');
 
 	Route::get('/warehouse', 'WarehouseController@index');
 	Route::post('/warehouse/store', 'WarehouseController@store');
@@ -181,6 +187,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getFilterDateTerritory','ReportController@getFilterDateTerritory');
 	Route::get('/getFilterTerritoryTabs','ReportController@getFilterTerritoryTabs');
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
+	Route::get('/report_product_technology','ReportController@report_product_technology');
+	Route::get('/getFilterTags','ReportController@getFilterTags');
 
 	//route report customer msp
 	Route::get('/getreportcustomermsp','ReportController@getreportcustomermsp');
