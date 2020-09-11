@@ -45,7 +45,7 @@ class HRController extends Controller
 
         $hr = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file','users.ktp_file')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file','users.ktp_file','status_kerja')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
@@ -53,7 +53,7 @@ class HRController extends Controller
 
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file','users.ktp_file')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file','users.ktp_file','status_kerja')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','2')
@@ -269,7 +269,7 @@ class HRController extends Controller
     	$id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_npwp','npwp_file','ktp_file')
+                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_npwp','npwp_file','ktp_file','status_kerja')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -287,6 +287,7 @@ class HRController extends Controller
      */
     public function store(Request $request)
     {
+
         $id_company = $request['company'];
         $year_entry = substr($request['date_of_entry'],2,2);
         $month_entry = substr($request['date_of_entry'],5,2);
@@ -344,7 +345,6 @@ class HRController extends Controller
             $niks = substr($cek_nik->nik, -1, 1);
             $nomor = $niks+1;
         }
-        
 
         if ($cek == 0) {
             $nik = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth. '0';
@@ -355,14 +355,13 @@ class HRController extends Controller
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|confirmed',
             'company' => 'required',
             'date_of_entry' => 'required',
-            'date_of_birth' => 'required',
-            'no_npwp' => 'required',
-            'npwp_file' => 'required|image|mimes:jpeg,jpg,png',
-        ]); 
-
+            'date_of_birth' => 'required'
+            // 'no_npwp' => 'required',
+            // 'npwp_file' => 'required|image|mimes:jpeg,jpg,png',
+        ]);
 
         $tambah = new User();
         $tambah->nik = $nik;
@@ -399,6 +398,7 @@ class HRController extends Controller
                 $tambah->id_division = $request['division_sip'];
         } 
 
+
         if ($request['id_sub_division_finance'] != '') {
             $tambah->id_territory = $request['id_sub_division_finance'];
         }else if ($request['id_sub_division_operation'] != '') {
@@ -416,6 +416,8 @@ class HRController extends Controller
         }else if ($request['id_sub_division_tech'] != '') {
             $tambah->id_territory = $request['id_sub_division_tech'];
         }
+
+        // return 'bcl';
 
         if ($request['pos_tech'] != '') {
         	if($request['id_sub_division_tech'] == 'DPG'){
@@ -476,8 +478,13 @@ class HRController extends Controller
         //upload file gambar npwp user
 
         $file = $request->file('npwp_file');
-        $fileName = $nik."_npwp_ver1".".jpg";
-        $request->file('npwp_file')->move("image/", $fileName);
+
+        if ($file !== null) {
+        	$fileName = $nik."_npwp_ver1".".jpg";
+        	$request->file('npwp_file')->move("image/", $fileName);
+        }else{
+        	$fileName = "";
+        }
 
         $tambah->npwp_file = $fileName;
         
@@ -745,6 +752,10 @@ class HRController extends Controller
             
         }
 
+        if ($request['status_kerja_update'] != "") {
+            $update->status_kerja = $request['status_kerja_update'];
+        }
+
         $update->update();
 
         return redirect('hu_rec')->with('update', 'Updated Employee Data Successfully!');
@@ -769,10 +780,16 @@ class HRController extends Controller
         $kirim = User::select('email')->where('email', 'ladinar@sinergy.co.id')->first();
         Notification::send($kirim, new DeleteUser($arr));
 
-        $hapus = HRCrud::find($nik);
-        $hapus->delete();
+        if (User::where('nik',$nik)->first()->id_division == 'SALES') {
+            $update = User::where('nik',$nik)->first();
+            $update->status_karyawan = 'dummy';
+            $update->update();
+        }else{
+            $hapus = HRCrud::find($nik);
+            $hapus->delete();
+        }
 
-        return redirect()->back()->with('alert', 'Deleted!');
+        return redirect()->back()->with('alert', 'Deleted Employee!');
     }
 
     public function user_profile()

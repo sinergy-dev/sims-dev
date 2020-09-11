@@ -4461,7 +4461,7 @@ class SALESController extends Controller{
 
             if($nomor <= 9){
                 $nomor = '00' . $nomor;
-            }elseif($nomor > 9 && $nomor < 99){
+            }elseif($nomor > 9 && $nomor <= 99){
                 $nomor = '0' . $nomor;
             }
 
@@ -4532,7 +4532,7 @@ class SALESController extends Controller{
 
             if($nomor <= 9){
                 $nomor = '00' . $nomor;
-            }elseif($nomor > 9 && $nomor < 99){
+            }elseif($nomor > 9 && $nomor <= 99){
                 $nomor = '0' . $nomor;
             }
 
@@ -4954,7 +4954,19 @@ class SALESController extends Controller{
             $row->setFontWeight('bold');
         });
 
-        $datas = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+        if (Auth::User()->id_division == 'SALES') {
+            $datas = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+            ->join('users','users.nik','=','sales_lead_register.nik')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name')
+            ->whereYear('tb_id_project.created_at',date('Y'))
+            ->where('users.id_territory',Auth::User()->id_territory)
+            ->where('id_company','1')
+            ->orderBy('tb_id_project.id_project','asc')
+            ->get();
+
+        }else{
+            $datas = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('users','users.nik','=','sales_lead_register.nik')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
             ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name')
@@ -4962,7 +4974,7 @@ class SALESController extends Controller{
             ->where('id_company','1')
             ->orderBy('tb_id_project.id_project','asc')
             ->get();
-
+        }
         // $datass = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
         //     ->join('tb_detail_id_project','tb_detail_id_project.id_pro','=','tb_id_project.id_pro')
         //     ->join('users','users.nik','=','sales_lead_register.nik')
@@ -4978,90 +4990,116 @@ class SALESController extends Controller{
                 $row->setFontWeight('bold');
             });
 
-             $datasheet = array();
-             $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name",  "Amount IDR", "Sales");
-             $i=1;
+             
 
              $datasheet2 = array();
              $datasheet2[0] = array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Sales");
              $j = 1;
 
-            foreach ($datas as $data) {
-                if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
-                    $datasheet[$i] = array(
-                            $i,
-                            date_format(date_create($data['date']),'d-M-Y'),
-                            $data['id_project'],
-                            $data['no_po_customer'],
-                            $data['customer_name'],
-                            $data['name_project'],
-                            $data['amount_idr'],
-                            $data['sales_name']
-                            
-                        );
-              
-                    $i++;
-                } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
-                    $datasheet[$i] = array(
-                            $i,
-                            date_format(date_create($data['date']),'d-M-Y'),
-                            $data['id_project'],
-                            $data['no_po_customer'],
-                            $data['customer_name'],
-                            $data['name_project'],
-                            $data['sales_name']
-                            
-                        );
-              
-                    $i++;
-                } else if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO'){
-                    $datasheet2[$j] = array(
-                            $j,
-                            date_format(date_create($data['date']),'d-M-Y'),
-                            $data['id_project'],
-                            $data['no_po_customer'],
-                            $data['customer_legal_name'],
-                            $data['opp_name'],
-                            $data['name']
-                            
-                        );
-              
-                    $j++;
-                } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO') {
-                    $datasheet2[$j] = array(
-                            $j,
-                            date_format(date_create($data['date']),'d-M-Y'),
-                            $data['id_project'],
-                            $data['no_po_customer'],
-                            $data['customer_legal_name'],
-                            $data['opp_name'],
-                            $data['name']
-                            
-                        );
-              
-                    $j++;
-                }
-                
-            }
-
-            // foreach ($datass as $data) {
-            //   $datasheet[$i] = array(
+            // foreach ($datas as $data) {
+            //     if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
+            //         $datasheet[$i] = array(
             //                 $i,
-            //                 $data['date'],
+            //                 date_format(date_create($data['date']),'d-M-Y'),
+            //                 $data['id_project'],
+            //                 $data['no_po_customer'],
+            //                 $data['customer_name'],
+            //                 $data['name_project'],
+            //                 $data['amount_idr'],
+            //                 $data['sales_name']
+                            
+            //             );
+              
+            //         $i++;
+            //     } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
+            //         $datasheet[$i] = array(
+            //                 $i,
+            //                 date_format(date_create($data['date']),'d-M-Y'),
+            //                 $data['id_project'],
+            //                 $data['no_po_customer'],
+            //                 $data['customer_name'],
+            //                 $data['name_project'],
+            //                 $data['sales_name']
+                            
+            //             );
+              
+            //         $i++;
+            //     } else if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO'){
+            //         $datasheet2[$j] = array(
+            //                 $j,
+            //                 date_format(date_create($data['date']),'d-M-Y'),
             //                 $data['id_project'],
             //                 $data['no_po_customer'],
             //                 $data['customer_legal_name'],
-            //                 $data['name_project'],
-            //                 $data['amount_idr'],
+            //                 $data['opp_name'],
             //                 $data['name']
                             
             //             );
               
-            //   $i++;
+            //         $j++;
+            //     } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO') {
+            //         $datasheet2[$j] = array(
+            //                 $j,
+            //                 date_format(date_create($data['date']),'d-M-Y'),
+            //                 $data['id_project'],
+            //                 $data['no_po_customer'],
+            //                 $data['customer_legal_name'],
+            //                 $data['opp_name'],
+            //                 $data['name']
+                            
+            //             );
+              
+            //         $j++;
+            //     }
+                
             // }
 
+            if (Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN') {
+                $datasheet = array();
+                $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name",  "Amount IDR", "Sales");
+                $i=1;
+
+                foreach ($datas as $data) {
+                  $datasheet[$i] = array(
+                        $i,
+                        date_format(date_create($data['date']),'d-M-Y'),
+                        // $data['date'],
+                        $data['id_project'],
+                        $data['no_po_customer'],
+                        $data['customer_legal_name'],
+                        $data['name_project'],
+                        $data['amount_idr'],
+                        $data['name']
+                        
+                    );
+                  
+                  $i++;
+                }
+            }else{
+                $datasheet = array();
+                $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Sales");
+                $i=1;
+
+                foreach ($datas as $data) {
+                  $datasheet[$i] = array(
+                        $i,
+                        date_format(date_create($data['date']),'d-M-Y'),
+                        // $data['date'],
+                        $data['id_project'],
+                        $data['no_po_customer'],
+                        $data['customer_legal_name'],
+                        $data['name_project'],
+                        $data['name']
+                        
+                    );
+                  
+                  $i++;
+                }
+            }
+            
+
             $sheet->fromArray($datasheet);
-            $sheet->fromArray($datasheet2);
+            // $sheet->fromArray($datasheet2);
         });
 
         })->export('xls');
@@ -5073,7 +5111,7 @@ class SALESController extends Controller{
         Excel::create($nama, function ($excel) use ($request) {
         $excel->sheet('Data ID Project', function ($sheet) use ($request) {
         
-        $sheet->mergeCells('A1:H1');
+        $sheet->mergeCells('A1:I1');
 
        // $sheet->setAllBorders('thin');
         $sheet->row(1, function ($row) {
@@ -5094,10 +5132,13 @@ class SALESController extends Controller{
         $datas = SalesProject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                 ->join('users','users.nik','=','sales_lead_register.nik')
                 ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','name_project','tb_id_project.created_at','sales_name','customer_legal_name')
+                ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
+                ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo')
+                ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','tb_pid.no_po','tb_quote_msp.quote_number')
                 ->where('id_company','2')
                 ->whereYear('tb_id_project.created_at',date('Y'))
-                ->where('status','!=','WO')
+                ->where('tb_id_project.status','!=','WO')
+                ->orderBy('tb_id_project.id_project','asc')
                 ->get();
 
 
@@ -5107,7 +5148,7 @@ class SALESController extends Controller{
             });
 
              $datasheet = array();
-             $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Amount IDR", "Sales");
+             $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer","No. Quote","Customer Name", "Project Name", "Amount IDR", "Sales");
              $i=1;
 
 
@@ -5118,27 +5159,52 @@ class SALESController extends Controller{
                     date_format(date_create($data['date']),'d-M-Y'),
                     $data['id_project'],
                     $data['no_po_customer'],
+                    [' - '],
                     $data['customer_name'],
                     $data['name_project'],
                     $data['amount_idr'],
                     $data['sales_name']
-                    
                     );
                   
                   $i++;
                 }else{
-                $datasheet[$i] = array(
-                    $i,
-                    date_format(date_create($data['date']),'d-M-Y'),
-                    $data['id_project'],
-                    $data['no_po_customer'],
-                    $data['customer_legal_name'],
-                    $data['opp_name'],
-                    $data['amount_idr'],
-                    $data['name']
+                    $datasheet[$i] = array(
+                        $i,
+                        date_format(date_create($data['date']),'d-M-Y'),
+                        $data['id_project'],
+                        $data['no_po'],
+                        $data['quote_number'],
+                        $data['customer_legal_name'],
+                        $data['opp_name'],
+                        $data['amount_idr'],
+                        $data['name']
                     
-                );
-              
+                    );
+                    // if ($data->no_po == null) {
+                    //     $datasheet[$i] = array(
+                    //         $i,
+                    //         date_format(date_create($data['date']),'d-M-Y'),
+                    //         $data['id_project'],
+                    //         $data['quote_number'],
+                    //         $data['customer_legal_name'],
+                    //         $data['opp_name'],
+                    //         $data['amount_idr'],
+                    //         $data['name']
+                        
+                    //     );
+                    // }else{
+                    //     $datasheet[$i] = array(
+                    //         $i,
+                    //         date_format(date_create($data['date']),'d-M-Y'),
+                    //         $data['id_project'],
+                    //         $data['no_po'],
+                    //         $data['customer_legal_name'],
+                    //         $data['opp_name'],
+                    //         $data['amount_idr'],
+                    //         $data['name']
+                        
+                    //     );
+                    // }              
                 $i++;
                 }
             }

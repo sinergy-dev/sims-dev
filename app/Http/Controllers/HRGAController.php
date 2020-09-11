@@ -1176,12 +1176,14 @@ class HRGAController extends Controller
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
 	            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
 	            ->groupby('tb_cuti.nik')
+                ->where('status_karyawan','!=','dummy')
 	            ->get();
 
 	        $cuti_list = DB::table('users')
 	            ->join('tb_position','tb_position.id_position','=','users.id_position')
 	            ->join('tb_division','tb_division.id_division','=','users.id_division')
 	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+                ->where('status_karyawan','!=','dummy')
 	            ->whereNotIn('nik',function($query) { 
 	            	$query->select('nik')->from('tb_cuti');
 	            })

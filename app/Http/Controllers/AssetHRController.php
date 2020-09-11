@@ -263,12 +263,14 @@ class AssetHRController extends Controller
         $tambah->code_name      = $request['asset_code'];
         $tambah->nama_barang    = $request['nama_barang'];
         $tambah->status         = "NEW";
-        $tambah->tgl_tambah     = $request['asset_date'];
+        $edate = strtotime($_POST['asset_date']); 
+        $edate = date("Y-m-d",$edate);
+        $tambah->tgl_tambah     = $edate;
         $tambah->serial_number  = $request['asset_sn'];
         $tambah->description    = $request['keterangan'];
         $tambah->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Create New Asset Successfully!');
     }
 
     public function detail_asset($id_barang)

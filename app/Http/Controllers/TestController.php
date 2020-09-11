@@ -59,7 +59,7 @@ class TestController extends Controller
     ]);
 
     $return =  new EmailRemainderWeekly($parameterEmail);
-          Mail::to('agastya@sinergy.co.id')->send($return);
+    Mail::to('agastya@sinergy.co.id')->send($return);
 
     return $return;
   }
