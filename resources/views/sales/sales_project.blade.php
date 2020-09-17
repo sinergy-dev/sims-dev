@@ -29,11 +29,6 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     display: none;
   }
 
-/*  table.dataTable tbody th,
-  table.dataTable tbody td {
-  white-space: nowrap;
-  }*/
-
   th, td { white-space: no-wrap; overflow: hidden; };
 
   .inputWithIcon input[type=text]{
@@ -228,8 +223,8 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
   <!--modal-->
 
-<div class="modal fade" id="showRequestProjectID" role="dialog">
-  <div class="modal-dialog">
+<div class="modal fade" id="showRequestProjectID" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered " role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Request Project ID</h4>
