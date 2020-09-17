@@ -697,6 +697,9 @@
       			<li>
       				<a href="{{url('/report_customer')}}" style="font-size: 14px">Report Customer</a>
       			</li>
+      			<li>
+      				<a href="{{url('/report_product_technology')}}" style="font-size: 14px">Report Tags</a>
+      			</li>
       			@if(Auth::User()->email == 'tech@sinergy.co.id')
       			<li>
       				<a href="{{url('/report_deal_price')}}" style="font-size: 14px">Report Range by Deal Price</a>
@@ -727,6 +730,11 @@
       		@if(Auth::User()->id_position != 'HR MANAGER')
       		<li>
       			<a href="{{url('/customer')}}" style="font-size: 14px">Customer Data</a>
+      		</li>
+      		@endif
+      		@if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'MANAGER')
+      		<li>
+      			<a href="{{url('/sales/tag')}}" style="font-size: 14px">Category Tags</a>
       		</li>
       		@endif
       	</ul>
