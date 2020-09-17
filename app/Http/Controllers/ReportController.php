@@ -3828,15 +3828,21 @@ class ReportController extends Controller
                     ->orderBy('lead_id','DESC')
                     ->get();
 
-                $product = DB::table('tb_product_tag_relation')
-                    ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
-                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_product_tag_relation.lead_id')
-                    ->select("name_product","price","sales_lead_register.lead_id")
-                    ->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
+                if ($request->Tagstechno == ["-1"]) {
+
+                    $query_tech = DB::table('tb_technology_tag_relation')
+                    ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_technology_tag_relation.lead_id')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','tb_technology_tag_relation.lead_id')
+                    ->join('users as sales','sales.nik','=','sales_lead_register.nik')
+                    ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
+                    ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","price","name_tech","brand_name")
                     ->orderBy('lead_id','DESC')
-                    ->get()->groupBy('lead_id');
-                
-                $query_tech = DB::table('tb_technology_tag_relation')
+                    ->get();
+                }else{
+
+                    $query_tech = DB::table('tb_technology_tag_relation')
                     ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_technology_tag_relation.lead_id')
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
@@ -3847,10 +3853,45 @@ class ReportController extends Controller
                     ->whereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
                     ->orderBy('lead_id','DESC')
                     ->get();
+                }
+                // $query_all = array_merge($query_product->toArray(),$query_tech->toArray());
 
-                $query_all = array_merge($query_product->toArray(),$query_tech->toArray());
+                $query_all = collect(array_merge($query_product->toArray(),$query_tech->toArray()))->sortBy('lead_id');
 
-                return array("data"=>$query_all);
+                $sorted = $query_all->values()->all();
+
+                // foreach ($query_all as $key => $data) {
+                //     ;
+                // }
+                // foreach ($query_all as $key => $value) {
+                //     // echo $key."</br>" ;
+                //     $lead_id = array($key);
+                //     // foreach ($value as $key => $data) {
+                //     //     if ($key == 0 || $value[$key]->name_sales != $value[$key -1]->name_sales) {
+                //     //         $name_sales = $data->name_sales;
+                //     //         $name_presales = $data->name_presales;
+                //     //         print_r($name_sales."</br>");
+                //     //     }
+
+                //     //     // echo $value->lead_id;
+                //     //     if (isset($data->name_product)) {
+                //     //         $name_product = $data->name_product;
+                //     //        print_r($data->name_product . "</br><br>");
+                           
+                //     //     }
+
+                //     //     if (isset($data->name_tech)) {
+                //     //          $name_tech = $data->name_tech;
+                //     //         print_r($data->name_tech . "</br></br>");
+                //     //     }
+
+                //     //     $price = $data->price;
+                //     //     print_r($data->price."</br>");
+                //     // }
+                //     echo json_encode(implode("[]", $lead_id));
+                // }
+
+                return array("data"=>$sorted);
         }else{
                 $query_product = DB::table('tb_product_tag_relation')
                     ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
@@ -3865,14 +3906,6 @@ class ReportController extends Controller
                     ->orWhereIn('presales.nik',$request->TagsPersona)
                     ->orderBy('lead_id','DESC')
                     ->get();
-
-                $product = DB::table('tb_product_tag_relation')
-                    ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
-                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_product_tag_relation.lead_id')
-                    ->select("name_product","price","sales_lead_register.lead_id")
-                    ->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
-                    ->orderBy('lead_id','DESC')
-                    ->get()->groupBy('lead_id');
                 
                 $query_tech = DB::table('tb_technology_tag_relation')
                     ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
