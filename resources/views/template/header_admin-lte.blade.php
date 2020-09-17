@@ -497,7 +497,7 @@
         <!-- User Account: style can be found in dropdown.less -->
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            @if(Auth::User()->gambar == NULL)
+            @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
               <img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="user-image" alt="Yuki">
             @else
               <img src="{{asset('image/'.Auth::User()->gambar)}}" class="user-image" alt="User Image">
@@ -508,7 +508,7 @@
             <!-- User image -->
             <li class="user-header">
               {{-- <img src="{{asset('template2/dist/img/user2-160x160.jpg')}}" class="img-circle" alt="User Image"> --}}
-              @if(Auth::User()->gambar == NULL)
+              @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
                 <img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="img-circle" alt="Yuki">
               @else
                 <img src="{{asset('image/'.Auth::User()->gambar)}}" class="img-circle" alt="User Image">
@@ -521,7 +521,11 @@
                 @elseif(Auth::user()->id_position == 'EXPERT SALES')
                   {{ Auth::user()->id_position}}
                 @else
+                  @if(Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER')
+                  OPERATIONAL DIRECTOR
+                  @else
                   {{ Auth::user()->id_division }} {{ Auth::user()->id_position }}
+                  @endif
                 @endif
                 <small>
                   @if(Auth::User()->id_company == '1') 
@@ -582,7 +586,7 @@
     <!-- Sidebar user panel -->
     <div class="user-panel">
       <div class="pull-left image">
-        @if(Auth::User()->gambar == NULL)
+        @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
           <img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="img-circle" alt="Yuki">
         @else
           <img src="{{asset('image/'.Auth::User()->gambar)}}" class="img-circle" alt="User Image">
@@ -758,7 +762,7 @@
           </li>
           @endif
 
-          @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'STAFF GA' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM')
+          @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'STAFF GA' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM' || Auth::User()->id_position == 'OPERATION DIRECTOR' && Auth::User()->id_division == 'PMO')
           <li>
             <a href="{{url('/quote')}}" style="font-size: 14px"></i>Quote Number</a>
           </li>
