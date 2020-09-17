@@ -4820,7 +4820,7 @@ class SALESController extends Controller
                 ->join('users','users.nik','=','sales_lead_register.nik')
                 ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                 ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
-                ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo')
+                ->LeftJoin('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo')
                 ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','tb_pid.no_po','tb_quote_msp.quote_number')
                 ->where('id_company','2')
                 ->whereYear('tb_id_project.created_at',date('Y'))
