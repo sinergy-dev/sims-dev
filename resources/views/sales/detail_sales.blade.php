@@ -48,7 +48,7 @@
         text-align: center;
   }
 
-  .input-tags{
+/*  .input-tags{
      width: 50%;
   	 padding: 0.2em;
   	 border:  2px solid #555;
@@ -68,7 +68,7 @@
 
   .input-tags-before:focus{
   	background: transparent;border: none;
-  }
+  }*/
    
 </style>
   
@@ -334,20 +334,37 @@
                       @foreach($data["product"] as $datasProduct)
                         <tr>
                           <td><span class="label label-primary">{{$datasProduct->name_product}}</span></td>
-                          <td><input type="" name="" value="{{$datasProduct->price}}" data-value="{{$datasProduct->id}}" disabled id="input-price" class="money input-tags-before"></td>
                           <td>
-                            <button type="button" id="btnPrice" data-value="{{$datasProduct->id}}" class="btn btn-xs btn-warning" onclick="btnEditTags('{{$datasProduct->id}}')" style="width: 30px"><i class="btn-setting fa fa-pencil"></i></button>
-                            <button type="button" id="btnDelPrice" data-value="{{$datasProduct->id}}" class="btn btn-xs btn-danger" onclick="btnDeleteTags('{{$datasProduct->id}}')" style="width: 30px;"><i class="btn-trash fa fa-trash"></i></button>
+                            @if($datasProduct->price != "")
+                              <!-- <i class="" aria-hidden="true">Rp.<span class="money">{{$datasProduct->price}}</span></i> -->
+                              <div class="form-group inputWithIcon inputIconBg">
+                                <input data-value="{{$datasProduct->id}}" class="form-control money input-tags-before" type="text" aria-describedby="emailHelp" placeholder="Enter Product Price" name="project_budget"  id="input-price" value="{{$datasProduct->price}}" disabled/>
+                                <i class="" style="margin-top: -47px" aria-hidden="true">Rp.</i>
+                              </div>
+                     <!--          <input type="" name="" style="display: none" value="{{$datasProduct->price}}" data-value="{{$datasProduct->id}}" disabled id="input-price" class="money input-tags-before"> -->
+                            @else
+                            <div class="form-group inputWithIcon inputIconBg">
+                                <input data-value="{{$datasProduct->id}}" class="form-control money input-tags-before" type="text" aria-describedby="emailHelp" placeholder="Enter Product Price" name="project_budget"  id="input-price" disabled/>
+                                <i class="" style="margin-top: -47px" aria-hidden="true">Rp.</i>
+                              </div>
+                            @endif
+                          </td>
+                          <td>
+                            <button type="button" id="btnPrice" data-value="{{$datasProduct->id}}" class="btn btn-sm btn-warning" onclick="btnEditTags('{{$datasProduct->id}}')" style="width: 35px"><i class="btn-setting fa fa-pencil"></i></button>
+                            <button type="button" id="btnDelPrice" data-value="{{$datasProduct->id}}" class="btn btn-sm btn-danger" onclick="btnDeleteTags('{{$datasProduct->id}}')" style="width: 35px;"><i class="btn-trash fa fa-trash"></i></button>
                           </td>
                         </tr>
                       @endforeach
                       @foreach($data["technology"] as $datasTechnology)
                         <tr>
                           <td><span class="label label-default">{{$datasTechnology->name_tech}}</span></td>
-                          <td><input type="" name="" value="{{$datasTechnology->price}}" data-value="{{$datasTechnology->id}}" disabled id="input-price" class="money input-tags-before"></td>
                           <td>
-                            <button type="button" id="btnPrice" data-value="{{$datasTechnology->id}}" class="btn btn-xs btn-warning" onclick="btnEditTags('{{$datasTechnology->id}}')" style="width: 30px"><i class="btn-setting fa fa-pencil"></i></button>
-                            <button type="button" id="btnDelPrice" data-value="{{$datasTechnology->id}}" class="btn btn-xs btn-danger" onclick="btnDeleteTags('{{$datasTechnology->id}}')" style="width:30px"><i class="btn-trash fa fa-trash"></i></button>
+                            <b><i>none</i></b>
+              <!--               <input type="" name="" value="{{$datasTechnology->price}}" data-value="{{$datasTechnology->id}}" disabled id="input-price" class="money input-tags-before"> -->
+                          </td>
+                          <td>
+                      <!--       <button type="button" id="btnPrice" data-value="{{$datasTechnology->id}}" class="btn btn-xs btn-warning" onclick="btnEditTags('{{$datasTechnology->id}}')" style="width: 30px"><i class="btn-setting fa fa-pencil"></i></button> -->
+                            <button type="button" id="btnDelPrice" data-value="{{$datasTechnology->id}}" class="btn btn-sm btn-danger" onclick="btnDeleteTags('{{$datasTechnology->id}}')" style="width:35px"><i class="btn-trash fa fa-trash"></i></button>
                           </td>
                         </tr>
                       @endforeach
@@ -1592,13 +1609,15 @@
         		<label>-- Product --</label>
         		<select class="form-control" id="searchTagsProduct" style="width: 100%!important"></select><br><br>
         		<label>-- Price --</label>
-        		<input type="number" id="priceTagsProduct" class="form-control" name="">
+            <div class="inputWithIcon inputIconBg">
+              <input type="text" id="priceTagsProduct" class="money form-control float-left" name="">
+              <i class="" style="margin-top: -47px" aria-hidden="true">Rp.</i>
+            </div>
         	</div>
-
-	        <div class="modal-footer">
-	          <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-	          <button type="submit" class="btn btn-sm btn-success" onclick="submitProductTags('{{$tampilkan->lead_id}}')"><i class="fa fa-check"></i>&nbsp Submit</button>
-	        </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+            <button type="submit" class="btn btn-sm btn-success" onclick="submitProductTags('{{$tampilkan->lead_id}}')"><i class="fa fa-check"></i>&nbsp Submit</button>
         </div>
       </div>
     </div>
@@ -1646,18 +1665,126 @@
                 return $.parseHTML('<span>' + selection.text + '</span>');
               }
             })
+
+            $("#searchTagsProduct").change(function(){
+              var valueId = $("#searchTagsProduct").val();
+              var paramId = valueId.substring(0,1);
+              if (paramId == "t") {
+                $("#priceTagsProduct").prop("disabled",true)
+              }else{
+                $("#priceTagsProduct").prop("disabled",false)
+              }
+            })
           }
         })
+      }
+
+      function submitProductTags(id){
+        var valueId = $("#searchTagsProduct").val();
+        var paramId = valueId.substring(0,1);
+        var idTag = valueId.substring(1);
+        if (paramId == "p") {
+           if ($("#priceTagsProduct").val() == "") {
+              Swal.fire({
+                icon: 'error',
+                title: 'Kalem bos!...',
+                text: 'Please fill the field of price!',
+              })
+            }else{
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                    popup: 'border-radius-0',
+                  },
+                  onOpen: () => {
+                    Swal.showLoading()
+                  }
+              })
+              var token =  $('input[name="csrfToken"]').attr('value')
+              $.ajax({
+                  url:"/sales/add_product_technology",
+                  type:"POST",
+                  data:{
+                    id:idTag,
+                    paramId:paramId,
+                    lead_id:id,
+                    price:$("#priceTagsProduct").val().replace(',','').replace(/\D/g, ""),
+                    _token:"{{csrf_token()}}"
+                  },
+                  // beforeSend: function(xhr) {
+                  //   xhr.setRequestHeader('Csrf-Token', token);
+                  // }, 
+                  success:function(result){
+                      location.reload();
+                      Swal.showLoading()
+                      Swal.fire(
+                        'Successfully!',
+                        'Product has been Added.',
+                        'success'
+                      ).then((result) => {
+                        if (result.value) {
+                        }
+                      })
+                  }
+              });
+            }
+        }else{
+            Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                    popup: 'border-radius-0',
+                  },
+                  onOpen: () => {
+                    Swal.showLoading()
+                  }
+              })
+              var token =  $('input[name="csrfToken"]').attr('value')
+              $.ajax({
+                  url:"/sales/add_product_technology",
+                  type:"POST",
+                  data:{
+                    id:idTag,
+                    paramId:paramId,
+                    lead_id:id,
+                    _token:"{{csrf_token()}}"
+                  },
+                  // beforeSend: function(xhr) {
+                  //   xhr.setRequestHeader('Csrf-Token', token);
+                  // }, 
+                  success:function(result){
+                      location.reload();
+                      Swal.showLoading()
+                      Swal.fire(
+                        'Successfully!',
+                        'Product has been Added.',
+                        'success'
+                      ).then((result) => {
+                        if (result.value) {
+                        }
+                      })
+                  }
+              });
+        }
+        
+        console.log($("#priceTagsProduct").val())
       }
 
       function btnEditTags(id){
         console.log(id)
       	$("#input-price[data-value='"+id+"']").prop("disabled", false);
-      	$("#table-product #input-price[data-value='"+id+"']").removeClass("money input-tags-before")
-      	$("#table-product #input-price[data-value='"+id+"']").addClass("input-tags");
+      	$("#table-product #input-price[data-value='"+id+"']").removeClass("form-control money input-tags-before")
+      	$("#table-product #input-price[data-value='"+id+"']").addClass("form-control input-tags");
 
         console.log($("#input-price[data-value='"+id+"']").attr('class'))
-      	if ($("#input-price[data-value='"+id+"']").attr('class') == "input-tags") {
+      	if ($("#input-price[data-value='"+id+"']").attr('class') == "form-control input-tags") {
       		$("#btnPrice[data-value='"+id+"'] .btn-setting").removeClass("fa fa-pencil")
           $("#btnPrice[data-value='"+id+"'] .btn-setting").addClass("fa fa-check")
       		$("#btnPrice[data-value='"+id+"']").removeClass("btn-warning")
@@ -1719,7 +1846,7 @@
                       if (result.value) {
                         $("#input-price[data-value='"+id+"']").prop("disabled", true);
                         $("#table-product #input-price[data-value='"+id+"']").removeClass("input-tags")
-                        $("#table-product #input-price[data-value='"+id+"']").addClass("money input-tags-before");
+                        $("#table-product #input-price[data-value='"+id+"']").addClass("form-control money input-tags-before");
                         $("#btnPrice[data-value='"+id+"']").attr("onclick","btnEditTags('"+id+"')")
                         $("#btnPrice[data-value='"+id+"']").html("Edit")
                         $("#btnPrice[data-value='"+id+"']").removeClass("btn-success")
@@ -1735,7 +1862,7 @@
       function btnCancel(id){
         $("#input-price[data-value='"+id+"']").prop("disabled", true);
         $("#table-product #input-price[data-value='"+id+"']").removeClass("input-tags")
-        $("#table-product #input-price[data-value='"+id+"']").addClass("money input-tags-before");
+        $("#table-product #input-price[data-value='"+id+"']").addClass("form-control money input-tags-before");
         $("#btnPrice[data-value='"+id+"']").attr("onclick","btnEditTags('"+id+"')")
         $("#btnPrice[data-value='"+id+"'] .btn-setting").removeClass("fa fa-check")
         $("#btnPrice[data-value='"+id+"'] .btn-setting").addClass("fa fa-pencil")
@@ -1802,60 +1929,7 @@
       
       }
 
-      function submitProductTags(id){
-        var valueId = $("#searchTagsProduct").val();
-        var paramId = valueId.substring(0,1);
-        var idTag = valueId.substring(1);
-        if ($("#priceTagsProduct").val() == "") {
-          Swal.fire({
-            icon: 'error',
-            title: 'Kalem bos!...',
-            text: 'Please fill the field of price!',
-          })
-        }else{
-          Swal.fire({
-              title: 'Please Wait..!',
-              text: "It's sending..",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              customClass: {
-                popup: 'border-radius-0',
-              },
-              onOpen: () => {
-                Swal.showLoading()
-              }
-          })
-          var token =  $('input[name="csrfToken"]').attr('value')
-          $.ajax({
-              url:"/sales/add_product_technology",
-              type:"POST",
-              data:{
-                id:idTag,
-                paramId:paramId,
-                lead_id:id,
-                price:$("#priceTagsProduct").val(),
-                _token:"{{csrf_token()}}"
-              },
-              // beforeSend: function(xhr) {
-              //   xhr.setRequestHeader('Csrf-Token', token);
-              // }, 
-              success:function(result){
-                  location.reload();
-                  Swal.showLoading()
-                  Swal.fire(
-                    'Successfully!',
-                    'Product has been Added.',
-                    'success'
-                  ).then((result) => {
-                    if (result.value) {
-                    }
-                  })
-              }
-          });
-        }
-        console.log($("#priceTagsProduct").val())
-      }
+
 
       $("#quote_number_final").select2();
 
