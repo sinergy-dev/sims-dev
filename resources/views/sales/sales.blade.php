@@ -349,6 +349,7 @@
         <div style="max-width: 250px;width: 220px" class="pull-left">
           <select class="form-control" style="width: 50%" id="searchTags"></select>
         </div>
+        <!-- <input type="" id="searchTagsProd" name=""> -->
         @endif        
       @endif
 
@@ -2240,8 +2241,9 @@
                           @endif
                         </td>
                         <td hidden>
-                          {{$data->result_concat}}
-                          {{$data->result_concat_2}}
+                          @foreach(explode(',', $data->result_concat_2) as $info) 
+                              <option>{{$info}}</option>
+                          @endforeach
                         </td>
                     </tr>
                   @endif
@@ -4659,17 +4661,31 @@
               })
 
               $('#searchTags').on('change', function(){
-                  var search = "";
-
+                  // var search = "";
+                  var pattern =''; 
                   $.each($('#searchTags').select2('data'), function(key,value){
-                      search = search+value.text+" "
+                      // search = search+value.text+" "
+                      if (pattern!='') pattern+='|';
+                          pattern+=value.text;
                   });
-                  datasnow.columns(13).search(search).draw(); 
+                  datasnow.columns(13).search(pattern, true, false, true).draw();
+                  // datasnow.columns(13).search(search).draw(); 
               });
 
-              $('#searchTagsProd').keyup(function(){
+              $('#searchTagsProd').keyup(function(e){
                   // TagProduct.search($(this).val()).draw() ;
-                  datasnow.columns(13).search(this.value).draw(); 
+                  if(e.keyCode==13){
+                      var arr = $('#searchTagsProd').val().split(' ');
+                      var pattern ='';  
+                      arr.forEach(function(item) {
+                          if (pattern!='') pattern+='|';
+                          pattern+=item;
+                      });
+
+                      datasnow.columns(13).search(pattern, true, false, true).draw();
+                      // datasnow.columns(13).search(pattern).draw(); 
+                   }
+                    
               })
             }
           })
@@ -4805,12 +4821,20 @@
                   })
 
                   $('#searchTags').on('change', function(){
-                      var search = "";
+                      // var search = "";
 
-                      $.each($('#searchTags').select2('data'), function(key,value){
-                          search = search+value.text+" "
-                      });
-                      datasnow.columns(15).search(search).draw(); 
+                      // $.each($('#searchTags').select2('data'), function(key,value){
+                      //     search = search+value.text+" "
+
+                      // });
+                      // datasnow.columns(15).search(search).draw(); 
+                        var pattern =''; 
+                        $.each($('#searchTags').select2('data'), function(key,value){
+                            // search = search+value.text+" "
+                            if (pattern!='') pattern+='|';
+                                pattern+=value.text;
+                        });
+                        datasnow.columns(15).search(pattern, true, false, true).draw();
                   });
 
                   $('#searchTagsProd').keyup(function(){
