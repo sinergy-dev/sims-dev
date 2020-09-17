@@ -1082,6 +1082,7 @@ class SALESController extends Controller{
         }
 
         $year_now = date('Y');
+        // return $leadsnow;
 
         if (Auth::User()->id_division == 'FINANCE') {
             
@@ -2172,9 +2173,9 @@ class SALESController extends Controller{
                         ->orderBy('created_at', 'desc')
                         ->get();
 
-        $productTag = DB::table('tb_product_tag_relation')->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')->selectRaw('CONCAT("p",`tb_product_tag_relation`.`id`) AS `id`,`name_product`,`price`')->where('tb_product_tag_relation.lead_id',$lead_id)->get();
+        $productTag = DB::table('tb_product_tag_relation')->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')->selectRaw('CONCAT("p",`tb_product_tag_relation`.`id`) AS `id`,`name_product`,`price`')->where('tb_product_tag_relation.lead_id',$lead_id)->orderBy('tb_product_tag_relation.created_at','desc')->get();
 
-        $technologyTag = DB::table('tb_technology_tag_relation')->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')->selectRaw('CONCAT("t",`tb_technology_tag_relation`.`id`) AS `id`,`name_tech`,`price`')->where('tb_technology_tag_relation.lead_id',$lead_id)->get();
+        $technologyTag = DB::table('tb_technology_tag_relation')->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')->selectRaw('CONCAT("t",`tb_technology_tag_relation`.`id`) AS `id`,`name_tech`,`price`')->where('tb_technology_tag_relation.lead_id',$lead_id)->orderBy('tb_technology_tag_relation.created_at','desc')->get();
 
         $productTech = array(collect(["product"=>$productTag,"technology"=>$technologyTag]));
 
@@ -3392,30 +3393,6 @@ class SALESController extends Controller{
 
     }
 
-    public function update_product_technology(Request $request)
-    {
-        if ($request->paramId == 'p') {
-            $update = ProductTagRelation::where('id',$request->id)->first();
-            $update->price = $request->price;
-            $update->update();
-        }else{
-            $update = TechnologyTagRelation::where('id',$request->id)->first();
-            $update->price = $request->price;
-            $update->update();
-        }
-        
-    }
-
-    public function delete_product_technology(Request $request)
-    {
-        if ($request->paramId == 'p') {
-            $delete = ProductTagRelation::find('id',$request->id)->delete();
-        }else{
-            $delete = TechnologyTagRelation::where('id',$request->id)->delete();
-        }
-        
-    }
-
     public function add_product_technology(Request $request)
     {
         if ($request->paramId == 'p') {
@@ -3424,13 +3401,92 @@ class SALESController extends Controller{
             $store->id_product_tag  = $request->id;
             $store->price           = $request->price;
             $store->save();
+
+            $product = ProductTag::where('id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $request->lead_id; 
+            $tambah->nik        = Auth::User()->nik;
+            $tambah->status     = "Added Product - Price ( " . $product->name_product ." - ". number_format($request->price) . " )";
+            $tambah->save(); 
         }else{
             $store = new TechnologyTagRelation;
             $store->lead_id         = $request->lead_id;
             $store->id_tech_tag     = $request->id;
             $store->price           = $request->price;
             $store->save();
+
+            $product = TechnologyTag::where('id',$request->id)->first();                
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $request->lead_id; 
+            $tambah->nik        = Auth::User()->nik; 
+            $tambah->status     = "Added Technology ( " . $product->name_tech . " )";
+            $tambah->save(); 
         }
+        
+    }
+
+    public function update_product_technology(Request $request)
+    {
+        if ($request->paramId == 'p') {
+            $update = ProductTagRelation::where('id',$request->id)->first();
+            $update->price = $request->price;
+            $update->update();
+
+            $product = ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+                ->where('tb_product_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik;
+            $tambah->status     = "Updated Product - Price ( " . $product->name_product ." - ". number_format($product->price) . " )";
+            $tambah->save(); 
+        }else{
+            $update = TechnologyTagRelation::where('id',$request->id)->first();
+            $update->price = $request->price;
+            $update->update();
+
+            $product = TechnologyTagRelation::join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
+                ->where('tb_technology_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik; 
+            $tambah->status     = "Updated Technology ( " . $product->name_tech . " )";
+            $tambah->save(); 
+        }
+        
+    }
+
+    public function delete_product_technology(Request $request)
+    {
+
+        if ($request->paramId == 'p') {
+            $product = ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+                ->where('tb_product_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik;
+            $tambah->status     = "Deleted Product - Price ( " . $product->name_product ." - ". number_format($product->price) . " )";
+            $tambah->save(); 
+
+            $delete = ProductTagRelation::where('id',$request->id)->delete();
+        }else{
+            $product = TechnologyTagRelation::join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
+                ->where('tb_technology_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik; 
+            $tambah->status     = "Deleted Technology ( " . $product->name_tech . " )";
+            $tambah->save(); 
+
+            $delete = TechnologyTagRelation::where('id',$request->id)->delete();
+        }
+
+        
         
     }
 
