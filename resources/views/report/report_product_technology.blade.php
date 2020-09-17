@@ -199,32 +199,48 @@
         url:"sales/getTechTag",
         type:"GET",
         success:function(result){
+          
           $("#searchTagsTechnology").select2().val("");
           var arr = result.results;
           var selectOption = [];
           var otherOption;
+          // $.each(arr,function(key,value){
+          //   if (value.text != "Others") {
+          //     selectOption.push(value)
+          //   }else{
+          //     otherOption = value
+          //   }
+          // })
+
+          var data = {
+              id: -1,
+              text: 'All Technology'
+          };
+
+          selectOption.push(data)
           $.each(arr,function(key,value){
-            if (value.text != "Others") {
-              selectOption.push(value)
-            }else{
-              otherOption = value
-            }
+            selectOption.push(value)
           })
 
-          selectOption.push(otherOption)
           var TagTechnology = $("#searchTagsTechnology").select2({
             placeholder: " Select #Tags#Technology",
             allowClear: true,
             multiple:true,
             data:selectOption,
             templateSelection: function(selection,container) {
-              $(container).css("background-color", "#32a852");
-              $(container).css("border-color","#32a852");
-              return $.parseHTML('<span>' + selection.text + '</span>');
+              if (selection.text == 'All Technology') {
+                return $.parseHTML('<span>' + selection.text + '</span>');
+              }else{
+                $(container).css("background-color", "#32a852");
+                $(container).css("border-color","#32a852");
+                return $.parseHTML('<span>' + selection.text + '</span>');
+              }
             }
           })
 
-          $('#searchTags').on('change', function(){
+
+          $('#searchTagsTechnology').on('change', function(){
+
           });
         }
     
@@ -243,6 +259,7 @@
               id: 2,
               text: 'All'
           };
+
           selectOption.push(data)
           $.each(arr,function(key,value){
             selectOption.push(value)
@@ -354,7 +371,7 @@
       }else{
 
           $('#data_lead').DataTable().clear().destroy();
-          $("#data_lead").DataTable({
+          var table = $("#data_lead").DataTable({
               "ajax":{
                 "type":"GET",
                 // "url":"{{url('/getFilterTags')}}?TagsProduct="+ TagsProduct,
@@ -368,51 +385,111 @@
                 }
               },
               "columns": [
-                { 
-                  "data": "lead_id" },  
-                { "data": "brand_name" },  
-                { "data": "opp_name" },  
+                // { "data": "lead_id" },  
+                // { "data": "brand_name" },  
+                // { "data": "opp_name" },  
                 {
-                  render: function ( data, type, row, meta) {
-                    console.log(meta.row)
-                    if (row.name_sales == null) {
-                      return row.name_presales;
-                    }else if (row.name_presales == null) {
-                      return row.name_sales;
+                  render: function ( data, type, row, meta ) {
+                    if (meta.row == 0) {
+                      return "<b>"+row.lead_id+"</b>";
                     }else{
-                      return row.name_sales + ',' + row.name_presales;
+                      if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
+                        return "<b>"+row.lead_id+"</b>";
+                      }else{
+                        return null;
+                      }
                     }
-                  }
-                }, 
-                {
-                  render: function ( data, type, row ) {
-                      return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount);
                   }
                 },
                 {
-                  render: function ( data, type, row ) {
-                    if (row.name_product != null) {
-                      return row.name_product;
+                  render: function ( data, type, row, meta ) {
+                    if (meta.row == 0) {
+                      return "<b>"+row.brand_name+"</b>";
+                    }else{
+                      if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
+                        return "<b>"+row.brand_name+"</b>";
+                      }else{
+                        return null;
+                      }
                     }
-                    if (row.name_tech != null) {
-                      return row.name_tech;
+                  }
+                },
+                {
+                  render: function ( data, type, row, meta ) {
+                    if (meta.row == 0) {
+                      return "<b>"+row.opp_name+"</b>";
+                    }else{
+                      if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
+                        return "<b>"+row.opp_name+"</b>";
+                      }else{
+                        return null;
+                      }
                     }
-                    
+                  }
+                },
+                {
+                  render: function ( data, type, row, meta) {
+                    if (meta.row == 0) {
+                      if (row.name_sales == null) {
+                        return "<b>"+row.name_presales+"</b>";
+                      }else if (row.name_presales == null) {
+                        return "<b>"+row.name_sales+"</b>";
+                      }else{
+                        return "<b>"+row.name_sales +','+"</b>"+"<b>"+ row.name_presales+"</b>";
+                      }                      
+                    }else{
+                      if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
+                        if (row.name_sales == null) {
+                          return "<b>"+row.name_presales+"</b>";
+                        }else if (row.name_presales == null) {
+                          return "<b>"+row.name_sales+"</b>";
+                        }else{
+                          return "<b>"+row.name_sales + ',' + "</b>"+"<b>" + row.name_presales +"</b>";
+                        }
+                      }else{
+                        return null;
+                      }
+                    }
                   }
                 }, 
                 {
-                  render: function ( data, type, row ) {
-                    return row.price;
+                  render: function ( data, type, row, meta ) {
+                    if (meta.row == 0) {
+                      return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount);
+                    }else{
+                      if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
+                        return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount);
+                      }else{
+                        return null;
+                      }
+                    }
+                  }
+                },
+                {
+                  render: function ( data, type, row, meta ) {
+                    if (row.name_product != null) {
+                      return "<span style='color:#4075c9'>"+row.name_product+"</span>";
+                    }
+                    if (row.name_tech != null) {
+                      return "<span style='color:#448c35;'>"+row.name_tech+"</span>";
+                    }
+                  }
+                }, 
+                {
+                  render: function ( data, type, row, meta ) {
+                    return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.price);
                   }
                 },
                 // { "data": "amount" },        
               ],
-              "info":false,
+              // "info":false,
               "scrollX": false,
-              "order": [[ 1, "asc" ]],
-              "orderFixed": [[1, 'asc']],
+              "ordering": false,
               "processing": true,
               "paging": false,
+              // "columnDefs": [
+              //   { "orderable": false, "targets": [0,1,2,3,4,5,6] }
+              // ]
           })
       }
       // start_date  = $("#reportrange").val().split("-")[0];
