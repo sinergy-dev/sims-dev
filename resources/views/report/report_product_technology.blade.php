@@ -170,27 +170,74 @@
           var arr = result.results;
           var selectOption = [];
           var otherOption;
+          var data = {
+              id: -1,
+              text: 'All Product'
+          };
+
+          // selectOption.push(otherOption)
+          selectOption.push(data)
           $.each(arr,function(key,value){
-            if (value.text != "Others") {
-              selectOption.push(value)
-            }else{
-              otherOption = value
-            }
+            selectOption.push(value)
           })
 
-          selectOption.push(otherOption)
           var TagProduct = $("#searchTagsProduct").select2({
             placeholder: " Select #Tags#Product",
             allowClear: true,
             multiple:true,
             data:selectOption,
             templateSelection: function(selection,container) {
-              return $.parseHTML('<span>' + selection.text + '</span>');
+              if (selection.text == 'All Product') {
+                return $.parseHTML('<span>' + selection.text + '</span>');
+              }else{
+                return $.parseHTML('<span>' + selection.text + '</span>');
+              }
             }
           })
 
-          $('#searchTags').on('change', function(){
+          $('#searchTagsProduct').on("select2:select", function(evt, f, g) {
+            var selected_element = $(evt.currentTarget);
+            var select_val = selected_element.val();
+            if (select_val == -1) {
+              disableOtherOpt(evt, this, true);
+            }else {
+              disableAllOpt(evt, this, true);
+            }
+            console.log(select_val);
           });
+
+          $('#searchTagsProduct').on("select2:unselect", function(evt) {
+            disableOtherOpt(evt, this, false);
+            disableAllOpt(evt, this, false);
+          });
+
+          function disableOtherOpt(evt, target, disabled) {
+
+            var aaList = $("option", target);
+            $.each(aaList, function (i, item) {
+              var data = $(item).data("data");
+
+              if (data.id != "-1") {
+                data.disabled = disabled;
+              }
+
+               console.log(data);
+            });
+          }
+
+          function disableAllOpt(evt, target, disabled) {
+
+            var aaList = $("option", target);
+            $.each(aaList, function (i, item) {
+              var data = $(item).data("data");
+
+              if (data.id == "-1") {
+                data.disabled = disabled;
+              }
+
+               console.log(data);
+            });
+          }
         }
     
     })
@@ -204,13 +251,6 @@
           var arr = result.results;
           var selectOption = [];
           var otherOption;
-          // $.each(arr,function(key,value){
-          //   if (value.text != "Others") {
-          //     selectOption.push(value)
-          //   }else{
-          //     otherOption = value
-          //   }
-          // })
 
           var data = {
               id: -1,
@@ -229,6 +269,8 @@
             data:selectOption,
             templateSelection: function(selection,container) {
               if (selection.text == 'All Technology') {
+                $(container).css("background-color", "#32a852");
+                $(container).css("border-color","#32a852");
                 return $.parseHTML('<span>' + selection.text + '</span>');
               }else{
                 $(container).css("background-color", "#32a852");
@@ -237,6 +279,52 @@
               }
             }
           })
+
+          $('#searchTagsTechnology').on("select2:select", function(evt, f, g) {
+            var selected_element = $(evt.currentTarget);
+            var select_val = selected_element.val();
+            if (select_val == -1) {
+              disableOtherOpt(evt, this, true);
+            }else {
+              disableAllOpt(evt, this, true);
+            }
+            console.log(select_val);
+          });
+
+          $('#searchTagsTechnology').on("select2:unselect", function(evt) {
+            disableOtherOpt(evt, this, false);
+            disableAllOpt(evt, this, false);
+          });
+
+          function disableOtherOpt(evt, target, disabled) {
+
+            var aaList = $("option", target);
+            $.each(aaList, function (i, item) {
+              var data = $(item).data("data");
+
+              if (data.id != "-1") {
+                data.disabled = disabled;
+              }
+
+               console.log(data);
+            });
+          
+          }
+
+          function disableAllOpt(evt, target, disabled) {
+
+            var aaList = $("option", target);
+            $.each(aaList, function (i, item) {
+              var data = $(item).data("data");
+
+              if (data.id == "-1") {
+                data.disabled = disabled;
+              }
+
+               console.log(data);
+            });
+          
+          }
 
 
           $('#searchTagsTechnology').on('change', function(){
@@ -396,7 +484,7 @@
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
                         return "<b>"+row.lead_id+"</b>";
                       }else{
-                        return null;
+                        return "";
                       }
                     }
                   }
@@ -409,7 +497,7 @@
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
                         return "<b>"+row.brand_name+"</b>";
                       }else{
-                        return null;
+                        return "";
                       }
                     }
                   }
@@ -422,7 +510,7 @@
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
                         return "<b>"+row.opp_name+"</b>";
                       }else{
-                        return null;
+                        return "";
                       }
                     }
                   }
@@ -447,7 +535,7 @@
                           return "<b>"+row.name_sales + ',' + "</b>"+"<b>" + row.name_presales +"</b>";
                         }
                       }else{
-                        return null;
+                        return "";
                       }
                     }
                   }
@@ -460,7 +548,7 @@
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
                         return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount);
                       }else{
-                        return null;
+                        return "";
                       }
                     }
                   }
@@ -500,6 +588,7 @@
     })
 
     $("#reload-table").click(function(){
+      location.reload();
       $('#data_lead').DataTable().clear().destroy();
       $('#data_lead').DataTable({
         "paging": false
