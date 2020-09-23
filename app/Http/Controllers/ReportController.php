@@ -3815,161 +3815,140 @@ class ReportController extends Controller
         //     // ->WhereIn('result',$request->TagsProduct)
         //     ->get();
 
+         $query_product = DB::table('tb_product_tag_relation')
+                    ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_product_tag_relation.lead_id')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
+                    ->join('users as sales','sales.nik','=','sales_lead_register.nik')
+                    ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
+                    ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","brand_name","name_product","price");
+
+        $query_tech = DB::table('tb_technology_tag_relation')
+            ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
+            ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_technology_tag_relation.lead_id')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','tb_technology_tag_relation.lead_id')
+            ->join('users as sales','sales.nik','=','sales_lead_register.nik')
+            ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
+            ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","price","name_tech","brand_name");
+
         if ($request->TagsPersona == ["2"]) {
-                $query_product = DB::table('tb_product_tag_relation')
-                    ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
-                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_product_tag_relation.lead_id')
-                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
-                    ->join('users as sales','sales.nik','=','sales_lead_register.nik')
-                    ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
-                    ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","brand_name","name_product","price")
-                    ->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
+                if ($request->TagsProduct == ["-1"]) {
+                    $query_tech_result = $query_tech->whereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
                     ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
                     ->get();
 
-                if ($request->Tagstechno == ["-1"]) {
-
-                    $query_tech = DB::table('tb_technology_tag_relation')
-                    ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
-                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_technology_tag_relation.lead_id')
-                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','tb_technology_tag_relation.lead_id')
-                    ->join('users as sales','sales.nik','=','sales_lead_register.nik')
-                    ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
-                    ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","price","name_tech","brand_name")
-                    ->orderBy('lead_id','DESC')
+                    $query_product_result = $query_product->orderBy('lead_id','DESC')
+                    ->whereIn('tb_product_tag_relation.lead_id',$query_tech_result->pluck("lead_id"))
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
                     ->get();
+                    
+                }else if ($request->Tagstechno == ["-1"]) {
+                    $query_product_result = $query_product->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
+                    ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
+                    ->get();
+
+                    $query_tech_result = $query_tech->orderBy('lead_id','DESC')
+                    ->whereIn('tb_technology_tag_relation.lead_id',$query_product_result->pluck("lead_id"))
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
+                    ->get();
+                    //  $query_tech = DB::table('tb_technology_tag_relation')
+                    // ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
+                    // ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_technology_tag_relation.lead_id')
+                    // ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    // ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','tb_technology_tag_relation.lead_id')
+                    // ->join('users as sales','sales.nik','=','sales_lead_register.nik')
+                    // ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
+                    // ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","price","name_tech","brand_name")
+                    // // ->whereIn('tb_technology_tag_relation.id_tech_tag',$)
+                    // ->orderBy('lead_id','DESC')
+                    // ->get();
+
+                    // return $query_tech;
+                    // $query_all = collect(array_merge($query_product->toArray()))->sortBy('lead_id');
+                
                 }else{
-
-                    $query_tech = DB::table('tb_technology_tag_relation')
-                    ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
-                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_technology_tag_relation.lead_id')
-                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','tb_technology_tag_relation.lead_id')
-                    ->join('users as sales','sales.nik','=','sales_lead_register.nik')
-                    ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
-                    ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","price","name_tech","brand_name")
-                    ->whereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
+                   $query_product_result = $query_product->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
                     ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
                     ->get();
-                }
-                // $query_all = array_merge($query_product->toArray(),$query_tech->toArray());
 
-                $query_all = collect(array_merge($query_product->toArray(),$query_tech->toArray()))->sortBy('lead_id');
-
-                $sorted = $query_all->values()->all();
-
-                // foreach ($query_all as $key => $data) {
-                //     ;
-                // }
-                // foreach ($query_all as $key => $value) {
-                //     // echo $key."</br>" ;
-                //     $lead_id = array($key);
-                //     // foreach ($value as $key => $data) {
-                //     //     if ($key == 0 || $value[$key]->name_sales != $value[$key -1]->name_sales) {
-                //     //         $name_sales = $data->name_sales;
-                //     //         $name_presales = $data->name_presales;
-                //     //         print_r($name_sales."</br>");
-                //     //     }
-
-                //     //     // echo $value->lead_id;
-                //     //     if (isset($data->name_product)) {
-                //     //         $name_product = $data->name_product;
-                //     //        print_r($data->name_product . "</br><br>");
-                           
-                //     //     }
-
-                //     //     if (isset($data->name_tech)) {
-                //     //          $name_tech = $data->name_tech;
-                //     //         print_r($data->name_tech . "</br></br>");
-                //     //     }
-
-                //     //     $price = $data->price;
-                //     //     print_r($data->price."</br>");
-                //     // }
-                //     echo json_encode(implode("[]", $lead_id));
-                // }
-
-                return array("data"=>$sorted);
-        }else{
-                $query_product = DB::table('tb_product_tag_relation')
-                    ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
-                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_product_tag_relation.lead_id')
-                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
-                    ->join('users as sales','sales.nik','=','sales_lead_register.nik')
-                    ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
-                    ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","brand_name","name_product","price")
-                    ->OrWhereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
-                    ->whereIn('sales.nik',$request->TagsPersona)
-                    ->orWhereIn('presales.nik',$request->TagsPersona)
+                    $query_tech_result = $query_tech->whereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
                     ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
                     ->get();
                 
-                $query_tech = DB::table('tb_technology_tag_relation')
-                    ->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
-                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_technology_tag_relation.lead_id')
-                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                    ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','tb_technology_tag_relation.lead_id')
-                    ->join('users as sales','sales.nik','=','sales_lead_register.nik')
-                    ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
-                    ->select("sales_lead_register.lead_id","sales.name as name_sales","presales.name as name_presales","opp_name","amount","price","name_tech","brand_name")
-                    ->OrWhereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
+                }
+        }else{
+                if ($request->TagsProduct == ["-1"]) {
+                    $query_tech_result = $query_tech->whereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
+                    ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
                     ->whereIn('sales.nik',$request->TagsPersona)
                     ->orWhereIn('presales.nik',$request->TagsPersona)
-                    ->orderBy('lead_id','DESC')
                     ->get();
 
-                $query_all = array_merge($query_product->toArray(),$query_tech->toArray());
+                    $query_product_result = $query_product->orderBy('lead_id','DESC')
+                    ->whereIn('tb_product_tag_relation.lead_id',$query_tech_result->pluck("lead_id"))
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
+                    ->whereIn('sales.nik',$request->TagsPersona)
+                    ->orWhereIn('presales.nik',$request->TagsPersona)
+                    ->get();
+   
+                }else if ($request->Tagstechno == ["-1"]) {
+                    $query_product_result = $query_product->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
+                    ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
+                    ->whereIn('sales.nik',$request->TagsPersona)
+                    ->orWhereIn('presales.nik',$request->TagsPersona)
+                    ->get();
 
-                return array("data"=>$query_all);
+                    $query_tech_result = $query_tech->orderBy('lead_id','DESC')
+                    ->whereIn('tb_technology_tag_relation.lead_id',$query_product_result->pluck("lead_id"))
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
+                    ->whereIn('sales.nik',$request->TagsPersona)
+                    ->orWhereIn('presales.nik',$request->TagsPersona)
+                    ->get();
+                
+                }else{
+                   $query_product_result = $query_product->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
+                    ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
+                    ->whereIn('sales.nik',$request->TagsPersona)
+                    ->orWhereIn('presales.nik',$request->TagsPersona)
+                    ->get();
+
+                    $query_tech_result = $query_tech->whereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
+                    ->orderBy('lead_id','DESC')
+                    ->where('sales_lead_register.created_at','>=',$request->start_date)
+                    ->where('sales_lead_register.created_at','<=',$request->end_date)
+                    ->whereIn('sales.nik',$request->TagsPersona)
+                    ->orWhereIn('presales.nik',$request->TagsPersona)
+                    ->get();
+                
+                }
 
         }
+
+        $query_all = collect(array_merge($query_product_result->toArray(),$query_tech_result->toArray()))->sortBy('lead_id');
+
+        $sorted = $query_all->values()->all();
         
-
-        // if ($request->TagsPersona == ["2"]) {
-        //     $query_product = DB::table('tb_product_tag_relation')->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')->select("*")->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct);
-            
-        //     $query_tech = DB::table('tb_technology_tag_relatio')->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')->select("*")->whereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
-
-        //     return $query_product;
-
-        //     array("data" => Sales2::join('users as sales','sales.nik','=','sales_lead_register.nik')
-        //         ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
-        //         ->Leftjoin('users as presales','presales.nik','=','sales_solution_design.nik')
-        //         ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-        //         ->join('tb_product_tag_relation','tb_product_tag_relation.lead_id','=','sales_lead_register.lead_id')
-        //         ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
-        //         ->join('tb_technology_tag_relation','tb_technology_tag_relation.lead_id','=','sales_lead_register.lead_id')
-        //         ->join('tb_technology_tag','tb_technology_tag.id','tb_technology_tag_relation.id_tech_tag')
-        //         ->select('sales.name as name_sales','presales.name as name_presales','sales_lead_register.opp_name','sales_lead_register.amount','sales_lead_register.deal_price','tb_contact.brand_name','sales_lead_register.lead_id','name_product','name_tech','tb_product_tag_relation.price as product_price','tb_technology_tag_relation.price as tech_price')
-        //         ->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
-        //         ->orWhereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
-        //         ->where('sales_lead_register.created_at','>=',$request->start_date)
-        //         ->where('sales_lead_register.created_at','<=',$request->end_date)
-        //         ->get());
-        // }else{
-        //     return array("data" => Sales2::join('users as sales','sales.nik','=','sales_lead_register.nik')
-        //         ->LeftJoin('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
-        //         ->join('users as presales','presales.nik','=','sales_solution_design.nik')
-        //         ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-        //         ->join('tb_product_tag_relation','tb_product_tag_relation.lead_id','=','sales_lead_register.lead_id')
-        //         ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
-        //         ->join('tb_technology_tag_relation','tb_technology_tag_relation.lead_id','=','sales_lead_register.lead_id')
-        //         ->join('tb_technology_tag','tb_technology_tag.id','tb_technology_tag_relation.id_tech_tag')
-        //         ->select('sales.name as name_sales','presales.name as name_presales','sales_lead_register.opp_name','sales_lead_register.amount','sales_lead_register.deal_price','tb_contact.brand_name','sales_lead_register.lead_id')
-        //         ->whereIn('tb_product_tag_relation.id_product_tag',$request->TagsProduct)
-        //         ->orWhereIn('tb_technology_tag_relation.id_tech_tag',$request->Tagstechno)
-        //         ->whereIn('sales.nik',$request->TagsPersona)
-        //         ->orWhereIn('presales.nik',$request->TagsPersona)
-        //         ->where('sales_lead_register.created_at','>=',$request->start_date)
-        //         ->where('sales_lead_register.created_at','<=',$request->end_date)
-        //         ->groupBy('sales_lead_register.lead_id')
-        //         ->groupBy('sales_solution_design.nik')
-        //         ->get());
-        // }
-        
+        return array("data"=>$sorted);        
     }
 
     public function getreportcustomermsp(){
