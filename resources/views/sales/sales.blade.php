@@ -3278,7 +3278,7 @@
                 @endforeach
               </select>
               </div>
-            @elseif(Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+            @elseif(Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' && Auth::User()->name != "Operations Team")
               <div class="form-group">
               <label for="">Owner</label>
               <select class="form-control" style="width: 100%;" id="owner_sales" onkeyup="copytextbox();" name="owner_sales" required>
@@ -3326,10 +3326,10 @@
             </select>
           </div>
 
-         <div class="form-group">
-          <label for="">Opportunity Name</label>
-          <input type="text" class="form-control" placeholder="Enter Opportunity Name" name="opp_name" id="opp_name" required>
-         </div>
+          <div class="form-group">
+            <label for="">Opportunity Name</label>
+            <input type="text" class="form-control" placeholder="Enter Opportunity Name" name="opp_name" id="opp_name" required>
+          </div>
 
           <div class="form-group  modalIcon inputIconBg">
             <label for="">Amount</label>
@@ -3354,28 +3354,28 @@
             </div>
           @endif
 
-            <div class="form-group">
-              <label for="">Note (jika perlu)</label>
-              <input type="text" class="form-control" placeholder="Enter Note" name="note" id="note">
-            </div>
+          <div class="form-group">
+            <label for="">Note (jika perlu)</label>
+            <input type="text" class="form-control" placeholder="Enter Note" name="note" id="note">
+          </div>
 
-            <div class="form-group">
-              <label>Product Tag</label>
-              <select class="js-product-multiple" name="product[]" id="product" multiple="multiple">
-                @foreach($tag_product as $data)
-                <option value="{{$data->id}}">{{$data->name_product}}</option>
-                @endforeach
-              </select>
-            </div>
+          <div class="form-group">
+            <label>Product Tag</label>
+            <select class="js-product-multiple" name="product[]" id="product" multiple="multiple">
+              @foreach($tag_product as $data)
+              <option value="{{$data->id}}">{{$data->name_product}}</option>
+              @endforeach
+            </select>
+          </div>
 
-            <div>
-              <label>Technology Tag</label>
-              <select class="js-technology-multiple" name="technology[]" id="technology" multiple="multiple">
-                @foreach($tag_technology as $data)
-                <option value="{{$data->id}}">{{$data->name_tech}}</option>
-                @endforeach
-              </select>
-            </div>
+          <div>
+            <label>Technology Tag</label>
+            <select class="js-technology-multiple" name="technology[]" id="technology" multiple="multiple">
+              @foreach($tag_technology as $data)
+              <option value="{{$data->id}}">{{$data->name_tech}}</option>
+              @endforeach
+            </select>
+          </div>
 
             <!-- @if(Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
             <div class="form-group" style="padding-left: 25px">
