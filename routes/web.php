@@ -105,6 +105,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('sales/update_product_technology','SalesController@update_product_technology');
 	Route::get('sales/delete_product_technology','SalesController@delete_product_technology');
 	Route::post('sales/add_product_technology','SalesController@add_product_technology');
+	Route::get('sales/getAllEmployee','SalesController@getAllEmployee');
 
 	// Sales Lead Setting
 	Route::get('sales/lead_setting', 'LeadSettingController@index');
@@ -244,6 +245,10 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	//Record Authentication
 	Route::get('/report_record_auth', 'ReportController@report_record_auth');
+	Route::get('/get_login','ReportController@get_auth_login');
+	Route::get('/get_logout','ReportController@get_auth_logout');
+	Route::get('/get_auth_login_users','ReportController@get_auth_login_users');
+	Route::get('/getFilterRecordAuth','ReportController@getFilterRecordAuth');
 
 	/*Route::get('/presales_manager','PRESALES_MANAGERController@index');
 	Route::post('/presales/store', 'PRESALES_MANAGERController@store');*/
