@@ -115,6 +115,9 @@
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#msp" role="tab" aria-controls="msp" aria-selected="true" onclick="changeTerritory('msp')">MSP</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="ter_opp" data-toggle="tab" href="#ter_opp" role="tab" aria-controls="ter_opp" aria-selected="true" onclick="changeTerritory('OPERATION')">OPERATION</a>
+                    </li>
                 </ul>
                 @endif
 
