@@ -101,33 +101,6 @@
             <select class="form-control a" style="width: 100%" id="searchTags"></select>
             <button class="btn btn-primary a">Apply</button>    -->     
           <!-- </div>  -->
- <!--          <div class="col-md-8" style="margin-top: 10px">
-              <div class="input-group select2-bootstrap-append">
-                <div class="input-group-btn">
-                  <select class="form-control select2">
-                    <option>Selec.</option>
-                    <option>Prueba 2 max with</option>
-                    <option>Prueba 3</option>
-                    <option>Prueba 4</option>
-                    <option>Prueba 5</option>
-                  </select>
-                  <span class="btn btn-primary btn-file">Buscar <i class="fas fa-file-alt"></i><input id="i_file_1" type="file" name="i_file_1" accept="application/pdf, image/jpeg, image/jpg, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required></span>
-                </div>
-              </div>
-            </div>  -->
-          
-<!--           <div class="col-md-12" style="margin-top: 10px">
-              
-              <div class="">
-                  <div>
-                     <button class="btn btn-sm btn-default btn-filter" data-toggle="collapse" data-target="#demo" style="width: 40px"><i class="fa fa-filter"></i></button>
-                  </div>
-                  <div class="speech-bubble" id="filter-bubble">
-                    <select class="form-control" style="width: 100%;" id="searchTags"></select>
-                    <button class="btn btn-primary btn-sm" style="margin-top: 5px;margin-left: 525px">Apply</button>
-                  </div>
-              </div> 
-            </div> -->
           </div>  
 
           <div class="box-body">
@@ -147,6 +120,7 @@
               </table>
             </div>
           </div>       
+        
         </div>
       </div>  
     </div>
