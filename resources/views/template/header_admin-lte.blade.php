@@ -521,7 +521,9 @@
                 @elseif(Auth::user()->id_position == 'EXPERT SALES')
                   {{ Auth::user()->id_position}}
                 @else
-                  @if(Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER')
+                  @if(Auth::user()->nik == 100000000003)
+                  SALES OPERATIONAL
+                  @elseif(Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER')
                   OPERATIONAL DIRECTOR
                   @else
                   {{ Auth::user()->id_division }} {{ Auth::user()->id_position }}
@@ -565,6 +567,7 @@
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
+                    <input type="hidden" name="nik" value="{{Auth::User()->nik}}">
                 </form>
               </div>
             </li>
@@ -594,8 +597,22 @@
       </div>
       <div class="pull-left info" >
         <p>{{ Auth::User()->name }}</p>
-        <a href="#"><i class="fa fa-circle text-success"></i>@if(Auth::User()->id_division == 'TECHNICAL PRESALES')
-        TECH. PRESALES @elseif(Auth::User()->id_division == 'TECHNICAL') TECH. @elseif(Auth::User()->id_division == 'HR') @else {{ Auth::user()->id_division }} @endif &nbsp {{ Auth::user()->id_position }} </a>
+        <a href="#"><i class="fa fa-circle text-success"></i>
+        	@if(Auth::user()->nik == 100000000003)
+        	SALES OPERATIONAL 
+        	@else
+	        	@if(Auth::User()->id_division == 'TECHNICAL PRESALES')
+		        	TECH. PRESALES 
+		        @elseif(Auth::User()->id_division == 'TECHNICAL') 
+		        	ECH. 
+		        @elseif(Auth::User()->id_division == 'HR') 
+		        @else 
+		        	{{ Auth::user()->id_division }} 
+		        @endif 
+
+		        {{ Auth::user()->id_position }} 
+        	@endif
+	    </a>
       </div>
     </div>
     <!-- search form -->
@@ -732,22 +749,32 @@
       		</li>
       		@endif
       		@if(Auth::User()->id_position != 'HR MANAGER')
-      		<li>
-      			<a href="{{url('/customer')}}" style="font-size: 14px">Customer Data</a>
-      		</li>
-      		@endif
-      		@if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == "MANAGER")
-      		<li>
-      			<a href="{{url('/sales/tag')}}" style="font-size: 14px">Category Tags</a>
+      		<li class="activeable treeview">
+      			<a href="#SettingLead" data-parent="#exampleAccordion">
+      				<span class="nav-link-text" style="font-size: 14px">Setting</span>
+      				<span class="pull-right-container">
+      					<i class="fa fa-angle-left pull-right"></i>
+      				</span>
+      			</a>
+      			<ul class="activeable treeview-menu" id="ReportLead">
+	      			<li>
+		      			<a href="{{url('/customer')}}" style="font-size: 14px">Customer Data</a>
+		      		</li>
+		      		@if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == "MANAGER")
+	      			<li>
+		      			<a href="{{url('/sales/tag')}}" style="font-size: 14px">Category Tags</a>
+		      		</li>
+		      		@endif
+		      		@if((Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER') ||  (Auth::user()->id_division == 'SALES' && Auth::user()->id_position == 'OPERATION'))
+	      			<li>
+		      			<a href="{{url('/sales/lead_setting')}}" style="font-size: 14px">Setting Lead</a>
+		      		</li>
+		      		@endif
+      			</ul>
       		</li>
       		@endif
       	</ul>
       </li>
-
-
-
-
-
       @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(HEAD)' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(STAFF)' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'HR' || Auth::User()->name == 'Felicia Debi Noor')
       <li class="activeable treeview">
         <a href="#ADMINPages" data-parent="#exampleAccordion">
