@@ -1148,6 +1148,13 @@ class SALESController extends Controller{
     
     }
 
+    public function getAllEmployee(Request $request)
+    {
+        $getAllEmployee = DB::table('users')->selectRaw('`nik` AS `id`,`name` AS `text`')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->get();
+        
+        return $getAllEmployee;
+    }
+
     public function getProductTechTag(Request $request)
     {
         // $getListProductLead = collect(ProductTag::select(DB::raw("CONCAT('p',`id`) AS `id`,`name_product` AS 'text'"))->orderBy('name_product','asc')->get());
@@ -2385,7 +2392,7 @@ class SALESController extends Controller{
 
             $tambah = new Sales();
             $tambah->lead_id = $lead;
-            if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER'){
+            if((Auth::User()->id_division == 'SALES') || (Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER') || Auth::User()->name == "Operations Team"){
                 $tambah->nik = Auth::User()->nik;
             } else {
                 $tambah->nik = $request['owner_sales'];
