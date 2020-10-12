@@ -527,9 +527,10 @@ class QuoteController extends Controller
                 ->where('status_backdate','T')
                 ->orderBy('id_quote','asc')
                 ->first();
+
         $angka = $angka7->id_quote;
 
-        $update = Quote::where('id_quote',$request['backdate_num'])->first();
+        $update = Quote::where('id_quote',$angka)->first();
         $update->quote_number = $no;
         $update->position = $posti;
         $update->type_of_letter = $type;
