@@ -139,7 +139,7 @@ input[type=text]:focus{
     background-color:#aaa;
     color:#fff;
     padding:7px 4px;
-    border-radius:4px 0 0 4px;
+    /*border-radius:4px 0 0 4px;*/
   }
 
  .inputWithIcon{
