@@ -1,63 +1,175 @@
 @extends('template.template_admin-lte')
 @section('content')
 <style type="text/css">
-    .modalIconsubject input[type=text]{
-      padding-left:115px;
-    }
+  .transparant{
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      width: 25px;
+  }
 
-    .modalIconsubject.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
+  .modalIconsubject input[type=text]{
+    padding-left:115px;
+  }
 
-   .modalIconsubject.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:7px 4px ;
-      border-radius:4px 0 0 4px;
-    }
+  .modalIconsubject.inputIconBg input[type=text]:focus + i{
+    color:#fff;
+    background-color:dodgerBlue;
+  }
+
+  .modalIconsubject.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:7px 4px ;
+    border-radius:4px 0 0 4px;
+  }
 
   .modalIconsubject{
-      position:relative;
-    }
+    position:relative;
+  }
 
-   .modalIconsubject i{
-      position:absolute;
-      left:9px;
-      top:0px;
-      padding:9px 8px;
-      color:#aaa;
-      transition:.3s;
-    }
+  .modalIconsubject i{
+    position:absolute;
+    left:9px;
+    top:0px;
+    padding:9px 8px;
+    color:#aaa;
+    transition:.3s;
+  }
 
-    .modalIcontgl input[type=text]{
-      padding-left:115px;
-    }
+  .modalIcontgl input[type=text]{
+    padding-left:115px;
+  }
 
-    .modalIcontgl.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
+  .modalIcontgl.inputIconBg input[type=text]:focus + i{
+    color:#fff;
+    background-color:dodgerBlue;
+  }
 
-   .modalIcontgl.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:7px 4px ;
-      border-radius:4px 0 0 4px;
-    }
+  .modalIcontgl.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:7px 4px ;
+    border-radius:4px 0 0 4px;
+  }
 
   .modalIcontgl{
-      position:relative;
-    }
+    position:relative;
+  }
 
-   .modalIcontgl i{
-      position:absolute;
-      left:9px;
-      top:0px;
-      padding:9px 8px;
-      color:#aaa;
-      transition:.3s;
-    }
+  .modalIcontgl i{
+    position:absolute;
+    left:9px;
+    top:0px;
+    padding:9px 8px;
+    color:#aaa;
+    transition:.3s;
+  }
+
+  .btn{
+    width: 80px; 
+    height: 25px;
+  }
+
+  tr.group,
+  tr.group:hover {
+      font-style: bold;
+      color: white;
+      background-color: #d4d9d6 !important;
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 55px;
+    height: 28px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #d1523f;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #2d9c43;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2d9c43;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  .available-on{
+    color: #2d9c43;
+  }
+
+  .available-off{
+    color: #d1523f;
+  }
+
+  .color-switch{
+    color: #dfebe1;
+  }
+
+  .display-none{
+    display: none;
+  }
+
+  .display-block{
+    display: block;
+  }
+
+  /* Firefox */
+
 </style>
 
 <section class="content-header">
@@ -111,13 +223,12 @@
           <li class="nav-item">
             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#peminjaman" role="tab" aria-controls="profile" aria-selected="false">Peminjaman Asset</a>
           </li>
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-          <div class="pull-right">
-          	<button class="btn btn-sm btn-success" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
-          	<button class="btn btn-sm btn-primary" style="width: 110px; margin-left: 30px; " data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbsp Add Kategori</button>
-          </div>
+          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+        	<button class="btn btn-xs btn-warning pull-right display-none" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
+        	<button class="btn btn-xs btn-primary pull-right" id="kategori-asset" style="margin-right: 5px" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
+          <a href="{{action('AssetController@exportExcelTech')}}" id="export-excel" class="btn btn-xs btn-success pull-right display-none" style="margin-right: 5px"><i class="fa fa-cloud-download"></i> Excel</a>
           @else
-          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#peminjaman_modal" style="width: 150px;"><i class="fa fa-plus"> </i>&nbsp Peminjaman</button>
+          <button class="btn btn-xs btn-success pull-right btn-add-peminjaman" style="width: 100px;"><i class="fa fa-plus" > </i>&nbsp Peminjaman</button>
           @endif
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -127,86 +238,26 @@
               <table class="table table-bordered nowrap " id="data_Table" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>No</th>
                     <th>Kategori</th>
-                    <th>Nama Barang</th>
+                    <th>Nama Barang/Type</th>
                     <th>Serial Number</th>
                     <th>Keterangan</th>
-                    <th>Total Pinjam</th>
+                    <th>Lokasi Barang</th>
+                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+                    <th>History</th>
+                    @endif
                     <th>Status</th>
-                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
+                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
                     <th>Action</th>
                     @endif
                   </tr>
                 </thead>
-                <tbody id="products-list" name="products-list">
-                  <?php $no = 1 ?>
-                  @foreach($asset2 as $data)
-                  <tr>
-                    <td>{{$no++}}<input type="" name="id_barang_update" value="{{$data->id_barang}}" hidden></td>
-                    <td>{{$data->kategori}}</td>
-                    <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->serial_number}}</td>
-                    <td>{{$data->description}}</td>
-                    <td>{{$data->qty_pinjam}}</td>
-                    <td>
-                      @if($data->status == 'AVAILABLE')
-                        <label class="status-open">AVAILABLE</label>
-                      @elseif($data->status == 'UNAVAILABLE')
-                        <label class="status-tp" style="width: 110px;">UNAVAILABLE</label>
-                      @endif
-                    </td>
-                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-                    <td>
-                      <a href="{{url('/detail_asset_peminjaman', $data->id_barang) }}"><button class="btn btn-sm" style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button></a>
-                      @if($data->status == 'AVAILABLE')
-                      <button class="btn btn-sm btn-primary" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->serial_number}}', '{{$data->description}}')">Edit</button>
-                      <button class="btn btn-sm btn-danger" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#delete_modal" onclick="delete_asset('{{$data->id_barang}}', '{{$data->id_kat}}')">Hapus</button>
-                      @else
-                      <button class="btn btn-sm btn-primary" style="width: 70px; height: 25px;" disabled>Edit</button>
-                      <button class="btn btn-sm btn-danger" style="width: 70px; height: 25px;" disabled>Hapus</button>
-                      @endif
-                      <!-- {{url('delete_asset', $data->id_barang)}} -->
-                    </td>
-                    @endif
-                  </tr>
-                  @endforeach
-                  @foreach($asset3 as $data)
-                  <tr>
-                    <td>{{$no++}}<input type="" name="id_barang_update" value="{{$data->id_barang}}" hidden></td>
-                    <td>{{$data->kategori}}</td>
-                    <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->serial_number}}</td>
-                    <td>{{$data->description}}</td>
-                    <td>0</td>
-                    <td>
-                      @if($data->status == 'AVAILABLE')
-                        <label class="status-open">AVAILABLE</label>
-                      @elseif($data->status == 'UNAVAILABLE')
-                        <label class="status-tp" style="width: 110px;">UNAVAILABLE</label>
-                      @endif
-                    </td>
-                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-                    <td>
-                      <a href="{{url('/detail_asset_peminjaman', $data->id_barang) }}"><button class="btn btn-sm" style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button></a>
-                      @if($data->status == 'AVAILABLE')
-                      <button class="btn btn-sm btn-primary" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->serial_number}}', '{{$data->description}}')">Edit</button>=
-                      <button class="btn btn-sm btn-danger" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#delete_modal" onclick="delete_asset('{{$data->id_barang}}', '{{$data->id_kat}}')">Hapus</button>
-                      @else
-                      <button class="btn btn-sm btn-primary" style="width: 70px; height: 25px;" disabled>Edit</button>
-                      <button class="btn btn-sm btn-danger" style="width: 70px; height: 25px;" disabled>Hapus</button>
-                      @endif
-                    </td>
-                    @endif
-                  </tr>
-                  @endforeach
-                </tbody>
                 <tfoot>
                 </tfoot>
               </table>
             </div>
           </div>
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
+          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
           <div class="tab-pane fade" id="peminjaman" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered DataTable" id="datatable1" width="100%" cellspacing="0">
@@ -220,12 +271,12 @@
                     <th>Nama Peminjam</th>
                     <th>Tgl Peminjaman</th>
                     <th>Tgl Pengembalian</th>
-                    <th>Tgl Pengembalian(Real)</th>
+                    <th>Tgl Pengembalian(Actual)</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody id="products-list" name="products-list">
+             <!--    <tbody id="products-list" name="products-list">
                   <?php $no = 1 ?>
                   @foreach($assetsd as $data)
                   <tr>
@@ -233,7 +284,7 @@
                     @if($data->status == 'PENDING')
                     <td>{{$data->kategori}}</td>
                     @else
-                    <td><button class="btn btn-sm btn-primary" id="btn_detail" name="btn_detail" data-target="#serial_number" data-toggle="modal" value="{{$data->id_transaction}}" onclick="serial_number('{{$data->id_transaction}}', '{{$data->name}}', '{{$data->no_peminjaman}}', '{{$data->tgl_peminjaman}}', '{{$data->tgl_pengembalian}}')">{{$data->kategori}}</button></td>
+                    <td><button class="btn btn-xs btn-primary" id="btn_detail" name="btn_detail" data-target="#serial_number" data-toggle="modal" value="{{$data->id_transaction}}" onclick="serial_number('{{$data->id_transaction}}', '{{$data->name}}', '{{$data->no_peminjaman}}', '{{$data->tgl_peminjaman}}', '{{$data->tgl_pengembalian}}')">{{$data->kategori}}</button></td>
                     @endif
                     <td>{{$data->qty_akhir}}</td>
                     <td>{{$data->keterangan}}</td>
@@ -248,37 +299,35 @@
                     @endif
                     <td>
                       @if($data->status == 'PENDING')
-                        <label class="status-open">PENDING</label>
+                        <span class="label label-warning">PENDING</span>
                       @elseif($data->status == 'ACCEPT')
-                        <label class="status-win" style="width: 90px;height: 25px">ACCEPTED</label>
+                        <span class="label label-success">ACCEPTED</span>
                       @elseif($data->status == 'REJECT')
-                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px;" onclick="reject('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                        <span class="label label-danger" style="cursor: zoom-in;" data-target="#reject_note_modal" data-toggle="modal" onclick="reject('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</span>
                       @elseif($data->status == 'AMBIL')
-                       <label class="status-lose" style="width: 150px;background-color: #7735a3;height: 25px">SUDAH DI AMBIL</label>
+                       <span class="label label-success" >SUDAH DI AMBIL</span>
                       @elseif($data->status == 'RETURN')
-                       <label class="status-win" style="width: 90px;height: 25px">RETURNED</label>
+                       <span class="label label-success" >RETURNED</span>
                       @endif
                     </td>
                     <td>
                     @if($data->status == 'PENDING' || $data->status == 'ACCEPT')
                     <input type="" name="" value="{{$data->id_kat}}" hidden>
                       @if($data->status == 'PENDING')
-                      <button class="btn btn-md btn-success" id="btn_accept" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}', '{{$data->nik_peminjam}}', '{{$data->id_kat}}', '{{$data->qty_akhir}}')" value="{{$data->id_kat}}">ACCEPT</button>
-                      <button class="btn btn-md btn-danger" id="btn_reject" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}', '{{$data->id_kat}}', '{{$data->nik_peminjam}}', '{{$data->qty_akhir}}')" value="{{$data->id_transaction}}"><i hidden>{{$data->id_transaction}}</i>REJECT</button>
+                      <button class="btn btn-xs btn-success" id="btn_accept" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}', '{{$data->nik_peminjam}}', '{{$data->id_kat}}', '{{$data->qty_akhir}}')" value="{{$data->id_kat}}">ACCEPT</button>
+                      <button class="btn btn-xs btn-danger" id="btn_reject" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}', '{{$data->id_kat}}', '{{$data->nik_peminjam}}', '{{$data->qty_akhir}}')" value="{{$data->id_transaction}}"><i hidden>{{$data->id_transaction}}</i>REJECT</button>
                       @elseif($data->status == 'ACCEPT')
-                      <button class="btn btn-md btn-danger" id="btn_kembali" data-target="#kembali_modal" data-toggle="modal" onclick="kembali('{{$data->id_transaction}}', '{{$data->id_kat}}', '{{$data->qty_akhir}}')" value="{{$data->id_transaction}}" style="text-align: center;width: 125px"><i hidden>{{$data->id_transaction}}</i> KEMBALI</button>
+                      <button class="btn btn-xs btn-danger" id="btn_kembali" data-target="#kembali_modal" data-toggle="modal" onclick="kembali('{{$data->id_transaction}}', '{{$data->id_kat}}', '{{$data->qty_akhir}}')" value="{{$data->id_transaction}}"><i hidden>{{$data->id_transaction}}</i> KEMBALI</button>
                       @else
-                      <button class="btn btn-md btn-success disabled">ACCEPT</button>
-                      <button class="btn btn-md btn-danger disabled">REJECT</button>
+                      <button class="btn btn-xs btn-success disabled">ACCEPT</button>
+                      <button class="btn btn-xs btn-danger disabled">REJECT</button>
                       @endif
                     @else
                     @endif
                     </td>
                   </tr>
                   @endforeach
-                </tbody>
-                <tfoot>
-                </tfoot>
+                </tbody> -->
               </table>
             </div>
           </div>
@@ -291,17 +340,14 @@
                     <th>No</th>
                     <th>Kategori</th>
                     <th>Qty</th>
-                    <th>Keterangan</th>
+                    <th>Keterangan(lokasi barang)</th>
                     <th>Keperluan</th>
-                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-                    <th>Nama Peminjam</th>
-                    @endif
                     <th>Tgl Peminjaman</th>
                     <th>Tgl Pengembalian</th>
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody id="products-list" name="products-list">
+              <!--   <tbody id="products-list" name="products-list">
                   <?php $no = 1 ?>
                   @foreach($pinjaman as $data)
                   <tr>
@@ -309,7 +355,7 @@
                     @if($data->status == 'PENDING')
                     <td>{{$data->kategori}}</td>
                     @else
-                    <td><button class="btn btn-sm btn-primary" id="btn_detail" name="btn_detail" data-target="#serial_number" data-toggle="modal" value="{{$data->id_transaction}}" onclick="serial_number('{{$data->id_transaction}}', '{{$data->name}}', '{{$data->no_peminjaman}}', '{{$data->tgl_pengembalian}}', '{{$data->tgl_pengembalian}}')">{{$data->kategori}}</button></td>
+                    <td><button class="btn btn-xs btn-primary" id="btn_detail" name="btn_detail" data-target="#serial_number" data-toggle="modal" value="{{$data->id_transaction}}" onclick="serial_number('{{$data->id_transaction}}', '{{$data->name}}', '{{$data->no_peminjaman}}', '{{$data->tgl_pengembalian}}', '{{$data->tgl_pengembalian}}')">{{$data->kategori}}</button></td>
                     @endif
                     <td>{{$data->qty_akhir}}</td>
                     <td>{{$data->keterangan}}</td>
@@ -321,20 +367,20 @@
                     <td>{{$data->tgl_pengembalian}}</td>
                     <td>
                       @if($data->status == 'PENDING')
-                        <label class="status-open">PENDING</label>
+                        <span class="label label-warning">PENDING</span>
                       @elseif($data->status == 'ACCEPT')
-                        <label class="status-win" style="width: 90px">ACCEPTED</label>
+                        <span class="label label-success">ACCEPTED</span>
                       @elseif($data->status == 'REJECT')
-                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px;" onclick="reject('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                        <span class=" btn btn-xs label label-danger" data-target="#reject_note_modal" data-toggle="modal" onclick="reject('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</span>
                       @elseif($data->status == 'AMBIL')
-                       <label class="status-lose" style="width: 150px;background-color: #7735a3">SUDAH DI AMBIL</label>
+                       <span class="label label-success">SUDAH DI AMBIL</span>
                       @elseif($data->status == 'RETURN')
-                       <label class="status-win" style="width: 90px">RETURNED</label>
+                       <span class="label label-success">RETURNED</span>
                       @endif
                     </td>
                   </tr>
                   @endforeach
-                </tbody>
+                </tbody> -->
                 <tfoot>
                 </tfoot>
               </table>
@@ -349,71 +395,19 @@
                     <th>No</th>
                     <th>Kategori</th>
                     <th>Qty</th>
-                    <th>Description</th>
+                    <th>Deskripsi</th>
                 </thead>
-                <tbody id="products-list" name="products-list">
-                  <?php $no = 1; ?>
-                  @foreach($kategori as $data)
-                  <tr>
-                    <td>{{$no++}}</td>
-                    <td>{{$data->kategori}}</td>
-                    <td>{{$data->qty}}</td>
-                    <td>{{$data->desc}}</td>
-                  </tr>
-                  @endforeach
-                </tbody>
+                <tbody></tbody>
                 <tfoot>
                 </tfoot>
               </table>
             </div>
           </div>
-          <!-- <div class="tab-pane fade" id="kembaliin" role="tabpanel" aria-labelledby="kembaliin-tab">
-            <div class="table-responsive" style="margin-top: 15px">
-              <table class="table table-bordered" id="datas" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Description</th>
-                    <th>Action</th>
-                </thead>
-                <tbody id="products-list" name="products-list">
-                  <?php $no = 1; ?>
-                  @foreach($asset as $data)
-                  <tr>
-                    <td>{{$no++}}<input type="" name="id_barang_update" value="{{$data->id_barang}}" hidden></td>
-                    <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->description}}</td>
-                    <td>
-                      <a href="{{url('/detail_asset_peminjaman', $data->id_barang) }}"><button class="btn btn-sm sho">Detail</button></a>
-                    </td>
-                  </tr>
-                  @endforeach
-                </tbody>
-                <tfoot>
-                </tfoot>
-              </table>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<style type="text/css">
-   .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-</style>
 
 <div class="modal fade" id="serial_number" role="dialog">
     <div class="modal-dialog modal-md">
@@ -456,7 +450,7 @@
               </tbody>
             </table>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-xs btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
             </div>
         </form>
         </div>
@@ -472,7 +466,7 @@
           <h4 class="modal-title">Add Asset Engineer</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('store_asset')}}" id="modalProgress" name="modalProgress">
+          <form id="modalAddAsset" name="modalAddAsset">
             @csrf
           <div class="form-group">
             <label for="sow">Nama Barang</label>
@@ -481,7 +475,7 @@
           <div class="form-group">
             <label for="">Kategori</label><br>
             <select type="text" class="form-control" style="width: 270px;" placeholder="Select Kategori" name="kategori" id="kategori2" required>
-            	<option>Select Kategori</option>
+            	<option value="">Select Kategori</option>
               @foreach($kategori as $data)
               <option value="{{$data->id_kat}}">{{$data->kategori}}</option>
               @endforeach
@@ -497,11 +491,15 @@
           </div>
           <div class="form-group">
             <label for="sow">Keterangan</label>
-            <textarea name="keterangan" id="keterangan" class="form-control" required></textarea>
+            <textarea name="keterangan" id="keterangan_add" class="form-control" required></textarea>
+          </div>
+          <div>
+            <label for="sow">Lokasi Barang</label>
+            <textarea name="letak_barang" id="letak_barang" class="form-control" required></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-xs btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-xs btn-success btn-Add-Asset"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -516,7 +514,7 @@
           <h4 class="modal-title">Kategori</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('store_kategori_asset')}}" id="modalProgress" name="modalProgress">
+          <form id="modalAddKategori" name="modalAddKategori">
             @csrf
           <div class="form-group">
             <label for="">Kategori</label>
@@ -527,8 +525,8 @@
             <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-xs btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-xs btn-success btn-add-kategori"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -544,28 +542,44 @@
           <h4 class="modal-title">Update Asset Engineer</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('edit_pinjam')}}" id="modalProgress" name="modalProgress">
+          <form id="modalEdit" name="modalEdit" >
             @csrf
-          <input type="" name="id_barang_edit" id="id_barang_edit" hidden>
-          <!-- <div class="form-group">
-            <label for="sow">Qty</label>
-            <input name="qty_edit" id="qty_edit" type="number" class="form-control" required="">
-          </div> -->
-          <div class="form-group">
-            <label>Nama Barang</label>
-            <input type="text" name="edit_nama" id="edit_nama" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>Serial Number</label>
-            <input type="text" name="serial_number_edit" id="serial_number_edit" class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="sow">Keterangan</label>
-            <textarea name="keterangan_edit" id="keterangan_edit" class="form-control" required></textarea>
-          </div>
+            <input type="" name="id_barang_edit" id="id_barang_edit" hidden>
+            <!-- <div class="form-group">
+              <label for="sow">Qty</label>
+              <input name="qty_edit" id="qty_edit" type="number" class="form-control" required="">
+            </div> -->
+            <div class="form-group">
+              <label>Nama Barang</label>
+              <input type="text" name="edit_nama" id="edit_nama" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label>Serial Number</label>
+              <input type="text" name="serial_number_edit" id="serial_number_edit" class="form-control">
+            </div>
+
+            <div>
+              <label>Status Barang</label>
+            </div>
+            <div class="form-group" style="display:inline-block; ">
+              <span class="label-unavailable available-off" style="margin-right: 5px;margin-top: 5px;"><b>Unavailable</b></span>
+              <label class="switch">
+              <input type="checkbox" class="cb-value" value="yes" id="switch-checkbox" name="switch-checkbox">
+              <!-- <input type="checkbox" value="no" id="switch-checkbox-unvisible" name="switch-checkbox-unvisible"> -->
+              <span class="slider round"></span>
+              </label>
+              <span class="label-available color-switch" style="margin-left: 5px;margin-top: 5px;"><b>Available</b></span>
+            </div>
+
+            <div class="form-group">
+              <label for="sow">Keterangan</label>
+              <textarea name="keterangan_edit" id="keterangan_edit" class="form-control" required></textarea>
+            </div>
+            
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-warning"><i class="fa fa-check"></i>&nbsp Update</button>
+              <button type="button" class="btn btn-xs btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-xs btn-warning btn-update-asset"><i class="fa fa-check"></i>&nbsp Update</button>
             </div>
         </form>
         </div>
@@ -580,7 +594,7 @@
           <h4 class="modal-title">Peminjaman</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('update_asset')}}" id="modalProgress" name="modalProgress">
+          <form id="modalPeminjaman" name="modalPeminjaman">
             @csrf
           <input type="text" name="id_barang" id="id_barang" hidden>
           <div class="form-group">
@@ -593,11 +607,11 @@
           </div>
           <div class="form-group">
             <label for="">Kategori</label><br>
-            <select type="text" class="form-control" style="width: 270px;" placeholder="Select Kategori" name="kategori3" id="kategori3" required>
-              <option>Select Kategori</option>
+            <select type="text" class="form-control kategori3" style="width: 270px;" placeholder="Select Kategori" name="kategori3" id="kategori3" required>
+         <!--      <option>Select Kategori</option>
               @foreach($kategori2 as $data)
               <option value="{{$data->id_kat}}">{{$data->kategori}} <i> - {{$data->qty}}</i></option>
-              @endforeach
+              @endforeach -->
             </select>
           </div>
           <!-- <div class="form-group">
@@ -617,19 +631,19 @@
           <div class="form-group">
             <label>Masukkan kebutuhan</label><br>
             <input type="text" name="qtys" id="qtys" class="qtys" hidden>
-            <input type='number' name='quantity' id="quantity" value='0' class="form-control" style="width: 270px;" />
+            <input type='number' name='quantity' id="quantity" placeholder="0" class="form-control" style="width: 270px;" />
           </div>
           <div class="form-group"> 
             <label>Keperluan</label>
             <textarea name="description" id="description" class="form-control" required></textarea>
           </div>
           <div class="form-group"> 
-            <label>Keterangan</label>
-            <textarea name="keterangan" id="keterangan" class="form-control"></textarea>
+            <label>Lokasi Peminjaman</label>
+            <textarea name="keterangan" id="keterangan_peminjaman" class="form-control"></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-xs btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-xs btn-success btn-submit-peminjaman"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -644,10 +658,9 @@
           <h4 class="modal-title">Pengembalian</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('update_asset')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('update_asset')}}" id="modalPengembalian" name="modalPengembalian">
             @csrf
-          <input type="text" name="id_barang" id="id_barang" hidden>
-          <input type="text" name="id_barang" id="id_barang" hidden>
+          <input type="text" name="id_barang" id="id_barang_pengembalian" hidden>
           <div class="form-group">
             <label for="sow">Nama Barang</label>
             <input name="nama_barang" id="nama_barang_kembali" class="form-control" readonly></input>
@@ -671,8 +684,8 @@
             <input type='button' value='+' class='qtyplus' field='quantity' />
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-xs btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-xs btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -691,6 +704,7 @@
           <input type="text" name="id_transaction_update" id="id_transaction_update" hidden>
           <input type="text" name="nik_peminjam_accept" id="nik_peminjam_accept" hidden>
           <input type="text" name="qty_akhir" id="qty_akhir" hidden>
+          <input type="text" name="location_update" id="location_update" hidden>
           <div class="form-group">
           	<!-- <h6 style="text-align: center;">Please Select Serial Number <input type="text" style="border-style: none;" id="qty" readonly></h6> -->
           	<h4>Please Select Serial Number: <input type="" class="qtysn" name="qty" id="qty" style="border-style: none;width: 25px;" readonly></h4><br>
@@ -701,8 +715,8 @@
             </select>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-              <input type="button" value="YES" class="btn btn-sm btn-success float-right " data-dismiss="modal" id="btn_submit" style="width: 70px;">
+              <button type="button" class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+              <input type="button" value="YES" class="btn btn-xs btn-success float-right " data-dismiss="modal" id="btn_submit" style="width: 70px;">
             </div>
         </form>
         </div>
@@ -715,7 +729,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('delete_asset/{id_barang}')}}" id="modalProgress" name="modalProgress">
+          <form id="modalDelete" name="modalDelete">
             @csrf
           <input type="text" name="id_barang_delete" id="id_barang_delete" hidden>
           <input type="text" name="id_kat_delete" id="id_kat_delete" hidden>
@@ -724,8 +738,8 @@
             <h4 style="text-align: center;"><b>Are you sure to delete product?</b></h4>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-              <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-check"></i>&nbsp YES</button>
+              <button type="button" class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+              <button type="button" class="btn btn-success btn-xs btn-delete-asset"><i class="fa fa-check"></i>&nbsp YES</button>
             </div>
         </form>
         </div>
@@ -738,7 +752,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('reject_pinjam')}}" id="modalProgress" name="modalProgress">
+          <form id="modalReject" name="modalReject">
             @csrf
           <input type="text" name="id_transaction_reject" id="id_transaction_reject" hidden>
           <input type="text" name="id_kat" id="id_kat" hidden>
@@ -755,8 +769,8 @@
             <textarea class="form-control" name="reject_note" id="" required></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-              <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-check"></i>&nbsp YES</button>
+              <button type="button" class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+              <button type="button" class="btn btn-danger btn-xs btn-reject-modal"><i class="fa fa-check"></i>&nbsp YES</button>
             </div>
         </form>
         </div>
@@ -769,7 +783,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('ambil_pinjam')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('ambil_pinjam')}}" id="modalProgressambil" name="modalProgress">
             @csrf
           <input type="text" name="id_barang_ambil" id="id_barang_ambil" hidden>
           <input type="text" name="id_transaction_ambil" id="id_transaction_ambil" hidden>
@@ -777,8 +791,8 @@
             <h3 style="text-align: center;"><b>PICK UP NOW!</b></h3>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-              <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-check"></i>&nbsp YES</button>
+              <button type="button" class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+              <button type="button" class="btn btn-success btn-xs"><i class="fa fa-check"></i>&nbsp YES</button>
             </div>
         </form>
         </div>
@@ -791,7 +805,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('kembali_pinjam')}}" id="modalProgress" name="modalProgress">
+          <form id="modalKembali" name="modalKembali">
             @csrf
           <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" hidden>
           <input type="text" name="id_kat_kembali" id="id_kat_kembali" hidden>
@@ -802,10 +816,12 @@
           </select>
           <div class="form-group">
             <h3 style="text-align: center;"><b>RETURN NOW!</b></h3>
+            <label>Lokasi Pengembalian</label>
+            <textarea id="location_return" name="location_return" class="form-control"></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-              <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-check"></i>&nbsp YES</button>
+              <button type="button" class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+              <button type="button" class="btn btn-danger btn-xs btn-kembali-modal"><i class="fa fa-check"></i>&nbsp YES</button>
             </div>
         </form>
         </div>
@@ -817,7 +833,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="" id="modalProgress" name="modalProgress">
+          <form method="POST" action="" id="modalNote" name="modalNote">
             @csrf
           <input type="text" name="id_barang_reject_note" id="id_barang_reject_note" hidden>
           <input type="text" name="id_transaction_reject_note" id="id_transaction_reject_note" hidden>
@@ -826,8 +842,8 @@
             <textarea class="form-control" name="reject_note" id="reject_note" readonly></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCLOSE</button>
-              <!-- <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-check"></i>&nbsp YES</button> -->
+              <button type="button" class="btn btn-default btn-xs" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCLOSE</button>
+              <!-- <button type="button" class="btn btn-danger btn-xs"><i class="fa fa-check"></i>&nbsp YES</button> -->
             </div>
         </form>
         </div>
@@ -851,7 +867,7 @@
           </div>
         </div>
         <div class="modal-footer">
-            <input class="btn btn-sm btn-primary float-right btn-sn" id="btn-sn" type="button" value="submit" disabled>
+            <input class="btn btn-xs btn-primary float-right btn-sn" id="btn-sn" type="button" value="submit" disabled>
         </div>
       </div>
     </div>
@@ -865,7 +881,426 @@
   <!-- <script src="{{asset("template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+  <!-- <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.min.js"></script> -->
   <script type="text/javascript">
+    //datatable kategori
+    $("#datatable3").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('/getKategori')}}",
+        },
+        "columns": [
+          {
+            render: function ( data, type, row, meta ) {
+               return  meta.row+1;
+            }
+          },
+          { "data": "kategori" },  
+          { "data": "qty" }, 
+          { "data": "description" },   
+
+        ],
+        "scrollX": false,
+        "ordering": false,
+        "processing": true,
+        "paging": true,
+        "pageLength":25,
+    })
+
+    //datatable list asset
+    var groupColumn = 0;
+    $("#data_Table").DataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('/getAssetTech')}}",
+        },
+        "columns": [
+          { "data": "kategori" },  
+          { "data": "nama_barang" },  
+          { "data": "serial_number" },
+          { "data": "description" },
+          { "data": "location"},
+          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status_pinjam == 'PERNAH') {
+                return row.qty_pinjam;
+              }else{
+                return "0";
+              }
+              
+            }
+          },
+          @endif
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'AVAILABLE') {
+                return "<span class='label label-warning'>AVAILABLE</span>";
+              }else{
+                return "<span class='label label-danger'>UNAVAILABLE</span>";
+              }
+            }
+          },
+          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'AVAILABLE') {
+                return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'><button class='btn btn-xs' style='width: 80px; height: 25px;margin-right:5px; background-color: black;color: white '>Detail</button></a><button class='btn btn-xs btn-primary edit_asset' value='"+row.id_barang+"' style='width: 70px; height: 25px;margin-right:5px'>Edit</button><button class='btn btn-xs btn-danger hapus_asset' style='width: 70px; height: 25px;' value='"+row.id_barang+"'>Delete</button>"
+              }else{
+                return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'><button class='btn btn-xs' style='width: 80px; height: 25px;margin-right:5px; background-color: black;color: white '>Detail</button></a><button class='btn btn-xs btn-primary edit_asset' value='"+row.id_barang+"' style='width: 70px; height: 25px;margin-right:5px'>Edit</button><button class='btn btn-xs btn-danger' style='width: 70px; height: 25px;' disabled>Delete</button>"
+              }
+            }
+          },
+          @endif        
+        ],
+        "order": [[ groupColumn, 'asc' ]],
+        "scrollX": false,
+        "paging": true,
+        "pageLength":25,
+        "columnDefs": [
+          { "visible": false, "targets": groupColumn }
+        ],
+        "drawCallback": function ( settings ) {
+        var api = this.api();
+        var rows = api.rows( {page:'current'} ).nodes();
+        var last=null;
+   
+        api.column(groupColumn, {page:'current'} ).data().each( function ( group, i ) {
+          if ( last !== group ) {
+            $(rows).eq( i ).before(
+              '<tr class="group">' + 
+              ' <th colspan="7">' + 
+                  '<span class="group">' +
+                    group + 
+                '</th>' +
+              '</tr>'
+            );
+            last = group;
+          }
+        });
+      }
+    })
+
+    //datatble peminjaman moderator
+    $("#datatable1").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('/getAssetTransactionModerator')}}",
+        },
+        "columns": [
+          {
+            render: function ( data, type, row, meta ) {
+               return  meta.row+1;
+            }
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  row.kategori;
+              }else{
+                return  "<button class='btn btn-xs btn-primary btn_detail' id='btn_detail' name='btn_detail' value='"+ row.id_transaction +"'>"+ row.kategori +"</button>";
+              }
+            }
+          },  
+          { "data": "qty_akhir" }, 
+          { "data": "keterangan" }, 
+          { "data": "keperluan" }, 
+          { "data": "name" }, 
+          { "data": "tgl_peminjaman" }, 
+          { "data": "tgl_pengembalian" }, 
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status != 'RETURN') {
+                return  " - ";
+              }else{
+                return  row.updated_at.substr(0,10);
+              }
+            }
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  "<span class='label label-warning'>PENDING</span>";
+              }else if (row.status == 'ACCEPT') {
+                return "<span class='label label-success'>ACCEPTED</span>"
+              }else if (row.status == 'REJECT') {
+                return "<span class='label label-danger' style='cursor: zoom-in;' data-target='#reject_note_modal' data-toggle='modal'> REJECTED</span>"
+              }else if (row.status == 'AMBIL') {
+                return "<span class='label label-success' >SUDAH DI AMBIL</span>"
+              }else if (row.status == 'RETURN') {
+                return "<span class='label label-success' >RETURNED</span>"
+              }
+            }
+          }, 
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  "<button class='btn btn-xs btn-success btn_accept' value="+row.id_transaction+" id='btn_accept' value=''>ACCEPT</button><button class='btn btn-xs btn-danger btn_reject' id='btn_reject' value="+row.id_transaction+">REJECT</button>";
+              }else if (row.status == 'ACCEPT') {
+                return "<button class='btn btn-xs btn-danger btn_kembali' value="+row.id_transaction+" id='btn_kembali'> RETURN</button>"
+              }else if (row.status == 'KEMBALI') {
+                return "<button class='btn btn-xs btn-success disabled'>ACCEPT</button><button class='btn btn-xs btn-danger disabled'>REJECT</button>"
+              }else{
+                return "";
+              }
+            }
+          },      
+        ],
+        "scrollX": false,
+        "ordering": false,
+        "processing": true,
+        "paging": true,
+        "pageLength":25,
+    })
+
+    //datatable peminjaman staff
+    $('#datatable2').DataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('/getAssetTransaction')}}",
+        },
+        "columns": [
+          {
+            render: function ( data, type, row, meta ) {
+               return  meta.row+1;
+            }
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  row.kategori;
+              }else{
+                return  "<button class='btn btn-xs btn-primary btn_detail' id='btn_detail' name='btn_detail' value='"+ row.id_transaction +"'>"+ row.kategori +"</button>";
+              }
+            }
+          },  
+          { "data": "qty_akhir" }, 
+          { "data": "keterangan" }, 
+          { "data": "keperluan" }, 
+          { "data": "tgl_peminjaman" }, 
+          { "data": "tgl_pengembalian" }, 
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  "<span class='label label-warning'>PENDING</span>";
+              }else if (row.status == 'ACCEPT') {
+                return "<span class='label label-success'>ACCEPTED</span>"
+              }else if (row.status == 'REJECT') {
+                return "<span class='label label-danger' style='cursor: zoom-in;' data-target='#reject_note_modal' data-toggle='modal'> REJECTED</span>"
+              }else if (row.status == 'AMBIL') {
+                return "<span class='label label-success' >SUDAH DI AMBIL</span>"
+              }else if (row.status == 'RETURN') {
+                return "<span class='label label-success' >RETURNED</span>"
+              }
+            }
+          },    
+        ],
+        "scrollX": false,
+        "ordering": false,
+        "processing": true,
+        "paging": true,
+        "pageLength":25,
+    });
+
+    //ajax add kategori    
+    $(document).on('click', ".btn-add-kategori", function(e){
+      Swal.fire({
+        title: 'Please Wait..!',
+        html: "<p style='text-align:center;'>It's sending..</p>",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        onOpen: () => {
+          Swal.showLoading()
+        }
+      })
+      $.ajax({
+        type:"POST",
+        url:'/store_kategori_asset',
+        data:$('#modalAddKategori').serialize(),
+        success: function(result){
+          swal({
+              title: "Success!",
+              text:  "You have been Added Kategori.",
+              type: "success",
+              timer: 3000,
+              showConfirmButton: false
+            });
+          setTimeout(function() {
+            location.reload();
+          }, 2000);  
+        },
+      });
+    });
+
+    //ajax add asset kategori
+    $(document).on('click', ".btn-Add-Asset", function(e){
+      Swal.fire({
+        title: 'Please Wait..!',
+        html: "<p style='text-align:center;'>It's sending..</p>",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        onOpen: () => {
+          Swal.showLoading()
+        }
+      })
+      $.ajax({
+        type:"POST",
+        url:'/store_asset',
+        data:$('#modalAddAsset').serialize(),
+        success: function(result){
+          swal({
+              title: "Success!",
+              text:  "You have been Added Asset.",
+              type: "success",
+              timer: 3000,
+              showConfirmButton: false
+            });
+          setTimeout(function() {
+            location.reload();
+          }, 2000);  
+        },
+      });
+    });
+
+    //ajax edit asset kategori
+    $(document).on('click',".edit_asset",function(e) { 
+        console.log(this.value);
+        $.ajax({
+            type:"GET",
+            url:'/getAsset',
+            data:{
+              id_barang:this.value,
+            },
+            success: function(result){
+              $.each(result[0], function(key, value){
+                $('#id_barang_edit').val(value.id_barang);
+                $('#edit_nama').val(value.nama_barang);
+                $('#serial_number_edit').val(value.serial_number);
+                $('#keterangan_edit').val(value.description);  
+                if(value.status == "AVAILABLE"){
+                  if(!$("#switch-checkbox").prop('checked')){
+                    $("#switch-checkbox").click()
+                  }
+                } else {
+                  if($("#switch-checkbox").prop('checked')){
+                    $("#switch-checkbox").click()
+                  }
+                }
+              })        
+            },
+        });
+
+        $("#modaledit").modal("show");
+
+        $('.cb-value').click(function() {
+          var mainParent = $(this).parent('.switch');
+          if($(mainParent).find('input.cb-value').is(':checked')) {
+            console.log("available")
+            $("#switch-checkbox").val("AVAILABLE");
+            $(".label-available").addClass("available-on");
+            $(".label-available").removeClass("color-switch");
+            $(".label-unavailable").addClass("color-switch");
+          } else {
+            $("#switch-checkbox").val("UNAVAILABLE");
+            $(".label-unavailable").addClass("available-off");
+            $(".label-unavailable").removeClass("color-switch");
+            $(".label-available").addClass("color-switch");
+            console.log("unavailable")
+          }
+
+        })
+    });
+
+    $(document).on('click', ".btn-update-asset", function(e){
+      Swal.fire({
+          title: 'Please Wait..!',
+          html: "<p style='text-align:center;'>It's sending..</p>",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+      $.ajax({
+        type:"GET",
+        url:'/edit_pinjam',
+        // data:$('#modalEdit').serialize(),
+        data:{
+          id_barang_edit:$("#id_barang_edit").val(),
+          edit_nama:$("#edit_nama").val(),
+          serial_number_edit:$("#serial_number_edit").val(),
+          keterangan_edit:$("#keterangan_edit").val(),
+          status_asset:$("#switch-checkbox").val(),
+        },
+        success: function(result){
+            swal({
+                title: "Success!",
+                text:  "You Have been Update Asset",
+                type: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+          setTimeout(function() {
+            location.reload();
+          }, 1000);  
+        },
+      });
+    });
+
+    //ajax delete asset
+    $(document).on('click',".hapus_asset",function(e) { 
+        console.log(this.value);
+        $.ajax({
+            type:"GET",
+            url:'/getAsset',
+            data:{
+              id_barang:this.value,
+            },
+            success: function(result){
+              $.each(result[0], function(key, value){  
+                $('#id_barang_delete').val(value.id_barang);
+                $('#id_kat_delete').val(value.id_kat)
+              });              
+            },
+        });
+
+        $("#delete_modal").modal("show");
+    });
+
+    $(document).on('click', ".btn-delete-asset", function(e){
+      $("#delete_modal").modal("hide");
+      Swal.fire({
+        title: 'Please Wait..!',
+        html: "<p style='text-align:center;'>It's sending..</p>",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        onOpen: () => {
+          Swal.showLoading()
+        }
+      })
+      $.ajax({
+        type:"GET",
+        data:$('#modalDelete').serialize(),
+        url:"{{url('/delete_asset')}}"+"/"+ $('#id_barang_delete').val(),
+        success: function(result){
+            swal({
+                title: "Deleted!",
+                text:  "You Have been delete Asset",
+                type: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+          setTimeout(function() {
+            location.reload();
+          }, 1000);  
+        },
+      })
+    })
+
 
     $(document).on('keyup keydown', "input[id^='quantity']", function(e){
       var qty_before  = $(".qtys").val();
@@ -879,30 +1314,308 @@
           }
     });
 
+    //ajax peminjaman
+    $(".btn-add-peminjaman").click(function(){
+      $.ajax({
+        type:"GET",
+        url:'/getKategori2',
+        success: function(result){
+          
+            $('#kategori3').html(append)
+              var append = "<option>-- Select Option --</option>";
+              $.each(result, function(key, value){
+                append = append + "<option value='"+value.id_kat+"'>" + value.kategori +  " (" + value.qty + ") "+ "</option>";
+              });
+            $('#kategori3').html(append);
+          
+        }
+      });
+
+      $("#peminjaman_modal").modal("show");
+    })
+    
+
+    $(document).on('click', ".btn-submit-peminjaman", function(e){
+      $("#peminjaman_modal").modal("hide");
+      Swal.fire({
+        title: 'Please Wait..!',
+        html: "<p style='text-align:center;'>It's sending..</p>",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        onOpen: () => {
+          Swal.showLoading()
+        }
+      })
+      $.ajax({
+        type:"POST",
+        url:'/update_asset',
+        data:$('#modalPeminjaman').serialize(),
+        success: function(result){
+            swal({
+                title: "Success!",
+                text:  "Successfully Request.",
+                type: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+          setTimeout(function() {
+            location.reload();
+          }, 1000);  
+        },
+      });
+    });
+
+    //ajax peminjaman accept
+    $(document).on('click',".btn_accept",function(e) { 
+        // console.log(this.value);
+        id_transaction = this.value;
+        $.ajax({
+          type:"GET",
+          url:'/getdetailAsset',
+          data:{
+            id_transaction:this.value,
+          },
+          success: function(result){
+            $.each(result[0], function(key, value){
+              $('#id_transaction_update').val(id_transaction);
+              $('#nik_peminjam_accept').val(value.nik_peminjam);
+              $('#id_kat_accept').val(value.id_kat);
+              $('#qty_akhir').val(value.qty_akhir);
+              $('#qty').val(value.qty_akhir);
+              $('#location_update').val(value.keterangan)
+            })
+          },
+        })
+
+
+        $.ajax({
+            type:"GET",
+            url:'/dropdownSerialNumberAsset?kategori=',
+            data:{
+              id_transaction:this.value,
+            },
+            success: function(result){
+
+              $(".detail-product").html(append)
+              var append = append + "<option>"  +"</option>";
+
+              $.each(result[0], function(key, value){
+                  // append = append + "<option value="+value.id_detail+">" + value.nama + "</option>";   
+                append = append + "<option value="+value.id_barang+">"+ value.nama_barang + " - " + value.serial_number +"</option>";
+                // console.log(value.id_barang);
+              });
+
+              $(".detail-product").html(append);
+
+            },
+        });
+
+        $("#accept_modal").modal("show");
+    });
+
+    $(document).on('click', "#btn_submit", function(e){
+      var qty           = $(".qtysn").val();
+      var sn            = $(".detail-product").val();
+      var total_sn      = sn.length;
+      /*console.log(qty);
+      console.log(qty);
+      console.log(sn);
+      console.log(sn);*/
+
+      if (total_sn == qty) {
+        Swal.fire({
+          title: 'Please Wait..!',
+          html: "<p style='text-align:center;'>It's sending..</p>",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+        $.ajax({
+          type:"POST",
+          url:'/accept_pinjam',
+          data:$('#modal_accept').serialize(),
+          success: function(result){
+              swal({
+                  title: "Success!",
+                  text:  "You have been Accepted the progress.",
+                  type: "success",
+                  timer: 2000,
+                  showConfirmButton: false
+              });
+            setTimeout(function() {
+              location.reload();
+            }, 1000);  
+          },
+        });
+      } else if (total_sn == 0) {
+        alert('Jumlah tidak sesuai !')
+      } else{
+        alert('Jumlah tidak sesuai !')
+      }
+    });
+
+    //ajax peminjaman kembali
+    $(document).on('click',"#btn_kembali",function(e) { 
+        var id_transaction = this.value;
+        $.ajax({
+          type:"GET",
+          url:'/getdetailAsset',
+          data:{
+            id_transaction:this.value,
+          },
+          success: function(result){
+            $.each(result[0], function(key, value){
+              $('#id_transaction_kembali').val(id_transaction);
+              $('#id_kat_kembali').val(value.id_kat);
+              $('#total_qty_kembali').val(value.qty_akhir);
+            })
+          },
+        })
+      
+        // console.log(this.value);
+        $.ajax({
+            type:"GET",
+            url:'/dropdownid_barang?kategori=',
+            data:{
+              id_transaction:this.value,
+            },
+            success: function(result){
+              $("#id_barang_kembali").html(append)
+              var append = append + "<option>"  +"</option>";
+
+              $.each(result[0], function(key, value){
+                  // append = append + "<option value="+value.id_detail+">" + value.nama + "</option>";   
+                  append = append + "<option value="+value.id_barang+" selected>"+ value.id_barang +"</option>";
+                // console.log(value.id_barang);
+              });
+
+              $("#id_barang_kembali").html(append);
+
+            },
+        });
+
+        $("#kembali_modal").modal("show");
+    });
+
+    $(document).on('click', ".btn-kembali-modal", function(e){
+      $("#kembali_modal").modal("hide");
+      Swal.fire({
+        title: 'Please Wait..!',
+        html: "<p style='text-align:center;'>It's sending..</p>",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        onOpen: () => {
+          Swal.showLoading()
+        }
+      })
+      $.ajax({
+        type:"POST",
+        url:'/kembali_pinjam',
+        data:$('#modalKembali').serialize(),
+        success: function(result){
+          swal({
+              title: "Success!",
+              text:  "Asset has benn Returned.",
+              type: "success",
+              timer: 1000,
+              showConfirmButton: false
+            });
+          setTimeout(function() {
+            location.reload();
+          }, 2000);  
+        },
+      });
+    });
+    
+
+    //ajax peminjaman reject
+    $(document).on('click',".btn_reject",function(e) { 
+        // console.log(this.value);
+        // $.ajax({
+        //     type:"GET",
+        //     url:'/dropdownid_barang_reject?kategori=',
+        //     data:{
+        //       id_transaction:this.value,
+        //     },
+        //     success: function(result){
+        //       console.log(result)
+        //       $("#id_barang_reject").html(append)
+        //       var append = append + "<option>"  +"</option>";
+
+        //       $.each(result[0], function(key, value){
+        //           // append = append + "<option value="+value.id_detail+">" + value.nama + "</option>";   
+        //           append = append + "<option value="+value.id_barang+" selected>"+ value.id_barang +"</option>";
+        //           $('#id_barang_reject').val(value.id_barang);
+        //         // console.log(value.serial_number);
+        //       });
+        //     },
+        // });
+
+        id_transaction = this.value;
+        $.ajax({
+          type:"GET",
+          url:'/getdetailAsset',
+          data:{
+            id_transaction:this.value,
+          },
+          success: function(result){
+            $.each(result[0], function(key, value){
+              $('#id_transaction_reject').val(id_transaction);
+              $('#id_kat').val(value.id_kat);
+              $('#nik_peminjam_reject').val(value.nik_peminjam);
+              $('#qty_total_reject').val(value.qty_akhir);   
+              // $("#id_barang_reject").html(append);           
+            })
+          },
+        })
+
+        $("#reject_modal").modal('show');
+    });
+
+    $(document).on('click', ".btn-reject-modal", function(e){
+      Swal.fire({
+        title: 'Please Wait..!',
+        html: "<p style='text-align:center;'>It's sending..</p>",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        onOpen: () => {
+          Swal.showLoading()
+        }
+      })
+      $.ajax({
+        type:"POST",
+        url:'/reject_pinjam',
+        data:$('#modalReject').serialize(),
+        success: function(result){
+            swal({
+                title: "Success!",
+                text:  "You have been rejected the progress.",
+                type: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+          setTimeout(function() {
+            location.reload();
+          }, 1000);  
+        },
+      });
+    });
+
+    //////////////////////////////
+
     $(".detail-product").select2({
       closeOnSelect : false,
     });
-
     
     $('#kategori2').select2();
 
     $('#kategori3').select2();
-
-    $('#data_Table').DataTable({
-      pageLength: 25,
-    });
-
-    $('#datatable1').DataTable({
-      pageLength: 25,
-    });
-
-    $('#datatable2').DataTable({
-      pageLength: 25,
-    });
-
-    $('#datatable3').DataTable({
-      pageLength: 25,
-    });
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
          $("#alert").slideUp(300);
@@ -1001,80 +1714,26 @@
         }
     });
 
-    $(document).on('click',"#btn_accept",function(e) { 
-        // console.log(this.value);
+
+    $(document).on('click',".btn_detail",function(e) { 
+        console.log(this.value);
         $.ajax({
             type:"GET",
-            url:'/dropdownSerialNumberAsset?kategori=',
-            data:{
-              kategori:this.value,
-            },
-            success: function(result){
-              $(".detail-product").html(append)
-              var append = append + "<option>"  +"</option>";
-
-              $.each(result[0], function(key, value){
-                  // append = append + "<option value="+value.id_detail+">" + value.nama + "</option>";   
-                append = append + "<option value="+value.id_barang+">"+ value.nama_barang + " - " + value.serial_number +"</option>";
-                // console.log(value.id_barang);
-              });
-
-              $(".detail-product").html(append);
-
-            },
-        });
-    });
-
-    $(document).on('click',"#btn_kembali",function(e) { 
-        // console.log(this.value);
-        $.ajax({
-            type:"GET",
-            url:'/dropdownid_barang?kategori=',
+            url:'/getdetailAsset',
             data:{
               id_transaction:this.value,
             },
             success: function(result){
-              $("#id_barang_kembali").html(append)
-              var append = append + "<option>"  +"</option>";
-
-              $.each(result[0], function(key, value){
-                  // append = append + "<option value="+value.id_detail+">" + value.nama + "</option>";   
-                  append = append + "<option value="+value.id_barang+" selected>"+ value.id_barang +"</option>";
-                // console.log(value.id_barang);
-              });
-
-              $("#id_barang_kembali").html(append);
-
+              $.each(result[0], function(key, value){  
+                $('#id_transaksi').val(value.id_transaction);
+                $('#nama_peminjam').val(value.name);
+                $('#no_peminjaman').val(value.no_peminjaman);
+                $('#tgl_pinjam').val(value.tgl_peminjaman);
+                $('#tgl_kembalian').val(value.tgl_pengembalian);
+              });              
             },
         });
-    });
-
-    $(document).on('click',"#btn_reject",function(e) { 
-        // console.log(this.value);
-        $.ajax({
-            type:"GET",
-            url:'/dropdownid_barang_reject?kategori=',
-            data:{
-              id_transaction:this.value,
-            },
-            success: function(result){
-              $("#id_barang_reject").html(append)
-              var append = append + "<option>"  +"</option>";
-
-              $.each(result[0], function(key, value){
-                  // append = append + "<option value="+value.id_detail+">" + value.nama + "</option>";   
-                  append = append + "<option value="+value.id_barang+" selected>"+ value.id_barang +"</option>";
-                // console.log(value.serial_number);
-              });
-
-              $("#id_barang_reject").html(append);
-
-            },
-        });
-    });
-
-    $(document).on('click',"#btn_detail",function(e) { 
-        // console.log(this.value);
+        
         $.ajax({
             type:"GET",
             url:'/dropdownsn',
@@ -1096,44 +1755,12 @@
 
             },
         });
+
+        $("#serial_number").modal("show");
     });
 
-    $(document).on('click', "#btn_submit", function(e){
-      var qty           = $(".qtysn").val();
-      var sn            = $("#detail_product").val();
-      var total_sn      = sn.length;
-      /*console.log(qty);
-      console.log(qty);
-      console.log(sn);
-      console.log(sn);*/
-
-      if (total_sn == qty) {
-        $.ajax({
-          type:"POST",
-          url:'/accept_pinjam',
-          data:$('#modal_accept').serialize(),
-          success: function(result){
-              swal({
-                  title: "Success!",
-                  text:  "You have been add serial number",
-                  type: "success",
-                  timer: 2000,
-                  showConfirmButton: false
-              });
-            setTimeout(function() {
-                window.location.href = window.location;
-            }, 2000);  
-          },
-        });
-      } else if (total_sn == 0) {
-        alert('Jumlah tidak sesuai !')
-      } else{
-        alert('Jumlah tidak sesuai !')
-      }
-    });
-
-    $(document).on('change',"select[id^='detail_product']",function(e) {
-      var id_barang = $('#detail_product').val();
+    $(document).on('change',"select[class^='detail-product']",function(e) {
+      var id_barang = $('.detail-product').val();
       // console.log(id_barang);
 
          /*$.ajax({
@@ -1155,15 +1782,67 @@
         });*/
     });
 
-    $('#myTab a').click(function(e) {
+    $('#myTab .nav-link').click(function(e) {
       e.preventDefault();
       $(this).tab('show');
+      if ($(this).tab('show').text() == 'Peminjaman Asset') {
+        $("#kategori-asset").removeClass('display-block').addClass('display-none');
+
+        $("#list-asset").removeClass('display-block').addClass('display-none');
+
+        $("#export-excel").removeClass('display-block')
+                          .addClass('display-none');
+      }else if ($(this).tab('show').text() == 'List Asset') {
+        $("#export-excel").removeClass('display-none')
+                          .addClass('display-block');
+        $("#list-asset").addClass('display-block')
+                        .removeClass('display-none');
+        $("#kategori-asset").removeClass('display-block')
+                            .addClass('display-none');
+      }else{
+        $("#kategori-asset").removeClass('display-none').addClass('display-block');
+
+        $("#list-asset").removeClass('display-block').addClass('display-none');
+
+        $("#export-excel").removeClass('display-block')
+                          .addClass('display-none');
+      }
+      console.log($(this).tab('show').text())
     });
+
+    if (window.location.href.split("/")[3].split("#")[1] == 'list_asset') {
+      $("#export-excel").removeClass('display-none')
+                          .addClass('display-block');
+      $("#list-asset").addClass('display-block')
+                      .removeClass('display-none');
+      $("#kategori-asset").removeClass('display-block')
+                          .addClass('display-none');
+    }else if (window.location.href.split("/")[3].split("#")[1] == 'kategori') {
+      $("#kategori-asset").removeClass('display-none')
+                          .addClass('display-block');
+
+        $("#list-asset").removeClass('display-block')
+                        .addClass('display-none');
+
+        $("#export-excel").removeClass('display-block')
+                          .addClass('display-none');
+    }else if (window.location.href.split("/")[3].split("#")[1] == 'peminjaman'){
+      $("#kategori-asset").removeClass('display-block')
+                          .addClass('display-none');
+
+      $("#list-asset").removeClass('display-block')
+                      .addClass('display-none');
+
+      $("#export-excel").removeClass('display-block')
+                        .addClass('display-none');
+    }
 
     // store the currently selected tab in the hash value
     $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
       var id = $(e.target).attr("href").substr(1);
       window.location.hash = id;
+
+      console.log(id)
     });
 
     // on load of the page: switch to the currently selected tab
