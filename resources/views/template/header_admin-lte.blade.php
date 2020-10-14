@@ -20,6 +20,23 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #555; 
     }
+
+    .user-panel>.image>img {
+	    width: 100%;
+	    max-width: 45px;
+	    max-height: 45px;
+	    object-fit: cover;
+	}
+
+	.navbar-nav>.user-menu .user-image {
+	    object-fit: cover;
+	    float: left;
+	    width: 25px;
+	    height: 25px;
+	    border-radius: 50%;
+	    margin-right: 10px;
+	    margin-top: -2px;
+	}
   </style>
 
   <!-- Logo -->
@@ -1022,7 +1039,7 @@
       @endif
 
 
-      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG')
+      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
       <li class="nav-item">
         <a class="nav-link" href="{{url('/asset_pinjam')}}">
           <i class="fa fa-fw fa-book"></i>
@@ -1091,6 +1108,21 @@
           </ul>
         </li>
       @endif
+
+	    <li class="activeable treeview">
+          <a href="#INPages" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-clock-o"></i>
+            <span class="nav-link-text" style="font-size: 14px">Log History</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="activeable treeview-menu" id="INPages">
+            <li>
+              <a href="{{url('/report_record_auth')}}" style="font-size: 14px"> Record Log History</a>
+            </li>
+          </ul>
+        </li>
       
 
     </ul>
