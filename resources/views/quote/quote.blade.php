@@ -51,7 +51,6 @@
             @else
             <button type="button" class="btn btn-success pull-right disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="margin-right: 10px;width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
             @endif
-            @endif
           </div>
       </div>
       <div class="box-body">
