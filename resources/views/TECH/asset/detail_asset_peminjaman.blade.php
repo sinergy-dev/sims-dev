@@ -1,5 +1,11 @@
 @extends('template.template_admin-lte')
 @section('content')
+<style type="text/css">
+  .btn{
+      height: 25px;
+      width: 100px;
+    }
+</style>
 
 <section class="content-header">
   <h1>
@@ -41,7 +47,7 @@
 
   <div class="box">
     <div class="box-header">
-      <a href="{{url('/asset_pinjam')}}"><button button class="btn btn-xs btn-danger pull-left" style="width: 150px"><i class="fa fa-arrow-circle-o-left"></i>&nbsp back to Asset</button></a>
+      <a href="{{url('/asset_pinjam#list_asset')}}"><button button class="btn btn-xs btn-danger pull-left"><i class="fa fa-arrow-circle-o-left"></i>&nbsp back to Asset</button></a>
     </div>
 
     <div class="box-body">
@@ -70,15 +76,15 @@
                 <td>{{$data->keterangan}}</td>
                 <td>
                   @if($data->status == 'PENDING')
-                    <label class="status-open">PENDING</label>
+                    <span class="label label-warning">PENDING</span>
                   @elseif($data->status == 'ACCEPT')
-                    <label class="status-win" style="width: 90px">ACCEPTED</label>
+                    <span class="label label-success" style="width: 90px">ACCEPTED</span>
                   @elseif($data->status == 'REJECT')
-                    <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px;" onclick="reject('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                    <span class="label label-danger" data-target="#reject_note_modal" data-toggle="modal" onclick="reject('{{$data->id_transaction}}', '{{$data->note}}')" style="cursor: zoom-in;"> REJECTED</span>
                   @elseif($data->status == 'AMBIL')
-                    <label class="status-lose" style="width: 150px;background-color: #7735a3">SUDAH DI AMBIL</label>
+                    <span class="label label-success" style="width: 150px;">SUDAH DI AMBIL</span>
                   @elseif($data->status == 'RETURN')
-                    <label class="status-win" style="width: 90px">RETURNED</label>
+                    <span class="label label-success" style="width: 90px">RETURNED</span>
                   @endif
                 </td>
               </tr>
@@ -137,39 +143,40 @@
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript">
-    $('.money').mask('000,000,000,000,00', {reverse: true});
 
-    $("#alert").fadeTo(2000, 500).slideUp(500, function(){
-         $("#alert").slideUp(300);
-    });
+  $('.money').mask('000,000,000,000,00', {reverse: true});
 
-    function return_hr(id_pam){
-      $('#no_return_hr').val(id_pam);
-    }
+  $("#alert").fadeTo(2000, 500).slideUp(500, function(){
+    $("#alert").slideUp(300);
+  });
 
-    function return_finance(id_pam){
-      $('#no_return_fnc').val(id_pam);
-    }
+  function return_hr(id_pam){
+    $('#no_return_hr').val(id_pam);
+  }
 
-    function ambil(id_transaction,id_barang){
-      $('#id_transaction_ambil').val(id_transaction);
-      $('#id_barang_ambil').val(id_barang);
-    }
+  function return_finance(id_pam){
+    $('#no_return_fnc').val(id_pam);
+  }
 
-    function kembali(id_transaction,id_barang){
-      $('#id_transaction_kembali').val(id_transaction);
-      $('#id_barang_kembali').val(id_barang);
-    }
+  function ambil(id_transaction,id_barang){
+    $('#id_transaction_ambil').val(id_transaction);
+    $('#id_barang_ambil').val(id_barang);
+  }
 
-    function reject(id_transaksi,note) {
-      $('#reject_note').val(note);
-      $('#id_transaction_reject_note').val(id_transaksi);
-      $('#id_barang_reject_note').val(id_barang);
-    }
+  function kembali(id_transaction,id_barang){
+    $('#id_transaction_kembali').val(id_transaction);
+    $('#id_barang_kembali').val(id_barang);
+  }
 
-    $('#data_Table').DataTable({
-          // "scrollX": true
-        pageLength:25
-    });
+  function reject(id_transaksi,note) {
+    $('#reject_note').val(note);
+    $('#id_transaction_reject_note').val(id_transaksi);
+    $('#id_barang_reject_note').val(id_barang);
+  }
+
+  $('#data_Table').DataTable({
+        // "scrollX": true
+      pageLength:25
+  });
 </script>
 @endsection
