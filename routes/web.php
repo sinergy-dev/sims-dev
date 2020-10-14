@@ -106,6 +106,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('sales/delete_product_technology','SalesController@delete_product_technology');
 	Route::post('sales/add_product_technology','SalesController@add_product_technology');
 	Route::get('sales/getAllEmployee','SalesController@getAllEmployee');
+	Route::get('sales/getProductTechByLead','SalesController@getProductTechByLead');
 
 	// Sales Lead Setting
 	Route::get('sales/lead_setting', 'LeadSettingController@index');
@@ -544,6 +545,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/ambil_pinjam_warehouse', 'WarehouseAssetController@ambil');
 	Route::post('/kembali_pinjam_warehouse', 'WarehouseAssetController@kembali');
 	Route::get('/detail_asset/{id_barang}','WarehouseAssetController@detail_asset');
+	Route::get('/getKategori2','AssetController@getKategori2');
+	Route::get('/exportExcelTech','AssetController@exportExcelTech');
 
 	//MSP inventory gudang
 	Route::get('/inventory/msp','WarehouseController@inventory_msp');
@@ -613,8 +616,13 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/accept_status', 'BGaransiController@accept_status');
 
 	// Asset Technical
+	Route::get('/getKategori','AssetController@getKategori');
+	Route::get('/getAssetTech','AssetController@getAssetTech');
+	Route::get('/getAssetTransactionModerator','AssetController@getAssetTransactionModerator');
+	Route::get('/getAssetTransaction','AssetController@getAssetTransaction');
+
 	Route::get('/asset_pinjam', 'AssetController@index');
-	Route::post('/edit_pinjam', 'AssetController@edit');
+	Route::get('/edit_pinjam', 'AssetController@edit');
 	Route::post('/store_asset', 'AssetController@store');
 	Route::post('/update_asset', 'AssetController@update');
 	Route::post('/accept_pinjam', 'AssetController@accept');
@@ -629,6 +637,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/dropdownid_barang', 'AssetController@getid_barang');
 	Route::get('/dropdownid_barang_reject', 'AssetController@getid_barang_reject');
 	Route::get('/dropdownsn', 'AssetController@getsn');
+	Route::get('/getdetailAsset','AssetController@getdetailAsset');
+	Route::get('/getAsset','AssetController@getAsset');
 	Route::get('/getidbarangaccept', 'AssetController@getid_barang_accept');
 
 	//App Incident
