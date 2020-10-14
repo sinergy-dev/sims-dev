@@ -347,6 +347,8 @@
   $(function () {
     $(".activeable").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
 
+    $(".activeable2").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+
     $('#example1').DataTable()
     $('#example2').DataTable({
       'paging'      : true,
