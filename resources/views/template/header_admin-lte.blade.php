@@ -753,7 +753,7 @@
       		@if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'ADMIN')
       		@else
       		<li class="activeable2">
-      			<a href="{{('/sho')}}" style="font-size: 14px">Sales Handover</a>
+      			<a href="{{url('/sho')}}" style="font-size: 14px">Sales Handover</a>
       		</li>
       		@endif
       		@if(Auth::User()->id_company == '1')
