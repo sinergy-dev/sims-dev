@@ -65,6 +65,10 @@ class Kernel extends ConsoleKernel
         $schedule->call(function() {
             Artisan::call('FollowUpCuti:followupcuti');
         })->daily();
+
+        $schedule->command('ExpirePeminjamanAssetTech:expirepeminjamanassettech')->dailyAt('00:30');
+
+        $schedule->command('ReminderPengembalianAssetTech:reminderpengembalianassettech')->dailyAt('08:00');
     }
 
     /**
