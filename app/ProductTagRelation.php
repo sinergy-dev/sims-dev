@@ -10,5 +10,10 @@ class ProductTagRelation extends Model
     //
     protected $table = 'tb_product_tag_relation';
     protected $primaryKey = 'id';
-    protected $fillable = ['id_product_tag', 'lead_id'];
+    protected $fillable = [
+    	'lead_id',
+    	'id_product_tag',
+    	'id_technology_tag',
+    	'price'
+    ];
 }
