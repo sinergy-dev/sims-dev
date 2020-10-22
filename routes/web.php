@@ -280,6 +280,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/update_profile','HRController@update_profile');
 	Route::post('/profile/delete_pict','HRController@delete_pict');
 	Route::get('/hu_rec/get_hu','HRController@getdatahu');
+	Route::get('/exportExcelEmployee', 'HRController@exportExcelEmployee');
 
 	//cuti
 	Route::get('/show_cuti', 'HRGAController@show_cuti');
@@ -547,6 +548,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/detail_asset/{id_barang}','WarehouseAssetController@detail_asset');
 	Route::get('/getKategori2','AssetController@getKategori2');
 	Route::get('/exportExcelTech','AssetController@exportExcelTech');
+	Route::get('/getLogAssetTech','AssetController@getLogAssetTech');
 
 	//MSP inventory gudang
 	Route::get('/inventory/msp','WarehouseController@inventory_msp');
@@ -638,6 +640,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/dropdownid_barang_reject', 'AssetController@getid_barang_reject');
 	Route::get('/dropdownsn', 'AssetController@getsn');
 	Route::get('/getdetailAsset','AssetController@getdetailAsset');
+	Route::get('/getdetailAssetPeminjaman','AssetController@getdetailAssetPeminjaman');
 	Route::get('/getAsset','AssetController@getAsset');
 	Route::get('/getidbarangaccept', 'AssetController@getid_barang_accept');
 
