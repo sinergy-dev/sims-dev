@@ -74,11 +74,22 @@
     height: 25px;
   }
 
+  .btn-icon{
+    width: 30px;
+    height: 25px;
+  }
+
   tr.group,
   tr.group:hover {
-      font-style: bold;
-      color: white;
-      background-color: #d4d9d6 !important;
+    font-size: 14px;
+    font-style: italic;
+    color: #f02424;
+    background-color: white !important;
+  }
+
+  .datatablelog tbody tr:first-child td {
+    background-color: #f02424;
+    color: white;
   }
 
   /* Chrome, Safari, Edge, Opera */
@@ -233,29 +244,63 @@
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
-            <br>
-            <div class="table-responsive" >
-              <table class="table table-bordered nowrap " id="data_Table" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th>Kategori</th>
-                    <th>Nama Barang/Type</th>
-                    <th>Serial Number</th>
-                    <th>Keterangan</th>
-                    <th>Lokasi Barang</th>
-                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
-                    <th>History</th>
-                    @endif
-                    <th>Status</th>
-                    @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
-                    <th>Action</th>
-                    @endif
-                  </tr>
-                </thead>
-                <tfoot>
-                </tfoot>
-              </table>
+            <div class="box box-primary">
+              <div class="box-header with-border">
+                <h5 class="box-title"><i class="fa fa-table"></i> Warehouse Asset </h5>
+                <div class="box-tools pull-right">
+                  <!-- Collapse Button -->
+                  <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="box-body table-responsive">
+                <table class="table table-bordered nowrap " id="data_Table" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>No. Transaksi</th>
+                      <th>Nama Barang/Type</th>
+                      <th>Serial Number</th>
+                      <th>Keterangan</th>
+                      <th>Lokasi Barang</th>
+                      <th>Status</th>
+                      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+                      <th>Action</th>
+                      @endif
+                    </tr>
+                  </thead>
+                  <tfoot>
+                  </tfoot>
+                </table>
+              </div>
             </div>
+
+            <div class="box box-primary">
+              <div class="box-header with-border">
+                <h5 class="box-title"><i class="fa fa-table"></i> Activity log </h5>
+                <div class="box-tools pull-right">
+                  <!-- Collapse Button -->
+                  <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="box-body table-responsive">
+                <table class="table table-bordered nowrap datatablelog" id="dataTableLog" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Aktivitas</th>
+                      <th>Waktu</th>
+                      <th>Oleh</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
           </div>
           @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
           <div class="tab-pane fade" id="peminjaman" role="tabpanel" aria-labelledby="profile-tab">
@@ -264,7 +309,7 @@
                 <thead>
                   <tr>
                     <th>No</th>
-                    <th>Kategori</th>
+                    <th>No. Transaksi</th>
                     <th>Qty</th>
                     <th>Keterangan</th>
                     <th>Keperluan</th>
@@ -338,7 +383,7 @@
                 <thead>
                   <tr>
                     <th>No</th>
-                    <th>Kategori</th>
+                    <th>No. Transaksi</th>
                     <th>Qty</th>
                     <th>Keterangan(lokasi barang)</th>
                     <th>Keperluan</th>
@@ -920,18 +965,6 @@
           { "data": "serial_number" },
           { "data": "description" },
           { "data": "location"},
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
-          {
-            render: function ( data, type, row, meta ) {
-              if (row.status_pinjam == 'PERNAH') {
-                return row.qty_pinjam;
-              }else{
-                return "0";
-              }
-              
-            }
-          },
-          @endif
           {
             render: function ( data, type, row, meta ) {
               if (row.status == 'AVAILABLE') {
@@ -945,9 +978,17 @@
           {
             render: function ( data, type, row, meta ) {
               if (row.status == 'AVAILABLE') {
-                return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'><button class='btn btn-xs' style='width: 80px; height: 25px;margin-right:5px; background-color: black;color: white '>Detail</button></a><button class='btn btn-xs btn-primary edit_asset' value='"+row.id_barang+"' style='width: 70px; height: 25px;margin-right:5px'>Edit</button><button class='btn btn-xs btn-danger hapus_asset' style='width: 70px; height: 25px;' value='"+row.id_barang+"'>Delete</button>"
+                if (row.status_pinjam == 'PERNAH') {
+                  return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'><button class='btn btn-info btn-xs btn-icon'><i class='fa fa-info'></i></button></a> <button class='btn btn-xs btn-primary btn-icon edit_asset' value='"+row.id_barang+"' margin-right:5px'><i class='fa fa-pencil'></i></button> <button class='btn btn-xs btn-danger btn-icon hapus_asset' value='"+row.id_barang+"'><i class='fa fa-trash'></i></button>";
+                }else{
+                  return "<button class='btn btn-info btn-xs btn-icon disabled' style='cursor:not-allowed'><i class='fa fa-info'></i></button> <button class='btn btn-xs btn-primary btn-icon edit_asset' value='"+row.id_barang+"' margin-right:5px'><i class='fa fa-pencil'></i></button> <button class='btn btn-xs btn-danger btn-icon hapus_asset' value='"+row.id_barang+"'><i class='fa fa-trash'></i></button>";
+                }
               }else{
-                return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'><button class='btn btn-xs' style='width: 80px; height: 25px;margin-right:5px; background-color: black;color: white '>Detail</button></a><button class='btn btn-xs btn-primary edit_asset' value='"+row.id_barang+"' style='width: 70px; height: 25px;margin-right:5px'>Edit</button><button class='btn btn-xs btn-danger' style='width: 70px; height: 25px;' disabled>Delete</button>"
+                if (row.status_pinjam == 'PERNAH') {
+                  return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'> <button class='btn btn-info btn-xs btn-icon'><i class='fa fa-info'></i></button></a> <button class='btn btn-xs btn-primary edit_asset btn-icon' value='"+row.id_barang+"'><i class='fa fa-pencil'></i></button> <button class='btn btn-xs btn-danger btn-icon' disabled><i class='fa fa-trash'></i></button>"
+                }else{
+                  return "<button class='btn btn-info btn-xs btn-icon disabled'><i class='fa fa-info'></i></button> <button class='btn btn-xs btn-primary edit_asset btn-icon' value='"+row.id_barang+"'><i class='fa fa-pencil'></i></button> <button class='btn btn-xs btn-danger btn-icon' disabled><i class='fa fa-trash'></i></button>"
+                }
               }
             }
           },
@@ -969,7 +1010,7 @@
           if ( last !== group ) {
             $(rows).eq( i ).before(
               '<tr class="group">' + 
-              ' <th colspan="7">' + 
+              ' <th>' + 
                   '<span class="group">' +
                     group + 
                 '</th>' +
@@ -996,9 +1037,11 @@
           {
             render: function ( data, type, row, meta ) {
               if (row.status == 'PENDING') {
-                return  row.kategori;
+                return  row.no_peminjaman;
+              }else if (row.status == 'REJECT') {
+                return  "<span style='cursor:not-allowed;color:red' id='btn_detail' name='btn_detail'>"+ row.no_peminjaman +"</span>";
               }else{
-                return  "<button class='btn btn-xs btn-primary btn_detail' id='btn_detail' name='btn_detail' value='"+ row.id_transaction +"'>"+ row.kategori +"</button>";
+                return  "<span class='btn_detail' style='cursor:pointer;color:blue' onclick='btn_detail("+row.no_peminjaman+")' id='btn_detail' name='btn_detail' data-value='"+row.no_peminjaman+"'> "+ row.no_peminjaman +"</span>";
               }
             }
           },  
@@ -1041,7 +1084,7 @@
               }else if (row.status == 'KEMBALI') {
                 return "<button class='btn btn-xs btn-success disabled'>ACCEPT</button><button class='btn btn-xs btn-danger disabled'>REJECT</button>"
               }else{
-                return "";
+                return "<button style='background-color:Transparent;border:none;overflow:hidden;outline:none;background-repeat:no-repeat;cursor:not-allowed'><i class='fa fa-ban' style='text-align:center'></i></button";
               }
             }
           },      
@@ -1068,9 +1111,11 @@
           {
             render: function ( data, type, row, meta ) {
               if (row.status == 'PENDING') {
-                return  row.kategori;
+                return  row.no_peminjaman;
+              }else if (row.status == 'REJECT') {
+                return  "<span style='cursor:not-allowed;color:red' id='btn_detail' name='btn_detail'>" + row.no_peminjaman +"</span>";
               }else{
-                return  "<button class='btn btn-xs btn-primary btn_detail' id='btn_detail' name='btn_detail' value='"+ row.id_transaction +"'>"+ row.kategori +"</button>";
+                return  "<span class='btn_detail' style='cursor:pointer;color:blue' onclick='btn_detail("+row.no_peminjaman+")' id='btn_detail' name='btn_detail' data-value='"+row.no_peminjaman+"'> "+ row.no_peminjaman +"</span>";
               }
             }
           },  
@@ -1100,7 +1145,43 @@
         "processing": true,
         "paging": true,
         "pageLength":25,
-    });
+    })
+
+    //datatable log aktivitas
+    $('#dataTableLog').DataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('/getLogAssetTech')}}",
+        },
+        "columns": [
+          {
+            render: function ( data, type, row, meta ) {
+               return  meta.row+1;
+            }
+          },
+          { "data": "keterangan" },  
+          {
+            render: function ( data, type, row, meta ) {
+               return  moment(row.created_at).format('MMMM Do YYYY, h:mm:ss a');
+            }
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.nik == 'System') {
+                return 'System';
+              }else{
+                return row.name;
+              }
+            }
+          }, 
+
+        ],
+        "scrollX": false,
+        "ordering": true,
+        "processing": true,
+        "paging": true,
+        "pageLength":10,
+    })
 
     //ajax add kategori    
     $(document).on('click', ".btn-add-kategori", function(e){
@@ -1502,34 +1583,40 @@
     });
 
     $(document).on('click', ".btn-kembali-modal", function(e){
-      $("#kembali_modal").modal("hide");
-      Swal.fire({
-        title: 'Please Wait..!',
-        html: "<p style='text-align:center;'>It's sending..</p>",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false,
-        onOpen: () => {
-          Swal.showLoading()
-        }
-      })
-      $.ajax({
-        type:"POST",
-        url:'/kembali_pinjam',
-        data:$('#modalKembali').serialize(),
-        success: function(result){
-          swal({
-              title: "Success!",
-              text:  "Asset has benn Returned.",
-              type: "success",
-              timer: 1000,
-              showConfirmButton: false
-            });
-          setTimeout(function() {
-            location.reload();
-          }, 2000);  
-        },
-      });
+      if ($("#location_return").val() == "") {
+        alert("Please fill your return location!")
+        $("#kembali_modal").modal("hide");
+      }else{
+        $("#kembali_modal").modal("hide");
+        Swal.fire({
+          title: 'Please Wait..!',
+          html: "<p style='text-align:center;'>It's sending..</p>",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+        $.ajax({
+          type:"POST",
+          url:'/kembali_pinjam',
+          data:$('#modalKembali').serialize(),
+          success: function(result){
+            swal({
+                title: "Success!",
+                text:  "Asset has benn Returned.",
+                type: "success",
+                timer: 1000,
+                showConfirmButton: false
+              });
+            setTimeout(function() {
+              location.reload();
+            }, 2000);  
+          },
+        });
+      }
+      
     });
     
 
@@ -1606,7 +1693,6 @@
         },
       });
     });
-
     //////////////////////////////
 
     $(".detail-product").select2({
@@ -1715,13 +1801,13 @@
     });
 
 
-    $(document).on('click',".btn_detail",function(e) { 
-        console.log(this.value);
-        $.ajax({
+    function btn_detail(n){
+      console.log(n)
+      $.ajax({
             type:"GET",
-            url:'/getdetailAsset',
+            url:'/getdetailAssetPeminjaman',
             data:{
-              id_transaction:this.value,
+              id_transaction:n,
             },
             success: function(result){
               $.each(result[0], function(key, value){  
@@ -1738,7 +1824,7 @@
             type:"GET",
             url:'/dropdownsn',
             data:{
-              id_transaction:this.value,
+              id_transaction:n,
             },
             success: function(result){
               $("#mytable").empty();
@@ -1757,6 +1843,10 @@
         });
 
         $("#serial_number").modal("show");
+    }
+
+    $('a.reload').click(function() {
+        window.location.reload();                       
     });
 
     $(document).on('change',"select[class^='detail-product']",function(e) {
@@ -1836,6 +1926,41 @@
       $("#export-excel").removeClass('display-block')
                         .addClass('display-none');
     }
+
+    $('#export-excel').click(function(event) {
+        $.ajax({
+            url: this.href,
+            type: 'GET',
+            success: function(result) {
+              swal({
+                 title: "Success!",
+                 text:  "You have been Export to Excel.",
+                 type: "success",
+                 timer: 3000,
+                 showConfirmButton: false
+               });
+             setTimeout(function() {
+               location.reload();
+             }, 2000);  
+            }
+        });
+        // $.ajax({
+        // url: '@Url.Action("exportExcelTech", "AssetController")',
+        // type: "GET",
+        // success: function(result){
+        // // swal({
+        // //       title: "Success!",
+        // //       text:  "You have been Export Excel.",
+        // //       type: "success",
+        // //       timer: 3000,
+        // //       showConfirmButton: false
+        // //     });
+        // //   setTimeout(function() {
+        // //     location.reload();
+        // //   }, 2000);  
+        // }, 
+        // });
+    });
 
     // store the currently selected tab in the hash value
     $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
