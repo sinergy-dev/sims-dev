@@ -60,7 +60,7 @@
                 <th>Peminjam</th>
                 <th>Tgl Peminjaman</th>
                 <th>Tgl Pengembalian</th>
-                <th>Note</th>
+                <th>Keperluan</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -73,7 +73,7 @@
                 <td>{{$data->name}}</td>
                 <td>{{$data->tgl_peminjaman}}</td>
                 <td>{{$data->tgl_pengembalian}}</td>
-                <td>{{$data->keterangan}}</td>
+                <td>{{$data->keperluan}}</td>
                 <td>
                   @if($data->status == 'PENDING')
                     <span class="label label-warning">PENDING</span>
