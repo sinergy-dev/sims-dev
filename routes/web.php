@@ -14,6 +14,7 @@
 Auth::routes();
 
 // hahahahahahaha
+// hahahahahahaha2
 
 Route::post('/update_result', 'SalesController@update_result');
 Route::post('/update_result2', 'SalesController@update_result');
