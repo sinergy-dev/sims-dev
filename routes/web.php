@@ -20,6 +20,10 @@ Route::post('/update_result3', 'SalesController@update_result');
 Route::post('/update_result4', 'SalesController@update_result');
 Route::post('/update_result5', 'SalesController@update_result');
 
+Route::get('/testEmailTrap',function(){
+	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
+});
+
 //dinar cantik3
 //dinar cantik
 //dinar cantik2
