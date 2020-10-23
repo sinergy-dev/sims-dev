@@ -2,6 +2,10 @@
 @section('content')
 
 <style type="text/css">
+  .inline-block{
+     display:inline-block;
+  }
+
   div div ol li{
     font-size: 14px;
   }
@@ -69,6 +73,14 @@
   .input-tags-before:focus{
   	background: transparent;border: none;
   }*/
+
+  .active-tab{
+    display: block;
+  }
+
+  .non-active-tab{
+    display: none;
+  }
    
 </style>
   
@@ -320,59 +332,6 @@
                 </div>
 
                 <div class="form-group margin-left-right">
-                	<label for="product" class="margin-top-form">-- Product & Technology --</label><br>
-                	<table class="table" id="table-product">
-                		<tr>
-                			<th>Name</th>
-                			<th>List Price</th>
-                			<th>
-                			Setting    
-                			<button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;margin-left: 10px" onclick="addTagsProduct('{{$tampilkan->lead_id}}')"><i class="fa fa-plus"></i></button>
-                			</th>
-                		</tr>
-                    @foreach($productTech as $data)
-                      @foreach($data["product"] as $datasProduct)
-                        <tr>
-                          <td><span class="label label-primary">{{$datasProduct->name_product}}</span></td>
-                          <td>
-                            @if($datasProduct->price != "")
-                              <!-- <i class="" aria-hidden="true">Rp.<span class="money">{{$datasProduct->price}}</span></i> -->
-                              <div class="form-group inputWithIcon inputIconBg">
-                                <input data-value="{{$datasProduct->id}}" class="form-control money input-tags-before" type="text" aria-describedby="emailHelp" placeholder="Enter Product Price" name="project_budget"  id="input-price" value="{{$datasProduct->price}}" disabled/>
-                                <i class="" style="margin-top: -47px" aria-hidden="true">Rp.</i>
-                              </div>
-                     <!--          <input type="" name="" style="display: none" value="{{$datasProduct->price}}" data-value="{{$datasProduct->id}}" disabled id="input-price" class="money input-tags-before"> -->
-                            @else
-                            <div class="form-group inputWithIcon inputIconBg">
-                                <input data-value="{{$datasProduct->id}}" class="form-control money input-tags-before" type="text" aria-describedby="emailHelp" placeholder="Enter Product Price" name="project_budget"  id="input-price" disabled/>
-                                <i class="" style="margin-top: -47px" aria-hidden="true">Rp.</i>
-                              </div>
-                            @endif
-                          </td>
-                          <td>
-                            <button type="button" id="btnPrice" data-value="{{$datasProduct->id}}" class="btn btn-sm btn-warning" onclick="btnEditTags('{{$datasProduct->id}}')" style="width: 35px"><i class="btn-setting fa fa-pencil"></i></button>
-                            <button type="button" id="btnDelPrice" data-value="{{$datasProduct->id}}" class="btn btn-sm btn-danger" onclick="btnDeleteTags('{{$datasProduct->id}}')" style="width: 35px;"><i class="btn-trash fa fa-trash"></i></button>
-                          </td>
-                        </tr>
-                      @endforeach
-                      @foreach($data["technology"] as $datasTechnology)
-                        <tr>
-                          <td><span class="label label-default">{{$datasTechnology->name_tech}}</span></td>
-                          <td>
-                            <b><i>none</i></b>
-              <!--               <input type="" name="" value="{{$datasTechnology->price}}" data-value="{{$datasTechnology->id}}" disabled id="input-price" class="money input-tags-before"> -->
-                          </td>
-                          <td>
-                      <!--       <button type="button" id="btnPrice" data-value="{{$datasTechnology->id}}" class="btn btn-xs btn-warning" onclick="btnEditTags('{{$datasTechnology->id}}')" style="width: 30px"><i class="btn-setting fa fa-pencil"></i></button> -->
-                            <button type="button" id="btnDelPrice" data-value="{{$datasTechnology->id}}" class="btn btn-sm btn-danger" onclick="btnDeleteTags('{{$datasTechnology->id}}')" style="width:35px"><i class="btn-trash fa fa-trash"></i></button>
-                          </td>
-                        </tr>
-                      @endforeach
-                    @endforeach
-                	</table>
-                </div>
-
-                <div class="form-group margin-left-right">
                   <label for="priority" class="margin-top-form">-- Priority --</label>
                   
                   <select class="form-control float-left" id="priority"  name="priority">
@@ -488,9 +447,9 @@
               @if(Auth::User()->id_company == '1')
                 @if(Auth::User()->id_division == 'SALES' && $tampilkanc->status == 'ready' && Auth::User()->nik == $tampilkanc->nik || Auth::User()->id_division == 'SALES' && $tampilkanc->result == 'HOLD' && Auth::User()->nik == $tampilkanc->nik || Auth::User()->id_division == 'SALES' && $tampilkanc->result == 'WIN' && Auth::User()->nik == $tampilkanc->nik)
                 <fieldset>
-                @elseif(Auth::User()->id_division == 'TECHNICAL' || $tampilkanc->status == 'ready')
+                @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkanc->status == 'ready')
                 <fieldset>
-                @elseif(Auth::User()->id_position == 'DIRECTOR' || $tampilkanc->status == 'ready')
+                @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkanc->status == 'ready')
                 <fieldset>
                 @elseif(Auth::User()->id_division == 'SALES' && $tampilkanc->status == 'closed')
                 <fieldset disabled>
@@ -774,11 +733,11 @@
                   <button type="submit" class="btn btn-md btn-primary  margin-bottom" >Submit</button>
                   @endif
                   @if($tampilkanc->status != 'closed' && Auth::User()->id_division == 'SALES' || $tampilkanc->result == 'HOLD' && Auth::User()->id_division == 'SALES')
-                  <button type="button" class="btn btn-md btn-success float-right margin-bottom" data-toggle="modal" data-target="#formResult">Result</button>
+                  <button type="button" class="btn btn-md btn-success float-right margin-bottom" onclick="formResult('{{$tampilkan->lead_id}}')">Result</button>
                   @elseif(Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-                  <button type="button" class="btn btn-md btn-success float-right margin-bottom" data-toggle="modal" data-target="#formResult">Result</button>
+                  <button type="button" class="btn btn-md btn-success float-right margin-bottom" onclick="formResult('{{$tampilkan->lead_id}}')">Result</button>
                   @elseif($tampilkanc->status != 'closed' && $tampilkan->name == 'Presales')
-                  <button type="button" class="btn btn-md btn-success float-right margin-bottom" data-toggle="modal" data-target="#formResult">Result</button>
+                  <button type="button" class="btn btn-md btn-success float-right margin-bottom" onclick="formResult('{{$tampilkan->lead_id}}')">Result</button>
                   @endif
                 </div>
               </form>
@@ -1164,88 +1123,156 @@
 
 
   <!--Modal Result-->
-  <div class="modal fade" id="formResult" role="dialog">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Choose Result</h4>
-        </div>
-        <div class="modal-body">
-          <form method="POST" action="{{url('update_result')}}" id="modalResult" name="modalResult">
-            @csrf
-          <div class="form-group">
-            <input type="" name="submit_price_result" id="submit_price_result" value="{{$tampilkanc->submit_price}}" hidden>
-            <input type="" name="deal_price_result" id="deal_price_result" value="{{$tampilkanc->deal_price}}" hidden>
-            <input type="" name="lead_id_result" id="lead_id_result" value="{{$tampilkan->lead_id}}" hidden>
-            <h5><b>Opp Name : <i>{{$tampilkan->opp_name}}</i></b></h5><br>
-            <div>
-              <select class="form-control" id="result" name="result" required>
-                  <option value="">-- Choose Result --</option>
-                    <option value="WIN" data-target="win">WIN</option>
-                    <option value="LOSE" data-target="lose">LOSE</option>
-                    <option value="HOLD">HOLD</option>
-                    <option value="CANCEL">CANCEL</option>
-                    <option value="SPECIAL">SPECIAL</option>
-              </select>
+    <div class="modal fade" id="formResult" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Choose Result</h4>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-danger" id="alert_result" role="alert" style="display: none">
+              <ul id="ul-warning-result">
+                
+              </ul>
             </div>
-            <br>
+            <form method="POST" action="{{url('update_result')}}" id="modalResult" name="modalResult">
+              @csrf
+              <div class="tab active-tab">
+                <div class="form-group">
+                  <input type="" name="submit_price_result" id="submit_price_result" value="{{$tampilkanc->submit_price}}" hidden>
+                  <input type="" name="deal_price_result" id="deal_price_result" value="{{$tampilkanc->deal_price}}" hidden>
+                  <input type="" name="lead_id_result" id="lead_id_result" value="{{$tampilkan->lead_id}}" hidden>
+                  <h5><b>Opp Name : <i>{{$tampilkan->opp_name}}</i></b></h5>
+                  <div>
+                    <select class="form-control" id="result" name="result" required>
+                        <option value="">-- Choose Result --</option>
+                          <option value="WIN">WIN</option>
+                          <option value="LOSE">LOSE</option>
+                          <option value="HOLD">HOLD</option>
+                          <option value="CANCEL">CANCEL</option>
+                          <option value="SPECIAL">SPECIAL</option>
+                    </select>
+                  </div>                
+                </div>
+
+                <div class="form-group">
+                  <label><b>Closing Date</b></label>
+                  <input type="text" class="form-control" name="update_closing_date" id="update_closing_date" required>
+                </div>
+
+                <div class="form-group" id="result-win" style="display: none;">
+
+                  <label>Project Type</label>
+                  <select class="form-control" id="project_type" name="project_type" >
+                    <option value="">-- Choose Result --</option>
+                    <option value="Supply Only">Supply Only</option>
+                    <option value="Implementation">Implementation</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Managed-Services">Managed-Services</option>
+                    <option value="Services">Services</option>
+                  </select>           
+
+                  <label style="padding-top: 15px;">No. Quote</label>
+                  <select class="form-control" id="quote_number_final" name="quote_number_final" style="width: 100%; ">
+                    <option value="">Choose Quote</option>
+                    @foreach($get_quote_number as $data)
+                    <option value="{{$data->quote_number}}">{{$data->quote_number}} - {{$data->customer_legal_name}}</option>
+                    @endforeach
+                  </select><br><br> 
+
+                  <label>Date PO</label>
+                  <input type="text" name="date_po" id="date_po_result" class="form-control" ><br>
+                  
+                  <label>No. PO</label>
+                  <input type="text" name="no_po" id="no_po_result" class="form-control" disabled=""><br>
+                  
+                  <label>Amount PO <sup><b>(Grand Total)</b></sup></label>
+                  <input type="text" name="amount_pid" id="amount_pid_result" class="form-control money" disabled=""><br>
+
+                  <label class="checkbox" style="padding-left: 25px; padding-top: 10px;" id="checkbox_result">
+                    <input type="checkbox" name="request_id" id="request_id" style="width: 7px;height: 7px">
+                    <span>Request ID Project <sup>(Optional)</sup></span>
+                  </label>
+                </div>
+                
+                <div class="form-group" id="result-lose" style="display: none;">
+                  <label><b>Description</b></label>
+                  <textarea type="text" class="form-control" placeholder="Enter Description" name="Description" id="keterangan" required> </textarea>
+                </div>
+              </div>
+              <div class="tab non-active-tab">
+                <div class="form-group">
+                  <table class="table" id="table-product">
+                    <thead>
+                      <tr>
+                        <th>Product Tag</th>
+                        <th>Technology Tag</th>
+                        <th>Price</th>
+                        <th class="text-center">
+                          <button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;" id="addProductTech">
+                            <i class="fa fa-plus"></i>
+                          </button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbtagprice">
+                    </tbody>
+                  </table>
+                  <table class="table" id="table-service">
+                    <thead>
+                      <tr>
+                        <th>Service Type</th>
+                        <th>Price</th>
+                        <th class="text-center">
+                          <button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;" id="addService">
+                            <i class="fa fa-plus"></i>
+                          </button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbserviceprice">
+                    </tbody>
+                  </table>
+                  <table class="table" id="table-grand-total" style="display: none;">
+                    <tbody id="tbgrantotal">
+                      <tr>
+                        <td style='white-space: nowrap;width: 20%;vertical-align: middle;'>
+                          <b>Grand Total</b>
+                        </td>
+                        <td style='white-space: nowrap;width: 80%'>
+                          <div class='input-group'>
+                            <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>
+                            <input class='form-control' type='text' id="input_gran_total" readonly="true">
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <!-- <table class="table" id="table-technology">
+                    <thead>
+                      <tr>
+                        <th>Technology Tag</th>
+                        <th>List Price
+                          <button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;float: right;" id="addProductTech"><i class="fa fa-plus"></i></button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbtagprice">
+                    </tbody>
+                  </table> -->
+                </div>
+              </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" id="prevBtn" onclick="closeClick()">Close</button>
+              <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextPrev('{{$tampilkan->lead_id}}')">Submit</button>
+            <!--   <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-sm btn-primary">Submit</button> -->
+            </div>
+          </form>
           </div>
-
-          <div class="form-group">
-	            <label><b>Closing Date</b></label>
-	            <input type="text" class="form-control" name="update_closing_date" id="update_closing_date" required>
-	       </div>
-
-          <div class="form-group" id="result-win" style="display: none;">
-            <label><u>Mohon Isi input di bawah sebelum submit!</u></label>
-
-            <label>Project Type</label>
-            <select class="form-control" id="project_type" name="project_type" >
-              <option value="">-- Choose Result --</option>
-              <option value="Supply Only">Supply Only</option>
-              <option value="Implementation">Implementation</option>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Managed-Services">Managed-Services</option>
-              <option value="Services">Services</option>
-            </select><br>            
-
-            <label style="padding-top: 15px;">No. Quote</label>
-            <select class="form-control" id="quote_number_final" name="quote_number_final" style="width: 100%; ">
-            	<option value="">Choose Quote</option>
-              @foreach($get_quote_number as $data)
-              <option value="{{$data->quote_number}}">{{$data->quote_number}} - {{$data->customer_legal_name}}</option>
-              @endforeach
-            </select><br><br> 
-
-            <label>Date PO</label>
-            <input type="text" name="date_po" id="date_po_result" class="form-control date" ><br>
-            
-            <label>No. PO</label>
-            <input type="text" name="no_po" id="no_po_result" class="form-control" disabled=""><br>
-            
-            <label>Amount PO <sup><b>(Grand Total)</b></sup></label>
-            <input type="text" name="amount_pid" id="amount_pid_result" class="form-control money" disabled=""><br>
-
-            <label class="checkbox" style="padding-left: 25px; padding-top: 10px;" id="checkbox_result">
-              <input type="checkbox" name="request_id" id="request_id" style="width: 7px;height: 7px">
-              <span>Request ID Project <sup>(Optional)</sup></span>
-            </label>
-
-          </div>
-          
-          <div class="form-group" id="result-lose" style="display: none;">
-            <label><b>Description</b></label>
-            <textarea type="text" class="form-control" placeholder="Enter Description" name="Description" id="keterangan" required> </textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-          </div>
-        </form>
         </div>
       </div>
     </div>
-  </div>
 
   <!--status PMO-->
   <div class="modal fade" id="formResult2" role="dialog">
@@ -1636,6 +1663,575 @@
     <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script type="text/javascript">
+      $('.money').mask('000,000,000,000,000', {reverse: true});
+      function formResult(n){
+        // var lead = $("#lead_id_result").val();        
+        $("#formResult").modal("show"); 
+        
+      }
+
+      function nextPrev(){
+        if ($("#deal_price_result").val() == "") {
+          $("#alert_result").css("display","block");   
+          $("#ul-warning-result").empty();  
+          var append = "";
+          append = append + "<li> Your deal price is empty,please fill and submit before choose the result!</<li>"
+          $("#ul-warning-result").append(append);       
+        }else if($("#update_closing_date").val() == "" || $("#date_po_result").val() == "" || $("#no_po_result").val() == "" || $("#amount_pid_result").val() == ""){
+          var append = "";
+          if ($("#update_closing_date").val() == "") {
+            append = append + "<li> Please fill closing date!</<li>"
+            $("#update_closing_date").parent().addClass("has-error has-feedback")
+          }else if ($("#date_po_result").val() == "") {
+            append = append + "<li> Please fill date PO!</<li>"
+          }else if ($("#no_po_result").val() == "") {
+            append = append + "<li> Please fill no PO!</<li>"
+          }else if ($("#amount_pid_result").val() == "") {
+            append = append + "<li> Please fill amount PO!</<li>"
+          }
+          $("#alert_result").css("display","block");   
+          $("#ul-warning-result").empty();  
+          $("#ul-warning-result").append(append);  
+        }
+        else
+        {
+          $("#alert_result").css("display","none");
+          $("#prevBtn").attr('onclick','prevClick("'+lead_id+'")');
+
+          if ($('.active-tab').next('.tab').length) {
+              $('.active-tab').removeClass('active-tab')
+                          .addClass('non-active-tab')
+                          .next('.tab')
+                          .addClass('active-tab')
+                          .removeClass('non-active-tab');
+
+          document.getElementById("prevBtn").innerHTML = "Prev";
+          document.getElementById("nextBtn").innerHTML = "Submit";
+          }
+
+          $.ajax({
+              url: "/sales/getProductTechByLead",
+              type:"GET",
+              data:{
+                lead_id:lead_id,
+              },
+              success: function(result){
+                $("#tbtagprice").empty();
+                var append = ""
+                $.each(result, function(key, value){
+                  append = append + "<tr class='existing-products'>"
+                  append = append + "<td class='existing-id' style='vertical-align: middle;''>"
+                  append = append + value.name_product  + "<input class='existing-id-product' value='"+value.id.substr(1)+"' hidden/>"
+                  append = append + "</td>"
+                  append = append + "<td>"
+                  append = append + " <div class='input-group'>"
+                  append = append + "   <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+                  append = append + "   <input class='money form-control existing-price' data-value='" + i + "' type='text' placeholder='Enter Product Price' name='project_budget'>"
+                  // append = append + "   <i style='margin-top: -47px'>Rp.</i>"
+                  append = append + "    <span class='input-group-btn'>"
+                  append = append + "      <button type='button' style='width: auto !important;margin-left: 10px;' class='btn btn-danger btn-flat btn-trash'>"
+                  append = append + "        <i class='fa fa-trash'></i>"
+                  append = append + "      </button>"
+                  append = append + "    </span>"
+                  append = append + " </div>"
+                  append = append + "</td>"
+                  // append = append + "<td>"
+                  // append = append + "<button type='button' data-value='"+i+"' id='btnDelPrice' class='btn btn-sm btn-danger' onclick='btnDeleteTags('')'' style='width:35px'><i class='btn-trash fa fa-trash'></i></button>"
+                  // append = append + "</td>"
+                  append = append + "</tr>"
+                  
+                })
+                $("#tbtagprice").append(append) 
+                initmoney();
+              },
+          })
+
+          var i = 0;
+          $("#addProductTech").click(function(){
+            $("#nextBtn").prop("disabled",false);
+            $.ajax({
+              url:"/sales/getProductTechTagDetail",
+              type:"GET",
+              data:{
+                lead_id:lead_id,
+              },
+              success:function(result){
+                $("#searchTagsProduct[data-value='" + i + "']").empty("");
+                $("#searchTagsTechnology[data-value='" + i + "']").empty(""); 
+                var product_tag = result.product_tag;
+                var product_tag_selectOption = [];
+
+                var technology_tag = result.technology_tag;
+                var technology_tag_selectOption = [];
+
+                $.each(product_tag,function(key,value){
+                  product_tag_selectOption.push(value)
+                })
+
+                $.each(technology_tag,function(key,value){
+                  technology_tag_selectOption.push(value)
+                })
+
+                var TagProduct = $("#searchTagsProduct[data-value='" + i + "']").select2({
+                  dropdownParent: $('#formResult'),
+                  placeholder: " Select #Tags#Product",
+                  data:product_tag_selectOption,
+                  templateSelection: function(selection,container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                  }
+                })
+                var TagProduct = $("#searchTagsTechnology[data-value='" + i + "']").select2({
+                  dropdownParent: $('#formResult'),
+                  placeholder: " Select #Tags#Technology",
+                  data:technology_tag_selectOption,
+                  templateSelection: function(selection,container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                  }
+                })
+              }
+            })   
+
+            i++;
+            var append = ""
+            append = append + "<tr class='new-product'>"
+            append = append + " <td>"
+            append = append + "   <select class='form-control select2-customProduct'  data-value='" + i + "' id='searchTagsProduct'  style='width: 100%!important'></select>"
+            append = append + " </td>"
+            append = append + " <td>"
+            append = append + "   <select class='form-control select2-customTechnology'  data-value='" + i + "' id='searchTagsTechnology'  style='width: 100%!important'></select>"
+            append = append + " </td>"
+            append = append + " <td style='white-space: nowrap'>"
+            append = append + "  <div class='input-group'>"
+            append = append + "    <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+            append = append + "    <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price' name='project_budget'>"
+            append = append + "   </div>"
+            append = append + " </td>"
+            append = append + " <td class='text-center'>"
+            append = append + "   <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash'>"
+            append = append + "     <i class='fa fa-trash'></i>"
+            append = append + "   </button>"
+            append = append + " </td>"
+            append = append + "</tr>"
+
+            $("#tbtagprice").append(append) 
+            initmoney();
+          })
+
+          $("#addService").click(function(){
+            $("#nextBtn").prop("disabled",false);
+            $(this).hide()
+
+            var append = ""
+            append = append + "<tr class='new-product new-service'>"
+            append = append + " <td style='vertical-align:middle'>"
+            // append = append + "   <select class='form-control select2-customService'  data-value='" + i + "' id='searchService'  style='width: 100%!important'></select>"
+            append = append + "   <b>PM Cost</b>"
+            append = append + " </td>"
+            append = append + " <td style='white-space: nowrap'>"
+            append = append + "  <div class='input-group'>"
+            append = append + "    <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+            append = append + "    <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Service Price'>"
+            append = append + "   </div>"
+            append = append + " </td>"
+            append = append + " <td class='text-center'>"
+            append = append + "   <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash'>"
+            append = append + "     <i class='fa fa-trash'></i>"
+            append = append + "   </button>"
+            append = append + " </td>"
+            append = append + "</tr>"
+
+            $("#tbserviceprice").append(append)
+
+            // var service_selectOption = [
+            //   {'id':1,text:'PM Cost'},
+            //   {'id':2,text:'Implementation Cost'},
+            //   {'id':3,text:'Maintenance Cost'}
+            // ]
+
+            // $("#searchService[data-value='"+i+"']").select2({
+            //   dropdownParent: $('#formResult'),
+            //   placeholder: " Select #Tags#Service",
+            //   data:service_selectOption,
+            //   templateSelection: function(selection,container) {
+            //     return $.parseHTML('<span>' + selection.text + '</span>');
+            //   }
+            // })
+
+            i++;
+            initmoney();
+          })
+
+          $("#nextBtn").attr('onclick','submitBtnWin(1)');
+        }
+      } 
+
+      $(document).on('change', '.new-price', function() {
+        var sum = 0
+        $('.new-price').each(function() {
+            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+            sum += temp;
+            console.log(temp)
+        });
+        $("#table-grand-total").show()
+        var formatter = new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
+
+        console.log(sum)
+        $("#input_gran_total").val(formatter.format(sum))
+      });
+
+      var lead_id = window.location.href.split("/")[4];
+      $('#result').on('change', function (e) {
+        var optionSelected = $("option:selected", this);
+        var valueSelected = this.value;
+        console.log(valueSelected);
+          if (valueSelected == "WIN") {
+            document.getElementById("nextBtn").innerHTML = "Next";
+            // $("#nextBtn").attr('onclick','nextPrev()');
+            $("#result-win").css("display", "block");
+            $("#result-lose").css("display", "none");
+            $("#nextBtn").attr('onclick','nextPrev()');
+          } 
+          else {
+            document.getElementById("nextBtn").innerHTML = "Submit";
+            $("#result-win").css("display","none");
+            $("#result-lose").css("display", "block");
+            
+            
+            $("#nextBtn").attr('onclick','submitBtn(1)');
+            $("#alert_result").css("display","none");
+          }
+        
+      })
+
+      //   var sum = 0;
+      // function test(){
+      //   $('.new-price').each(function() {
+      //     console.log($(this).val())
+      //       sum += parseInt($(this).val().replace(',',''));
+      //   });
+
+      //   console.log(sum);
+      // }
+
+
+
+
+      function initmoney(){
+        $('.money').mask('000,000,000,000,000', {reverse: true});
+      } 
+
+      $(".existing-price").toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"); 
+      $(".new-price").addClass("money"); 
+
+      function prevClick(n){
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You'll lost your activity in this tab!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if ($('.active-tab').prev('.tab').length) {
+            $('.active-tab').removeClass('active-tab')
+                        .addClass('non-active-tab')
+                        .prev('.tab')
+                        .addClass('active-tab')
+                        .removeClass('non-active-tab');
+              document.getElementById("nextBtn").innerHTML = "Next";
+              document.getElementById("prevBtn").innerHTML = "Close";
+              $("#prevBtn").attr('onclick','closeClick()');
+              $("#nextBtn").attr('onclick','nextPrev("'+n+'")');
+            }
+          }
+        })
+      }
+
+      function closeClick(){
+        $("#formResult").modal("hide"); 
+      }
+
+      $(document).on('click', '.btn-trash', function() {
+        // var trIndex = $(this).closest("tr").index();
+        // if(trIndex>0) {
+          $(this).closest("tr").remove();
+          if($(this).closest("tr.new-service").length > 0){
+            $("#addService").show()
+          }
+        // } else {
+        //   alert("Sorry!! Can't remove first row!");
+        // }
+        // console.log(trIndex)
+      });
+
+      function submitBtn(n){
+        $.ajax({
+          type:"POST",
+          url:"{{url('update_result')}}",
+          data:{
+            update_closing_date:$('#update_closing_date').val(),
+            request_id:$("#request_id").is(":checked"),
+            date_po:$("#date_po_result").val(),
+            amount_pid:$("#amount_pid_result").val(),
+            no_po:$("#no_po_result").val(),
+            project_type:$("#project_type").val(),
+            keterangan:$("#keterangan").val(),
+            deal_price_result:$("#deal_price_result").val(),
+            result:$("#result").val(),
+            quote_number_final:$("#quote_number_final").val(),
+            lead_id_result:$("#lead_id_result").val(),
+            _token:"{{ csrf_token() }}"
+          },
+          success: function(){
+            Swal.hideLoading()
+            Swal.fire({
+              title: 'Success!',
+              html: "<p style='text-align:center;'>You've set result to "+$("#result").val()+"</p>",
+              type: 'success',
+              confirmButtonText: 'Reload',
+            }).then((result) => {
+              $("#formResult").modal('hide')
+              location.reload();
+            })
+          }
+        })
+        console.log(n);
+      }
+
+      function submitWinStep2(){
+        var emptyProduct = $("#table-product #tbtagprice tr input").filter(function() {
+          return !this.value.trim();
+        })
+        var itemsProduct = emptyProduct.map(function() {
+          return this.placeholder;
+        }).get();
+
+        var emptyService = $("#table-service #tbserviceprice tr input").filter(function() {
+          return !this.value.trim();
+        })
+        var itemsSerice = emptyService.map(function() {
+          return this.placeholder;
+        }).get();
+
+        if (itemsProduct.includes("Enter Product Price")) {
+          Swal.fire({
+            title: 'Can`t Submit Result!',
+            icon: 'error',
+            html: "<p style='text-align:center;'>Please Select Product and fill Price!!</p>",
+            confirmButtonText: 'Oke',
+          })
+        } else if (itemsSerice.includes("Enter Service Price")) {
+          Swal.fire({
+            title: 'Can`t Submit Result!',
+            icon: 'error',
+            html: "<p style='text-align:center;'>Please Select Service and fill Price!!</p>",
+            confirmButtonText: 'Oke',
+          })
+        } else {
+          var tagProduct = []
+          $('#table-product #tbtagprice .new-product').each(function() {
+            tagProduct.push({
+              tag_price:$(this).find(".new-price").val().replace(/\D/g, ""),
+              tag_product:{
+                productTag:$(this).find('.select2-customProduct').select2("data")[0].id.substr(1),
+                techTag:$(this).find('.select2-customTechnology').select2("data")[0].id.substr(1)
+              }
+            })
+          });
+
+          var tagService = []
+          $('#table-service #tbserviceprice .new-product').each(function() {
+            tagService.push({
+              tag_price:$(this).find(".new-price").val().replace(/\D/g, ""),
+              // tag_service:$(this).find('.select2-customService').select2("data")[0].id,
+              tag_service:1,
+            })
+          });
+
+          var tagData = {
+            tagProduct:tagProduct,
+            tagService:tagService
+          }
+
+          console.log(tagData)
+
+          Swal.fire({
+            title: 'Please Wait..!',
+            html: "<p style='text-align:center;'>It's processing..</p>",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"POST",
+            url:"{{url('update_result')}}",
+            data:{
+              update_closing_date:$('#update_closing_date').val(),
+              request_id:$("#request_id").is(":checked"),
+              date_po:$("#date_po_result").val(),
+              amount_pid:$("#amount_pid_result").val(),
+              no_po:$("#no_po_result").val(),
+              project_type:$("#project_type").val(),
+              keterangan:$("#keterangan").val(),
+              deal_price_result:$("#deal_price_result").val(),
+              result:$("#result").val(),
+              quote_number_final:$("#quote_number_final").val(),
+              lead_id_result:$("#lead_id_result").val(),
+              // tagsOld:tagsOld,
+              // tagsNew:tagsNew,
+              tagData:tagData,
+              _token:"{{ csrf_token() }}"
+            },
+            success: function(){
+              Swal.hideLoading()
+              Swal.fire({
+                title: 'Success!',
+                html: "<p style='text-align:center;'>You've set result to " + $("#result").val() + "</p>",
+                type: 'success',
+                confirmButtonText: 'Reload',
+              }).then((result) => {
+                $("#formResult").modal('hide')
+                location.reload();
+              })
+            }
+          })
+        }
+      }
+
+      function submitBtnWin(n){
+        $("#nextBtn").prop("disabled",true);
+        $("#prevBtn").prop("disabled",true);
+
+        var rowCount = $('#tbtagprice tr').length + $('#tbserviceprice tr').length
+
+        if (rowCount == 0) {
+          Swal.fire({
+            title: 'Are you sure?',
+            icon: 'warning',
+            html: "<p style='text-align:center;'>To change this status of this lead without adding price?</p>",
+            confirmButtonText: 'Yes',
+            showCancelButton: true,
+            cancelButtonText: 'No'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              submitWinStep2()
+            } else {
+              Swal.close()
+            }
+          })
+        } else {
+          submitWinStep2()
+        }
+
+        
+
+        
+        // var rowCount = $('#tbtagprice tr').length;
+        // if (rowCount == 0) {
+        //   Swal.fire({
+        //     title: 'Can`t Submit Result!',
+        //     icon: 'warning',
+        //     html: "<p style='text-align:center;'>Please Add the Product and Price!!</p>",
+        //     confirmButtonText: 'Oke',
+        //   })
+        // }else{
+        //    console.log(rowCount);
+        //     productid = [];
+        //     productidNew = [];
+        //     tagsOld = [];
+        //     tagsNew = [];
+
+        //     var $empty = $("#table-product #tbtagprice tr input").filter(function() {
+        //       return !this.value.trim();
+        //     }),
+        //     valid = $empty.length == 0,
+        //     items = $empty.map(function() {
+        //       return this.placeholder;
+        //     }).get();
+
+        //     if (!valid) {
+        //       Swal.fire({
+        //         title: 'Can`t Submit Result!',
+        //         icon: 'warning',
+        //         html: "<p style='text-align:center;'>Please Select Product and fill Price!!</p>",
+        //         confirmButtonText: 'Oke',
+        //       })
+        //     }else{
+        //         $('#table-product #tbtagprice .existing-products').each(function() {
+        //           var price = $(this).find(".existing-price").val().replace(/\D/g, "");
+        //           var idOld = $(this).find(".existing-id .existing-id-product").val();
+        //           var nameOld = $(this).find(".existing-id").text();
+        //           tagsOld.push({id_product_relation:idOld,price_product:price,name_product:nameOld})
+        //         });
+
+
+        //         $('#table-product #tbtagprice .new-product').each(function() {
+
+        //           var price = $(this).find(".new-price").val().replace(/\D/g, "");
+
+        //           var idNew = $(this).find('.select2-custom').select2("data")[0].id.substr(1); 
+
+        //           var nameNew = $(this).find('.select2-custom').select2("data")[0].text;   
+
+        //           tagsNew.push({id_product:idNew,price_product:price,name_product:nameNew})
+        //         });
+
+        //         Swal.fire({
+        //           title: 'Please Wait..!',
+        //           html: "<p style='text-align:center;'>It's sending..</p>",
+        //           allowOutsideClick: false,
+        //           allowEscapeKey: false,
+        //           allowEnterKey: false,
+        //           onOpen: () => {
+        //             Swal.showLoading()
+        //           }
+        //         })
+                // $.ajax({
+                //   type:"POST",
+                //   url:"{{url('update_result')}}",
+                //   data:{
+                //     update_closing_date:$('#update_closing_date').val(),
+                //     request_id:$("#request_id").is(":checked"),
+                //     date_po:$("#date_po").val(),
+                //     amount_pid:$("#amount_pid_result").val(),
+                //     no_po:$("#no_po").val(),
+                //     project_type:$("#project_type").val(),
+                //     keterangan:$("#keterangan").val(),
+                //     deal_price_result:$("#deal_price_result").val(),
+                //     result:$("#result").val(),
+                //     quote_number_final:$("#quote_number_final").val(),
+                //     lead_id_result:$("#lead_id_result").val(),
+                //     // tagsOld:tagsOld,
+                //     // tagsNew:tagsNew,
+                //     tagData:tagData,
+                //     _token:"{{ csrf_token() }}"
+                //   },
+                //   success: function(){
+                //     Swal.hideLoading()
+                //     Swal.fire({
+                //       title: 'Success!',
+                //       html: "<p style='text-align:center;'>You've set result to "+$("#result").val()+"</p>",
+                //       type: 'success',
+                //       confirmButtonText: 'Reload',
+                //     }).then((result) => {
+                //       $("#formResult").modal('hide')
+                //       location.reload();
+                //     })
+                //   }
+                // })
+        //     }
+        // }
+       
+      }
+
       function addTagsProduct(lead_id){
         $("#addProductTags").modal("show")
         $.ajax({
@@ -1929,9 +2525,9 @@
       
       }
 
-
-
-      $("#quote_number_final").select2();
+      $("#quote_number_final").select2({
+        dropdownParent: $('#formResult')
+      });
 
       function edit_po(id_tb_po_cus,no_po,nominal,date,note){
       	$('#id_po_customer_edit').val(id_tb_po_cus);
@@ -1965,254 +2561,250 @@
         autoclose: true,
       }).on('changeDate', function(date) {
 
-      	if (moment(date.date).format("YYYY") < 2020) {
-      		swal("<h3>Warning Pembuatan PID!!!</h3>", "<h4>lead dengan tanggal PO tahun lalu (backdate) harap kirim email manual pada Bu Anne untuk pembuatan PID seperti proses manual terdahulu! Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</h4>")
+    	if (moment(date.date).format("YYYY") < 2020) {
+    		swal.fire("<h3>Warning Pembuatan PID!!!</h3>", "<h4>lead dengan tanggal PO tahun lalu (backdate) harap kirim email manual pada Bu Anne untuk pembuatan PID seperti proses manual terdahulu! Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</h4>")
 
-      		if ($('.date').datepicker('setDate', null)) {
-      			$("#no_po_result").prop( "disabled", true );
-	      		$("#amount_pid_result").prop( "disabled", true );
-	      		$("#quote_number_final").prop( "disabled", true );
-	      		$("#checkbox_result").css("display", "none");
-      		}
-      		console.log($('#date').val())
-      	}else{
-      		$("#no_po_result").prop( "disabled", false );
-	      	$("#amount_pid_result").prop( "disabled", false );
-	      	$("#checkbox_result").css("display", "block");
-	      	$("#quote_number_final").prop( "disabled", false );
-      	}
+    		if ($('.date').datepicker('setDate', null)) {
+    			$("#no_po_result").prop( "disabled", true );
+      		$("#amount_pid_result").prop( "disabled", true );
+      		$("#quote_number_final").prop( "disabled", true );
+      		$("#checkbox_result").css("display", "none");
+    		}
+    		console.log($('#date').val())
+    	}else{
+    		$("#no_po_result").prop( "disabled", false );
+      	$("#amount_pid_result").prop( "disabled", false );
+      	$("#checkbox_result").css("display", "block");
+      	$("#quote_number_final").prop( "disabled", false );
+    	}
+    });
 
-      	
-      });
+      // $(document).ready(function(){
+      //     $('#result').on('change', function() {
+      //        var target=$(this).find(":selected").attr("data-target");
+      //        var id=$(this).attr("id");
+      //       $("div[id^='"+id+"']").hide();
+      //      $("#"+id+"-"+target).show();
+      //     });
+      // });
 
-      $(document).ready(function(){
-          $('#result').on('change', function() {
-             var target=$(this).find(":selected").attr("data-target");
-             var id=$(this).attr("id");
-            $("div[id^='"+id+"']").hide();
-           $("#"+id+"-"+target).show();
-          });
-      });
+            
+      if ('{{$tampilkan->result}}' == 'LOSE') {
+        var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+            $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+            $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active6');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+            $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+            $('#s_tp').html("<b> TENDER PROCCESS </b>");
+            $('#s_winlose').html("<b> LOSE </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('win_lose');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
+          /*
+          $('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');
+          $('#tp').addClass('active3');
+          $('#win_lose').addClass('active');
+          $('#s_winlose').html("<b> LOSE </b>");*/
+      } else if('{{$tampilkan->result}}' == 'WIN'){
+        var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+            $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+            $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active4');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+            $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+            $('#s_tp').html("<b> TENDER PROCCESS </b>");
+            $('#s_winlose').html("<b> WIN </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('win_lose');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
+          /*
+          $('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');
+          $('#tp').addClass('active3');
+          $('#win_lose').addClass('active4');
+          $('#s_winlose').html("<b> WIN </b>");*/
+      }else if('{{$tampilkan->result}}' == 'HOLD'){
+        var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+            $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+            $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+            $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+            $('#s_tp').html("<b> TENDER PROCCESS </b>");
+            $('#s_winlose').html("<b> HOLD </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('win_lose');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
+          /*
+          $('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');
+          $('#tp').addClass('active3');
+          $('#win_lose').addClass('active4');
+          $('#s_winlose').html("<b> WIN </b>");*/
+      }else if('{{$tampilkan->result}}' == 'SPECIAL'){
+        var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+            $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+            $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+            $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+            $('#s_tp').html("<b> TENDER PROCCESS </b>");
+            $('#s_winlose').html("<b> SPECIAL </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('win_lose');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
+          /*
+          $('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');
+          $('#tp').addClass('active3');
+          $('#win_lose').addClass('active4');
+          $('#s_winlose').html("<b> WIN </b>");*/
+      }else if('{{$tampilkan->result}}' == 'CANCEL'){
+        var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+            $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+            $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+            $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+            $('#s_tp').html("<b> TENDER PROCCESS </b>");
+            $('#s_winlose').html("<b> CANCEL </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('win_lose');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
+          /*
+          $('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');
+          $('#tp').addClass('active3');
+          $('#win_lose').addClass('active4');
+          $('#s_winlose').html("<b> WIN </b>");*/
+      } else if('{{$tampilkan->result}}' == ''){
+          var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('open');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
 
-          console.log('{{$tampilkan->result}}');      
-          if ('{{$tampilkan->result}}' == 'LOSE') {
-            var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-                $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-                $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active6');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-                $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-                $('#s_tp').html("<b> TENDER PROCCESS </b>");
-                $('#s_winlose').html("<b> LOSE </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('win_lose');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
-              /*
-              $('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');
-              $('#tp').addClass('active3');
-              $('#win_lose').addClass('active');
-              $('#s_winlose').html("<b> LOSE </b>");*/
-          } else if('{{$tampilkan->result}}' == 'WIN'){
-            var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-                $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-                $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active4');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-                $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-                $('#s_tp').html("<b> TENDER PROCCESS </b>");
-                $('#s_winlose').html("<b> WIN </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('win_lose');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
-              /*
-              $('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');
-              $('#tp').addClass('active3');
-              $('#win_lose').addClass('active4');
-              $('#s_winlose').html("<b> WIN </b>");*/
-          }else if('{{$tampilkan->result}}' == 'HOLD'){
-            var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-                $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-                $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-                $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-                $('#s_tp').html("<b> TENDER PROCCESS </b>");
-                $('#s_winlose').html("<b> HOLD </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('win_lose');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
-              /*
-              $('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');
-              $('#tp').addClass('active3');
-              $('#win_lose').addClass('active4');
-              $('#s_winlose').html("<b> WIN </b>");*/
-          }else if('{{$tampilkan->result}}' == 'SPECIAL'){
-            var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-                $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-                $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-                $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-                $('#s_tp').html("<b> TENDER PROCCESS </b>");
-                $('#s_winlose').html("<b> SPECIAL </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('win_lose');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
-              /*
-              $('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');
-              $('#tp').addClass('active3');
-              $('#win_lose').addClass('active4');
-              $('#s_winlose').html("<b> WIN </b>");*/
-          }else if('{{$tampilkan->result}}' == 'CANCEL'){
-            var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-                $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-                $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-                $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-                $('#s_tp').html("<b> TENDER PROCCESS </b>");
-                $('#s_winlose').html("<b> CANCEL </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('win_lose');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
-              /*
-              $('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');
-              $('#tp').addClass('active3');
-              $('#win_lose').addClass('active4');
-              $('#s_winlose').html("<b> WIN </b>");*/
-          } else if('{{$tampilkan->result}}' == ''){
-              var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('open');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
+          /*
+          setInterval(function (){
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+          })*//*
+          $('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');*/
+      } else if('{{$tampilkan->result}}' == 'SD'){
+        var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+            $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('sd');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
+          /*$('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');*/
+      } else if('{{$tampilkan->result}}' == 'TP'){
+        var i = 0;
+          setInterval(function (){
+            $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+            i++
+            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+            $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+            $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+            $('#s_init').html("<b> INITIAL </b>");
+            $('#s_open').html("<b> OPEN </b>");
+            $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+            $('#s_tp').html("<b> TENDER PROCCESS </b>");
+          },1000)
+          var kedipan = 500; 
+          var dumet = setInterval(function () {
+              var ele = document.getElementById('tp');
+              ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+          }, kedipan);
+        /*  $('#init').addClass('active5');
+          $('#open').addClass('active1');
+          $('#sd').addClass('active2');
+          $('#tp').addClass('active3');*/
+      } else if ('{{$tampilkan->result}}' == 'OPEN') {
+          $('#init').addClass('active5');
+      }
 
-              /*
-              setInterval(function (){
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-              })*//*
-              $('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');*/
-          } else if('{{$tampilkan->result}}' == 'SD'){
-            var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-                $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('sd');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
-              /*$('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');*/
-          } else if('{{$tampilkan->result}}' == 'TP'){
-            var i = 0;
-              setInterval(function (){
-                $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-                i++
-                $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-                $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-                $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-                $('#s_init').html("<b> INITIAL </b>");
-                $('#s_open').html("<b> OPEN </b>");
-                $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-                $('#s_tp').html("<b> TENDER PROCCESS </b>");
-              },1000)
-              var kedipan = 500; 
-              var dumet = setInterval(function () {
-                  var ele = document.getElementById('tp');
-                  ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-              }, kedipan);
-            /*  $('#init').addClass('active5');
-              $('#open').addClass('active1');
-              $('#sd').addClass('active2');
-              $('#tp').addClass('active3');*/
-          } else if ('{{$tampilkan->result}}' == 'OPEN') {
-              $('#init').addClass('active5');
-          }
- 
-          $('.money').mask('000,000,000,000,000', {reverse: true});
+      function updatequote(quote_number){
+        $('#quote_number').val(quote_number);
+      }
 
-          function updatequote(quote_number){
-            $('#quote_number').val(quote_number);
-          }
+      function progress(id_pmo){
+        $('#pmo_id').val(lead_id);
+      }
 
-          function progress(id_pmo){
-            $('#pmo_id').val(lead_id);
-          }
+      $('#datastable').dataTable();
 
-          $('#datastable').dataTable();
-
-          $('#data_po').dataTable({
+      $('#data_po').dataTable({
           	"footerCallback": function( row, data, start, end, display ) {
 			  
-  			var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp' ).display;
+  			   var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp' ).display;
 
             var api = this.api(),data;
   	        // Remove the formatting to get integer data for summation
@@ -2221,9 +2813,9 @@
     		  i.replace(/[\$,]/g, '')*1 :
     		  typeof i === 'number' ?
     		  i : 0;
-    		};
+    		  };
 
-			var filtered = api.column( 3, {"filter": "applied"} ).data().sum();
+			    var filtered = api.column( 3, {"filter": "applied"} ).data().sum();
 	           
 	        $( api.column( 3 ).footer() ).html(numFormat(filtered) + '');
 		   },
@@ -2261,7 +2853,7 @@
           });
       });
 
-      function showKeterangan() {
+      /*function showKeterangan() {
         var selectBox = document.getElementById('result');
         var UserInput = selectBox.options[selectBox.selectedIndex].value;
         if (UserInput == 'lose') {
@@ -2271,7 +2863,7 @@
         }
 
         return false;
-      }
+      }*/
 
       $(function() {
         $('#project_class').change(function(){
@@ -2301,6 +2893,7 @@
           $select.append($('<option></option>').val(i).html(i))
         } --}}
       });
+
     </script>  
     <style type="text/css">
     .transparant{
