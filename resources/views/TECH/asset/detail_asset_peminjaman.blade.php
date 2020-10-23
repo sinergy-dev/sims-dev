@@ -9,7 +9,7 @@
 
 <section class="content-header">
   <h1>
-    SIP Detail Asset Management
+    SIP Detail Asset Tech
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
