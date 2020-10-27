@@ -149,6 +149,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getCustomerbyDate2', 'ReportController@getCustomerbyDate2');
 	Route::get('/total_deal_price','ReportController@total_deal_price');
 
+
 	/*Route::get('/presales','SalesController@index')->middleware('TechnicalPresalesMiddleware', 'ManagerStaffMiddleware')*/;
 	Route::post('/update_sd/{lead_id}', 'SalesController@update_sd');
 	Route::post('/assign_to_presales','SalesController@assign_to_presales');
@@ -210,6 +211,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
 	Route::get('/report_product_technology','ReportController@report_product_technology');
 	Route::get('/getFilterTags','ReportController@getFilterTags');
+
+	Route::get('/report_product_index','ReportController@report_product_index');
+	Route::get('/getreportproduct','ReportController@getreportproduct');
 
 	//route report customer msp
 	Route::get('/getreportcustomermsp','ReportController@getreportcustomermsp');
