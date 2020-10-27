@@ -734,6 +734,9 @@
       			<li class="activeable2">
       				<a href="{{url('/report_product_technology')}}" style="font-size: 14px">Report Tags</a>
       			</li>
+      			<li class="activeable2">
+      				<a href="{{url('/report_product_index')}}" style="font-size: 14px">Report Products</a>
+      			</li>
       			@if(Auth::User()->email == 'tech@sinergy.co.id')
       			<li class="activeable2">
       				<a href="{{url('/report_deal_price')}}" style="font-size: 14px">Report Range by Deal Price</a>
