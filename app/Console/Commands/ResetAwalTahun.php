@@ -48,25 +48,35 @@ class ResetAwalTahun extends Command
         $i = 0;
         foreach ($variable as $key => $value) {
           if(strpos($value->summary,'Cuti Bersama') === 0){
-            if(strpos($value->start->date ,date('Y')) === 0){
-              echo $value->start->date . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
+            if(strpos($value->start->date , date('Y')) === 0){
+              // echo "</br>". $value->start->date . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
               $i++;
             }
           }
         }
 
-        $cuti_custom = DB::table('tb_cuti_custom')->count();
+        // $cuti_custom = DB::table('tb_cuti_custom')->count();
 
-        $total_cuti = $i + $cuti_custom;
+        // $total_cuti = $i + $cuti_custom;
 
-        print_r(12  - $total_cuti);
+        // print_r(12  - $total_cuti);
+
+        $total_cuti = 12 - $i;
+
+        echo("cuti". $total_cuti);
         
         $reset = User::select('nik','name')->where('status_karyawan','cuti')->get();
 
+        // $update = User::where('nik',$reset->nik)->first();
+        //     // $data->cuti2 = 12 - $total_cuti;
+        // $update->cuti2 = $total_cuti;
+        // $update->update();
+
         foreach ($reset as $data) {
             $update = User::where('nik',$data->nik)->first();
-            $data->cuti2 = 12 - $total_cuti;
-            $data->update();
+            // $data->cuti2 = 12 - $total_cuti;
+            $update->cuti2 = $total_cuti;
+            $update->update();
 
         }
     }
