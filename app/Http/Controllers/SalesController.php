@@ -21,6 +21,11 @@ use App\SalesProject;
 use App\PMO;
 use App\PMOProgress;
 use App\SalesHandover;
+use App\ProductTag;
+use App\TechnologyTag;
+use App\ProductTagRelation;
+use App\ServiceTagRelation;
+use App\TechnologyTagRelation;
 use App\PID;
 
 use App\SalesChangeLog;
@@ -43,8 +48,7 @@ use App\QuoteMSP;
 
 
 
-class SALESController extends Controller
-{
+class SALESController extends Controller{
     /**
      * Display a listing of the resource.
      *
@@ -76,8 +80,6 @@ class SALESController extends Controller
         $cek_note = Sales::count('keterangan');
 
         $dates = Date('Y');
-
-        // $cek_initial = Sales::where('year',$dates)->where('result','OPEN')->count('result');
         
         $year = DB::table('sales_lead_register')->select('year')->where('year','!=',NULL)->groupBy('year')->get();
 
@@ -87,6 +89,10 @@ class SALESController extends Controller
                         ->select('nik')
                         ->where('lead_id',$lead_id)
                         ->first();
+
+        $tag_product = ProductTag::get();
+
+        $tag_technology = TechnologyTag::get();
 
         if($ter != null){
         	if ($pos == 'ENGINEER MANAGER') {
@@ -385,16 +391,44 @@ class SALESController extends Controller
                     
 
                     $leads = DB::table('sales_lead_register')
-                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                        ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                        ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
-                        ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year','users.nik', 'tb_pid.status')
-                        ->where('result','!=','hmm')
-                        ->where('users.id_company',1)
-                        ->orderBy('created_at','desc')
-                        ->where('users.id_territory',$ter)
-                        ->get();
-                    
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
+                    // ->leftJoin('tb_product_tag_relation','sales_lead_register.lead_id', '=', 'tb_product_tag_relation.lead_id')
+                    // ->leftJoin('tb_product_tag','tb_product_tag_relation.id_product_tag','=','tb_product_tag.id')
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_product_tag`.`name_product`) AS `name_product`
+                        FROM
+                            `tb_product_tag`
+                        INNER JOIN `tb_product_tag_relation` ON `tb_product_tag_relation`.`id_product_tag` = `tb_product_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_product_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_product_custom.lead_id");
+                    })
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`
+                        FROM
+                            `tb_technology_tag`
+                        INNER JOIN `tb_technology_tag_relation` ON `tb_technology_tag_relation`.`id_tech_tag` = `tb_technology_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_technology_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_technology_custom.lead_id");
+                    })
+                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year','users.nik', 'tb_pid.status',DB::raw('GROUP_CONCAT(tb_technology_custom.name_tech) as result_concat'),DB::raw('GROUP_CONCAT(tb_product_custom.name_product) as result_concat_2'))  
+                    ->where('result','!=','hmm')
+                    ->where('users.id_company',1)
+                    ->orderBy('created_at','desc')
+                    ->where('users.id_territory',$ter)
+                    ->groupBy('sales_lead_register.lead_id')
+                    ->groupBy('tb_pid.status')
+                    ->get();
+ 
                 } else{
 
                     $lead = DB::table('sales_lead_register')
@@ -408,18 +442,57 @@ class SALESController extends Controller
                     ->orderBy('created_at','desc')
                     ->get();
 
+                    // $leads = DB::table('sales_lead_register')
+                    //     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    //     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    //     ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
+                    //     ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year','users.nik', 'tb_pid.status')
+                    //     ->where('result','!=','hmm')
+                    //     ->where('id_territory', $ter)
+                    //     ->where('id_company','1')
+                    //     ->orderBy('created_at','desc')
+                    //     ->orwhere('year',$dates)
+                    //     ->whereYear('sales_lead_register.created_at', '=', '2019')
+                    //     ->get();
+
                     $leads = DB::table('sales_lead_register')
-                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                        ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                        ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
-                        ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year','users.nik', 'tb_pid.status')
-                        ->where('result','!=','hmm')
-                        ->where('id_territory', $ter)
-                        ->where('id_company','1')
-                        ->orderBy('created_at','desc')
-                        ->orwhere('year',$dates)
-                        ->whereYear('sales_lead_register.created_at', '=', '2019')
-                        ->get();
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
+                    // ->leftJoin('tb_product_tag_relation','sales_lead_register.lead_id', '=', 'tb_product_tag_relation.lead_id')
+                    // ->leftJoin('tb_product_tag','tb_product_tag_relation.id_product_tag','=','tb_product_tag.id')
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_product_tag`.`name_product`) AS `name_product`
+                        FROM
+                            `tb_product_tag`
+                        INNER JOIN `tb_product_tag_relation` ON `tb_product_tag_relation`.`id_product_tag` = `tb_product_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_product_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_product_custom.lead_id");
+                    })
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`
+                        FROM
+                            `tb_technology_tag`
+                        INNER JOIN `tb_technology_tag_relation` ON `tb_technology_tag_relation`.`id_tech_tag` = `tb_technology_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_technology_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_technology_custom.lead_id");
+                    })
+                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.keterangan','sales_lead_register.deal_price','sales_lead_register.year','users.nik', 'tb_pid.status',DB::raw('GROUP_CONCAT(tb_technology_custom.name_tech) as result_concat'),DB::raw('GROUP_CONCAT(tb_product_custom.name_product) as result_concat_2'))  
+                    ->where('result','!=','hmm')
+                    ->where('users.id_company',1)
+                    ->orderBy('created_at','desc')
+                    ->where('users.id_territory',$ter)
+                    ->groupBy('sales_lead_register.lead_id')
+                    ->groupBy('tb_pid.status')
+                    ->get();
 
                 }
                     
@@ -475,27 +548,6 @@ class SALESController extends Controller
                     ->where('year','2018')
                     ->get();
 
-                $leadspre = DB::table('sales_lead_register')
-                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.opp_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_solution_design.nik', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan','sales_lead_register.closing_date','sales_lead_register.deal_price','sales_lead_register.year','tb_contact.id_customer','sales_solution_design.status','users.id_territory')
-                    ->whereYear('sales_lead_register.created_at',date('Y'))
-                    ->where('sales_lead_register.result','!=','hmm')
-                    ->where('users.id_company','1')
-                    ->get();
-
-                $leads = DB::table('sales_lead_register')
-                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','users.id_company','sales_lead_register.deal_price','sales_lead_register.year','users.id_territory')
-                    ->orwhere('year',$dates)
-                    ->where('users.id_company','1')
-                    ->where('result','OPEN')
-                    ->get();
-
                 $leadsprenow = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -506,12 +558,84 @@ class SALESController extends Controller
                     ->where('sales_lead_register.result','!=','hmm')
                     ->get();
 
-                $leadsnow = DB::table('sales_lead_register')
+                $leadspre = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','users.id_company','sales_lead_register.deal_price','sales_lead_register.year','users.id_territory')
+                    ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                    ->join('users as u_presales','u_presales.nik','=','sales_solution_design.nik')
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_product_tag`.`name_product`) AS `name_product`
+                        FROM
+                            `tb_product_tag`
+                        INNER JOIN `tb_product_tag_relation` ON `tb_product_tag_relation`.`id_product_tag` = `tb_product_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_product_custom"),function($join){
+                        $join->on("sales_solution_design.lead_id","=","tb_product_custom.lead_id");
+                    })
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`
+                        FROM
+                            `tb_technology_tag`
+                        INNER JOIN `tb_technology_tag_relation` ON `tb_technology_tag_relation`.`id_tech_tag` = `tb_technology_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_technology_custom"),function($join){
+                        $join->on("sales_solution_design.lead_id","=","tb_technology_custom.lead_id");
+                    })
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.opp_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name','u_presales.name as name_presales', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.keterangan','sales_lead_register.closing_date','sales_lead_register.deal_price','sales_lead_register.year','tb_contact.id_customer','users.id_territory','sales_solution_design.status','users.nik','tb_product_custom.name_product as name_product','tb_technology_custom.name_tech as name_tech')
+                    ->whereYear('sales_lead_register.created_at',date('Y'))
+                    ->where('sales_lead_register.result','!=','hmm')
                     ->where('users.id_company','1')
+                    ->get();
+
+                $leads = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_product_tag`.`name_product`) AS `name_product`
+                        FROM
+                            `tb_product_tag`
+                        INNER JOIN `tb_product_tag_relation` ON `tb_product_tag_relation`.`id_product_tag` = `tb_product_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_product_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_product_custom.lead_id");
+                    })
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`
+                        FROM
+                            `tb_technology_tag`
+                        INNER JOIN `tb_technology_tag_relation` ON `tb_technology_tag_relation`.`id_tech_tag` = `tb_technology_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_technology_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_technology_custom.lead_id");
+                    })
+                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','users.id_company','sales_lead_register.deal_price','sales_lead_register.year','users.id_territory',DB::raw('GROUP_CONCAT(tb_product_custom.name_product) as result_concat'),DB::raw('GROUP_CONCAT(tb_technology_custom.name_tech) as result_concat_2'))
+                    ->orwhere('year',$dates)
+                    ->where('users.id_company','1')
+                    ->where('result','OPEN')
+                    ->groupBy('sales_lead_register.lead_id')
+                    ->get();
+
+                $leadsnow = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
+                    ->Leftjoin('users as u_presales', 'u_presales.nik', '=', 'sales_solution_design.nik')
+                    ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','u_presales.name as name_presales', 'sales_lead_register.result','sales_solution_design.status','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','u_sales.id_company','sales_lead_register.deal_price','sales_lead_register.year','u_sales.id_territory')
+                    ->where('u_sales.id_company','1')
                     ->where('result','OPEN')
                     ->get();
 
@@ -676,8 +800,32 @@ class SALESController extends Controller
                             ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                             ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                             ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                            ->LeftJoin(DB::raw("(
+                                SELECT
+                                    `lead_id`,
+                                    GROUP_CONCAT(`tb_product_tag`.`name_product`) AS `name_product`
+                                FROM
+                                    `tb_product_tag`
+                                INNER JOIN `tb_product_tag_relation` ON `tb_product_tag_relation`.`id_product_tag` = `tb_product_tag`.`id`
+                                GROUP BY
+                                    `lead_id`
+                              ) as tb_product_custom"),function($join){
+                                $join->on("sales_lead_register.lead_id","=","tb_product_custom.lead_id");
+                            })
+                            ->LeftJoin(DB::raw("(
+                                SELECT
+                                    `lead_id`,
+                                    GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`
+                                FROM
+                                    `tb_technology_tag`
+                                INNER JOIN `tb_technology_tag_relation` ON `tb_technology_tag_relation`.`id_tech_tag` = `tb_technology_tag`.`id`
+                                GROUP BY
+                                    `lead_id`
+                              ) as tb_technology_custom"),function($join){
+                                $join->on("sales_lead_register.lead_id","=","tb_technology_custom.lead_id");
+                            })
                             ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-                            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price')
+                            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price',DB::raw('GROUP_CONCAT("tb_product_custom.name_product") as result_concat'),DB::raw('GROUP_CONCAT("tb_technology_custom.name_tech") as result_concat_2'))
                             ->where('result','!=','hmm')
                             ->whereYear('sales_lead_register.created_at', '=', $dates-1)
                             ->orwhere('year',$dates)
@@ -748,12 +896,38 @@ class SALESController extends Controller
             ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
             ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
             ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
+            ->LeftJoin(DB::raw("(
+                SELECT
+                    `lead_id`,
+                    GROUP_CONCAT(`tb_product_tag`.`name_product`) AS `name_product`
+                FROM
+                    `tb_product_tag`
+                INNER JOIN `tb_product_tag_relation` ON `tb_product_tag_relation`.`id_product_tag` = `tb_product_tag`.`id`
+                GROUP BY
+                    `lead_id`
+              ) as tb_product_custom"),function($join){
+                $join->on("sales_lead_register.lead_id","=","tb_product_custom.lead_id");
+            })
+            ->LeftJoin(DB::raw("(
+                SELECT
+                    `lead_id`,
+                    GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`
+                FROM
+                    `tb_technology_tag`
+                INNER JOIN `tb_technology_tag_relation` ON `tb_technology_tag_relation`.`id_tech_tag` = `tb_technology_tag`.`id`
+                GROUP BY
+                    `lead_id`
+              ) as tb_technology_custom"),function($join){
+                $join->on("sales_lead_register.lead_id","=","tb_technology_custom.lead_id");
+            })
             ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory')
+            'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory',DB::raw('GROUP_CONCAT(tb_product_custom.name_product) as result_concat'),DB::raw('GROUP_CONCAT(tb_technology_custom.name_tech) as result_concat_2'))
             ->where('result','!=','hmm')
             ->whereYear('sales_lead_register.created_at', '=', $dates-1)
             ->orwhere('year',$dates)
             ->orderBy('created_at','desc')
+            ->groupBy('sales_lead_register.lead_id')
+            ->groupBy('tb_pid.status')
             ->get();
 
             $year_dif = (int)$request['year_dif'];
@@ -948,6 +1122,7 @@ class SALESController extends Controller
         }
 
         $year_now = date('Y');
+        // return $leadsnow;
 
         if (Auth::User()->id_division == 'FINANCE') {
             
@@ -955,11 +1130,9 @@ class SALESController extends Controller
 
         }else{
 
-            return view('sales/sales', compact('lead','leads', 'total_ter','total_ters','notif','notifOpen','notifsd','notiftp','id_pro','contributes','users','pmo_nik','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose','total_leads','total_opens','total_sds','total_tps','total_wins','total_loses', 'notifClaim','cek_note','cek_initial','datas','rk','gp','st','rz','jh','leadspre','year','year_now','year_dif','coba','leadsprenow','leadsnow','leadnow'));
+            return view('sales/sales', compact('lead','leads', 'total_ter','total_ters','notif','notifOpen','notifsd','notiftp','id_pro','contributes','users','pmo_nik','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose','total_leads','total_opens','total_sds','total_tps','total_wins','total_loses', 'notifClaim','cek_note','cek_initial','datas','rk','gp','st','rz','jh','leadspre','year','year_now','year_dif','coba','leadsprenow','leadsnow','leadnow','tag_product','tag_technology'));
 
         }
-
-        
     }
 
     public function getBtnFilter(Request $request)
@@ -987,6 +1160,83 @@ class SALESController extends Controller
                     ->get());
 
         return $leadsnow;
+    }
+
+    public function getListProductLead(Request $request)
+    {
+        $getListProductLead = collect(ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')->select(DB::raw('`tb_product_tag`.`id`,`tb_product_tag`.`name_product` AS `text`'))->orderBy('name_product','asc')->where('tb_product_tag_relation.lead_id',$request->lead_id)->get());
+
+        return array("results" => $getListProductLead);
+    }
+
+    public function getProductTag(Request $request)
+    {
+        $getListProductLead = collect(ProductTag::select(DB::raw('`id`,`name_product` AS `text`'))->orderBy('name_product','asc')->get());
+
+        return array("results" => $getListProductLead);
+    }
+
+    public function getPersonaTags(Request $request)
+    {
+        $getSales = DB::table('users')->selectRaw('`nik` AS `id`,`name` AS `text`')->where('id_division','sales')->where('id_position','!=','admin')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->get();
+        $getPresales = DB::table('users')->selectRaw('`nik` AS `id`,`name` AS `text`')->where('id_division','TECHNICAL PRESALES')->where('id_company',1)->orderBy('name','asc')->get(); 
+
+        return array(
+            collect(["id"=>0,"text"=>'Sales',"children"=>$getSales]),
+            // collect(["id"=>1,"text"=>'Presales',"children"=>$getPresales])
+        );
+    
+    }
+
+    public function getAllEmployee(Request $request)
+    {
+        $getAllEmployee = DB::table('users')->selectRaw('`nik` AS `id`,`name` AS `text`')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->get();
+        
+        return $getAllEmployee;
+    }
+
+    public function getProductTechTag(Request $request)
+    {
+        // $getListProductLead = collect(ProductTag::select(DB::raw("CONCAT('p',`id`) AS `id`,`name_product` AS 'text'"))->orderBy('name_product','asc')->get());
+        // $getListProductLead = collect(ProductTag::select(DB::raw("`id`,`name_product` AS 'text'"))->orderBy('name_product','asc')->get());
+
+        // return ProductTag::select(DB::raw("`id`,`name_product` AS 'text'"))->orderBy('name_product','asc')->get(); 
+        $getListProductLead = DB::table('tb_product_tag')->selectRaw('CONCAT("p",`id`) AS `id`,`name_product` AS `text`')->get(); 
+        $getListTechTag = DB::table('tb_technology_tag')->selectRaw('CONCAT("t",`id`) AS `id`,`name_tech` AS `text`')->get(); 
+
+        // $getListTechTag = collect(TechnologyTag::select(DB::raw('CONCAT("t",`id`) AS id,`name_tech` AS `text`'))->orderBy('name_tech','asc')->get());
+
+        // return collect(["data" => ["id"=>0,"text"=>'Product',"Product"=>$getListProductLead]]);
+        return array(
+            collect(["id"=>0,"text"=>'Product',"children"=>$getListProductLead]),
+            collect(["id"=>1,"text"=>'Technology',"children"=>$getListTechTag])
+        );
+    }
+
+    public function getProductTechTagDetail(Request $request){
+        $getListProductLead = DB::table('tb_product_tag')->whereNotIn('id',function($query) use ($request) {
+            $query->select('id_product_tag')->where('lead_id',$request->lead_id)->from('tb_product_tag_relation');
+        })->selectRaw('CONCAT("p",`id`) AS `id`,`name_product` AS `text`')->get(); 
+
+        $getListTechTag = DB::table('tb_technology_tag')->whereNotIn('id',function($query) use ($request) {
+            $query->select('id_tech_tag')->where('lead_id',$request->lead_id)->from('tb_technology_tag_relation');
+        })->selectRaw('CONCAT("t",`id`) AS `id`,`name_tech` AS `text`')->get(); 
+
+        return array("product_tag"=>$getListProductLead,"technology_tag"=>$getListTechTag);
+    }
+
+    public function getListTechTag(Request $request)
+    {
+        $getListTechTag = collect(TechnologyTagRelation::join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')->select(DB::raw('`tb_technology_tag`.`id`,`tb_technology_tag`.`name_tech` AS `text`'))->orderBy('name_tech','asc')->where('tb_technology_tag_relation.lead_id',$request->lead_id)->get());
+
+        return array("results" => $getListTechTag);
+    }
+
+    public function getTechTag(Request $request)
+    {
+        $getListTechTag = collect(TechnologyTag::select(DB::raw('`id`,`name_tech` AS `text`'))->orderBy('name_tech','asc')->get());
+
+        return array("results" => $getListTechTag);
     }
 
     public function year_initial(Request $request)
@@ -1785,7 +2035,7 @@ class SALESController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_solution_design.nik', 'sales_lead_register.status_sho','sales_lead_register.status_handover')
                 ->where('sales_solution_design.nik', $nik)
                 ->get();
-        }elseif($div == 'PMO' && $pos == 'MANAGER') {
+        } elseif($div == 'PMO' && $pos == 'MANAGER') {
             $lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -1793,7 +2043,7 @@ class SALESController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover')
                 ->where('sales_lead_register.result','WIN')
                 ->get();
-        }elseif($div == 'PMO' && $pos == 'STAFF') {
+        } elseif($div == 'PMO' && $pos == 'STAFF') {
             $lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -1803,16 +2053,14 @@ class SALESController extends Controller
                 ->where('sales_lead_register.result','WIN')
                 ->where('tb_pmo.pmo_nik',$nik)
                 ->get();
-        }
-        elseif($div == 'FINANCE' && $pos == 'MANAGER') {
+        } elseif($div == 'FINANCE' && $pos == 'MANAGER') {
             $lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.opp_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik')
                 ->where('sales_lead_register.result','WIN')
                 ->get();
-        }
-        elseif($pos == 'ENGINEER MANAGER') {
+        } elseif($pos == 'ENGINEER MANAGER') {
             $lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -1820,8 +2068,7 @@ class SALESController extends Controller
                 ->where('sales_lead_register.result','WIN')
                 ->where('sales_lead_register.status_sho','PMO')
                 ->get();
-        }
-        elseif($pos == 'ENGINEER STAFF') {
+        } elseif($pos == 'ENGINEER STAFF') {
             $lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -1830,8 +2077,7 @@ class SALESController extends Controller
                 ->where('sales_lead_register.result','WIN')
                  ->where('tb_engineer.nik',$nik)
                 ->get();
-        }
-        else {
+        } else {
               $lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -1885,12 +2131,6 @@ class SALESController extends Controller
                     ->where('lead_id',$lead_id)
                     ->get();
 
-        // $pmo_contribute = DB::table('tb_pmo')
-        //             ->join('users','users.nik','=','tb_pmo.pmo_nik')
-        //             ->select('users.name','tb_pmo.id_pmo')
-        //             ->where('lead_id',$lead_id)
-        //             ->get();
-
         $engineer_contribute = DB::table('tb_engineer')
                     ->join('users','users.nik','=','tb_engineer.nik')
                     ->select('tb_engineer.id_engineer','users.name')
@@ -1902,6 +2142,7 @@ class SALESController extends Controller
                     ->select('sales_tender_process.lead_id','auction_number','submit_price','win_prob','project_name','submit_date','quote_number','status','result','sales_lead_register.nik', 'sales_tender_process.assigned_by','quote_number2', 'sales_lead_register.amount', 'sales_lead_register.deal_price', 'sales_lead_register.deal_price_total', 'sales_lead_register.jumlah_tahun', 'sales_lead_register.project_class','id_tp')
                     ->where('sales_tender_process.lead_id',$lead_id)
                     ->first();
+        // return collect($tampilkanc);
 
         $tampilkan_po = POCustomer::select('date','no_po','nominal','note','id_tb_po_cus')->where('lead_id',$lead_id)->get();
 
@@ -1924,12 +2165,6 @@ class SALESController extends Controller
                     ->select('tb_engineer.lead_id','tb_engineer_progress.ket','tb_engineer.id_engineer')
                     ->where('tb_engineer.lead_id',$lead_id)
                     ->get();
-
-        // $pmo_id = DB::table('tb_pmo')
-        //             ->join('users','tb_pmo.pmo_nik','=','users.nik')
-        //             ->select('tb_pmo.id_pmo','users.name')
-        //             ->where('lead_id',$lead_id)
-        //             ->first();
 
         $sd_id = DB::table('sales_solution_design')
                 ->join('users','users.nik','=','sales_solution_design.nik')
@@ -1982,6 +2217,41 @@ class SALESController extends Controller
                         ->where('sales_change_log.lead_id',$lead_id)
                         ->orderBy('created_at', 'desc')
                         ->get();
+
+        // SELECT
+        //     DISTINCT `tb_product_tag`.`name_product`
+        // FROM
+        //     `tb_product_tag_relation`
+        // INNER JOIN `tb_product_tag` ON `tb_product_tag`.`id` = `tb_product_tag_relation`.`id_product_tag`
+        // WHERE
+        //     `lead_id` = "BULG201003"
+
+        $productTag = DB::table('tb_product_tag_relation')
+            ->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+            ->selectRaw('DISTINCT `tb_product_tag`.`name_product`')
+            ->where('tb_product_tag_relation.lead_id',$lead_id)
+            ->get();
+
+        $technologyTag = DB::table('tb_product_tag_relation')
+            ->join('tb_technology_tag','tb_technology_tag.id','=','tb_product_tag_relation.id_technology_tag')
+            ->selectRaw('DISTINCT `tb_technology_tag`.`name_tech`')
+            ->where('tb_product_tag_relation.lead_id',$lead_id)
+            ->get();
+
+
+
+        $productTech = collect(["product"=>$productTag,"technology"=>$technologyTag]);
+
+        // $productTech = Sales::Leftjoin('tb_product_tag_relation','tb_product_tag_relation.lead_id','=','sales_lead_register.lead_id')
+        //         ->Leftjoin('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+        //         ->Leftjoin('tb_technology_tag_relation','tb_technology_tag_relation.lead_id','=','sales_lead_register.lead_id')
+        //         ->Leftjoin('tb_technology_tag','tb_technology_tag.id','tb_technology_tag_relation.id_tech_tag')
+        //         ->select('name_product','name_tech','tb_technology_tag_relation.price as price_tech','tb_product_tag_relation.price as price_product')
+        //         ->where('sales_lead_register.lead_id',$lead_id)
+        //         ->get();
+
+        // return $productTech;
+       
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -2127,8 +2397,18 @@ class SALESController extends Controller
                             ->get();
         }
 
-        return view('sales/detail_sales',compact('pre_cont','lead','tampilkan','tampilkans','tampilkan_com', 'tampilkana', 'tampilkanc','notif','notifOpen','notifsd','notiftp','tampilkan_progress','pmo_id','engineer_id','current_eng','tampilkan_progress_engineer','pmo_contribute','engineer_contribute','q_num','sd_id', 'get_quote_number', 'q_num2', 'change_log','notifClaim','tampilkan_po'));
+        return view('sales/detail_sales',compact('pre_cont','lead','tampilkan','tampilkans','tampilkan_com', 'tampilkana', 'tampilkanc','notif','notifOpen','notifsd','notiftp','tampilkan_progress','pmo_id','engineer_id','current_eng','tampilkan_progress_engineer','pmo_contribute','engineer_contribute','q_num','sd_id', 'get_quote_number', 'q_num2', 'change_log','notifClaim','tampilkan_po','productTag','technologyTag','productTech'));
+    
     }
+
+    public function getProductTechByLead(Request $request){
+        $productTag = DB::table('tb_product_tag_relation')->join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')->selectRaw('CONCAT("p",`tb_product_tag_relation`.`id`) AS `id`,`name_product`,`price`')->where('tb_product_tag_relation.lead_id',$request->lead_id)->orderBy('tb_product_tag_relation.created_at','desc')->get();
+
+        // $technologyTag = DB::table('tb_technology_tag_relation')->join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')->selectRaw('CONCAT("t",`tb_technology_tag_relation`.`id`) AS `id`,`name_tech`,`price`')->where('tb_technology_tag_relation.lead_id',$request->lead_id)->orderBy('tb_technology_tag_relation.created_at','desc')->get();
+
+        return $productTech = collect($productTag->toArray());
+    }
+
 
     public function getdatacustomer(Request $request)
     {
@@ -2158,8 +2438,6 @@ class SALESController extends Controller
      */
     public function store(Request $request)
     {
-    
-
         if (Auth::User()->id_company == '1') {
             $contact = $request['contact'];
             $name = DB::table('tb_contact')
@@ -2181,7 +2459,7 @@ class SALESController extends Controller
 
             $tambah = new Sales();
             $tambah->lead_id = $lead;
-            if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER'){
+            if((Auth::User()->id_division == 'SALES') || (Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER') || Auth::User()->name == "Operations Team"){
                 $tambah->nik = Auth::User()->nik;
             } else {
                 $tambah->nik = $request['owner_sales'];
@@ -2209,6 +2487,26 @@ class SALESController extends Controller
             $tambah->keterangan = $request['note'];
             $tambah->save();
 
+            if ($request->product != "") {
+                $productTag = $request->product;
+                foreach ($productTag as $data) {
+                    $productRelation = new ProductTagRelation();
+                    $productRelation->lead_id = $lead;
+                    $productRelation->id_product_tag = $data;
+                    $productRelation->save();
+                }
+            }
+            
+            if ($request->technology != "") {
+                $techTag = $request->technology;
+                foreach ($techTag as $data) {
+                    $productRelation = new TechnologyTagRelation();
+                    $productRelation->lead_id = $lead;
+                    $productRelation->id_tech_tag = $data;
+                    $productRelation->save();
+                }
+            }
+            
             /*$date_po = strtotime($_POST['date_po']); 
             $date_po = date("Y-m-d",$date_po);*/
 
@@ -2347,11 +2645,13 @@ class SALESController extends Controller
             $tambahscl->save();*/
 
             return redirect('project')->with('success', 'Create Lead Register Successfully!');
+        
         }
         
     }
 
-    public function update_lead_register(Request $request){
+    public function update_lead_register(Request $request)
+    {
         $lead_id = $request['lead_id_edit'];
 
         $date_edit_year = substr($request['create_date_edit'],2,2);
@@ -2366,45 +2666,92 @@ class SALESController extends Controller
                     ->select('code')
                     ->where('id_customer', $name)
                     ->first();
-/*
-        $lead_id_edit =  $name . $date_edit_year . $date_edit_month .$inc;*/
+        /*
+            $lead_id_edit =  $name . $date_edit_year . $date_edit_month .$inc;*/
+            $update = Sales::where('lead_id',$lead_id)->first();
+            $update->opp_name   = $request['opp_name_edit'];
+            // $update->id_customer = $request['contact_edit'];
+            if ($request['amount_edit'] != NULL) {
+                $update->amount = str_replace(',', '', $request['amount_edit']);
+            }else{
+                $update->amount = $request['amount_edit'];
+            }
+            // $update->created_at = $request['create_date_edit'];
+            $edate_edit = strtotime($_POST['closing_date_edit']); 
+            $edate_edit = date("Y-m-d",$edate_edit);
 
-        $update = Sales::where('lead_id',$lead_id)->first();
-        $update->opp_name   = $request['opp_name_edit'];
-        // $update->id_customer = $request['contact_edit'];
-        if ($request['amount_edit'] != NULL) {
-            $update->amount = str_replace(',', '', $request['amount_edit']);
-        }else{
-            $update->amount = $request['amount_edit'];
-        }
-        // $update->created_at = $request['create_date_edit'];
-        $edate_edit = strtotime($_POST['closing_date_edit']); 
-        $edate_edit = date("Y-m-d",$edate_edit);
+            $update->closing_date = $edate_edit;
+            $update->keterangan = $request['note_edit'];
+            $update->update();
 
-        $update->closing_date = $edate_edit;
-        $update->keterangan = $request['note_edit'];
-        $update->update();
+            $amount = str_replace(',', '', $request['amount_edit']);
 
+            if ($request['amount_edit'] != $request['amount_edit_before']) {
+                $tambah_log = new SalesChangeLog();
+                $tambah_log->lead_id = $lead_id;
+                $tambah_log->nik = Auth::User()->nik;
+                $tambah_log->status = 'Update Lead with Amount ';
+                $tambah_log->submit_price  = $amount;
+                $tambah_log->save();
+            }
 
-        $amount = str_replace(',', '', $request['amount_edit']);
+            if ($request->product_edit != "") {
+                $leadProduct = ProductTagRelation::where('lead_id',$lead_id)->get();
+                foreach ($leadProduct as $data) {
+                   $delete_product = ProductTagRelation::where('lead_id',$lead_id)->delete();
+                }
+            
+                $productTag = $request->product_edit;
+                foreach ($productTag as $data) {
+                    $productRelation = new ProductTagRelation();
+                    $productRelation->lead_id = $lead_id;
+                    $productRelation->id_product_tag = $data;
+                    $productRelation->save();
+                }
+            }else{
+                $leadProduct = ProductTagRelation::where('lead_id',$lead_id)->get();
+                foreach ($leadProduct as $data) {
+                   $delete_product = ProductTagRelation::where('lead_id',$lead_id)->delete();
+                }
 
-        if ($request['amount_edit'] != $request['amount_edit_before']) {
-            $tambah_log = new SalesChangeLog();
-            $tambah_log->lead_id = $lead_id;
-            $tambah_log->nik = Auth::User()->nik;
-            $tambah_log->status = 'Update Lead with Amount ';
-            $tambah_log->submit_price  = $amount;
-            $tambah_log->save();
-        }
-       
+                // $leadtech = TechnologyTagRelation::where('lead_id',$lead_id)->get();
+                // foreach ($leadtech as $data) {
+                //    $delete_product = TechnologyTagRelation::where('lead_id',$lead_id)->delete();
+                // }
+            }
 
+            if ($request->technology_edit != "") {
+                $leadtech = TechnologyTagRelation::where('lead_id',$lead_id)->get();
+                   foreach ($leadtech as $data) {
+                        if ($data != NULL) {
+                            $delete_product = TechnologyTagRelation::where('lead_id',$lead_id)->delete();
+                        }
+                    }
 
+                $techTag = $request->technology_edit;
+                foreach ($techTag as $data) {
+                    $productRelation = new TechnologyTagRelation();
+                    $productRelation->lead_id = $lead_id;
+                    $productRelation->id_tech_tag = $data;
+                    $productRelation->save();
+                }
+            }else{
+                // $leadProduct = ProductTagRelation::where('lead_id',$lead_id)->get();
+                // foreach ($leadProduct as $data) {
+                //    $delete_product = ProductTagRelation::where('lead_id',$lead_id)->delete();
+                // }
 
-        return redirect()->back(); 
+                $leadtech = TechnologyTagRelation::where('lead_id',$lead_id)->get();
+                foreach ($leadtech as $data) {
+                   $delete_product = TechnologyTagRelation::where('lead_id',$lead_id)->delete();
+                }
+            }
+
+            return redirect()->back()->with('update','Lead Register Has Been Updated!'); 
     }
 
-    public function assign_to_presales(Request $request){
-
+    public function assign_to_presales(Request $request)
+    {
         $tambah = new solution_design();
         $tambah->lead_id = $request['coba_lead'];
         $tambah->nik = $request['owner'];
@@ -2488,7 +2835,8 @@ class SALESController extends Controller
         return redirect()->back();
     }
 
-    public function raise_to_tender(Request $request){
+    public function raise_to_tender(Request $request)
+    {
         $lead_id = $request['lead_id'];
 
         $update = TenderProcess::where('lead_id', $lead_id)->first();
@@ -2525,223 +2873,288 @@ class SALESController extends Controller
         return redirect()->back();
     }
 
-    public function update_result(Request $request){
+    public function update_result(Request $request)
+    {
+        // echo '<pre>';
+        // print_r($request->tagsOld);
+        // print_r($request->tagData);
+        // echo '</pre>';
 
-        // return "asdfasdf";
+        // echo "<pre>";
+        // echo isset($request->tagData) ? "tagData True" : "tagData False";
+        // echo "<br>";
+        // echo !empty($request->tagData["tagProduct"]) ? "tagProduct True" : "tagProduct False";
+        // echo "<br>";
+        // echo !empty($request->tagData["tagService"]) ? "tagService True" : "tagService False";
+        // echo "</pre>";
+        // return $request;
         
-            $lead_id = $request['lead_id_result'];
+        $lead_id = $request['lead_id_result'];
+        
 
-            if ($request['quote_number_final'] != NULL) {
-                $id_quotes = Quote::where('quote_number', $request['quote_number_final'])->first()->id_quote;
+        if ($request['quote_number_final'] != NULL) {
+            $id_quotes = Quote::where('quote_number', $request['quote_number_final'])->first()->id_quote;
 
-                $amount_quo = Quote::where('quote_number', $request['quote_number_final'])->first()->amount;
-            }
+            $amount_quo = Quote::where('quote_number', $request['quote_number_final'])->first()->amount;
 
-            if ($request['result'] == 'WIN' && $request['deal_price_result'] == null) {
-                return back()->with('submit-price','Deal Price Wajib Diisi!');
-            } else{
-                // return "asdfafdasd";
-                $edate = strtotime($_POST['update_closing_date']); 
-                $edate = date("Y-m-d",$edate);
+        }
 
-                $update = Sales::where('lead_id', $lead_id)->first();
-                $update->result = $request['result'];
-                $update->keterangan = $request['keterangan'];
-                $update->closing_date = $edate;
-                $update->result4    = $request['project_type'];
+        // return $id_quotes;
+
+        if ($request['result'] == 'WIN' && $request['deal_price_result'] == null) {
+            return back()->with('submit-price','Deal Price Wajib Diisi!');
+        } else{
+            $edate = strtotime($_POST['update_closing_date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $update = Sales::where('lead_id', $lead_id)->first();
+            $update->result = $request['result'];
+            $update->keterangan = $request['keterangan'];
+            $update->closing_date = $edate;
+            $update->result4    = $request['project_type'];
+            $update->update();
+
+            if($request['result'] != 'HOLD' || $request['result'] != 'SPECIAL'){
+                $update = TenderProcess::where('lead_id', $lead_id)->first();
+                $update->status = 'closed';
                 $update->update();
-
-                if($request['result'] != 'HOLD' || $request['result'] != 'SPECIAL'){
-                    $update = TenderProcess::where('lead_id', $lead_id)->first();
-                    $update->status = 'closed';
-                    $update->update();
-                }
-
-                $tambah = new SalesChangeLog();
-                $tambah->lead_id = $request['lead_id_result'];
-                $tambah->nik = Auth::User()->nik;
-                if($request['result'] == 'WIN'){
-                    $tambah->status = 'Update WIN';
-
-		            $tambahpid = new PID();
-		            $tambahpid->lead_id     = $request['lead_id_result'];
-		            $tambahpid->no_po       = $request['no_po'];
-                    if ($request['amount_pid'] != NULL) {
-                        $tambahpid->amount_pid  = str_replace(',', '',$request['amount_pid']);
-                    }else{
-                        $tambahpid->amount_pid  = $amount_quo;
-                    }
-                    
-		            if ($request['date_po'] != NULL) {
-                        $edate                  = strtotime($_POST['date_po']); 
-                        $edate                  = date("Y-m-d",$edate);
-                        $tambahpid->date_po     = $edate;
-                    }  
-                    // return $request['request_id'];
-                    if (!empty($request['request_id'])) {
-                        $tambahpid->status = 'requested';
-
-                        /*$users = User::select('name')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
-
-                        $pid_info = DB::table('sales_lead_register')
-                            ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                            ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
-                            ->join('users','users.nik','=','sales_lead_register.nik')
-                            ->where('sales_lead_register.lead_id','=',$request['lead_id_result'])
-                            ->select(
-                                'sales_lead_register.lead_id',
-                                'sales_lead_register.opp_name',
-                                'users.name',
-                                'tb_pid.amount_pid',
-                                'tb_pid.no_po',
-                                'sales_tender_process.quote_number2'
-                            )->first(); 
-               
-                            // return "$pid_info";
-
-                        Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
-                        Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));*/
-                        // Mail::to($users->email)->send(new MailResult($users,$pid_info));
-                    
-                    }else{
-                        $tambahpid->status = 'pending';
-                    }
-
-                    $tambahpid->save();
-
-                    $update_quo = TenderProcess::where('lead_id', $lead_id)->first();
-                    $update_quo->quote_number_final = $request['quote_number_final'];
-                    $update_quo->update();
-
-                    if ($request['quote_number_final'] != null) {
-                        $update_status_quo = Quote::where('quote_number', $request['quote_number_final'])->first();
-                        $update_status_quo->status = 'choosed';
-                        $update_status_quo->update();
-                    }
-                    
-
-                    $cekstatus = PID::select('status')->where('lead_id', $tambahpid->lead_id)->first();
-
-                    if ($cekstatus->status == 'requested') {
-                        $pid_info = DB::table('sales_lead_register')
-                            ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                            ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
-                            ->join('users','users.nik','=','sales_lead_register.nik')
-                            ->where('sales_lead_register.lead_id',$tambahpid->lead_id)
-                            ->select(
-                                'sales_lead_register.lead_id',
-                                'sales_lead_register.opp_name',
-                                'users.name',
-                                'tb_pid.amount_pid',
-                                'tb_pid.id_pid',
-                                'tb_pid.no_po',
-                                'sales_tender_process.quote_number2'
-                            )->first();
-
-                        if($pid_info->lead_id == "MSPQUO"){
-                            $pid_info->url_create = "/salesproject";
-                        }else {
-                            $pid_info->url_create = "/salesproject#acceptProjectID?" . $pid_info->id_pid;
-                        }
-
-                        $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
-               
-                            // return "$pid_info";
-
-                        // Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
-                        Mail::to('faiqoh@sinergy.co.id')->send(new MailResult($users,$pid_info));
-                        Mail::to($users->email)->send(new MailResult($users,$pid_info));
-                    }
-
-                    
-                    // return "asdfasfda";
-
-		            // $tambahpid->status      = 'requested';
-		            
-
-                } elseif($request['result'] == 'LOSE'){
-                    $tambah->status = 'Update LOSE';
-                } elseif($request['result'] == 'HOLD'){
-                    $tambah->status = 'Update HOLD';
-                } elseif($request['result'] == 'CANCEL'){
-                    $tambah->status = 'Update CANCEL';
-                } elseif($request['result'] == 'SPECIAL'){
-                    $tambah->status = 'Update SPECIAL';
-                }
-                $tambah->save();
-
             }
 
-            
+            $tambah = new SalesChangeLog();
+            $tambah->lead_id = $request['lead_id_result'];
+            $tambah->nik = Auth::User()->nik;
+            if($request['result'] == 'WIN'){
+
+                if(isset($request->tagData)){
+                    if(!empty($request->tagData["tagProduct"])){
+                        foreach ($request->tagData["tagProduct"] as $key => $value) {
+                            $store = new ProductTagRelation;
+                            $store->lead_id = $lead_id;
+                            $store->id_product_tag = $value['tag_product']['productTag'];
+                            $store->id_technology_tag = $value['tag_product']['techTag'];
+                            $store->price = $value['tag_price'];
+                            $store->save(); 
+                        }
+                    }
+
+                    if(!empty($request->tagData["tagService"])){
+                        foreach ($request->tagData["tagService"] as $key => $value) {
+                            $store = new ServiceTagRelation;
+                            $store->lead_id = $lead_id;
+                            $store->id_service_tag = $value['tag_service'];
+                            $store->price = $value['tag_price'];
+                            $store->save(); 
+                        }
+                    }
+                }
+
+                // if ($request->tagsOld != ""){
+                //     foreach ($request->tagsOld as $key => $value) {
+                //         $update = ProductTagRelation::where('id',$value['id_product_relation']);
+                //         $update_price = $update->update(['price'=>$value['price_product']]);  
+
+                //         $tambah             = new SalesChangeLog();
+                //         $tambah->lead_id    = $lead_id; 
+                //         $tambah->nik        = Auth::User()->nik; 
+                //         $tambah->status     = "Updated Product " . $value['name_product'] . " - Price [" . number_format($value['price_product']) . "]";
+                //         $tambah->save(); 
+                //     }
+                // }
+                
+
+                // if ($request->tagsNew != "") {
+                //     foreach ($request->tagsNew as $key => $value) {
+                //         $store = new ProductTagRelation;
+                //         $store->lead_id = $lead_id;
+                //         $store->id_product_tag = $value['id_product'];
+                //         $store->price = $value['price_product'];
+                //         $store->save();  
+
+                //         $tambah             = new SalesChangeLog();
+                //         $tambah->lead_id    = $lead_id; 
+                //         $tambah->nik        = Auth::User()->nik; 
+                //         $tambah->status     = "Updated Product " . $value['name_product'] . " - Price [" . number_format($value['price_product']) . "]";
+                //         $tambah->save(); 
+                //     }
+                // }
 
 
-            $nik_sales = DB::table('sales_lead_register')
-                            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                            ->select('sales_lead_register.nik', 'users.id_territory')
-                            ->where('lead_id',$lead_id)
-                            ->first();
 
-            $current_presales = DB::table('sales_solution_design')
-                                    ->join('users','users.nik','=','sales_solution_design.nik')
-                                    ->select('sales_solution_design.nik')
-                                    ->where('lead_id',$lead_id)
-                                    ->first();
+                $tambah->status = 'Update WIN';
 
-            $presales_manager = DB::table('users')
-                                    ->select('nik')
-                                    ->where('id_position', 'MANAGER')
-                                    ->where('id_division', 'TECHNICAL PRESALES')
-                                    ->first();
-
-            if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'SALES' && Auth::User()->id_territory == $nik_sales->id_territory || Auth::User()->email == 'presales@sinergy.co.id'){
-
-                if (Auth::User()->email == 'presales@sinergy.co.id') {
-                    $kirim = User::select('email')
-                                ->where('id_division', 'TECHNICAL PRESALES')
-                                ->where('email', 'ganjar@sinergy.co.id')
-                                ->orWhere('email', 'nabil@sinergy.co.id')
-                                ->orWhere('email', 'yuliane@sinergy.co.id')
-                                ->get();
+	            $tambahpid = new PID();
+	            $tambahpid->lead_id     = $request['lead_id_result'];
+	            $tambahpid->no_po       = $request['no_po'];
+                if ($request['amount_pid'] != NULL) {
+                    $tambahpid->amount_pid  = str_replace(',', '',$request['amount_pid']);
                 }else{
-                    $kirim = User::select('email')
-                                ->where('id_division', 'TECHNICAL PRESALES')
-                                ->where('nik', $current_presales->nik)
-                                ->orWhere('nik', $presales_manager->nik)
-                                ->orWhere('email', 'nabil@sinergy.co.id')
-                                ->orWhere('email', 'yuliane@sinergy.co.id')
-                                ->get();
+                    $tambahpid->amount_pid  = $amount_quo;
                 }
                 
-            } elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'SALES' && Auth::User()->id_territory == $nik_sales->id_territory){
-                $kirim = User::select('email')
-                                ->where('id_position', 'MANAGER')
-                                ->where('id_division', 'SALES')
-                                ->where('id_territory', $nik_sales->id_territory)
-                                ->orWhere('nik', $current_presales->nik)
-                                ->orWhere('nik', $presales_manager->nik)
-                                ->orWhere('email', 'nabil@sinergy.co.id')
-                                ->orWhere('email', 'yuliane@sinergy.co.id')
-                                ->get();
-            } elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER'){
-                $kirim = User::select('email')
-                                ->where('id_position', 'MANAGER')
-                                ->where('id_division', 'SALES')
-                                ->where('id_territory', $nik_sales->id_territory)
-                                ->orWhere('nik', $current_presales->nik)
-                                ->orWhere('nik', $presales_manager->nik)
-                                ->orWhere('email', 'nabil@sinergy.co.id')
-                                ->orWhere('email', 'yuliane@sinergy.co.id')
-                                ->get();
-            }
+	            if ($request['date_po'] != NULL) {
+                    $edate                  = strtotime($_POST['date_po']); 
+                    $edate                  = date("Y-m-d",$edate);
+                    $tambahpid->date_po     = $edate;
+                }  
+                // return $request['request_id'];
+                if ($request['request_id'] == "true") {
+                    $tambahpid->status = 'requested';
 
-            /*$users = User::where('email','faiqoh@sinergy.co.id')->first();
-            Notification::send($users, new Result());*/
+                    /*$users = User::select('name')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+
+                    $pid_info = DB::table('sales_lead_register')
+                        ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                        ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
+                        ->join('users','users.nik','=','sales_lead_register.nik')
+                        ->where('sales_lead_register.lead_id','=',$request['lead_id_result'])
+                        ->select(
+                            'sales_lead_register.lead_id',
+                            'sales_lead_register.opp_name',
+                            'users.name',
+                            'tb_pid.amount_pid',
+                            'tb_pid.no_po',
+                            'sales_tender_process.quote_number2'
+                        )->first(); 
+           
+                        // return "$pid_info";
+
+                    Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
+                    Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));*/
+                    // Mail::to($users->email)->send(new MailResult($users,$pid_info));
+                
+                }else{
+                    $tambahpid->status = 'pending';
+                }
+
+                $tambahpid->save();
+
+                $update_quo = TenderProcess::where('lead_id', $lead_id)->first();
+                $update_quo->quote_number_final = $request['quote_number_final'];
+                $update_quo->update();
+
+                if ($request['quote_number_final'] != null) {
+                    $update_status_quo = Quote::where('quote_number', $request['quote_number_final'])->first();
+                    $update_status_quo->status = 'choosed';
+                    $update_status_quo->update();
+                }
+                
+
+                $cekstatus = PID::select('status')->where('lead_id', $tambahpid->lead_id)->first();
+
+                if ($cekstatus->status == 'requested') {
+                    $pid_info = DB::table('sales_lead_register')
+                        ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                        ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
+                        ->join('users','users.nik','=','sales_lead_register.nik')
+                        ->where('sales_lead_register.lead_id',$tambahpid->lead_id)
+                        ->select(
+                            'sales_lead_register.lead_id',
+                            'sales_lead_register.opp_name',
+                            'users.name',
+                            'tb_pid.amount_pid',
+                            'tb_pid.id_pid',
+                            'tb_pid.no_po',
+                            'sales_tender_process.quote_number2'
+                        )->first();
+
+                    if($pid_info->lead_id == "MSPQUO"){
+                        $pid_info->url_create = "/salesproject";
+                    }else {
+                        $pid_info->url_create = "/salesproject#acceptProjectID?" . $pid_info->id_pid;
+                    }
+
+                    $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+           
+                        // return "$pid_info";
+
+                    // Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
+                    Mail::to('hellosinergy@gmail.com')->send(new MailResult($users,$pid_info));
+                    Mail::to($users->email)->send(new MailResult($users,$pid_info));
+                }
+
+                
+                // return "asdfasfda";
+
+	            // $tambahpid->status      = 'requested';
+	            
+
+            } elseif($request['result'] == 'LOSE'){
+                $tambah->status = 'Update LOSE';
+            } elseif($request['result'] == 'HOLD'){
+                $tambah->status = 'Update HOLD';
+            } elseif($request['result'] == 'CANCEL'){
+                $tambah->status = 'Update CANCEL';
+            } elseif($request['result'] == 'SPECIAL'){
+                $tambah->status = 'Update SPECIAL';
+            }
+            $tambah->save();
+
+        }      
+
+        // $nik_sales = DB::table('sales_lead_register')
+        //                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+        //                 ->select('sales_lead_register.nik', 'users.id_territory')
+        //                 ->where('lead_id',$lead_id)
+        //                 ->first();
+
+        // $current_presales = DB::table('sales_solution_design')
+        //                         ->join('users','users.nik','=','sales_solution_design.nik')
+        //                         ->select('sales_solution_design.nik')
+        //                         ->where('lead_id',$lead_id)
+        //                         ->first();
+
+        // $presales_manager = DB::table('users')
+        //                         ->select('nik')
+        //                         ->where('id_position', 'MANAGER')
+        //                         ->where('id_division', 'TECHNICAL PRESALES')
+        //                         ->first();
+
+        // if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'SALES' && Auth::User()->id_territory == $nik_sales->id_territory || Auth::User()->email == 'presales@sinergy.co.id'){
+
+        //     if (Auth::User()->email == 'presales@sinergy.co.id') {
+        //         $kirim = User::select('email')
+        //                     ->where('id_division', 'TECHNICAL PRESALES')
+        //                     ->where('email', 'ganjar@sinergy.co.id')
+        //                     ->orWhere('email', 'nabil@sinergy.co.id')
+        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
+        //                     ->get();
+        //     }else{
+        //         $kirim = User::select('email')
+        //                     ->where('id_division', 'TECHNICAL PRESALES')
+        //                     ->where('nik', $current_presales->nik)
+        //                     ->orWhere('nik', $presales_manager->nik)
+        //                     ->orWhere('email', 'nabil@sinergy.co.id')
+        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
+        //                     ->get();
+        //     }                
+        // } elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'SALES' && Auth::User()->id_territory == $nik_sales->id_territory){
+        //     $kirim = User::select('email')
+        //                     ->where('id_position', 'MANAGER')
+        //                     ->where('id_division', 'SALES')
+        //                     ->where('id_territory', $nik_sales->id_territory)
+        //                     ->orWhere('nik', $current_presales->nik)
+        //                     ->orWhere('nik', $presales_manager->nik)
+        //                     ->orWhere('email', 'nabil@sinergy.co.id')
+        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
+        //                     ->get();
+        // } elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER'){
+        //     $kirim = User::select('email')
+        //                     ->where('id_position', 'MANAGER')
+        //                     ->where('id_division', 'SALES')
+        //                     ->where('id_territory', $nik_sales->id_territory)
+        //                     ->orWhere('nik', $current_presales->nik)
+        //                     ->orWhere('nik', $presales_manager->nik)
+        //                     ->orWhere('email', 'nabil@sinergy.co.id')
+        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
+        //                     ->get();
+        // }
            
 
-        return redirect()->back();
+        return "success";
     }
 
-    public function update_next_status(Request $request){
+    public function update_next_status(Request $request)
+    {
         $lead_id = $request['lead_id_result2'];        
 
         $update = Sales::where('lead_id', $lead_id)->first();
@@ -2926,187 +3339,188 @@ class SALESController extends Controller
 
     public function update_tp(Request $request, $lead_id)
     {
-        $compare_win_tp = TenderProcess::select('status')->where('lead_id', $lead_id)->first();
-        $update = TenderProcess::where('lead_id', $lead_id)->first();
-        
-        if($compare_win_tp->status != 'closed') {
-            $update->status = 'ready';
-        }
+            $compare_win_tp = TenderProcess::select('status')->where('lead_id', $lead_id)->first();
+            $update = TenderProcess::where('lead_id', $lead_id)->first();
+            
+            if($compare_win_tp->status != 'closed') {
+                $update->status = 'ready';
+            }
 
-        // $id_quote = $request['quote_before'];
-        // $id_quote_true = $request['quote_number'];
-        // $update_false = Quote::where('id_quote', $id_quote)->first();
-        // $update_true = Quote::where('id_quote', $id_quote_true)->first();
+            // $id_quote = $request['quote_before'];
+            // $id_quote_true = $request['quote_number'];
+            // $update_false = Quote::where('id_quote', $id_quote)->first();
+            // $update_true = Quote::where('id_quote', $id_quote_true)->first();
 
-        if($request['submit_price'] != $request['submit_price_before']){
- /*           $angka = $request['submit_price'];
-            $format_rupiah = number_format($angka, '2', ',', '.'); */
-           $update->submit_price = str_replace(',', '', $request['submit_price']);
-           $update->update();
-          }
+            if($request['submit_price'] != $request['submit_price_before']){
+            /*           $angka = $request['submit_price'];
+                $format_rupiah = number_format($angka, '2', ',', '.'); */
+               $update->submit_price = str_replace(',', '', $request['submit_price']);
+               $update->update();
+              }
 
-        if (is_null( $request['lelang'])) {
-           $update->auction_number = $request['lelang'];
-           $update->update();
-        }else if ($request['lelang'] == TRUE) {
-            $update->auction_number = $request['lelang'];
-            $update->update();
-        }
+            if (is_null( $request['lelang'])) {
+               $update->auction_number = $request['lelang'];
+               $update->update();
+            }else if ($request['lelang'] == TRUE) {
+                $update->auction_number = $request['lelang'];
+                $update->update();
+            }
 
-        if (is_null($request['submit_price'])) {
-           $update->submit_price = str_replace(',', '', $request['submit_price']);
-           $update->update();
-        }else if ($request['submit_price'] == TRUE) {
-           $update->submit_price = str_replace(',', '', $request['submit_price']);
-           $update->update(); 
-        }
+            if (is_null($request['submit_price'])) {
+               $update->submit_price = str_replace(',', '', $request['submit_price']);
+               $update->update();
+            }else if ($request['submit_price'] == TRUE) {
+               $update->submit_price = str_replace(',', '', $request['submit_price']);
+               $update->update(); 
+            }
 
-        if ( is_null($request['win_prob'])) {
-          $update->win_prob = $request['win_prob'];
-          $update->update();  
-        }else if ( $request['win_prob'] == TRUE) {
-           $update->win_prob = $request['win_prob'];
-           $update->update();   
-        }
+            if ( is_null($request['win_prob'])) {
+              $update->win_prob = $request['win_prob'];
+              $update->update();  
+            }else if ( $request['win_prob'] == TRUE) {
+               $update->win_prob = $request['win_prob'];
+               $update->update();   
+            }
 
-        if (is_null($request['project_name'])) {   
-            $update->project_name = $request['project_name'];
-            $update->update();
-        }else if ( $request['project_name'] == TRUE) {
-           $update->project_name = $request['project_name'];
-           $update->update();   
-        }
+            if (is_null($request['project_name'])) {   
+                $update->project_name = $request['project_name'];
+                $update->update();
+            }else if ( $request['project_name'] == TRUE) {
+               $update->project_name = $request['project_name'];
+               $update->update();   
+            }
 
-        $edate = strtotime($_POST['submit_date']); 
-        $edate = date("Y-m-d",$edate);
+            $edate = strtotime($_POST['submit_date']); 
+            $edate = date("Y-m-d",$edate);
 
-        if (is_null($request['submit_date'])) {   
-            $update->submit_date = $edate;
-            $update->update();
-        }else if ( $request['submit_date'] == TRUE) {
-           $update->submit_date = $edate;
-           $update->update();   
-        }
+            if (is_null($request['submit_date'])) {   
+                $update->submit_date = $edate;
+                $update->update();
+            }else if ( $request['submit_date'] == TRUE) {
+               $update->submit_date = $edate;
+               $update->update();   
+            }
 
-        if($request['submit_price'] != $request['submit_price_before']){
-            $update->submit_price = str_replace(',', '', $request['submit_price']);
-            $update->update();
-          }
+            if($request['submit_price'] != $request['submit_price_before']){
+                $update->submit_price = str_replace(',', '', $request['submit_price']);
+                $update->update();
+              }
 
-        if ( is_null($request['assigned_by'])) {
-          $update->assigned_by = $request['assigned_by'];
-          $update->update();  
-        }else if ( $request['assigned_by'] == TRUE) {
-           $update->assigned_by = $request['assigned_by'];
-           $update->update();   
-        }
+            if ( is_null($request['assigned_by'])) {
+              $update->assigned_by = $request['assigned_by'];
+              $update->update();  
+            }else if ( $request['assigned_by'] == TRUE) {
+               $update->assigned_by = $request['assigned_by'];
+               $update->update();   
+            }
 
-//         if ($request['quote_number'] == TRUE) {
-//             if($request['quote_number'] != $request['quote_before']) {
-//                 $update->quote_number = $request['quote_number'];
-//                 $update->update();
+            //         if ($request['quote_number'] == TRUE) {
+            //             if($request['quote_number'] != $request['quote_before']) {
+            //                 $update->quote_number = $request['quote_number'];
+            //                 $update->update();
 
-//                 if($update_false == TRUE){
-//                     $update_false->status = 'F';
-//                     $update_false->update();
-//                 }
+            //                 if($update_false == TRUE){
+            //                     $update_false->status = 'F';
+            //                     $update_false->update();
+            //                 }
 
-//                 if($update_true == TRUE){
-//                     $update_true->status = 'T';
-//                     $update_true->update();
-//                 }
-//             }
-//         }else if($request['quote_number'] == NULL) {
-//         	$q_num = $request['quote_before'];
-//             $update->quote_number = $q_num;
-//             $update->update();
-// /*
-//             if($update_false == TRUE){
-//                 $update_false->status = 'F';
-//                 $update_false->update();
-//             }
+            //                 if($update_true == TRUE){
+            //                     $update_true->status = 'T';
+            //                     $update_true->update();
+            //                 }
+            //             }
+            //         }else if($request['quote_number'] == NULL) {
+            //         	$q_num = $request['quote_before'];
+            //             $update->quote_number = $q_num;
+            //             $update->update();
+            // /*
+            //             if($update_false == TRUE){
+            //                 $update_false->status = 'F';
+            //                 $update_false->update();
+            //             }
 
-//             if($update_true == TRUE){
-//                 $update_true->status = 'T';
-//                 $update_true->update();
-//             }*/
-//         }
+            //             if($update_true == TRUE){
+            //                 $update_true->status = 'T';
+            //                 $update_true->update();
+            //             }*/
+            //         }
 
-        if (is_null($request['quote_number'])) {   
-            $update->quote_number2 = $request['quote_number'];
-            $update->update();
-        }else if ( $request['quote_number'] == TRUE) {
-           $update->quote_number2 = $request['quote_number'];
-           $update->update();   
-        }
+            if (is_null($request['quote_number'])) {   
+                $update->quote_number2 = $request['quote_number'];
+                $update->update();
+            }else if ( $request['quote_number'] == TRUE) {
+               $update->quote_number2 = $request['quote_number'];
+               $update->update();   
+            }
 
-        $tambah = new SalesChangeLog();
-        $tambah->lead_id = $request['lead_id'];
-        $tambah->nik = Auth::User()->nik;
-        $tambah->status = 'Update TP';
-        if ($request['deal_price'] == '') {
-           $tambah->deal_price = $request['deal_price'];
-        }else{
-           $tambah->deal_price = str_replace(',', '', $request['deal_price']); 
-        }
-        
-        // $tambah->submit_price = $request['submit_price'];
-        $tambah->submit_price = str_replace(',', '', $request['submit_price']);
-        $tambah->save();
- 
-        $compare_win_lead = Sales::select('result')->where('lead_id', $lead_id)->first();
-        $update_lead = Sales::where('lead_id', $lead_id)->first();
+            $tambah = new SalesChangeLog();
+            $tambah->lead_id = $request['lead_id'];
+            $tambah->nik = Auth::User()->nik;
+            $tambah->status = 'Update TP';
+            if ($request['deal_price'] == '') {
+               $tambah->deal_price = $request['deal_price'];
+            }else{
+               $tambah->deal_price = str_replace(',', '', $request['deal_price']); 
+            }
+            
+            // $tambah->submit_price = $request['submit_price'];
+            $tambah->submit_price = str_replace(',', '', $request['submit_price']);
+            $tambah->save();
+     
+            $compare_win_lead = Sales::select('result')->where('lead_id', $lead_id)->first();
+            $update_lead = Sales::where('lead_id', $lead_id)->first();
 
-        if($compare_win_lead->result != 'WIN') {
-            $update_lead->result = 'TP';
-        }
+            if($compare_win_lead->result != 'WIN') {
+                $update_lead->result = 'TP';
+            }
 
-        if ($request['deal_price'] == '') {
-           $update_lead->deal_price = $request['deal_price'];
-        }else{
-           $update_lead->deal_price = str_replace(',', '', $request['deal_price']); 
-        }
+            if ($request['deal_price'] == '') {
+               $update_lead->deal_price = $request['deal_price'];
+            }else{
+               $update_lead->deal_price = str_replace(',', '', $request['deal_price']); 
+            }
 
-        if ($request['deal_price'] == '') {
-           $update_lead->amount = $request['amount_cek_tp'];
-        }else{
-           $update_lead->amount = str_replace(',', '', $request['deal_price']); 
-        }
+            if ($request['deal_price'] == '') {
+               $update_lead->amount = $request['amount_cek_tp'];
+            }else{
+               $update_lead->amount = str_replace(',', '', $request['deal_price']); 
+            }
 
-        /*if ($request['submit_price'] != '') {
-            $update_lead->amount = str_replace(',', '', $request['submit_price']);
-        } elseif ($request['submit_price'] == '') {
-            $update_lead->amount = $request['amount_before'];
-        }*/
+            /*if ($request['submit_price'] != '') {
+                $update_lead->amount = str_replace(',', '', $request['submit_price']);
+            } elseif ($request['submit_price'] == '') {
+                $update_lead->amount = $request['amount_before'];
+            }*/
 
-        if ( is_null($request['project_class'])) {
-            $update_lead->project_class = $request['project_class'];
-        }else if ( $request['project_class'] == TRUE) {
-            $update_lead->project_class = $request['project_class'];
-                if($request['project_class'] == 'multiyears' || $request['project_class'] == 'blanket') {
+            if ( is_null($request['project_class'])) {
+                $update_lead->project_class = $request['project_class'];
+            }else if ( $request['project_class'] == TRUE) {
+                $update_lead->project_class = $request['project_class'];
+                    if($request['project_class'] == 'multiyears' || $request['project_class'] == 'blanket') {
 
-                    if ( is_null($request['jumlah_tahun'])) {
-                        $update_lead->jumlah_tahun = $request['jumlah_tahun'];
-                    }else if ( $request['jumlah_tahun'] == TRUE) {
-                        $update_lead->jumlah_tahun = $request['jumlah_tahun'];
+                        if ( is_null($request['jumlah_tahun'])) {
+                            $update_lead->jumlah_tahun = $request['jumlah_tahun'];
+                        }else if ( $request['jumlah_tahun'] == TRUE) {
+                            $update_lead->jumlah_tahun = $request['jumlah_tahun'];
+                        }
+
+                        if ($request['deal_price_total'] == '') {
+                            $update_lead->deal_price_total = $request['deal_price_total'];
+                        }else{
+                            $update_lead->deal_price_total = str_replace(',', '', $request['deal_price_total']); 
+                        }
+                    } else {
+                        $update_lead->jumlah_tahun = NULL;
+                        $update_lead->deal_price_total = NULL;
                     }
+            }
+            $update_lead->update();
 
-                    if ($request['deal_price_total'] == '') {
-                        $update_lead->deal_price_total = $request['deal_price_total'];
-                    }else{
-                        $update_lead->deal_price_total = str_replace(',', '', $request['deal_price_total']); 
-                    }
-                } else {
-                    $update_lead->jumlah_tahun = NULL;
-                    $update_lead->deal_price_total = NULL;
-                }
-        }
-        $update_lead->update();
-
-        return redirect()->back();
+            return redirect()->back();
     }
 
-    public function add_changelog_progress(Request $request) {
+    public function add_changelog_progress(Request $request) 
+    {
 
         $tambah = new SalesChangeLog();
         $tambah->lead_id = $request['changelog_lead_id'];
@@ -3119,6 +3533,103 @@ class SALESController extends Controller
 
         return redirect()->back();
 
+    }
+
+    public function add_product_technology(Request $request)
+    {
+        if ($request->paramId == 'p') {
+            $store = new ProductTagRelation;
+            $store->lead_id         = $request->lead_id;
+            $store->id_product_tag  = $request->id;
+            $store->price           = $request->price;
+            $store->save();
+
+            $product = ProductTag::where('id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $request->lead_id; 
+            $tambah->nik        = Auth::User()->nik;
+            $tambah->status     = "Added Product - Price ( " . $product->name_product ." - ". number_format($request->price) . " )";
+            $tambah->save(); 
+        }else{
+            $store = new TechnologyTagRelation;
+            $store->lead_id         = $request->lead_id;
+            $store->id_tech_tag     = $request->id;
+            $store->price           = $request->price;
+            $store->save();
+
+            $product = TechnologyTag::where('id',$request->id)->first();                
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $request->lead_id; 
+            $tambah->nik        = Auth::User()->nik; 
+            $tambah->status     = "Added Technology ( " . $product->name_tech . " )";
+            $tambah->save(); 
+        }
+        
+    }
+
+    public function update_product_technology(Request $request)
+    {
+        if ($request->paramId == 'p') {
+            $update = ProductTagRelation::where('id',$request->id)->first();
+            $update->price = $request->price;
+            $update->update();
+
+            $product = ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+                ->where('tb_product_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik;
+            $tambah->status     = "Updated Product - Price ( " . $product->name_product ." - ". number_format($product->price) . " )";
+            $tambah->save(); 
+        }else{
+            $update = TechnologyTagRelation::where('id',$request->id)->first();
+            $update->price = $request->price;
+            $update->update();
+
+            $product = TechnologyTagRelation::join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
+                ->where('tb_technology_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik; 
+            $tambah->status     = "Updated Technology ( " . $product->name_tech . " )";
+            $tambah->save(); 
+        }
+        
+    }
+
+    public function delete_product_technology(Request $request)
+    {
+
+        if ($request->paramId == 'p') {
+            $product = ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+                ->where('tb_product_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik;
+            $tambah->status     = "Deleted Product - Price ( " . $product->name_product ." - ". number_format($product->price) . " )";
+            $tambah->save(); 
+
+            $delete = ProductTagRelation::where('id',$request->id)->delete();
+        }else{
+            $product = TechnologyTagRelation::join('tb_technology_tag','tb_technology_tag.id','=','tb_technology_tag_relation.id_tech_tag')
+                ->where('tb_technology_tag_relation.id',$request->id)->first();
+
+            $tambah             = new SalesChangeLog();
+            $tambah->lead_id    = $product->lead_id; 
+            $tambah->nik        = Auth::User()->nik; 
+            $tambah->status     = "Deleted Technology ( " . $product->name_tech . " )";
+            $tambah->save(); 
+
+            $delete = TechnologyTagRelation::where('id',$request->id)->delete();
+        }
+
+        
+        
     }
 
     /**
@@ -4204,9 +4715,14 @@ class SALESController extends Controller
               $pid_info->no_quote = "-";
             }
 
-            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->where('tb_id_project.id_pro',$tambah->id_pro)->first();
+            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')
+                ->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('users.email', 'users.name', 'tb_id_project.lead_id')
+                ->where('tb_id_project.id_pro',$tambah->id_pro)
+                ->first();
 
             Mail::to($users->email)->send(new mailPID($pid_info,$users));
+            Mail::to("hellosinergy@gmail.com")->send(new mailPID($pid_info,$users));
 
         }else if($cek_sip->id_company == '2'){
 
@@ -4279,9 +4795,14 @@ class SALESController extends Controller
               $pid_info->no_quote = "-";
             }
 
-            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')->select('users.email', 'users.name', 'tb_id_project.lead_id')->where('tb_id_project.id_pro',$tambah->id_pro)->first();
+            $users = User::join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')
+                ->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select('users.email', 'users.name', 'tb_id_project.lead_id')
+                ->where('tb_id_project.id_pro',$tambah->id_pro)
+                ->first();
 
             Mail::to($users->email)->send(new mailPID($pid_info,$users));
+            Mail::to("hellosinergy@gmail.com")->send(new mailPID($pid_info,$users));
         
         }
         // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));

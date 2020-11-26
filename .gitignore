@@ -40,3 +40,7 @@ app/Http/Controllers/firebase-key.json
 public/img
 public/image
 
+# Ignore MacOS Generate File
+._*
+.DS*
+

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>SIP - SIMSApp</title>
-  <link rel="icon" type="image/png" href="../img/siplogooke.png">
+  <link rel="icon" type="image/png" href="../img/siplogookegrey.png">
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -314,7 +314,8 @@
 <!-- jQuery 3 -->
 <script src="{{asset('template2/bower_components/jquery/dist/jquery.min.js')}}"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="{{asset('template2/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
+<!-- <script src="{{asset('template2/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script> -->
 <!-- FastClick -->
 <script src="{{asset('template2/bower_components/fastclick/lib/fastclick.js')}}"></script>
 <!-- AdminLTE App -->
@@ -345,6 +346,8 @@
 <script>
   $(function () {
     $(".activeable").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+
+    $(".activeable2").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
 
     $('#example1').DataTable()
     $('#example2').DataTable({

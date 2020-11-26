@@ -20,6 +20,23 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #555; 
     }
+
+    .user-panel>.image>img {
+	    width: 100%;
+	    max-width: 45px;
+	    max-height: 45px;
+	    object-fit: cover;
+	}
+
+	.navbar-nav>.user-menu .user-image {
+	    object-fit: cover;
+	    float: left;
+	    width: 25px;
+	    height: 25px;
+	    border-radius: 50%;
+	    margin-right: 10px;
+	    margin-top: -2px;
+	}
   </style>
 
   <!-- Logo -->
@@ -521,7 +538,9 @@
                 @elseif(Auth::user()->id_position == 'EXPERT SALES')
                   {{ Auth::user()->id_position}}
                 @else
-                  @if(Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER')
+                  @if(Auth::user()->nik == 100000000003)
+                  SALES OPERATIONAL
+                  @elseif(Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER')
                   OPERATIONAL DIRECTOR
                   @else
                   {{ Auth::user()->id_division }} {{ Auth::user()->id_position }}
@@ -565,6 +584,7 @@
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
+                    <input type="hidden" name="nik" value="{{Auth::User()->nik}}">
                 </form>
               </div>
             </li>
@@ -594,8 +614,22 @@
       </div>
       <div class="pull-left info" >
         <p>{{ Auth::User()->name }}</p>
-        <a href="#"><i class="fa fa-circle text-success"></i>@if(Auth::User()->id_division == 'TECHNICAL PRESALES')
-        TECH. PRESALES @elseif(Auth::User()->id_division == 'TECHNICAL') TECH. @elseif(Auth::User()->id_division == 'HR') @else {{ Auth::user()->id_division }} @endif &nbsp {{ Auth::user()->id_position }} </a>
+        <a href="#"><i class="fa fa-circle text-success"></i>
+        	@if(Auth::user()->nik == 100000000003)
+        	SALES OPERATIONAL 
+        	@else
+	        	@if(Auth::User()->id_division == 'TECHNICAL PRESALES')
+		        	TECH. PRESALES 
+		        @elseif(Auth::User()->id_division == 'TECHNICAL') 
+		        	ECH. 
+		        @elseif(Auth::User()->id_division == 'HR') 
+		        @else 
+		        	{{ Auth::user()->id_division }} 
+		        @endif 
+
+		        {{ Auth::user()->id_position }} 
+        	@endif
+	    </a>
       </div>
     </div>
     <!-- search form -->
@@ -615,7 +649,7 @@
       <li class="header">MAIN NAVIGATION</li>
       
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('/') }}">
+        <a href="{{ url('/') }}" class="nav-link" >
           <i class="fa fa-fw fa-dashboard"></i>
           <span class="nav-link-text" style="font-size: 14px">Dashboard</span>
         </a>
@@ -630,22 +664,18 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="DVGPages">
-          <li>
+          <li class="activeable2">
             <a href="{{ url('/config_management') }}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>Config Management</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{ url('/incident_management') }}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>Incident Management</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{ url('/app_incident') }}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>App Incident Management</a>
           </li>
         </ul>
       </li>
       @endif
-
-
-
-
 
       <li class="activeable treeview">
       	<a href="#SalesPages" data-parent="#exampleAccordion">
@@ -657,32 +687,32 @@
       	</a>
       	<ul class="activeable treeview-menu" id="SalesPages">
       		@if(Auth::User()->id_position == 'DIRECTOR')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
       		</li>
       		@elseif(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
       		</li>
       		@elseif(Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
       		</li>
       		@elseif(Auth::User()->id_division == 'SALES')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
       		</li>
       		@elseif(Auth::User()->id_division == 'TECHNICAL PRESALES')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
       		</li>
       		
       		@elseif(Auth::User()->id_division == 'PMO' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_territory == 'OPERATION')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
       		</li>
       		@elseif(Auth::User()->id_position == 'ENGINEER MANAGER' || Auth::User()->id_position == 'ENGINEER STAFF')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/project')}}" style="font-size: 14px">Lead Register</a>
       		</li>
       		@endif
@@ -695,22 +725,28 @@
       				</span>
       			</a>
       			<ul class="activeable treeview-menu" id="ReportLead">
-      			<li>
+      			<li class="activeable2">
       				<a href="{{url('/report_range')}}" style="font-size: 14px">Report Range</a>
       			</li>
-      			<li>
+      			<li class="activeable2">
       				<a href="{{url('/report_customer')}}" style="font-size: 14px">Report Customer</a>
       			</li>
+      			<li class="activeable2">
+      				<a href="{{url('/report_product_technology')}}" style="font-size: 14px">Report Tags</a>
+      			</li>
+      			<li class="activeable2">
+      				<a href="{{url('/report_product_index')}}" style="font-size: 14px">Report Products</a>
+      			</li>
       			@if(Auth::User()->email == 'tech@sinergy.co.id')
-      			<li>
+      			<li class="activeable2">
       				<a href="{{url('/report_deal_price')}}" style="font-size: 14px">Report Range by Deal Price</a>
       			</li>
       			@endif
       			@if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
-      			<li>
+      			<li class="activeable2">
       				<a href="{{url('/report_sales')}}" style="font-size: 14px">Report Sales</a>
       			</li>
-      			<li>
+      			<li class="activeable2">
       				<a href="{{url('/report_presales')}}" style="font-size: 14px">Report Presales</a>
       			</li>
       			@endif
@@ -719,27 +755,42 @@
       		@endif
       		@if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'ADMIN')
       		@else
-      		<li>
-      			<a href="{{('/sho')}}" style="font-size: 14px">Sales Handover</a>
+      		<li class="activeable2">
+      			<a href="{{url('/sho')}}" style="font-size: 14px">Sales Handover</a>
       		</li>
       		@endif
       		@if(Auth::User()->id_company == '1')
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('/partnership')}}" style="font-size: 14px">Partnership</a>
       		</li>
       		@endif
       		@if(Auth::User()->id_position != 'HR MANAGER')
-      		<li>
-      			<a href="{{url('/customer')}}" style="font-size: 14px">Customer Data</a>
+      		<li class="activeable treeview">
+      			<a href="#SettingLead" data-parent="#exampleAccordion">
+      				<span class="nav-link-text" style="font-size: 14px">Setting</span>
+      				<span class="pull-right-container">
+      					<i class="fa fa-angle-left pull-right"></i>
+      				</span>
+      			</a>
+      			<ul class="activeable treeview-menu" id="ReportLead">
+	      			<li class="activeable2">
+		      			<a href="{{url('/customer')}}" style="font-size: 14px">Customer Data</a>
+		      		</li>
+		      		@if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == "MANAGER")
+	      			<li class="activeable2">
+		      			<a href="{{url('/sales/tag')}}" style="font-size: 14px">Category Tags</a>
+		      		</li>
+		      		@endif
+		      		@if((Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER') ||  (Auth::user()->id_division == 'SALES' && Auth::user()->id_position == 'OPERATION'))
+	      			<li class="activeable2">
+		      			<a href="{{url('/sales/lead_setting')}}" style="font-size: 14px">Setting Lead</a>
+		      		</li>
+		      		@endif
+      			</ul>
       		</li>
       		@endif
       	</ul>
       </li>
-
-
-
-
-
       @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(HEAD)' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(STAFF)' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'HR' || Auth::User()->name == 'Felicia Debi Noor')
       <li class="activeable treeview">
         <a href="#ADMINPages" data-parent="#exampleAccordion">
@@ -751,50 +802,46 @@
         </a>
         <ul class="activeable treeview-menu" id="ADMINPages">
           @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR')
-          <li>
+          <li class="activeable2">
             <a href="{{url('/pr')}}" style="font-size: 14px"></i>Purchase Request</a>
           </li>
           @endif
 
           @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(HEAD)' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'SERVICE PROJECT(STAFF)' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR')
-          <li>
+          <li class="activeable2">
             <a href="{{url('/letter')}}" style="font-size: 14px"></i>Letter</a>
           </li>
           @endif
 
           @if(Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'STAFF GA' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM' || Auth::User()->id_position == 'OPERATION DIRECTOR' && Auth::User()->id_division == 'PMO')
-          <li>
+          <li class="activeable2">
             <a href="{{url('/quote')}}" style="font-size: 14px"></i>Quote Number</a>
           </li>
           @endif
 
           @if(Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'HR' || Auth::User()->id_position == 'ADMIN' && Auth::User()->id_division == 'MSM' || Auth::User()->name == 'Felicia Debi Noor')
-          <li>
+          <li class="activeable2">
             <a href="{{url('admin_hr')}}" style="font-size: 14px"></i>HR</a>
           </li>
           @endif
 
           @if(Auth::User()->name == 'Felicia Debi Noor' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'ADMIN' && Auth::User()->id_company == '1')
-          <li>
+          <li class="activeable2">
             <a href="{{url('po')}}" style="font-size: 14px"></i>Purchase Order</a>
           </li>
           @endif
           @if(Auth::User()->id_position == 'ADMIN')
-          <li>
+          <li class="activeable2">
             <a href="{{url('pr_asset')}}" style="font-size: 14px"></i>PR Asset Management</a>
           </li>
           @endif
 
           @if(Auth::User()->id_position == 'HR MANAGER')
-      	  <li>
-            <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
-          </li>
-          @elseif(Auth::User()->id_position == 'ADMIN')
-          <li>
+      	  <li class="activeable2">
             <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
           </li>
           @elseif(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'STAFF' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'ADMIN' && Auth::User()->id_company == '1' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_company == '1')
-          <li class="nav-item">
+          <li class="nav-item activeable2">
         	<a class="nav-link" href="{{url('/esm')}}">
           		<span class="nav-link-text" style="font-size: 14px">Claim Management</span>
         	</a>
@@ -812,28 +859,24 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="ADMINPages">
-          <li>
+          <li class="activeable2">
             <a href="{{url('/pr')}}" style="font-size: 14px"></i>Purchase Request</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/po')}}" style="font-size: 14px"></i>Purchase Order</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/letter')}}" style="font-size: 14px"></i>Letter</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/quote')}}" style="font-size: 14px"></i>Quote Number</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('admin_hr')}}" style="font-size: 14px"></i>HR</a>
           </li>
         </ul>
       </li>
       @endif
-
-
-
-
 
       <li class="activeable treeview">
       	<a href="#Finance" data-parent="#exampleAccordion">
@@ -845,12 +888,12 @@
       	</a>
       	<ul class="activeable treeview-menu" id="HumanResource">
           @if(Auth::User()->id_position != 'HR MANAGER')
-          <li>
+          <li class="activeable2">
             <a href="{{url('/salesproject')}}" style="font-size: 14px"></i>ID Project</a>
           </li>
           @endif
 
-      	  <li>
+      	  <li class="activeable2">
             <a href="{{url('/esm')}}" style="font-size: 14px"></i>Claim Management</a>
           </li>
       	</ul>
@@ -868,7 +911,7 @@
       		</span>
       	</a>
       	<ul class="activeable treeview-menu" id="PMO">
-      		<li>
+      		<li class="activeable2">
       			<a href="{{url('PMO/index')}}" style="font-size: 14px">Project</a>
       		</li>
       	</ul>
@@ -887,10 +930,10 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="HRPages">
-          <li>
+          <li class="activeable2">
             <a href="{{url('/hu_rec')}}" style="font-size: 14px"></i>Employees</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
           </li>
         </ul>
@@ -905,10 +948,10 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="HRPages">
-          <li>
+          <li class="activeable2">
             <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
           </li>
         </ul>
@@ -923,10 +966,10 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="HRPages">
-          <li>
+          <li class="activeable2">
             <a href="{{url('/hu_rec')}}" style="font-size: 14px"></i>Employees</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
           </li>
         </ul>
@@ -941,10 +984,10 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="HRPages">
-          <li>
+          <li class="activeable2">
             <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
           </li>
         </ul>
@@ -959,7 +1002,7 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="HRPages">
-          <li>
+          <li class="activeable2">
             <a href="{{url('/show_cuti')}}" style="font-size: 14px"></i>Leaving Permit</a>
           </li>
           <!-- <li>
@@ -976,10 +1019,10 @@
           </span>
         </a>
         <ul class="activeable treeview-menu" id="HRPages">
-          <li>
+          <li class="activeable2">
             <a href="{{url('/asset_hr')}}" style="font-size: 14px"></i>Asset</a>
           </li>
-          <li>
+          <li class="activeable2">
             <a href="{{url('/asset_atk')}}" style="font-size: 14px"></i>ATK</a>
           </li>
         </ul>
@@ -987,9 +1030,9 @@
       @endif
 
 
-      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG')
-      <li class="nav-item">
-        <a class="nav-link" href="{{url('/asset_pinjam')}}">
+      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+      <li class="activeable nav-item">
+        <a href="{{url('/asset_pinjam')}}" class="nav-link">
           <i class="fa fa-fw fa-book"></i>
           <span class="nav-link-text" style="font-size: 14px">Tech Asset</span>
         </a>
@@ -997,8 +1040,8 @@
       @endif
 
       @if(Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER')
-      <li class="nav-item">
-        <a class="nav-link" href="{{url('/hu_rec')}}">
+      <li class="activable nav-item">
+        <a href="{{url('/hu_rec')}}" class="nav-link">
           <i class="fa fa-fw fa-book"></i>
           <span class="nav-link-text" style="font-size: 14px">Employees</span>
         </a>
@@ -1008,8 +1051,8 @@
       
 
       @if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'HR')
-      <li class="nav-item">
-        <a class="nav-link" href="{{url('/bank_garansi')}}">
+      <li class="activable nav-item">
+        <a href="{{url('/bank_garansi')}}" class="nav-link" >
           <i class="fa fa-fw fa-folder-open"></i>
           <span class="nav-link-text" style="font-size: 14px">Bank Garansi</span>
         </a>
@@ -1044,18 +1087,33 @@
             </span>
           </a>
           <ul class="activeable treeview-menu" id="INPages">
-            <li>
+            <li class="activeable2">
               <a href="{{url('/inventory')}}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>&nbspInventory</a>
             </li>
-            <li>
+            <li class="activeable2">
               <a href="{{url('/inventory/project')}}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>&nbspDelivery Order</a>
             </li>
-            <li>
+            <li class="activeable2">
               <a href="{{url('/asset')}}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>&nbspAsset Management</a>
             </li>
           </ul>
         </li>
       @endif
+
+	    <li class="activeable treeview">
+          <a href="#INPages" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-clock-o"></i>
+            <span class="nav-link-text" style="font-size: 14px">Log History</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="activeable treeview-menu" id="INPages">
+            <li class="activeable2">
+              <a href="{{url('/report_record_auth')}}" style="font-size: 14px"> Record Log History</a>
+            </li>
+          </ul>
+        </li>
       
 
     </ul>

@@ -139,7 +139,7 @@ input[type=text]:focus{
     background-color:#aaa;
     color:#fff;
     padding:7px 4px;
-    border-radius:4px 0 0 4px;
+    /*border-radius:4px 0 0 4px;*/
   }
 
  .inputWithIcon{
@@ -963,16 +963,16 @@ img{
 }
 
 .html{
-  background: url('img.jpg') no-repeat center center fixed;
+  /*background: url('img.jpg') no-repeat center center fixed;*/
   -webkit-background-size:cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
 
-body{
+/*body{
   background: url('img.jpg');
-}
+}*/
 
 .title-sales a{
   font-size: 20px;

@@ -39,6 +39,7 @@ class TestController extends Controller
 
   public function testRemainderEmail(){
     $parameterEmail = collect([
+      // "to" => DB::table('users')->where('nik',1150991080)->first()->name,
       "to" => DB::table('users')->where('name','Rama Agastya')->first()->name,
       "proses_count" => DB::table('sales_lead_register')->where('nik',1150991080)->whereRaw('(`result` = "SD" OR `result` = "TP")')->count(),
       "tp_count" => DB::table('sales_lead_register')->where('nik',1150991080)->where('result' ,'TP')->count(),
@@ -59,6 +60,7 @@ class TestController extends Controller
 
     $return =  new EmailRemainderWeekly($parameterEmail);
     Mail::to('agastya@sinergy.co.id')->send($return);
+
     return $return;
   }
 
@@ -116,7 +118,9 @@ class TestController extends Controller
       $pid_info->url_create = "/salesproject#acceptProjectID?" . $pid_info->id_pid;
     }
 
-    $users = User::select('name')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+    $users = User::select('name')->where('name','Rama Agastya')->first();
+
+
 
     return new MailResult($users,$pid_info);
   }

@@ -13,12 +13,23 @@
 
 Auth::routes();
 
+// hahahahahahaha
+// hahahahahahaha2
+// hahahahahahaha3
+// hahahahahahaha4
+
 Route::post('/update_result', 'SalesController@update_result');
 Route::post('/update_result2', 'SalesController@update_result');
 Route::post('/update_result2a', 'SalesController@update_result');
 Route::post('/update_result3', 'SalesController@update_result');
 Route::post('/update_result4', 'SalesController@update_result');
 Route::post('/update_result5', 'SalesController@update_result');
+
+//ghghgjhgjhgjhgjhgjhgjgj
+
+Route::get('/testEmailTrap',function(){
+	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
+});
 
 //dinar cantik3
 //dinar cantik
@@ -97,8 +108,24 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('sales/getProductEdit','SalesController@getListProductLead');
 	Route::get('sales/getProductTag','SalesController@getProductTag');
 	Route::get('sales/getProductTechTag','SalesController@getProductTechTag');
+	Route::get('sales/getProductTechTagDetail','SalesController@getProductTechTagDetail');
 	Route::get('sales/getTechEdit','SalesController@getListTechTag');
 	Route::get('sales/getTechTag','SalesController@getTechTag');
+	Route::get('sales/getPersonaTags','SalesController@getPersonaTags');
+	Route::get('sales/report_product_technology_sip_msp','ReportController@report_product_technology_sip_msp');
+	Route::get('sales/update_product_technology','SalesController@update_product_technology');
+	Route::get('sales/delete_product_technology','SalesController@delete_product_technology');
+	Route::post('sales/add_product_technology','SalesController@add_product_technology');
+	Route::get('sales/getAllEmployee','SalesController@getAllEmployee');
+	Route::get('sales/getProductTechByLead','SalesController@getProductTechByLead');
+
+	// Sales Lead Setting
+	Route::get('sales/lead_setting', 'LeadSettingController@index');
+	Route::get('sales/lead_setting/getDataLead', 'LeadSettingController@getDataLead');
+	Route::get('sales/lead_setting/getDataLeadPerSales', 'LeadSettingController@getDataLeadPerSales');
+	Route::get('sales/lead_setting/getDataListSales', 'LeadSettingController@getDataListSales');
+	Route::post('sales/lead_setting/postUpdateSales', 'LeadSettingController@postUpdateSales');
+	Route::get('sales/lead_setting/getTestMailable', 'LeadSettingController@getTestMailable');
 
 	Route::get('/warehouse', 'WarehouseController@index');
 	Route::post('/warehouse/store', 'WarehouseController@store');
@@ -121,6 +148,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getCustomerbyDate', 'ReportController@getCustomerbyDate');
 	Route::get('/getCustomerbyDate2', 'ReportController@getCustomerbyDate2');
 	Route::get('/total_deal_price','ReportController@total_deal_price');
+
 
 	/*Route::get('/presales','SalesController@index')->middleware('TechnicalPresalesMiddleware', 'ManagerStaffMiddleware')*/;
 	Route::post('/update_sd/{lead_id}', 'SalesController@update_sd');
@@ -181,6 +209,11 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getFilterDateTerritory','ReportController@getFilterDateTerritory');
 	Route::get('/getFilterTerritoryTabs','ReportController@getFilterTerritoryTabs');
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
+	Route::get('/report_product_technology','ReportController@report_product_technology');
+	Route::get('/getFilterTags','ReportController@getFilterTags');
+
+	Route::get('/report_product_index','ReportController@report_product_index');
+	Route::get('/getreportproduct','ReportController@getreportproduct');
 
 	//route report customer msp
 	Route::get('/getreportcustomermsp','ReportController@getreportcustomermsp');
@@ -226,6 +259,13 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/filter_presales_each_year', 'ReportController@filter_presales_each_year');
 	Route::get('/get_lead_init_presales', 'ReportController@getdatainitleadpresales');
 
+	//Record Authentication
+	Route::get('/report_record_auth', 'ReportController@report_record_auth');
+	Route::get('/get_login','ReportController@get_auth_login');
+	Route::get('/get_logout','ReportController@get_auth_logout');
+	Route::get('/get_auth_login_users','ReportController@get_auth_login_users');
+	Route::get('/getFilterRecordAuth','ReportController@getFilterRecordAuth');
+
 	/*Route::get('/presales_manager','PRESALES_MANAGERController@index');
 	Route::post('/presales/store', 'PRESALES_MANAGERController@store');*/
 
@@ -255,6 +295,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/update_profile','HRController@update_profile');
 	Route::post('/profile/delete_pict','HRController@delete_pict');
 	Route::get('/hu_rec/get_hu','HRController@getdatahu');
+	Route::get('/exportExcelEmployee', 'HRController@exportExcelEmployee');
 
 	//cuti
 	Route::get('/show_cuti', 'HRGAController@show_cuti');
@@ -520,6 +561,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/ambil_pinjam_warehouse', 'WarehouseAssetController@ambil');
 	Route::post('/kembali_pinjam_warehouse', 'WarehouseAssetController@kembali');
 	Route::get('/detail_asset/{id_barang}','WarehouseAssetController@detail_asset');
+	Route::get('/getKategori2','AssetController@getKategori2');
+	Route::get('/exportExcelTech','AssetController@exportExcelTech');
+	Route::get('/getLogAssetTech','AssetController@getLogAssetTech');
 
 	//MSP inventory gudang
 	Route::get('/inventory/msp','WarehouseController@inventory_msp');
@@ -589,8 +633,13 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/accept_status', 'BGaransiController@accept_status');
 
 	// Asset Technical
+	Route::get('/getKategori','AssetController@getKategori');
+	Route::get('/getAssetTech','AssetController@getAssetTech');
+	Route::get('/getAssetTransactionModerator','AssetController@getAssetTransactionModerator');
+	Route::get('/getAssetTransaction','AssetController@getAssetTransaction');
+
 	Route::get('/asset_pinjam', 'AssetController@index');
-	Route::post('/edit_pinjam', 'AssetController@edit');
+	Route::get('/edit_pinjam', 'AssetController@edit');
 	Route::post('/store_asset', 'AssetController@store');
 	Route::post('/update_asset', 'AssetController@update');
 	Route::post('/accept_pinjam', 'AssetController@accept');
@@ -605,6 +654,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/dropdownid_barang', 'AssetController@getid_barang');
 	Route::get('/dropdownid_barang_reject', 'AssetController@getid_barang_reject');
 	Route::get('/dropdownsn', 'AssetController@getsn');
+	Route::get('/getdetailAsset','AssetController@getdetailAsset');
+	Route::get('/getdetailAssetPeminjaman','AssetController@getdetailAssetPeminjaman');
+	Route::get('/getAsset','AssetController@getAsset');
 	Route::get('/getidbarangaccept', 'AssetController@getid_barang_accept');
 
 	//App Incident

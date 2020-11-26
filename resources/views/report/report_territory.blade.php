@@ -51,7 +51,8 @@
           font-style: bold;
           background-color: #18113d !important;
       }
-            .dataTables_filter {display: none;}
+      
+      .dataTables_filter {display: none;}
   </style>
   
   <section class="content-header">
@@ -113,6 +114,9 @@
                   @endforeach
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#msp" role="tab" aria-controls="msp" aria-selected="true" onclick="changeTerritory('msp')">MSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="ter_opp" data-toggle="tab" href="#ter_opp" role="tab" aria-controls="ter_opp" aria-selected="true" onclick="changeTerritory('OPERATION')">OPERATION</a>
                     </li>
                 </ul>
                 @endif
@@ -181,7 +185,6 @@
     initReportTerritory();
 
     function initReportTerritory(){
-
       var id_territory = $(".nav-item.active").contents().text().trim()
       console.log($(".nav-item.active").contents().text().trim());
       $("#data_lead").DataTable({

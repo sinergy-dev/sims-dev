@@ -57,52 +57,52 @@
                 @endforeach
                 </tbody>
             </table>
-      </div>
+        </div>
     </div>
 
     <div class="modal fade" id="edit_sho" role="dialog">
-    <div class="modal-dialog modal-lg">
-      <!-- Modal content-->
-      <div class="modal-content modal-md">
-        <div class="modal-header">
-          <h4 class="modal-title">Edit Sales Handover</h4>
-        </div>
-        <div class="modal-body">
-          <form method="POST" action="{{url('update_sho')}}" id="modalCustomer" name="modalCustomer">
-            @csrf
-          <input type="" id="id_sho" name="id_sho" value="" hidden>
-          <div class="form-group">
-            <label for="sow">Scope of Work</label>
-            <input type="text" class="form-control" id="sow" name="sow" placeholder="" required>
+      <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content modal-md">
+          <div class="modal-header">
+            <h4 class="modal-title">Edit Sales Handover</h4>
           </div>
-          <div class="form-group">
-            <label for="timeline">Timeline</label>
-            <input type="text" class="form-control" id="timeline" name="timeline" placeholder="" required>
-          </div>
-          <div class="form-group">
-            <label for="top">Term of Payment</label>
-            <textarea type="text" class="form-control" id="top" name="top" placeholder="" required> </textarea>
-          </div>
-           <div class="form-group modalIcon inputIconBg">
-            <label for="pro_budget">Project Budget</label>
-            <input type="text" class="form-control money" id="pro_budget" name="pro_budget" placeholder="" required>
-            <i class="" aria-hidden="true">Rp.</i>
-          </div>
-           <div class="form-group">
-            <label for="meeting_date">Meeting date</label>
-            <input type="date" class="form-control" id="meeting_date" name="meeting_date" placeholder="" required>
-          </div>
-
-
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-warning"><i class="fa fa-check"></i>&nbspEdit</button>
+          <div class="modal-body">
+            <form method="POST" action="{{url('update_sho')}}" id="modalCustomer" name="modalCustomer">
+              @csrf
+            <input type="" id="id_sho" name="id_sho" value="" hidden>
+            <div class="form-group">
+              <label for="sow">Scope of Work</label>
+              <input type="text" class="form-control" id="sow" name="sow" placeholder="" required>
             </div>
-        </form>
+            <div class="form-group">
+              <label for="timeline">Timeline</label>
+              <input type="text" class="form-control" id="timeline" name="timeline" placeholder="" required>
+            </div>
+            <div class="form-group">
+              <label for="top">Term of Payment</label>
+              <textarea type="text" class="form-control" id="top" name="top" placeholder="" required> </textarea>
+            </div>
+             <div class="form-group modalIcon inputIconBg">
+              <label for="pro_budget">Project Budget</label>
+              <input type="text" class="form-control money" id="pro_budget" name="pro_budget" placeholder="" required>
+              <i class="" aria-hidden="true">Rp.</i>
+            </div>
+             <div class="form-group">
+              <label for="meeting_date">Meeting date</label>
+              <input type="date" class="form-control" id="meeting_date" name="meeting_date" placeholder="" required>
+            </div>
+
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+                <button type="submit" class="btn btn-warning"><i class="fa fa-check"></i>&nbspEdit</button>
+              </div>
+          </form>
+          </div>
         </div>
       </div>
     </div>
-</div>
     
   </section>
 
