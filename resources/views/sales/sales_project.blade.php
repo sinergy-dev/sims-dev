@@ -7,10 +7,14 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 <style type="text/css">
   div.dataTables_processing { z-index: 1; }
 
-  .DTFC_LeftBodyLiner {
+/*  .DTFC_LeftBodyLiner {
     overflow-y: hidden; // hide vertical
 	  overflow-x: hidden; // hide horizontal
     opacity:0.8;
+  }*/
+
+  .DTFC_LeftBodyLiner {
+    overflow: hidden;
   }
 
   .dataTables_length{
@@ -29,7 +33,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     display: none;
   }
 
-  th, td { white-space: no-wrap; overflow: hidden; };
+  th, td { white-space: nowrap; overflow: hidden; };
 
   .inputWithIcon input[type=text]{
     padding-left:40px;
@@ -115,14 +119,24 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 <div class="row">
                   <div class="col-md-8" id="export-table">
                     @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-sm pull-left export" style="margin-right: 10px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
 
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
                     @else
                     <a href="{{action('SalesController@export')}}" style="margin-right: 10px" class="btn btn-warning btn-sm pull-left export"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
 
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
                     @endif
+                    <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
+                        <option value="{{$year_now}}">&#xf073 &nbsp{{$year_now}}</option>
+                        @foreach($year_before as $years)
+                          @if($years->year != $year_now)
+                            <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                          @endif
+                        @endforeach
+                        
+                        <!-- <option value="2019">&#xf073 &nbsp2019</option> -->
+                    </select>
                   </div>
                   <div class="col-md-4" id="search-table">
                     <div class="input-group pull-right" style="margin-left: 10px">
@@ -189,7 +203,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 	           </div>
               
 	           <div id="request-table" style="display:none">
-	              <table class="table table-bordered table-striped dataTable"  id="request_id" width="100%" cellspacing="0">
+	              <table class="table table-bordered table-striped display"  id="request_id" width="100%" cellspacing="0">
 	                  <thead>
 	                    <tr>
 	                      <th>Created</th>
@@ -564,317 +578,318 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
   <script type="text/javascript">
 
-    initPID();
+  initPID();
 
-    function changeNumberEntries(number){
-      $("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
-      $("#table-pid").DataTable().page.len( number ).draw();
-    }
+  function changeNumberEntries(number){
+    $("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
+    $("#table-pid").DataTable().page.len( number ).draw();
+  }
 
-    function initPID(){
-    var table = $("#table-pid").DataTable({
-    	"footerCallback": function( row, data, start, end, display ) {
+  function initPID(){
+  var table = $("#table-pid").DataTable({
+  	"footerCallback": function( row, data, start, end, display ) {
+          var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
+
+          var api = this.api(),data;  
+          // Remove the formatting to get integer data for summation
+
+          var total = api.column(7, {page:'current'}).data().sum();
+
+          var filtered = api.column(7, {"filter": "applied"} ).data().sum();
+
+          var totalpage = api.column(7).data().sum();
+
+          var filteredgrand = api.column(8, {"filter": "applied"} ).data().sum();
+
+          var totalpagegrand = api.column(8).data().sum();
+
+          $( api.column( 6 ).footer() ).html("Total Amount");
+
+          $( api.column( 7 ).footer() ).html(totalpage);
+
+          $( api.column( 7 ).footer() ).html(filtered);
+
+          $( api.column( 8 ).footer() ).html(totalpagegrand);
+
+          $( api.column( 8 ).footer() ).html(filteredgrand);
+
+    },
+    "ajax":{
+        "type":"GET",
+        "url":"{{url('getPIDIndex')}}",
+      },
+      "columns": [
+        { "data": "date" },
+        { "data": "id_project" },
+        { "data": "lead_id" },
+        { // No Po
+          render: function ( data, type, row ) {
+            if (row.id_company == 1) {
+              if (row.no_po_customer == null) {
+                return row.quote_number_final;  
+              }else{
+                return row.no_po_customer;  
+              }
+            }else{
+              if (row.lead_id == "MSPPO") {
+                return row.no_po_customer;
+              }else{
+                return row.no_po;  
+              }
+            }
+          }
+        },
+        { // No Quotation
+          render: function ( data, type, row ) {
+            if (row.id_company == 1) {
+              return "-";
+            }else{
+              if (row.lead_id == "MSPQUO") {
+                return row.no_po_customer;
+              }else{
+                return row.quote_number;  
+              }
+            }
+          }
+        },
+        { // Customer Name
+          render: function ( data, type, row ) {
+            if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+              return row.customer_name;  
+            }else{
+              return row.customer_legal_name;  
+            }
+          }
+        },
+        { "data": "name_project" },
+        { "data": "amount_idr" },
+        { "data": "amount_idr_before_tax" },
+        { "data": "note" },
+        { // Invoice
+          render: function ( data, type, row ) {
+            if (row.invoice == 'H') {
+              return "Setengah Bayar";  
+            }else if (row.invoice == 'F') {
+              return "Sudah Bayar";
+            }else if (row.invoice == 'N') {
+              return "Belum Bayar";
+            }else{
+              return "";
+            }
+          }
+        },
+        { // Status
+          render: function ( data, type, row ) {
+            if (row.progres == null) {
+              return "UnProgress";  
+            }else {
+              return row.progres;
+            }
+          }
+        },
+        { // Sales
+          render: function ( data, type, row ) {
+            if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+              return row.sales_name;  
+            }else{
+              return row.name;  
+            }
+          }
+        },
+        { // Action
+          render: function ( data, type, row ) {
+          	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+          		@if(Auth::User()->id_division == 'FINANCE')
+            		@if(Auth::User()->id_position == 'MANAGER')
+            			return '<i>No Action</i>';
+            		@else
+            			return '<i>No Action</i>';
+              	@endif
+            	@elseif(Auth::User()->id_division == 'PMO')
+            		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+            	@else
+            	 return 'mbuh'; 
+            	@endif  
+
+          	}else{
+
+          		@if(Auth::User()->id_division == 'FINANCE')
+            		@if(Auth::User()->id_position == 'MANAGER')
+            			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
+            		@else
+            			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
+            		@endif
+            	@elseif(Auth::User()->id_division == 'PMO')
+            		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+            	@else
+            	 return 'mbuh'; 
+            	@endif  
+
+          	}
+          	                
+          }
+        },
+      ],
+      // "info":false,
+      "scrollX": true,
+      "pageLength": 25,
+      "order": [[ 1, "desc" ]],
+      "orderFixed": [[1, 'desc']],
+      "processing": true,
+      "language": {
+        'loadingRecords': '&nbsp;',
+        'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+      }, 
+      "scrollCollapse":true,
+      // "paging": false,
+      fixedColumns:   {
+        leftColumns: 2,
+        rightColumns: 1
+      },  
+  });
+
+  var request_table = $("#request_id").DataTable({
+    "footerCallback": function( row, data, start, end, display ) {
             var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
 
-            var api = this.api(),data;  
+            var api = this.api(),data;
             // Remove the formatting to get integer data for summation
 
-            var total = api.column(7, {page:'current'}).data().sum();
+            var total = api.column(6, {page:'current'}).data().sum();
 
-            var filtered = api.column(7, {"filter": "applied"} ).data().sum();
+            var filtered = api.column(6, {"filter": "applied"} ).data().sum();
 
-            var totalpage = api.column(7).data().sum();
+            var totalpage = api.column(6).data().sum();
 
-            var filteredgrand = api.column(8, {"filter": "applied"} ).data().sum();
+            $( api.column( 5 ).footer() ).html("Total Amount");
 
-            var totalpagegrand = api.column(8).data().sum();
+            $( api.column( 6 ).footer() ).html(numFormat(totalpage));
 
-            $( api.column( 6 ).footer() ).html("Total Amount");
-
-            $( api.column( 7 ).footer() ).html(totalpage);
-
-            $( api.column( 7 ).footer() ).html(filtered);
-
-            $( api.column( 8 ).footer() ).html(totalpagegrand);
-
-            $( api.column( 8 ).footer() ).html(filteredgrand);
+            $( api.column( 6 ).footer() ).html(numFormat(filtered));
 
       },
-      "ajax":{
-          "type":"GET",
-          "url":"{{url('getPIDIndex')}}",
+    "ajax":{
+      "type":"GET",
+      "url":"{{url('getShowPIDReq')}}",
+      },
+      "columns": [
+        { "data": "created_at" },
+        { "data": "code_company" },
+        {
+          render: function ( data, type, row ) {
+          	if (row.no_po == null) {
+                return row.quote_number;
+            }else{
+                return row.no_po;  
+            }
+          }
         },
-        "columns": [
-          { "data": "date" },
-          { "data": "id_project" },
-          { "data": "lead_id" },
-          { // No Po
-            render: function ( data, type, row ) {
-              if (row.id_company == 1) {
-                if (row.no_po_customer == null) {
-                  return row.quote_number_final;  
-                }else{
-                  return row.no_po_customer;  
-                }
-              }else{
-                if (row.lead_id == "MSPPO") {
-                  return row.no_po_customer;
-                }else{
-                  return row.no_po;  
-                }
-              }
+        { "data": "opp_name"},
+        { "data": "name"},
+        {
+          render: function ( data, type, row ) {
+          	if (row.date_po == null) {
+                return row.date;
+            }else{
+                return row.date_po;  
             }
-          },
-          { // No Quotation
-            render: function ( data, type, row ) {
-              if (row.id_company == 1) {
-                return "-";
-              }else{
-                if (row.lead_id == "MSPQUO") {
-                  return row.no_po_customer;
-                }else{
-                  return row.quote_number;  
-                }
-              }
-            }
-          },
-          { // Customer Name
-            render: function ( data, type, row ) {
-              if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-                return row.customer_name;  
-              }else{
-                return row.customer_legal_name;  
-              }
-            }
-          },
-          { "data": "name_project" },
-          { "data": "amount_idr" },
-          { "data": "amount_idr_before_tax" },
-          { "data": "note" },
-          { // Invoice
-            render: function ( data, type, row ) {
-              if (row.invoice == 'H') {
-                return "Setengah Bayar";  
-              }else if (row.invoice == 'F') {
-                return "Sudah Bayar";
-              }else if (row.invoice == 'N') {
-                return "Belum Bayar";
-              }else{
-                return "";
-              }
-            }
-          },
-          { // Status
-            render: function ( data, type, row ) {
-              if (row.progres == null) {
-                return "UnProgress";  
-              }else {
-                return row.progres;
-              }
-            }
-          },
-          { // Sales
-            render: function ( data, type, row ) {
-              if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-                return row.sales_name;  
-              }else{
-                return row.name;  
-              }
-            }
-          },
-          { // Action
-            render: function ( data, type, row ) {
-            	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-            		@if(Auth::User()->id_division == 'FINANCE')
-              		@if(Auth::User()->id_position == 'MANAGER')
-              			return '<i>No Action</i>';
-              		@else
-              			return '<i>No Action</i>';
-	              	@endif
-              	@elseif(Auth::User()->id_division == 'PMO')
-              		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-              	@else
-              	 return 'mbuh'; 
-              	@endif  
-
-            	}else{
-
-            		@if(Auth::User()->id_division == 'FINANCE')
-              		@if(Auth::User()->id_position == 'MANAGER')
-              			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
-              		@else
-              			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
-              		@endif
-              	@elseif(Auth::User()->id_division == 'PMO')
-              		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-              	@else
-              	 return 'mbuh'; 
-              	@endif  
-
-            	}
-            	                
-            }
-          },
-        ],
-        "info":false,
-        "scrollX": true,
-        "pageLength": 25,
-        "order": [[ 1, "desc" ]],
-        "orderFixed": [[1, 'desc']],
-        "processing": true,
-        "language": {
+          }
+        },
+        { "data": "amount_pid"},
+        {
+          render: function ( data, type, row ) {
+          	if (row.status == 'requested') {
+          		return '<button class="btn btn-xs btn-primary btn-show" style="width: 100%" data-toggle="modal" value="'+row.id_pid+'">Show</button>'
+          	}else if(row.status == 'done'){
+          		return '<small class="label label-success"><i class="fa fa-clock-o"></i>Done</small>'
+          	}
+          	
+          }
+        },
+      ],
+      "info":false,
+      "scrollX": true,
+      "pageLength": 25,
+      "order": [[ 1, "desc" ]],
+      "orderFixed": [[1, 'desc']],
+      "processing": true,
+      "language": {
           'loadingRecords': '&nbsp;',
           'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
-        }, 
-        "scrollCollapse":true,
-        // "paging": false,
-        fixedColumns:   {
-          leftColumns: 2,
-          rightColumns: 1
-        },  
-    });
-
-	  var request_table = $("#request_id").DataTable({
-      "footerCallback": function( row, data, start, end, display ) {
-              var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
-
-              var api = this.api(),data;
-              // Remove the formatting to get integer data for summation
-
-              var total = api.column(6, {page:'current'}).data().sum();
-
-              var filtered = api.column(6, {"filter": "applied"} ).data().sum();
-
-              var totalpage = api.column(6).data().sum();
-
-              $( api.column( 5 ).footer() ).html("Total Amount");
-
-              $( api.column( 6 ).footer() ).html(numFormat(totalpage));
-
-              $( api.column( 6 ).footer() ).html(numFormat(filtered));
-
         },
-	    "ajax":{
-        "type":"GET",
-        "url":"{{url('getShowPIDReq')}}",
-	      },
-	      "columns": [
-	        { "data": "created_at" },
-	        { "data": "code_company" },
-	        {
-	          render: function ( data, type, row ) {
-	          	if (row.no_po == null) {
-	                return row.quote_number;
-	            }else{
-	                return row.no_po;  
-	            }
-	          }
-	        },
-	        { "data": "opp_name"},
-	        { "data": "name"},
-	        {
-	          render: function ( data, type, row ) {
-	          	if (row.date_po == null) {
-	                return row.date;
-	            }else{
-	                return row.date_po;  
-	            }
-	          }
-	        },
-	        { "data": "amount_pid"},
-	        {
-	          render: function ( data, type, row ) {
-	          	if (row.status == 'requested') {
-	          		return '<button class="btn btn-xs btn-primary btn-show" style="width: 100%" data-toggle="modal" value="'+row.id_pid+'">Show</button>'
-	          	}else if(row.status == 'done'){
-	          		return '<small class="label label-success"><i class="fa fa-clock-o"></i>Done</small>'
-	          	}
-	          	
-	          }
-	        },
-	      ],
-	      "info":false,
-	      "scrollX": true,
-	      "pageLength": 25,
-	      "order": [[ 1, "desc" ]],
-	      "orderFixed": [[1, 'desc']],
-	      "processing": true,
-	      "language": {
-            'loadingRecords': '&nbsp;',
-            'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
-          },
-	      "paging": false,
-	      fixedColumns:   {
-	        rightColumns: 1
-	      }, 
-		});	
+      "paging": true,
+      fixedColumns:   {
+        rightColumns: 1
+      }, 
+	});	
 
-	    @if(Auth::User()->id_division == 'MSM')
-  		  // Column Amount IDR
-        var column1 = table.column(7);
-  	    column1.visible( ! column1.visible() );
-        // Column Amount IDR Before Tax
-  	    var column2 = table.column(8);
-  	    column2.visible( ! column2.visible() );
-      @endif
 
-      @if(Auth::User()->id_division == "SALES" || Auth::User()->id_division == "TECHNICAL" || Auth::User()->id_division == "MSM" || Auth::User()->id_position == "DIRECTOR")
-      	// Column Action
-        var column3 = table.column(13);
-	      column3.visible(! column3.visible());
-      @endif
+    @if(Auth::User()->id_division == 'MSM')
+		  // Column Amount IDR
+      var column1 = table.column(7);
+	    column1.visible( ! column1.visible() );
+      // Column Amount IDR Before Tax
+	    var column2 = table.column(8);
+	    column2.visible( ! column2.visible() );
+    @endif
 
-      $('#searchBarTicket').keyup(function(){
-	      table.search($('#searchBarTicket').val()).draw();
-	    })
+    @if(Auth::User()->id_division == "SALES" || Auth::User()->id_division == "TECHNICAL" || Auth::User()->id_division == "MSM" || Auth::User()->id_position == "DIRECTOR")
+    	// Column Action
+      var column3 = table.column(13);
+      column3.visible(! column3.visible());
+    @endif
 
-	    $('#applyFilterTablePerformance').click(function(){
-	      table.search($('#searchBarTicket').val()).draw();
-	    })
+    $('#searchBarTicket').keyup(function(){
+      table.search($('#searchBarTicket').val()).draw();
+    })
 
-	    $('#searchBarTicketmsp').keyup(function(){
-	      table.search($('#searchBarTicketmsp').val()).draw();
-	    })
+    $('#applyFilterTablePerformance').click(function(){
+      table.search($('#searchBarTicket').val()).draw();
+    })
 
-	    $('#applyFilterTablePerformancemsp').click(function(){
-	      table.search($('#searchBarTicketmsp').val()).draw();
-	    })
-      
+    $('#searchBarTicketmsp').keyup(function(){
+      table.search($('#searchBarTicketmsp').val()).draw();
+    })
+
+    $('#applyFilterTablePerformancemsp').click(function(){
+      table.search($('#searchBarTicketmsp').val()).draw();
+    })
+    
+  }
+
+  function submitRequestID(){
+    if($("#inputCustomer").val() == ""){
+      customer_name = "MSPQUO"
+    } else {
+      customer_name = $("#inputCustomer").val()
     }
 
-    function submitRequestID(){
-      if($("#inputCustomer").val() == ""){
-        customer_name = "MSPQUO"
-      } else {
-        customer_name = $("#inputCustomer").val()
+    $('#tunggu').modal('show');
+    $('#showRequestProjectID').modal('hide')
+
+    $.ajax({
+      type:"GET",
+      url:"{{url('/store_sp')}}",
+      data:{
+        _token: "{{ csrf_token() }}",
+        customer_name:customer_name,
+        // sales:$("#inputCustomer").val(),
+        date:($("#inputDate").val()),
+        amount:$("#inputAmount").val(),
+        note:$("#inputNote").val(),
+        p_order:$("#inputPO").val(),
+        quote:$("#inputQuo").val(),
+        id_cus:$("#code_name").val(),
+        // id_customer_quotation:$("#code_name").val(),
+        // payungs:$("#inputCustomer").val(),
+      },
+      success:function(result){
+        $('#tunggu').modal('hide');
+    	  $('#showRequestProjectID').modal('hide')
+        location.reload()
       }
-
-      $('#tunggu').modal('show');
-      $('#showRequestProjectID').modal('hide')
-
-      $.ajax({
-        type:"GET",
-        url:"{{url('/store_sp')}}",
-        data:{
-          _token: "{{ csrf_token() }}",
-          customer_name:customer_name,
-          // sales:$("#inputCustomer").val(),
-          date:($("#inputDate").val()),
-          amount:$("#inputAmount").val(),
-          note:$("#inputNote").val(),
-          p_order:$("#inputPO").val(),
-          quote:$("#inputQuo").val(),
-          id_cus:$("#code_name").val(),
-          // id_customer_quotation:$("#code_name").val(),
-          // payungs:$("#inputCustomer").val(),
-        },
-        success:function(result){
-          $('#tunggu').modal('hide');
-      	  $('#showRequestProjectID').modal('hide')
-          location.reload()
-        }
-      })
-    }
+    })
+  }
 
   $('#table-pid').on('click', '.btn-edit', function(){
   	$('#tunggu').modal('show');
@@ -1005,13 +1020,13 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('#pid-table').css("display","block")
         $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
       }else if (id == "request") {
-      	$('#request-table').css("display","block")
+      	$('#request-table').show()
       	$('#pid-table').css("display","none")
       	$('#export-table').css("display","none")
       	$('#search-table').css("display","none")
       	$('#request_id').DataTable().ajax.url("{{url('getShowPIDReq')}}?id="+id).load();
       }else if (id == "history") {
-      	$('#request-table').css("display","block")
+      	$('#request-table').show()
       	$('#pid-table').css("display","none")
       	$('#export-table').css("display","none")
       	$('#search-table').css("display","none")
@@ -1061,12 +1076,29 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   //     setTimeout(function() {$('#tunggu').modal('hide');}, 10000);
   //  });
 
-   $('#table-pid').on('click', '.btn-status', function(){
+ $('#table-pid').on('click', '.btn-status', function(){
 
-   	$("#id_pro_status").val(this.value);
-   	$("#modal_status").modal("show");
+ 	$("#id_pro_status").val(this.value);
+ 	$("#modal_status").modal("show");
 
-   })
+ })
 
-  </script>
+ $("#year_filter").change(function(){
+  var filterYear = this.value;
+    console.log(this.value)
+    // $.ajax({
+    //   url:"getFilterYearPID",
+    //   type:"GET",
+    //   data:{
+    //     filterYear:this.value,
+    //   },
+    //   success:function(result){
+        
+    //     console.log(result)
+    //   }
+    // })
+    $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
+ })
+
+</script>
 @endsection
