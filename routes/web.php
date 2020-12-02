@@ -66,7 +66,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/update_lead_register', 'SalesController@update_lead_register');
 	Route::post('/salesAddLead', 'SalesController@store');
 	// Route::get('/sales','SalesController@index');
-	Route::get('/detail_sales/{lead_id}','SalesController@detail_sales');
+	Route::get('/detail_sales/{lead_id}','SalesController@detail_sales')->name('sales.detail_sales');
 	Route::post('/update_tp/{lead_id}', 'SalesController@update_tp');
 
 	Route::get('/test_update_result',function () {
@@ -352,6 +352,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getPIDIndex','SalesController@getPIDIndex');
 	Route::get('/getEditPID','SalesController@getEditPID');
 	Route::get('/getShowPIDReq','SalesController@getShowPIDReq');
+	Route::get('/getFilterYearPID','SalesController@getFilterYearPID');
 
 
 	Route::get('/salesproject/getRequestProjectID', 'SalesController@getRequestProjectID');
@@ -486,6 +487,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/do', 'DONumberController@index');
 	Route::post('/store_do', 'DONumberController@store');
 	Route::post('/update_do', 'DONumberController@update');
+	Route::get('/getdatado', 'DONumberController@getdatado');
+	Route::get('/getfilteryeardo', 'DONumberController@getfilteryear');
+	Route::get('/downloadExcelDO', 'DONumberController@downloadExcelDO');
 
 	Route::get('/partnership', 'PartnershipController@index');
 	Route::post('/store_partnership', 'PartnershipController@store');
