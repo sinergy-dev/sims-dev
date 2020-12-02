@@ -14,6 +14,8 @@ use Auth;
 use Month;
 use PDF;
 use Excel;
+use Crypt;
+use Carbon\Carbon;
 use App\solution_design;
 use App\TB_Contact;
 use App\Quote;
@@ -2018,6 +2020,10 @@ class SALESController extends Controller{
         $pos = $position->id_position;
         $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
         $com = $company->id_company;
+
+        if ($div == 'SALES') {
+           $lead_id = Crypt::decrypt($lead_id);
+        }        
 
         if($ter != null){
             $lead = DB::table('sales_lead_register')
@@ -4310,7 +4316,11 @@ class SALESController extends Controller{
 
         $pid_request_lead_done = PID::where('status','=','done')->get();  
 
-      return view('sales/sales_project',compact('hitung_msp','salessp','salesmsp','lead_sp','lead_msp','notif','notifOpen','notifsd','notiftp', 'notifClaim','pops','datas','pid_request','pid_request_done','pid_request_lead','pid_request_lead_done'));
+        $year_before = SalesProject::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+
+        $year_now = date('Y');
+
+      return view('sales/sales_project',compact('hitung_msp','salessp','salesmsp','lead_sp','lead_msp','notif','notifOpen','notifsd','notiftp', 'notifClaim','pops','datas','pid_request','pid_request_done','pid_request_lead','pid_request_lead_done','year_now','year_before'));
     }
 
     public function getPIDIndex(Request $request){
@@ -4477,6 +4487,171 @@ class SALESController extends Controller{
         
         }
     
+    }
+
+    public function getFilterYearPID(Request $req){
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+        $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
+        $com = $company->id_company;
+
+        $pops = SalesProject::select('id_project')->orderBy('created_at','desc')->first();
+
+        if ($div == 'SALES' && $pos != 'ADMIN') {
+            if ($com == 1) {
+
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
+                    // ->where('sales_lead_register.nik',$nik)
+                    ->where('id_territory', $ter)
+                    ->orWhere('tb_id_project.sales_name',Auth::User()->name)
+                    ->where('id_company','1')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->get();
+                
+            }else{
+
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id','left')
+                    ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')
+                    ->join('tb_company','tb_company.id_company','=','users.id_company')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
+                    ->where('users.id_company','2')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->where('tb_id_project.status','!=','WO')
+                    ->get();
+            }
+
+            return array("data" => $pid);  
+        
+        }elseif ($div == 'TECHNICAL' && $pos == 'MANAGER' || $pos == 'DIRECTOR') {
+            if ($com == 1) {
+
+                 $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
+                    ->where('id_company','1')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->get(); 
+
+            }else{
+
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id','left')
+                    ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')
+                    ->join('tb_company','tb_company.id_company','=','users.id_company')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
+                    ->where('users.id_company','2')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->where('tb_id_project.status','!=','WO')
+                    ->get();
+
+            }
+
+            return array("data" => $pid);  
+        
+        }elseif ($div == 'FINANCE'){
+            
+            if ($req->id == "sip") {
+                
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','invoice')
+                    ->where('id_company','1')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->get(); 
+
+            }else if ($req->id == "msp") {
+                
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id','left')
+                    ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')
+                    ->join('tb_company','tb_company.id_company','=','users.id_company')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select(
+                        'tb_id_project.customer_name',
+                        'tb_id_project.id_project',
+                        'tb_id_project.date',
+                        'tb_id_project.no_po_customer',
+                        'sales_lead_register.opp_name',
+                        'users.name',
+                        'tb_id_project.amount_idr',
+                        DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
+                    ->where('users.id_company','2')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->where('tb_id_project.status','!=','WO')
+                    ->get();
+            }else{
+                
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
+                    ->where('id_company','1')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->get();
+            }  
+
+            return array("data" => $pid);   
+        
+        }else{
+
+            if ($com == 1) {
+
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','sales_lead_register.lead_id',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','users.id_company','tb_id_project.amount_idr','tb_id_project.sales_name')
+                    ->where('id_company','1')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->get();
+            }else{
+
+                $pid = DB::table('tb_id_project')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id','left')
+                    ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')
+                    ->join('tb_company','tb_company.id_company','=','users.id_company')
+                    ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+                    ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
+                    ->where('users.id_company','2')
+                    ->whereYear('tb_id_project.created_at',$req->filterYear)
+                    ->where('tb_id_project.status','!=','WO')
+                    ->get();
+
+            }
+            
+            return array("data" => $pid);  
+        
+        }
     }
 
     public function getShowPIDReq(Request $request){
