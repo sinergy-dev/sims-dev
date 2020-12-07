@@ -195,7 +195,9 @@ class QuoteController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote'));
+        $year_before = Quote::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+
+        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote','tahun','year_before'));
 	}
 
 	public function create()
@@ -523,14 +525,14 @@ class QuoteController extends Controller
 
         $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
 
-        $angka7 = Quote::select('id_quote')
-                ->where('status_backdate','T')
-                ->orderBy('id_quote','asc')
-                ->first();
+        // $angka7 = Quote::select('id_quote')
+        //         ->where('status_backdate','T')
+        //         ->orderBy('id_quote','asc')
+        //         ->first();
 
-        $angka = $angka7->id_quote;
+        // $angka = $angka7->id_quote;
 
-        $update = Quote::where('id_quote',$angka)->first();
+        $update = Quote::where('id_quote',$akhirnomor)->first();
         $update->quote_number = $no;
         $update->position = $posti;
         $update->type_of_letter = $type;
