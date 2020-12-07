@@ -134,8 +134,6 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                             <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
                           @endif
                         @endforeach
-                        
-                        <!-- <option value="2019">&#xf073 &nbsp2019</option> -->
                     </select>
                   </div>
                   <div class="col-md-4" id="search-table">
