@@ -123,7 +123,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
                     <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
                     @else
-                    <a href="{{action('SalesController@export')}}" style="margin-right: 10px" class="btn btn-warning btn-sm pull-left export"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
 
                     <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
                     @endif
