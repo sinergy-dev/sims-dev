@@ -27,6 +27,10 @@
           <div class="alert alert-success notification-bar"><span>Notice : </span> {{ session('success') }}<button type="button" class="dismisbar transparant pull-right"><i class="fa fa-times fa-lg"></i></button><br>Get your Quote Number :<h4> {{$pops->quote_number}}</h4></div>
         @endif
 
+        @if (session('sukses'))
+          <div class="alert alert-success notification-bar"><span>Notice : </span> {{ session('success') }}<button type="button" class="dismisbar transparant pull-right"><i class="fa fa-times fa-lg"></i></button><br>Get your Quote Number :<h4> {{$pops2->quote_number}}</h4></div>
+        @endif
+
         @if (session('alert'))
       <div class="alert alert-success" id="alert">
           {{ session('alert') }}
@@ -36,10 +40,18 @@
     <div class="box">
       <div class="box-header with-border">
           <div class="pull-left">
-            <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+            <!-- <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
             <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
                 <option value="2020">&#xf073 &nbsp2020</option>
                 <option value="2019">&#xf073 &nbsp2019</option>
+            </select> -->
+            <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
+                <option value="{{$tahun}}">&#xf073 &nbsp{{$tahun}}</option>
+                @foreach($year_before as $years)
+                  @if($years->year != $tahun)
+                    <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                  @endif
+                @endforeach
             </select>
           </div>
           <div class="pull-right">
@@ -60,7 +72,7 @@
                 @if($data->status_backdate == 'A')
                     <li class="nav-item active">
                         <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status_backdate }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status_backdate}}')">All</a>
-                @else
+                @elseif($data->status_backdate == 'F')
                     <li class="nav-item">
                         <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status_backdate }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status_backdate}}')"> Backdate
                 @endif
