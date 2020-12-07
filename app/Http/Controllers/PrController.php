@@ -191,7 +191,9 @@ class PrController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse'));
+        $year_before = PR::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+
+        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse','year_before','tahun'));
     }
 
     /**
