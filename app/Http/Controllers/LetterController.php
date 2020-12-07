@@ -203,8 +203,9 @@ class LetterController extends Controller
 
         $sidebar_collapse = true;
 
+        $year_before = Letter::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
 
-        return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter'));
+        return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun'));
 	}
 
     public function getdataletter(Request $request)
@@ -596,11 +597,11 @@ class LetterController extends Controller
 
         $no = $akhirnomor . '/' . $posti . '/' . $type . '/' . $bln . '/' . $year_pr;
 
-        $angka7 = Letter::select('no')
-                ->where('status','T')
-                ->orderBy('no','asc')
-                ->first();
-        $angka = $angka7->no;
+        // $angka7 = Letter::select('no')
+        //         ->where('status','T')
+        //         ->orderBy('no','asc')
+        //         ->first();
+        // $angka = $angka7->no;
 
         $update = Letter::where('no_letter',$request['backdate_num'])->first();
         $update->no_letter = $no;
