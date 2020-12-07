@@ -33,15 +33,23 @@
           <div class="box">
             <div class="box-header with-border">
               <div class="pull-left">
-                <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+                <!-- <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
                 <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
                     <option value="2020">&#xf073 &nbsp2020</option>
                     <option value="2019">&#xf073 &nbsp2019</option>
+                </select> -->
+                <select style="margin-right: 5px;width: 100px" class="form-control btn-primary fa" id="year_filter">
+                  <option value="{{$tahun}}">&#xf073 &nbsp{{$tahun}}</option>
+                  @foreach($year_before as $years)
+                    @if($years->year != $tahun)
+                      <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                    @endif
+                  @endforeach
                 </select>
               </div>
               <div class="pull-right">
-                  <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Request</button>
-                  <a href="{{url('/downloadExcelPr')}}"><button class="btn btn-warning" style="height: 40px; margin-right: 10px;"><i class="fa fa-print"></i> EXCEL </button></a>
+                  <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 200px;color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Request</button>
+                  <a href="{{url('/downloadExcelPr')}}"><button class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-print"></i> EXCEL </button></a>
               </div>
            </div>
 
