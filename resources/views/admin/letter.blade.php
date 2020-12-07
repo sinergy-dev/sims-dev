@@ -54,10 +54,18 @@
     <div class="box-header with-border">
 
         <div class="pull-left">
-          <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
-          <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
+          <!-- <label style="margin-top: 5px;margin-right: 5px">Filter Year</label> -->
+        <!--   <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
               <option value="2020">&#xf073 &nbsp2020</option>
               <option value="2019">&#xf073 &nbsp2019</option>
+          </select> -->
+          <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
+              <option value="{{$tahun}}">&#xf073 &nbsp{{$tahun}}</option>
+              @foreach($year_before as $years)
+                @if($years->year != $tahun)
+                  <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                @endif
+              @endforeach
           </select>
         </div>
       
