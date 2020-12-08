@@ -190,7 +190,9 @@ class PONumberController extends Controller
 
         $sidebar_collapse = true;
 
-        return view('admin/po', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse', 'no_pr'));
+        $year_before = PONumber::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+
+        return view('admin/po', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse', 'no_pr','tahun','year_before'));
     }
 
     public function getPRNumber(){
