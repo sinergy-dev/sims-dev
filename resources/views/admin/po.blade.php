@@ -48,8 +48,8 @@
           </div>
           <div class="pull-right">
           	@if(Auth::User()->name == 'Felicia Debi Noor' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
-            <button type="button" class="btn btn-success margin-bottom pull-right add-po" id="" style="width: 200px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
-            <a href="{{url('/downloadExcelPO')}}"><button class="btn btn-warning" style="height: 40px; margin-right: 10px;"> EXCEL </button></a>
+            <button type="button" class="btn btn-success margin-bottom pull-right add-po" id="" style="width: 200px;color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
+            <a href="{{url('/downloadExcelPO')}}"><button class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel </button></a>
             @endif
           </div>
        </div>
