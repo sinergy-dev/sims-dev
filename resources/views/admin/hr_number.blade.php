@@ -54,8 +54,8 @@
         </div>
 
         <div class="pull-right">
-          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 150px; height: 40px; color: white"><i class="fa fa-plus"> </i>&nbsp Penomoran HR</button>
-          <a href="{{url('/downloadExcelAdminHR')}}"><button class="btn btn-warning" style="height: 40px; margin-right: 10px;"> EXCEL </button></a>
+          <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 150px;color: white"><i class="fa fa-plus"> </i>&nbsp Penomoran HR</button>
+          <a href="{{url('/downloadExcelAdminHR')}}"><button class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel </button></a>
         </div>
       </div>
 
