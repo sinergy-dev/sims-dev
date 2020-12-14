@@ -9,6 +9,8 @@ use App\DONumber;
 use Illuminate\Support\Facades\Route;
 use Excel;
 use Validator;
+use App\PONumber;
+use App\SalesProject; 
 
 class DONumberController extends Controller
 {
@@ -26,6 +28,8 @@ class DONumberController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position; 
+
+        $pops = DONumber::select('no_do')->orderBy('created_at','desc')->first();
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -156,10 +160,6 @@ class DONumberController extends Controller
             ->get();
         }
 
-        $datas = DB::table('tb_do')
-                        ->select('no','no_do', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'project_id','note')
-                        ->get();
-
         if (Auth::User()->id_position == 'ADMIN') {
             $notifClaim = DB::table('dvg_esm')
                             ->select('nik_admin', 'personnel', 'type')
@@ -177,7 +177,34 @@ class DONumberController extends Controller
                             ->get();
         }
 
-        return view('admin/do', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim', 'notifc'));
+        $id_project = SalesProject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+                        ->join('users','users.nik','=','sales_lead_register.nik')
+                        ->select('id_project', 'tb_id_project.id_pro')
+                        ->where('id_company', '1')
+                        ->get();
+
+        $no_po = PONumber::select('no_po')->orderBy('created_at', 'desc')->get();
+
+        return view('admin/do', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'notifClaim', 'notifc', 'id_project', 'pops', 'no_po'));
+    }
+
+    public function getfilteryear(Request $request)
+    {
+        $filter_do = DB::table('tb_do')
+                        ->select('no','no_do', 'type_of_letter', 'month', 'date', 'to', 'attention', 'address', 'from', 'subject', 'no_telp', 'project_id','note','no_po')
+                        ->whereYear('tb_do.created_at', $request->data)
+                        ->get();
+
+        return array("data" => $filter_do);
+    }
+
+    public function getdatado(Request $request)
+    {
+        $tahun = date("Y"); 
+
+        return array("data" => DONumber::select('no','no_do', 'type_of_letter', 'month', 'date', 'to', 'attention', 'address', 'from', 'subject', 'no_telp', 'project_id','note','no_po')
+                                ->where('date','like',$tahun."%")
+                                ->get());
     }
 
     /**
@@ -198,85 +225,151 @@ class DONumberController extends Controller
      */
     public function store(Request $request)
     {
-        $type = 'SJ';
-        // $posti = $request['position'];
-        $month_pr = substr($request['date'],5,2);
-        $year_pr = substr($request['date'],0,4);
 
-        $array_bln = array('01' => "I",
-                            '02' => "II",
-                            '03' => "III",
-                            '04' => "IV",
-                            '05' => "V",
-                            '06' => "VI",
-                            '07' => "VII",
-                            '08' => "VIII",
-                            '09' => "IX",
-                            '10' => "X",
-                            '11' => "XI",
-                            '12' => "XII");
-        $bln = $array_bln[$month_pr];
+        $tahun = date("Y");
+        $cek = DB::table('tb_do')
+                ->where('date','like',$tahun."%")
+                ->count('no');
 
-        $getnumber = DeliveryOrder::orderBy('no', 'desc')->first();
+        if ($cek > 0) {
+            $type = 'SJ';
+            $month_pr = substr($request['date'],5,2);
+            $year_pr = substr($request['date'],0,4);
 
-        if($getnumber == NULL){
-            $getlastnumber = 1;
-            $lastnumber = $getlastnumber;
-        } else{
-            $lastnumber = $getnumber->no+1;
-        }// } else {
-        //    if($getnumber->no > 7){
-        //        $query = PR::where('no', 'like', '%8')->get();
-        //        foreach ($query as $compare) {
-        //             if($getnumber->no == $compare->no){
-        //                $lastnumber = $getnumber->no+2;
-        //             } else {
-        //                $lastnumber = $getnumber->no+1;
-        //             }            
-        //         }
-        //     }
-        // }
+            $array_bln = array('01' => "I",
+                                '02' => "II",
+                                '03' => "III",
+                                '04' => "IV",
+                                '05' => "V",
+                                '06' => "VI",
+                                '07' => "VII",
+                                '08' => "VIII",
+                                '09' => "IX",
+                                '10' => "X",
+                                '11' => "XI",
+                                '12' => "XII");
+            $bln = $array_bln[$month_pr];
 
-        if($lastnumber < 10){
-           $akhirnomor = '000' . $lastnumber;
-        }elseif($lastnumber > 9 && $lastnumber < 100){
-           $akhirnomor = '00' . $lastnumber;
-        }elseif($lastnumber >= 100){
-           $akhirnomor = '0' . $lastnumber;
+            $getnumber = DONumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+
+            $getnumbers = DONumber::orderBy('no', 'desc')->first();
+
+            if($getnumber == NULL){
+                $getlastnumber = 1;
+                $lastnumber = $getlastnumber;
+            } else{
+                $lastnumber = $getnumber+1;
+            }// } else {
+            //    if($getnumber->no > 7){
+            //        $query = PR::where('no', 'like', '%8')->get();
+            //        foreach ($query as $compare) {
+            //             if($getnumber->no == $compare->no){
+            //                $lastnumber = $getnumber->no+2;
+            //             } else {
+            //                $lastnumber = $getnumber->no+1;
+            //             }            
+            //         }
+            //     }
+            // }
+
+            if($lastnumber < 10){
+               $akhirnomor = '000' . $lastnumber;
+            }elseif($lastnumber > 9 && $lastnumber < 100){
+               $akhirnomor = '00' . $lastnumber;
+            }elseif($lastnumber >= 100){
+               $akhirnomor = '0' . $lastnumber;
+            }
+
+            $no = $akhirnomor .'/'. $type .'/' . $bln .'/'. $year_pr;
+            $nom = DONumber::select('no')->orderBy('created_at','desc')->first();
+
+            $tambah = new DONumber();
+            $tambah->no = $nom->no+1;
+            $tambah->no_do = $no;
+            $tambah->type_of_letter = $type;
+            $tambah->month = $bln;
+            $tambah->date = $request['date'];
+            $tambah->to = $request['to'];
+            $tambah->attention = $request['attention'];
+            $tambah->address = $request['address'];
+            $tambah->subject = $request['subject'];
+            $tambah->from = $request['from'];
+            $tambah->no_telp = $request['no_telp'];
+            $tambah->project_id = $request['project_id'];
+            $tambah->no_po = $request['no_po'];
+            $tambah->save();
+
+            return redirect('do')->with('success', 'Created Delivery Order Successfully!');
+        } else {
+            $type = 'SJ';
+            $month_pr = substr($request['date'],5,2);
+            $year_pr = substr($request['date'],0,4);
+
+            $array_bln = array('01' => "I",
+                                '02' => "II",
+                                '03' => "III",
+                                '04' => "IV",
+                                '05' => "V",
+                                '06' => "VI",
+                                '07' => "VII",
+                                '08' => "VIII",
+                                '09' => "IX",
+                                '10' => "X",
+                                '11' => "XI",
+                                '12' => "XII");
+            $bln = $array_bln[$month_pr];
+
+            $getnumber = DONumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+
+            $getnumbers = DONumber::orderBy('no', 'desc')->first();
+
+            if($getnumber == NULL){
+                $getlastnumber = 1;
+                $lastnumber = $getlastnumber;
+            } else{
+                $lastnumber = $getnumber+1;
+            }// } else {
+            //    if($getnumber->no > 7){
+            //        $query = PR::where('no', 'like', '%8')->get();
+            //        foreach ($query as $compare) {
+            //             if($getnumber->no == $compare->no){
+            //                $lastnumber = $getnumber->no+2;
+            //             } else {
+            //                $lastnumber = $getnumber->no+1;
+            //             }            
+            //         }
+            //     }
+            // }
+
+            if($lastnumber < 10){
+               $akhirnomor = '000' . $lastnumber;
+            }elseif($lastnumber > 9 && $lastnumber < 100){
+               $akhirnomor = '00' . $lastnumber;
+            }elseif($lastnumber >= 100){
+               $akhirnomor = '0' . $lastnumber;
+            }
+
+            $no = $akhirnomor .'/'. $type .'/' . $bln .'/'. $year_pr;
+            $nom = DONumber::select('no')->orderBy('created_at','desc')->first();
+
+            $tambah = new DONumber();
+            $tambah->no = $getnumbers->no+1;
+            $tambah->no_do = $no;
+            $tambah->type_of_letter = $type;
+            $tambah->month = $bln;
+            $tambah->date = $request['date'];
+            $tambah->to = $request['to'];
+            $tambah->attention = $request['attention'];
+            $tambah->address = $request['address'];
+            $tambah->subject = $request['subject'];
+            $tambah->from = $request['from'];
+            $tambah->no_telp = $request['no_telp'];
+            $tambah->project_id = $request['project_id'];
+            $tambah->no_po = $request['no_po'];
+            $tambah->save();
+
+            return redirect('do')->with('success', 'Created Delivery Order Successfully!');
         }
-
-        // $getnum = count($getnumber);
-        // $akhirnomor = $getnum+1;
-        // if ($akhirnomor < 10) {
-        //     $akhirnomor = '00' . $akhirnomor;
-        // } elseif ($akhirnomor > 9 && $akhirnomor < 100) {
-        //     $akhirnomor = '0' . $akhirnomor;
-        // } elseif ($akhirnomor >= 100) {
-        //     $akhirnomor = $akhirnomor;
-        // }
-
-        $no = $akhirnomor .'/'. $type .'/' . $bln .'/'. $year_pr;
-
-        $tambah = new DeliveryOrder();
-        $tambah->no = $lastnumber;
-        $tambah->no_do = $no;
-        // $tambah->position = $posti;
-        $tambah->type_of_letter = $type;
-        $tambah->month = $bln;
-        $tambah->date = $request['date'];
-        $tambah->to = $request['to'];
-        $tambah->attention = $request['attention'];
-        $tambah->title = $request['title'];
-        $tambah->project = $request['project'];
-        $tambah->description = $request['description'];
-        /*$tambah->from = Auth::User()->nik;
-        $tambah->division = $request['division'];
-        $tambah->issuance = $request['issuance'];*/
-        $tambah->project_id = $request['project_id'];
-        // $tambah->result = 'T';
-        $tambah->save();
-
-        return redirect('do')->with('success', 'Created Delivery Order Successfully!');
     }
 
     /**
@@ -312,15 +405,16 @@ class DONumberController extends Controller
     {
         $no = $request['edit_no_do'];
 
-        $update = DeliveryOrder::where('no',$no)->first();
+        $update = DONumber::where('no',$no)->first();
         // $update->date = $request['edit_date'];
         $update->to = $request['edit_to'];
         $update->attention = $request['edit_attention'];
-        $update->title = $request['edit_title'];
-        $update->project = $request['edit_project'];
-        $update->description = $request['edit_description'];
+        $update->address = $request['edit_address'];
+        $update->no_telp = $request['edit_no_telp'];
+        $update->subject = $request['edit_subject'];
         $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
+        $update->no_po = $request['edit_no_po'];
 
         $update->update();
 
@@ -336,5 +430,75 @@ class DONumberController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function downloadExcelDO(Request $request)
+    { 
+        $nama = 'Daftar Buku Admin (DO) '.date('Y');
+        Excel::create($nama, function ($excel) use ($request) {
+        $excel->sheet('Delivery Order', function ($sheet) use ($request) {
+        
+        $sheet->mergeCells('A1:L1');
+
+       // $sheet->setAllBorders('thin');
+        $sheet->row(1, function ($row) {
+            $row->setFontFamily('Calibri');
+            $row->setFontSize(11);
+            $row->setAlignment('center');
+            $row->setFontWeight('bold');
+        });
+
+        $sheet->row(1, array('Delivery Order'));
+
+        $sheet->row(2, function ($row) {
+            $row->setFontFamily('Calibri');
+            $row->setFontSize(11);
+            $row->setFontWeight('bold');
+        });
+
+        if (isset($request->year)) {
+            $datas = DONumber::select('no','no_do', 'type_of_letter', 'month', 'date', 'to', 'attention', 'no_telp', 'subject', 'address', 'from', 'project_id')
+                    ->where('date','like',$request->year.'%')
+                    ->get();
+        } else {
+            $datas = DONumber::select('no','no_do', 'type_of_letter', 'month', 'date', 'to', 'attention', 'no_telp', 'subject', 'address', 'from', 'project_id')
+                    ->get();
+        }
+        
+
+       // $sheet->appendRow(array_keys($datas[0]));
+            $sheet->row($sheet->getHighestRow(), function ($row) {
+                $row->setFontWeight('bold');
+            });
+
+             $datasheet = array();
+             $datasheet[0]  =   array("No", "NO DO", "TYPE OF LETTER", "MONTH",  "DATE", "TO", "ADDRESS", "NO. TELP", "ATTENTION", "SUBJECT", "FROM", "ID PROJECT");
+             $i=1;
+
+            foreach ($datas as $data) {
+
+               // $sheet->appendrow($data);
+              $datasheet[$i] = array(
+                            $i,
+                            $data['no_do'],
+                            $data['type_of_letter'],
+                            $data['month'],
+                            $data['date'],
+                            $data['to'],
+                            $data['address'],
+                            $data['no_telp'],
+                            $data['attention'],
+                            $data['subject'],
+                            $data['from'],
+                            $data['project_id'],
+                        );
+              
+              $i++;
+            }
+
+            $sheet->fromArray($datasheet);
+        });
+
+        })->export('xls');
     }
 }
