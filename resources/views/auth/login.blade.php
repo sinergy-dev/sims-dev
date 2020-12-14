@@ -26,13 +26,12 @@
   <div id="wrapper">
     <div class="vertical-align-wrap">
       <div class="vertical-align-middle">
-        <div class="auth-box" style="filter: grayscale(100%)">
+        <div class="auth-box">
           <div class="left">
             <div class="content">
               <div class="header">
                 <div class="logo text-center"><img src="{{asset('/img/siplogin.png')}}" width="123" height="60" alt="Klorofil Logo"></div>
                 <p class="lead">Sinergy Integrated Management System</p>
-                <h3><b style="color: red"><p>[Dev Proposed Only]</p></b></h3>
               </div>
               <form class="form-horizontal" role="form" method="POST" action="{{ route('login') }}">
                   {{ csrf_field() }}
