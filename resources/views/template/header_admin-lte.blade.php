@@ -37,6 +37,11 @@
 	    margin-right: 10px;
 	    margin-top: -2px;
 	}
+
+	li div a.btn{
+		width: 70px;
+		height: 36px;
+	}
   </style>
 
   <!-- Logo -->
@@ -1030,7 +1035,7 @@
       @endif
 
 
-      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_territory != '' || Auth::User()->id_division == 'TECHNICAL PRESALES' || Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
       <li class="activeable nav-item">
         <a href="{{url('/asset_pinjam')}}" class="nav-link">
           <i class="fa fa-fw fa-book"></i>
@@ -1095,6 +1100,9 @@
             </li>
             <li class="activeable2">
               <a href="{{url('/asset')}}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>&nbspAsset Management</a>
+            </li>
+            <li class="activeable2">
+              <a href="{{url('/do')}}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>&nbspDO Number</a>
             </li>
           </ul>
         </li>
