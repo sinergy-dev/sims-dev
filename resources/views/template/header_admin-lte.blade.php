@@ -659,6 +659,14 @@
           <span class="nav-link-text" style="font-size: 14px">Dashboard</span>
         </a>
       </li>
+
+      <li class="nav-item">
+        <a href="{{ url('/presence') }}" class="nav-link" >
+          <i class="fa fa-fw fa-clock-o"></i>
+          <span class="nav-link-text" style="font-size: 14px">Presence</span>
+        </a>
+      </li>
+
       @if(Auth::User()->id_territory == 'DVG' && Auth::User()->id_position != 'ADMIN')
       <li class="activeable treeview">
         <a href="#DVGPages" data-parent="#exampleAccordion">
