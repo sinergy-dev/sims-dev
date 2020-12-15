@@ -77,6 +77,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/','DASHBOARDController@index')->middleware('HRDash');
 	/*Route::get('/','DASHBOARDController@index')->middleware('Maintenance');*/
 
+	Route::get('/presence', 'PresenceController@index');
+	Route::get('/presence_history', 'PresenceController@history');
+
 	Route::get('/project','SalesController@index')->middleware('ManagerStaffMiddleware');
 	/*Route::get('/project','SalesController@index')->middleware('Maintenance');*/
 	Route::get('/year_initial', 'SalesController@year_initial');
