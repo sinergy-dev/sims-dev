@@ -79,6 +79,10 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	Route::get('/presence', 'PresenceController@index');
 	Route::get('/presence_history', 'PresenceController@history');
+	Route::get('/team_history', 'PresenceController@team_history');
+	Route::post('/presence/checkIn', 'PresenceController@checkIn');
+	Route::post('/presence/checkOut', 'PresenceController@checkOut');
+	Route::get('/presence_report', 'PresenceController@presence_report');
 
 	Route::get('/project','SalesController@index')->middleware('ManagerStaffMiddleware');
 	/*Route::get('/project','SalesController@index')->middleware('Maintenance');*/
