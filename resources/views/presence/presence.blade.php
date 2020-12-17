@@ -1,6 +1,5 @@
 @extends('template.template_admin-lte')
-@section('content')
-
+@section('head_css')
 <style>
 	#analog-clock {
 		position: relative;
@@ -108,31 +107,33 @@
 		-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
 	}
 </style>
+@endsection
+@section('content')
+<section class="content-header">
+	<h1>
+		Presence
+	</h1>
+	<ol class="breadcrumb">
+		<li>
+			<a href="{{url('precense/myhistory')}}">
+				<i class="fa fa-book"></i>My Absent History
+			</a>
+		</li>
+		<li>
+			<a href="{{url('precense/teamhistory')}}">
+				<i class="fa fa-users"></i>My Team Attendance
+			</a>
+		</li>
+		<li>
+			<a href="{{url('precense/reporting')}}">
+				<i class="fa fa-users"></i>Reporting
+			</a>
+		</li>
+	</ol>
+</section>
 
-  <section class="content-header">
-    <h1>
-      Presence
-    </h1>
-    <ol class="breadcrumb">
-      <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Presence</li>
-    </ol>
-  </section>
-
-  <section class="content">
+<section class="content">
     <div class="box">
-
-    	<section class="content-header" >
-		<!-- <img src="{{ url('/img/labelaogy.png')}}" width="120" height="40"> -->
-		<ol class="breadcrumb" style="font-size: 15px;">
-			<li><a href="{{url('precense/myhistory')}}"><i class="fa fa-book"></i>My Absent History</a></li>
-			
-				<li><a href="{{url('precense/teamhistory')}}"><i class="fa fa-users"></i>My Team Attendance</a></li>
-				<li><a href="{{url('precense/reporting')}}"><i class="fa fa-users"></i>Reporting</a></li>
-			
-		</ol>
-	</section>
-
       	<div class="box-body">
         	<div id="analog-clock">
 				<div id="clock-dial">
@@ -160,185 +161,30 @@
     	</div>
 
     	<br>
-			<center><h3>{{date("l, d M Y H:i:s")}}</h3></center>
+			
+		<center>
+			@if($presenceStatus == "not-yet")
+			<button type="button" class="btn btn-success" onclick="checkIn()">Check In</button>
+			@elseif($presenceStatus == "done-checkin")
+			<button type="button" class="btn btn-danger" onclick="checkOut()">Check Out</button>
+			@else
+			<h3>Thank you for your hard work today</h3>
+			@endif
+		</center>
 		<br>
-
-		<center><button type="button" class="btn btn-success " data-toggle="modal" data-target="#myModal" id="absen">ABSEN</button></center><br>
-
-    <div class="modal fade" id="myModal" role="dialog">
-							<div class="modal-dialog">
-
-								<div class="modal-content">
-									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal">&times;</button>
-										<h4 class="modal-title">Absen Location</h4>
-									</div>
-									<div class="modal-body">
-										<p>Please go to your area, and login on there</p>
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-success" id="absenLocation">Absen Location</button>
-										<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-									</div>
-								</div>
-
-							</div>
-						</div>
-
-						<div class="modal fade" id="myModal2" role="dialog">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal">&times;</button>
-										<h4 class="modal-title">Login on Position Success</h4>
-									</div>
-									<div class="modal-body">
-										<p>You have been login on your area. Keep spirit for our bussines</p>
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-default pull-left" data-dismiss="modal" id="close">Close</button>
-									</div>
-								</div>
-
-							</div>
-						</div>
-
-						<div class="modal fade" id="modalPulang" role="dialog">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal">&times;</button>
-										<h4 class="modal-title">Absen Pulang</h4>
-									</div>
-									<div class="modal-body">
-										<p>Please go to your area, and login on there</p>
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-danger" data-dismiss="modal" id="pulang">Pulang</button>
-										<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-									</div>
-								</div>
-
-							</div>
-						</div>
-
+		<p style="margin-left: 10px;padding-bottom: 10px;">Accessed : {{date("l, d M Y H:i:s")}}</p>
   </div>
    
 </section>
-
+@endsection
+@section('script')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script>
-	$(document).ready(function(){
-		var condition;
-		$("#absenLocation").click(function () {
-			condition = 'masuk';
-			initMap();
-		});
-
-		$("#tryAgain").click(function(){
-			condition = 'masuk';
-			initMap();
-		});
-
-		$("#pulang").click(function(){
-			condition = 'pulang';
-			initMap();
-		});
-		
-		var map, infoWindow, pos;
-		function initMap() {
-
-			if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(function(position) {
-					pos = {
-						lat: position.coords.latitude,
-						lng: position.coords.longitude
-					};
-
-					var lat = "1";
-					var lang = "1";
-					var p1 = new google.maps.LatLng(lat, lang);
-					var p2 = new google.maps.LatLng(pos.lat, pos.lng);
-
-					var radius = parseInt("1") / 1000;
-					console.log("Lokasi : bpjs");
-					console.log("Radius : " + radius);
-						
-					var calculate = calcDistance(p1, p2);
-					if(calculate < radius) {
-						$("#berhasil").click();
-						$("#myModal").hide();
-						$("#absen").hide();
-						$("#logined").show();
-						$("#close").click(function () {
-							$(".modal-backdrop").hide();
-						});
-						alert(calculate + " km, masuk wilayah");
-						$.ajax({
-							type: "POST",
-							data: {
-								"_token": "{{ csrf_token() }}",
-							},
-							url: "raw/{{Auth::user()->id}}",
-							success: function(){
-								$.ajax({
-									type: "GET",
-									data: {
-										"lat": lat,
-										"lng": lang,
-										"condition" : condition,
-									},
-									url: "createPresenceLocation",
-									success: function(){
-										location.reload();
-									},
-								});
-							},
-						});
-						$("#absen").hide();
-					} else {
-						$.ajax({
-							type:"GET",
-							data:{
-								message: "Gagal Absen - Keluar Wilayah"
-							},
-							url: "logging/ERROR",
-							success: function(){
-								$("#gagal").click();
-								$("#myModal").hide();
-								$(".modal-backdrop").hide();
-								alert(calcDistance(p1, p2) + " km, keluar wilayah");
-							}
-						})
-					}
-					function calcDistance(p1, p2) {
-						return (google.maps.geometry.spherical.computeDistanceBetween(p1, p2) / 1000).toFixed(2);
-					}
-					console.log(pos.lat + " , " + pos.lng);
-				}, 
-				function() {
-					console.log("Geolocation error");
-				});
-			} else {
-				handleLocationError(false, infoWindow, map.getCenter());
-			}
-		}
-
-		function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-			infoWindow.setPosition(pos);
-			infoWindow.setContent(browserHasGeolocation ? 'Error: The Geolocation service failed.' : 'Error: Your browser doesn\'t support geolocation.');
-			infoWindow.open(map);
-		}
-	});
-	
 	function updateTime () {
 		now = new Date ();
-
 		document.getElementById("hour-hand").style.webkitTransform = "rotate(" + (now.getHours() * 30 + now.getMinutes() / 2) + "deg)";
-		
 		document.getElementById("min-hand").style.webkitTransform = "rotate(" + (now.getMinutes() * 6 + now.getSeconds() / 10) + "deg)";
-		
 		document.getElementById("sec-hand").style.webkitTransform = "rotate(" + now.getSeconds() * 6 + "deg)";
-		
 		setTimeout(function () {
 			updateTime();
 		}, 1000);
@@ -346,8 +192,86 @@
 
 	updateTime();
 	
+	function checkIn(){
+		Swal.fire({
+			title: 'Please Wait..!',
+			text: "It's checking..",
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			customClass: {
+				popup: 'border-radius-0',
+			},
+			onOpen: () => {
+				Swal.showLoading()
+			}
+		})
+		$.ajax({
+			type:"POST",
+			url:"{{url('/presence/checkIn')}}",
+			data:{
+				presence_actual:moment().format("YYYY-MM-DD HH:mm:ss"),
+				_token: "{{ csrf_token() }}"
+			},
+			success: function(){
+				Swal.hideLoading()
+				Swal.fire(
+					'Check-in success',
+					"Don't forget to checkout later",
+					'success'
+				).then((result) => {
+					location.reload();
+				})
+			}
+		})
+	}
+
+	function checkOut(){
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "to checkout your Presence now?",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No',
+		}).then((result) => {
+			if(result.value){
+				Swal.fire({
+					title: 'Please Wait..!',
+					text: "It's checking..",
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					customClass: {
+						popup: 'border-radius-0',
+					},
+					onOpen: () => {
+						Swal.showLoading()
+					}
+				})
+				$.ajax({
+					type:"POST",
+					url:"{{url('/presence/checkOut')}}",
+					data:{
+						presence_actual:moment().format("YYYY-MM-DD HH:mm:ss"),
+						_token: "{{ csrf_token() }}"
+					},
+					success: function(){
+						Swal.hideLoading()
+						Swal.fire(
+							'Check-out success',
+							"Thank you for your hard work today",
+							'success'
+						).then((result) => {
+							location.reload();
+						})
+					}
+				})
+			}
+		})
+	}
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY')}}"></script>
-
-
+<!-- <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&libraries=geometry&key={{env('GOOGLE_API_KEY')}}"></script> -->
 @endsection
