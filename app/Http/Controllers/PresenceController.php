@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use DB;
+use DateTime;
+
+use App\PresenceHistory;
 
 class PresenceController extends Controller
 {
@@ -157,19 +160,20 @@ class PresenceController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = false;
         }
 
         return collect([
             "notif" => $notif,
             "notifOpen" => $notifOpen,
             "notifsd" => $notifsd,
-            "notiftp" => $notiftp
+            "notiftp" => $notiftp,
             "notifClaim" => $notifClaim
         ]);
     }
 
-    public function index()
-    {
+    public function index() {
 
         $notifAll = $this->notification_legacy();
         
@@ -179,11 +183,21 @@ class PresenceController extends Controller
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
 
-        return view('presence.presence', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        $presenceStatus = PresenceHistory::where('nik',Auth::User()->nik)
+            ->whereRaw('DATE(`presence_actual`)',now()->toDateString());
+
+        if($presenceStatus->count() == 0){
+            $presenceStatus = "not-yet";
+        } else if ($presenceStatus->count() == 1) {
+            $presenceStatus = "done-checkin";
+        } else {
+            $presenceStatus = "done-checkout";
+        }
+
+        return view('presence.presence', compact('presenceStatus','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
-    public function history()
-    {
+    public function history() {
         $notifAll = $this->notification_legacy();
         
         $notif = $notifAll["notif"];
@@ -196,69 +210,68 @@ class PresenceController extends Controller
         return view('presence.history', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function team_history() {
+        $notifAll = $this->notification_legacy();
+        
+        $notif = $notifAll["notif"];
+        $notifOpen = $notifAll["notifOpen"];
+        $notifsd = $notifAll["notifsd"];
+        $notiftp = $notifAll["notiftp"];
+        $notifClaim = $notifAll["notifClaim"];
+
+        return view('presence.team_history', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    public function presence_report() {
+        $notifAll = $this->notification_legacy();
+        
+        $notif = $notifAll["notif"];
+        $notifOpen = $notifAll["notifOpen"];
+        $notifsd = $notifAll["notifsd"];
+        $notiftp = $notifAll["notiftp"];
+        $notifClaim = $notifAll["notifClaim"];
+        
+        return view('presence.reporting', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+    public function checkIn(Request $req) {
+        $setting_schedule = Auth::User()->presence_setting;
+
+        $history = new PresenceHistory();
+        $history->nik = Auth::User()->nik;
+        $history->presence_setting = $setting_schedule->id;
+        $history->presence_schedule = $setting_schedule->setting_on_time;
+        $history->presence_actual = $req->presence_actual;
+        $history->presence_location = 1;
+        $history->presence_condition = $this->checkPresenceCondition($req->presence_actual,$setting_schedule);
+        $history->presence_type = "Check-In";
+
+        $history->save();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+    public function checkOut(Request $req) {
+        $setting_schedule = Auth::User()->presence_setting;
+
+        $history = new PresenceHistory();
+        $history->nik = Auth::User()->nik;
+        $history->presence_setting = $setting_schedule->id;
+        $history->presence_schedule = $setting_schedule->setting_check_out;
+        $history->presence_actual = $req->presence_actual;
+        $history->presence_location = 1;
+        $history->presence_condition = "-";
+        $history->presence_type = "Check-Out";
+
+        $history->save();
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+    public function checkPresenceCondition($presenceActual,$settingSchedule){
+        $actual = new DateTime($presenceActual);
+        if ($actual->diff(new DateTime($settingSchedule->setting_on_time))->format('%R') == '+') {
+            return "On-Time";
+        } else if ($actual->diff(new DateTime($settingSchedule->setting_on_time))->format('%R') == '-' && $actual->diff(new DateTime($settingSchedule->setting_injury_time))->format('%R') == '+') {
+            return "Injury-Time";
+        } else {
+            return "Late";
+        }
     }
 }
