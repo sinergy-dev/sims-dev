@@ -18,7 +18,26 @@ class User extends Authenticatable
     protected $primaryKey = 'nik';
 
     protected $fillable = [
-        'nik', 'id_company', 'id_position', 'id_division', 'id_territory', 'name', 'email', 'password', 'date_of_entry', 'date_of_birth', 'address', 'phone', 'no_npwp', 'npwp_file', 'ktp_file'
+        'nik', 
+        'id_company', 
+        'id_position', 
+        'id_division', 
+        'id_territory', 
+        'name', 
+        'email', 
+        'password', 
+        'date_of_entry', 
+        'date_of_birth', 
+        'address', 
+        'phone', 
+        'no_ktp', 
+        'no_kk', 
+        'no_npwp', 
+        'npwp_file', 
+        'ktp_file', 
+        'bpjs_kes', 
+        'bpjs-ket',
+        'id_presence_setting'
     ];
 
     /**
@@ -33,5 +52,9 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new Notifications\MailResetPasswordNotification($token));
+    }
+
+    public function presence_setting(){
+        return $this->hasOne(PresenceSetting::class,'id','id_presence_setting');
     }
 }
