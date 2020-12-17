@@ -282,6 +282,8 @@
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
       }
   </style>
+  @yield('head_css')
+
 </head>
   @if(isset($sidebar_collapse))
   <body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
