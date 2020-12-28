@@ -340,7 +340,7 @@
 
 					// var actuals_position = new google.maps.LatLng(-6.185084, 106.752010)
 
-					var onLocation = true
+					var onLocation = false
 					presenceLocation.forEach(function(data){
 						var compare_position = new google.maps.LatLng(
 							data.location.location_lat,
@@ -350,9 +350,11 @@
 						console.log("Distance now to " + data.location.location_name+ " : "+ google.maps.geometry.spherical.computeDistanceBetween(actuals_position, compare_position))
 						if(google.maps.geometry.spherical.computeDistanceBetween(actuals_position, compare_position) < (data.location.location_radius) ){
 							console.log('Raidus : ' + data.location.location_radius + ' Im in location now')	
+							console.log(onLocation)
+							onLocation = true
 						} else {
 							console.log('Raidus : ' + data.location.location_radius + ' Im not in location now')
-							onLocation = false
+							console.log(onLocation)
 						}
 					})
 					if (onLocation) {
