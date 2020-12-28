@@ -8,9 +8,14 @@ use DB;
 use DateTime;
 
 use App\PresenceHistory;
+use App\PresenceLocationUser;
 
 class PresenceController extends Controller
 {
+    public function __construct() {
+        $this->middleware('auth');
+    }
+
     public function notification_legacy(){
         $user = Auth::User(); 
         $nik = $user->nik;
@@ -184,7 +189,8 @@ class PresenceController extends Controller
         $notifClaim = $notifAll["notifClaim"];
 
         $presenceStatus = PresenceHistory::where('nik',Auth::User()->nik)
-            ->whereRaw('DATE(`presence_actual`)',now()->toDateString());
+            ->whereRaw('DATE(`presence_actual`) = "' . now()->toDateString() . '"');
+
 
         if($presenceStatus->count() == 0){
             $presenceStatus = "not-yet";
@@ -197,7 +203,7 @@ class PresenceController extends Controller
         return view('presence.presence', compact('presenceStatus','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
-    public function history() {
+    public function personalHistory() {
         $notifAll = $this->notification_legacy();
         
         $notif = $notifAll["notif"];
@@ -206,11 +212,40 @@ class PresenceController extends Controller
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
 
+        $presenceHistoryTemp = PresenceHistory::select(
+            DB::raw("*"),
+            DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`")
+        )->whereRaw('`nik` = ' . Auth::User()->nik);
 
-        return view('presence.history', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        $presenceHistory = DB::table(DB::raw("(" . $presenceHistoryTemp->toSql() . ") AS `presence__history_temp`"))
+            ->select('presence__history_temp.nik')
+            ->selectRaw("CAST(MIN(`presence__history_temp`.`presence_actual`) AS DATE) AS `date`")
+            ->selectRaw("MIN(`presence__history_temp`.`presence_schedule`) AS `schedule`")
+            ->selectRaw("MIN(`presence__history_temp`.`presence_actual`) AS `checkin`")
+            ->selectRaw("MAX(`presence__history_temp`.`presence_actual`) AS `checkout`")
+            ->selectRaw("MAX(`presence__history_temp`.`presence_condition`) AS `condition`")
+            ->groupBy('presence__history_temp.presence_actual_date');
+
+        $presenceHistoryDetail = $presenceHistory->get();
+        $presenceHistoryCounted = $presenceHistory->get()->groupBy('condition');
+
+        $presenceHistoryCounted = $presenceHistoryCounted->map(function ($item, $key) {
+            if($key == "On-Time"){
+                return ['count' => collect($item)->count(),'color' => "#00a65a"];
+            }else if($key == "Injury-Time"){
+                return ['count' => collect($item)->count(),'color' => "#f39c12"];
+            } else {
+                return ['count' => collect($item)->count(),'color' => "#dd4b39"];
+            }
+        })->sortBy('count');
+
+        // return $presenceHistoryCounted->sortBy('count');
+
+
+        return view('presence.personal_history', compact('presenceHistoryDetail','presenceHistoryCounted','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
-    public function team_history() {
+    public function teamHistory() {
         $notifAll = $this->notification_legacy();
         
         $notif = $notifAll["notif"];
@@ -222,7 +257,7 @@ class PresenceController extends Controller
         return view('presence.team_history', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
-    public function presence_report() {
+    public function presenceReport() {
         $notifAll = $this->notification_legacy();
         
         $notif = $notifAll["notif"];
@@ -231,7 +266,35 @@ class PresenceController extends Controller
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
         
-        return view('presence.reporting', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('presence.reporting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+    }
+
+    public function presenceSetting() {
+        $notifAll = $this->notification_legacy();
+        
+        $notif = $notifAll["notif"];
+        $notifOpen = $notifAll["notifOpen"];
+        $notifsd = $notifAll["notifsd"];
+        $notiftp = $notifAll["notiftp"];
+        $notifClaim = $notifAll["notifClaim"];
+
+        return view('presence.setting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+    }
+
+    public function presenceShifting() {
+        $notifAll = $this->notification_legacy();
+        
+        $notif = $notifAll["notif"];
+        $notifOpen = $notifAll["notifOpen"];
+        $notifsd = $notifAll["notifsd"];
+        $notiftp = $notifAll["notiftp"];
+        $notifClaim = $notifAll["notifClaim"];
+        
+        return view('presence.shifting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+    }
+
+    public function getPresenceParameter(Request $req){
+        return PresenceLocationUser::with('location')->where('user_id',$req->user()->nik)->get();
     }
 
     public function checkIn(Request $req) {
