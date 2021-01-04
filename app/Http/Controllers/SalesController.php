@@ -4316,7 +4316,7 @@ class SALESController extends Controller{
 
         $pid_request_lead_done = PID::where('status','=','done')->get();  
 
-        $year_before = SalesProject::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+        $year_before = SalesProject::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
         $year_now = date('Y');
 
@@ -4413,7 +4413,7 @@ class SALESController extends Controller{
                     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company','invoice')
                     ->where('id_company','1')
-                    ->whereYear('tb_id_project.created_at',date('Y'))
+                    ->whereYear('tb_id_project.created_at',$request->year_filter)
                     ->get(); 
 
             }else if ($request->id == "msp") {
@@ -4435,7 +4435,7 @@ class SALESController extends Controller{
                         'tb_id_project.amount_idr',
                         DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
                     ->where('users.id_company','2')
-                    ->whereYear('tb_id_project.created_at',date('Y'))
+                    ->whereYear('tb_id_project.created_at',$request->year_filter)
                     ->where('tb_id_project.status','!=','WO')
                     ->get();
             }else{
