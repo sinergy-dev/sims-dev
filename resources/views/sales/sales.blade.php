@@ -1179,13 +1179,13 @@
                   @foreach($leads as $data)
                   <tr>
                     <!-- <a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a> -->
-                    @if($data->result != 'OPEN')
                     <td>
+                    @if($data->result != 'OPEN')
                     <a href="{{ url ('/detail_project', $data->lead_id) }}">{{$data->lead_id}}</a>
                     @else
                     {{ $data->lead_id }}
-                    </td>
                     @endif
+                    </td>
                     <td>{{ $data->brand_name}}</td>
                     <td>{{ $data->opp_name}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
