@@ -15,6 +15,7 @@ use Month;
 use PDF;
 use Excel;
 use Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Carbon\Carbon;
 use App\solution_design;
 use App\TB_Contact;
@@ -2022,7 +2023,11 @@ class SALESController extends Controller{
         $com = $company->id_company;
 
         if ($div == 'SALES') {
-           $lead_id = Crypt::decrypt($lead_id);
+            try {
+                $lead_id = Crypt::decrypt($lead_id);
+            } catch (DecryptException $e) {
+               $lead_id = $lead_id;
+            }
         }        
 
         if($ter != null){
@@ -4316,7 +4321,7 @@ class SALESController extends Controller{
 
         $pid_request_lead_done = PID::where('status','=','done')->get();  
 
-        $year_before = SalesProject::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+        $year_before = SalesProject::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->orderBy('year','DESC')->get();
 
         $year_now = date('Y');
 
@@ -5342,7 +5347,7 @@ class SALESController extends Controller{
             ->join('users','users.nik','=','sales_lead_register.nik')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
             ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name')
-            ->whereYear('tb_id_project.created_at',date('Y'))
+            ->whereYear('tb_id_project.created_at',$request->year)
             ->where('users.id_territory',Auth::User()->id_territory)
             ->where('id_company','1')
             ->orderBy('tb_id_project.id_project','asc')
@@ -5353,7 +5358,7 @@ class SALESController extends Controller{
             ->join('users','users.nik','=','sales_lead_register.nik')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
             ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name')
-            ->whereYear('tb_id_project.created_at',date('Y'))
+            ->whereYear('tb_id_project.created_at',$request->year)
             ->where('id_company','1')
             ->orderBy('tb_id_project.id_project','asc')
             ->get();
@@ -5519,10 +5524,23 @@ class SALESController extends Controller{
                 ->LeftJoin('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo')
                 ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','tb_pid.no_po','tb_quote_msp.quote_number')
                 ->where('id_company','2')
-                ->whereYear('tb_id_project.created_at',date('Y'))
-                ->where('tb_id_project.status','!=','WO')
+                ->whereYear('tb_id_project.created_at',$request->year)
+                // ->where('tb_id_project.status','!=','WO')
                 ->orderBy('tb_id_project.id_project','asc')
                 ->get();
+
+        // $datas = DB::table('tb_id_project')
+        //         ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+        //         ->join('users','users.nik','=','sales_lead_register.nik')
+        //         ->join('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id','left')
+        //         ->join('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo','left')
+        //         ->join('tb_company','tb_company.id_company','=','users.id_company')
+        //         ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+        //         ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
+        //         ->where('users.id_company','2')
+        //         ->whereYear('tb_id_project.created_at',$req->filterYear)
+        //         ->where('tb_id_project.status','!=','WO')
+        //         ->get();
 
 
        // $sheet->appendRow(array_keys($datas[0]));
