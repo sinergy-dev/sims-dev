@@ -21,17 +21,17 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     display: none
   }
 
-  .dataTables_paginate{
+  /*.dataTables_paginate{
     display: none;
-  }
+  }*/
 
   .dataTables_filter {
     display: none;
   }
 
-  .dataTables_paging {
+  /*.dataTables_paging {
     display: none;
-  }
+  }*/
 
   th, td { white-space: nowrap; overflow: hidden; };
 
@@ -100,10 +100,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'DIRECTOR')
               @if(Auth::User()->id_position == 'MANAGER')
-              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
-              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
-              <li><a href="#request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
-              <li><a href="#history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
+              <li class="tabs_item active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
+              <li class="tabs_item"><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
+              <li class="tabs_item"><a href="#request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
+              <li class="tabs_item"><a href="#history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
               @else
               <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
               <li><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
@@ -119,16 +119,16 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                 <div class="row">
                   <div class="col-md-8" id="export-table">
                     @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
 
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
                     @else
-                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
 
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
                     @endif
                     <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
-                        <option value="{{$year_now}}">&#xf073 &nbsp{{$year_now}}</option>
+                        <option value="{{$year_now}}" selected>&#xf073 &nbsp{{$year_now}}</option>
                         @foreach($year_before as $years)
                           @if($years->year != $year_now)
                             <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
@@ -576,6 +576,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
   <script type="text/javascript">
 
+  function exportPID(url){
+    window.location = url + "?year=" + $("#year_filter").val();
+  }
+
   initPID();
 
   function changeNumberEntries(number){
@@ -615,135 +619,136 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     "ajax":{
         "type":"GET",
         "url":"{{url('getPIDIndex')}}",
+    },
+    "paging":   false,
+    "columns": [
+      { "data": "date" },
+      { "data": "id_project" },
+      { "data": "lead_id" },
+      { // No Po
+        render: function ( data, type, row ) {
+          if (row.id_company == 1) {
+            if (row.no_po_customer == null) {
+              return row.quote_number_final;  
+            }else{
+              return row.no_po_customer;  
+            }
+          }else{
+            if (row.lead_id == "MSPPO") {
+              return row.no_po_customer;
+            }else{
+              return row.no_po;  
+            }
+          }
+        }
       },
-      "columns": [
-        { "data": "date" },
-        { "data": "id_project" },
-        { "data": "lead_id" },
-        { // No Po
-          render: function ( data, type, row ) {
-            if (row.id_company == 1) {
-              if (row.no_po_customer == null) {
-                return row.quote_number_final;  
-              }else{
-                return row.no_po_customer;  
-              }
+      { // No Quotation
+        render: function ( data, type, row ) {
+          if (row.id_company == 1) {
+            return "-";
+          }else{
+            if (row.lead_id == "MSPQUO") {
+              return row.no_po_customer;
             }else{
-              if (row.lead_id == "MSPPO") {
-                return row.no_po_customer;
-              }else{
-                return row.no_po;  
-              }
+              return row.quote_number;  
             }
           }
-        },
-        { // No Quotation
-          render: function ( data, type, row ) {
-            if (row.id_company == 1) {
-              return "-";
-            }else{
-              if (row.lead_id == "MSPQUO") {
-                return row.no_po_customer;
-              }else{
-                return row.quote_number;  
-              }
-            }
+        }
+      },
+      { // Customer Name
+        render: function ( data, type, row ) {
+          if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+            return row.customer_name;  
+          }else{
+            return row.customer_legal_name;  
           }
-        },
-        { // Customer Name
-          render: function ( data, type, row ) {
-            if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-              return row.customer_name;  
-            }else{
-              return row.customer_legal_name;  
-            }
+        }
+      },
+      { "data": "name_project" },
+      { "data": "amount_idr" },
+      { "data": "amount_idr_before_tax" },
+      { "data": "note" },
+      { // Invoice
+        render: function ( data, type, row ) {
+          if (row.invoice == 'H') {
+            return "Setengah Bayar";  
+          }else if (row.invoice == 'F') {
+            return "Sudah Bayar";
+          }else if (row.invoice == 'N') {
+            return "Belum Bayar";
+          }else{
+            return "";
           }
-        },
-        { "data": "name_project" },
-        { "data": "amount_idr" },
-        { "data": "amount_idr_before_tax" },
-        { "data": "note" },
-        { // Invoice
-          render: function ( data, type, row ) {
-            if (row.invoice == 'H') {
-              return "Setengah Bayar";  
-            }else if (row.invoice == 'F') {
-              return "Sudah Bayar";
-            }else if (row.invoice == 'N') {
-              return "Belum Bayar";
-            }else{
-              return "";
-            }
+        }
+      },
+      { // Status
+        render: function ( data, type, row ) {
+          if (row.progres == null) {
+            return "UnProgress";  
+          }else {
+            return row.progres;
           }
-        },
-        { // Status
-          render: function ( data, type, row ) {
-            if (row.progres == null) {
-              return "UnProgress";  
-            }else {
-              return row.progres;
-            }
+        }
+      },
+      { // Sales
+        render: function ( data, type, row ) {
+          if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+            return row.sales_name;  
+          }else{
+            return row.name;  
           }
-        },
-        { // Sales
-          render: function ( data, type, row ) {
-            if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-              return row.sales_name;  
-            }else{
-              return row.name;  
-            }
-          }
-        },
-        { // Action
-          render: function ( data, type, row ) {
-          	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-          		@if(Auth::User()->id_division == 'FINANCE')
-            		@if(Auth::User()->id_position == 'MANAGER')
-            			return '<i>No Action</i>';
-            		@else
-            			return '<i>No Action</i>';
-              	@endif
-            	@elseif(Auth::User()->id_division == 'PMO')
-            		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-            	@else
-            	 return 'mbuh'; 
-            	@endif  
+        }
+      },
+      { // Action
+        render: function ( data, type, row ) {
+        	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+        		@if(Auth::User()->id_division == 'FINANCE')
+          		@if(Auth::User()->id_position == 'MANAGER')
+          			return '<i>No Action</i>';
+          		@else
+          			return '<i>No Action</i>';
+            	@endif
+          	@elseif(Auth::User()->id_division == 'PMO')
+          		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+          	@else
+          	 return 'mbuh'; 
+          	@endif  
 
-          	}else{
+        	}else{
 
-          		@if(Auth::User()->id_division == 'FINANCE')
-            		@if(Auth::User()->id_position == 'MANAGER')
-            			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
-            		@else
-            			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
-            		@endif
-            	@elseif(Auth::User()->id_division == 'PMO')
-            		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-            	@else
-            	 return 'mbuh'; 
-            	@endif  
+        		@if(Auth::User()->id_division == 'FINANCE')
+          		@if(Auth::User()->id_position == 'MANAGER')
+          			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
+          		@else
+          			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
+          		@endif
+          	@elseif(Auth::User()->id_division == 'PMO')
+          		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+          	@else
+          	 return 'mbuh'; 
+          	@endif  
 
-          	}
-          	                
-          }
-        },
-      ],
-      // "info":false,
-      "scrollX": true,
-      "pageLength": 25,
-      "order": [[ 1, "desc" ]],
-      "orderFixed": [[1, 'desc']],
-      "processing": true,
-      "language": {
-        'loadingRecords': '&nbsp;',
-        'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
-      }, 
-      "scrollCollapse":true,
-      // "paging": false,
-      fixedColumns:   {
-        leftColumns: 2,
-        rightColumns: 1
-      },  
+        	}
+        	                
+        }
+      },
+    ],
+    // "info":false,
+    "scrollX": true,
+    "pageLength": 25,
+    "order": [[ 1, "desc" ]],
+    "orderFixed": [[1, 'desc']],
+    "processing": true,
+    "language": {
+      'loadingRecords': '&nbsp;',
+      'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+    }, 
+    "scrollCollapse":true,
+    // "paging": false,
+    fixedColumns:   {
+      leftColumns: 2,
+      rightColumns: 1
+    },
   });
 
   var request_table = $("#request_id").DataTable({
@@ -1095,7 +1100,13 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     //     console.log(result)
     //   }
     // })
-    $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
+    var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
+    console.log(companyString)
+    if(companyString == "sip" || companyString == "msp"){
+      $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
+    } else {
+      console.log('bukan tab perusahaan')
+    }
  })
 
 </script>
