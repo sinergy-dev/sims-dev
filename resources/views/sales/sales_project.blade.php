@@ -1100,13 +1100,18 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     //     console.log(result)
     //   }
     // })
-    var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
-    console.log(companyString)
-    if(companyString == "sip" || companyString == "msp"){
-      $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
-    } else {
-      console.log('bukan tab perusahaan')
-    }
+    
+    @if(Auth::User()->id_division == 'FINANCE')
+      var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
+      console.log(companyString)
+      if(companyString == "sip" || companyString == "msp"){
+        $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
+      } else {
+        console.log('bukan tab perusahaan')
+      }
+    @else
+      $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
+    @endif
  })
 
 </script>
