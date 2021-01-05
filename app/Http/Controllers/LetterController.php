@@ -203,7 +203,7 @@ class LetterController extends Controller
 
         $sidebar_collapse = true;
 
-        $year_before = Letter::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+        $year_before = Letter::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
         return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun'));
 	}

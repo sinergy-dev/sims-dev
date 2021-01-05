@@ -1003,7 +1003,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     });
 
     function changeTabs(id) {
-      console.log(id)
+      year = $("#year_filter").val()
       if (id == "sip") {
       	$('#export-table').css("display","block")
       	$('#search-table').css("display","block")
@@ -1012,7 +1012,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('#pid-table').css("display","block")
       	$('.export-msp').css("display","none")
       	$('.export').css("display","block")
-        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
+        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
       }else if(id == "msp"){
       	$('.export-msp').css("display","block")
       	$('.export').css("display","none")
@@ -1021,7 +1021,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('#request-table').css("display","none")
       	$('#history-table').css("display","none")
       	$('#pid-table').css("display","block")
-        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
+        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
       }else if (id == "request") {
       	$('#request-table').show()
       	$('#pid-table').css("display","none")
