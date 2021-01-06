@@ -4778,9 +4778,9 @@ class SALESController extends Controller{
                     ->where('nik', $sales)
                     ->first();
 
-        if (substr($request['date'], 0,4) != $year) {
-            return redirect()->back()->with('gagal', 'Tanggal Yang Kamu Input Tidak Valid!');
-        }
+        // if (substr($request['date'], 0,4) != $year) {
+        //     return redirect()->back()->with('gagal', 'Tanggal Yang Kamu Input Tidak Valid!');
+        // }
                     
         $hitung_sip = DB::table('tb_id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
