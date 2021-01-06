@@ -91,7 +91,7 @@
                                   <label style="margin: 12px">Email</label>
                                 </div>
                                 <div class="col-md-8">
-                                  <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="email" name="email"  placeholder="Type Email" value="{{$user_profile->email}}" required>
+                                  <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="email" name="email"  placeholder="Type Email" value="{{$user_profile->email}}" readonly required>
                                 </div>
                             </div>
 
