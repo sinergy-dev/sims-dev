@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use DB;
 use DateTime;
+use App\User;
 
 use App\PresenceHistory;
 use App\PresenceLocationUser;
@@ -13,7 +14,7 @@ use App\PresenceLocationUser;
 class PresenceController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['getPresenceParameter','checkIn','checkOut']]);
     }
 
     public function notification_legacy(){
@@ -294,14 +295,18 @@ class PresenceController extends Controller
     }
 
     public function getPresenceParameter(Request $req){
-        return PresenceLocationUser::with('location')->where('user_id',$req->user()->nik)->get();
+        return PresenceLocationUser::with('location')->where('user_id',$req->nik)->get();
     }
 
     public function checkIn(Request $req) {
-        $setting_schedule = Auth::User()->presence_setting;
-
         $history = new PresenceHistory();
-        $history->nik = Auth::User()->nik;
+        if (isset(Auth::User()->nik)) {
+            $setting_schedule = Auth::User()->presence_setting;
+            $history->nik = Auth::User()->nik;
+        }else{
+            $history->nik = $req->nik;
+            $setting_schedule = User::with('presence_setting')->where('nik',$history->nik)->first()->presence_setting;
+        }     
         $history->presence_setting = $setting_schedule->id;
         $history->presence_schedule = $setting_schedule->setting_on_time;
         $history->presence_actual = $req->presence_actual;
@@ -313,10 +318,14 @@ class PresenceController extends Controller
     }
 
     public function checkOut(Request $req) {
-        $setting_schedule = Auth::User()->presence_setting;
-
         $history = new PresenceHistory();
-        $history->nik = Auth::User()->nik;
+        if (isset(Auth::User()->nik)) {
+            $setting_schedule = Auth::User()->presence_setting;
+            $history->nik = Auth::User()->nik;
+        }else{
+            $history->nik = $req->nik;
+            $setting_schedule = User::with('presence_setting')->where('nik',$history->nik)->first()->presence_setting;
+        }
         $history->presence_setting = $setting_schedule->id;
         $history->presence_schedule = $setting_schedule->setting_check_out;
         $history->presence_actual = $req->presence_actual;
