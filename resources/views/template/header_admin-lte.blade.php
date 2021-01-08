@@ -626,7 +626,7 @@
 	        	@if(Auth::User()->id_division == 'TECHNICAL PRESALES')
 		        	TECH. PRESALES 
 		        @elseif(Auth::User()->id_division == 'TECHNICAL') 
-		        	ECH. 
+		        	TECH. 
 		        @elseif(Auth::User()->id_division == 'HR') 
 		        @else 
 		        	{{ Auth::user()->id_division }} 
