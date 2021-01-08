@@ -190,6 +190,9 @@
 			$.ajax({
 				type:"GET",
 				url:"{{url('/presence/getPresenceParameter')}}",
+				data:{
+					nik:'{{Auth::User()->nik}}'
+				},
 				success: function(result){	
 					presenceLocation = result
 					// isOnLocation(presenceLocation)
