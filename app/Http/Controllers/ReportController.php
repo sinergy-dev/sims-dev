@@ -2762,7 +2762,22 @@ class ReportController extends Controller
 
         $year_now = DATE('Y');
 
-        $top_win_sip = DB::table('sales_lead_register')
+        if ($request->data == 'ALL') {
+            $top_win_sip = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->join('sales_tender_process', 'sales_tender_process.lead_id', '=', 'sales_lead_register.lead_id')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.deal_price) as amounts'), 'users.name', 'tb_company.code_company')
+                        ->where('result', 'WIN')
+                        // ->where('sales_tender_process.win_prob', $request->data)
+                        ->where('year', $request->tahun)
+                        ->where('users.id_company', '1')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('amounts', 'desc')
+                        ->take(5)
+                        ->get();
+        }else{
+            $top_win_sip = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                         ->join('sales_tender_process', 'sales_tender_process.lead_id', '=', 'sales_lead_register.lead_id')
@@ -2776,6 +2791,8 @@ class ReportController extends Controller
                         ->take(5)
                         ->get();
 
+        }
+
         return $top_win_sip;
 
     }
@@ -2784,7 +2801,22 @@ class ReportController extends Controller
 
         $year_now = DATE('Y');
 
-        $top_win_msp = DB::table('sales_lead_register')
+        if ($request->data == 'ALL') {
+            $top_win_msp = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->join('sales_tender_process', 'sales_tender_process.lead_id', '=', 'sales_lead_register.lead_id')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.deal_price) as amounts'), 'users.name', 'tb_company.code_company')
+                        ->where('result', 'WIN')
+                        // ->where('sales_tender_process.win_prob', $request->data)
+                        ->where('year', $request->tahun)
+                        ->where('users.id_company', '2')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('amounts', 'desc')
+                        ->take(5)
+                        ->get();
+        }else{
+            $top_win_msp = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                         ->join('sales_tender_process', 'sales_tender_process.lead_id', '=', 'sales_lead_register.lead_id')
@@ -2797,6 +2829,9 @@ class ReportController extends Controller
                         ->orderBy('amounts', 'desc')
                         ->take(5)
                         ->get();
+        }
+
+        
 
         return $top_win_msp;
 
