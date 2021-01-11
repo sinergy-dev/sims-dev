@@ -1268,6 +1268,7 @@ class HRController extends Controller
                 ->select('name_position')
                 ->where('id_position','DIRECTOR')
                 ->orWhere('id_position','ADMIN')
+                ->orWhere('id_position','COURIER')
                 ->get(),$request->id_assign);
         } else if ($request->id_assign == 'SALES_MSP') {
             return array(DB::table('tb_position')
@@ -1286,6 +1287,7 @@ class HRController extends Controller
                 ->select('name_position')
                 ->where('id_position','MANAGER')
                 ->orWhere('id_position','STAFF')
+                ->orWhere('id_position','COURIER')
                 ->get(),$request->id_assign);
         } else if ($request->id_assign == 'WAREHOUSE_MSP') {
             return array(DB::table('tb_position')
