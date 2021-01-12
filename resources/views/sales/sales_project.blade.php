@@ -100,13 +100,13 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'DIRECTOR')
               @if(Auth::User()->id_position == 'MANAGER')
-              <li class="tabs_item active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
-              <li class="tabs_item"><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
+              <li class="tabs_item active"><a href="#sip" data-toggle="tab" onclick="changeTabs('SIP')">SIP</a></li>
+              <li class="tabs_item"><a href="#msp" data-toggle="tab" onclick="changeTabs('MSP')">MSP</a></li>
               <li class="tabs_item"><a href="#request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
               <li class="tabs_item"><a href="#history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
               @else
-              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
-              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
+              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('SIP')">SIP</a></li>
+              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('MSP')">MSP</a></li>
               @endif
             @else
             @endif
@@ -1004,7 +1004,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
     function changeTabs(id) {
       year = $("#year_filter").val()
-      if (id == "sip") {
+      if (id == "SIP") {
       	$('#export-table').css("display","block")
       	$('#search-table').css("display","block")
       	$('#request-table').css("display","none")
@@ -1013,7 +1013,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('.export-msp').css("display","none")
       	$('.export').css("display","block")
         $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
-      }else if(id == "msp"){
+      }else if(id == "MSP"){
       	$('.export-msp').css("display","block")
       	$('.export').css("display","none")
       	$('#export-table').css("display","block")
@@ -1102,9 +1102,11 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     // })
     
     @if(Auth::User()->id_division == 'FINANCE')
-      var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
-      console.log(companyString)
-      if(companyString == "sip" || companyString == "msp"){
+      var companyString = $('.nav-tabs .active').text()
+      // var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
+
+      // console.log(companyString)
+      if(companyString == "SIP" || companyString == "MSP"){
         $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
       } else {
         console.log('bukan tab perusahaan')
