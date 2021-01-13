@@ -5399,10 +5399,21 @@ class ReportController extends Controller
 
     public function get_auth_login_users(Request $request){
 
-        $getlogin = array("data" => HistoryAuth::join('users','users.nik','=','tb_history_auth.nik')
+        if (Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR')
+        {
+            $getlogin = array("data" => HistoryAuth::join('users','users.nik','=','tb_history_auth.nik')
                     ->select('name','email','datetime','ip_address')
                     ->where('information','Log In')
                     ->orderBy('datetime','DESC')->get());
+        }else{
+            $getlogin = array("data" => HistoryAuth::join('users','users.nik','=','tb_history_auth.nik')
+                    ->select('name','email','datetime','ip_address')
+                    ->where('information','Log In')
+                    ->where('tb_history_auth.nik',Auth::User()->nik)
+                    ->orderBy('datetime','DESC')->get());
+        }
+
+        
 
         return $getlogin;
 
@@ -5428,6 +5439,7 @@ class ReportController extends Controller
                     ->where('information','Log In')
                     ->where('datetime', '>=', $request->start_date)
                     ->where('datetime', '<=', $request->end_date)
+                    ->where('tb_history_auth.nik',Auth::User()->nik)
                     ->orderBy('datetime','DESC')->get());
 
         }else{
