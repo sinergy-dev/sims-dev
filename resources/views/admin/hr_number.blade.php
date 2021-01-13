@@ -97,17 +97,6 @@
         <div class="modal-body">
           <form method="POST" action="{{url('/store_admin_hr')}}" id="modal_pr" name="modal_pr">
             @csrf
-          <!-- <div class="form-group">
-            <label for="">Position</label>
-            <select type="text" class="form-control" placeholder="Select Position" name="position" id="position" required>
-                <option>PMO</option>
-                <option>PRE</option>
-                <option>MSM</option>
-                <option>SAL</option>
-                <option>FA</option>
-                <option>HR</option>
-            </select>
-          </div> -->
           <div class="form-group">
             <label for="">Type of Letter</label>
             <select type="text" class="form-control" placeholder="Select Type of Letter" name="type" id="type" required>
@@ -123,9 +112,18 @@
                 <option>MSP</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Date</label>
             <input type="date" class="form-control" name="date" id="date" required>
+          </div> -->
+          <div class="form-group">
+            <label for="">Date</label>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right date" name="date" id="date_hr">
+            </div>
           </div>
           <div class="form-group">
             <label for="">To</label>
@@ -159,10 +157,6 @@
                 <option>AM</option>
             </select>
           </div>
-          <!-- <div class="form-group">
-            <label for="">Issuance</label>
-            <input type="text" class="form-control" placeholder="Enter Issuance" name="issuance" id="issuance">
-          </div> -->
           <div class="form-group">
             <label for="">Project ID</label>
             <input type="text" class="form-control" placeholder="Project ID" name="project_id" id="project_id">
@@ -249,7 +243,12 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript">
+
+    $('#date_hr').datepicker({
+      autoclose: true,
+    }).attr('readonly','readonly').css('background-color','#fff');
 
     function edit_hr_number(no,to,attention,title,project,description,from) {
       $('#modaledit').modal('show');
