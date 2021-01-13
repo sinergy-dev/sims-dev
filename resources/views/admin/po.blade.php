@@ -134,10 +134,15 @@
           		<option value="{{$data->no}}">{{$data->no_pr}} - {{$data->to}}</option>
           		@endforeach -->
           	</select>
-          </div>  
+          </div>
           <div class="form-group">
             <label for="">Date</label>
-            <input type="date" class="form-control" name="date" id="date" required>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right date" name="date" id="date_po">
+            </div>
           </div>
           <div class="form-group">
             <label for="">To</label>
@@ -288,9 +293,14 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript">
 
     initTablePo();
+
+    $('#date_po').datepicker({
+      autoclose: true,
+    }).attr('readonly','readonly').css('background-color','#fff');
 
     function initTablePo() {
       $("#data_po").DataTable({
