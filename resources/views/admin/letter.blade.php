@@ -165,7 +165,12 @@
           </div>
           <div class="form-group">
             <label for="">Date</label>
-            <input type="date" class="form-control" name="date" id="date" required>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right date" name="date" id="date_letter">
+            </div>
           </div>
           <div class="form-group">
             <label for="">To</label>
@@ -220,12 +225,22 @@
         <div class="modal-body">
           <form method="POST" action="{{url('/store_letterbackdate')}}" id="letter_backdate" name="letter_backdate">
             @csrf
+
+          <div class="form-group">
+            <label for="">Date</label>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right date" name="date" id="date_backdate">
+            </div>
+          </div>
           <div class="form-group">
             <label>Backdate Number</label>
-            <select type="text" class="form-control" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" required>
-              @foreach($backdate_num as $data)
+            <select type="text" class="form-control" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" disabled>
+              <!-- @foreach($backdate_num as $data)
               <option value="{{$data->no_letter}}">{{$data->no_letter}}</option>
-              @endforeach
+              @endforeach -->
             </select>
           </div>
           <div class="form-group">
@@ -248,10 +263,6 @@
                 <option value="ADM">ADM (Surat Administrasi & Backdate)</option>
                 <option value="SGB">SBG (Surat Garansi Bank)</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label for="">Date</label>
-            <input type="date" class="form-control" name="date" id="date" required>
           </div>
           <div class="form-group">
             <label for="">To</label>
@@ -380,6 +391,7 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript">
     function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
       $('#modaledit').modal('show');
@@ -485,7 +497,26 @@
          $("#alert").slideUp(300);
     });
 
-    $("#backdate_num").select2();
+    // $("#backdate_num").select2();
+
+    $('#date_letter').datepicker({
+      autoclose: true,
+    }).attr('readonly','readonly').css('background-color','#fff');
+
+    $('#date_backdate').datepicker({
+      autoclose: true,
+    }).css('background-color','#fff');
+
+    $('#date_backdate').change(function (argument) {
+      console.log($('#date_backdate').val())
+      $("#backdate_num").prop("disabled",false);
+      $("#backdate_num").select2({
+        ajax: {
+          url: '{{url("/get_backdate_letter")}}' + '?tanggal=' + $('#date_backdate').val(),
+          dataType: 'json'
+        }
+      });
+    })
 
     function changetabPane(status) {
       $('#data_all').DataTable().ajax.url("{{url('getfilteryearletter')}}?status=" + status + "&year=" + $('#year_filter').val()).load();
