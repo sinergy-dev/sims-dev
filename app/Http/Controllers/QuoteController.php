@@ -200,6 +200,18 @@ class QuoteController extends Controller
         return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote','tahun','year_before'));
 	}
 
+    public function get_backdate_num(Request $request)
+    {
+        if (isset($request->tanggal)) {
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->whereYear('created_at',substr($request->tanggal, 6,4))->orderBy('created_at','asc')->get();
+            return array('results'=>$backdate_num);
+        } else {
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->orderBy('created_at','asc')->get();
+            return array('results'=>$backdate_num);
+        }
+        
+    }
+
 	public function create()
 	{
 
@@ -273,8 +285,12 @@ class QuoteController extends Controller
                      
                     $type = 'QO';
                     $posti = $request['position'];
-                    $month_quote = substr($request['date'],5,2);
-                    $year_quote = substr($request['date'],0,4);
+                    
+                    $edate = strtotime($_POST['date']); 
+                    $edate = date("Y-m-d",$edate);
+
+                    $month_quote = substr($edate,5,2);
+                    $year_quote = substr($edate,0,4);
 
                     $array_bln = array('01' => "I",
                                         '02' => "II",
@@ -333,7 +349,7 @@ class QuoteController extends Controller
                         $tambah->position = $posti;
                         $tambah->type_of_letter = $type;
                         $tambah->month = $bln;
-                        $tambah->date = $request['date'];
+                        $tambah->date = $edate;
                         // $tambah->to = $request['to'];
                         $tambah->id_customer = $request['customer_quote'];
                         $tambah->attention = $request['attention'];
@@ -358,8 +374,12 @@ class QuoteController extends Controller
                 }else{
                     $type = 'QO';
                     $posti = $request['position'];
-                    $month_quote = substr($request['date'],5,2);
-                    $year_quote = substr($request['date'],0,4);
+                    
+                    $edate = strtotime($_POST['date']); 
+                    $edate = date("Y-m-d",$edate);
+
+                    $month_quote = substr($edate,5,2);
+                    $year_quote = substr($edate,0,4);
 
                     $array_bln = array('01' => "I",
                                         '02' => "II",
@@ -402,7 +422,7 @@ class QuoteController extends Controller
                     $tambah->position = $posti;
                     $tambah->type_of_letter = $type;
                     $tambah->month = $bln;
-                    $tambah->date = $request['date'];
+                    $tambah->date = $edate;
                     // $tambah->to = $request['to'];
                     $tambah->id_customer = $request['customer_quote'];
                     $tambah->attention = $request['attention'];
@@ -423,8 +443,12 @@ class QuoteController extends Controller
         } else{
             $type = 'QO';
             $posti = $request['position'];
-            $month_quote = substr($request['date'],5,2);
-            $year_quote = substr($request['date'],0,4);
+            
+            $edate = strtotime($_POST['date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $month_quote = substr($edate,5,2);
+            $year_quote = substr($edate,0,4);
 
             $array_bln = array('01' => "I",
                                 '02' => "II",
@@ -467,7 +491,7 @@ class QuoteController extends Controller
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             // $tambah->to = $request['to'];
             $tambah->id_customer = $request['customer_quote'];
             $tambah->attention = $request['attention'];
@@ -489,8 +513,12 @@ class QuoteController extends Controller
     {
         $type = 'QO';
         $posti = $request['position'];
-        $month_quote = substr($request['date'],5,2);
-        $year_quote = substr($request['date'],0,4);
+        
+        $edate = strtotime($_POST['date']); 
+        $edate = date("Y-m-d",$edate);
+
+        $month_quote = substr($edate,5,2);
+        $year_quote = substr($edate,0,4);
 
         $array_bln = array('01' => "I",
                             '02' => "II",
@@ -520,10 +548,8 @@ class QuoteController extends Controller
         }elseif($lastnumber >= 100){
            $akhirnomor = $lastnumber;
         }*/
-
-        $akhirnomor = $request['backdate_num'];
-
-        $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
+        $update = Quote::where('id_quote',$request['backdate_num'])->first();
+        $no =         $update->quote_number .'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
 
         // $angka7 = Quote::select('id_quote')
         //         ->where('status_backdate','T')
@@ -532,12 +558,11 @@ class QuoteController extends Controller
 
         // $angka = $angka7->id_quote;
 
-        $update = Quote::where('id_quote',$akhirnomor)->first();
         $update->quote_number = $no;
         $update->position = $posti;
         $update->type_of_letter = $type;
         $update->month = $bln;
-        $update->date = $request['date'];
+        $update->date = $edate;
         // $update->to = $request['to'];
         $update->id_customer = $request['customer_quote_backdate'];
         $update->attention = $request['attention'];
