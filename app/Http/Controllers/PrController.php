@@ -222,8 +222,12 @@ class PrController extends Controller
         if ($cek > 0) {
             $type = $request['type'];
             $posti = $request['position'];
-            $month_pr = substr($request['date'],5,2);
-            $year_pr = substr($request['date'],0,4);
+            
+            $edate = strtotime($_POST['date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $month_pr = substr($edate,5,2);
+            $year_pr = substr($edate,0,4);
 
             $array_bln = array('01' => "I",
                                 '02' => "II",
@@ -278,7 +282,7 @@ class PrController extends Controller
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             $tambah->to = $request['to'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];
@@ -295,8 +299,12 @@ class PrController extends Controller
         } else{
             $type = $request['type'];
             $posti = $request['position'];
-            $month_pr = substr($request['date'],5,2);
-            $year_pr = substr($request['date'],0,4);
+
+            $edate = strtotime($_POST['date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $month_pr = substr($edate,5,2);
+            $year_pr = substr($edate,0,4);
 
             $array_bln = array('01' => "I",
                                 '02' => "II",
@@ -350,7 +358,7 @@ class PrController extends Controller
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             $tambah->to = $request['to'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];

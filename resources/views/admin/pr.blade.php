@@ -140,9 +140,18 @@
                     <option value="EPR">EPR (Eksternal Purchase Request)</option>
                 </select>
               </div>
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="">Date</label>
                 <input type="date" class="form-control" name="date" id="date" required>
+              </div> -->
+              <div class="form-group">
+                <label for="">Date</label>
+                <div class="input-group date">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="text" class="form-control pull-right date" name="date" id="date_pr">
+                </div>
               </div>
               <div class="form-group">
                 <label for="">To</label>
@@ -284,7 +293,11 @@
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <!-- <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.js"></script>
   <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript">
+    $('#date_pr').datepicker({
+      autoclose: true,
+    }).attr('readonly','readonly').css('background-color','#fff');
     function edit_pr(no,to,attention,title,project,description,issuance,project_id,note) {
       $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
