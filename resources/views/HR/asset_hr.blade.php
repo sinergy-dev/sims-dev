@@ -1,6 +1,9 @@
 @extends('template.template_admin-lte')
 @section('content')
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap4-select2-theme@1.0.3/src/css/bootstrap4-select2-theme.css" rel="stylesheet" /> -->
+<link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css" rel="stylesheet" />
 <style type="text/css">
   .modalIconsubject input[type=text]{
       padding-left:115px;
@@ -61,17 +64,27 @@
   <div class="box">
     <div class="box-body">
       <div class="nav-tabs-custom active" id="asset" role="tabpanel">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item active">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="kategori" aria-selected="false">List Asset</a>
-          </li>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">          
           @if(Auth::User()->id_division == 'HR')
-          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
+          <li class="nav-item active">
+            <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="asset" aria-selected="false"><i class="fa fa-list"></i>&nbspList Asset</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="kategori_list" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false"><i class="fa fa-wrench"></i>&nbspKategori</a>
+          </li>
+          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd"><i class="fa fa-plus"> </i>&nbsp Asset</button>
           <a href="{{url('exportExcelAsset')}}" class="btn btn-info btn-sm pull-right" style="margin-right: 5px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+          @else
+          <li class="nav-item active">
+            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="kategori" aria-selected="false"><i class="fa fa-list"></i> List Asset</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="myAsset-tab" data-toggle="tab" href="#my_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Current borrowed</a>
+          </li>
           @endif
         </ul>
         <div class="tab-content" id="myTabContent">
-          <div class="tab-pane active" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
+          <div class="tab-pane active" id="asset_list" role="tabpanel" aria-labelledby="home-tab">
             <br>
             <div class="table-responsive" >
               <table class="table table-bordered table-striped " id="data_table" width="100%" cellspacing="0">
@@ -81,7 +94,9 @@
                     <th>Name</th>
                     <th>Description</th>
                     <th>Serial Number</th>
+                    <th>Latest Peminjam</th>
                     <th>Status</th>
+                    <th>Lokasi</th>
                     @if(Auth::User()->id_division == 'HR')
                     <th>Action</th>
                     @endif
@@ -100,13 +115,15 @@
                       -
                       @endif
                     </td>
+                    <td>latest</td>
                     <td>
                       @if($data->status == "PENDING")
-                      <span class="label label-info">UnAvailable</span>
+                      <span class="label label-default">UNAVAILABLE</span>
                       @else
-                      <span class="label label-default">Available</span>
+                      <span class="label label-info">AVAILABLE</span>
                       @endif
                     </td>
+                    <td>lokasi</td>
                     @if(Auth::User()->id_division == 'HR')
                     <td>
                       <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
@@ -131,46 +148,26 @@
             </div>
           </div>
           @if(Auth::User()->id_division == 'HR')
-          <div class="tab-pane fade" id="peminjaman_asset" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="tab-pane fade" id="kategori_asset" role="tabpanel" aria-labelledby="current">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered nowrap DataTable" id="datatable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>No</th>
-                    <th>No Peminjaman</th>
-                    <th>Nama Barang</th>
-                    <th>Description</th>
-                    <th>Nama Peminjam</th>
-                    <th>Tgl Peminjaman</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th>Code</th>
+                    <th>Nama Kategori</th>
+                    <th>Qty</th>
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
-                  <?php $no = 1 ?>
-                  @foreach($assetsd as $data)
-                  <tr>
-                    <td>{{$no++}}</td>
-                    <td>{{$data->no_transac}}</td>
-                    <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->keterangan}}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{{$data->tgl_peminjaman}}</td>
-                    <td>
-                      @if($data->status == 'PENDING')
-                        <label class="status-open" style="width: 150px;">SUDAH DI AMBIL</label>
-                      @elseif($data->status == 'RETURN')
-                       <label class="status-win" style="width: 90px;height: 25px">RETURNED</label>
-                      @endif
-                    </td>
-                    <td>
-                      @if($data->status == 'PENDING')
-                      <button class="btn btn-md btn-danger" data-target="#kembali_modal" data-toggle="modal" onclick="kembali('{{$data->id_barang}}','{{$data->id_transaction}}')" style="text-align: center;width: 125px">KEMBALI</button>
-                      @else
-                      <button class="btn btn-md btn-danger" disabled style="text-align: center;width: 125px">KEMBALI</button>
-                      @endif
-                    </td>
-                  </tr>
+                  <?php $no = 1?>
+                  @foreach($kategori_asset as $data)
+                    <tr>
+                      <td>{{$no++}}</td>
+                      <td>{{$data->code_kat}}</td>
+                      <td>{{$data->kategori}}</td>
+                      <td>{{$data->qty_kat}}</td>
+                    </tr>
                   @endforeach
                 </tbody>
                 <tfoot>
@@ -200,64 +197,75 @@
 
 <!--add asset-->
 <div class="modal fade" id="add_asset" role="dialog">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-md">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Add Asset HR/GA</h4>
         </div>
         <div class="modal-body">
           <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">
-            @csrf
-          <div class="form-group">
-            <label for="sow">Kategori</label>
-            <select class="form-control" id="category_asset" name="category_asset" required>
-              <option value="">Select Kategori</option>
-              <option value="LPT">Laptop</option>
-              <option value="PRN">Printer</option>
-              <option value="HDD">Harddisk</option>
-              <option value="PRY">Proyektor</option>
-              <option value="OTH">Other</option>
-            </select>
-          </div>
+            @csrf          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="sow">Asset Code</label>
+                <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden=></input>
+                <input name="asset_code" id="asset_code" class="form-control" value="{{$nomor}}" readonly></input>
+              </div>
 
-          <div class="form-group">
-            <label for="sow">Company</label>
-            <select class="form-control" id="company_asset" name="company_asset" required">
-              <option value="">Select Company</option>
-              <option value="SIP">PT. SIP</option>
-              <option value="MSP">PT. MSP</option>
-            </select>
-          </div>
+              <div class="form-group">
+                <label for="sow">Kategori</label>
+                <select class="form-control" id="category_asset" name="category_asset" required>
+                </select>
+                <input type="text" hidden name="category_id" id="category_id">
+              </div>
 
-          <div class="form-group">
-            <label for="sow">Nama Barang</label>
-            <input name="nama_barang" id="nama_barang" class="form-control"></input>
-          </div>
+              <div class="form-group">
+                <label for="sow">Company</label>
+                <select class="form-control" id="company_asset" name="company_asset" required>
+                  <option value="">Select Company</option>
+                  <option value="SIP">PT. SIP</option>
+                  <option value="MSP">PT. MSP</option>
+                </select>
+              </div>
 
-          <div class="form-group">
-            <label for="sow">Nomor SN</label>
-            <input name="asset_sn" id="asset_sn" class="form-control"></input>
-          </div>
-          
-          <div class="form-group">
-            <label for="sow">Keterangan</label>
-            <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
-          </div>
+              <div class="form-group">
+                <label>Merk</label>
+                <input type="" class="form-control" name="merk_barang" id="merk_barang" required>
+              </div>
 
-          <div class="form-group">
-            <label for="sow">Asset Date</label>
-            <input type="text" name="asset_date" id="asset_date" class="form-control" data-date-end-date="0d"></input>
-          </div>
+              <div class="form-group">
+                <label for="sow">Nama Barang</label>
+                <input name="nama_barang" id="nama_barang" class="form-control" required></input>
+              </div>
+            </div>
+            <div class="col-md-6">            
 
-          <div class="form-group">
-            <label for="sow">Asset Code</label>
-            <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden=></input>
-            <input name="asset_code" id="asset_code" class="form-control" value="{{$nomor}}" readonly></input>
+              <div class="form-group">
+                <label for="sow">Date of Purchase</label>
+                <input type="text" name="asset_date" id="asset_date" class="form-control" required></input>
+              </div>
+
+              <div class="form-group">
+                <label for="sow">Nomor SN</label>
+                <input name="asset_sn" id="asset_sn" class="form-control" required></input>
+              </div>
+              
+              <div class="form-group">
+                <label for="sow">Description</label>
+                <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="sow">Note</label>
+                <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
+              </div>
+            </div>
           </div>
 
           <div class="modal-footer">
             <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-            <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+            <button type="submit" class="btn btn-sm btn-success" id="btnSubmit" disabled><i class="fa fa-check"></i>&nbsp Submit</button>
           </div>
         </form>
         </div>
@@ -503,6 +511,35 @@ REJECT
       </div>
     </div>
 </div>
+
+<!--add kategori-->
+<div class="modal fade" id="add_kategori" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Kategori</h4>
+        </div>
+        <div class="modal-body">
+          <form id="modalAddKategori" name="modalAddKategori" method="POST" action="{{url('store_kategori_asset')}}" >
+            @csrf
+          <div class="form-group">
+            <label for="">Kode</label>
+            <input type="text" name="kode_kategori" id="kode_kategori" class="form-control" maxlength="3" minlength="3" required="" style="text-transform:uppercase">
+            <small>Must haves 3 character</small>
+          </div>
+          <div class="form-group">
+            <label for="">Kategori</label>
+            <input type="text" name="kategori" id="kategori" class="form-control" required="">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+            <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-check"></i>&nbsp Submit</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+</div>
 @endsection
 
 @section('script')
@@ -512,7 +549,24 @@ REJECT
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/roman.js')}}"></script>
+  <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript">
+
+    $(document).ready(function(){
+      $("#btnAdd").attr('data-target','#add_asset');
+    })    
+
+    $('#myTab .nav-link').click(function(e) {
+      console.log($(e.target).attr("id"))
+      if ($(e.target).attr("id") == "list_asset") {
+        $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspAsset');
+        $("#btnAdd").attr('data-target','#add_asset');
+      }else if ($(e.target).attr("id") == "kategori_list") {
+        console.log('OK')
+        $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspKategori');
+        $("#btnAdd").attr('data-target','#add_kategori');
+      }
+    })
 
     var hari_libur_nasional = []
     var hari_libur_nasional_tooltip = []
@@ -525,6 +579,34 @@ REJECT
           hari_libur_nasional_tooltip.push(value.summary)
         })
       }
+    })
+
+    var datas_kat = [];
+    $.ajax({
+      type:"GET",
+      url: "getAssetCategoriHR",
+      success:function(result){
+        var arr = result.results;        
+          var data = {
+            id: -1,
+            text: 'Select Category...'
+          };
+
+          datas_kat.push(data)
+          $.each(arr,function(key,value){
+            datas_kat.push(value)
+          })
+
+        $("#category_asset").select2({
+          placeholder: "Select a state",
+          theme: 'bootstrap4',
+          data: datas_kat
+        });
+      }
+    })
+
+    $("#category_asset").on('change',function(){
+      $("#category_id").val($('#category_asset').select2('data')[0].no)
     })
 
     $('#asset_date').datepicker({
@@ -581,10 +663,10 @@ REJECT
               id_barang:this.value,
             },
             success: function(result){
-              var swal_html = '<div class="panel" style="background:aliceblue;font-weight:bold;font-size:12px"> Berikut informasi terkait : </br></br> Umur Asset : '+ result[0].umur_asset +' hari </div>';
+              var swal_html = '<div style="font-weight:bold;font-size:12px">Umur Asset : '+ result[0].umur_asset +' hari</div>';
               // swal({title: "Asset "+ result[0].nama_barang +" !!", html: swal_html})
               swal({
-                title: "Asset "+ result[0].nama_barang +" !!", html: swal_html
+                title: result[0].nama_barang +" !!", html: swal_html
               });
             },
         });
@@ -661,6 +743,10 @@ REJECT
     } 
 
     $(document).on('change',"#category_asset",function(e) { 
+        if ($("#category_asset").val() == "-1") {
+          $("#btnSubmit").prop("disabled",true)
+        }
+        
         var code = $("#kode_asset").val();
         var company = $("#company_asset").val();
         var asset_date = $("#asset_date").val();
@@ -677,6 +763,8 @@ REJECT
           }
 
           $(document).on('change',"#asset_date",function(e) { 
+
+            $("#btnSubmit").prop("disabled",false)
 
             var code = $("#kode_asset").val();
             var category = $("#category_asset").val();
@@ -698,6 +786,8 @@ REJECT
         }
         
     });
+
+
 
     /*$('#myTab a').click(function(e) {
       e.preventDefault();
