@@ -195,6 +195,21 @@ class AssetHRController extends Controller
                     ->where('tb_asset_hr.availability',1)
                     ->get();
 
+        $kategori_asset = DB::table('tb_kategori_asset_hr')
+        				->Leftjoin(DB::raw("(
+                        SELECT
+                            COUNT(`kategori`) AS `count_kategori`, `kategori`
+                        FROM
+                            `tb_asset_hr`
+                        GROUP BY
+                            `kategori`
+                      	) as tb_asset_hr"),function($join){
+                        $join->on("tb_kategori_asset_hr.id","=","tb_asset_hr.kategori");
+                    	})
+                      	->select('tb_kategori_asset_hr.kategori','code_kat',DB::raw('tb_asset_hr.count_kategori as qty_kat'))
+                      	// ->groupBy('tb_kategori_asset_hr.id')
+        				->get();
+
         $users = User::select('name','nik')->where('status_karyawan','!=','dummy')->get();
 
         $inc = DB::table('tb_asset_hr')->get();
@@ -207,7 +222,7 @@ class AssetHRController extends Controller
             $nomor = '0' . $nomor;
         }
 
-    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam'));
+    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset'));
     }
 
     public function getPengembalian(Request $request){
@@ -232,6 +247,11 @@ class AssetHRController extends Controller
         return $asset;
 
         //tambahhhhh
+    }
+
+    public function getCategory(Request $request){
+
+    	return array("results" => DB::table('tb_kategori_asset_hr')->select(DB::raw("`id` AS `no`,`code_kat` AS `id`,`kategori` AS `text`"))->get());
     }
 
     public function getdetail(Request $request)
@@ -261,6 +281,7 @@ class AssetHRController extends Controller
         $tambah                 = new AssetHR();
         $tambah->nik            = Auth::User()->nik;
         $tambah->code_name      = $request['asset_code'];
+        $tambah->kategori    	= $request['category_id'];
         $tambah->nama_barang    = $request['nama_barang'];
         $tambah->status         = "NEW";
         $edate = strtotime($_POST['asset_date']); 
@@ -268,9 +289,20 @@ class AssetHRController extends Controller
         $tambah->tgl_tambah     = $edate;
         $tambah->serial_number  = $request['asset_sn'];
         $tambah->description    = $request['keterangan'];
+        $tambah->note    		= $request['note'];
         $tambah->save();
 
         return redirect()->back()->with('success', 'Create New Asset Successfully!');
+    }
+
+    public function store_kategori(Request $request){
+    	DB::table('tb_kategori_asset_hr')->insert(
+		    ['kategori' => $request['kategori'], 
+		     'code_kat' => $request['kode_kategori'],
+		 	]
+		);
+
+		return redirect()->back()->with('success', 'Create New Kategori Successfully!');
     }
 
     public function detail_asset($id_barang)
