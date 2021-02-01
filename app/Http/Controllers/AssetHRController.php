@@ -176,7 +176,18 @@ class AssetHRController extends Controller
         }
 
         $asset = DB::table('tb_asset_hr')
-                ->select('nama_barang', 'id_barang','status','description','code_name', 'serial_number')
+                ->Leftjoin(DB::raw("(
+                    SELECT
+                        `id_barang` AS `id_barang`, substring_index(group_concat(`name` ORDER BY `id_transaction` DESC SEPARATOR ','), ',', 1) AS `name`
+                    FROM
+                        `tb_asset_hr_transaction`
+                    LEFT JOIN `users` ON `users`.`nik` = `tb_asset_hr_transaction`.`nik_peminjam`
+                    GROUP BY
+                        `id_barang`
+                    ) as tb_asset_hr_transaction"),function($join){
+                    $join->on("tb_asset_hr.id_barang","=","tb_asset_hr_transaction.id_barang");
+                })
+                ->select('nama_barang', 'tb_asset_hr.id_barang','status','description','code_name', 'serial_number','name','lokasi')
                 ->where('availability',1)
                 ->get();
 
@@ -207,8 +218,21 @@ class AssetHRController extends Controller
                         $join->on("tb_kategori_asset_hr.id","=","tb_asset_hr.kategori");
                     	})
                       	->select('tb_kategori_asset_hr.kategori','code_kat',DB::raw('tb_asset_hr.count_kategori as qty_kat'))
-                      	// ->groupBy('tb_kategori_asset_hr.id')
         				->get();
+
+        $current_borrowed = DB::table('tb_asset_hr_transaction')
+                        ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
+                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction')
+                        ->where('nik_peminjam',Auth::User()->nik)
+                        ->where('tb_asset_hr_transaction.status','ACCEPT')
+                        ->get();
+
+        $request_asset = DB::table('tb_asset_hr_transaction')
+                        ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
+                        ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+                        ->select('name','nama_barang','description','no_transac','tb_asset_hr.note','nik_peminjam','tb_asset_hr_transaction.id_barang','id_transaction')
+                        ->where('tb_asset_hr_transaction.status','PENDING')
+                        ->get();
 
         $users = User::select('name','nik')->where('status_karyawan','!=','dummy')->get();
 
@@ -222,7 +246,13 @@ class AssetHRController extends Controller
             $nomor = '0' . $nomor;
         }
 
-    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset'));
+    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset','current_borrowed','request_asset'));
+    }
+
+    public function getDetailBorrowed(Request $request){
+        return DB::table('tb_asset_hr_transaction')
+                ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
+                ->select('keterangan','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr_transaction.note','no_transac','nama_barang','code_name','id_transaction')->where('id_transaction',$request->id_transaction)->get();
     }
 
     public function getPengembalian(Request $request){
@@ -240,7 +270,7 @@ class AssetHRController extends Controller
 
     public function getEditAsset(Request $request){
         $asset = DB::table('tb_asset_hr')
-                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','serial_number',DB::raw('DATEDIFF(created_at,tgl_tambah) AS umur_asset'))
+                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(tgl_tambah,created_at) AS umur_asset'))
                 ->where('tb_asset_hr.id_barang',$request->id_barang)
                 ->get();
 
@@ -283,13 +313,14 @@ class AssetHRController extends Controller
         $tambah->code_name      = $request['asset_code'];
         $tambah->kategori    	= $request['category_id'];
         $tambah->nama_barang    = $request['nama_barang'];
-        $tambah->status         = "NEW";
-        $edate = strtotime($_POST['asset_date']); 
-        $edate = date("Y-m-d",$edate);
+        $tambah->status         = "AVAILABLE";
+        $edate          = strtotime($_POST['asset_date']); 
+        $edate          = date("Y-m-d",$edate);
         $tambah->tgl_tambah     = $edate;
         $tambah->serial_number  = $request['asset_sn'];
         $tambah->description    = $request['keterangan'];
         $tambah->note    		= $request['note'];
+        $tambah->lokasi         = $request['lokasi'];
         $tambah->save();
 
         return redirect()->back()->with('success', 'Create New Asset Successfully!');
@@ -500,7 +531,11 @@ class AssetHRController extends Controller
         $id_barang = $request['id_barang'];
 
         $update = AssetHR::where('id_barang',$id_barang)->first();
-        $update->status = 'PENDING';
+        if (Auth::User()->id_division == 'HR') {
+            $update->status = 'UNAVAILABLE';
+        }else{
+            $update->status = 'PENDING';
+        }        
         $update->update();  
 
         $inc = DB::table('tb_asset_hr_transaction')->select('id_transaction')->get();
@@ -514,13 +549,65 @@ class AssetHRController extends Controller
 
         $store                  = new DetailAssetHR();
         $store->id_barang       = $id_barang; 
-        $store->nik_peminjam    = $request['users'];
+        if (Auth::User()->id_division == 'HR') {
+            $store->nik_peminjam    = $request['users'];
+            $store->status          = 'ACCEPT';
+        }else{
+            $store->nik_peminjam    = Auth::User()->nik;
+            $store->status          = 'PENDING';
+        }        
         $store->keterangan      = $request['keperluan'];
         $store->tgl_peminjaman  = date('Y-m-d');
-        $store->no_transac		= $no_peminjaman;
+        $store->no_transac		= $no_peminjaman;        
         $store->save();
 
+        // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
+        //     ->where('nik_peminjam','<>',$request['users'])
+        //     ->where('status','PENDING')
+        //     ->get();
+
+        // foreach ($update_rejects as $update_reject) {
+        //     $update_reject->status = "REJECT";
+        //     $update_reject->update();
+        // }
+
         return redirect()->back()->with('alert', 'Peminjaman Barang Berhasil!');
+    }
+
+    public function acceptPeminjaman(Request $request){
+        $update = AssetHR::where('id_barang',$request->id_barang)->first();
+        if ($request->status == 'ACCEPT') {
+            $update->status = 'UNAVAILABLE';
+        }else{
+            $update->status = 'AVAILABLE';
+        }
+        $update->update(); 
+
+        // $update_accept =  DetailAssetHR::where('nik_peminjam',$request->nik_peminjam)
+        //         ->where('id_barang',$request->id_barang)    
+        //         ->first();
+
+        $update_accept =  DetailAssetHR::where('id_transaction',$request->id_transaction)
+                ->first();
+        if ($request->status == 'ACCEPT') {
+            $update_accept->status = "ACCEPT";
+        }else{
+            $update_accept->status = "REJECT";
+        }
+        $update_accept->save();
+
+        // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
+        //     ->where('nik_peminjam','<>',$request->nik_peminjam)
+        //     ->where('status','PENDING')
+        //     ->get();
+
+        // foreach ($update_rejects as $update_reject) {
+        //     $update_reject->status = "REJECT";
+        //     $update_reject->save();
+        // }
+
+        return redirect()->back()->with('alert','Asset Request Accepted!');
+        
     }
 
     public function penghapusan(Request $request)
@@ -570,7 +657,7 @@ class AssetHRController extends Controller
         $id_transaction   = $request['id_transaction_kembali'];
 
         $update_asset       = AssetHR::where('id_barang',$id_barang)->first();
-        $update_asset->status     = 'RETURN';
+        $update_asset->status     = 'AVAILABLE';
         $update_asset->update();
 
         $update         = DetailAssetHR::where('id_transaction',$id_transaction)->first();
@@ -592,9 +679,11 @@ class AssetHRController extends Controller
 
         $id_barang = $request['id_barang_asset_edit'];
 
-        $update_asset       = AssetHR::where('id_barang',$id_barang)->first();
-        $update_asset->description  = $request['keterangan_edit'];
-        $update_asset->serial_number  = $request['asset_sn_edit'];
+        $update_asset                   = AssetHR::where('id_barang',$id_barang)->first();
+        $update_asset->description      = $request['keterangan_edit'];
+        $update_asset->serial_number    = $request['asset_sn_edit'];
+        $update_asset->status           = $request['select-status'];
+        $update_asset->lokasi           = $request['lokasi_edit'];
         $update_asset->update();
 
         return redirect()->back()->with('alert', 'Barang Telah di Update !');
