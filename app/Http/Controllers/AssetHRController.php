@@ -182,6 +182,7 @@ class AssetHRController extends Controller
                     FROM
                         `tb_asset_hr_transaction`
                     LEFT JOIN `users` ON `users`.`nik` = `tb_asset_hr_transaction`.`nik_peminjam`
+                    WHERE `status` = 'ACCEPT'
                     GROUP BY
                         `id_barang`
                     ) as tb_asset_hr_transaction"),function($join){
@@ -217,7 +218,7 @@ class AssetHRController extends Controller
                       	) as tb_asset_hr"),function($join){
                         $join->on("tb_kategori_asset_hr.id","=","tb_asset_hr.kategori");
                     	})
-                      	->select('tb_kategori_asset_hr.kategori','code_kat',DB::raw('tb_asset_hr.count_kategori as qty_kat'))
+                      	->select('tb_kategori_asset_hr.kategori','code_kat',DB::raw('tb_asset_hr.count_kategori as qty_kat'),'id')
         				->get();
 
         $current_borrowed = DB::table('tb_asset_hr_transaction')
@@ -225,6 +226,7 @@ class AssetHRController extends Controller
                         ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction')
                         ->where('nik_peminjam',Auth::User()->nik)
                         ->where('tb_asset_hr_transaction.status','ACCEPT')
+                        ->where('tgl_pengembalian',NULL)
                         ->get();
 
         $request_asset = DB::table('tb_asset_hr_transaction')
@@ -327,13 +329,26 @@ class AssetHRController extends Controller
     }
 
     public function store_kategori(Request $request){
-    	DB::table('tb_kategori_asset_hr')->insert(
-		    ['kategori' => $request['kategori'], 
-		     'code_kat' => $request['kode_kategori'],
-		 	]
-		);
+        if ($request['status_kategori'] == 'edit') {
+            DB::table('tb_kategori_asset_hr')->where('id',$request['id_kategori'])->update(
+                ['kategori' => $request['kategori'], 
+                 'code_kat' => $request['kode_kategori'],
+                ]
+            );
 
-		return redirect()->back()->with('success', 'Create New Kategori Successfully!');
+            $line = 'Update Kategori Successfully!';
+        }else{
+            DB::table('tb_kategori_asset_hr')->insert(
+                ['kategori' => $request['kategori'], 
+                 'code_kat' => $request['kode_kategori'],
+                ]
+            );
+
+            $line = 'Create New Kategori Successfully!';
+        }
+    	
+
+		return redirect()->back()->with('success', $line);
     }
 
     public function detail_asset($id_barang)
@@ -552,9 +567,13 @@ class AssetHRController extends Controller
         if (Auth::User()->id_division == 'HR') {
             $store->nik_peminjam    = $request['users'];
             $store->status          = 'ACCEPT';
+
+            $line = 'Peminjaman Barang Berhasil!';
         }else{
             $store->nik_peminjam    = Auth::User()->nik;
             $store->status          = 'PENDING';
+
+            $line = 'Peminjaman Barang Akan diproses!';
         }        
         $store->keterangan      = $request['keperluan'];
         $store->tgl_peminjaman  = date('Y-m-d');
@@ -571,7 +590,7 @@ class AssetHRController extends Controller
         //     $update_reject->update();
         // }
 
-        return redirect()->back()->with('alert', 'Peminjaman Barang Berhasil!');
+        return redirect()->back()->with('alert', $line);
     }
 
     public function acceptPeminjaman(Request $request){
@@ -694,71 +713,71 @@ class AssetHRController extends Controller
     {
         $nama = 'List Asset '.date('Y-m-d');
         Excel::create($nama, function ($excel) use ($request) {
-            $excel->sheet('List Asset', function ($sheet) use ($request) {
+            // $excel->sheet('List Asset', function ($sheet) use ($request) {
             
-                $sheet->mergeCells('A1:F1');
+            //     $sheet->mergeCells('A1:F1');
 
-               // $sheet->setAllBorders('thin');
-                $sheet->row(1, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(12);
-                    $row->setAlignment('center');
-                    $row->setFontWeight('bold');
-                });
+            //    // $sheet->setAllBorders('thin');
+            //     $sheet->row(1, function ($row) {
+            //         $row->setFontFamily('Calibri');
+            //         $row->setFontSize(12);
+            //         $row->setAlignment('center');
+            //         $row->setFontWeight('bold');
+            //     });
 
-                $sheet->row(1, array('LIST ASSET'));
+            //     $sheet->row(1, array('LIST ASSET'));
 
-                $sheet->row(2, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(12);
-                    $row->setFontWeight('bold');
-                });
+            //     $sheet->row(2, function ($row) {
+            //         $row->setFontFamily('Calibri');
+            //         $row->setFontSize(12);
+            //         $row->setFontWeight('bold');
+            //     });
 
-                $asset = AssetHR::select('nama_barang', 'id_barang', 'description','code_name')
-                    ->where('tb_asset_hr.availability',1)
-                    ->get();
+            //     $asset = AssetHR::select('nama_barang', 'id_barang', 'description','code_name')
+            //         ->where('tb_asset_hr.availability',1)
+            //         ->get();
                 
 
-               // $sheet->appendRow(array_keys($datas[0]));
-                $sheet->row($sheet->getHighestRow(), function ($row) {
-                    $row->setFontWeight('bold');
-                });
+            //    // $sheet->appendRow(array_keys($datas[0]));
+            //     $sheet->row($sheet->getHighestRow(), function ($row) {
+            //         $row->setFontWeight('bold');
+            //     });
 
-                $datasheet = array();
-                $datasheet[0]  =   array("No","Kode Asset","Nama Barang", "Quantity", "Deskripsi", "Status");
-                 $i=1;
+            //     $datasheet = array();
+            //     $datasheet[0]  =   array("No","Kode Asset","Nama Barang", "Quantity", "Deskripsi", "Status");
+            //      $i=1;
 
-                foreach ($asset as $data) {
-                    if ($data->qty == 0) {
-                      $datasheet[$i] = array(
-                        $i,
-                        $data['code_name'],
-                        $data['nama_barang'],
-                        $data['description'],
-                        'UnAvailable'
+            //     foreach ($asset as $data) {
+            //         if ($data->qty == 0) {
+            //           $datasheet[$i] = array(
+            //             $i,
+            //             $data['code_name'],
+            //             $data['nama_barang'],
+            //             $data['description'],
+            //             'UnAvailable'
                         
-                        );
+            //             );
                       
-                      $i++;
-                    }else{
-                    $datasheet[$i] = array(
-                        $i,
-                        $data['code_name'],
-                        $data['nama_barang'],
-                        $data['description'],
-                        'Available'
+            //           $i++;
+            //         }else{
+            //         $datasheet[$i] = array(
+            //             $i,
+            //             $data['code_name'],
+            //             $data['nama_barang'],
+            //             $data['description'],
+            //             'Available'
                         
-                    );
+            //         );
                   
-                    $i++;
-                    }
+            //         $i++;
+            //         }
                     
-                }
+            //     }
 
-                $sheet->fromArray($datasheet);
-            });
+            //     $sheet->fromArray($datasheet);
+            // });
 
-            $excel->sheet('Detail Peminjaman Asset', function ($sheet) use ($request) {
+            $excel->sheet('List  Asset', function ($sheet) use ($request) {
             
                 $sheet->mergeCells('A1:H1');
 
@@ -778,12 +797,27 @@ class AssetHRController extends Controller
                     $row->setFontWeight('bold');
                 });
 
-                $datas    = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                            ->where('tb_asset_hr.availability',1)
-                            ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang', 'left')
-                            ->select('tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','tb_asset_hr.nama_barang','tb_asset_hr.description','users.name','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr.status', 'tb_asset_hr_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'no_transac', 'code_name')
-                            ->get();
-                
+                // $datas    = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+                //             ->where('tb_asset_hr.availability',1)
+                //             ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang', 'left')
+                //             ->select('tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','tb_asset_hr.nama_barang','tb_asset_hr.description','users.name','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr.status', 'tb_asset_hr_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'no_transac', 'code_name')
+                //             ->get();
+
+                $datas = AssetHR::Leftjoin(DB::raw("(
+                        SELECT
+                            `id_barang` AS `id_barang`, substring_index(group_concat(`name` ORDER BY `id_transaction` DESC SEPARATOR ','), ',', 1) AS `name`
+                        FROM
+                            `tb_asset_hr_transaction`
+                        LEFT JOIN `users` ON `users`.`nik` = `tb_asset_hr_transaction`.`nik_peminjam`
+                        GROUP BY
+                            `id_barang`
+                        ) as tb_asset_hr_transaction"),function($join){
+                        $join->on("tb_asset_hr.id_barang","=","tb_asset_hr_transaction.id_barang");
+                    })
+                    ->select('nama_barang', 'tb_asset_hr.id_barang','status','description','code_name', 'serial_number','name','lokasi','note','lokasi')
+                    ->where('availability',1)
+                    ->get();
+                    
 
                // $sheet->appendRow(array_keys($datas[0]));
                 $sheet->row($sheet->getHighestRow(), function ($row) {
@@ -791,7 +825,7 @@ class AssetHRController extends Controller
                 });
 
                 $datasheet = array();
-                $datasheet[0]  =   array("No","Kode Asset", "Nama Barang", "Deskripsi", "Nama Peminjam", "Tgl Pinjam", "Tgl Kembali", "Note");
+                $datasheet[0]  =   array("No","Kode Asset", "Nama Barang", "Deskripsi", "Latest Peminjam", "Note" , "Status","Lokasi");
                  $i=1;
 
                 foreach ($datas as $data) {
@@ -800,9 +834,9 @@ class AssetHRController extends Controller
                                 $data['nama_barang'],
                                 $data['description'],
                                 $data['name'],
-                                $data['tgl_peminjaman'],
-                                $data['tgl_pengembalian'],
-                                $data['keterangan']
+                                $data['note'],
+                                $data['status'],
+                                $data['lokasi']
                             );
                     $i++;
                     

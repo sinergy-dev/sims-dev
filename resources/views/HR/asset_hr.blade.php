@@ -72,7 +72,7 @@
           <li class="nav-item active">
             <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="asset" aria-selected="false"><i class="fa fa-list"></i>&nbspList Asset</a>
           </li>
-          @if(Auth::User()->id_division == 'HR')
+          @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
           <li class="nav-item">
             <a class="nav-link" id="kategori_list" data-toggle="tab" href="#kategori_asset" role="tab" aria-controls="kategori" aria-selected="false"><i class="fa fa-wrench"></i>&nbspKategori</a>
           </li>
@@ -111,9 +111,9 @@
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->description}}</td>
                     <td>
-                      @foreach(explode(',', $data->name) as $key => $latest_pinjam) 
-                        {{$latest_pinjam}}
-                      @endforeach
+                        @foreach(explode(',', $data->name) as $key => $latest_pinjam) 
+                          {{$latest_pinjam}}
+                        @endforeach
                     </td>
                     <td>
                       @if($data->status == "UNAVAILABLE")
@@ -121,13 +121,15 @@
                       @elseif($data->status == "AVAILABLE")
                       <span class="label label-info">AVAILABLE</span>
                       @elseif($data->status == "SERVICE")
-                      <span class="label label-warning">SERVICE</span>
+                      <span class="label label-primary">SERVICE</span>
                       @elseif($data->status == "RUSAK")
                       <span class="label label-danger">RUSAK</span>
+                      @elseif($data->status == "PENDING")
+                      <span class="label label-warning">PENDING</span>
                       @endif
                     </td>
                     <td>{{$data->lokasi}}</td>
-                    @if(Auth::User()->id_division == 'HR')
+                    @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
                     <td>                      
                       @if($data->status == "UNAVAILABLE")
                       <button class="btn btn-xs btn-default btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-hourglass-end"></i></button>
@@ -154,9 +156,11 @@
                       @if($data->status == "UNAVAILABLE" || $data->status == "PENDING" || $data->status == "RUSAK" || $data->status == "SERVICE")
                       <button class="btn btn-xs btn-success" disabled data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
                       <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
+                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
                       @else
                       <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
                       <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
+                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
                       @endif
                       
                     </td>
@@ -169,7 +173,7 @@
               </table>
             </div>
           </div>
-          @if(Auth::User()->id_division == 'HR')
+          @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
           <div class="tab-pane fade" id="kategori_asset" role="tabpanel" aria-labelledby="current">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered nowrap DataTable" id="datatable" width="100%" cellspacing="0">
@@ -179,6 +183,7 @@
                     <th>Code</th>
                     <th>Nama Kategori</th>
                     <th>Qty</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
@@ -189,6 +194,9 @@
                       <td>{{$data->code_kat}}</td>
                       <td>{{$data->kategori}}</td>
                       <td>{{$data->qty_kat}}</td>
+                      <td>
+                        <button class="btn btn-xs btn-warning" onclick="editKategori('{{$data->code_kat}}','{{$data->kategori}}','{{$data->id}}','edit')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Update" data-placement="bottom"><i class="fa fa-edit"></i></button>
+                      </td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -217,8 +225,9 @@
                       <td>{{$data->name}}</td>
                       <td>{{$data->nama_barang}}</td>
                       <td>{{$data->description}}</td>
-                      <td><button class="btn btn-primary btn-sm" id="requestAccept" onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','ACCEPT')">Accept</button></td>
-                      <td><button class="btn btn-danger btn-sm" id="requestAccept" onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
+                      <td>
+                      <button class="btn btn-primary btn-sm" id="requestAccept" onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
+                      <button class="btn btn-danger btn-sm" id="requestAccept" onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -630,6 +639,8 @@ REJECT
         <div class="modal-body">
           <form id="modalAddKategori" name="modalAddKategori" method="POST" action="{{url('store_kategori_asset')}}" >
             @csrf
+          <input type="" id="status_kategori" name="status_kategori" hidden> 
+          <input type="" name="id_kategori" id="id_kategori" value="" hidden>
           <div class="form-group">
             <label for="">Kode</label>
             <input type="text" name="kode_kategori" id="kode_kategori" class="form-control" maxlength="3" minlength="3" required="" style="text-transform:uppercase">
@@ -664,6 +675,8 @@ REJECT
     </div>
   </div>
 </div>
+
+
 @endsection
 
 @section('script')
@@ -692,12 +705,18 @@ REJECT
         $("#btnExport").show();
         $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspAsset');
         $("#btnAdd").attr('data-target','#add_asset');
+        $("#btnAdd").removeAttr('onclick');
+        $("#btnAdd").attr('data-toggle','modal');
       }else if ($(e.target).attr("id") == "kategori_list") {
         $("#btnAdd").show();
+        $("#btnAdd").removeAttr('data-toggle');
+        $("#btnAdd").attr('onclick','addKategori()');
         $("#btnExport").show();
         console.log('OK')
         $("#btnAdd").html('<i class="fa fa-plus"></i> &nbspKategori');
-        $("#btnAdd").attr('data-target','#add_kategori');
+        // $("#btnAdd").attr('data-target','#add_kategori');
+        $("#btnAdd").attr('onclick','addKategori()');
+        $("#btnAdd").removeAttr('data-toggle');
       }else if ($(e.target).attr("id") == "request_list") {
         $("#btnAdd").hide();
         $("#btnExport").hide();
@@ -970,7 +989,7 @@ REJECT
 
     $('#users').select2();
 
-    @if(Auth::User()->id_division == 'HR')
+    @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
       $('#data_table').DataTable({
         "order": [[ 0, "asc" ]],
         pageLength: 20,
@@ -1023,6 +1042,25 @@ REJECT
       $('#keterangan_edit').val(description);
       $('#asset_sn_edit').val(serial_number);
     } 
+
+    function addKategori(){
+      $("#add_kategori").modal('show')
+
+      $('#kode_kategori').val('')
+      $('#kategori').val('')
+      $('#id_kategori').val('')
+      $('#status_kategori').val('')
+    }
+
+    function editKategori(kode,kategori,id,status){
+      $("#add_kategori").modal('show')
+
+      $('#kode_kategori').val(kode)
+      $('#kategori').val(kategori)
+      $('#id_kategori').val(id)
+      $('#status_kategori').val(status)
+
+    }
 
     $(document).on('change',"#category_asset",function(e) { 
         if ($("#category_asset").val() == "-1") {
