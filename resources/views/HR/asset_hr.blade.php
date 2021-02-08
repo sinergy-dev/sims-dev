@@ -38,6 +38,10 @@
       width: 100%!important;
     }
 
+    #tbRequestModal tr td{
+      text-align: center;
+    }
+
 </style>
 <section class="content">
 
@@ -85,6 +89,7 @@
           <li class="nav-item">
             <a class="nav-link" id="my_asset" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Current borrowed</a>
           </li>
+          <button class="btn btn-sm btn-success pull-right" style="width: 100px" data-toggle="modal" id="btnRequest"><i class="fa fa-plus"> </i>&nbsp Request Asset</button>
           <!-- <button class="btn btn-sm btn-success pull-right" data-toggle="modal" style="width: 100px" id="btnPinjam"><i class="fa fa-plus"> </i>&nbsp Pinjam Asset</button> -->
           @endif
         </ul>
@@ -473,6 +478,59 @@
     </div>
 </div>
 
+<div class="modal fade" id="requestAsset" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Request Asset</h4>           
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="" id="modal_peminjaman" name="modalProgress">
+              @csrf
+              <table class="table nowrap" id="tbRequestModal">
+                <thead>
+                  <tr>
+                    <td width="20%">Nama barang</td>
+                    <td width="20%">Kategori</td>
+                    <td width="20%">Merk</td>
+                    <td width="10%">Qty</td>
+                    <td width="30%">link</td>
+                    <td><button class="btn btn-xs btn-success" type="button" id="btnAddRowReq" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" ><i class="fa fa-plus"></i></button></td>
+                  </tr>
+                </thead>
+                <tbody id="tbody_request">
+                  <tr>
+                    <td>
+                      <input name="nama_barang_request" id="nama_barang_request" class="form-control" required></input>
+                    </td>
+                    <td>
+                      <select class="form-control" id="category_asset_request" name="category_asset_request" data-rowid="1" required></select>
+                    </td>
+                    <td>
+                      <input name="merk_barang_request" id="merk_barang_request" class="form-control"></input>
+                    </td>
+                    <td>
+                      <input name="qty_barang_request" id="qty_barang_request" class="form-control" required></input>
+                    </td>
+                    <td>
+                      <textarea class="form-control" id="link_barang_request" name="link_barang_request" required></textarea>
+                    </td>
+                    <td>
+                      <button class="btn btn-xs btn-danger remove" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+                  <button type="submit" id="btnSubmitReq" class="btn btn-sm btn-info disabled"><i class="fa fa-check"></i>&nbsp Submit</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
 <div class="modal fade" id="penghapusan" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -690,13 +748,76 @@ REJECT
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript">
-
     $("#company_asset").select2()
     $("#select-status").select2()
 
     $(document).ready(function(){
-      $("#btnAdd").attr('data-target','#add_asset');
+      $("#btnAdd").attr('data-target','#add_asset')  
+
+      initCategory() 
     })    
+
+    function initCategory(){
+      var datas_kat = [];
+      $.ajax({
+        type:"GET",
+        url: "getAssetCategoriHR",
+        success:function(result){
+          var arr = result.results;        
+            var data = {
+              id: -1,
+              text: 'Select Category...'
+            };
+
+            datas_kat.push(data)
+            $.each(arr,function(key,value){
+              datas_kat.push(value)
+            })
+
+          $("#category_asset").select2({
+            placeholder: "Select a category",
+            // theme: 'bootstrap4',
+            data: datas_kat
+          });
+
+          $("#category_asset_request[data-rowid]").select2({
+            placeholder: "Select a category",
+            // theme: 'bootstrap4',
+            data: datas_kat
+          });
+        }
+      })
+    }  
+
+    var i = 1;
+    $("#btnAddRowReq").click(function(){     
+      ++i;  
+      console.log(i)
+      console.log('success')
+      var append = ""
+      initCategory()
+      append =  append + '<tr id="row'+i+'">'
+      append =  append + '<td><input name="nama_barang_request[]" data-rowid="'+i+'" id="nama_barang_request" class="form-control"></input></td>'
+      append =  append + '<td><select class="form-control" id="category_asset_request" data-rowid="'+i+'" name="category_asset_request[]" required></select></td>'
+      append =  append + '<td><input name="merk_barang_request[]" id="merk_barang_request" data-rowid="'+i+'" class="form-control"></input></td>'
+      append =  append + '<td><input name="qty_barang_request[]" id="qty_barang_request" data-rowid="'+i+'" class="form-control" required></input></td>'
+      append =  append + '<td><textarea id="link_barang_request" name="link_barang_request[]" data-rowid="'+i+'" class="form-control" required></textarea></td>'
+      append =  append + '<td><button class="btn btn-xs btn-danger remove" data-rowid="'+i+'" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>'
+      append =  append + '</td>'
+      append =  append + '</tr>'
+
+      $('#tbRequestModal > tbody:last-child').append(append);
+      
+    })
+
+    $(document).on('click', '.remove', function() {
+      var trIndex = $(this).closest("tr").index();
+        if(trIndex>0) {
+          $(this).closest("tr").remove();
+        } else {
+          alert("Sorry!! Can't remove first row!");
+      }
+    });
 
     $('#myTab .nav-link').click(function(e) {
       console.log($(e.target).attr("id"))
@@ -735,30 +856,7 @@ REJECT
         })
       }
     })
-
-    var datas_kat = [];
-    $.ajax({
-      type:"GET",
-      url: "getAssetCategoriHR",
-      success:function(result){
-        var arr = result.results;        
-          var data = {
-            id: -1,
-            text: 'Select Category...'
-          };
-
-          datas_kat.push(data)
-          $.each(arr,function(key,value){
-            datas_kat.push(value)
-          })
-
-        $("#category_asset").select2({
-          placeholder: "Select a state",
-          // theme: 'bootstrap4',
-          data: datas_kat
-        });
-      }
-    })
+     
 
     $("#category_asset").on('change',function(){
       $("#category_id").val($('#category_asset').select2('data')[0].no)
@@ -899,17 +997,24 @@ REJECT
     })
 
     //tambahhhhh
-    // $("#btnPinjam").on('click',function(){
-    //   $('#peminjaman').modal('show')
-    // })
+    $("#btnRequest").on('click',function(){
+      $('#requestAsset').modal('show')
+    })    
 
     // $("#requestAccept").on('click',function(){
     function requestAccept(id_barang,id_transaction,status){
       console.log(id_barang)
       console.log(id_transaction)
       console.log(status)
+      if (status == 'ACCEPT') {
+        var titleStatus = 'Accept Peminjaman Asset'
+        
+      }else{
+        var titleStatus = 'Reject Peminjaman Asset'
+      }      
+      
       Swal.fire({
-        title: 'Request Asset',
+        title: titleStatus,
         text: "are you sure?",
         icon: 'warning',
         showCancelButton: true,
