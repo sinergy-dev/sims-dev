@@ -87,7 +87,7 @@
           <a href="{{url('exportExcelAsset')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
           @else
           <li class="nav-item">
-            <a class="nav-link" id="my_asset" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Current borrowed</a>
+            <a class="nav-link" id="my_asset" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Current Borrowed/Request</a>
           </li>
           <button class="btn btn-sm btn-success pull-right" style="width: 100px" data-toggle="modal" id="btnRequest"><i class="fa fa-plus"> </i>&nbsp Request Asset</button>
           <!-- <button class="btn btn-sm btn-success pull-right" data-toggle="modal" style="width: 100px" id="btnPinjam"><i class="fa fa-plus"> </i>&nbsp Pinjam Asset</button> -->
@@ -181,7 +181,7 @@
           @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
           <div class="tab-pane fade" id="kategori_asset" role="tabpanel" aria-labelledby="current">
             <div class="table-responsive" style="margin-top: 15px">
-              <table class="table table-bordered nowrap DataTable" id="datatable" width="100%" cellspacing="0">
+              <table class="table table-bordered nowrap DataTable" id="kategori_table" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>No</th>
@@ -216,9 +216,10 @@
                 <thead>
                   <tr>
                     <th>No Transaksi</th>
-                    <th>Peminjam</th>
+                    <th>Request By</th>
                     <th>Nama Asset</th>
                     <th>Description</th>
+                    <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -231,8 +232,34 @@
                       <td>{{$data->nama_barang}}</td>
                       <td>{{$data->description}}</td>
                       <td>
-                      <button class="btn btn-primary btn-sm" id="requestAccept" onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
-                      <button class="btn btn-danger btn-sm" id="requestAccept" onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
+                        <label class="label label-info">Request</label>
+                      </td>
+                      <td>
+                      <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
+                      <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->id_barang}}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
+                    </tr>
+                  @endforeach
+                  @foreach($current_request as $datas)
+                    <tr>
+                      <td>{{$datas->id_request}}</td>
+                      <td>{{$datas->name}}</td>
+                      <td>{{$datas->nama}}</td>
+                      <td><a href="{{$datas->link}}" target="_blank">{!!substr($datas->link, 0, 35) !!}...</a></td> 
+                      <td>
+                        @if($datas->status == 'REQUEST')
+                        <label class="label label-info">Request</label>
+                        @else
+                        <label class="label label-warning">Pending</label>
+                        @endif
+                      </td>                     
+                      <td>
+                        @if($datas->status == 'REQUEST')
+                          <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Accept</button>
+                          <button class="btn btn-danger btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->id_request}}','REJECT')">Reject</button>
+                        @else
+                          <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetDone('{{$datas->nik}}','{{$datas->id_request}}')">Done</button>
+                        @endif  
+                      </td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -252,6 +279,7 @@
                     <th>Name</th>
                     <th>Descrption</th>
                     <th>Note</th>
+                    <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -263,9 +291,23 @@
                       <td>{{$data->code_name}}</td>
                       <td>{{$data->nama_barang}}</td>
                       <td>{{$data->description}}</td>
-                      <td>{{$data->note}}</td>                      
+                      <td>{{$data->note}}</td> 
+                      <td><label class="label label-success">Borrowed</label></td>                     
                       <td>
                         <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset_transac" value="{{$data->id_transaction}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
+                      </td>
+                    </tr>
+                  @endforeach
+                  @foreach($current_request as $datas)
+                    <tr>
+                      <td>{{$datas->id_request}}</td>
+                      <td>{{$datas->code_kat}}</td>
+                      <td>{{$datas->nama}}</td>
+                      <td>{{$datas->merk}}</td>
+                      <td style="color: blue">{!!substr($datas->link, 0, 35) !!}...</td> 
+                      <td><label class="label label-warning">Request</label></td>                     
+                      <td>
+                        <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btnEditRequestAsset" value="{{$datas->id_request}}"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
                       </td>
                     </tr>
                   @endforeach
@@ -315,9 +357,10 @@
 
               <div class="form-group">
                 <label for="sow">Kategori</label>
-                <select class="form-control" id="category_asset" name="category_asset" required>
+                <select class="form-control category_asset" id="category_asset" name="category_asset" required>
                 </select>
-                <input type="text" hidden name="category_id" id="category_id">
+                <input type="text" name="category_id" id="category_id" hidden>
+                <input type="text" name="category_id_req" id="category_id_req" hidden>
               </div>
 
               <div class="form-group">
@@ -363,6 +406,13 @@
               <div class="form-group">
                 <label for="sow">Lokasi</label>
                 <textarea name="lokasi" id="lokasi" class="form-control" required=""></textarea>
+              </div>
+
+              <div class="form-group" style="display: none;" id="peminjams">
+                <label for="sow">Request By</label>
+                <input type="text" name="requestBy" id="requestBy" class="form-control" readonly="">
+                <input type="text" name="requestNik" id="requestNik" class="form-control hidden">
+                <input type="text" name="id_requestNewAsset" id="id_requestNewAsset" class="form-control hidden">
               </div>
             </div>
           </div>
@@ -485,7 +535,7 @@
           <h4 class="modal-title">Request Asset</h4>           
         </div>
         <div class="modal-body">
-          <form method="POST" action="" id="modal_peminjaman" name="modalProgress">
+          <form method="POST" action="{{url('/storeRequestAsset')}}">
               @csrf
               <table class="table nowrap" id="tbRequestModal">
                 <thead>
@@ -501,19 +551,19 @@
                 <tbody id="tbody_request">
                   <tr>
                     <td>
-                      <input name="nama_barang_request" id="nama_barang_request" class="form-control" required></input>
+                      <input name="nama_barang_request[]" id="nama_barang_request" class="form-control" required></input>
                     </td>
                     <td>
-                      <select class="form-control" id="category_asset_request" name="category_asset_request" data-rowid="1" required></select>
+                      <select class="form-control" id="category_asset_request" name="category_asset_request" data-rowid="1" required> <input id="cat_req_id" name="cat_req_id[]" data-rowid="1" hidden></select>
                     </td>
                     <td>
-                      <input name="merk_barang_request" id="merk_barang_request" class="form-control"></input>
+                      <input name="merk_barang_request[]" id="merk_barang_request" class="form-control"></input>
                     </td>
                     <td>
-                      <input name="qty_barang_request" id="qty_barang_request" class="form-control" required></input>
+                      <input name="qty_barang_request[]" id="qty_barang_request" class="form-control" required></input>
                     </td>
                     <td>
-                      <textarea class="form-control" id="link_barang_request" name="link_barang_request" required></textarea>
+                      <textarea class="form-control" id="link_barang_request" name="link_barang_request[]" required></textarea>
                     </td>
                     <td>
                       <button class="btn btn-xs btn-danger remove" type="button" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;float: right;" ><i class="fa fa-trash-o"></i></button>
@@ -523,7 +573,7 @@
               </table>
               <div class="modal-footer">
                   <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-                  <button type="submit" id="btnSubmitReq" class="btn btn-sm btn-info disabled"><i class="fa fa-check"></i>&nbsp Submit</button>
+                  <button type="submit" class="btn btn-sm btn-info"><i class="fa fa-check"></i>&nbsp Submit</button>
               </div>
           </form>
         </div>
@@ -752,10 +802,14 @@ REJECT
     $("#select-status").select2()
 
     $(document).ready(function(){
-      $("#btnAdd").attr('data-target','#add_asset')  
+      $("#btnAdd").attr('data-target','#add_asset') 
 
       initCategory() 
-    })    
+    })  
+
+    $("#category_asset").on('change',function(){
+      $("#category_id").val($('#category_asset').select2('data')[0].no)
+    })
 
     function initCategory(){
       var datas_kat = [];
@@ -787,6 +841,12 @@ REJECT
           });
         }
       })
+
+      $(document).on('change',"select[id^='category_asset_request']",function(e) { 
+        var rowid = $(this).attr("data-rowid");
+        console.log('gabti')
+        $("#cat_req_id[data-rowid='"+rowid+"']").val($("#category_asset_request[data-rowid='"+rowid+"']").select2('data')[0].no)
+      })      
     }  
 
     var i = 1;
@@ -798,7 +858,8 @@ REJECT
       initCategory()
       append =  append + '<tr id="row'+i+'">'
       append =  append + '<td><input name="nama_barang_request[]" data-rowid="'+i+'" id="nama_barang_request" class="form-control"></input></td>'
-      append =  append + '<td><select class="form-control" id="category_asset_request" data-rowid="'+i+'" name="category_asset_request[]" required></select></td>'
+      append =  append + '<td><select class="form-control category_asset_request" id="category_asset_request" data-rowid="'+i+'" name="category_asset_request" required></select>'
+      append =  append + '<input id="cat_req_id" name="cat_req_id[]" data-rowid="'+i+'" hidden></td>'
       append =  append + '<td><input name="merk_barang_request[]" id="merk_barang_request" data-rowid="'+i+'" class="form-control"></input></td>'
       append =  append + '<td><input name="qty_barang_request[]" id="qty_barang_request" data-rowid="'+i+'" class="form-control" required></input></td>'
       append =  append + '<td><textarea id="link_barang_request" name="link_barang_request[]" data-rowid="'+i+'" class="form-control" required></textarea></td>'
@@ -806,7 +867,7 @@ REJECT
       append =  append + '</td>'
       append =  append + '</tr>'
 
-      $('#tbRequestModal > tbody:last-child').append(append);
+      $('#tbRequestModal > tbody:last-child').append(append);     
       
     })
 
@@ -855,12 +916,7 @@ REJECT
           hari_libur_nasional_tooltip.push(value.summary)
         })
       }
-    })
-     
-
-    $("#category_asset").on('change',function(){
-      $("#category_id").val($('#category_asset').select2('data')[0].no)
-    })
+    })     
 
     $('#asset_date').datepicker({
       weekStart: 1,
@@ -1003,9 +1059,6 @@ REJECT
 
     // $("#requestAccept").on('click',function(){
     function requestAccept(id_barang,id_transaction,status){
-      console.log(id_barang)
-      console.log(id_transaction)
-      console.log(status)
       if (status == 'ACCEPT') {
         var titleStatus = 'Accept Peminjaman Asset'
         
@@ -1064,6 +1117,103 @@ REJECT
 
     }
 
+    //request asset baru
+    function requestAssetAccept(id_request,status){
+      if (status == 'ACCEPT') {
+        var titleStatus = 'Accept Request Asset Baru'
+        
+      }else{
+        var titleStatus = 'Reject Request Asset Baru'
+      }      
+      
+      Swal.fire({
+        title: titleStatus,
+        text: "are you sure?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's updating..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+              popup: 'border-radius-0',
+            },
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"GET",
+            url:"{{url('acceptNewAsset')}}",
+            data:{
+              id_request:id_request,
+              status:status
+            },
+            success: function(result){
+              Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                }
+              })
+            },
+          });
+        }        
+      })
+    }
+
+    //create asset baru
+    function requestAssetDone(nik,id_request){
+      $("#add_asset").modal('show')
+      $("#modal_add_asset").attr("action", "{{url('/createNewAsset')}}");
+      $.ajax({
+        type:"GET",
+        url:"{{url('/getRequestAssetBy')}}",
+        data:{
+          id_request:id_request
+        },
+        success: function(result){
+          $('#requestBy').val(result[0].name)
+          $('#nama_barang').val(result[0].nama)
+          $('#merk_barang').val(result[0].merk)
+          $('#category_id_req').val(result[0].id)
+          // $('#category_id').val(result[0].id)
+          $('#requestNik').val(nik)
+          $('#id_requestNewAsset').val(id_request)
+          var CatSelect = $('#category_asset');
+
+          var option = new Option(result[0].kategori, result[0].code_kat, true, true)
+          CatSelect.append(option).trigger('change')
+
+          if (result[0].id_company == '1') {
+            comVal = 'SIP'
+            comValName = 'PT. SIP'
+          }else{
+            comVal = 'MSP'
+            comValName = 'PT. MSP'
+          }
+
+          var ComSelect = $("#company_asset")
+
+          var option = new Option(comValName, comVal, true, true);
+          ComSelect.append(option).trigger('change')
+        },
+      })
+
+      $("#peminjams").show()
+    }
+
     $(document).on('click',".btn-pengembalian",function(e) { 
         console.log(this.value);
         $.ajax({
@@ -1112,11 +1262,17 @@ REJECT
     @endif
 
     $('#datatable').DataTable({
-      pageLength: 20,
+      pageLength: 20,    
+      "order": [[ 5, "asc" ]],  
     });
+
+    $('#kategori_table').DataTable({
+      pageLength: 20,
+    })
 
     $('#request_table').DataTable({
       pageLength: 20,
+      "order": [[ 5, "asc" ]],
     });
     
 
