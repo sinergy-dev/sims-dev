@@ -10,6 +10,8 @@ use App\AssetHR;
 use App\AssetHrRequest;
 use App\DetailAssetHR;
 use App\User;
+use App\Mail\RequestAssetHr;
+use Mail;
 use Excel;
 
 class AssetHRController extends Controller
@@ -383,7 +385,15 @@ class AssetHRController extends Controller
             );
             $insertData[] = $data;
         }
-        AssetHrRequest::insert($insertData);       
+        AssetHrRequest::insert($insertData);  
+
+        $req_asset = collect(['insertdata'=>$insertData,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
+
+        $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+
+        $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+
+        Mail::to($to)->send(new RequestAssetHr('new',$users,$req_asset,'[SIMS-APP] Request New Asset'));     
 
         return redirect()->back()->with('success', 'Create New Request Asset Successfully!');
     }
@@ -606,7 +616,7 @@ class AssetHRController extends Controller
         $id_barang = $request['id_barang'];
 
         $update = AssetHR::where('id_barang',$id_barang)->first();
-        if (Auth::User()->id_division == 'HR') {
+        if (Auth::User()->id_division == 'HR' || Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_company == '1') {
             $update->status = 'UNAVAILABLE';
         }else{
             $update->status = 'PENDING';
@@ -624,7 +634,7 @@ class AssetHRController extends Controller
 
         $store                  = new DetailAssetHR();
         $store->id_barang       = $id_barang; 
-        if (Auth::User()->id_division == 'HR') {
+        if (Auth::User()->id_division == 'HR' || Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_company == '1') {
             $store->nik_peminjam    = $request['users'];
             $store->status          = 'ACCEPT';
 
@@ -649,6 +659,26 @@ class AssetHRController extends Controller
         //     $update_reject->status = "REJECT";
         //     $update_reject->update();
         // }
+        $req_asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
+                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik')
+                    ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
+                    ->where('tb_asset_hr_transaction.id_transaction',$store->id_transaction)
+                    ->first();
+
+        if (Auth::User()->id_division == 'HR' || Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_company == '1') {
+            $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+
+            $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+
+            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
+        }else{
+            $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+
+            $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+
+            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
+        }
+        
 
         return redirect()->back()->with('alert', $line);
     }
@@ -666,8 +696,10 @@ class AssetHRController extends Controller
                 ->first();
         if ($request->status == 'ACCEPT') {
             $update_accept->status = "ACCEPT";
+            $emailSubject = '[SIMS-APP] Accepting Peminjaman Asset';
         }else{
             $update_accept->status = "REJECT";
+            $emailSubject = '[SIMS-APP] Rejecting Peminjaman Asset';
         }
         $update_accept->save();
 
@@ -681,6 +713,18 @@ class AssetHRController extends Controller
         //     $update_reject->save();
         // }
 
+        $req_asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
+                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik')
+                    ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
+                    ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
+                    ->first();
+
+        $to = User::select('email')->where('nik',$update_accept->nik_peminjam)->get();
+
+        $users = User::select('name')->where('nik',$update_accept->nik_peminjam)->first();
+
+        Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,$emailSubject));
+
         return redirect()->back()->with('alert','Asset Request Accepted!');
         
     }
@@ -688,13 +732,26 @@ class AssetHRController extends Controller
     public function acceptNewAsset(Request $request){
         $update = AssetHrRequest::where('id_request',$request->id_request)->first();
         if ($request->status == 'ACCEPT') {
-            $update->status = 'PENDING';
+            $update->status     = 'PENDING';
+            $update->updated_at = date('Y-m-d h:i:s');
             $alerts = 'New Asset Request Accepted!';
         }else{
             $update->status = 'REJECT';
+            $update->updated_at = date('Y-m-d h:i:s');
             $alerts = 'New Asset Request Rejected!';
         }
         $update->update(); 
+
+        $req_asset = AssetHrRequest::join('users','users.nik','=','tb_asset_hr_request.nik')
+                    ->select('nama','qty','link','merk','users.name','tb_asset_hr_request.updated_at','tb_asset_hr_request.status')
+                    ->where('id_request',$request->id_request)
+                    ->first();
+
+        $to = User::select('email')->where('nik',$update->nik)->get();
+
+        $users = User::select('name')->where('nik',$update->nik)->first();
+
+        Mail::to($to)->send(new RequestAssetHr('proses',$users,$req_asset,'[SIMS-APP] Request Asset ( ' . $req_asset->nama . ' ) sedang diproses'));  
 
         // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
         //     ->where('nik_peminjam','<>',$request->nik_peminjam)
@@ -747,9 +804,21 @@ class AssetHRController extends Controller
         $store->no_transac      = $no_peminjaman;        
         $store->save();
 
-        $update = AssetHrRequest::where('id_request',$request->id_requestNewAsset)->first();
-        $update->status = 'ACCEPT';
+        $update             = AssetHrRequest::where('id_request',$request->id_requestNewAsset)->first();
+        $update->status     = 'ACCEPT';
+        $update->updated_at = date('Y-m-d h:i:s');
         $update->update(); 
+
+        $req_asset = AssetHrRequest::join('users','users.nik','=','tb_asset_hr_request.nik')
+                    ->select('nama','qty','link','merk','users.name','tb_asset_hr_request.updated_at','tb_asset_hr_request.status')
+                    ->where('id_request',$request->id_requestNewAsset)
+                    ->first();
+
+        $to = User::select('email')->where('nik',$update->nik)->get();
+
+        $users = User::select('name')->where('nik',$update->nik)->first();
+
+        Mail::to($to)->send(new RequestAssetHr('proses',$users,$req_asset,'[SIMS-APP] Request Asset ( ' . $request['nama_barang'] . ' ) Sudah Datang'));  
 
         return redirect()->back()->with('alert', 'Create New Asset Successfully!');
 
@@ -801,21 +870,34 @@ class AssetHRController extends Controller
 
         $id_transaction   = $request['id_transaction_kembali'];
 
-        $update_asset       = AssetHR::where('id_barang',$id_barang)->first();
+        $update_asset             = AssetHR::where('id_barang',$id_barang)->first();
         $update_asset->status     = 'AVAILABLE';
+        $update_asset->lokasi     = $request->lokasi_kembali;
         $update_asset->update();
 
-        $update         = DetailAssetHR::where('id_transaction',$id_transaction)->first();
-        $update->tgl_pengembalian = $request['tanggal_kembali'];
+        $update                     = DetailAssetHR::where('id_transaction',$id_transaction)->first();
+        $update->tgl_pengembalian   = $request['tanggal_kembali'];
         $update->update();
 
-        $asset = DB::table('tb_asset_hr')
-                ->join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang','inner')
-                ->join('users', 'users.nik', '=', 'tb_asset_hr_transaction.nik_peminjam')
-                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','tb_asset_hr_transaction.id_transaction','name')
-                ->where('tb_asset_hr_transaction.id_barang',$request->id_barang)
-                ->orderBy('tb_asset_hr_transaction.id_transaction','desc')
-                ->first();
+        // $asset = DB::table('tb_asset_hr')
+        //         ->join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang','inner')
+        //         ->join('users', 'users.nik', '=', 'tb_asset_hr_transaction.nik_peminjam')
+        //         ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','tb_asset_hr_transaction.id_transaction','name','tb_asset_hr.status','lokasi')
+        //         ->where('tb_asset_hr_transaction.id_barang',$request->id_barang)
+        //         ->orderBy('tb_asset_hr_transaction.id_transaction','desc')
+        //         ->first();
+
+        $req_asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
+                    ->join('users','users.nik','=','tb_asset_hr.nik')
+                    ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr.status','lokasi','tgl_peminjaman','tgl_pengembalian')
+                    ->where('tb_asset_hr_transaction.id_transaction',$id_transaction)
+                    ->first();
+
+        $to = User::select('email')->where('nik',$update->nik_peminjam)->get();
+
+        $users = User::select('name')->where('nik',$update->nik_peminjam)->first();
+
+        Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,'[SIMS-APP] Pengembalian Asset'));
 
         return redirect()->back()->with('success','Barang sudah dikembalikan!');
     }

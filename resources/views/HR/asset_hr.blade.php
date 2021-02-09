@@ -257,7 +257,7 @@
                           <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->id_request}}','ACCEPT')">Accept</button>
                           <button class="btn btn-danger btn-xs" style="width: 50px" onclick="requestAssetAccept('{{$datas->id_request}}','REJECT')">Reject</button>
                         @else
-                          <button class="btn btn-primary btn-xs" style="width: 50px" onclick="requestAssetDone('{{$datas->nik}}','{{$datas->id_request}}')">Done</button>
+                          <button class="btn btn-success btn-xs" style="width: 100px" onclick="requestAssetDone('{{$datas->nik}}','{{$datas->id_request}}')">Pesanan Diterima</button>
                         @endif  
                       </td>
                     </tr>
@@ -485,7 +485,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Peminjaman</h4>
+          <h3 class="modal-title">Peminjaman Asset</h3>
         </div>
         <div class="modal-body">
           <form method="POST" action="{{url('peminjaman_hr')}}" id="modal_peminjaman" name="modalProgress">
@@ -535,7 +535,7 @@
           <h4 class="modal-title">Request Asset</h4>           
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('/storeRequestAsset')}}">
+          <form method="GET" action="{{url('/storeRequestAsset')}}">
               @csrf
               <table class="table nowrap" id="tbRequestModal">
                 <thead>
@@ -707,12 +707,13 @@ REJECT
           <input type="text" name="id_barang_kembali" id="id_barang_kembali" hidden>
           <input type="text" name="id_transaction_kembali" id="id_transaction_kembali" hidden>
           <div class="form-group">
-            <h3 style="text-align: center;"><b>RETURN NOW!</b></h3>
+            <h3 style="text-align: center;">Pengembalian Asset</h3>
             <table class="table table-bordered">
               <tr>
                 <th>Nama Barang</th>
                 <th>Nama Peminjam</th>
                 <th>Tanggal Kembali</th>
+                <th>Lokasi</th>
               </tr>
               <tr>
                 <td>
@@ -723,6 +724,10 @@ REJECT
                 </td>
                 <td>
                   <input type="date" name="tanggal_kembali" id="tanggal_kembali" readonly class="form-control">
+                </td>
+                <td>
+                  <textarea class="form-control"  type="text" name="lokasi_kembali" id="lokasi_kembali" required></textarea>
+                  <!-- <input type="text" name="lokasi_kembali" id="lokasi_kembali" required class="form-control"> -->
                 </td>
               </tr>
             </table>
