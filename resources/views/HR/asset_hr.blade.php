@@ -292,7 +292,7 @@
                       <td>{{$data->nama_barang}}</td>
                       <td>{{$data->description}}</td>
                       <td>{{$data->note}}</td> 
-                      <td><label class="label label-success">Borrowed</label></td>                     
+                      <td><label class="label label-success">BORROWED</label></td>                     
                       <td>
                         <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset_transac" value="{{$data->id_transaction}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
                       </td>
@@ -305,9 +305,15 @@
                       <td>{{$datas->nama}}</td>
                       <td>{{$datas->merk}}</td>
                       <td style="color: blue">{!!substr($datas->link, 0, 35) !!}...</td> 
-                      <td><label class="label label-warning">Request</label></td>                     
                       <td>
-                        <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btnEditRequestAsset" value="{{$datas->id_request}}"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
+                        @if($datas->status == 'REQUEST')
+                        <label class="label label-info">{{$datas->status}}</label>
+                        @else
+                        <label class="label label-warning">{{$datas->status}}</label>                        
+                        @endif
+                      </td>                     
+                      <td>
+                        <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btnEditRequestAsset" value="{{$datas->id_request}}" data-rowid="{{$datas->id_request}}"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
                       </td>
                     </tr>
                   @endforeach
@@ -528,6 +534,7 @@
     </div>
 </div>
 
+<!--tambah request asset-->
 <div class="modal fade" id="requestAsset" role="dialog">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -573,9 +580,34 @@
               </table>
               <div class="modal-footer">
                   <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-                  <button type="submit" class="btn btn-sm btn-info"><i class="fa fa-check"></i>&nbsp Submit</button>
+                  <button type="submit" class="btn btn-sm btn-info"><i class="fa fa-check" id="submitReq"></i>&nbsp Submit</button>
               </div>
           </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!--edit req asset-->
+<div class="modal fade" id="requestAssetEdit" role="dialog">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Detail Request Asset</h4>           
+        </div>
+        <div class="modal-body">
+          @csrf
+          <div class="form-group">
+            <table class="table nowrap" id="tbody_requestEdit">
+            </table>
+            <b><p>Note</p></b>
+            <textarea class="form-control" id="notes" name="notes"></textarea>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-sm btn-info" id="btnAddNoteReq"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-sm btn-danger" id="btnBatalReq"><i class="fa fa-trash"></i>&nbsp Batalkan</button>
+          </div>
         </div>
       </div>
     </div>
@@ -845,14 +877,14 @@ REJECT
             data: datas_kat
           });
         }
-      })
-
-      $(document).on('change',"select[id^='category_asset_request']",function(e) { 
-        var rowid = $(this).attr("data-rowid");
-        console.log('gabti')
-        $("#cat_req_id[data-rowid='"+rowid+"']").val($("#category_asset_request[data-rowid='"+rowid+"']").select2('data')[0].no)
-      })      
+      })  
     }  
+
+    $(document).on('change',"select[id^='category_asset_request']",function(e) { 
+      var rowid = $(this).attr("data-rowid");
+      console.log('gabti')
+      $("#cat_req_id[data-rowid='"+rowid+"']").val($("#category_asset_request[data-rowid='"+rowid+"']").select2('data')[0].no)
+    })    
 
     var i = 1;
     $("#btnAddRowReq").click(function(){     
@@ -1060,7 +1092,138 @@ REJECT
     //tambahhhhh
     $("#btnRequest").on('click',function(){
       $('#requestAsset').modal('show')
-    })    
+    })  
+
+    $("#submitReq").on('click',function(){
+      $('#requestAsset').modal('hide')
+    })
+
+    //editDeleteRequestAsset  
+    $("#btnEditRequestAsset[data-rowid]").click(function(){     
+
+      console.log(this.value)
+      $('#requestAssetEdit').modal('show')     
+      var append = ""
+      $("#tbody_requestEdit").html('')
+      $.ajax({
+        type:"GET",
+        url:"/getRequestAssetBy",
+        data:{
+          id_request:this.value,
+        },
+        success:function(result){
+          console.log(result[0])    
+          append = append + '<tr><th width="25%">Nama Barang</th><th width="5%">Qty</th><th width="15%">Merk</th>/<th width="15%">Kategori</th><th width="20%">Link</th></tr>'
+          append = append + '<tr><td>'+ result[0].nama +'</td><td>'+ result[0].qty +'</td><td>'+ result[0].merk +'</td><td>' + result[0].kategori +'</td><td><a href="'+ result[0].link +'">'+ result[0].link +'</a></td></tr>' 
+
+          $("#tbody_requestEdit").append(append)
+          if (result[0].status == 'PENDING') {
+            $("#btnBatalReq").hide()
+          }else{
+            $("#btnBatalReq").show()
+          }
+
+          $("#btnAddNoteReq").click(function(){
+            if ($("#notes").val().length == 0) {
+              alert('fill note for submit')
+            }else{
+              submitNoteReq(result[0].id_request)
+            }
+          })  
+
+          $("#btnBatalReq").click(function(){
+            batalkanReq(result[0].id_request)
+          })                 
+          
+        }
+      })
+    })
+
+    //batalRequest
+    function batalkanReq(id_request){
+      Swal.fire({
+        title: 'Batalkan Request Asset',
+        text: "kamu yakin?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's updating..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+              popup: 'border-radius-0',
+            },
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"GET",
+            url:"{{url('batalkanReq')}}",
+            data:{
+              id_request:id_request,
+            },
+            success: function(result){
+              Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                  $("#requestAssetEdit").modal('toggle')
+                }
+              })
+            },
+          });
+        }        
+      })
+    }
+
+    //AddNoteReq  
+
+    function submitNoteReq(id_request){
+      Swal.fire({
+          title: 'Please Wait..!',
+          text: "It's updating..",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          customClass: {
+            popup: 'border-radius-0',
+          },
+          onOpen: () => {
+            Swal.showLoading()
+          }
+      })
+      $.ajax({
+          type:"GET",
+          url:"{{url('AddNoteReq')}}",
+          data:{
+            id_request:id_request,
+            notes:$("#notes").val()
+          },
+          success: function(result){
+            Swal.showLoading()
+            Swal.fire(
+              'Successfully!',
+              'success'
+            ).then((result) => {
+              if (result.value) {
+                location.reload()
+              }
+            })
+          },
+      });
+    }    
 
     // $("#requestAccept").on('click',function(){
     function requestAccept(id_barang,id_transaction,status){
@@ -1122,11 +1285,14 @@ REJECT
 
     }
 
+    $("#btnSubmit").on('click',function(){
+      $("#add_asset").modal('hide')
+    })
+
     //request asset baru
     function requestAssetAccept(id_request,status){
       if (status == 'ACCEPT') {
-        var titleStatus = 'Accept Request Asset Baru'
-        
+        var titleStatus = 'Accept Request Asset Baru'        
       }else{
         var titleStatus = 'Reject Request Asset Baru'
       }      
