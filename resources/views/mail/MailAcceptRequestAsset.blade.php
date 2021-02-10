@@ -133,7 +133,91 @@
 					<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
 				</tr>
 			</table>
-		@endif	
+		@elseif($req_asset->status == 'REJECT')
+			<b>Rejecting Request New Asset</b>, berikut rinciannya:
+			<table style="text-align: left;margin: 5px;">
+				<tr>
+					<th>Status</th>
+					<th> : </th>
+					<td><label style="padding: 5px;background-color: #d73925;color: white">{{$req_asset->status}}</label></td>
+				</tr>
+				<tr>
+					<th>Reason</th>
+					<th> : </th>
+					<td>Mahal</td>
+				</tr>
+			</table>
+			<table style="text-align: left;margin: 5px;" class="tableBarang">
+				<tr style="border: solid 1px">
+					<th width="20%">Name / Merk</th>
+					<th width="5%">Qty</th>
+					<th width="25%">Note(link)</th>			
+				</tr>
+				<tr>
+					<td>{{$req_asset->nama}} {{$req_asset->merk}}</td>
+					<td>{{$req_asset->qty}}</td>
+					<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
+				</tr>
+			</table>
+		@endif
+	@elseif($status == 'addNote')
+		<p>
+			Hello {{$users->name}},
+		</p>
+		<b style="text-align: left;margin: 5px;">Tambahan </b>:
+		<div style="text-align: left;margin: 5px;padding-bottom: 5px">{{$req_asset['notes']}}</div>
+		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
+			<tr>
+				<th>Request By</th>
+				<th> : </th>
+				<td>{{$req_asset['asset']['name']}}</td>
+			</tr>
+			<tr>
+				<th>Status</th>
+				<th> : </th>
+				<td><label style="padding: 5px;background-color: #00c0ef;color: white">{{$req_asset['asset']['status']}}</label></td>
+			</tr>
+		</table>
+		<table style="text-align: left;margin: 5px;" class="tableBarang">
+			<tr style="border: solid 1px">
+				<th width="20%">Name / Merk</th>
+				<th width="5%">Qty</th>
+				<th width="25%">Note(link)</th>			
+			</tr>
+			<tr>
+				<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
+				<td>{{$req_asset['asset']['qty']}}</td>
+				<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
+			</tr>
+		</table>
+	@elseif($status == 'batalkan')
+		<p>
+			Hello {{$users->name}},
+		</p>
+		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
+			<tr>
+				<th>Request By</th>
+				<th> : </th>
+				<td>{{$req_asset->name}}</td>
+			</tr>
+			<tr>
+				<th>Status</th>
+				<th> : </th>
+				<td><label style="padding: 5px;background-color:#d73925;color: white">{{$req_asset->status}}</label></td>
+			</tr>
+		</table>
+		<table style="text-align: left;margin: 5px;" class="tableBarang">
+			<tr style="border: solid 1px">
+				<th width="20%">Name / Merk</th>
+				<th width="5%">Qty</th>
+				<th width="25%">Note(link)</th>			
+			</tr>
+			<tr>
+				<td>{{$req_asset->nama}} {{$req_asset->merk}}</td>
+				<td>{{$req_asset->qty}}</td>
+				<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
+			</tr>
+		</table>
 	@endif	
 	<br>
 	<p>
