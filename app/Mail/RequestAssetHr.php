@@ -55,7 +55,13 @@ class RequestAssetHr extends Mailable
                 return $this->subject($this->subject)
                 ->view('mail.MailAcceptRequestAsset');
             }
-        } 
+        }else if ($this->status == 'addNote') {
+            return $this->subject($this->subject)
+            ->view('mail.MailAcceptRequestAsset');
+        }else if ($this->status == 'batalkan') {
+            return $this->subject($this->subject)
+            ->view('mail.MailAcceptRequestAsset');
+        }
             
         
     	
