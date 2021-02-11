@@ -34,7 +34,7 @@
 			<tr>
 				<th>Reason</th>
 				<th> : </th>
-				<td><label style="padding: 5px;background-color: #008d4c;color: white">{{$req_asset['reason']}}</label></td>
+				<td>{{$req_asset['reason']}}</td>
 			</tr>
 		</table>
 		<table style="text-align: left;margin: 5px;">
