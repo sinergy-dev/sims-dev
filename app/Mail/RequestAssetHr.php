@@ -20,7 +20,7 @@ class RequestAssetHr extends Mailable
     public function __construct($status,$users,$req_asset,$subject)
     {
         //
-        $this->status        = $status;
+        $this->status       = $status;
     	$this->users		= $users;
     	$this->req_asset	= $req_asset;
     	$this->subject 		= $subject;
@@ -34,13 +34,13 @@ class RequestAssetHr extends Mailable
     public function build()
     {
         if ($this->status == 'peminjaman') {
-            if ($this->req_asset->status == "PENDING" || $this->req_asset->status == "AVAILABLE") {
+            if ($this->req_asset['asset']['status'] == "PENDING" || $this->req_asset['asset']['status'] == "AVAILABLE") {
                 return $this->subject($this->subject)
                 ->view('mail.MailRequestPeminjamanAsset');
-            }else if($this->req_asset->status == "ACCEPT"){
+            }else if($this->req_asset['asset']['status']  == "ACCEPT"){
                 return $this->subject($this->subject)
                 ->view('mail.MailAcceptRequestAsset');
-            }else if($this->req_asset->status == "REJECT"){
+            }else if($this->req_asset['asset']['status']  == "REJECT"){
                 return $this->subject($this->subject)
                 ->view('mail.MailAcceptRequestAsset');
             }
@@ -48,7 +48,7 @@ class RequestAssetHr extends Mailable
             return $this->subject($this->subject)
             ->view('mail.MailRequestNewAsset');  
         }else if ($this->status == 'proses') {
-            if($this->req_asset->status == "PENDING"){
+            if($this->req_asset['asset']['status'] == "PENDING"){
                 return $this->subject($this->subject)
                 ->view('mail.MailAcceptRequestAsset');
             }else{
