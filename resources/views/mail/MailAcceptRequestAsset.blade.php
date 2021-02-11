@@ -14,34 +14,49 @@
 		text-align:left;
 		padding: 5px
 	}
+
+	table tr th{
+		padding: 5px
+	}
+
+	table tr td{
+		padding: 5px
+	}
 </style>
 <div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;">
 	@if($status == 'peminjaman')
 		<p>
 			Hello {{$users->name}},
 		</p>		
-		@if($req_asset->status == 'REJECT')
+		@if($req_asset['asset']['status'] == 'REJECT')
 		<b><i>Rejecting Peminjaman Asset</i></b>, berikut rinciannya:
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Reason</th>
+				<th> : </th>
+				<td><label style="padding: 5px;background-color: #008d4c;color: white">{{$req_asset['reason']}}</label></td>
+			</tr>
+		</table>
 		<table style="text-align: left;margin: 5px;">
 			<tr>
 				<th>Name</th>
 				<th> : </th>
-				<td>{{$req_asset->nama_barang}}</td>
+				<td>{{$req_asset['asset']['nama_barang']}}</td>
 			</tr>
 			<tr>
 				<th>Description</th>
 				<th> : </th>
-				<td>{{$req_asset->description}}</td>
+				<td>{{$req_asset['asset']['description']}}</td>
 			</tr>
 			<tr>
 				<th>Tanggal Peminjaman</th>
 				<th> : </th>
-				<td>{{date('d-M-Y', strtotime($req_asset->created_at))}}</td>
+				<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
 			</tr>
 			<tr>
 				<th>Note</th>
 				<th> : </th>
-				<td> Peminjaman asset ditolak </td>
+				<td>{{$req_asset['asset']['keterangan']}}</td>
 			</tr>
 		</table>
 		@else
@@ -50,27 +65,27 @@
 			<tr>
 				<th>Name</th>
 				<th> : </th>
-				<td>{{$req_asset->nama_barang}}</td>
+				<td>{{$req_asset['asset']['nama_barang']}}</td>
 			</tr>
 			<tr>
 				<th>Description</th>
 				<th> : </th>
-				<td>{{$req_asset->description}}</td>
+				<td>{{$req_asset['asset']['description']}}</td>
 			</tr>
 			<tr>
 				<th>Request By</th>
 				<th> : </th>
-				<td>{{$req_asset->name}}</td>
+				<td>{{$req_asset['asset']['name']}}</td>
 			</tr>
 			<tr>
 				<th>Tanggal Peminjaman</th>
 				<th> : </th>
-				<td>{{date('d-M-Y', strtotime($req_asset->created_at))}}</td>
+				<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
 			</tr>
 			<tr>
 				<th>Note</th>
 				<th> : </th>
-				<td>{{$req_asset->keterangan}}</td>
+				<td>{{$req_asset['asset']['keterangan']}}</td>
 			</tr>
 		</table>
 		@endif
@@ -78,20 +93,18 @@
 		<p>
 			Hello {{$users->name}},
 		</p>
-		@if($req_asset->status == 'PENDING')
+		@if($req_asset['asset']['status'] == 'PENDING')
 			<b>Request Asset sedang Diproses</b>, berikut rinciannya:
 			<table style="text-align: left;margin: 5px;">
 				<tr>
 					<th>Tanggal Acc</th>
 					<th> : </th>
-					<!-- <td>2021-02-14</td> -->
-					<td>{{date('d-M-Y', strtotime($req_asset->updated_at))}}</td>
+					<td>{{date('d-M-Y', strtotime($req_asset['asset']['updated_at']))}}</td>
 				</tr>
 				<tr>
 					<th>Status</th>
 					<th> : </th>
-					<!-- <td>2021-02-14</td> -->
-					<td><label style="padding: 5px;background-color: #f39c12;color: white">{{$req_asset->status}}</label></td>
+					<td><label style="padding: 5px;background-color: #f39c12;color: white">{{$req_asset['asset']['status']}}</label></td>
 				</tr>
 			</table>
 			<table style="text-align: left;margin: 5px;" class="tableBarang">
@@ -101,24 +114,24 @@
 					<th width="55%">Note(link)</th>			
 				</tr>
 				<tr>
-					<td>{{$req_asset->nama}} {{$req_asset->merk}}</td>
-					<td>{{$req_asset->qty}}</td>
-					<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
+					<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
+					<td>{{$req_asset['asset']['qty']}}</td>
+					<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
 				</tr>
 			</table>
-		@elseif($req_asset->status == 'ACCEPT')
+		@elseif($req_asset['asset']['status'] == 'ACCEPT')
 			<b>Barang Sudah datang</b>, berikut rinciannya:
 			<table style="text-align: left;margin: 5px;">
 				<tr>
 					<th>Tanggal sampai</th>
 					<th> : </th>
 					<!-- <td>2021-02-14</td> -->
-					<td>{{date('d-M-Y', strtotime($req_asset->updated_at))}}</td>
+					<td>{{date('d-M-Y', strtotime($req_asset['asset']['updated_at']))}}</td>
 				</tr>
 				<tr>
 					<th>Status</th>
 					<th> : </th>
-					<td><label style="padding: 5px;background-color: #008d4c;color: white">{{$req_asset->status}}</label></td>
+					<td><label style="padding: 5px;background-color: #008d4c;color: white">{{$req_asset['asset']['status']}}</label></td>
 				</tr>
 			</table>
 			<table style="text-align: left;margin: 5px;" class="tableBarang">
@@ -128,23 +141,23 @@
 					<th width="25%">Note(link)</th>			
 				</tr>
 				<tr>
-					<td>{{$req_asset->nama}} {{$req_asset->merk}}</td>
-					<td>{{$req_asset->qty}}</td>
-					<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
+					<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
+					<td>{{$req_asset['asset']['qty']}}</td>
+					<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
 				</tr>
 			</table>
-		@elseif($req_asset->status == 'REJECT')
+		@elseif($req_asset['asset']['status'] == 'REJECT')
 			<b>Rejecting Request New Asset</b>, berikut rinciannya:
 			<table style="text-align: left;margin: 5px;">
 				<tr>
 					<th>Status</th>
 					<th> : </th>
-					<td><label style="padding: 5px;background-color: #d73925;color: white">{{$req_asset->status}}</label></td>
+					<td><label style="padding: 5px;background-color: #d73925;color: white">{{$req_asset['asset']['status']}}</label></td>
 				</tr>
 				<tr>
 					<th>Reason</th>
 					<th> : </th>
-					<td>Mahal</td>
+					<td>{{$req_asset['reason']}}</td>
 				</tr>
 			</table>
 			<table style="text-align: left;margin: 5px;" class="tableBarang">
@@ -154,9 +167,9 @@
 					<th width="25%">Note(link)</th>			
 				</tr>
 				<tr>
-					<td>{{$req_asset->nama}} {{$req_asset->merk}}</td>
-					<td>{{$req_asset->qty}}</td>
-					<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
+					<td>{{$req_asset['asset']['nama']}} {{$req_asset['asset']['merk']}}</td>
+					<td>{{$req_asset['asset']['qty']}}</td>
+					<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
 				</tr>
 			</table>
 		@endif
