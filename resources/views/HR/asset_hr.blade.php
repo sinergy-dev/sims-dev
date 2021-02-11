@@ -42,6 +42,13 @@
       text-align: center;
     }
 
+    .nav-tabs .badge{
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: red;
+    }
+
 </style>
 <section class="content">
 
@@ -212,7 +219,7 @@
           </div>
           <div class="tab-pane fade" id="request_asset">
             <div class="table-responsive" style="margin-top: 15px">
-              <table class="table table-bordered nowrap requestTable" id="request_table" width="100%" cellspacing="0">
+              <table class="table table-bordered requestTable" id="request_table" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>No Transaksi</th>
@@ -271,7 +278,7 @@
           @else
           <div class="tab-pane fade" id="current_asset" role="tabpanel" aria-labelledby="current">
             <div class="table-responsive" style="margin-top: 15px">
-              <table class="table table-bordered nowrap DataTable" id="datatable" width="100%" cellspacing="0">
+              <table class="table table-bordered collapsed DataTable" id="datatable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>No</th>
@@ -352,75 +359,70 @@
         </div>
         <div class="modal-body">
           <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">
-            @csrf          
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="sow">Asset Code</label>
-                <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden=></input>
-                <input name="asset_code" id="asset_code" class="form-control" value="{{$nomor}}" readonly></input>
-              </div>
+            @csrf       
+          <div class="col-md-6 form-group">
+            <label for="sow">Asset Code</label>
+            <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden=></input>
+            <input name="asset_code" id="asset_code" class="form-control" value="{{$nomor}}" readonly></input>
+          </div>
 
-              <div class="form-group">
-                <label for="sow">Kategori</label>
-                <select class="form-control category_asset" id="category_asset" name="category_asset" required>
-                </select>
-                <input type="text" name="category_id" id="category_id" hidden>
-                <input type="text" name="category_id_req" id="category_id_req" hidden>
-              </div>
+          <div class="col-md-6 form-group">
+            <label for="sow">Kategori</label>
+            <select class="form-control category_asset" id="category_asset" name="category_asset" required>
+            </select>
+            <input type="text" name="category_id" id="category_id" hidden>
+            <input type="text" name="category_id_req" id="category_id_req" hidden>
+          </div>
 
-              <div class="form-group">
-                <label for="sow">Company</label>
-                <select class="form-control" id="company_asset" name="company_asset" required>
-                  <option value="">Select Company</option>
-                  <option value="SIP">PT. SIP</option>
-                  <option value="MSP">PT. MSP</option>
-                </select>
-              </div>
+          <div class="col-md-6 form-group">
+            <label for="sow">Company</label>
+            <select class="form-control" id="company_asset" name="company_asset" required>
+              <option value="">Select Company</option>
+              <option value="SIP">PT. SIP</option>
+              <option value="MSP">PT. MSP</option>
+            </select>
+          </div>
 
-              <div class="form-group">
-                <label>Merk</label>
-                <input type="" class="form-control" name="merk_barang" id="merk_barang" required>
-              </div>
+          <div class="col-md-6 form-group">
+            <label>Merk</label>
+            <input type="" class="form-control" name="merk_barang" id="merk_barang" required>
+          </div>
 
-              <div class="form-group">
-                <label for="sow">Nama Barang</label>
-                <input name="nama_barang" id="nama_barang" class="form-control" required></input>
-              </div>
+          <div class="col-md-6 form-group">
+            <label for="sow">Nama Barang</label>
+            <input name="nama_barang" id="nama_barang" class="form-control" required></input>
+          </div>
 
-              <div class="form-group">
-                <label for="sow">Date of Purchase</label>
-                <input type="text" name="asset_date" id="asset_date" class="form-control" required></input>
-              </div>
-            </div>
-            <div class="col-md-6">  
-              <div class="form-group">
-                <label for="sow">Nomor SN</label>
-                <input name="asset_sn" id="asset_sn" class="form-control" required></input>
-              </div>
-              
-              <div class="form-group">
-                <label for="sow">Description</label>
-                <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
-              </div>
+          <div class="col-md-6 form-group">
+            <label for="sow">Date of Purchase</label>
+            <input type="text" name="asset_date" id="asset_date" class="form-control" required></input>
+          </div>
 
-              <div class="form-group">
-                <label for="sow">Note</label>
-                <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
-              </div>
+          <div class="col-md-6 form-group">
+            <label for="sow">Nomor SN</label>
+            <input name="asset_sn" id="asset_sn" class="form-control" required></input>
+          </div>
+          
+          <div class="col-md-6 form-group">
+            <label for="sow">Description</label>
+            <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
+          </div>
 
-              <div class="form-group">
-                <label for="sow">Lokasi</label>
-                <textarea name="lokasi" id="lokasi" class="form-control" required=""></textarea>
-              </div>
+          <div class="col-md-6 form-group">
+            <label for="sow">Note</label>
+            <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
+          </div>
 
-              <div class="form-group" style="display: none;" id="peminjams">
-                <label for="sow">Request By</label>
-                <input type="text" name="requestBy" id="requestBy" class="form-control" readonly="">
-                <input type="text" name="requestNik" id="requestNik" class="form-control hidden">
-                <input type="text" name="id_requestNewAsset" id="id_requestNewAsset" class="form-control hidden">
-              </div>
-            </div>
+          <div class="col-md-6 form-group">
+            <label for="sow">Lokasi</label>
+            <textarea name="lokasi" id="lokasi" class="form-control" required=""></textarea>
+          </div>
+
+          <div class="col-md-6 form-group" style="display: none;" id="peminjams">
+            <label for="sow">Request By</label>
+            <input type="text" name="requestBy" id="requestBy" class="form-control" readonly="">
+            <input type="text" name="requestNik" id="requestNik" class="form-control hidden">
+            <input type="text" name="id_requestNewAsset" id="id_requestNewAsset" class="form-control hidden">
           </div>
 
           <div class="modal-footer">
@@ -497,7 +499,7 @@
           <form method="POST" action="{{url('peminjaman_hr')}}" id="modal_peminjaman" name="modalProgress">
               @csrf
               <input type="text" name="id_barang" id="id_barang" hidden>
-              @if(Auth::User()->id_division == 'HR')
+              @if(Auth::User()->id_division == 'HR' || Auth::User()->id_position == 'WAREHOUSE')
               <div class="form-group">
                 <label>Nama Peminjam</label>
                 <select name="users" id="users" class="form-control" style="width: 270px;" required >
@@ -605,7 +607,7 @@
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-sm btn-info" id="btnAddNoteReq"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-sm btn-info" id="btnAddNoteReq"><i class="fa fa-check"></i>&nbsp Submit</button>
               <button type="button" class="btn btn-sm btn-danger" id="btnBatalReq"><i class="fa fa-trash"></i>&nbsp Batalkan</button>
           </div>
         </div>
@@ -842,6 +844,10 @@ REJECT
       $("#btnAdd").attr('data-target','#add_asset') 
 
       initCategory() 
+
+      $("#submitReq").on('click',function(){
+        $('#requestAsset').modal('hide')
+      })
     })  
 
     $("#category_asset").on('change',function(){
@@ -860,6 +866,10 @@ REJECT
               text: 'Select Category...'
             };
 
+            for(var x in arr)
+              arr[x].id == 'OTH' ?
+            arr.push(arr.splice(x,1)[0]) : 0
+
             datas_kat.push(data)
             $.each(arr,function(key,value){
               datas_kat.push(value)
@@ -870,6 +880,8 @@ REJECT
             // theme: 'bootstrap4',
             data: datas_kat
           });
+
+
 
           $("#category_asset_request[data-rowid]").select2({
             placeholder: "Select a category",
@@ -882,7 +894,6 @@ REJECT
 
     $(document).on('change',"select[id^='category_asset_request']",function(e) { 
       var rowid = $(this).attr("data-rowid");
-      console.log('gabti')
       $("#cat_req_id[data-rowid='"+rowid+"']").val($("#category_asset_request[data-rowid='"+rowid+"']").select2('data')[0].no)
     })    
 
@@ -1092,16 +1103,10 @@ REJECT
     //tambahhhhh
     $("#btnRequest").on('click',function(){
       $('#requestAsset').modal('show')
-    })  
-
-    $("#submitReq").on('click',function(){
-      $('#requestAsset').modal('hide')
-    })
+    })      
 
     //editDeleteRequestAsset  
-    $("#btnEditRequestAsset[data-rowid]").click(function(){     
-
-      console.log(this.value)
+    $("#btnEditRequestAsset[data-rowid]").click(function(){ 
       $('#requestAssetEdit').modal('show')     
       var append = ""
       $("#tbody_requestEdit").html('')
@@ -1114,7 +1119,7 @@ REJECT
         success:function(result){
           console.log(result[0])    
           append = append + '<tr><th width="25%">Nama Barang</th><th width="5%">Qty</th><th width="15%">Merk</th>/<th width="15%">Kategori</th><th width="20%">Link</th></tr>'
-          append = append + '<tr><td>'+ result[0].nama +'</td><td>'+ result[0].qty +'</td><td>'+ result[0].merk +'</td><td>' + result[0].kategori +'</td><td><a href="'+ result[0].link +'">'+ result[0].link +'</a></td></tr>' 
+          append = append + '<tr><td>'+ result[0].nama +'</td><td>'+ result[0].qty +'</td><td>'+ result[0].merk +'</td><td>' + result[0].kategori +'</td><td><a href="'+ result[0].link +'" target="_blank">'+ result[0].link +'</a></td></tr>' 
 
           $("#tbody_requestEdit").append(append)
           if (result[0].status == 'PENDING') {
@@ -1243,7 +1248,7 @@ REJECT
       }else{
         var titleStatus = 'Reject Peminjaman Asset'
         var swalAccept = Swal.fire({
-          title: "An input!",
+          title: titleStatus,
           text: "Reason for rejecting:",
           input: 'text',
           icon: 'warning',
@@ -1315,7 +1320,7 @@ REJECT
       }else{
         var titleStatus = 'Reject Request Asset Baru'
         var swalAccept = Swal.fire({
-            title: "An input!",
+            title: titleStatus,
             text: "Reason for rejecting:",
             input: 'text',
             icon: 'warning',
@@ -1380,10 +1385,12 @@ REJECT
           // $('#category_id').val(result[0].id)
           $('#requestNik').val(nik)
           $('#id_requestNewAsset').val(id_request)
-          var CatSelect = $('#category_asset');
+          // var CatSelect = $('#category_asset');
 
-          var option = new Option(result[0].kategori, result[0].code_kat, true, true)
-          CatSelect.append(option).trigger('change')
+          // var option = new Option(result[0].kategori, result[0].code_kat, true, true)
+          // CatSelect.append(option).trigger('change')
+          $('#category_asset').val(result[0].code_kat);
+          $('#category_asset').select2().trigger('change');
 
           if (result[0].id_company == '1') {
             comVal = 'SIP'
@@ -1452,17 +1459,22 @@ REJECT
 
     $('#datatable').DataTable({
       pageLength: 20,    
-      "order": [[ 5, "asc" ]],  
+      "order": [[ 5, "asc" ]]
     });
 
     $('#kategori_table').DataTable({
       pageLength: 20,
     })
 
-    $('#request_table').DataTable({
+    var requestTable = $('#request_table').DataTable({
       pageLength: 20,
-      "order": [[ 5, "asc" ]],
+      "order": [[ 5, "asc" ]]
     });
+
+    if (!requestTable.rows().count()) {
+    }else{
+        $('#request_list').append('<span class="badge">'+ requestTable.rows().count() +'</span>')
+    }
     
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
