@@ -362,13 +362,19 @@ class AssetHRController extends Controller
     }
 
     public function storeRequestAsset(Request $request){
-        $count_kategori = count($request['cat_req_id']);
+        $count_kategori = count($request['cat_req_id']);      
 
         $inc = DB::table('tb_asset_hr_request')->get();
         $increment = count($inc);
         $no_req = date('ymd');
 
         for ($i=0; $i < $count_kategori ; $i++) { 
+            if ($request->merk_barang_request[$i] == '') {
+                $merk_barang = ' - ';
+            }else{
+                $merk_barang = $request['merk_barang_request'][$i];
+            }  
+
             $nomor = $increment+$i;
             if($nomor < 10){
                 $nomor = '00' . $nomor;
@@ -381,7 +387,7 @@ class AssetHRController extends Controller
                 'qty'               => $request['qty_barang_request'][$i],
                 'status'            => "REQUEST",
                 'link'              => $request['link_barang_request'][$i],
-                'merk'              => $request['merk_barang_request'][$i],
+                'merk'              => $merk_barang,
                 'created_at'        => date("Y-m-d h:i:s"),
                 'updated_at'        => date("Y-m-d h:i:s"),
             );
@@ -694,25 +700,34 @@ class AssetHRController extends Controller
         // foreach ($update_rejects as $update_reject) {
         //     $update_reject->status = "REJECT";
         //     $update_reject->update();
-        // }
-        $req_asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
-                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik')
+        // }        
+
+        if (Auth::User()->id_division == 'HR' || Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_company == '1') {
+            $asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
+                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
                     ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
                     ->where('tb_asset_hr_transaction.id_transaction',$store->id_transaction)
                     ->first();
 
-        if (Auth::User()->id_division == 'HR' || Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_company == '1') {
-            $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+            $req_asset = collect(['asset'=>$asset]);
 
-            $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+            $to = User::select('email')->where('nik',$store->nik_peminjam)->get();
 
-            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
+            $users = User::select('name')->where('nik',$store->nik_peminjam)->first();
+
+            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,'[SIMS-APP] Accepting Peminjaman Asset'));
         }else{
+            $req_asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
+                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+                    ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
+                    ->where('tb_asset_hr_transaction.id_transaction',$store->id_transaction)
+                    ->first();
+
             $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
 
             $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
 
-            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
+            Mail::to($to)->send(new RequestAssetHr('reqPinjam',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
         }
         
 
@@ -942,7 +957,7 @@ class AssetHRController extends Controller
 
         $users = User::select('name')->where('nik',$update->nik_peminjam)->first();
 
-        Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,'[SIMS-APP] Pengembalian Asset'));
+        Mail::to($to)->send(new RequestAssetHr('reqPinjam',$users,$req_asset,'[SIMS-APP] Pengembalian Asset'));
 
         return redirect()->back()->with('success','Barang sudah dikembalikan!');
     }
