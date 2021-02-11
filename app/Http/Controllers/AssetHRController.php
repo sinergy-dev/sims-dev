@@ -749,11 +749,13 @@ class AssetHRController extends Controller
         //     $update_reject->save();
         // }
 
-        $req_asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
-                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik')
+        $asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
+                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
                     ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
                     ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
                     ->first();
+
+        $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
 
         $to = User::select('email')->where('nik',$update_accept->nik_peminjam)->get();
 
@@ -781,12 +783,14 @@ class AssetHRController extends Controller
 
             $emailSubject = '[SIMS-APP] Rejecting Request New Asset';
         }
-        $update->update();   
+        $update->update();  
 
-        $req_asset = AssetHrRequest::join('users','users.nik','=','tb_asset_hr_request.nik')
-                    ->select('nama','qty','link','merk','users.name','tb_asset_hr_request.updated_at','tb_asset_hr_request.status')
-                    ->where('id_request',$request->id_request)
-                    ->first();      
+        $asset = AssetHrRequest::join('users','users.nik','=','tb_asset_hr_request.nik')
+                ->select('nama','qty','link','merk','users.name','tb_asset_hr_request.updated_at','tb_asset_hr_request.status')
+                ->where('id_request',$request->id_request)
+                ->first(); 
+
+        $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
 
         $to = User::select('email')->where('nik',$update->nik)->get();
 
