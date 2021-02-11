@@ -40,7 +40,7 @@
 
   <div class="box">
     <div class="box-header">
-      <a href="{{url('/asset_hr')}}"><button button class="btn btn-xs btn-danger pull-left"><i class="fa fa-arrow-circle-o-left"></i>&nbsp Back</button></a>
+      <a href="{{url('/asset_hr')}}"><button button class="btn btn-xs btn-danger pull-left" style="width: 70px"><i class="fa fa-arrow-circle-o-left"></i>&nbsp Back</button></a>
     </div>
 
     <div class="box-body">
@@ -73,7 +73,7 @@
                  @if($data->tgl_pengembalian == "")
                  	<span class="label label-danger">SUDAH DI AMBIL</span>
                   @else
-                  	<span class="label label-success">SUDAH KEMBALI</span>
+                  <span class="label label-success">SUDAH KEMBALI</span>
                   @endif
                 </td>
               </tr>
