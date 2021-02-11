@@ -1229,21 +1229,29 @@ REJECT
     function requestAccept(id_barang,id_transaction,status){
       if (status == 'ACCEPT') {
         var titleStatus = 'Accept Peminjaman Asset'
+        var swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "are you sure?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        })
         
       }else{
         var titleStatus = 'Reject Peminjaman Asset'
+        var swalAccept = Swal.fire({
+          title: "An input!",
+          text: "Reason for rejecting:",
+          input: 'text',
+          icon: 'warning',
+          showCancelButton: true        
+        })
       }      
       
-      Swal.fire({
-        title: titleStatus,
-        text: "are you sure?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
+      swalAccept.then((result) => {
         if (result.value) {
           Swal.fire({
             title: 'Please Wait..!',
@@ -1265,7 +1273,8 @@ REJECT
               id_barang:id_barang,
               // nik_peminjam:nik_peminjam,
               id_transaction:id_transaction,
-              status:status
+              status:status,
+              reason:result.value
             },
             success: function(result){
               Swal.showLoading()
@@ -1292,21 +1301,29 @@ REJECT
     //request asset baru
     function requestAssetAccept(id_request,status){
       if (status == 'ACCEPT') {
-        var titleStatus = 'Accept Request Asset Baru'        
+        var titleStatus = 'Accept Request Asset Baru'   
+        var swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "are you sure?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        })     
       }else{
         var titleStatus = 'Reject Request Asset Baru'
+        var swalAccept = Swal.fire({
+            title: "An input!",
+            text: "Reason for rejecting:",
+            input: 'text',
+            icon: 'warning',
+            showCancelButton: true        
+        })
       }      
       
-      Swal.fire({
-        title: titleStatus,
-        text: "are you sure?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
+      swalAccept.then((result) => {
         if (result.value) {
           Swal.fire({
             title: 'Please Wait..!',
@@ -1326,7 +1343,8 @@ REJECT
             url:"{{url('acceptNewAsset')}}",
             data:{
               id_request:id_request,
-              status:status
+              status:status,
+              reason:result.value
             },
             success: function(result){
               Swal.showLoading()
@@ -1339,7 +1357,7 @@ REJECT
                 }
               })
             },
-          });
+          }) 
         }        
       })
     }
