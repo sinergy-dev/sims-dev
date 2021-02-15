@@ -21,6 +21,14 @@
       position:relative;
     }
 
+  .nav-tabs .badge{
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: red;
+    }
+
+
    .modalIconsubject i{
       position:absolute;
       left:9px;
@@ -29,6 +37,49 @@
       color:#aaa;
       transition:.3s;
     }
+
+    /* Dropdown Button */
+    .dropbtn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 5px;
+      font-size: 13px;
+      width: 120px;
+      border: none;
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 120px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {background-color: #ddd;}
+
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {display: block;}
+
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .dropdown:hover .dropbtn {background-color: #3e8e41;}
 </style>
 <section class="content">
 
@@ -73,15 +124,21 @@
           <li class="nav-item">
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#peminjaman_asset" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
           </li>
-          @if(Auth::User()->id_division == 'HR')
+          <!-- @if(Auth::User()->id_division == 'HR')
           <li class="nav-item">
             <a class="nav-link" id="home-tab" data-toggle="tab" href="#request_pr" role="tab" aria-controls="home" aria-selected="true">Request PR</a>
           </li>
-          @endif
-          @if(Auth::User()->id_division == 'HR')
-          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Add Asset</button>
+          @endif -->
+          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
+          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Asset</button>
           @else
-          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#peminjaman_modal" style="width: 150px;"><i class="fa fa-plus"> </i>&nbsp Request ATK</button>
+          <div class="pull-right dropdown" style="margin-left: 5px">
+            <button class="dropbtn"><i class="fa fa-plus"> </i>&nbspRequest ATK</button>
+            <div class="dropdown-content">
+              <a data-toggle="modal" data-target="#peminjaman_modal">Available</a>
+              <a data-toggle="modal" data-target="#request_modal">Unavailable</a>
+            </div>
+          </div>
           @endif
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -95,8 +152,9 @@
                     <th>Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Brand Name</th>
                     <th>Description</th>
-                    @if(Auth::User()->id_division == 'HR')
+                    @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
                     <th>Action</th>
                     @endif
                   </tr>
@@ -109,16 +167,16 @@
                     <td>{{$data->nama_barang}}</td>
                     <td>{{$data->qty}}</td>
                     <td>{{$data->unit}}</td>
+                    <td>{{$data->merk}}</td>
                     <td>{{$data->description}}</td>
-                    @if(Auth::User()->id_division == 'HR')
+                    @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
                     <td>
-                      @if($data->status == 'NN')
-                      <a href="{{url('/asset_atk/detail_asset_atk', $data->id_barang) }}"><button class="btn btn-xs" style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button></a>
-                      @else
-                      <button class="btn btn-xs" disabled style="width: 80px; height: 25px; background-color: black;color: white ">Detail</button>
-                      @endif
-                      <button class="btn btn-xs btn-primary" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->description}}')">Edit</button>
-                      <button class="btn btn-xs btn-warning" style="width: 70px; height: 25px;" data-toggle="modal" data-target="#modalrestock" onclick="update_stok('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->qty}}', '{{$data->description}}')">Restock</button>
+                      <!-- @if($data->status == 'NN') -->
+                      <!-- @else -->
+                      <a href="{{url('/asset_atk/detail_asset_atk', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
+                      <!-- @endif -->
+                      <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->description}}')"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
+                      <button class="btn btn-xs btn-default btn-peminjaman" data-toggle="modal" data-target="#modalrestock" onclick="update_stok('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->qty}}', '{{$data->description}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Restock" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
                     </td>
                     @endif
                   </tr>
@@ -129,10 +187,10 @@
               </table>
             </div>
           </div>
-          @if(Auth::User()->id_division == 'HR')
+          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
           <div class="tab-pane fade" id="peminjaman_asset" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
-              <table class="table table-bordered nowrap DataTable" id="datatable" width="100%" cellspacing="0">
+              <table class="table table-bordered nowrap requestTable" id="datatable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>No</th>
@@ -141,6 +199,7 @@
                     <th>Description</th>
                     <th>Nama</th>
                     <th>Tgl Request</th>
+                    <th>Note</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -161,22 +220,23 @@
                     <td>{{$data->keterangan}}</td>
                     <td>{{$data->name}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
+                    <td>-</td>
                     <td>
                       @if($data->status == 'PENDING')
-                        <label class="status-open" style="width: 90px">PENDING</label>
+                        <label class="label label-warning" style="width: 90px">PENDING</label>
                       @elseif($data->status == 'ACCEPT')
-                        <label class="status-win" style="width: 90px">ACCEPTED</label>
+                        <label class="label label-primary" style="width: 90px">ACCEPTED</label>
                       @elseif($data->status == 'REJECT')
                         <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @elseif($data->status == 'PROSES')
-                        <label class="status-sd" style="width: 90px">PROSES PR</label>
+                        <label class="label label-default" style="width: 90px">PROSES PR</label>
                       @elseif($data->status == 'DONE')
-                        <label class="status-tp" style="width: 90px">DONE</label>
+                        <label class="label label-success" style="width: 90px">DONE</label>
                       @endif
                     </td>
                     <td>
                       @if($data->status == 'PENDING')
-                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}')">ACCEPT</button>
+                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}', '{{$data->nik_peminjam}}')">ACCEPT</button>
                       <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
                       @elseif($data->status == 'PROSES')
                       <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
@@ -189,6 +249,40 @@
                     </td>
                   </tr>
                   @endforeach
+
+                  @foreach($request as $data)
+                    <tr>
+                      <td>{{$no++}}</td>
+                      <td>{{$data->nama}}</td>
+                      <td>{{$data->qty}}</td>
+                      <td>{{$data->keterangan}}</td>
+                      <td>{{$data->name}}</td>
+                      <td>{!!substr($data->created_at,0,10)!!}</td>
+                      <td><a href="{{$data->link}}">{!!substr($data->link,0,30)!!}...</a></td>
+                      <td>
+                        @if($data->status == 'REQUEST' || $data->status == 'PROCESS')
+                          <label class="label label-warning" style="width: 90px">PENDING</label>
+                        @elseif($data->status == 'ACCEPT')
+                          <label class="label label-primary" style="width: 90px">ACCEPTED</label>
+                        @elseif($data->status == 'REJECT')
+                          <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" > REJECTED</button>
+                        @endif
+                      </td>
+                      <td>
+                        @if($data->status == 'REQUEST')
+                        <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" style="width: 90px; height: 25px;" data-target="#accept_request_modal" data-toggle="modal" onclick="accept_request('{{$data->id_barang}}', '{{$data->nama}}', '{{$data->keterangan}}', '{{$data->qty}}')">ACCEPT</button>
+                        <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" style="width: 90px; height: 25px;" data-target="#reject_request_modal" data-toggle="modal" onclick="reject_request_atk('{{$data->id_barang}}')">REJECT</button>
+                        @elseif($data->status == 'PROCESS')
+                        <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_request_modal" data-toggle="modal" name="btn_done" style="width: 90px; height: 25px" onclick="done_request_atk('{{$data->id_barang}}', '{{$data->nama}}', '{{$data->qty}}', '{{$data->nik}}', '{{$data->keterangan}}')">DONE</button>
+                        @elseif($data->status == 'DONE')
+                        <button class="btn btn-xs btn-primary disabled" style="width: 90px; height: 25px">DONE</button>
+                        @else
+                        <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
+                        <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
+                        @endif
+                      </td>
+                    </tr>
+                  @endforeach
                 </tbody>
                 <tfoot>
                 </tfoot>
@@ -198,12 +292,12 @@
           @else 
           <div class="tab-pane fade" id="peminjaman_asset" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
-              <table class="table table-bordered nowrap DataTable" id="datatable" width="100%" cellspacing="0">
+              <table class="table table-bordered nowrap DataTable" id="datatables" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>No</th>
                     <th>Nama Barang</th>
-                    <th>Qty Available</th>
+                    <!-- <th>Qty Available</th> -->
                     <th>Qty Request</th>
                     <th>Description</th>
                     <th>Tgl Request</th>
@@ -216,7 +310,7 @@
                   <tr>
                     <td>{{$no++}}</td>
                     <td>{{$data->nama_barang}}</td>
-                    <td>
+                    <!-- <td>
                       @if($data->status == 'PROSES' || $data->status == 'DONE')
                       {{$data->qty_awal}}
                       @elseif($data->status == 'PENDING' || $data->status == 'ACCEPT' || $data->status == 'REJECT')
@@ -224,27 +318,45 @@
                       @elseif($data->qty_awal == 0) 
                       0
                       @endif
-                    </td>
-                    <td>
-                      @if($data->qty_request != null)
+                    </td> -->
+                    <td> {{$data->qty_akhir}}
+                      <!-- @if($data->qty_request != null)
                       {{$data->qty_request}}
                       @else
                       0
-                      @endif
+                      @endif -->
                     </td>
                     <td>{{$data->keterangan}}</td>
                     <td>{!!substr($data->created_at,0,10)!!}</td>
                     <td>
                       @if($data->status == 'PENDING')
-                        <label class="status-open">PENDING</label>
+                        <label class="label label-warning" style="width: 90px">PENDING</label>
                       @elseif($data->status == 'ACCEPT')
-                        <label class="status-win" style="width: 90px">ACCEPTED</label>
+                        <label class="label label-primary" style="width: 90px">ACCEPTED</label>
                       @elseif($data->status == 'REJECT')
                         <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @elseif($data->status == 'PROSES')
-                        <label class="status-sd" style="width: 90px">PROSES PR</label>
+                        <label class="label label-default" style="width: 90px">PROSES PR</label>
                       @elseif($data->status == 'DONE')
-                        <label class="status-tp" style="width: 90px">DONE</label>
+                        <label class="label label-success" style="width: 90px">DONE</label>
+                      @endif
+                    </td>
+                  </tr>
+                  @endforeach
+                  @foreach($request as $data)
+                    <tr>
+                    <td>{{$no++}}</td>
+                    <td>{{$data->nama}}</td>
+                    <td> {{$data->qty}}</td>
+                    <td>{{$data->keterangan}}</td>
+                    <td>{!!substr($data->created_at,0,10)!!}</td>
+                    <td>
+                      @if($data->status == 'REQUEST' || $data->status == 'PROCESS')
+                        <label class="label label-warning" style="width: 90px">PENDING</label>
+                      @elseif($data->status == 'ACCEPT')
+                        <label class="label label-primary" style="width: 90px">ACCEPTED</label>
+                      @elseif($data->status == 'REJECT')
+                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @endif
                     </td>
                   </tr>
@@ -256,7 +368,7 @@
             </div>
           </div>
           @endif
-          @if(Auth::User()->id_division == 'HR')
+          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
           <div class="tab-pane fade" id="request_pr" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered nowrap DataTable" id="pr_request" width="100%" cellspacing="0">
@@ -275,46 +387,46 @@
                 <tbody id="products-list" name="products-list">
                   <?php $no = 1 ?>
                   @foreach($pr_request as $data)
-                  <tr>
-                    <td>{{$no++}}</td>
-                    <td>{{$data->nama_barang}}</td>
-                    <td>
-                      @if($data->qty_request != null)
-                      {{$data->qty_request}}
-                      @else 
-                      0
-                      @endif
-                    </td>
-                    <td>{{$data->keterangan}}</td>
-                    <td>{{$data->name}}</td>
-                    <td>{!!substr($data->created_at,0,10)!!}</td>
-                    <td>
-                      @if($data->status == 'PENDING')
-                        <label class="status-open" style="width: 90px">PENDING</label>
-                      @elseif($data->status == 'ACCEPT')
-                        <label class="status-win" style="width: 90px">ACCEPTED</label>
-                      @elseif($data->status == 'REJECT')
-                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
-                      @elseif($data->status == 'PROSES')
-                        <label class="status-sd" style="width: 90px">PROSES PR</label>
-                      @elseif($data->status == 'DONE')
-                        <label class="status-tp" style="width: 90px">DONE</label>
-                      @endif
-                    </td>
-                    <td>
-                      @if($data->status == 'PENDING')
-                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
-                      <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
-                      @elseif($data->status == 'PROSES')
-                      <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
-                      @elseif($data->status == 'DONE')
-                      <button class="btn btn-xs btn-primary disabled" style="width: 90px; height: 25px">DONE</button>
-                      @else
-                      <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
-                      <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
-                      @endif
-                    </td>
-                  </tr>
+                    <tr>
+                      <td>{{$no++}}</td>
+                      <td>{{$data->nama_barang}}</td>
+                      <td>
+                        @if($data->qty_request != null)
+                        {{$data->qty_request}}
+                        @else 
+                        0
+                        @endif
+                      </td>
+                      <td>{{$data->keterangan}}</td>
+                      <td>{{$data->name}}</td>
+                      <td>{!!substr($data->created_at,0,10)!!}</td>
+                      <td>
+                        @if($data->status == 'PENDING')
+                          <label class="status-open" style="width: 90px">PENDING</label>
+                        @elseif($data->status == 'ACCEPT')
+                          <label class="status-win" style="width: 90px">ACCEPTED</label>
+                        @elseif($data->status == 'REJECT')
+                          <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                        @elseif($data->status == 'PROSES')
+                          <label class="status-sd" style="width: 90px">PROSES PR</label>
+                        @elseif($data->status == 'DONE')
+                          <label class="status-tp" style="width: 90px">DONE</label>
+                        @endif
+                      </td>
+                      <td>
+                        @if($data->status == 'PENDING')
+                        <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
+                        <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
+                        @elseif($data->status == 'PROSES')
+                        <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
+                        @elseif($data->status == 'DONE')
+                        <button class="btn btn-xs btn-primary disabled" style="width: 90px; height: 25px">DONE</button>
+                        @else
+                        <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
+                        <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
+                        @endif
+                      </td>
+                    </tr>
                   @endforeach
                 </tbody>
                 <tfoot>
@@ -350,19 +462,19 @@
           <h4 class="modal-title">Add Asset HR/GA</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/store_asset_atk')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/store_asset_atk')}}" name="modalProgress">
             @csrf
           <div class="form-group">
-            <label for="sow">Nama Barang</label>
-            <input name="nama_barang" id="nama_barang" class="form-control"></input>
+            <label for="sow">Product Name</label>
+            <input name="nama_barang" id="nama_barang" class="form-control" placeholder="Enter name" required></input>
           </div>
           <div class="form-group">
-            <label for="sow">Qty</label>
-            <input name="qty" id="qty" type="number" class="form-control" required="">
+            <label for="sow">Quantity</label>
+            <input name="qty" id="qty" type="number" class="form-control" required placeholder="Enter Quantity">
           </div>
           <div class="form-group">
             <label>Unit</label>
-            <select class="form-control" name="unit" id="unit">
+            <select class="form-control unit_atk" name="unit" id="unit"style="width: 100%">
               <option value="">Select Unit</option>
               @foreach($unit_assets as $unit_asset)
               <option value="{{$unit_asset->unit}}">{{$unit_asset->unit}}</option>
@@ -371,8 +483,12 @@
             <label class="hover-biru" style="color:#002280;">Unit belum ada?</label>
           </div>
           <div class="form-group">
-            <label for="sow">Deskripsi</label>
-            <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
+            <label for="sow">Brand</label>
+            <input name="merk" id="merk" type="text" class="form-control" required placeholder="Enter Brand Name">
+          </div>
+          <div class="form-group">
+            <label for="sow">Description</label>
+            <textarea name="keterangan" id="ket" class="form-control" required placeholder="Enter Description"></textarea>
           </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
@@ -392,16 +508,16 @@
           <h4 class="modal-title">Update Asset</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/edit_atk')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/edit_atk')}}" name="modalProgress">
             @csrf
           <input type="" name="id_barang_edit" id="id_barang_edit" hidden>
           <div class="form-group">
             <label>Nama Barang</label>
-            <input type="text" name="nama_barang_edit" id="nama_barang_edit" class="form-control">
+            <input type="text" name="nama_barang_edit" id="nama_barang_edit" class="form-control" required>
           </div>
           <div class="form-group">
             <label for="sow">Deskripsi</label>
-            <textarea name="deskripsi_edit" id="deskripsi_edit" class="form-control" required=""></textarea>
+            <textarea name="deskripsi_edit" id="deskripsi_edit" class="form-control" required></textarea>
           </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
@@ -420,7 +536,7 @@
           <h4 class="modal-title">Update Stok Asset</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/update_stok')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/update_stok')}}" name="modalProgress">
             @csrf
           <input type="" name="id_barang_restok" id="id_barang_restok" hidden>
           <div class="form-group">
@@ -433,7 +549,7 @@
           </div>
           <div class="form-group">
            <label>Qty Masuk</label>
-            <input type="number" name="qty_masuk_restok" id="qty_masuk_restok" class="form-control">
+            <input type="number" name="qty_masuk_restok" id="qty_masuk_restok" class="form-control" required>
           </div>
           <div class="form-group">
             <label for="sow">Deskripsi</label>
@@ -450,49 +566,112 @@
 </div>
 
 <div class="modal fade" id="peminjaman_modal" role="dialog">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Request ATK</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/request_atk')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/request_atk')}}" name="modalProgress">
             @csrf
-          <!-- <input type="text" name="id_barang" id="id_barang" hidden> -->
-          <div class="form-group">
-            <label>Nama Barang</label>
-            <select name="atk" id="atk" class="form-control" style="width: 270px;" required >
-              <option>Select Name</option>
-              @foreach($atk as $atk)
-              <option value="{{$atk->id_barang}}" >{{$atk->nama_barang}}</option>
-              @endforeach
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="sow">Jumlah Stock</label>
-            <input name="qty" type="number" class="form-control qty" readonly>
-          </div>
-          <div class="form-group margin-left-right">
-              @if ($message = Session::get('warning'))
-              <div class="alert alert-warning alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button> 
-                <strong>{{ $message }}</strong>
-              </div>
-              @endif
+          <div style="overflow: auto">
+            <table id="product-add" class="table product-add">
+              <tr class="tr-header">
+                <th>Product Name</th>
+                <th>Stock</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Description</th>
+                <th><a href="javascript:void(0);" style="font-size:18px;" id="addMore" class="add"><span class="fa fa-plus"></span></a></th>
+              </tr>
+              <tr>
+              <td style="margin-bottom: 50px;">
+                <br><select class="form-control produk"  onchange="initatk()" name="atk[]" id="atk" data-rowid="0" style="font-size: 14px; width: 200px">
+                
+                </select>
+              </td>
+                <td hidden>    
+                  <input name="id_barangs[]" id="id_barangs" class="id_barangs" value="" data-rowid="0">
+                </td>
+                <td style="margin-bottom: 50px;">
+                  <br>
+                 <input class="form-control stock" placeholder="stock" data-rowid="0" name="stock[]" id="stock" style="width: 70px;font-size: 14px" readonly>
+                </td>
+                <td style="margin-bottom: 50px;">
+                  <br>
+                 <input type="number" class="form-control" placeholder="qty" name="qty[]" id="qty_butuh" style="width: 70px;font-size: 14px" required>
+                </td>
+                <td style="margin-bottom: 50px">
+                  <br><input type="text" class="form-control units" data-rowid="0" name="unit[]" style="width: 100px" id="unit_produk" readonly >
+                </td>
+                <td style="margin-bottom: 50px;">
+                  <br>
+                 <textarea type="text" class="form-control" placeholder="Enter keterangan" name="keterangan[]" id="keterangan" style="width: 300px;font-size: 14px" required></textarea>
+                </td>
+                <td>
+                  <a href='javascript:void(0);'  class='remove'><span class="fa fa-times" style="font-size: 18px;margin-top: 20px;color: red;"></span></a>
+                </td>
+              </tr>
+            </table>
+            <div class="col-md-12 modal-footer" id="btn_submit">
+              <br>
+              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"> </i>&nbspClose</button>
+              <button type="submit" id="btn_request" class="btn btn-sm btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
             </div>
-          <div class="form-group">
-            <label>Masukkan kebutuhan</label><br>
-            <!-- <input type="text" name="qtys" id="qtys" class="qtys" hidden> -->
-            <input type='number' name='quantity' id="quantity" value='0' class="form-control" style="width: 270px;" />
-          </div>
-          <div class="form-group">
-            <label>Keterangan</label>
-            <textarea class="form-control" name="keterangan"></textarea>
-          </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
+
+        </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="request_modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Request ATK</h4>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="{{url('asset_atk/store_request_atk')}}" name="modalProgress">
+            @csrf
+          <div style="overflow: auto">
+            <table id="product-request" class="table product-add">
+              <tr class="tr-header">
+                <th>Product Name</th>
+                <th>Qty</th>
+                <th>Description</th>
+                <th>Link Product</th>
+                <th><a href="javascript:void(0);" style="font-size:18px;" id="addMore2" class="add"><span class="fa fa-plus"></span></a></th>
+              </tr>
+              <tr>
+                <td style="margin-bottom: 50px;">
+                  <br><input class="form-control" name="atk[]" placeholder="Enter Product Name" id="atk_request" data-rowid="0" style="font-size: 14px; width: 200px" required>
+                </td>
+                <td style="margin-bottom: 50px;">
+                  <br>
+                 <input type="number" class="form-control" placeholder="Qty" name="qty[]" id="quantity_request" style="width: 70px;font-size: 14px" required>
+                </td>
+                <td style="margin-bottom: 50px;">
+                  <br>
+                 <textarea type="text" class="form-control" placeholder="Enter Description" name="keterangan[]" id="keterangan_request" style="width: 250px;font-size: 14px" required></textarea>
+                </td>
+                <td style="margin-bottom: 50px;">
+                  <br>
+                 <textarea type="tetx" class="form-control" placeholder="Enter Link Product" name="link[]" id="link" style="width: 250px;font-size: 14px" required></textarea>
+                </td>
+                <td>
+                  <a href='javascript:void(0);' class='remove'><span class="fa fa-times" style="font-size: 18px;margin-top: 20px;color: red;"></span></a>
+                </td>
+              </tr>
+            </table>
+            <div class="col-md-12 modal-footer" id="btn_submit">
+              <br>
+              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"> </i>&nbspClose</button>
+              <button type="submit" id="btn_request_asset" class="btn btn-sm btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            </div>
+            </div>
+
         </form>
         </div>
       </div>
@@ -504,12 +683,13 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/accept_request')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/accept_request')}}" name="modalProgress">
             @csrf
-          <input type="text" name="id_barang_update" id="id_barang_update" hidden>
-          <input type="text" name="id_transaction_update" id="id_transaction_update" hidden>
-          <input type="" name="qty_awal_accept" id="qty_awal_accept" hidden>
-          <input type="" name="qty_akhir_accept" id="qty_akhir_accept" hidden>
+          <input name="id_barang_update" id="id_barang_update" hidden>
+          <input name="id_transaction_update" id="id_transaction_update" hidden>
+          <input name="qty_awal_accept" id="qty_awal_accept" hidden>
+          <input name="qty_akhir_accept" id="qty_akhir_accept" hidden>
+          <input name="nik_request" id="nik_request" hidden>
           <div class="form-group">
           	<h4 style="text-align: center;"><b>Are you sure to accept?</b></h4>
           </div>
@@ -519,7 +699,7 @@
           </div>
           <div class="form-group">
             <label>Quantity</label>
-            <input type="number" name="qty_accept" id="qty_accept" readonly class="form-control">
+            <input type="number" name="qty_accept" id="qty_accept" readonly class="form-control" required>
           </div>
           <div class="form-group">
             <label>Description</label>
@@ -528,7 +708,40 @@
           
           <div class="modal-footer">
             <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-            <button type="submit" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Accept</button>
+            <button type="submit" id="btn_accept_atk" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Accept</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="accept_request_modal" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form method="POST" action="{{url('asset_atk/accept_request_atk')}}" name="modalProgress">
+            @csrf
+          <input name="id_trans" id="id_trans" hidden>
+          <div class="form-group">
+            <h4 style="text-align: center;"><b>Are you sure to accept?</b></h4>
+          </div>
+          <div class="form-group">
+            <label>Nama Barang</label>
+            <input type="text" name="nama_barang_accept" id="nama_barang_accept2" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" name="qty_accept" id="qty_accept2" readonly class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" name="description_accept" id="description_accept2" class="form-control" readonly>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+            <button type="submit" id="btn_accept_request" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Accept</button>
           </div>
         </form>
         </div>
@@ -541,7 +754,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/reject_request')}}" id="modalProgress" name="modalProgress">
+          <form method="POST" action="{{url('asset_atk/reject_request')}}" name="modalProgress">
             @csrf
           <input type="text" name="id_barang_reject" id="id_barang_reject" hidden>
           <input type="text" name="id_transaction_reject" id="id_transaction_reject" hidden>
@@ -556,7 +769,31 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
-            <button type="submit" class="btn btn-xs btn-danger" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Reject</button>
+            <button type="submit" id="btn_reject_atk" class="btn btn-xs btn-danger" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Reject</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reject_request_modal" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form method="POST" action="{{url('asset_atk/reject_request_atk')}}" name="modalProgress">
+            @csrf
+          <input type="text" name="id_barang_reject" id="id_barang_reject2" hidden>
+          <div class="form-group">
+            <h4 style="text-align: center;"><b>Are you sure to reject?</b></h4>
+          </div>
+          <div class="form-group">
+            <label>Note</label>
+            <textarea class="form-control" name="note_reject" id="note_reject" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+            <button type="submit" class="btn btn-xs btn-danger" id="btn_reject_request" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Reject</button>
           </div>
         </form>
         </div>
@@ -568,7 +805,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form id="modalProgress" name="modalProgress">
+          <form name="modalProgress">
             @csrf
           <input type="text" name="id_transaction_reject2" id="id_transaction_reject2" hidden>
           <div class="form-group">
@@ -588,7 +825,7 @@
  <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-body">
-        <form method="POST" action="{{url('asset_atk/done_request_pr')}}" id="modalProgress" name="modalProgress">
+        <form method="POST" action="{{url('asset_atk/done_request_pr')}}" name="modalProgress">
           @csrf
         <input type="text" name="id_barang_done" id="id_barang_done" hidden>
         <input type="text" name="id_transaction_done" id="id_transaction_done" hidden>
@@ -622,6 +859,71 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="done_request_modal" role="dialog">
+ <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form method="POST" action="{{url('asset_atk/done_request_atk')}}" name="modalProgress">
+          @csrf
+        <input type="text" name="id_barang_done2" id="id_barang_done2" hidden>
+        <input type="text" name="nik_request2" id="nik_request2" hidden>
+        <input type="text" name="ket_request" id="ket_request" hidden>
+        <div class="form-group">
+          <h4 style="text-align: center;"><b>Request Done?</b></h4>
+        </div>
+        <div class="form-group"> 
+          <label>Nama Barang</label>
+          <input name="nama_barang_done" id="nama_barang_done2" class="form-control" readonly>
+        </div>
+        <div class="form-group"> 
+          <label>Qty Request</label>
+          <input name="qty_request_done2" class="form-control" id="qty_request_done2" readonly>
+        </div>
+        <div class="form-group">
+          <label>Qty Restock</label>
+          <input type="number" name="qty_restock_atk" id="qty_restock_atk" placeholder="Enter Quantity" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Brand Name</label>
+          <input type="text" name="merk_request" id="merk_request" placeholder="Enter Brand Name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Unit</label>
+          <select class="form-control unit_atk" name="unit_request" id="unit_request"style="width: 100%" required>
+            <option value="">Select Unit</option>
+            @foreach($unit_assets as $unit_asset)
+            <option value="{{$unit_asset->unit}}">{{$unit_asset->unit}}</option>
+            @endforeach
+          </select>
+          <label class="hover-biru" style="color:#002280;">Unit belum ada?</label>
+        </div>
+        <div class="form-group">
+            <label for="sow">Description</label>
+            <textarea name="keterangan_request" id="ket2" class="form-control" required placeholder="Enter Description"></textarea>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
+          <button type="submit" id="btn_done_request" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp YES</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="tunggu" role="dialog">
+  <div class="modal-dialog modal-sm">
+  <!-- Modal content-->
+  <div class="modal-content">
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="">Sedang diproses. . .</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('script')
@@ -630,12 +932,69 @@
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript">
 
+    $(document).ready(function(){
+      initatk();
+    })
+
+    function initatk() {
+      var datas_kat = [];
+      $.ajax({
+        type:"GET",
+        url: "asset_atk/getAssetAtk",
+        success:function(result){
+          var arr = result.results;        
+            var data = {
+              id: -1,
+              text: 'Select Name...'
+            };
+
+            datas_kat.push(data)
+            $.each(arr,function(key,value){
+              datas_kat.push(value)
+            })
+
+          $(".produk").select2({
+            placeholder: "Select a state",
+            data: datas_kat
+          });
+        }
+      })
+    }
+
+
+    var i = 1;
+    $('#addMore').click(function(){  
+         i++;  
+         $('#product-add').append('<tr id="row'+i+'"><td><br><select class="form-control produk" name="atk[]" data-rowid="'+i+'" id="atk2"></select></td><td hidden><input type="" name="id_barangs[]" id="id_barangs" class="id_barangs" value="" data-rowid="'+i+'" ></td><td style="margin-bottom: 50px;"><br><input class="form-control stock" placeholder="stock" data-rowid="'+i+'" name="stock[]" id="stock" style="width: 70px;font-size: 14px" readonly></td><td style="margin-bottom: 50px;"><br><input type="number" class="form-control" placeholder="qty" name="qty[]" id="quantity" style="width: 70px;font-size: 14px" required></td><td style="margin-bottom: 50px"><br><input type="text" class="form-control units" data-rowid="'+i+'" style="width: 100px" name="unit[]" id="unit_produk" readonly ></td><td style="margin-bottom: 50px;"><br><textarea type="text" class="form-control" placeholder="Enter keterangan" name="keterangan[]" id="keterangan" style="width: 300px;font-size: 14px" required></textarea></td><td><a href="javascript:void(0);" id="'+i+'"class="remove"><span class="fa fa-times" style="font-size: 18px;color:red;margin-top: 25px"></span></a></td></tr>');
+
+      initatk();
+
+    });
+
+    $('#addMore2').click(function(){  
+         i++;  
+         $('#product-request').append('<tr id="row'+i+'"><td style="margin-bottom: 50px;"><br><input class="form-control" name="atk[]" id="atk_request" data-rowid="'+i+'" style="font-size: 14px; width: 200px" placeholder="Enter Product Name" required></td><td style="margin-bottom: 50px;"><br><input type="number" class="form-control" placeholder="Qty" name="qty[]" id="quantity_request" style="width: 70px;font-size: 14px" required></td><td style="margin-bottom: 50px;"><br><textarea type="text" class="form-control" name="keterangan[]" id="keterangan_request" placeholder="Enter Description" style="width: 250px;font-size: 14px" required></textarea></td><td style="margin-bottom: 50px;"><br><textarea type="tetx" placeholder="Enter Link Product" class="form-control" name="link[]" id="link" style="width: 250px;font-size: 14px" required></textarea></td><td><a href="javascript:void(0);" class="remove"><span class="fa fa-times" style="font-size: 18px;margin-top: 20px;color: red;"></span></a></td></tr>');
+
+    });
+    
+
+    $(document).on('click', '.remove', function() {
+     var trIndex = $(this).closest("tr").index();
+      if(trIndex>1) {
+        $(this).closest("tr").remove();
+      } else {
+        alert("Sorry!! Can't remove first row!");
+      }
+    });
+
+  	$('.unit_atk').select2();
+
   	function reject_note(id_transaction,note) {
   		$('#id_transaction_reject2').val(id_transaction);
   		$('#note_reject2').val(note);
   	}
 
-    function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan){
+    function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan,nik_peminjam,nama){
       $('#id_transaction_update').val(id_transaction);
       $('#id_barang_update').val(id_barang);
       $('#qty_awal_accept').val(qty);
@@ -643,6 +1002,14 @@
       $('#nama_barang_accept').val(nama_barang);
       $('#qty_accept').val(qty_akhir);
       $('#description_accept').val(keterangan);
+      $('#nik_request').val(nik_peminjam);
+    }
+
+    function accept_request(id_barang,nama,keterangan,qty) {
+      $('#id_trans').val(id_barang);
+      $('#nama_barang_accept2').val(nama);
+      $('#qty_accept2').val(qty);
+      $('#description_accept2').val(keterangan);
     }
 
     function update_done_pr(id_transaction,id_barang,qty,qty_request,nama_barang) {
@@ -655,24 +1022,40 @@
       $('#qty_now_pr').val(qty);
     }
 
-    $('#atk').select2();
+    function done_request_atk(id_barang,nama_barang,qty,nik,keterangan) {
+      $('#id_barang_done2').val(id_barang);
+      $('#qty_request_done2').val(qty);
+      $('#nama_barang_done2').val(nama_barang);
+      $('#nik_request2').val(nik);
+      $('#ket_request').val(keterangan);
+    }
 
+    $(document).on('keyup keydown', "input[id^='qty_butuh']", function(e){
+      var qty_before = $("#stock").val();
+      if ($(this).val() > parseFloat(qty_before)
+          && e.keyCode != 46
+          && e.keyCode != 8
+         ) {
+         e.preventDefault();     
+         $(this).val(qty_before);
+      }
+    });
 
-    /*$(document).on('keyup keydown', "input[id^='quantity']", function(e){
-      var qty_before  = $(".qty").val();
-      console.log(qty_before);
-          if ($(this).val() > parseFloat(qty_before)
-              && e.keyCode != 46
-              && e.keyCode != 8 
-             ) {
-             e.preventDefault();     
-             $(this).val(qty_before);
-          }
-    });*/
+    // $(document).on('keyup keydown', "input[id^='qty_restock_atk']", function(e){
+    //   var qty_before = $("#qty_request_done2").val();
+    //   if ($(this).val() < parseFloat(qty_before)
+    //       && e.keyCode != 46
+    //       && e.keyCode != 8
+    //      ) {
+    //      e.preventDefault();     
+    //      $(this).val(qty_before);
+    //   }
+    // });
 
     $('.hover-biru').click(function(){
       var new_unit = prompt("Enter unit :");
       $("#unit").append($('<option>', { value: new_unit, text: new_unit, selected:true }));
+      $("#unit_request").append($('<option>', { value: new_unit, text: new_unit, selected:true }));
     })
 
     $(".detail-product").select2({
@@ -682,8 +1065,12 @@
     $('#data_table').DataTable({
     });
 
-    $('#datatable').DataTable({
+    // $('#datatable').DataTable({
+    // });
+
+    $('#datatables').DataTable({
     });
+
 
     $('#pr_request').DataTable({
     });
@@ -692,8 +1079,61 @@
          $("#alert").slideUp(300);
     });
 
-    $(document).on('change',"select[id^='atk']",function(e) {
-      var atk = $('#atk').val();
+    $('#btn_request').click(function(){
+      $('#tunggu').modal('show')
+      $('#peminjaman_modal').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+    });
+
+    $('#btn_request_asset').click(function(){
+      $('#tunggu').modal('show')
+      $('#request_modal').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+    });
+
+    $('#btn_accept_atk').click(function(){
+      $('#tunggu').modal('show')
+      $('#accept_modal').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+    });
+
+    $('#btn_accept_request').click(function(){
+      $('#tunggu').modal('show')
+      $('#accept_request_modal').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+    });
+
+    $('#btn_reject_atk').click(function(){
+      $('#tunggu').modal('show')
+      $('#reject_modal').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+    });
+
+    $('#btn_reject_request').click(function(){
+      $('#tunggu').modal('show')
+      $('#reject_request_modal').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+    });
+
+    $('#btn_done_request').click(function(){
+      $('#tunggu').modal('show')
+      $('#done_request_modal').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+    });
+
+    var requestTable = $('#datatable').DataTable({
+      pageLength: 10,
+    });
+
+    if (!requestTable.rows().count()) {
+    }else{
+        $('#home-tab').append('<span class="badge">'+ requestTable.rows().count() +'</span>')
+    }
+    
+
+    $(document).on('change',".produk",function(e) {
+      var atk = $('.produk').val();
+      var rowid = $(this).attr("data-rowid");
 
          $.ajax({
           type:"GET",
@@ -703,7 +1143,9 @@
           },
           success: function(result,qty){
             $.each(result[0], function(key, value){
-              $(".qty").val(value.qty);
+              $(".stock[data-rowid='"+rowid+"']").val(value.qty);
+              $(".units[data-rowid='"+rowid+"']").val(value.unit);
+              $(".id_barangs[data-rowid='"+rowid+"']").val(value.nama_barang);
             });
           }
         });
@@ -714,6 +1156,10 @@
       $('#id_barang_reject').val(id_barang);
       $('#qty_awal_reject').val(qty);
       $('#qty_akhir_reject').val(qty_akhir);
+    }
+
+    function reject_request_atk(id_barang) {
+      $('#id_barang_reject2').val(id_barang);
     }
 
     function edit_asset(id_barang,nama_barang,description){

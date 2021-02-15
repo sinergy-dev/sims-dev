@@ -39,8 +39,36 @@
 
 
   <div class="box">
+    <div class="box-header with-border">
+      <h3>Detail Barang</h3>
+    </div>
+
+    <div class="box-body">
+      <table class="table table-bordered">
+        <tr>
+          <td style="width:30%">Name of Goods</td>
+          <td>: {{$data->nama_barang}}</td>
+        </tr>
+        <tr>
+          <td style="width:30%">Current Stock</td>
+          <td>: {{$data->qty}} {{$data->unit}}</td>
+        </tr>
+        <tr>
+          <td style="width:30%">Last Activity</td>
+          <td>:
+            @if($last_update->status == 'In') 
+              Stock Added 
+            @else 
+              Requested @endif by {{$last_update->name}} at {{date('F, d - Y', strtotime($last_update->created_at))}}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="box">
     <div class="box-header">
-      <a href="{{url('/asset_atk')}}"><button button class="btn btn-xs btn-danger pull-left" style="width: 150px"><i class="fa fa-arrow-circle-o-left"></i>&nbsp back to Asset</button></a>
+      <h3>Saldo Table</h3>
     </div>
 
     <div class="box-body">
@@ -49,33 +77,23 @@
             <thead>
               <tr>
                 <th>No</th>
-                <!-- <th>No Peminjaman</th> -->
-                <th>Nama Barang</th>
-                <th>Nama</th>
-                <th>Tgl Request</th>
-                <th>Keterangan</th>
-                <th>Status</th>
+                <th>Date</th>
+                <th>In/Out</th>
+                <th>Requested By</th>
               </tr>
             </thead>
             <tbody id="products-list" name="products-list">
               <?php $no = 1; ?>
-              @foreach($asset as $data)
+              @foreach($detail as $data)
               <tr>
                 <td>{{$no++}}</td>
-                <!-- <td>{{$data->no_transac}}</td> -->
-                <td>{{$data->nama_barang}}</td>
+                <td>{{$data->created_at}}</td>
+                @if($data->status == 'In')
+                <td>+ {{$data->qty}} {{$data->unit}}</td>
+                @else
+                <td>- {{$data->qty}} {{$data->unit}}</td>
+                @endif
                 <td>{{$data->name}}</td>
-                <td>{!!substr($data->created_at,0,10)!!}</td>
-                <td>{{$data->keterangan}}</td>
-                <td>
-                  @if($data->status == 'PENDING')
-                    <label class="status-open">PENDING</label>
-                  @elseif($data->status == 'ACCEPT')
-                    <label class="status-win" style="width: 90px">ACCEPTED</label>
-                  @elseif($data->status == 'REJECT')
-                    <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
-                  @endif
-                </td>
               </tr>
               @endforeach
             </tbody>

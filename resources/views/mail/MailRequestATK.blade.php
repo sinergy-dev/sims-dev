@@ -2,71 +2,61 @@
 </style>
 <div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;">
 	@if($req_atk->status == 'ACCEPT')
-	<p>
-		Hello Sinergy,
-		<br>Request ATK diapprove, berikut rinciannya:
-	</p>
-	<table style="text-align: left;margin: 5px;">
-		<!-- <tr>
-			<th>Nama</th>
-			<th> : </th>
-			<td>{{$req_atk->name}}</td>
-		</tr> -->
-		<tr>
-			<th>Nama Barang</th>
-			<th> : </th>
-			<td>{{$req_atk->nama_barang}}</td>
-		</tr>
-		<tr>
-			<th>Quantity</th>
-			<th> : </th>
-			<td>{{$req_atk->qty_akhir}}</td>
-		</tr>
-		<tr>
-			<th>Tanggal Request ATK</th>
-			<th> : </th>
-			<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
-		</tr>
-		<tr>
-			<th>Note</th>
-			<th> : </th>
-			<td>{{$req_atk->keterangan}}</td>
-		</tr>
-	</table>
-	<br>
+		<p>
+			Hello {{$req_atk->name}},
+			<br><b>Request ATK diapprove,</b> berikut rinciannya:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama_barang}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty_akhir}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->keterangan}}</td>
+			</tr>
+		</table>
+		<br>
 	@elseif($req_atk->status == 'REJECT')
-	<p>
-		Hello Sinergy,
-		<br>Maaf request ATK direject, berikut rinciannya:
-	</p>
-	<table style="text-align: left;margin: 5px;">
-		<!-- <tr>
-			<th>Nama</th>
-			<th> : </th>
-			<td>{{$req_atk->name}}</td>
-		</tr> -->
-		<tr>
-			<th>Nama Barang</th>
-			<th> : </th>
-			<td>{{$req_atk->nama_barang}}</td>
-		</tr>
-		<tr>
-			<th>Quantity</th>
-			<th> : </th>
-			<td>{{$req_atk->qty_akhir}}</td>
-		</tr>
-		<tr>
-			<th>Tanggal Request ATK</th>
-			<th> : </th>
-			<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
-		</tr>
-		<tr>
-			<th>Note</th>
-			<th> : </th>
-			<td>{{$req_atk->note}}</td>
-		</tr>
-	</table>
-	<br>
+		<p>
+			Hello {{$req_atk->name}},
+			<br><b>Maaf request ATK ditolak</b>, berikut rinciannya:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama_barang}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty_akhir}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->note}}</td>
+			</tr>
+		</table>
+		<br>
 	@elseif($req_atk->status == 'PROSES')
 		<p>
 		Hello Sinergy,
@@ -100,39 +90,123 @@
 			</tr>
 		</table>
 		<br>
+	@elseif($req_atk->status == 'PROCESS')
+		<p>
+			Hello {{$req_atk->name}},
+			<br><b>Request ATK anda sedang diproses,</b> berikut rinciannya:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->keterangan}}</td>
+			</tr>
+		</table>
+		<br>
+	@elseif($req_atk->status == 'REJECTED')
+		<p>
+			Hello {{$req_atk->name}},
+			<br><b>Maaf request ATK ditolak</b>, berikut rinciannya:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->note_reject}}</td>
+			</tr>
+		</table>
+		<br>
+	@elseif($req_atk->status == 'DONE')
+		<p>
+			Hello {{$req_atk->name}},
+			<br><b>Barang sudah datang,</b> berikut rinciannya:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->keterangan}}</td>
+			</tr>
+		</table>
+		<br>
 	@else
-	<p>
-		Hello Sinergy,
-		<br>Berikut request ATK oleh:
-	</p>
-	<table style="text-align: left;margin: 5px;">
-		<tr>
-			<th>Nama</th>
-			<th> : </th>
-			<td>{{$req_atk->name}}</td>
-		</tr>
-		<tr>
-			<th>Nama Barang</th>
-			<th> : </th>
-			<td>{{$req_atk->nama_barang}}</td>
-		</tr>
-		<tr>
-			<th>Quantity</th>
-			<th> : </th>
-			<td>{{$req_atk->qty_akhir}}</td>
-		</tr>
-		<tr>
-			<th>Tanggal Request ATK</th>
-			<th> : </th>
-			<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
-		</tr>
-		<tr>
-			<th>Note</th>
-			<th> : </th>
-			<td>{{$req_atk->keterangan}}</td>
-		</tr>
-	</table>
-	<br>
+		<p>
+			Hello {{$get_user->name}},
+			<br><b>Berikut request ATK</b> oleh:
+		</p>
+		<table style="text-align: left;margin: 5px;">
+			<tr>
+				<th>Request By</th>
+				<th> : </th>
+				<td>{{$req_atk->name}}</td>
+			</tr>
+			<tr>
+				<th>Nama Barang</th>
+				<th> : </th>
+				<td>{{$req_atk->nama_barang}}</td>
+			</tr>
+			<tr>
+				<th>Quantity</th>
+				<th> : </th>
+				<td>{{$req_atk->qty_akhir}}</td>
+			</tr>
+			<tr>
+				<th>Tanggal Request ATK</th>
+				<th> : </th>
+				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<th> : </th>
+				<td>{{$req_atk->keterangan}}</td>
+			</tr>
+		</table>
+		<br>
 	@endif
 	Silahkan klik link berikut ini untuk melihat Detail Request ATK.<br>
 	<table width="100%" cellspacing="0" cellpadding="0">
