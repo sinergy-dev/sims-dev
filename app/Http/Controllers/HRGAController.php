@@ -1246,7 +1246,9 @@ class HRGAController extends Controller
         $client = new Client();
         $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_YEY'));
         $json = (string)$api_response->getBody();
-        $datas_nasional = json_decode($json, true);     
+        $datas_nasional = json_decode($json, true);  
+        // return $datas_nasional;
+        // $datas_nasional = [];   
 
         $bulan = date('F');
         $tahun_ini = date('Y');
@@ -1622,10 +1624,11 @@ class HRGAController extends Controller
 
     public function decline_cuti(Request $request)
     {
-        $id_cuti = $request['id_cuti_decline'];
+        $id_cuti = $request['id_cuti'];
+        $decline_reason = $request['decline_reason'];
 
         $update = Cuti::where('id_cuti',$id_cuti)->first();
-        $update->decline_reason = $request['keterangan'];
+        $update->decline_reason = $decline_reason;
         $update->status         = 'd';
         $update->pic            = Auth::User()->name;
         $update->updated_at     = date('Y-m-d');
@@ -2062,6 +2065,7 @@ class HRGAController extends Controller
             ->whereIn('id_cuti',function($query){
                 $query->select('id_cuti')
                     ->from('tb_cuti')
+                    ->where('status', '<>', 'd')
                     ->where('nik','=',Auth::user()->nik);
             })
             ->pluck('date_off');
@@ -2494,7 +2498,7 @@ class HRGAController extends Controller
                     
             });
 
-            $excel->sheet('Detail Report Cuti SIP & MSP', function ($sheet) use ($request) {
+            $excel->sheet('Report Cuti SIP & MSP', function ($sheet) use ($request) {
         
                 $sheet->mergeCells('A1:H1');
                 $sheet->setBorder('A1:H1', 'thin');
@@ -2507,7 +2511,7 @@ class HRGAController extends Controller
                     $row->setBackground('#fcd703');
                 });
 
-                $sheet->row(1, array('Detail Report Bulanan Cuti'));
+                $sheet->row(1, array('Report Cuti '.$request->date_start.' s/d '.$request->date_end));
 
                 $sheet->row(2, function ($row) {
                     $row->setFontFamily('Calibri');
@@ -2515,19 +2519,62 @@ class HRGAController extends Controller
                     $row->setFontWeight('bold');
                 });
 
-                    if ($request->filter == 'date') {
-    	                $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-    		            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-    		            ->join('tb_position','tb_position.id_position','=','users.id_position')
-    		            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->join('tb_company','tb_company.id_company','=','users.id_company')
-    		            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-    		            ->where('status','v')
-    		            ->whereBetween('date_off',array($request->date_start,$request->date_end))
-    		            ->groupby('tb_cuti_detail.id_cuti')
-    		            ->get();
+                  //   if ($request->filter == 'date') {
+    	             //    $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+    		            // ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+    		            // ->join('tb_position','tb_position.id_position','=','users.id_position')
+    		            // ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //       ->join('tb_company','tb_company.id_company','=','users.id_company')
+    		            // ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+    		            // ->where('status','v')
+    		            // ->whereBetween('date_off',array($request->date_start,$request->date_end))
+    		            // ->groupby('tb_cuti_detail.id_cuti')
+    		            // ->get();
 
-                    }else if($request->filter == 'div'){
+                  //   }else if($request->filter == 'div'){
+                  //       $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                  //       ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                  //       ->join('tb_position','tb_position.id_position','=','users.id_position')
+                  //       ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //       ->join('tb_company','tb_company.id_company','=','users.id_company')
+                  //       ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                  //       ->where('status','v')
+                  //       ->where('tb_division.id_division',$request->division)
+                  //       ->groupby('tb_cuti.id_cuti')
+                  //       ->get();
+
+                  //   }else if($request->filter == 'all'){
+                  //       if ($request->division == 'alldeh') {
+
+                  //           $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                  //           ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                  //           ->join('tb_position','tb_position.id_position','=','users.id_position')
+                  //           ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //           ->join('tb_company','tb_company.id_company','=','users.id_company')
+                  //           ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                  //           ->where('status','v')
+                  //           ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                  //           ->groupby('tb_cuti.id_cuti')
+                  //           ->get();
+                  //       }else{
+                  //           $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                  //           ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                  //           ->join('tb_position','tb_position.id_position','=','users.id_position')
+                  //           ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //           ->join('tb_company','tb_company.id_company','=','users.id_company')
+                  //           ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                  //           ->where('status','v')
+                  //           ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                  //           ->where('tb_division.id_division',$request->division)
+                  //           ->groupby('tb_cuti.id_cuti')
+                  //           ->get();
+                  //       }
+                        
+                  //   }else{
+                        
+                  //   }
+
+                    if ($request->division == 'alldeh') {
                         $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
@@ -2535,37 +2582,13 @@ class HRGAController extends Controller
                         ->join('tb_company','tb_company.id_company','=','users.id_company')
                         ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
                         ->where('status','v')
-                        ->where('tb_division.id_division',$request->division)
+                        // ->whereMonth('tb_cuti.date_req',date('m'))
+                        // ->whereYear('tb_cuti.date_req',date('Y'))
+                        ->whereBetween('date_off',array($request->date_start,$request->date_end))
                         ->groupby('tb_cuti.id_cuti')
                         ->get();
 
-                    }else if($request->filter == 'all'){
-                        if ($request->division == 'alldeh') {
-
-                            $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                            ->join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->join('tb_company','tb_company.id_company','=','users.id_company')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-                            ->where('status','v')
-                            ->whereBetween('date_off',array($request->date_start,$request->date_end))
-                            ->groupby('tb_cuti.id_cuti')
-                            ->get();
-                        }else{
-                            $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                            ->join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->join('tb_company','tb_company.id_company','=','users.id_company')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-                            ->where('status','v')
-                            ->whereBetween('date_off',array($request->date_start,$request->date_end))
-                            ->where('tb_division.id_division',$request->division)
-                            ->groupby('tb_cuti.id_cuti')
-                            ->get();
-                        }
-                        
+                        $cuti = $cuti->sortBy('name');
                     }else{
                         $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
                         ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
@@ -2574,10 +2597,13 @@ class HRGAController extends Controller
                         ->join('tb_company','tb_company.id_company','=','users.id_company')
                         ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
                         ->where('status','v')
-                        ->whereMonth('tb_cuti.date_req',date('m'))
-                        ->whereYear('tb_cuti.date_req',date('Y'))
+                        // ->whereMonth('tb_cuti.date_req',date('m'))
+                        ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                        ->where('tb_division.id_division',$request->division)
                         ->groupby('tb_cuti.id_cuti')
                         ->get();
+
+                        $cuti = $cuti->sortBy('name');
                     }
 
                     $datasheetdetail = array();
@@ -2605,19 +2631,771 @@ class HRGAController extends Controller
         })->export('xls');
     }
 
+    public function getFilterCom(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        if ($request->id == 'all_lis') {
+            $cuti_index = DB::table('users')
+                ->join('tb_cuti','tb_cuti.nik','=','users.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+                ->groupby('tb_cuti.nik')
+                ->where('status_karyawan','!=','dummy');
+
+            $cuti_list = DB::table('users')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+                ->where('status_karyawan','!=','dummy')
+                ->whereNotIn('nik',function($query) { 
+                    $query->select('nik')->from('tb_cuti');
+                });
+
+            if ($request->filter_com == 'all') {
+                $cuti_index = $cuti_index->get();
+                $cuti_list = $cuti_list->get();
+            } else {
+                $cuti_index = $cuti_index
+                    ->where('users.id_company',$request->filter_com)->get();
+                $cuti_list = $cuti_list
+                    ->where('users.id_company',$request->filter_com)->get();
+            }
+
+            return array("data"=>$cuti_index->merge($cuti_list));
+        } elseif ($request->id == 'request') {
+
+            $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik');
+
+            if ($request->filter_com == 'all') {
+                $cuti = $cuti->get();
+            } else {
+                if ($ter != NULL) {
+                    if($div == 'SALES' && $pos == 'MANAGER'){
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('id_territory', $ter)
+                            ->get();
+                    } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.id_division','TECHNICAL')
+                            ->where('users.id_territory','DPG')
+                            ->get();
+                    } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.id_division','TECHNICAL')
+                            ->where('users.id_territory','DVG')
+                            ->get();
+                    } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.id_division','MSM')
+                            ->get();
+                    } elseif ($pos == 'OPERATION DIRECTOR') {
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.id_position','MANAGER')
+                            ->where('users.id_territory','OPERATION')
+                            ->orwhere('users.id_position','OPERATION DIRECTOR')
+                            ->orwhere('users.id_division','WAREHOUSE')
+                            ->get();
+                    } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.id_territory','PRESALES')
+                            ->get();
+                    } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.id_division','FINANCE')
+                            ->get();
+                    } else{
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.nik',$nik)
+                            ->get();
+                    }
+                } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->get();
+                } elseif ($pos == 'DIRECTOR') {
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_position','MANAGER')
+                        ->where('users.id_division','!=','MSM')
+                        ->orwhere('users.id_position','=','OPERATION DIRECTOR')
+                        ->orwhere('users.id_position','=','HR MANAGER')
+                        ->get();
+                } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'STAFF HR'){
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.nik',$nik)
+                            ->get();
+                } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {  
+                    $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->where('users.id_division','TECHNICAL')
+                            ->where('users.id_position','MANAGER')
+                            ->orwhere('users.id_position','ENGINEER MANAGER')
+                            ->orwhere('users.id_position','MANAGER')
+                            ->orwhere('users.id_division','WAREHOUSE')
+                            ->get();
+                } else {
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->get();
+                }
+            }
+
+            return array("data"=>$cuti);
+        } else if ($request->id == 'report_') {
+            $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti','tb_cuti.pic','tb_cuti.updated_at')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->groupby('tb_cuti.id_cuti');
+            if ($request->filter_com != 'all') {
+                $cuti = $cuti->where('users.id_company',$request->filter_com);
+            } 
+            if ($request->division != "alldeh") {
+                $cuti = $cuti->where('users.id_division',$request->division);
+            }
+
+            return $cuti->get();
+        } else {
+            $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division')
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->groupby('id_cuti');
+
+            if ($ter != NULL) {
+                if($div == 'SALES' && $pos == 'MANAGER'){
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('id_territory', $ter)
+                        ->get();
+                } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_division','TECHNICAL')
+                        ->where('users.id_territory','DPG')
+                        ->get();
+                } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_division','TECHNICAL')
+                        ->where('users.id_territory','DVG')
+                        ->get();
+                } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_division','MSM')
+                        ->get();
+                } elseif ($pos == 'OPERATION DIRECTOR') {
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_position','MANAGER')
+                        ->where('users.id_territory','OPERATION')
+                        ->orwhere('users.id_position','OPERATION DIRECTOR')
+                        ->orwhere('users.id_division','WAREHOUSE')
+                        ->get();
+                } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_territory','PRESALES')
+                        ->get();
+                } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_division','FINANCE')
+                        ->get();
+                } else{
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.nik',$nik)
+                        ->get();
+                }
+            } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
+                $cuti = $cuti
+                    ->where('users.id_company',$request->filter_com)
+                    ->get();
+            } elseif ($pos == 'DIRECTOR') {
+                $cuti = $cuti
+                    ->where('users.id_company',$request->filter_com)
+                    ->where('users.id_position','MANAGER')
+                    ->where('users.id_division','!=','MSM')
+                    ->orwhere('users.id_position','=','OPERATION DIRECTOR')
+                    ->orwhere('users.id_position','=','HR MANAGER')
+                    ->get();
+            } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'STAFF HR'){
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.nik',$nik)
+                        ->get();
+            } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {  
+                $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_division','TECHNICAL')
+                        ->where('users.id_position','MANAGER')
+                        ->orwhere('users.id_position','ENGINEER MANAGER')
+                        ->orwhere('users.id_position','MANAGER')
+                        ->orwhere('users.id_division','WAREHOUSE')
+                        ->get();
+            } else {
+                $cuti = $cuti
+                    ->where('users.id_company',$request->filter_com)
+                    ->get();
+            }
+
+            return array("data"=>$cuti);
+        }
+        
+    }
+
+    public function get_history_cuti(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division')
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->groupby('id_cuti');
+
+        if ($ter != NULL) {
+            if($div == 'SALES' && $pos == 'MANAGER'){
+                $cuti = $cuti
+                    ->where('id_territory', $ter)
+                    ->get();
+            } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
+                $cuti = $cuti
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DPG')
+                    ->get();
+            } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
+                $cuti = $cuti
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DVG')
+                    ->get();
+            } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+                $cuti = $cuti
+                    ->where('users.id_division','MSM')
+                    ->get();
+            } elseif ($pos == 'OPERATION DIRECTOR') {
+                $cuti = $cuti
+                    ->where('users.id_position','MANAGER')
+                    ->where('users.id_territory','OPERATION')
+                    ->orwhere('users.id_position','OPERATION DIRECTOR')
+                    ->orwhere('users.id_division','WAREHOUSE')
+                    ->get();
+            } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
+                $cuti = $cuti
+                    ->where('users.id_territory','PRESALES')
+                    ->get();
+            } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                $cuti = $cuti
+                    ->where('users.id_division','FINANCE')
+                    ->get();
+            } else{
+                $cuti = $cuti
+                    ->where('users.nik',$nik)
+                    ->get();
+            }
+        } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
+            $cuti = $cuti
+                ->get();
+        } elseif ($pos == 'DIRECTOR') {
+            $cuti = $cuti
+                ->where('users.id_position','MANAGER')
+                ->where('users.id_division','!=','MSM')
+                ->orwhere('users.id_position','=','OPERATION DIRECTOR')
+                ->orwhere('users.id_position','=','HR MANAGER')
+                ->get();
+        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'STAFF HR'){
+                $cuti = $cuti
+                    ->where('users.nik',$nik)
+                    ->get();
+        } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {  
+            $cuti = $cuti
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_position','MANAGER')
+                    ->orwhere('users.id_position','ENGINEER MANAGER')
+                    ->orwhere('users.id_position','MANAGER')
+                    ->orwhere('users.id_division','WAREHOUSE')
+                    ->get();
+        } else {
+            $cuti = $cuti
+                ->get();
+        }
+
+        return array("data"=>$cuti);
+    }
+
+    public function get_list_cuti(Request $request)
+    {
+
+        $cuti_index = DB::table('users')
+            ->join('tb_cuti','tb_cuti.nik','=','users.nik')
+            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+            ->join('tb_position','tb_position.id_position','=','users.id_position')
+            ->join('tb_division','tb_division.id_division','=','users.id_division')
+            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+            ->groupby('tb_cuti.nik')
+            ->where('status_karyawan','!=','dummy')
+            ->get();
+
+        $cuti_list = DB::table('users')
+            ->join('tb_position','tb_position.id_position','=','users.id_position')
+            ->join('tb_division','tb_division.id_division','=','users.id_division')
+            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+            ->where('status_karyawan','!=','dummy')
+            ->whereNotIn('nik',function($query) { 
+                $query->select('nik')->from('tb_cuti');
+            })
+            ->get();
+
+        return array("data"=>$cuti_index->merge($cuti_list));
+    }
+
+    public function get_request_cuti_byMonth(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        if ($ter != NULL) {
+            if($div == 'SALES' && $pos == 'MANAGER'){
+                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('id_territory', $ter)
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+            } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG') {
+                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DPG')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+            } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
+                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DVG')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+            }elseif ($div == 'PMO' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','PMO')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+            } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','MSM')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+            } elseif ($pos == 'OPERATION DIRECTOR') {
+                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_position','MANAGER')
+                    ->where('users.id_territory','OPERATION')
+                    ->orwhere('users.id_position','OPERATION DIRECTOR')
+                    ->orwhere('users.id_division','WAREHOUSE')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+            } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
+                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('tb_cuti.status','n')
+                    ->where('users.id_territory','PRESALES')
+                    ->groupby('nik')
+                    ->get());
+            } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('users.id_division','FINANCE')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+            }else{
+                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('tb_cuti.status','n')
+                    ->where('users.nik',$nik)
+                    ->groupby('nik')
+                    ->get());
+            }
+        } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
+            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->orderBy('date_req','DESC')
+                ->groupby('tb_cuti.id_cuti')
+                ->where('tb_cuti.status','n')
+                ->groupby('nik')
+                ->get());
+        } elseif ($pos == 'DIRECTOR') {
+            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->orderBy('date_req','DESC')
+                ->groupby('tb_cuti.id_cuti')
+                ->where('users.id_position','MANAGER')
+                ->where('users.id_division','!=','MSM')
+                ->orwhere('users.id_position','=','OPERATION DIRECTOR')
+                ->orwhere('users.id_position','=','HR MANAGER')
+                ->where('users.id_company', '1')
+                ->where('tb_cuti.status','n')
+                ->groupby('nik')
+                ->get());
+        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'STAFF HR'){
+            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->orderBy('date_req','DESC')
+                ->groupby('tb_cuti.id_cuti')
+                ->where('tb_cuti.status','n')
+                ->where('users.nik',$nik)
+                ->groupby('nik')
+                ->get());
+        } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {
+            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->where('users.id_division','TECHNICAL')
+                ->where('users.id_position','MANAGER')
+                ->orwhere('users.id_position','ENGINEER MANAGER')
+                ->orwhere('users.id_position','MANAGER')
+                ->orwhere('users.id_division','WAREHOUSE')
+                ->orderBy('date_req','DESC')
+                ->groupby('tb_cuti.id_cuti')
+                ->where('tb_cuti.status','n')
+                ->where('users.id_company', '1')
+                ->groupby('nik')
+                ->get());
+        } else {
+            return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('tb_cuti.status','n')
+                    ->groupby('nik')
+                    ->get());
+        }
+        
+    }
+
     public function filterByDate(Request $request)
     {
-    	$cuti = DB::table('tb_cuti')
-	            ->join('users','users.nik','=','tb_cuti.nik')
-	            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-	            ->join('tb_position','tb_position.id_position','=','users.id_position')
-	            ->join('tb_division','tb_division.id_division','=','users.id_division')
-	            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti','tb_cuti.pic','tb_cuti.updated_at')
-	            // ->where('status','v')
-	            ->where('date_off', '>=', $request->start)
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        if ($ter != NULL) {
+            if($div == 'SALES' && $pos == 'MANAGER'){
+                $cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->orderBy('tb_cuti.date_req','DESC')
+                ->where('id_territory', $ter)
+                ->where('date_off', '>=', $request->start)
                 ->where('date_off', '<=', $request->end)
-	            ->groupby('tb_cuti.id_cuti')
-	            ->get();
+                ->groupby('tb_cuti.id_cuti')
+                ->get();
+            } elseif ($div == 'TECHNICAL' && $pos == 'ENGINEER MANAGER' && $ter == 'DPG'){
+                $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DPG')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->groupby('tb_cuti.id_cuti')
+                    ->get();
+            } elseif($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER'){
+                $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_territory','DVG')
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->groupby('tb_cuti.id_cuti')
+                    ->orderBy('id_cuti','desc')
+                    ->get();
+            } elseif ($div == 'PMO' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+                $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
+                    ->where('users.id_division','PMO')
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->groupby('tb_cuti.id_cuti')
+                    ->orderBy('id_cuti','desc')
+                    ->get();
+            } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
+                $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
+                    ->where('users.id_division','MSM')
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->groupby('tb_cuti.id_cuti')
+                    ->orderBy('id_cuti','desc')
+                    ->get();
+            } elseif ($pos == 'OPERATION DIRECTOR') {
+                $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
+                    ->where('users.id_position','MANAGER')
+                    ->where('users.id_territory','OPERATION')
+                    ->orwhere('users.id_position','OPERATION DIRECTOR')
+                    ->orwhere('users.id_division','WAREHOUSE')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->orderBy('id_cuti','desc')
+                    ->get();
+            } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
+                $cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','tb_cuti.pic','tb_cuti.updated_at')
+                ->where('users.id_territory','PRESALES')
+                ->where('date_off', '>=', $request->start)
+                ->where('date_off', '<=', $request->end)
+                ->groupby('tb_cuti.id_cuti')
+                ->orderBy('id_cuti','desc')
+                ->get();
+            } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
+                $cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->where('users.id_division','FINANCE')
+                ->where('date_off', '>=', $request->start)
+                ->where('date_off', '<=', $request->end)
+                ->groupby('tb_cuti.id_cuti')
+                ->orderBy('id_cuti','desc')
+                ->get();
+            } else{
+                $cuti = DB::table('tb_cuti')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
+                ->groupby('tb_cuti.id_cuti')
+                ->orderBy('tb_cuti.date_req','DESC')
+                ->where('users.nik',$nik)
+                ->where('date_off', '>=', $request->start)
+                ->where('date_off', '<=', $request->end)
+                ->orderBy('id_cuti','desc')
+                ->get();
+            }
+        } elseif($div == 'TECHNICAL' && $pos == 'MANAGER'){
+            $cuti = DB::table('tb_cuti')
+            ->join('users','users.nik','=','tb_cuti.nik')
+            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+            ->join('tb_position','tb_position.id_position','=','users.id_position')
+            ->join('tb_division','tb_division.id_division','=','users.id_division')
+            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+            ->where('users.id_division','TECHNICAL')
+            ->where('users.id_position','MANAGER')
+            ->orwhere('users.id_position','ENGINEER MANAGER')
+            ->where('date_off', '>=', $request->start)
+            ->where('date_off', '<=', $request->end)
+            ->groupby('tb_cuti.id_cuti')
+            ->orderBy('id_cuti','desc')
+            ->get();
+        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'STAFF HR'){
+                $cuti = DB::table('tb_cuti')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
+                    ->groupby('tb_cuti.id_cuti')
+                    ->orderBy('tb_cuti.date_req','DESC')
+                    ->where('users.nik',$nik)
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->orderBy('id_cuti','desc')
+                    ->get();
+        } elseif ($div == 'HR' && $pos == 'HR MANAGER') {
+            $cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->join('tb_position','tb_position.id_position','=','users.id_position')
+                ->join('tb_division','tb_division.id_division','=','users.id_division')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti','tb_cuti.pic','tb_cuti.updated_at')
+                // ->where('status','v')
+                ->where('date_off', '>=', $request->start)
+                ->where('date_off', '<=', $request->end)
+                ->groupby('tb_cuti.id_cuti')
+                ->get();
+        } elseif ($pos == 'DIRECTOR') {
+            $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->orderBy('id_cuti','desc')
+                    ->where('users.id_position','MANAGER')
+                    ->where('users.id_division','!=','MSM')
+                    ->orwhere('users.id_position','=','OPERATION DIRECTOR')
+                    ->orwhere('users.id_position','=','HR MANAGER')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->get();
+        } else {
+            $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('date_off', '>=', $request->start)
+                    ->where('date_off', '<=', $request->end)
+                    ->orderBy('id_cuti','desc')
+                    ->get();
+        }
 
 	    return $cuti;
     }
