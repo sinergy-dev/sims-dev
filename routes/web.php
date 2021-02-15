@@ -51,6 +51,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/testRemainderEmail', 'TestController@testRemainderEmail');
 	Route::get('/testEmailViewSales', 'TestController@view_mail_to_sales');
 	Route::get('/testEmailViewFinance', 'TestController@view_mail_to_finance');
+	Route::get('/testEmailPeminjaman','TestController@testEmailPeminjaman');
 
 	Route::get('/data/{id}', 'ImplementationController@get');
 	Route::get('/data_pmo/{id_pmo}', 'PMOController@getGantt');
@@ -84,6 +85,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/presence/history/personal', 'PresenceController@personalHistory');
 	Route::get('/presence/history/team', 'PresenceController@teamHistory');
 	Route::get('/presence/report', 'PresenceController@presenceReport');
+	Route::get('/presence/report/getData', 'PresenceController@getPresenceReportData');
+	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportRerport');
+	
 	Route::get('/presence/setting', 'PresenceController@presenceSetting');
 	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
 
@@ -325,6 +329,11 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/delete_cuti/{id_cuti}', 'HRGAController@delete_cuti');
 	Route::get('/follow_up/{id_cuti}', 'HRGAController@follow_up');
 	Route::get('/downloadPdfcuti', 'HRGAController@cutipdf');
+	Route::get('/get_list_cuti', 'HRGAController@get_list_cuti');
+	Route::get('/get_cuti_byMonth', 'HRGAController@get_request_cuti_byMonth');
+	Route::get('/getFilterCom', 'HRGAController@getFilterCom');
+	Route::get('/get_history_cuti', 'HRGAController@get_history_cuti');
+
 	Route::get('/index_delivery_person', 'HRGAController@index_delivery_person');
 	Route::get('/detail_delivery_person/{id_messenger}', 'HRGAController@detail_delivery_person');
 	Route::get('/getDataMessenger','HRGAController@getDataMessenger');
@@ -729,6 +738,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('imp/getprogress','ImplementationController@get_data_progress');
 	Route::get('imp/getproblem','ImplementationController@get_data_problem');
 
+	//asset HR
 
 	Route::get('/asset_hr', 'AssetHRController@index');
 	Route::post('/store_asset_hr', 'AssetHRController@store');
@@ -744,6 +754,17 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getEditAsset', 'AssetHRController@getEditAsset');
 	Route::post('/edit_asset', 'AssetHRController@edit_asset');
 	Route::get('exportExcelAsset', 'AssetHRController@export');
+	Route::get('/getAssetCategoriHR','AssetHRController@getCategory');
+	Route::post('/store_kategori_asset','AssetHRController@store_kategori');
+	Route::get('/getDetailBorrowed','AssetHRController@getDetailBorrowed');
+	Route::get('/acceptPeminjaman','AssetHRController@acceptPeminjaman');
+	Route::get('/storeRequestAsset','AssetHRController@storeRequestAsset');
+	Route::get('/acceptNewAsset','AssetHRController@acceptNewAsset');
+	Route::post('/createNewAsset','AssetHRController@createNewAsset');
+	Route::get('/getRequestAssetBy','AssetHRController@getRequestAssetBy');
+	Route::get('/AddNoteReq','AssetHRController@AddNoteReq');
+	Route::get('/batalkanReq','AssetHRController@batalkanReq');
+
 
 	Route::get('asset_atk', 'AssetAtkController@index');
 	Route::post('asset_atk/store_asset_atk', 'AssetAtkController@store');
@@ -755,6 +776,11 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('asset_atk/detail_asset_atk/{id_barang}','AssetAtkController@detail');
 	Route::post('asset_atk/update_stok', 'AssetAtkController@update_stok');
 	Route::post('asset_atk/done_request_pr', 'AssetAtkController@done_request_pr');
+	Route::get('asset_atk/getAssetAtk', 'AssetAtkController@getAtk');
+	Route::post('asset_atk/store_request_atk', 'AssetAtkController@store_request_atk');
+	Route::post('asset_atk/accept_request_atk', 'AssetAtkController@accept_request_atk');
+	Route::post('asset_atk/done_request_atk', 'AssetAtkController@request_done');
+	Route::post('asset_atk/reject_request_atk', 'AssetAtkController@reject_request_atk');
 
 	//PMO
 	Route::get('PMO/detail/{lead_id}','PMOController@detail');
