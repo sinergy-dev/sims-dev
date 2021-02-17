@@ -203,7 +203,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-            <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            <button type="submit" class="btn btn-primary" id="addLetter"><i class="fa fa-check"> </i>&nbspSubmit</button>
           </div>
         </form>
         </div>
@@ -293,7 +293,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-            <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            <button type="submit" class="btn btn-primary" id="addBackdate"><i class="fa fa-check"> </i>&nbspSubmit</button>
           </div>
         </form>
         </div>
@@ -350,6 +350,19 @@
     </div>
 </div>
 
+<div class="modal fade" id="tunggu" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="">Sedang diproses. . .</div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
 </section>
 
 <style type="text/css">
@@ -381,6 +394,18 @@
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
+    $('#addLetter').click(function(){
+      $('#tunggu').modal('show')
+      $('#modal_pr').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
+    });
+
+    $('#addBackdate').click(function(){
+      $('#tunggu').modal('show')
+      $('#letter_backdate').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
+    });
+
     function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
       $('#modaledit').modal('show');
       $('#edit_no_letter').val(no_letter);
