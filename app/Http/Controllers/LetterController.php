@@ -238,149 +238,59 @@ class LetterController extends Controller
                 ->count('no');
 
         // $getno_new = $getno->no;
+        $array_bln = array('01' => "I",
+                    '02' => "II",
+                    '03' => "III",
+                    '04' => "IV",
+                    '05' => "V",
+                    '06' => "VI",
+                    '07' => "VII",
+                    '08' => "VIII",
+                    '09' => "IX",
+                    '10' => "X",
+                    '11' => "XI",
+                    '12' => "XII");
+        $type = $request['type'];
+        $posti = $request['position'];
+        $month_pr = substr($request['date'],5,2);
+        $year_pr = substr($request['date'],0,4);        
 
         if ($cek > 0) {
-            $getno = Letter::orderBy('no', 'desc')->first();
-            $getno_new = $getno->no;
+            $letters = Letter::where('status','A')->orderBy('no','desc')->whereYear('created_at',$tahun)->first()->no_letter;
 
-                if ($getno_new < 7) {
-                    $angka = '7';
-                }
-                elseif ($getno_new > 6) {
-                        $query = Letter::where('no','like','%7')->get();
-                        foreach ($query as $data) {
-                             if ($getno_new == $data->no) {
-                                 $angka = $data->no;
-                             }else{
-                                 $angka = $data->no;
-                             }
-                        }
-                }
+            $getnumber =  explode("/",$letters)[0];
 
-                if ($getno_new == $angka) {
-                     
-                    $type = $request['type'];
-                    $posti = $request['position'];
-                    $month_pr = substr($request['date'],5,2);
-                    $year_pr = substr($request['date'],0,4);
+            $nom = Letter::select('no')->orderBy('created_at','desc')->whereYear('created_at', $tahun)->first()->no;
 
-                    $array_bln = array('01' => "I",
-                                        '02' => "II",
-                                        '03' => "III",
-                                        '04' => "IV",
-                                        '05' => "V",
-                                        '06' => "VI",
-                                        '07' => "VII",
-                                        '08' => "VIII",
-                                        '09' => "IX",
-                                        '10' => "X",
-                                        '11' => "XI",
-                                        '12' => "XII");
-                    $bln = $array_bln[$month_pr];
+            $skipNum = Letter::select('no_letter')->orderBy('created_at','desc')->first();
 
-                    $getnumber = Letter::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
+            $bln = $array_bln[$month_pr];
 
-                    $getnumbers = Letter::orderBy('no', 'desc')->first();
+            $lastnumber = $getnumber+1;
 
-                    if($getnumber == NULL){
-                        $getlastnumber = 1;
-                        $lastnumber  = $getlastnumber;
-                    } else{
-                        $lastnumber = $getnumber+1;
-                        $lastnumber9 = $getnumber+2;
-                    }
+            $lastnumber9 = $getnumber+2;
 
-                    if($lastnumber < 10){
-                       $akhirnomor  = '000' . $lastnumber;
-                       $akhirnomor9 = '000' . $lastnumber9;
-                    }elseif($lastnumber > 9 && $lastnumber < 100){
-                       $akhirnomor = '00' . $lastnumber;
-                       $akhirnomor9 = '00' . $lastnumber9;
-                    }elseif($lastnumber >= 100){
-                       $akhirnomor = '0' . $lastnumber;
-                       $akhirnomor9 = '0' . $lastnumber9;
-                    }
+            if($lastnumber < 10){
+               $akhirnomor  = '000' . $lastnumber;
+               $akhirnomor9 = '00' . $lastnumber9;
+            }elseif($lastnumber > 9 && $lastnumber < 100){
+               $akhirnomor = '00' . $lastnumber;
+               $akhirnomor9 = '00' . $lastnumber9;
+            }elseif($lastnumber >= 100){
+               $akhirnomor = '0' . $lastnumber;
+               $akhirnomor9 = '0' . $lastnumber9;
+            }            
 
-                    $no   = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-                    $no9  = $akhirnomor9;
+            if (substr($getnumber, -1) == '4') {
+                $no   = $akhirnomor9.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
 
+                $no9  = $akhirnomor;
 
-                    $nom = Letter::select('no')->orderBy('created_at','desc')->first();
-
-                    for ($i=0; $i < 2 ; $i++) { 
-                        $tambah = new Letter();
+                if (Letter::where('no_letter', '=', $no9)->exists()) {
+                   $tambah = new Letter();
                         
-                        if ($i == 0) {
-                            $tambah->no = $nom->no+1;
-                            $tambah->no_letter = $no;
-                            $tambah->status = 'A';
-                        }else{
-                            $tambah->no = $nom->no+2;
-                            $tambah->no_letter = $no9;
-                            $tambah->status = 'T';
-                        }
-                        $tambah->position = $posti;
-                        $tambah->type_of_letter = $type;
-                        $tambah->month = $bln;
-                        $tambah->date = $request['date'];
-                        $tambah->to = $request['to'];
-                        $tambah->attention = $request['attention'];
-                        $tambah->title = $request['title'];
-                        $tambah->project = $request['project'];
-                        $tambah->description = $request['description'];
-                        // $tambah->from = $request['from'];
-                        $tambah->nik = Auth::User()->nik;
-                        $tambah->division = $request['division'];
-                        $tambah->project_id = $request['project_id'];
-
-                        $tambah->save();
-                    }
-
-                    return redirect('letter')->with('success', 'Create Letter Successfully!');
-                }else{
-                    $type = $request['type'];
-                    $posti = $request['position'];
-                    $month_pr = substr($request['date'],5,2);
-                    $year_pr = substr($request['date'],0,4);
-
-                    $array_bln = array('01' => "I",
-                                        '02' => "II",
-                                        '03' => "III",
-                                        '04' => "IV",
-                                        '05' => "V",
-                                        '06' => "VI",
-                                        '07' => "VII",
-                                        '08' => "VIII",
-                                        '09' => "IX",
-                                        '10' => "X",
-                                        '11' => "XI",
-                                        '12' => "XII");
-                    $bln = $array_bln[$month_pr];
-
-                    $getnumber = Letter::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
-
-                    $getnumbers = Letter::orderBy('no', 'desc')->first();
-
-                    if($getnumber == NULL){
-                        $getlastnumber = 1;
-                        $lastnumber = $getlastnumber;
-                    } else{
-                        $lastnumber = $getnumber+1;
-                    }
-
-                    if($lastnumber < 10){
-                       $akhirnomor = '000' . $lastnumber;
-                    }elseif($lastnumber > 9 && $lastnumber < 100){
-                       $akhirnomor = '00' . $lastnumber;
-                    }elseif($lastnumber >= 100){
-                       $akhirnomor = '0' . $lastnumber;
-                    }
-
-                    $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-
-                    $tambah = new Letter();
-                    $tambah->no = $getnumbers->no+1;
                     $tambah->no_letter = $no;
+                    $tambah->status = 'A';
                     $tambah->position = $posti;
                     $tambah->type_of_letter = $type;
                     $tambah->month = $bln;
@@ -391,46 +301,210 @@ class LetterController extends Controller
                     $tambah->project = $request['project'];
                     $tambah->description = $request['description'];
                     $tambah->nik = Auth::User()->nik;
-                    $tambah->status = 'A';
-                    // $tambah->from = $request['from'];
                     $tambah->division = $request['division'];
                     $tambah->project_id = $request['project_id'];
-                    $tambah->save();
 
-                    return redirect('letter')->with('success', 'Create Letter Successfully!');
+                    $tambah->save();
+                }else{
+                    for ($i=0; $i < 2 ; $i++) { 
+                        $tambah = new Letter();
                         
+                        if ($i == 0) {
+                            // $tambah->no = $nom+1;
+                            $tambah->no_letter = $no9;
+                            $tambah->status = 'T';
+                        }else{
+                            // $tambah->no = $nom+2;
+                            $tambah->no_letter = $no;
+                            $tambah->status = 'A';
+                        }
+                        $tambah->position = $posti;
+                        $tambah->type_of_letter = $type;
+                        $tambah->month = $bln;
+                        $tambah->date = $request['date'];
+                        $tambah->to = $request['to'];
+                        $tambah->attention = $request['attention'];
+                        $tambah->title = $request['title'];
+                        $tambah->project = $request['project'];
+                        $tambah->description = $request['description'];
+                        $tambah->nik = Auth::User()->nik;
+                        $tambah->division = $request['division'];
+                        $tambah->project_id = $request['project_id'];
+
+                        $tambah->save();
+                    }
                 }
+
+            }else {
+                $no   = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+
+                $tambah = new Letter();
+                $tambah->no_letter = $no;
+                $tambah->position = $posti;
+                $tambah->type_of_letter = $type;
+                $tambah->month = $bln;
+                $tambah->date = $request['date'];
+                $tambah->to = $request['to'];
+                $tambah->attention = $request['attention'];
+                $tambah->title = $request['title'];
+                $tambah->project = $request['project'];
+                $tambah->description = $request['description'];
+                $tambah->nik = Auth::User()->nik;
+                $tambah->status = 'A';
+                $tambah->division = $request['division'];
+                $tambah->project_id = $request['project_id'];
+                $tambah->save();  
+            }
+
+            // $getno = Letter::orderBy('no', 'desc')->first();
+            // $getno_new = $getno->no;
+
+                // if ($getno_new < 7) {
+                //     $angka = '7';
+                // }
+                // elseif ($getno_new > 6) {
+                //         $query = Letter::where('no','like','%7')->get();
+                //         foreach ($query as $data) {
+                //              if ($getno_new == $data->no) {
+                //                  $angka = $data->no;
+                //              }else{
+                //                  $angka = $data->no;
+                //              }
+                //         }
+                // }
+
+                // if ($getno_new == $angka) {   
+                //     $bln = $array_bln[$month_pr];
+
+                //     if($getnumber == NULL){
+                //         $getlastnumber = 1;
+                //         $lastnumber  = $getlastnumber;
+                //     } else{
+                //         $lastnumber = $getnumber+1;
+                //         $lastnumber9 = $getnumber+2;
+                //     }
+                    
+
+                //     if($lastnumber < 10){
+                //        $akhirnomor  = '000' . $lastnumber;
+                //        $akhirnomor9 = '000' . $lastnumber9;
+                //     }elseif($lastnumber > 9 && $lastnumber < 100){
+                //        $akhirnomor = '00' . $lastnumber;
+                //        $akhirnomor9 = '00' . $lastnumber9;
+                //     }elseif($lastnumber >= 100){
+                //        $akhirnomor = '0' . $lastnumber;
+                //        $akhirnomor9 = '0' . $lastnumber9;
+                //     }
+
+                //     $no   = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+                //     $no9  = $akhirnomor9;
+
+                //     //double check skip number
+                //     $allNoLetter = Letter::where('status','T')->whereYear('created_at',$tahun)->get();
+                //     foreach ($allNoLetter as $NewNoLetter) {
+                //         $NewNoLetters = substr($NewNoLetter->no_letter, -1);
+                //         if ($NewNoLetters == $no9) {
+                //             // $skipNumber = 1;
+                //             $status = 'sameNumber';
+                //         }else{
+                //             // $skipNumber = 2;
+                //             $status = 'notSame';
+                //         }
+
+                //     }   
+
+                //     if ($status == 'sameNumber') {
+                //         for ($i=0; $i < 2 ; $i++) { 
+                //             $tambah = new Letter();
+                            
+                //             if ($i == 0) {
+                //                 // $tambah->no = $nom+1;
+                //                 $tambah->no_letter = $no;
+                //                 $tambah->status = 'A';
+                //             }else{
+                //                 // $tambah->no = $nom+2;
+                //                 $tambah->no_letter = $no9;
+                //                 $tambah->status = 'T';
+                //             }
+                //             $tambah->position = $posti;
+                //             $tambah->type_of_letter = $type;
+                //             $tambah->month = $bln;
+                //             $tambah->date = $request['date'];
+                //             $tambah->to = $request['to'];
+                //             $tambah->attention = $request['attention'];
+                //             $tambah->title = $request['title'];
+                //             $tambah->project = $request['project'];
+                //             $tambah->description = $request['description'];
+                //             $tambah->nik = Auth::User()->nik;
+                //             $tambah->division = $request['division'];
+                //             $tambah->project_id = $request['project_id'];
+
+                //             $tambah->save();
+                //         }
+                //     }else{
+                //         $tambah = new Letter();
+                            
+                //         $tambah->no_letter = $no;
+                //         $tambah->status = 'A';
+                //         $tambah->position = $posti;
+                //         $tambah->type_of_letter = $type;
+                //         $tambah->month = $bln;
+                //         $tambah->date = $request['date'];
+                //         $tambah->to = $request['to'];
+                //         $tambah->attention = $request['attention'];
+                //         $tambah->title = $request['title'];
+                //         $tambah->project = $request['project'];
+                //         $tambah->description = $request['description'];
+                //         $tambah->nik = Auth::User()->nik;
+                //         $tambah->division = $request['division'];
+                //         $tambah->project_id = $request['project_id'];
+
+                //         $tambah->save();
+                //     }
+
+                // }else{
+                //     $bln = $array_bln[$month_pr];
+
+                //     if($getnumber == NULL){
+                //         $getlastnumber = 1;
+                //         $lastnumber = $getlastnumber;
+                //     } else{
+                //         $lastnumber = $getnumber+1;
+                //     }
+
+                //     if($lastnumber < 10){
+                //        $akhirnomor = '000' . $lastnumber;
+                //     }elseif($lastnumber > 9 && $lastnumber < 100){
+                //        $akhirnomor = '00' . $lastnumber;
+                //     }elseif($lastnumber >= 100){
+                //        $akhirnomor = '0' . $lastnumber;
+                //     }
+
+                //     $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+
+                //     $tambah = new Letter();
+                //     // $tambah->no = $nom+1;
+                //     $tambah->no_letter = $no;
+                //     $tambah->position = $posti;
+                //     $tambah->type_of_letter = $type;
+                //     $tambah->month = $bln;
+                //     $tambah->date = $request['date'];
+                //     $tambah->to = $request['to'];
+                //     $tambah->attention = $request['attention'];
+                //     $tambah->title = $request['title'];
+                //     $tambah->project = $request['project'];
+                //     $tambah->description = $request['description'];
+                //     $tambah->nik = Auth::User()->nik;
+                //     $tambah->status = 'A';
+                //     // $tambah->from = $request['from'];
+                //     $tambah->division = $request['division'];
+                //     $tambah->project_id = $request['project_id'];
+                //     $tambah->save();                        
+                // }
             
         } else{
-            $type = $request['type'];
-            $posti = $request['position'];
-            $month_pr = substr($request['date'],5,2);
-            $year_pr = substr($request['date'],0,4);
-
-            $array_bln = array('01' => "I",
-                                '02' => "II",
-                                '03' => "III",
-                                '04' => "IV",
-                                '05' => "V",
-                                '06' => "VI",
-                                '07' => "VII",
-                                '08' => "VIII",
-                                '09' => "IX",
-                                '10' => "X",
-                                '11' => "XI",
-                                '12' => "XII");
-            $bln = $array_bln[$month_pr];
-
-            $getnumber = Letter::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
-
-            $getnumbers = Letter::orderBy('no', 'desc')->first();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber->no+1;
-            }
+            $getlastnumber = 1;
+            $lastnumber = $getlastnumber;
 
             if($lastnumber < 10){
                $akhirnomor = '000' . $lastnumber;
@@ -440,11 +514,10 @@ class LetterController extends Controller
                $akhirnomor = '0' . $lastnumber;
             }
 
-            $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+            $noReset = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
 
             $tambah = new Letter();
-            $tambah->no = $getnumbers->no+1;
-            $tambah->no_letter = $no;
+            $tambah->no_letter = $noReset;
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
@@ -454,15 +527,14 @@ class LetterController extends Controller
             $tambah->title = $request['title'];
             $tambah->project = $request['project'];
             $tambah->description = $request['description'];
-            // $tambah->from = $request['from'];
             $tambah->nik = Auth::User()->nik;
             $tambah->status = 'A';
             $tambah->division = $request['division'];
             $tambah->project_id = $request['project_id'];
-            $tambah->save();
-
-            return redirect('letter')->with('success', 'Create Letter Successfully!');
+            $tambah->save();            
         }
+
+        return redirect('letter')->with('success', 'Create Letter Successfully!');
     }
 
 	public function edit(Request $request)
