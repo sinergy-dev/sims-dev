@@ -88,7 +88,7 @@
                 @if($data->status == 'A')
                     <li class="nav-item active">
                         <a class="nav-link active" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')">All</a>
-                @else
+                @elseif($data->status == 'F')
                     <li class="nav-item">
                         <a class="nav-link" id="{{ $data }}-tab" data-toggle="tab" href="#{{ $data->status }}" role="tab" aria-controls="{{ $data }}" aria-selected="true" onclick="changetabPane('{{$data->status}}')"> Backdate
                 @endif
@@ -304,7 +304,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-            <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            <button type="submit" class="btn btn-primary" disabled id="submitBd"><i class="fa fa-check"> </i>&nbspSubmit</button>
           </div>
         </form>
         </div>
@@ -507,16 +507,42 @@
       autoclose: true,
     }).css('background-color','#fff');
 
-    $('#date_backdate').change(function (argument) {
-      console.log($('#date_backdate').val())
-      $("#backdate_num").prop("disabled",false);
-      $("#backdate_num").select2({
-        ajax: {
-          url: '{{url("/get_backdate_letter")}}' + '?tanggal=' + $('#date_backdate').val(),
-          dataType: 'json'
+    $('#date_backdate').change(function (argument) {  
+      $("#backdate_num").select2().val('')      
+      $.ajax({
+        type:"GET",
+        url:"get_backdate_letter",
+        data:{
+          tanggal:$('#date_backdate').val(),
+        },
+        success:function(result){
+          console.log(result.results.length)
+          if (result.results.length == 0) {
+          $('#submitBd').prop("disabled",true)          
+            initCekNum()
+            $("#backdate_num").prop("disabled",true)            
+          }else{
+            $('#submitBd').prop("disabled",false)
+            $("#backdate_num").prop("disabled",false)
+            $("#backdate_num").select2({
+              data: result.results
+            })            
+          }          
         }
-      });
+      })
+      // $("#backdate_num").select2({
+      //   ajax: {
+      //     url: '{{url("/get_backdate_letter")}}' + '?tanggal=' + $('#date_backdate').val(),
+      //     dataType: 'json'
+      //   }
+      // });
+      
     })
+
+    function initCekNum(){
+      $("#backdate_num").select2().val('')
+      alert('Maaf stock nomer backdate belum ada! Tolong segera hubungi tim development.')
+    }    
 
     function changetabPane(status) {
       $('#data_all').DataTable().ajax.url("{{url('getfilteryearletter')}}?status=" + status + "&year=" + $('#year_filter').val()).load();
