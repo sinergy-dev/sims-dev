@@ -319,7 +319,7 @@ class LetterController extends Controller
                     $no9  = $akhirnomor9;
 
 
-                    $nom = Letter::select('no')->orderBy('created_at','desc')->first();
+                    $nom = Letter::select('no')->orderBy('no','desc')->first();
 
                     for ($i=0; $i < 2 ; $i++) { 
                         $tambah = new Letter();
