@@ -10,20 +10,20 @@
 		@endif
 		berikut rinciannya:
 	</p>
-	<table style="text-align: left;margin: 5px;">
-		<tr>
-			<th>Name</th>
-			<th> : </th>
-			<!-- <td>SEPEDA MOTOR HONDA SUPRA X125</td> -->
-			<td>{{$req_asset->nama_barang}}</td>
-		</tr>
-		<tr>
-			<th>Description</th>
-			<th> : </th>
-			<!-- <td>Motor Supra X Biru Digunakan ARIFIN</td> -->
-			<td>{{$req_asset->description}}</td>
-		</tr>
+	<table style="text-align: left;margin: 5px;">		
 		@if($req_asset->status == 'PENDING')
+		<tr>
+			<th style="vertical-align: top">Kategori</th>
+			<th style="vertical-align: top"> : </th>
+			<!-- <td>Motor Supra X Biru Digunakan ARIFIN</td> -->
+			<td>{!!$req_asset->note!!}</td>
+		</tr>
+		<tr>
+			<th style="vertical-align: top">Note</th>
+			<th style="vertical-align: top"> : </th>
+			<!-- <td>Motor Supra X Biru Digunakan ARIFIN</td> -->
+			<td>{!!$req_asset->keterangan!!}</td>
+		</tr>
 		<tr>
 			<th>Request By</th>
 			<th> : </th>
@@ -38,6 +38,18 @@
 		</tr>
 		@elseif($req_asset->status == 'AVAILABLE')
 		<tr>
+			<th>Name</th>
+			<th> : </th>
+			<!-- <td>SEPEDA MOTOR HONDA SUPRA X125</td> -->
+			<td>{{$req_asset->nama_barang}}</td>
+		</tr>
+		<tr>
+			<th>Description</th>
+			<th> : </th>
+			<!-- <td>Motor Supra X Biru Digunakan ARIFIN</td> -->
+			<td>{{$req_asset->description}}</td>
+		</tr>
+		<tr>
 			<th>Tanggal Peminjaman</th>
 			<th> : </th>
 			<!-- <td>2021-02-14</td> -->
@@ -49,12 +61,13 @@
 			<!-- <td>2021-02-14</td> -->
 			<td>{{date('d-M-Y', strtotime($req_asset->tgl_pengembalian))}}</td>
 		</tr>
-		@endif		
 		<tr>
 			<th>Note</th>
 			<th> : </th>
-			<td>{{$req_asset->keterangan}}</td>
+			<td>{!!$req_asset->keterangan!!}</td>
 		</tr>
+		@endif		
+		
 		@if($req_asset->status == 'AVAILABLE')
 		<tr>
 			<th>Lokasi</th>

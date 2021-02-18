@@ -192,14 +192,14 @@ class AssetHRController extends Controller
                     $join->on("tb_asset_hr.id_barang","=","tb_asset_hr_transaction.id_barang");
                 })
                 ->select('nama_barang', 'tb_asset_hr.id_barang','status','description','code_name', 'serial_number','name','lokasi')
-                ->where('availability',1)
+                // ->where('availability',1)
                 ->get();
 
         $assetsd    = DB::table('tb_asset_hr_transaction')
                     ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
                     ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
                     ->select('tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','tb_asset_hr.nama_barang','tb_asset_hr.description','users.name','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr.status', 'tb_asset_hr_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'no_transac')
-                    ->where('tb_asset_hr.availability',1)
+                    // ->where('tb_asset_hr.availability',1)
                     ->get();
 
         $pinjaman = DB::table('tb_asset_hr_transaction')
@@ -207,7 +207,7 @@ class AssetHRController extends Controller
                     ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
                     ->select('tb_asset_hr.description','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','tb_asset_hr.nama_barang','tb_asset_hr.status', 'no_transac')
                     ->where('tb_asset_hr_transaction.nik_peminjam',Auth::User()->nik)
-                    ->where('tb_asset_hr.availability',1)
+                    // ->where('tb_asset_hr.availability',1)
                     ->get();
 
         $kategori_asset = DB::table('tb_kategori_asset_hr')
@@ -241,6 +241,13 @@ class AssetHRController extends Controller
                            ->where('tb_asset_hr_request.status','<>','REJECT')
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
                            ->get();
+
+            $historyCancel  = DB::table('tb_asset_hr_request')
+               ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
+               ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
+               ->where('tb_asset_hr_request.status','=','CANCEL')
+               ->orwhere('tb_asset_hr_request.status','=','REJECT')
+               ->get();
         }else{
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
@@ -250,14 +257,32 @@ class AssetHRController extends Controller
                            ->where('tb_asset_hr_request.status','<>','REJECT')
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
                            ->get();
+
+            $historyCancel  = DB::table('tb_asset_hr_request')
+                           ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
+                           ->where('nik',Auth::User()->nik)
+                           ->where('tb_asset_hr_request.status','=','CANCEL')
+                           ->orwhere('tb_asset_hr_request.status','=','REJECT')
+                           ->get();
         }
+
+        
         
 
+        // $request_asset = DB::table('tb_asset_hr_transaction')
+        //                 ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
+        //                 ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+        //                 ->select('name','nama_barang','description','no_transac','tb_asset_hr.note','nik_peminjam','tb_asset_hr_transaction.id_barang','id_transaction')
+        //                 ->where('tb_asset_hr_transaction.status','PENDING')
+        //                 ->orderBy('tb_asset_hr_transaction.created_at','asc')
+        //                 ->get();
+
         $request_asset = DB::table('tb_asset_hr_transaction')
-                        ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
                         ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                        ->select('name','nama_barang','description','no_transac','tb_asset_hr.note','nik_peminjam','tb_asset_hr_transaction.id_barang','id_transaction')
+                        ->select('tb_asset_hr_transaction.keterangan','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','no_transac','note','tgl_peminjaman')
                         ->where('tb_asset_hr_transaction.status','PENDING')
+                        ->orderBy('tb_asset_hr_transaction.created_at','asc')
                         ->get();
 
         $users = User::select('name','nik')->where('status_karyawan','!=','dummy')->get();
@@ -272,7 +297,9 @@ class AssetHRController extends Controller
             $nomor = '0' . $nomor;
         }
 
-    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset','current_borrowed','request_asset','current_request'));
+        $sidebar_collapse = true;
+
+    	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset','current_borrowed','request_asset','current_request','historyCancel','sidebar_collapse'));
     }
 
     public function getRequestAssetBy(Request $request){
@@ -317,6 +344,30 @@ class AssetHRController extends Controller
     public function getCategory(Request $request){
 
     	return array("results" => DB::table('tb_kategori_asset_hr')->select(DB::raw("`id` AS `no`,`code_kat` AS `id`,`kategori` AS `text`"))->get());
+    }
+
+    public function getListAsset(Request $request){
+
+        return array("results" => DB::table('tb_asset_hr')->select(DB::raw("`id_barang` AS `id`,`nama_barang` AS `text`"))->where('status','AVAILABLE')->get());
+    }
+
+    public function getCategoryPinjam(Request $request){
+
+        return array("results" => DB::table('tb_kategori_asset_hr')->Leftjoin(DB::raw("(
+                        SELECT
+                            `kategori`,`status`
+                        FROM
+                            `tb_asset_hr`
+                        WHERE
+                            `tb_asset_hr`.`status` = 'AVAILABLE'
+                        GROUP BY
+                            `kategori`
+                        ) as tb_asset_hr"),function($join){
+                            $join->on("tb_kategori_asset_hr.id","=","tb_asset_hr.kategori");
+                        })
+                    ->select(DB::raw("`tb_kategori_asset_hr`.`id` AS `no`,`tb_kategori_asset_hr`.`code_kat` AS `id`,`tb_kategori_asset_hr`.`kategori` AS `text`"))
+                    ->where('tb_asset_hr.status','AVAILABLE')
+                    ->get());
     }
 
     public function getdetail(Request $request)
@@ -469,8 +520,16 @@ class AssetHRController extends Controller
                 ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
                 ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
                 ->select('tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','users.name','tb_asset_hr.nama_barang','tb_asset_hr.status', 'tb_asset_hr_transaction.tgl_peminjaman', 'tb_asset_hr_transaction.tgl_pengembalian', 'tb_asset_hr_transaction.keterangan', 'tb_asset_hr_transaction.note', 'no_transac')
-                ->where('tb_asset_hr_transaction.id_barang',$id_barang)
+                ->where('tb_asset_hr_transaction.id_barang',$id_barang)                
+                ->orderBy('tb_asset_hr_transaction.updated_at','desc')
                 ->get();
+
+        $detailAsset = DB::table('tb_asset_hr')
+                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(tgl_tambah,created_at) AS umur_asset'),'lokasi','tgl_tambah','merk','description','note')
+                ->where('tb_asset_hr.id_barang',$id_barang)                
+                ->first();
+
+        $total_pinjam = DB::table('tb_asset_hr_transaction')->groupBy('id_barang')->count();
 
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -650,7 +709,9 @@ class AssetHRController extends Controller
             $notifc = count($notif);        
         }
 
-        return view('HR.detail_asset_peminjaman',compact('asset','notif','notifOpen','notifsd','notiftp','notifc', 'notifClaim'));
+        $sidebar_collapse = true;
+
+        return view('HR.detail_asset_peminjaman',compact('asset','detailAsset','total_pinjam','notif','notifOpen','notifsd','notiftp','notifc', 'notifClaim','sidebar_collapse'));
     }
 
     public function peminjaman(Request $request)
@@ -734,17 +795,56 @@ class AssetHRController extends Controller
         return redirect()->back()->with('alert', $line);
     }
 
-    public function acceptPeminjaman(Request $request){
-        $update = AssetHR::where('id_barang',$request->id_barang)->first();
-        if ($request->status == 'ACCEPT') {
-            $update->status = 'UNAVAILABLE';
-        }else{
-            $update->status = 'AVAILABLE';
+    public function requestPeminjaman(Request $request)
+    {
+        $inc = DB::table('tb_asset_hr_transaction')->select('id_transaction')->get();
+        $increment = count($inc);
+        $nomor = $increment+1;
+        if($nomor < 10){
+            $nomor = '00' . $nomor;
         }
-        $update->update(); 
+
+        $no_peminjaman = date('ymd').$nomor;
+
+        $store                  = new DetailAssetHR();
+        $store->nik_peminjam    = Auth::User()->nik;
+        $store->status          = 'PENDING';
+
+        $line = 'Peminjaman Barang Akan diproses!';
+
+        $store->keterangan      = 'Specification - '.$request['description'].'<br>'.'Using for - '.$request['keperluan'];
+        $store->tgl_peminjaman  = date('Y-m-d');
+        $store->no_transac      = $no_peminjaman;   
+        $store->note            = $request['cat_pinjam_id'];  
+        $store->save();    
+
+        $req_asset = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+                ->select('name','tb_asset_hr_transaction.created_at','note','tb_asset_hr_transaction.status','keterangan')
+                ->where('tb_asset_hr_transaction.id_transaction',$store->id_transaction)
+                ->first();
+
+        $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+
+        $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+
+        Mail::to($to)->send(new RequestAssetHr('reqPinjam',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));      
+        
+
+        return redirect()->back()->with('alert', $line);
+    }
+
+    public function acceptPeminjaman(Request $request){
+        // $update = AssetHR::where('id_barang',$request->id_barang)->first();
+        // if ($request->status == 'ACCEPT') {
+        //     $update->status = 'UNAVAILABLE';
+        // }else{
+        //     $update->status = 'AVAILABLE';
+        // }
+        // $update->update(); 
 
         $update_accept =  DetailAssetHR::where('id_transaction',$request->id_transaction)
                 ->first();
+        $update_accept->id_barang = $request->id_barang; 
         if ($request->status == 'ACCEPT') {
             $update_accept->status = "ACCEPT";
             $emailSubject = '[SIMS-APP] Accepting Peminjaman Asset';
@@ -764,11 +864,16 @@ class AssetHRController extends Controller
         //     $update_reject->save();
         // }
 
-        $asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
-                    ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                    ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
-                    ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
-                    ->first();
+        // $asset = AssetHR::join('tb_asset_hr_transaction','tb_asset_hr_transaction.id_barang','=','tb_asset_hr.id_barang')
+        //             ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+        //             ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
+        //             ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
+        //             ->first();
+
+        $asset = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
+                ->select('name','tb_asset_hr_transaction.created_at','note','tb_asset_hr_transaction.status','keterangan')
+                ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
+                ->first();
 
         $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
 
