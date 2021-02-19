@@ -5,49 +5,20 @@
 <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap4-select2-theme@1.0.3/src/css/bootstrap4-select2-theme.css" rel="stylesheet" /> -->
 <!-- <link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css" rel="stylesheet" /> -->
 <style type="text/css">
-  .modalIconsubject input[type=text]{
-      padding-left:115px;
-    }
+  .select2{
+    width: 100%!important;
+  }
 
-    .modalIconsubject.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
+  #tbRequestModal tr td{
+    text-align: center;
+  }
 
-   .modalIconsubject.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:7px 4px ;
-      border-radius:4px 0 0 4px;
-    }
-
-  .modalIconsubject{
-      position:relative;
-    }
-
-   .modalIconsubject i{
-      position:absolute;
-      left:9px;
-      top:0px;
-      padding:9px 8px;
-      color:#aaa;
-      transition:.3s;
-    }
-
-    .select2{
-      width: 100%!important;
-    }
-
-    #tbRequestModal tr td{
-      text-align: center;
-    }
-
-    .nav-tabs .badge{
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        background: red;
-    }
+  .nav-tabs .badge{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
+  }
 </style>
 <section class="content">
   @if (session('update'))
@@ -101,88 +72,90 @@
             <a class="nav-link" id="history_asset" data-toggle="tab" href="#history" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-history"></i> History</a>
           </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
+        <div class="tab-content" id="myTabContent">           
           <div class="tab-pane active" id="asset_list" role="tabpanel" aria-labelledby="home-tab">
-            <br>
+            <br>            
             <div class="table-responsive" >
               <table class="table table-bordered table-striped" id="data_table" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Code</th>
-                    <th>Name</th>
+                    <th width="15%">Name</th>
                     <th width="25%">Specification</th>
                     <th>Latest person</th>
                     <th>Status</th>
                     <th>Location</th>
-                    <th>Action</th>
+                    <th style="text-align: center;">Action</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
-                  @foreach($asset as $data)
-                  <tr>
-                    <td>{{$data->code_name}}<input type="" name="id_barang_update" hidden></td>
-                    <td>{{$data->nama_barang}}</td>
-                    <td>{{$data->description}}</td>
-                    <td>
-                        @foreach(explode(',', $data->name) as $key => $latest_pinjam) 
-                          {{$latest_pinjam}}
-                        @endforeach
-                    </td>
-                    <td>
-                      @if($data->status == "UNAVAILABLE")
-                      <span class="label label-default">UNAVAILABLE</span>
-                      @elseif($data->status == "AVAILABLE")
-                      <span class="label label-info">AVAILABLE</span>
-                      @elseif($data->status == "SERVICE")
-                      <span class="label label-primary">SERVICE</span>
-                      @elseif($data->status == "RUSAK")
-                      <span class="label label-danger">RUSAK</span>
-                      @elseif($data->status == "PENDING")
-                      <span class="label label-warning">PENDING</span>
-                      @endif
-                    </td>
-                    <td>{{$data->lokasi}}</td>
-                    @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
-                    <td>                      
-                      @if($data->status == "UNAVAILABLE")
-                      <button class="btn btn-xs btn-default btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
-                      <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" disabled><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
-                      <button class="btn btn-xs btn-danger btn-hapus" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
-                      @elseif($data->status == "AVAILABLE")                      
-                      <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-history"></i></button>
-                      <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
-                      <button class="btn btn-xs btn-danger btn-hapus" onclick="hapus('{{$data->id_barang}}','{{$data->nama_barang}}')" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
-                      @elseif($data->status == "PENDING" || $data->status == "RUSAK" || $data->status == "SERVICE")
-                      <button class="btn btn-xs btn-default" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
-                      <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" disabled><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
-                      <button class="btn btn-xs btn-danger btn-hapus" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
-                      @else
-                      <button class="btn btn-xs btn-default" disabled  style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
-                      <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" disabled><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
-                      <button class="btn btn-xs btn-danger btn-hapus" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
-                      @endif                      
-                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
-                     <!--  <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button> -->
-                    </td>
-                    @else
-                    <td>
-                      @if($data->status == "UNAVAILABLE" || $data->status == "PENDING" || $data->status == "RUSAK" || $data->status == "SERVICE")
-			           <!--            <button class="btn btn-xs btn-success" disabled data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button> -->
-			          <!--             <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button> -->
+                @foreach($asset as $item => $value)
+                  @foreach($value as $data)
+                    <tr>
+                        <td>{{$data->code_name}}<input type="" name="id_barang_update" hidden></td>
+                        <td>{{$data->nama_barang}}</td>
+                        <td>{{$data->description}}</td>
+                        <td>
+                            @foreach(explode(',', $data->name) as $key => $latest_pinjam) 
+                              {{$latest_pinjam}}
+                            @endforeach
+                        </td>
+                        <td>
+                          @if($data->status == "UNAVAILABLE")
+                          <span class="label label-default">UNAVAILABLE</span>
+                          @elseif($data->status == "AVAILABLE")
+                          <span class="label label-info">AVAILABLE</span>
+                          @elseif($data->status == "SERVICE")
+                          <span class="label label-primary">SERVICE</span>
+                          @elseif($data->status == "RUSAK")
+                          <span class="label label-danger">RUSAK</span>
+                          @elseif($data->status == "PENDING")
+                          <span class="label label-warning">PENDING</span>
+                          @endif
+                        </td>
+                        <td>{{$data->lokasi}}</td>
+                        @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
+                        <td>                      
+                          @if($data->status == "UNAVAILABLE")
+                          <button class="btn btn-xs btn-default btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
+                          <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" disabled><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
+                          <button class="btn btn-xs btn-danger btn-hapus" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
+                          @elseif($data->status == "AVAILABLE")                      
+                          <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-history"></i></button>
+                          <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
+                          <button class="btn btn-xs btn-danger btn-hapus" onclick="hapus('{{$data->id_barang}}','{{$data->nama_barang}}')" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
+                          @elseif($data->status == "PENDING" || $data->status == "RUSAK" || $data->status == "SERVICE")
+                          <button class="btn btn-xs btn-default" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
+                          <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" disabled><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
+                          <button class="btn btn-xs btn-danger btn-hapus" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
+                          @else
+                          <button class="btn btn-xs btn-default" disabled  style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
+                          <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" disabled><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
+                          <button class="btn btn-xs btn-danger btn-hapus" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
+                          @endif                      
+                          <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
+                          <!--  <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button> -->
+                        </td>
+                        @else
+                        <td style="text-align: center;">
+                          @if($data->status == "UNAVAILABLE" || $data->status == "PENDING" || $data->status == "RUSAK" || $data->status == "SERVICE")
+                          <!--            <button class="btn btn-xs btn-success" disabled data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button> -->
+                          <!--             <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button> -->
 
-                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
-                      @else                      
-                      <!-- <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button> -->
+                          <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
+                          @else                      
+                          <!-- <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button> -->
 
-               			<!--        <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button> -->
-
-                      <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
-                      @endif
-                      
-                    </td>
-                    @endif
-                  </tr>
+                            <!--        <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset" value="{{$data->id_barang}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button> -->
+                          <a href="{{url('/detail_peminjaman_hr', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
+                          @endif
+                        </td>                        
+                        @endif
+                        <td>0</td>
+                    </tr>
                   @endforeach
+                @endforeach
                 </tbody>
                 <tfoot>
                 </tfoot>
@@ -309,6 +282,19 @@
                       </td>
                     </tr>
                   @endforeach
+                  @foreach($pinjam_request as $data)
+                    <tr>
+                      <td>{{$data->no_transac}}</td>
+                      <td> - </td>
+                      <td>{{$data->note}}</td>
+                      <td>{!!$data->keterangan!!}</td>
+                      <td> - </td> 
+                      <td><label class="label label-warning">PENDING</label></td>                     
+                      <td>
+                        <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="btnEditRequestAsset('{{$data->id_transaction}}','pinjam')"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
+                      </td>
+                    </tr>
+                  @endforeach
                   @foreach($current_request as $datas)
                     <tr>
                       <td>{{$datas->id_request}}</td>
@@ -324,7 +310,7 @@
                         @endif
                       </td>                     
                       <td>
-                        <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btnEditRequestAsset" value="{{$datas->id_request}}" data-rowid="{{$datas->id_request}}"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
+                        <button class="btn btn-xs btn-info" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="btnEditRequestAsset('{{$datas->id_request}}','request')"><i class="fa fa-edit" style="color: white" aria-hidden="true"></i></button>
                       </td>
                     </tr>
                   @endforeach
@@ -393,85 +379,122 @@
 
 <!--add asset-->
 <div class="modal fade" id="add_asset" role="dialog">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Add Asset HR/GA</h4>
-        </div>
-        <div class="modal-body">
-          <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">
-            @csrf       
-          <div class="col-md-6 form-group">
-            <label for="sow">Asset Code</label>
-            <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden=></input>
-            <input name="asset_code" id="asset_code" class="form-control" value="{{$nomor}}" readonly></input>
+        <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">
+          <div class="modal-header">
+            <h4 class="modal-title">Add Asset HR/GA</h4>
           </div>
+          <div class="modal-body">          
+              @csrf
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Asset Code</label>
+                    <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden>
+                    <input name="asset_code" id="asset_code" class="d-block form-control" value="{{$nomor}}" readonly>
+                  </div>
 
-          <div class="col-md-6 form-group">
-            <label for="sow">Category</label>
-            <select class="form-control category_asset" id="category_asset" name="category_asset" required>
-            </select>
-            <input type="text" name="category_id" id="category_id" hidden>
-            <input type="text" name="category_id_req" id="category_id_req" hidden>
-          </div>
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Category</label>
+                    <select class="d-block form-control category_asset" id="category_asset" name="category_asset" required>
+                    </select>
+                    <input type="text" name="category_id" id="category_id" hidden>
+                    <input type="text" name="category_id_req" id="category_id_req" hidden>
+                  </div>
+                </div>
+              </div>
 
-          <div class="col-md-6 form-group">
-            <label for="sow">Company</label>
-            <select class="form-control" id="company_asset" name="company_asset" required>
-              <option value="">Select Company</option>
-              <option value="SIP">PT. SIP</option>
-              <option value="MSP">PT. MSP</option>
-            </select>
-          </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Company</label>
+                    <select class="form-control" id="company_asset" name="company_asset" required>
+                      <option value="">Select Company</option>
+                      <option value="SIP">PT. SIP</option>
+                      <option value="MSP">PT. MSP</option>
+                    </select>
+                  </div>
 
-          <div class="col-md-6 form-group">
-            <label>Merk</label>
-            <input type="" class="form-control" name="merk_barang" id="merk_barang" placeholder="input merk" required>
-          </div>
+                  <div class="col-md-6 form-group">
+                    <label>Merk</label>
+                    <input type="" class="form-control" name="merk_barang" id="merk_barang" placeholder="input merk" required>
+                  </div>
+                </div> 
+              </div>
+              
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Name</label>
+                    <input name="nama_barang" id="nama_barang" placeholder="input name" class="form-control" required>
+                  </div>
 
-          <div class="col-md-6 form-group">
-            <label for="sow">Name</label>
-            <input name="nama_barang" id="nama_barang" placeholder="input name" class="form-control" required></input>
-          </div>
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Serial Number</label>
+                    <input name="asset_sn" id="asset_sn" class="form-control" placeholder="input serial number" required>
+                  </div>                   
+                </div>
+              </div>
+                    
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Type</label>
+                    <input name="keterangan" id="keterangan" placeholder="input type asset" class="form-control" required="">
+                  </div>
+                  
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Note</label>
+                    <textarea name="note" id="note" placeholder="input note" class="form-control" required=""></textarea>            
+                  </div>            
+                </div>
+              </div>
 
-          <div class="col-md-6 form-group">
-            <label for="sow">Date of Purchase</label>
-            <input type="text" name="asset_date" id="asset_date" placeholder="input date" class="form-control" required></input>
-          </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Purchase Price</label>
+                    <input name="purchase_price" id="purchase_price" class="form-control money" placeholder="input price asset" required>
+                  </div>
 
-          <div class="col-md-6 form-group">
-            <label for="sow">Serial Number</label>
-            <input name="asset_sn" id="asset_sn" class="form-control" placeholder="input serial number" required></input>
-          </div>
-          
-          <div class="col-md-6 form-group">
-            <label for="sow">Specification</label>
-            <textarea name="keterangan" id="keterangan" placeholder="input Specification" class="form-control" required=""></textarea>
-          </div>
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Specification</label>
+                    <textarea name="keterangan" id="keterangan" placeholder="input Specification" class="form-control" required=""></textarea>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Date of Purchase</label>
+                    <input type="text" name="asset_date" id="asset_date" placeholder="input date" class="form-control" required>
+                  </div>
 
-          <div class="col-md-6 form-group">
-            <label for="sow">Note</label>
-            <textarea name="note" id="note" placeholder="input note" class="form-control" required=""></textarea>
+                  <div class="col-md-6 form-group">
+                    <label for="sow">Location</label>
+                    <textarea name="lokasi" id="lokasi" class="form-control" placeholder="input location" required=""></textarea>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="col-md-6 form-group" style="display: none;" id="peminjams">
+                    <label for="sow">Request By</label>
+                    <input type="text" name="requestBy" id="requestBy" class="form-control" readonly="">
+                    <input type="text" name="requestNik" id="requestNik" class="form-control hidden">
+                    <input type="text" name="id_requestNewAsset" id="id_requestNewAsset" class="form-control hidden">
+                  </div>
+                </div>
+              </div>               
           </div>
-
-          <div class="col-md-6 form-group">
-            <label for="sow">Location</label>
-            <textarea name="lokasi" id="lokasi" class="form-control" placeholder="input location" required=""></textarea>
-          </div>
-
-          <div class="col-md-6 form-group" style="display: none;" id="peminjams">
-            <label for="sow">Request By</label>
-            <input type="text" name="requestBy" id="requestBy" class="form-control" readonly="">
-            <input type="text" name="requestNik" id="requestNik" class="form-control hidden">
-            <input type="text" name="id_requestNewAsset" id="id_requestNewAsset" class="form-control hidden">
-          </div>
-
           <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-            <button type="submit" class="btn btn-sm btn-success" id="btnSubmit" disabled><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-sm btn-success" id="btnSubmit" disabled><i class="fa fa-check"></i>&nbsp Submit</button>
           </div>
         </form>
-        </div>
       </div>
     </div>
 </div>
@@ -648,10 +671,11 @@
         <div class="modal-body">
           @csrf
           <div class="form-group">
-            <table class="table nowrap" id="tbody_requestEdit">
-            </table>
+            <div id="tbody_requestEdit" style="font-size: 16px">
+              
+            </div>
             <b><p>Note</p></b>
-            <textarea class="form-control" id="notes" name="notes"></textarea>
+            <textarea class="form-control" id="notes" name="notes" placeholder="input for notes"></textarea>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
@@ -919,6 +943,8 @@ REJECT
     $("#company_asset").select2()
     $("#select-status").select2()
 
+    $('.money').mask('000,000,000,000,000', {reverse: true});
+
     $(document).ready(function(){
       $("#btnAdd").attr('data-target','#add_asset') 
 
@@ -927,8 +953,6 @@ REJECT
       $("#submitReq").on('click',function(){
         $('#requestAsset').modal('hide')
       })
-
-       $('.js-example-basic-multiple').select2(); 
     })  
 
     $("#category_asset").on('change',function(){
@@ -1231,7 +1255,7 @@ REJECT
     })      
 
     //editDeleteRequestAsset  
-    $("#btnEditRequestAsset[data-rowid]").click(function(){ 
+    function btnEditRequestAsset(id,status){ 
       $('#requestAssetEdit').modal('show')     
       var append = ""
       $("#tbody_requestEdit").html('')
@@ -1239,12 +1263,25 @@ REJECT
         type:"GET",
         url:"/getRequestAssetBy",
         data:{
-          id_request:this.value,
+          id:id,
+          status:status
         },
-        success:function(result){
-          console.log(result[0])    
-          append = append + '<tr><th width="25%">Nama Barang</th><th width="5%">Qty</th><th width="15%">Merk</th>/<th width="15%">Kategori</th><th width="20%">Link</th></tr>'
-          append = append + '<tr><td>'+ result[0].nama +'</td><td>'+ result[0].qty +'</td><td>'+ result[0].merk +'</td><td>' + result[0].kategori +'</td><td><a href="'+ result[0].link +'" target="_blank">'+ result[0].link +'</a></td></tr>' 
+        success:function(result){  
+          if (status == 'pinjam') {
+            append = append + '<ul><li>Category : '+ result[0].note +'</li>'
+            append = append + '<li>Note : <br>'+ result[0].keterangan +'</li>'
+            append = append + '<li>Date Request : '+ result[0].tgl_peminjaman +'</li>'
+            append = append + '</ul>'
+          }else{
+            append = append + '<ul><li>Nama Barang : '+ result[0].nama +'</li>'
+            append = append + '<li>Merk : '+ result[0].merk +'</li>'
+            append = append + '<li>Qty : '+ result[0].qty +'</li>'
+            append = append + '<li>Category : '+ result[0].lokasi +'</li>'
+            append = append + '<li>Specification : '+ result[0].link +'</li></ul>'
+          }
+          
+          // append = append + '<tr><th width="25%">Nama Barang</th><th width="5%">Qty</th><th width="15%">Merk</th>/<th width="15%">Kategori</th><th width="20%">Link</th></tr>'
+          // append = append + '<tr><td>'+ result[0].nama +'</td><td>'+ result[0].qty +'</td><td>'+ result[0].merk +'</td><td>' + result[0].kategori +'</td><td><a href="'+ result[0].link +'" target="_blank">'+ result[0].link +'</a></td></tr>' 
 
           $("#tbody_requestEdit").append(append)
           if (result[0].status == 'PENDING') {
@@ -1257,20 +1294,28 @@ REJECT
             if ($("#notes").val().length == 0) {
               alert('fill note for submit')
             }else{
-              submitNoteReq(result[0].id_request)
+              if (status == 'pinjam') {
+                submitNoteReq(result[0].id_transaction,status)
+              }else{
+                submitNoteReq(result[0].id_request,status)
+              }              
             }
           })  
 
           $("#btnBatalReq").click(function(){
-            batalkanReq(result[0].id_request)
+            if (status == 'pinjam') {
+              batalkanReq(result[0].id_transaction,status)
+            }else{
+              batalkanReq(result[0].id_request,status)
+            }
           })                 
           
         }
       })
-    })
+    }
 
     //batalRequest
-    function batalkanReq(id_request){
+    function batalkanReq(id_request,status){
       Swal.fire({
         title: 'Batalkan Request Asset',
         text: "kamu yakin?",
@@ -1300,6 +1345,7 @@ REJECT
             url:"{{url('batalkanReq')}}",
             data:{
               id_request:id_request,
+              status:status
             },
             success: function(result){
               Swal.showLoading()
@@ -1320,7 +1366,7 @@ REJECT
 
     //AddNoteReq  
 
-    function submitNoteReq(id_request){
+    function submitNoteReq(id_request,status){
       Swal.fire({
           title: 'Please Wait..!',
           text: "It's updating..",
@@ -1339,7 +1385,8 @@ REJECT
           url:"{{url('AddNoteReq')}}",
           data:{
             id_request:id_request,
-            notes:$("#notes").val()
+            notes:$("#notes").val(),
+            status:status
           },
           success: function(result){
             Swal.showLoading()
@@ -1360,13 +1407,13 @@ REJECT
       var swalAccept;
       if (status == 'ACCEPT') {
       	var myArrayOfThings = [];  	
-    	var titleStatus = 'Accept Peminjaman Asset' 
+    	  var titleStatus = 'Accept Peminjaman Asset' 
 
-    	$("#acceptModalPinjam").modal('show')
-    	$("#katModal").text(note)
-    	$("#noteModal").html('<br>'+keterangan)
+      	$("#acceptModalPinjam").modal('show')
+      	$("#katModal").text(note)
+      	$("#noteModal").html('<br>'+keterangan)
     	 
-	    $.ajax({
+	      $.ajax({
 		    type:"GET",
 		    url: "getListAsset",
 		    success:function(result){
@@ -1387,61 +1434,60 @@ REJECT
 		            data: myArrayOfThings
 		        })		       
 		    }
-		})   
+		    })   
 
-		$("#btnAcceptRequestModal").click(function(){
-			swalAccept = Swal.fire({
-	          title: titleStatus,
-	          text: "Are you sure?",
-	          icon: 'warning',
-	          showCancelButton: true,
-	          confirmButtonColor: '#3085d6',
-	          cancelButtonColor: '#d33',
-	          confirmButtonText: 'Yes',
-	          cancelButtonText: 'No',
-	        })
+  		  $("#btnAcceptRequestModal").click(function(){
+  	    swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "Are you sure?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        })
 
-	        swalAccept.then((result) => {
-				if (result.value) {
-				    console.log(result.value)
-				        Swal.fire({
-		            title: 'Please Wait..!',
-		            text: "It's updating..",
-		            allowOutsideClick: false,
-		            allowEscapeKey: false,
-		            allowEnterKey: false,
-		            customClass: {
-		              popup: 'border-radius-0',
-		            },
-		            onOpen: () => {
-		              Swal.showLoading()
-		            }
-		          })
-		          $.ajax({
-		            type:"GET",
-		            url:"{{url('acceptPeminjaman')}}",
-		            data:{
-		              id_transaction:id_transaction,
-		              status:status,
-		              id_barang:$('#barang_asset').select2('data')[0].id
-		            },
-		            success: function(result){
-		              Swal.showLoading()
-		              Swal.fire(
-		                'Successfully!',
-		                'success'
-		              ).then((result) => {
-		                if (result.value) {
-		                  location.reload()
-		                  $("#acceptModalPinjam").modal('toggle')
-		                }
-		              })
-		            },
-		          });
-		        }        
-		    })
-
-		})	
+        swalAccept.then((result) => {
+  		    if (result.value) {
+  		    console.log(result.value)
+  		        Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's updating..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"GET",
+              url:"{{url('acceptPeminjaman')}}",
+              data:{
+                id_transaction:id_transaction,
+                status:status,
+                id_barang:$('#barang_asset').select2('data')[0].id
+              },
+              success: function(result){
+                Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                    $("#acceptModalPinjam").modal('toggle')
+                  }
+                })
+              },
+            });
+          }        
+        })
+  		  })	
 
       }else{
       	var swalAccept;
@@ -1455,45 +1501,45 @@ REJECT
         })
 
         swalAccept.then((result) => {
-		    if (result.value) {
-		      Swal.fire({
-		        title: 'Please Wait..!',
-		        text: "It's updating..",
-		        allowOutsideClick: false,
-		        allowEscapeKey: false,
-		        allowEnterKey: false,
-		        customClass: {
-		          popup: 'border-radius-0',
-		        },
-		        onOpen: () => {
-		          Swal.showLoading()
-		        }
-		      })
-		      $.ajax({
-		        type:"GET",
-		        url:"{{url('acceptPeminjaman')}}",
-		        data:{
-		          // id_barang:id_barang,
-		          // nik_peminjam:nik_peminjam,
-		          id_transaction:id_transaction,
-		          status:status,
-		          reason:result.value
-		        },
-		        success: function(result){
-		          Swal.showLoading()
-		          Swal.fire(
-		            'Successfully!',
-		            'success'
-		          ).then((result) => {
-		            if (result.value) {
-		              location.reload()
-		              $("#editJob").modal('toggle')
-		            }
-		          })
-		        },
-		      });
-		    }  
-		})
+  		    if (result.value) {
+  		      Swal.fire({
+  		        title: 'Please Wait..!',
+  		        text: "It's updating..",
+  		        allowOutsideClick: false,
+  		        allowEscapeKey: false,
+  		        allowEnterKey: false,
+  		        customClass: {
+  		          popup: 'border-radius-0',
+  		        },
+  		        onOpen: () => {
+  		          Swal.showLoading()
+  		        }
+  		      })
+  		      $.ajax({
+  		        type:"GET",
+  		        url:"{{url('acceptPeminjaman')}}",
+  		        data:{
+  		          // id_barang:id_barang,
+  		          // nik_peminjam:nik_peminjam,
+  		          id_transaction:id_transaction,
+  		          status:status,
+  		          reason:result.value
+  		        },
+  		        success: function(result){
+  		          Swal.showLoading()
+  		          Swal.fire(
+  		            'Successfully!',
+  		            'success'
+  		          ).then((result) => {
+  		            if (result.value) {
+  		              location.reload()
+  		              $("#editJob").modal('toggle')
+  		            }
+  		          })
+  		        },
+  		      });
+  		    }  
+		    })
       } 
     }
 
@@ -1640,22 +1686,16 @@ REJECT
 
     $('#users').select2();
 
-    @if(Auth::User()->id_division == 'HR' || Auth::User()->id_division == 'WAREHOUSE' && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
-      $('#data_table').DataTable({
-        "order": [[ 0, "asc" ]],
-        pageLength: 20,
-        // "scrollX":true,
-        // fixedColumns:   {
-        //   rightColumns: 1
-        // }
-      });
-    @else
-      $('#data_table').DataTable({
-        "order": [[ 0, "asc" ]],
-        pageLength: 20,
-        // "scrollX":true,
-      });
-    @endif
+    $('#data_table').DataTable({
+      pageLength: 20,
+      columnDefs: [
+        { orderable: false, targets: 0},
+        { targets: 7, "visible": false}
+      ],
+      order: [[7, 'asc']]
+      // "scrollX":true,
+    });
+    
 
     $('#datatable').DataTable({
       pageLength: 20,    

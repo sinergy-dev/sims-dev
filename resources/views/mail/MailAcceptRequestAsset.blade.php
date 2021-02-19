@@ -28,66 +28,61 @@
 		<p>
 			Hello {{$users->name}},
 		</p>		
-		@if($req_asset['asset']['status'] == 'REJECT')
-		<b><i>Rejecting Peminjaman Asset</i></b>, berikut rinciannya:
-		<table style="text-align: left;margin: 5px;">
-			<tr>
-				<th>Reason</th>
-				<th> : </th>
-				<td>{{$req_asset['reason']}}</td>
-			</tr>
-		</table>
-		<table style="text-align: left;margin: 5px;">
-			<tr>
-				<th>Name</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['nama_barang']}}</td>
-			</tr>
-			<tr>
-				<th>Description</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['description']}}</td>
-			</tr>
-			<tr>
-				<th>Tanggal Peminjaman</th>
-				<th> : </th>
-				<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
-			</tr>
-			<tr>
-				<th>Note</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['keterangan']}}</td>
-			</tr>
-		</table>
+		@if($req_asset['asset']['status'] == 'ACCEPT')
+			<b><i>Accepting Peminjaman Asset</i></b>, berikut rinciannya:
+			<table style="text-align: left;margin: 5px;">
+				<tr>
+					<th>Name</th>
+					<th> : </th>
+					<td>{{$req_asset['asset']['nama_barang']}}</td>
+				</tr>
+				<tr>
+					<th>Note</th>
+					<th> : </th>
+					<td>{{$req_asset['asset']['description']}}</td>
+				</tr>
+				<tr>
+					<th>Request By</th>
+					<th> : </th>
+					<td>{{$req_asset['asset']['name']}}</td>
+				</tr>
+				<tr>
+					<th>Tanggal Peminjaman</th>
+					<th> : </th>
+					<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
+				</tr>
+				<tr>
+					<th style="vertical-align: top;">Note</th>
+					<th style="vertical-align: top;"> : </th>
+					<td>{!!$req_asset['asset']['keterangan']!!}</td>
+				</tr>
+			</table>			
 		@else
-		<b><i>Accepting Peminjaman Asset</i></b>, berikut rinciannya:
-		<table style="text-align: left;margin: 5px;">
-			<tr>
-				<th>Name</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['nama_barang']}}</td>
-			</tr>
-			<tr>
-				<th>Description</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['description']}}</td>
-			</tr>
-			<tr>
-				<th>Request By</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['name']}}</td>
-			</tr>
-			<tr>
-				<th>Tanggal Peminjaman</th>
-				<th> : </th>
-				<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
-			</tr>
-			<tr>
-				<th>Note</th>
-				<th> : </th>
-				<td>{{$req_asset['asset']['keterangan']}}</td>
-			</tr>
-		</table>
+			<b><i>Rejecting Peminjaman Asset</i></b>, berikut rinciannya:
+			<table style="text-align: left;margin: 5px;">
+				<tr>
+					<th>Reason</th>
+					<th> : </th>
+					<td>{{$req_asset['reason']}}</td>
+				</tr>
+			</table>
+			<table style="text-align: left;margin: 5px;">
+				<tr>
+					<th>Kategori</th>
+					<th> : </th>
+					<td>{{$req_asset['asset']['note']}}</td>
+				</tr>
+				<tr>
+					<th>Tanggal Peminjaman</th>
+					<th> : </th>
+					<td>{{date('d-M-Y', strtotime($req_asset['asset']['created_at']))}}</td>
+				</tr>
+				<tr>
+					<th style="vertical-align: top;">Note</th>
+					<th style="vertical-align: top;"> : </th>
+					<td>{!!$req_asset['asset']['keterangan']!!}</td>
+				</tr>
+			</table>
 		@endif
 	@elseif($status == 'proses')
 		<p>
@@ -203,6 +198,34 @@
 				<td style="color: blue">{!!substr($req_asset['asset']['link'],0,35)!!}...</td>
 			</tr>
 		</table>
+	@elseif($status == 'addNotePinjam')
+		<p>
+			Hello {{$users->name}},
+		</p>
+		<b style="text-align: left;margin: 5px;">Tambahan </b>:
+		<div style="text-align: left;margin: 5px;padding-bottom: 5px">{{$req_asset['notes']}}</div>
+		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
+			<tr>
+				<th>Request By</th>
+				<th> : </th>
+				<td>{{$req_asset['asset']['name']}}</td>
+			</tr>
+			<tr>
+				<th>Status</th>
+				<th> : </th>
+				<td><label style="padding: 5px;background-color: #00c0ef;color: white">{{$req_asset['asset']['status']}}</label></td>
+			</tr>
+		</table>
+		<table style="text-align: left;margin: 5px;" class="tableBarang">
+			<tr style="border: solid 1px">
+				<th width="10%">Kategori</th>
+				<th width="25%">Note</th>			
+			</tr>
+			<tr>
+				<td>{{$req_asset['asset']['note']}}</td>
+				<td>{!!$req_asset['asset']['keterangan']!!}</td>
+			</tr>
+		</table>
 	@elseif($status == 'batalkan')
 		<p>
 			Hello {{$users->name}},
@@ -229,6 +252,32 @@
 				<td>{{$req_asset->nama}} {{$req_asset->merk}}</td>
 				<td>{{$req_asset->qty}}</td>
 				<td style="color: blue">{!!substr($req_asset->link,0,35)!!}...</td>
+			</tr>
+		</table>
+	@elseif($status == 'cancelPinjam')
+		<p>
+			Hello {{$users->name}},
+		</p>
+		<table style="text-align: left;margin: 5px;padding-bottom: 5px">
+			<tr>
+				<th>Request By</th>
+				<th> : </th>
+				<td>{{$req_asset->name}}</td>
+			</tr>
+			<tr>
+				<th>Status</th>
+				<th> : </th>
+				<td><label style="padding: 5px;background-color:#d73925;color: white">{{$req_asset->status}}</label></td>
+			</tr>
+		</table>
+		<table style="text-align: left;margin: 5px;" class="tableBarang">
+			<tr style="border: solid 1px">
+				<th width="10%">Kategori</th>
+				<th width="25%">Note</th>			
+			</tr>
+			<tr>
+				<td>{{$req_asset->note}}</td>
+				<td>{!!$req_asset->keterangan!!}</td>
 			</tr>
 		</table>
 	@endif	
