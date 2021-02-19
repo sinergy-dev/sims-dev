@@ -225,6 +225,10 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
 	Route::get('/report_product_technology','ReportController@report_product_technology');
 	Route::get('/getFilterTags','ReportController@getFilterTags');
+	Route::get('/get_data_sd_report_sales', 'ReportController@get_data_sd_report_sales');
+	Route::get('/get_data_tp_report_sales', 'ReportController@get_data_tp_report_sales');
+	Route::get('/get_data_win_report_sales', 'ReportController@get_data_win_report_sales');
+	Route::get('/get_data_lose_report_sales', 'ReportController@get_data_lose_report_sales');
 
 	Route::get('/report_product_index','ReportController@report_product_index');
 	Route::get('/getreportproduct','ReportController@getreportproduct');
@@ -743,6 +747,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/asset_hr', 'AssetHRController@index');
 	Route::post('/store_asset_hr', 'AssetHRController@store');
 	Route::post('/peminjaman_hr', 'AssetHRController@peminjaman');
+	Route::post('/requestPeminjaman','AssetHRController@requestPeminjaman');
 	Route::post('/penghapusan_hr', 'AssetHRController@penghapusan');
 	Route::post('/accept_pinjam_hr', 'AssetHRController@accept_pinjam');
 	Route::post('/reject_pinjam_hr', 'AssetHRController@reject_pinjam');
@@ -755,6 +760,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/edit_asset', 'AssetHRController@edit_asset');
 	Route::get('exportExcelAsset', 'AssetHRController@export');
 	Route::get('/getAssetCategoriHR','AssetHRController@getCategory');
+	Route::get('/getCategoryPinjam','AssetHRController@getCategoryPinjam');
 	Route::post('/store_kategori_asset','AssetHRController@store_kategori');
 	Route::get('/getDetailBorrowed','AssetHRController@getDetailBorrowed');
 	Route::get('/acceptPeminjaman','AssetHRController@acceptPeminjaman');
@@ -764,6 +770,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getRequestAssetBy','AssetHRController@getRequestAssetBy');
 	Route::get('/AddNoteReq','AssetHRController@AddNoteReq');
 	Route::get('/batalkanReq','AssetHRController@batalkanReq');
+	Route::get('/getListAsset','AssetHRController@getListAsset');
 
 
 	Route::get('asset_atk', 'AssetAtkController@index');
@@ -781,6 +788,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('asset_atk/accept_request_atk', 'AssetAtkController@accept_request_atk');
 	Route::post('asset_atk/done_request_atk', 'AssetAtkController@request_done');
 	Route::post('asset_atk/reject_request_atk', 'AssetAtkController@reject_request_atk');
+	Route::get('asset_atk/detail_produk_request', 'AssetAtkController@detail_produk_request');
 
 	//PMO
 	Route::get('PMO/detail/{lead_id}','PMOController@detail');
