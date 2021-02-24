@@ -179,24 +179,19 @@
                       <th width="15%"><center>Company</center></th>
                       <th width="20%"><center>Total Amount</center></th>
                       <th width="10%"><center>Total</center></th>
+                      <th width="10%"><center>Total</center></th>
                     </tr>
                   </thead>
                   <tbody id="report_sd" name="report_sd">
-                    <?php $no = 1; ?>
-                    @foreach($lead_sd as $sds)
-                      <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ $sds->name }}</td>
-                        <td><center>{{ $sds->code_company }}</center></td>
-                        <td align="right">
-                          @if($sds->amounts != NULL)
-                            <i class="money">{{ $sds->amounts }}</i>
-                          @endif
-                        </td>
-                        <td><center>({{ $sds->leads }})</center></td>
-                      </tr>
-                    @endforeach
                   </tbody>
+                  <tfoot>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tfoot>
                 </table>
               </div>
             </div>
@@ -225,24 +220,19 @@
                       <th width="15%"><center>Company</center></th>
                       <th width="20%"><center>Total Amount</center></th>
                       <th width="10%"><center>Total</center></th>
+                      <th width="10%"><center>Total</center></th>
                     </tr>
                   </thead>
                   <tbody id="report_tp" name="report_tp">
-                    <?php $no = 1; ?>
-                    @foreach($lead_tp as $tps)
-                      <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ $tps->name }}</td>
-                        <td><center>{{ $tps->code_company }}</center></td>
-                        <td align="right">
-                          @if($tps->amounts != NULL)
-                            <i class="money">{{ $tps->amounts }}</i>
-                          @endif
-                        </td>
-                        <td><center>({{ $tps->leads }})</center></td>
-                      </tr>
-                    @endforeach
                   </tbody>
+                  <tfoot>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tfoot>
                 </table>
               </div>
             </div>
@@ -272,24 +262,19 @@
                       <th width="15%"><center>Company</center></th>
                       <th width="20%"><center>Total Amount</center></th>
                       <th width="10%"><center>Total</center></th>
+                      <th width="10%"><center>Total</center></th>
                     </tr>
                   </thead>
                   <tbody id="report_win" name="report_win">
-                    <?php $no = 1; ?>
-                    @foreach($lead_win as $wins)
-                      <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ $wins->name }}</td>
-                        <td><center>{{ $wins->code_company }}</center></td>
-                        <td align="right">
-                          @if($wins->amounts != NULL)
-                            <i class="money">{{ $wins->amounts }}</i>
-                          @endif
-                        </td>
-                        <td><center>({{ $wins->leads }})</center></td>
-                      </tr>
-                    @endforeach
                   </tbody>
+                  <tfoot>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tfoot>
                 </table>
               </div>
             </div>
@@ -318,24 +303,19 @@
                       <th width="15%"><center>Company</center></th>
                       <th width="20%"><center>Total Amount</center></th>
                       <th width="10%"><center>Total</center></th>
+                      <th width="10%"><center>Total</center></th>
                     </tr>
                   </thead>
                   <tbody id="report_lose" name="report_lose">
-                    <?php $no = 1; ?>
-                    @foreach($lead_lose as $loses)
-                      <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ $loses->name }}</td>
-                        <td><center>{{ $loses->code_company }}</center></td>
-                        <td align="right">
-                          @if($loses->amounts != NULL)
-                            <i class="money">{{ $loses->amounts }}</i>
-                          @endif
-                        </td>
-                        <td><center>({{ $loses->leads }})</center></td>
-                      </tr>
-                    @endforeach
                   </tbody>
+                  <tfoot>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                  </tfoot>
                 </table>
               </div>
             </div>
@@ -361,275 +341,475 @@
 
 <script>
 
-  $('.money').mask('000,000,000,000,000,000', {reverse: true});
-  $('.total').mask('000,000,000,000,000,000.00', {reverse: true});
-
-    $("#startdate").on('change',function(){
-      $("#enddate").attr('disabled',false)
-      
-      $("#enddate").on('change',function(){
-          $("#filter_submit").attr('disabled',false)
-      });
+  $("#startdate").on('change',function(){
+    $("#enddate").attr('disabled',false)
+    
+    $("#enddate").on('change',function(){
+        $("#filter_submit").attr('disabled',false)
     });
+  });
 
-    $('#enddate').datepicker({
-      autoclose: true
-    })
+  $('#enddate').datepicker({
+    autoclose: true
+  })
 
-    $('#startdate').datepicker({
-      autoclose: true
-    })
+  $('#startdate').datepicker({
+    autoclose: true
+  })
 
-    $('#filter_submit').click(function() {
-      var type = this.value;
-      console.log(this.value);
-        $.ajax({
-          type:"GET",
-          url:"/getfiltersd",
-          data:{
-            data:this.value,
-            type:type,
-            start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-            end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-          },
-          success: function(result){
-            $('#report_sd').empty();
-
-            var table = "";
-
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
-              table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
-
-            });
-            $('#report_sd').append(table);
-            
-          },
-        });
-
-        $.ajax({
-          type:"GET",
-          url:"/getfiltertp",
-          data:{
-            data:this.value,
-            type:type,
-            start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-            end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-          },
-          success: function(result){
-            $('#report_tp').empty();
-
-            var table = "";
-
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
-              if(value.amounts == null) {
-                table = table + '<td><center> - </center></td>';
-              } else {
-                table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              }
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
-
-            });
-            $('#report_tp').append(table);
-            
-          },
-        });
-
-        $.ajax({
-          type:"GET",
-          url:"/getfilterwin",
-          data:{
-            data:this.value,
-            type:type,
-            start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-            end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-          },
-          success: function(result){
-            $('#report_win').empty();
-
-            var table = "";
-
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
-              table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
-
-            });
-            $('#report_win').append(table);
-            
-          },
-        });
-
-        $.ajax({
-          type:"GET",
-          url:"/getfilterlose",
-          data:{
-            data:this.value,
-            type:type,
-            start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-            end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-          },
-          success: function(result){
-            $('#report_lose').empty();
-
-            var table = "";
-
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
-              table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
-
-            });
-            $('#report_lose').append(table);
-            
-          },
-        });
-
-    });
-
-  $('#year_filter2').change(function(){
+  $('#filter_submit').click(function() {
     var type = this.value;
     console.log(this.value);
+      $.ajax({
+        type:"GET",
+        url:"/getfiltersd",
+        data:{
+          data:this.value,
+          type:type,
+          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+        },
+        success: function(result){
+          $('#report_sd').empty();
 
-    $.ajax({
-          type:"GET",
-          url:"/getfiltersdyear",
-          data:{
-            data:this.value,
-            type:type,
-          },
-          success: function(result){
-            $('#report_sd').empty();
+          var table = "";
 
-            var table = "";
+          $.each(result, function(key, value){
+            table = table + '<tr>';
+            table = table + '<td></td>';
+            table = table + '<td>' +value.name+ '</td>';
+            table = table + '<td><center>' +value.code_company+ '</center></td>';
+            table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
+            table = table + '<td><center>(' +value.leads+ ')</center></td>';
+            table = table + '</tr>';
 
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
+          });
+          $('#report_sd').append(table);
+          
+        },
+      });
+
+      $.ajax({
+        type:"GET",
+        url:"/getfiltertp",
+        data:{
+          data:this.value,
+          type:type,
+          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+        },
+        success: function(result){
+          $('#report_tp').empty();
+
+          var table = "";
+
+          $.each(result, function(key, value){
+            table = table + '<tr>';
+            table = table + '<td></td>';
+            table = table + '<td>' +value.name+ '</td>';
+            table = table + '<td><center>' +value.code_company+ '</center></td>';
+            if(value.amounts == null) {
+              table = table + '<td><center> - </center></td>';
+            } else {
               table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
+            }
+            table = table + '<td><center>(' +value.leads+ ')</center></td>';
+            table = table + '</tr>';
 
-            });
-            $('#report_sd').append(table);
-            
-          },
-        });
+          });
+          $('#report_tp').append(table);
+          
+        },
+      });
 
-        $.ajax({
-          type:"GET",
-          url:"/getfiltertpyear",
-          data:{
-            data:this.value,
-            type:type,
-          },
-          success: function(result){
-            $('#report_tp').empty();
+      $.ajax({
+        type:"GET",
+        url:"/getfilterwin",
+        data:{
+          data:this.value,
+          type:type,
+          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+        },
+        success: function(result){
+          $('#report_win').empty();
 
-            var table = "";
+          var table = "";
 
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
-              if(value.amounts == null) {
-                table = table + '<td><center> - </center></td>';
-              } else {
-                table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              }
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
+          $.each(result, function(key, value){
+            table = table + '<tr>';
+            table = table + '<td></td>';
+            table = table + '<td>' +value.name+ '</td>';
+            table = table + '<td><center>' +value.code_company+ '</center></td>';
+            table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
+            table = table + '<td><center>(' +value.leads+ ')</center></td>';
+            table = table + '</tr>';
 
-            });
-            $('#report_tp').append(table);
-            
-          },
-        });
+          });
+          $('#report_win').append(table);
+          
+        },
+      });
 
-        $.ajax({
-          type:"GET",
-          url:"/getfilterwinyear",
-          data:{
-            data:this.value,
-            type:type,
-          },
-          success: function(result){
-            $('#report_win').empty();
+      $.ajax({
+        type:"GET",
+        url:"/getfilterlose",
+        data:{
+          data:this.value,
+          type:type,
+          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+        },
+        success: function(result){
+          $('#report_lose').empty();
 
-            var table = "";
+          var table = "";
 
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
-              table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
+          $.each(result, function(key, value){
+            table = table + '<tr>';
+            table = table + '<td></td>';
+            table = table + '<td>' +value.name+ '</td>';
+            table = table + '<td><center>' +value.code_company+ '</center></td>';
+            table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
+            table = table + '<td><center>(' +value.leads+ ')</center></td>';
+            table = table + '</tr>';
 
-            });
-            $('#report_win').append(table);
-            
-          },
-        });
-
-        $.ajax({
-          type:"GET",
-          url:"/getfilterloseyear",
-          data:{
-            data:this.value,
-            type:type,
-          },
-          success: function(result){
-            $('#report_lose').empty();
-
-            var table = "";
-
-            $.each(result, function(key, value){
-              table = table + '<tr>';
-              table = table + '<td></td>';
-              table = table + '<td>' +value.name+ '</td>';
-              table = table + '<td><center>' +value.code_company+ '</center></td>';
-              table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-              table = table + '<td><center>(' +value.leads+ ')</center></td>';
-              table = table + '</tr>';
-
-            });
-            $('#report_lose').append(table);
-            
-          },
-        });
+          });
+          $('#report_lose').append(table);
+          
+        },
+      });
 
   });
+
+  $('#year_filter2').change(function() {
+    var data = this.value;
+    console.log(this.value);
+    $('#data_sd').DataTable().ajax.url("{{url('getfiltersdyear')}}?data="+data+"&type=" + data).load();
+    $('#data_tp').DataTable().ajax.url("{{url('getfiltertpyear')}}?data="+data+"&type=" + data).load();
+    $('#data_win').DataTable().ajax.url("{{url('getfilterwinyear')}}?data="+data+"&type=" + data).load();
+    $('#data_lose').DataTable().ajax.url("{{url('getfilterloseyear')}}?data="+data+"&type=" + data).load();
+  })
 
   $('#data_summary').DataTable();
   $('#data_all_sales').DataTable();
 
-  $('#data_sd').DataTable();
-  $('#data_tp').DataTable();
-  $('#data_win').DataTable();
-  $('#data_lose').DataTable();
+  // $('#data_sd').DataTable();
+  var data_sd = $('#data_sd').DataTable({
+     "responsive":true,
+     "orderCellsTop": true,
+    "ajax":{
+        "type":"GET",
+        "url":"{{url('get_data_sd_report_sales')}}",
+    },
+    "columns": [
+      { "data": "leads" },
+      { "data": "name" },
+      { "data": "code_company" },
+      { 
+        data: null,
+        className: "sum",
+        render: function ( data, type, row ) {
+          return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
+        }
+      },
+      {
+        className: "sum2",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.leads 
+        }
+      },
+      {
+        className: "sum3",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.amounts 
+        }
+      }
+    ],
+    "columnDefs":[
+      {
+        "targets":[5],
+        "visible":false
+      }
+    ],
+    "scrollX": true,
+    "pageLength": 25,
+    "order": [[ 1, "desc" ]],
+    "footerCallback": function(row, data, start, end, display) {
+        var api = this.api();
+
+        api.columns('.sum3', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $("th.sum").last().html($.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(sum));
+        });
+
+        api.columns('.sum2', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $(this.footer()).html(sum);
+        });
+    }
+  });
+
+  data_sd.on( 'order.dt search.dt', function () {
+      data_sd.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+          cell.innerHTML = i+1;
+      } );
+  }).draw();
+
+  var data_tp = $('#data_tp').DataTable({
+     "responsive":true,
+     "orderCellsTop": true,
+     
+    "ajax":{
+        "type":"GET",
+        "url":"{{url('get_data_tp_report_sales')}}",
+    },
+    "columns": [
+      { "data": "leads" },
+      { "data": "name" },
+      { "data": "code_company" },
+      { 
+        data: null,
+        className: "sum4",
+        render: function ( data, type, row ) {
+          return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
+        }
+      },
+      {
+        className: "sum5",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.leads 
+        }
+      },
+      {
+        className: "sum6",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.amounts 
+        }
+      }
+    ],
+    "columnDefs":[
+      {
+        "targets":[5],
+        "visible":false
+      }
+    ],
+    "scrollX": true,
+    "pageLength": 25,
+    "order": [[ 1, "desc" ]],
+    "footerCallback": function(row, data, start, end, display) {
+        var api = this.api();
+
+        api.columns('.sum6', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $("th.sum4").last().html($.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(sum));
+        });
+
+        api.columns('.sum5', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $(this.footer()).html(sum);
+        });
+    }
+  });
+
+  data_tp.on( 'order.dt search.dt', function () {
+      data_tp.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+          cell.innerHTML = i+1;
+      } );
+  }).draw();
+
+  var data_win = $('#data_win').DataTable({
+     "responsive":true,
+     "orderCellsTop": true,
+     
+    "ajax":{
+        "type":"GET",
+        "url":"{{url('get_data_win_report_sales')}}",
+    },
+    "columns": [
+      { "data": "leads" },
+      { "data": "name" },
+      { "data": "code_company" },
+      { 
+        data: null,
+        className: "sum7",
+        render: function ( data, type, row ) {
+          return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
+        }
+      },
+      {
+        className: "sum8",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.leads 
+        }
+      },
+      {
+        className: "sum9",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.amounts 
+        }
+      }
+    ],
+    "columnDefs":[
+      {
+        "targets":[5],
+        "visible":false
+      }
+    ],
+    "scrollX": true,
+    "pageLength": 25,
+    "order": [[ 1, "desc" ]],
+    "footerCallback": function(row, data, start, end, display) {
+        var api = this.api();
+
+        api.columns('.sum9', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $("th.sum7").last().html($.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(sum));
+        });
+
+        api.columns('.sum8', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $(this.footer()).html(sum);
+        });
+    }
+  });
+
+  data_win.on( 'order.dt search.dt', function () {
+      data_win.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+          cell.innerHTML = i+1;
+      } );
+  }).draw();
+
+  var data_lose = $('#data_lose').DataTable({
+     "responsive":true,
+     "orderCellsTop": true,
+     
+    "ajax":{
+        "type":"GET",
+        "url":"{{url('get_data_lose_report_sales')}}",
+    },
+    "columns": [
+      { "data": "leads" },
+      { "data": "name" },
+      { "data": "code_company" },
+      { 
+        data: null,
+        className: "sum10",
+        render: function ( data, type, row ) {
+          return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
+        }
+      },
+      {
+        className: "sum11",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.leads 
+        }
+      },
+      {
+        className: "sum12",
+        data: null,
+        render: function ( data, type, row ) {
+           return row.amounts 
+        }
+      }
+    ],
+    "columnDefs":[
+      {
+        "targets":[5],
+        "visible":false
+      }
+    ],
+    "scrollX": true,
+    "pageLength": 25,
+    "order": [[ 1, "desc" ]],
+    "footerCallback": function(row, data, start, end, display) {
+        var api = this.api();
+
+        api.columns('.sum12', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $("th.sum10").last().html($.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(sum));
+        });
+
+        api.columns('.sum11', { page: 'current' }).every(function () {
+            var sum = api
+                .cells( null, this.index(), { page: 'current'} )
+                .render('display')
+                .reduce(function (a, b) {
+                    var x = parseFloat(a) || 0;
+                    var y = parseFloat(b) || 0;
+                    return x + y;
+                }, 0);
+            $(this.footer()).html(sum);
+        });
+    }
+  });
+
+  data_lose.on( 'order.dt search.dt', function () {
+      data_lose.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+          cell.innerHTML = i+1;
+      } );
+  }).draw();
+
+
+  // $('#data_tp').DataTable();
+  // $('#data_win').DataTable();
+  // $('#data_lose').DataTable();
 
   $('#data_all').DataTable({
     "retrive" : true,
@@ -751,6 +931,8 @@
     });
   });
 
+  $('.money').mask('000,000,000,000,000,000', {reverse: true});
+  $('.total').mask('000,000,000,000,000,000.00', {reverse: true});
   
 </script>
 
