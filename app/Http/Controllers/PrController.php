@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use DB;
 use App\PR;
+use App\SalesProject;
 use Illuminate\Support\Facades\Route;
 use Excel;
 use Validator;
@@ -193,7 +194,9 @@ class PrController extends Controller
 
         $year_before = PR::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse','year_before','tahun'));
+        $pid = SalesProject::select('id_project')->get();
+
+        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse','year_before','tahun','pid'));
     }
 
     /**
@@ -287,7 +290,12 @@ class PrController extends Controller
             $tambah->from = Auth::User()->nik;
             $tambah->division = $request['division'];
             $tambah->issuance = $request['issuance'];
-            $tambah->project_id = $request['project_id'];
+            if ($request['project_id'] == null) {
+                $tambah->project_id = $request['project_idInputNew'];
+            }else{
+                $tambah->project_id = $request['project_id'];
+                
+            }
             $tambah->result = 'T';
             $tambah->save();
 
@@ -359,14 +367,17 @@ class PrController extends Controller
             $tambah->from = Auth::User()->nik;
             $tambah->division = $request['division'];
             $tambah->issuance = $request['issuance'];
-            $tambah->project_id = $request['project_id'];
+            if ($request['project_id'] == null) {
+                $tambah->project_id = $request['project_id'];
+            }else{
+                $tambah->project_id = $request['project_idInputNew'];
+                
+            }
             $tambah->result = 'T';
             $tambah->save();
 
             return redirect('pr')->with('success', 'Created Purchase Request Successfully!');
-        }
-
-        
+        }        
     }
 
     /**
