@@ -1,6 +1,12 @@
 @extends('template.template_admin-lte')
 @section('content')
 
+<style type="text/css">
+  th {
+    text-align: center;
+  }
+</style>
+
 <section class="content-header">
   <h1>
     Daftar Buku Admin (PR)
@@ -57,15 +63,15 @@
             <div class="table-responsive">
                   <table class="table table-bordered table-striped dataTable display nowrap" id="data_pr" width="100%" cellspacing="0">
                     <thead>
-                      <tr>
+                      <tr  style="text-align: center;">
                         <th>No</th>
                         <th>Position</th>
-                        <th>Type of Letter</th>
+                        <th>Type</th>
                         <th>Month</th>
                         <th>Date</th>
                         <th>To</th>
                         <th>Attention</th>
-                        <th>Title</th>
+                        <th>Title/Subject</th>
                         <th>Project</th>
                         <th>Description</th>
                         <th>From</th>
@@ -145,15 +151,15 @@
                 <input type="date" class="form-control" name="date" id="date" required>
               </div>
               <div class="form-group">
-                <label for="">To</label>
-                <input type="text" class="form-control" placeholder="To" name="to" id="to" required>
+                <label for="">To (Customer, DIstributor, Pihak External)</label>
+                <input type="text" class="form-control" placeholder="ex. PT. Sinergy Informasi Pratama" name="to" id="to" required>
               </div> 
               <div class="form-group">
-                <label for="">Attention</label>
-                <input type="text" class="form-control" placeholder="Enter Attention" name="attention" id="attention" >
+                <label for="">Attention/PIC (Customer, DIstributor, Pihak External)</label>
+                <input type="text" class="form-control" placeholder="ex. Rama Agastya" name="attention" id="attention" >
               </div> 
               <div class="form-group">
-                <label for="">Title</label>
+                <label for="">Title/Subject</label>
                 <input type="text" class="form-control" placeholder="Enter Title" name="title" id="title" >
               </div>
               <div class="form-group">

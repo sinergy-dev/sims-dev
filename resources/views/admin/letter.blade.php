@@ -5,6 +5,10 @@
   		overflow: hidden;
 	}
 
+  th {
+    text-align: center;
+  }
+
 	/*.data tr:nth-child(1){
 	  counter-reset: rowNumber;
 	  }
@@ -106,7 +110,7 @@
 	                    <tr>
 	                      <th>No Letter</th>
 	                      <th>Position</th>
-	                      <th>Type of Letter</th>
+	                      <th>Type</th>
 	                      <th>Month</th>
 	                      <th>Date</th>
 	                      <th>To</th>
@@ -494,14 +498,19 @@
             "defaultContent": ''
           },
         ],
+        // "columnDefs": [
+        //   { "width": "20%", "targets": 7 },
+        // ],
         "searching": true,
-        "lengthChange": false,
+        // "lengthChange": false,
         "info":false,
-        "scrollX": true,
+        // "scrollX": true,
         "order": [[ 0, "desc" ]],
-        "fixedColumns":   {
-            leftColumns: 1
-        },
+        // "fixedColumns":   {
+        //     leftColumns: 1
+        // },
+        "responsive":true,
+        "orderCellsTop": true,
         "pageLength": 20,
       })
     }

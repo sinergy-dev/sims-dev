@@ -3,7 +3,10 @@
   <style type="text/css">
     .DTFC_LeftBodyLiner {
       overflow: hidden;
-  }
+    }
+    th{
+      text-align: center;
+    }
   </style>
   <section class="content-header">
     <h1>
@@ -137,9 +140,19 @@
                           <option value="MSM">MSM</option>
                       </select>
                   </div>
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                       <label>Date</label>
                       <input type="date" class="form-control" id="date" name="date" required>
+                  </div> -->
+
+                  <div class="form-group">
+                    <label for="">Date</label>
+                    <div class="input-group date">
+                      <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </div>
+                      <input type="text" class="form-control pull-right date" name="date" id="date_quote">
+                    </div>
                   </div>
 
                   <div class="form-group">
@@ -228,9 +241,18 @@
                     <option value="MSM">MSM</option>
                 </select>
               </div>
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="">Date</label>
                 <input type="date" class="form-control" name="date" id="date" required>
+              </div> -->
+              <div class="form-group">
+                <label for="">Date</label>
+                <div class="input-group date">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="text" class="form-control pull-right date" name="date" id="date_backdate">
+                </div>
               </div>
               <!-- <div class="form-group">
                 <label for="">To</label>
@@ -358,6 +380,8 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <!-- bootstrap datepicker -->
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript">
     $('#customer_quote').select2();
     $("#backdate_num").select2();
@@ -406,6 +430,18 @@
         $('#edit_note').val(note);
       }
     }
+
+    var nowDate = new Date();
+    var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+
+    $('#date_quote').datepicker({
+      autoclose: true,
+      startDate: today 
+    }).attr('readonly','readonly').css('background-color','#fff');
+
+    $('#date_backdate').datepicker({
+      autoclose: true,
+    }).attr('readonly','readonly').css('background-color','#fff');
 
     initQuoTable();
 
