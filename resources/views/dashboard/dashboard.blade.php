@@ -1233,7 +1233,7 @@
               </div>
             </div>
             <div class="modal-body">
-              <h4 style="text-align: center;"><b>Please change your password to protect your account !</b></h4>
+              <h4 style="text-align: center;"><b>Please change default password to protect your account !</b></h4>
               <a href="{{url('/profile_user')}}#changePassword"><span class="btn btn-info btn-block" style="border-radius: 24px">Change Password directly</span></a>
               <span data-dismiss="modal" style="cursor: pointer;"><h5 class="text-center" style="color: #00acd6">No, thanks</h5></span>
             </div>
