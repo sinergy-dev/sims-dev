@@ -83,6 +83,13 @@
               @endif
             </td>
           </tr>
+          <tr>
+            <th>Price purchase</th>
+            <th> : </th>
+            <td>
+              <label>Rp.<span class="money">{{$detailAsset->harga_beli}}</span></label>
+            </td>
+          </tr>
         </table>
       </div>
       <div class="col-md-6">
@@ -218,8 +225,10 @@
 @section('script')
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript">
-     $('.money').mask('000,000,000,000,00', {reverse: true});
+     $('.money').mask('000,000,000,000', {reverse: true});
 
      function return_hr(id_pam){
       $('#no_return_hr').val(id_pam);

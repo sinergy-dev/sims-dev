@@ -40,7 +40,7 @@ class RequestAssetHr extends Mailable
             if($this->req_asset['asset']['status']  == "ACCEPT"){
                 return $this->subject($this->subject)
                 ->view('mail.MailAcceptRequestAsset');
-            }else if($this->req_asset['asset']['status']  == "REJECT"){
+            }else{
                 return $this->subject($this->subject)
                 ->view('mail.MailAcceptRequestAsset');
             }
@@ -55,16 +55,9 @@ class RequestAssetHr extends Mailable
                 return $this->subject($this->subject)
                 ->view('mail.MailAcceptRequestAsset');
             }
-        }else if ($this->status == 'addNote') {
+        }else{
             return $this->subject($this->subject)
             ->view('mail.MailAcceptRequestAsset');
-        }else if ($this->status == 'batalkan') {
-            return $this->subject($this->subject)
-            ->view('mail.MailAcceptRequestAsset');
-        }
-            
-        
-    	
-        
+        }  
     }
 }

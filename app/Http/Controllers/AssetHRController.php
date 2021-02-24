@@ -274,8 +274,7 @@ class AssetHRController extends Controller
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
                            ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
                            ->where('nik',Auth::User()->nik)
-                           ->where('tb_asset_hr_request.status','=','CANCEL')
-                           ->orwhere('tb_asset_hr_request.status','=','REJECT')
+                           ->where('tb_asset_hr_request.status','<>','PENDING')
                            ->get();
         }
 
@@ -419,6 +418,13 @@ class AssetHRController extends Controller
         $tambah->code_name      = $request['asset_code'];
         $tambah->kategori    	= $request['category_id'];
         $tambah->nama_barang    = $request['nama_barang'];
+        if ($request['purchase_price'] == NULL) {
+        	$harga_beli	= $request['purchase_price'];
+        }else{
+        	$harga_beli = str_replace(',', '', $request['purchase_price']);
+        }
+        $tambah->harga_beli     = $harga_beli;
+        $tambah->type     		= $request['type_asset'];        
         $tambah->status         = "AVAILABLE";
         $edate          = strtotime($_POST['asset_date']); 
         $edate          = date("Y-m-d",$edate);
@@ -433,7 +439,10 @@ class AssetHRController extends Controller
     }
 
     public function storeRequestAsset(Request $request){
-        $count_kategori = count($request['cat_req_id']);      
+        $count_kategori = count($request['cat_req_id']);   
+
+        $text = $request['link_barang_request'];
+        $link_barang = $text;
 
         $inc = DB::table('tb_asset_hr_request')->get();
         $increment = count($inc);
@@ -457,7 +466,7 @@ class AssetHRController extends Controller
                 'nama'              => $request['nama_barang_request'][$i],
                 'qty'               => $request['qty_barang_request'][$i],
                 'status'            => "REQUEST",
-                'link'              => $request['link_barang_request'][$i],
+                'link'              => $link_barang[$i],
                 'merk'              => $merk_barang,
                 'created_at'        => date("Y-m-d h:i:s"),
                 'updated_at'        => date("Y-m-d h:i:s"),
@@ -474,7 +483,7 @@ class AssetHRController extends Controller
 
         Mail::to($to)->send(new RequestAssetHr('new',$users,$req_asset,'[SIMS-APP] Request New Asset'));     
 
-        return redirect()->back()->with('success', 'Create New Request Asset Successfully!');
+        return redirect()->back()->with('success', 'Create New Request Asset Successfully!')->withInput(['tab'=>'request_list']);
     }
 
     public function batalkanReq(Request $request){
@@ -570,11 +579,11 @@ class AssetHRController extends Controller
                 ->get();
 
         $detailAsset = DB::table('tb_asset_hr')
-                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(tgl_tambah,created_at) AS umur_asset'),'lokasi','tgl_tambah','merk','description','note')
+                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(tgl_tambah,NOW()) AS umur_asset'),'lokasi','tgl_tambah','merk','description','note','harga_beli')
                 ->where('tb_asset_hr.id_barang',$id_barang)                
                 ->first();
 
-        $total_pinjam = DB::table('tb_asset_hr_transaction')->groupBy('id_barang')->count();
+        $total_pinjam = DB::table('tb_asset_hr_transaction')->groupBy('id_barang')->where('id_barang',$id_barang)->count();
 
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -834,10 +843,9 @@ class AssetHRController extends Controller
             $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
 
             Mail::to($to)->send(new RequestAssetHr('reqPinjam',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
-        }
-        
+        }      
 
-        return redirect()->back()->with('alert', $line);
+        return redirect()->back()->with('alert', $line)->withInput(['tab'=>'request_list']);
     }
 
     public function requestPeminjaman(Request $request)
@@ -875,7 +883,7 @@ class AssetHRController extends Controller
         Mail::to($to)->send(new RequestAssetHr('reqPinjam',$users,$req_asset,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));      
         
 
-        return redirect()->back()->with('alert', $line);
+        return redirect()->back()->with(['alert'=> $line,'id'=>$req_asset->id_transaction]);
     }
 
     public function acceptPeminjaman(Request $request){
