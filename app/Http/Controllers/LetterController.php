@@ -252,6 +252,10 @@ class LetterController extends Controller
                     '12' => "XII");
         $type = $request['type'];
         $posti = $request['position'];
+
+        $edate = strtotime($_POST['date']); 
+        $edate = date("Y-m-d",$edate);
+
         $month_pr = substr($request['date'],5,2);
         $year_pr = substr($request['date'],0,4);        
 
@@ -294,7 +298,7 @@ class LetterController extends Controller
                     $tambah->position = $posti;
                     $tambah->type_of_letter = $type;
                     $tambah->month = $bln;
-                    $tambah->date = $request['date'];
+                    $tambah->date = $edate;
                     $tambah->to = $request['to'];
                     $tambah->attention = $request['attention'];
                     $tambah->title = $request['title'];
@@ -321,7 +325,7 @@ class LetterController extends Controller
                         $tambah->position = $posti;
                         $tambah->type_of_letter = $type;
                         $tambah->month = $bln;
-                        $tambah->date = $request['date'];
+                        $tambah->date = $edate;
                         $tambah->to = $request['to'];
                         $tambah->attention = $request['attention'];
                         $tambah->title = $request['title'];
@@ -343,7 +347,7 @@ class LetterController extends Controller
                 $tambah->position = $posti;
                 $tambah->type_of_letter = $type;
                 $tambah->month = $bln;
-                $tambah->date = $request['date'];
+                $tambah->date = $edate;
                 $tambah->to = $request['to'];
                 $tambah->attention = $request['attention'];
                 $tambah->title = $request['title'];
@@ -521,7 +525,7 @@ class LetterController extends Controller
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             $tambah->to = $request['to'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];
