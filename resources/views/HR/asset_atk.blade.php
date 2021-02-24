@@ -236,7 +236,7 @@
                     </td>
                     <td>
                       @if($data->status == 'PENDING')
-                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}', '{{$data->nik_peminjam}}')">ACCEPT</button>
+                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}', '{{$data->nik_peminjam}}', '{{$data->created_at}}')">ACCEPT</button>
                       <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
                       @elseif($data->status == 'PROSES')
                       <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
@@ -258,7 +258,7 @@
                       <td>{{$data->keterangan}}</td>
                       <td>{{$data->name}}</td>
                       <td>{!!substr($data->created_at,0,10)!!}</td>
-                      <td><a href="{{$data->link}}">{!!substr($data->link,0,30)!!}...</a></td>
+                      <td><a href="{{$data->link}}" target="_blank">{!!substr($data->link,0,30)!!}...</a></td>
                       <td>
                         @if($data->status == 'REQUEST' || $data->status == 'PROCESS')
                           <label class="label label-warning" style="width: 90px">PENDING</label>
@@ -270,7 +270,7 @@
                       </td>
                       <td>
                         @if($data->status == 'REQUEST')
-                        <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" style="width: 90px; height: 25px;" data-target="#accept_request_modal" data-toggle="modal" onclick="accept_request('{{$data->id_barang}}', '{{$data->nama}}', '{{$data->keterangan}}', '{{$data->qty}}')">ACCEPT</button>
+                        <button class="btn btn-xs btn-success" id="btn_accept_request_atk" value="{{$data->id_barang}}" name="btn_accept" style="width: 90px; height: 25px;">ACCEPT</button>
                         <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" style="width: 90px; height: 25px;" data-target="#reject_request_modal" data-toggle="modal" onclick="reject_request_atk('{{$data->id_barang}}')">REJECT</button>
                         @elseif($data->status == 'PROCESS')
                         <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_request_modal" data-toggle="modal" name="btn_done" style="width: 90px; height: 25px" onclick="done_request_atk('{{$data->id_barang}}', '{{$data->nama}}', '{{$data->qty}}', '{{$data->nik}}', '{{$data->keterangan}}')">DONE</button>
@@ -343,7 +343,7 @@
                     </td>
                   </tr>
                   @endforeach
-                  @foreach($request as $data)
+                  @foreach($request2 as $data)
                     <tr>
                     <td>{{$no++}}</td>
                     <td>{{$data->nama}}</td>
@@ -415,7 +415,7 @@
                       </td>
                       <td>
                         @if($data->status == 'PENDING')
-                        <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">ACCEPT</button>
+                        <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->created_at}}')">ACCEPT</button>
                         <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
                         @elseif($data->status == 'PROSES')
                         <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
@@ -459,7 +459,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Add Asset HR/GA</h4>
+          <h4 class="modal-title">Add Asset ATK</h4>
         </div>
         <div class="modal-body">
           <form method="POST" action="{{url('asset_atk/store_asset_atk')}}" name="modalProgress">
@@ -533,7 +533,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Update Stok Asset</h4>
+          <h4 class="modal-title">Update Stok ATK</h4>
         </div>
         <div class="modal-body">
           <form method="POST" action="{{url('asset_atk/update_stok')}}" name="modalProgress">
@@ -705,6 +705,10 @@
             <label>Description</label>
             <input type="text" name="description_accept" id="description_accept" class="form-control" readonly>
           </div>
+          <div class="form-group">
+            <label>Tgl Request</label>
+            <input type="text" name="tgl_request_accept" id="tgl_request_accept" class="form-control" readonly>
+          </div>
           
           <div class="modal-footer">
             <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
@@ -732,11 +736,19 @@
           </div>
           <div class="form-group">
             <label>Quantity</label>
-            <input type="number" name="qty_accept" id="qty_accept2" readonly class="form-control" required>
+            <input type="number" name="qty_accept" id="qty_accept2" readonly class="form-control">
           </div>
           <div class="form-group">
             <label>Description</label>
             <input type="text" name="description_accept" id="description_accept2" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Link Product</label>
+            <textarea class="form-control" id="link_product_accept2" readonly></textarea>
+          </div>
+          <div class="form-group">
+            <label>Tgl Request</label>
+            <input type="text" name="tgl_request_accept" id="tgl_request_accept2" class="form-control" readonly>
           </div>
           
           <div class="modal-footer">
@@ -836,7 +848,7 @@
         </div>
         <div class="form-group"> 
           <label>Nama Barang</label>
-          <input name="nama_barang_done" id="nama_barang_done" class="form-control" readonly>
+          <input name="nama_barang_done" id="nama_barang_done" class="form-control" readonly> 
         </div>
         <div class="form-group"> 
           <label>Qty Request</label>
@@ -874,7 +886,7 @@
         </div>
         <div class="form-group"> 
           <label>Nama Barang</label>
-          <input name="nama_barang_done" id="nama_barang_done2" class="form-control" readonly>
+          <input name="nama_barang_done" id="nama_barang_done2" class="form-control">
         </div>
         <div class="form-group"> 
           <label>Qty Request</label>
@@ -994,7 +1006,7 @@
   		$('#note_reject2').val(note);
   	}
 
-    function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan,nik_peminjam,nama){
+    function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan,nik_peminjam,created_at){
       $('#id_transaction_update').val(id_transaction);
       $('#id_barang_update').val(id_barang);
       $('#qty_awal_accept').val(qty);
@@ -1003,14 +1015,29 @@
       $('#qty_accept').val(qty_akhir);
       $('#description_accept').val(keterangan);
       $('#nik_request').val(nik_peminjam);
+      $('#tgl_request_accept').val(created_at.substring(0, 10));
     }
 
-    function accept_request(id_barang,nama,keterangan,qty) {
-      $('#id_trans').val(id_barang);
-      $('#nama_barang_accept2').val(nama);
-      $('#qty_accept2').val(qty);
-      $('#description_accept2').val(keterangan);
-    }
+    $(document).on('click', '#btn_accept_request_atk', function() {
+      $.ajax({
+        type:"GET",
+        url:'{{url("/asset_atk/detail_produk_request")}}',
+        data:{
+          id_barang:this.value,
+        },
+        success: function(result){
+          $.each(result, function(key, value){
+              $('#id_trans').val(value.id_barang);
+              $('#nama_barang_accept2').val(value.nama);
+              $('#qty_accept2').val(value.qty);
+              $('#description_accept2').val(value.keterangan);
+              $('#tgl_request_accept2').val(value.created_at.substring(0, 10));
+              $('#link_product_accept2').val(value.link);
+          });
+        }
+      });
+      $('#accept_request_modal').modal('show')
+    });
 
     function update_done_pr(id_transaction,id_barang,qty,qty_request,nama_barang) {
       $('#id_transaction_done').val(id_transaction);
@@ -1063,12 +1090,14 @@
     });
 
     $('#data_table').DataTable({
+      pageLength: 25,
     });
 
     // $('#datatable').DataTable({
     // });
 
     $('#datatables').DataTable({
+      pageLength: 25,
     });
 
 
@@ -1082,47 +1111,47 @@
     $('#btn_request').click(function(){
       $('#tunggu').modal('show')
       $('#peminjaman_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
     });
 
     $('#btn_request_asset').click(function(){
       $('#tunggu').modal('show')
       $('#request_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
     });
 
     $('#btn_accept_atk').click(function(){
       $('#tunggu').modal('show')
       $('#accept_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
     });
 
     $('#btn_accept_request').click(function(){
       $('#tunggu').modal('show')
       $('#accept_request_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
     });
 
-    $('#btn_reject_atk').click(function(){
-      $('#tunggu').modal('show')
-      $('#reject_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
-    });
+    // $('#btn_reject_atk').click(function(){
+    //   $('#tunggu').modal('show')
+    //   $('#reject_modal').modal('hide')
+    //   setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
+    // });
 
-    $('#btn_reject_request').click(function(){
-      $('#tunggu').modal('show')
-      $('#reject_request_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
-    });
+    // $('#btn_reject_request').click(function(){
+    //   $('#tunggu').modal('show')
+    //   $('#reject_request_modal').modal('hide')
+    //   setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
+    // });
 
     $('#btn_done_request').click(function(){
       $('#tunggu').modal('show')
       $('#done_request_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 1000);
+      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
     });
 
     var requestTable = $('#datatable').DataTable({
-      pageLength: 10,
+      pageLength: 25,
     });
 
     if (!requestTable.rows().count()) {

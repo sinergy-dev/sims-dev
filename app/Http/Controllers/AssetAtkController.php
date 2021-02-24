@@ -212,6 +212,13 @@ class AssetAtkController extends Controller
                     ->orWhere('status', 'REQUEST')
                     ->get();
 
+        $request2 = DB::table('tb_asset_atk_request')
+                    ->join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')
+                    ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_atk_request.created_at', 'name', 'link', 'id_barang','tb_asset_atk_request.nik')
+                    ->orderBy('tb_asset_atk_request.created_at','desc')
+                    ->where('tb_asset_atk_request.nik', Auth::User()->nik)
+                    ->get();
+
         $pr_request2 = DB::table('tb_asset_atk_transaction')
                     ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
                     ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
@@ -227,7 +234,7 @@ class AssetAtkController extends Controller
         $cek = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk_transaction.id_barang', '=', 'tb_asset_atk.id_barang', 'left')->select('tb_asset_atk_transaction.id_barang')->get();
         // return $cek;
 
-    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request'));
+    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request', 'request2'));
     }
 
     public function getAtk(Request $request){
@@ -414,7 +421,16 @@ class AssetAtkController extends Controller
 
         $data = AssetAtk::select('qty','unit','nama_barang')->where('id_barang',$id_barang)->first();
 
-        return view('HR/detail_asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'detail', 'data', 'last_update'));
+        $summary = AssetAtkChangelog::selectRaw('SUM(CASE WHEN `status` = "In" THEN 1 ELSE 0 END) AS `sum_in`')
+            ->selectRaw('SUM(CASE WHEN `status` = "Out" THEN 1 ELSE 0 END) AS `sum_out`')
+            ->selectRaw('LEFT(`created_at`, 7) AS `month`')
+            ->where('id_barang', $id_barang)
+            ->groupBy('month')
+            ->get();
+
+         // return $summary;   
+
+        return view('HR/detail_asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'detail', 'data', 'last_update', 'summary'));
     }
 
     public function store(Request $request)
@@ -440,6 +456,17 @@ class AssetAtkController extends Controller
 
         return redirect()->back()->with('update', 'Successfully!');
     }
+
+    public function detail_produk_request(Request $request)
+    {
+        $id_barang = $request->id_barang;
+        return array(DB::table('tb_asset_atk_request')
+                ->join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')
+                ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_atk_request.created_at', 'name', 'link', 'id_barang','tb_asset_atk_request.nik')
+                ->where('tb_asset_atk_request.id_barang',$id_barang)
+                ->first());
+    }
+
 
     public function update_stok(Request $request)
     {
@@ -725,6 +752,8 @@ class AssetAtkController extends Controller
 
             $req_atk = collect(['variable'=>$variable,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
+            // return $variable;
+
             foreach ($receiver_final as $final) {
                 Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position,$get_divisi_hr2,'PENDING'));
             }
@@ -794,7 +823,7 @@ class AssetAtkController extends Controller
         //             ->where('tb_asset_atk_request.id_barang', $get_id_transac->id_barang)
         //             ->first();
 
-        $req_atk = collect(['insertdata'=>$insertData,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
+        $req_atk = collect(['variable'=>$insertData,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
         // return $req_atk;
 

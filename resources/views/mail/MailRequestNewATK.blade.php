@@ -24,13 +24,11 @@
 		<tr>
 			<th>Request By</th>
 			<th> : </th>
-			<!-- <td>Bima Aldi Pratama</td> -->
 			<td>{{$req_atk['nama_peminjam']}}</td>
 		</tr>
 		<tr>
 			<th>Request Date</th>
 			<th> : </th>
-			<!-- <td>2021-02-14</td> -->
 			<td>{{date('d-M-Y', strtotime($req_atk['request_date']))}}</td>
 		</tr>
 	</table>
@@ -49,7 +47,7 @@
 			@if($status == 'REQUEST')
 				<td>{{$data['nama']}}</td>
 				<td>{{$data['qty']}}</td>
-				<td style="color: blue">{!!substr($data['link'],0,35)!!}...</td>
+				<td><a href="{{$data['link']}}" target="_blank">{!!substr($data['link'],0,35)!!}...</a></td>
 			@else
 				<td>{{$data['nama_barang']}}</td>
 				<td>{{$data['qty_akhir']}}</td>
@@ -66,7 +64,7 @@
 				<table cellspacing="0" cellpadding="0">
 					<tr>
 						<td style="border-radius: 2px;" bgcolor="#ED2939">
-							<a href="{{url('/asset_hr')}}#request_asset" target="_blank" style="padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
+							<a href="{{url('/asset_atk')}}#peminjaman_asset" target="_blank" style="padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
 								Request ATK
 							</a>
 						</td>
