@@ -194,6 +194,10 @@
                 <input type="text" class="form-control" placeholder="Enter Issuance" name="issuance" id="issuance">
               </div>
               <div class="form-group">
+                <label for="">Amount</label>
+                <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="amount">
+              </div>
+              <div class="form-group">
                 <label for="">Project ID</label>                
                 <select type="text" class="form-control" placeholder="Select Division" name="project_id" id="project_id" style="width: 100%">
                   <option value="">Select project id</option>
@@ -253,6 +257,10 @@
                 <input type="text" class="form-control" placeholder="Enter Issuance" name="edit_issuance" id="edit_issuance">
               </div>
               <div class="form-group">
+                <label for="">Amount</label>
+                <input type="text" class="form-control" placeholder="Enter Amount" name="edit_amount" id="edit_amount">
+              </div>
+              <div class="form-group">
                 <label for="">Project ID</label>
                 <input type="text" class="form-control" placeholder="Enter Project ID" name="edit_project_id" id="edit_project_id">
               </div>
@@ -308,6 +316,8 @@
   <!-- <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.js"></script>
   <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
   <script type="text/javascript">
+    $('.money').mask('000,000,000,000,000', {reverse: true});
+
     $('#makeId').click(function(){
       $('#project_idNew').show()
       $('#project_id').val("").select2().trigger("change")
