@@ -1784,8 +1784,10 @@ REJECT
         // $('.request_list').addClass('active')
         activeTab('request_asset')      
       }else{
-        activeTab('list_asset') 
+        activeTab('asset_list') 
       }
+    @else
+      activeTab('asset_list') 
     @endif
     
 
