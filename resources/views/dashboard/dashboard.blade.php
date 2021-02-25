@@ -77,7 +77,7 @@
     position: relative;
     width: 100%;
     height: 150px;
-    background: #fcba03;
+    background: red;
   }
 
   .inner-reset {
