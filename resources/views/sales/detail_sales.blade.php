@@ -6,6 +6,11 @@
      display:inline-block;
   }
 
+  td {
+    text-wrap: normal;
+    word-wrap: break-word;
+  }
+
   div div ol li{
     font-size: 14px;
   }
@@ -990,30 +995,30 @@
           <div class="box">
             <div class="box-header with-border">
             <h3 class="box-title">Change Log</h3>
-              <div class="box-tools pull-right">
+              <div class="pull-right">
               	@if(Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'OPERATION')
                 @else
-                <button type="button" class="btn btn-primary" style="width: 100px" data-target="#modal_changelog_progress" data-toggle="modal"><i class="fa fa-plus"></i> Progress</button>
+                <button type="button" class="btn btn-primary btn-sm" data-target="#modal_changelog_progress" data-toggle="modal"><i class="fa fa-plus"></i> Progress</button>
                 </button>
                 @endif
               </div>
             </div>
             <div class="box-body">
             <div class="table-responsive">
-              <table class="table table-bordered display nowrap" id="datastable" width="100%" cellspacing="0">
+              <table class="table table-bordered display" id="datastable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th style="width: 20px"><center>No</center></th>
-                    <th style="width: 150px"><center>Date</center></th>
-                    <th><center>Status</center></th>
-                    <th><center>Submit Oleh</center></th>
+                    <th width="5%"><center>No</center></th>
+                    <th width="15%"><center>Date</center></th>
+                    <th width="60%"><center>Status</center></th>
+                    <th width="25$"><center>Submit Oleh</center></th>
                   </tr>
                 </thead>
                 <?php $number = 1; ?>
                 <tbody id="products-list" name="products-list">
                   @foreach($change_log as $log)
                   <tr>
-                    <td>{{$number++}}</td>
+                    <td><center>{{$number++}}</center></td>
                     <td><center>{{$log->created_at}}</center></td>
 		                  @if($log->status == 'Update Lead with Amount ' || $log->status == 'Create Lead with Amount ')
                         <td>{{$log->status}} <i class="money">{{$log->submit_price}}</i></td>
@@ -1024,7 +1029,7 @@
 		                  @elseif($log->status != 'Update Lead with Amount ' || $log->status == 'Create Lead with Amount ')
 		                    <td>{{$log->status}}</td>
 		                  @endif
-                    <td>{{$log->name}}</td>
+                    <td><center>{{$log->name}}</center></td>
                   </tr>
                   @endforeach
                 </tbody>
