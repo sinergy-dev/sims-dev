@@ -49,7 +49,7 @@
             <div class="row" style="padding-left:20px">
               <h4 class="pull-left" style="margin-right: 15px"><i class="fa fa-address-card" style="margin-left: 5px"></i><b>&nbsp&nbsp {{$user_profile->nik}} </b></h4>
               <h4 class="pull-left" style="margin-right: 15px"><i class="fa fa-envelope" style="margin-left: 5px"></i><b>&nbsp&nbsp {{$user_profile->email}} </b></h4> 
-              <h4 class="pull-left" style="margin-right: 15px"><i class="fa fa-phone" style="margin-left: 5px"></i><b>&nbsp&nbsp +42{{$user_profile->phone}} </b></h4>
+              <h4 class="pull-left" style="margin-right: 15px"><i class="fa fa-phone" style="margin-left: 5px"></i><b>&nbsp&nbsp +62{{$user_profile->phone}} </b></h4>
             </div>
             <div class="row" style="padding-left:25px">
               <button class="btn btn-md btn-primary btn-edit" type="button" style="width: 150px"><i class="fa fa-key"></i> Change Password</button>
