@@ -76,6 +76,13 @@
     .dataTables_paging {
       display: none;
     }
+
+    .nav-tabs .badge{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
+    }
       
   </style>
   <!---->
@@ -141,25 +148,23 @@
           </div>
       </div>
 
-
-
       <div class="box-body">
         <div class="table-responsive">          
             <div class="nav-tabs-custom">
-                <ul class="nav nav-tabs" id="cutis">
+                <ul class="nav nav-tabs" style="margin-top: 10px" id="cutis">
                     <li class="tabs_item">
                       @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                      <a href="#bos" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
+                      <a href="#bos" id="bos" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
                       @endif
                     </li>
-                    <li class="tabs_item active">
-                      <a href="#cuti" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
+                    <li class="tabs_item">
+                      <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
                     </li>
                     <li class="tabs_item">
                       @if(Auth::User()->id_position == 'HR MANAGER')
-                      <a href="#staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
+                      <a href="#staff" id="staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
                       @else
-                      <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
+                      <a href="#staff" id="staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
                       @endif
                     </li>
                 </ul>
@@ -193,7 +198,7 @@
                 </div>
                 @endif
 
-                <div class="tab-pane active" id="cuti">
+                <div class="tab-pane" id="cuti">
                   <table class="table table-bordered table-striped dataTable" id="datatablew" width="100%" cellspacing="0">
                         <thead>
                           <tr>
@@ -256,7 +261,6 @@
                           </tbody>
                   </table>
                 </div>
-
 
                 <div class="tab-pane" id="staff">
                   @if(Auth::User()->id_position == 'HR MANAGER')
@@ -1152,12 +1156,14 @@
     var start_date = moment().startOf('year');
     var end_date = moment().endOf('year');
 
+    var monthCuti;
+
     get_list_cuti();
     get_cuti_byMonth();
-    get_history_cuti();
+    get_history_cuti(); 
 
     function get_cuti_byMonth(){
-      $("#datatablew").DataTable({
+      monthCuti = $("#datatablew").DataTable({
         "ajax":{
           "type":"GET",
           "url":"{{url('get_cuti_byMonth')}}",
@@ -1214,13 +1220,25 @@
             } 
           },
         ],
+        initComplete: function() {
+          if ("{{Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'HRD MANAGER'}}") {
+            if (this.api().data().length) {
+              $('#cuti_tab').append('<span class="badge">'+ this.api().data().length +'</span>')
+              activeTab('cuti')
+            }else{
+              activeTab('cuti') 
+            }
+          }else{
+            activeTab('cuti')
+          }
+        },
         "searching": true,
         "lengthChange": true,
         "order": [[ 0, "asc" ]],
         "fixedColumns":   {
             leftColumns: 1
         },
-        "pageLength": 10,
+        "pageLength": 25,
       })
     }
 
@@ -1265,6 +1283,10 @@
         },
         "pageLength": 10,
       })
+    }
+
+    function activeTab(tab){
+      $('#cutis a[href="#' + tab + '"]').tab('show');
     }
 
     function submitDecline(){
@@ -1835,12 +1857,12 @@
   	  });
       });
 
-      $(document).ready(function(){
-  	  $('[data-toggle="tooltip"]').tooltip();   
+    $(document).ready(function(){
+  	  $('[data-toggle="tooltip"]').tooltip(); 
   	});
 
     $(".alert").fadeTo(2000, 500).slideUp(500, function(){
-         $(".alert").slideUp(300);
+      $(".alert").slideUp(300);
     });
     
 
