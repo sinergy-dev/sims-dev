@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Hash;
 use Notification;
 use App\Notifications\CreateUser;
 use App\Notifications\DeleteUser;
+
+use Excel;
 // use Image;
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -45,7 +47,7 @@ class HRController extends Controller
 
         $hr = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file','users.ktp_file','status_kerja')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
@@ -53,7 +55,7 @@ class HRController extends Controller
 
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_npwp','users.npwp_file','users.ktp_file','status_kerja')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','2')
@@ -201,7 +203,7 @@ class HRController extends Controller
 
         $hr = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','users.no_npwp','users.npwp_file','users.ktp_file')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
@@ -210,7 +212,7 @@ class HRController extends Controller
 
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','users.no_npwp','users.npwp_file','users.ktp_file')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','2')
@@ -269,7 +271,7 @@ class HRController extends Controller
     	$id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_npwp','npwp_file','ktp_file','status_kerja')
+                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -370,6 +372,8 @@ class HRController extends Controller
         $tambah->email = $request['email'];
         $tambah->id_company = $request['company'];
         $tambah->status_karyawan = 'belum_cuti';
+        $tambah->id_presence_setting = '1';
+        $tambah->status_kerja = $request['status_kerja'];
 
         if($request['id_sub_division_tech_'] == 'PRESALES'){
             $tambah->id_division = 'TECHNICAL PRESALES';
@@ -469,10 +473,13 @@ class HRController extends Controller
            $tambah->id_position = $request['pos_sales_msp'];
         }
 
+        $tambah->akhir_kontrak = $request['akhir_kontrak'];
         $tambah->date_of_entry = $request['date_of_entry'];
         $tambah->date_of_birth = $request['date_of_birth'];
         $tambah->address = $request['address'];
         $tambah->phone = $request['phone_number'];
+        $tambah->no_ktp = $request['no_ktp'];
+        $tambah->no_kk = $request['no_kk'];
         $tambah->no_npwp = $request['no_npwp'];
 
         //upload file gambar npwp user
@@ -487,6 +494,26 @@ class HRController extends Controller
         }
 
         $tambah->npwp_file = $fileName;
+
+        $file = $request->file('bpjs_kes');
+        if ($file !== null) {
+            $fileName = $nik."_bpjs_kes_ver1".".jpg";
+            $request->file('bpjs_kes')->move("image/", $fileName);
+        }else{
+            $fileName = "";
+        }
+
+        $tambah->bpjs_kes = $fileName;
+
+        $file = $request->file('bpjs_ket');
+        if ($file !== null) {
+            $fileName = $nik."_bpjs_ket_ver1".".jpg";
+            $request->file('bpjs_ket')->move("image/", $fileName);
+        }else{
+            $fileName = "";
+        }
+
+        $tambah->bpjs_ket = $fileName;
         
         $tambah->save();
 
@@ -734,6 +761,10 @@ class HRController extends Controller
             $update->address = $request['address'];
         }elseif ($request['phone_number'] != "") {
             $update->phone = $request['phone_number'];
+        }elseif ($request['no_ktp_update'] != "") {
+            $update->no_ktp = $request['no_ktp'];
+        }elseif ($request['no_kk_update'] != "") {
+            $update->no_kk = $request['no_kk'];
         }elseif ($request['no_npwp'] != "") {
             $update->no_npwp = $request['no_npwp'];
         }
@@ -748,12 +779,30 @@ class HRController extends Controller
 
             $request->file('npwp_file')->move("image/", $fileName);
             $update->npwp_file = $fileName;
+        }
 
+        $file = $request->file('bpjs_kes');
+        if ($file == "") {
             
+        }else{
+            $fileName = $nik."_bpjs_kes_ver1".".jpg";
+            $request->file('bpjs_kes')->move("image/", $fileName);
+            $update->bpjs_kes = $fileName;
+        }
+
+        $file = $request->file('bpjs_ket');
+        if ($file == "") {
+            
+        }else{
+            $fileName = $nik."_bpjs_ket_ver1".".jpg";
+            $request->file('bpjs_ket')->move("image/", $fileName);
+            $update->bpjs_ket = $fileName;
         }
 
         if ($request['status_kerja_update'] != "") {
             $update->status_kerja = $request['status_kerja_update'];
+        } else if ($request['akhir_kontrak_update'] != "") {
+            $update->email = $request['akhir_kontrak_update'];
         }
 
         $update->update();
@@ -807,84 +856,84 @@ class HRController extends Controller
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'ADMIN'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'INTERNAL IT'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'SALES' && $ter == ''){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }
         else{
            $user_profile = DB::table('users')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_npwp','users.npwp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }
@@ -1085,8 +1134,12 @@ class HRController extends Controller
         $update->date_of_birth  = $req['date_of_birth'];
         $update->date_of_entry  = $req['date_of_entry'];
         $update->phone          = $req['phone'];
+        $update->no_ktp         = $req['no_ktp'];
+        $update->no_kk          = $req['no_kk'];
         $update->no_npwp        = $req['no_npwp'];
         $update->npwp_file      = $req['npwp_file'];
+        $update->bpjs_kes       = $req['bpjs_kes'];
+        $update->bpjs_ket       = $req['bpjs_ket'];
 
         if($req->file('npwp_file') == "")
         {
@@ -1099,6 +1152,24 @@ class HRController extends Controller
 
             $req->file('npwp_file')->move("image/", $fileName);
             $update->npwp_file = $fileName;
+        }
+
+        $file = $request->file('bpjs_kes');
+        if ($File == "") {
+            
+        }else{
+            $fileName = $nik."_bpjs_kes_ver1".".jpg";
+            $request->file('bpjs_kes')->move("image/", $fileName);
+            $update->bpjs_kes = $fileName;
+        }
+
+        $file = $request->file('bpjs_ket');
+        if ($File == "") {
+            
+        }else{
+            $fileName = $nik."_bpjs_ket_ver1".".jpg";
+            $request->file('bpjs_ket')->move("image/", $fileName);
+            $update->bpjs_ket = $fileName;
         }
 
         // Disini proses mendapatkan judul dan memindahkan letak gambar ke folder image
@@ -1299,5 +1370,71 @@ class HRController extends Controller
                 ->orWhere('id_position','PM')
                 ->get(),$request->id_assign);
         }
+    }
+
+    public function exportExcelEmployee(Request $request){
+        $nama = 'SIP Employee'.date('Y-m-d');
+        Excel::create($nama, function ($excel) use ($request) {
+        $excel->sheet('SIP Employee', function ($sheet) use ($request) {
+        
+        $sheet->mergeCells('A1:O1');
+
+       // $sheet->setAllBorders('thin');
+        $sheet->row(1, function ($row) {
+            $row->setFontFamily('Calibri');
+            $row->setFontSize(11);
+            $row->setAlignment('center');
+            $row->setFontWeight('bold');
+        });
+
+        $sheet->row(1, array('SIP Employee'));
+
+        $sheet->row(2, function ($row) {
+            $row->setFontFamily('Calibri');
+            $row->setFontSize(11);
+            $row->setFontWeight('bold');
+        });
+
+        $datas = User::select('nik','id_company','id_position','id_division','id_territory','name','email','date_of_entry','date_of_birth','address','phone','no_ktp','no_kk','no_npwp')
+                    ->get();
+
+        $sheet->row($sheet->getHighestRow(), function ($row) {
+                $row->setFontWeight('bold');
+            });
+
+             $datasheet = array();
+             $datasheet[0]  =   array("No", "NIK", "Company", "Position", "Division", "Territory", "Name",  "Email", "Date of entry", "Date of birth", "Address", "Phone", "KTP", "KK", "NPWP");
+             $i=1;
+
+        foreach ($datas as $data) {
+                       // $sheet->appendrow($data);
+                foreach ($datas as $data) {
+                    if($data->no == $data->no)
+                     $datasheet[$i] = array($i,
+
+
+                        $data['nik'],
+                        $data['id_company'],
+                        $data['id_position'],
+                        $data['id_division'],
+                        $data['id_territory'],
+                        $data['name'],
+                        $data['email'],
+                        $data['date_of_entry'],
+                        $data['date_of_birth'],
+                        $data['address'],
+                        $data['phone'],
+                        $data['no_ktp'],
+                        $data['no_kk'],
+                        $data['no_npwp'],
+                    );
+                  $i++;
+                }        
+            }
+
+            $sheet->fromArray($datasheet);
+        });
+
+        })->export('xls');
     }
 }
