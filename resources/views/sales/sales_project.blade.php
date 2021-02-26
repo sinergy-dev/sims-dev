@@ -829,6 +829,21 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       fixedColumns:   {
         rightColumns: 1
       }, 
+      initComplete: function() {
+        if("{{Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'FINANCE'}}"){
+          if (this.api().data().length) {
+            $('#request').append('<span class="badge">'+ this.api().data().length +'</span>')
+            $('#tabs_request').addClass('active')   
+            changeTabs('request')
+          }else{
+            $('#tabs_sip').addClass('active')
+            changeTabs('sip')
+          }
+        }else{
+          $('#tabs_sip').addClass('active')
+          changeTabs('sip')
+        }
+      }
 	  });	
 
     @if(Auth::User()->id_division == 'MSM')
@@ -861,21 +876,6 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     $('#applyFilterTablePerformancemsp').click(function(){
       table.search($('#searchBarTicketmsp').val()).draw();
     })
-
-    if("{{Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'FINANCE'}}"){
-      console.log(request_table.page.info().length)
-      if (request_table.page.info().length) {
-        $('#request').append('<span class="badge">'+ request_table.page.info().length +'</span>')
-        $('#tabs_request').addClass('active')   
-        changeTabs('request')
-      }else{
-        $('#tabs_sip').addClass('active')
-        changeTabs('sip')
-      }
-    }else{
-      $('#tabs_sip').addClass('active')
-      changeTabs('sip')
-    }
     
   }
 
