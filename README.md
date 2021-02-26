@@ -9,3 +9,5 @@ woooo ancene
 dinar cantik banget
 dinar imut banget
 
+dinduyy
+dinduttt
