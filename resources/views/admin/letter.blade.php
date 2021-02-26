@@ -503,41 +503,36 @@
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
 
-    $('#date_backdate').datepicker({
-      autoclose: true,
-    }).css('background-color','#fff');
 
-    $('#date_backdate').change(function (argument) {  
-      $("#backdate_num").select2().val('')      
-      $.ajax({
-        type:"GET",
-        url:"get_backdate_letter",
-        data:{
-          tanggal:$('#date_backdate').val(),
-        },
-        success:function(result){
-          console.log(result.results.length)
-          if (result.results.length == 0) {
-          $('#submitBd').prop("disabled",true)          
-            initCekNum()
-            $("#backdate_num").prop("disabled",true)            
-          }else{
-            $('#submitBd').prop("disabled",false)
-            $("#backdate_num").prop("disabled",false)
-            $("#backdate_num").select2({
-              data: result.results
-            })            
-          }          
-        }
-      })
-      // $("#backdate_num").select2({
-      //   ajax: {
-      //     url: '{{url("/get_backdate_letter")}}' + '?tanggal=' + $('#date_backdate').val(),
-      //     dataType: 'json'
-      //   }
-      // });
-      
-    })
+	$('#date_backdate').datepicker({
+		autoclose: true,
+	}).on('hide', function(e) {
+	    console.log($("#date_backdate").val());
+	    // $("#backdate_num").val("").trigger('change')
+	    $('#backdate_num').empty().trigger("change");
+	    $.ajax({
+	        type:"GET",
+	        url:"get_backdate_letter",
+	        data:{
+	          tanggal:$('#date_backdate').val(),
+	        },
+	        success:function(result){
+	          console.log(result.results.length)
+	          if (result.results.length == 0) {
+	          	$('#submitBd').prop("disabled",true)          
+	            initCekNum()
+	            $("#backdate_num").prop("disabled",true)            
+	          }else{
+	            $('#submitBd').prop("disabled",false)
+	            $("#backdate_num").prop("disabled",false)	           
+	            $("#backdate_num").select2({
+	              data: result.results
+	            })         
+
+	          }          
+	        }
+        })
+	});
 
     function initCekNum(){
       $("#backdate_num").select2().val('')
