@@ -30,8 +30,8 @@
 					<h3 class="box-title">My Attendance Detail</h3>			
 				</div>
 
-				<div class="box-body table-responsive no-padding">
-					<table class="table table-hover">
+				<div class="box-body table-responsive">
+					<table class="table table-hover" id="table-presence">
 						<thead>
 							<tr>
 								<th>Date</th>
@@ -73,6 +73,51 @@
 @endsection
 @section('script')
 <script type="text/javascript">
+	$("#table-presence").DataTable({
+		"ajax":{
+           "type":"GET",
+           "url":"{{url('/presence/history/personalMsp')}}",
+        },
+        "columns": [
+            {
+              render: function ( data, type, row ) {
+                return '<i>'+ row.date +'</i>';
+              }
+            },  
+            // { "data": "name_product" },  
+            {
+              render: function ( data, type, row ) {
+                 return '<i>'+ row.schedule +'</i>';
+                
+              }
+            },  
+            {
+              render: function ( data, type, row ) {
+                 return '<i>'+ row.checkin +'</i>';
+                
+              }
+            },  
+            {
+              render: function ( data, type, row ) {
+                 return '<i>'+ row.checkout +'</i>';
+                
+              }
+            },  
+            {
+              render: function ( data, type, row ) {
+              	if (row.condition == "On-Time") {
+              		return '<span class="label label-success">' + row.condition + '</span>'
+              	}else if (row.condition == "Injury-Time") {
+              		return '<span class="label label-warning">' + row.condition + '</span>'
+              	}else{
+              		return '<span class="label label-danger">' + row.condition + '</span>'
+              	}
+                
+              }
+            },       
+          ],
+	});
+
 	var config = {
 		type: 'doughnut',
 		data: {

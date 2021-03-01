@@ -4409,7 +4409,7 @@ class SALESController extends Controller{
         
         }elseif ($div == 'FINANCE'){
             
-            if ($request->id == "sip") {
+            if ($request->id == "SIP") {
                 
                 $pid = DB::table('tb_id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
@@ -4421,7 +4421,7 @@ class SALESController extends Controller{
                     ->whereYear('tb_id_project.created_at',$request->year_filter)
                     ->get(); 
 
-            }else if ($request->id == "msp") {
+            }else if ($request->id == "MSP") {
                 
                 $pid = DB::table('tb_id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
@@ -4575,7 +4575,7 @@ class SALESController extends Controller{
         
         }elseif ($div == 'FINANCE'){
             
-            if ($req->id == "sip") {
+            if ($req->id == "SIP") {
                 
                 $pid = DB::table('tb_id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
@@ -4587,7 +4587,7 @@ class SALESController extends Controller{
                     ->whereYear('tb_id_project.created_at',$req->filterYear)
                     ->get(); 
 
-            }else if ($req->id == "msp") {
+            }else if ($req->id == "MSP") {
                 
                 $pid = DB::table('tb_id_project')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')

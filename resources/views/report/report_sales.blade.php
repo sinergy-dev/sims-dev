@@ -39,6 +39,7 @@
               </select>
               <select class="form-control" style="width: 300px" id="dropdown" name="dropdown">
                 <option >Select Win Probability</option>
+                <option value="ALL">ALL</option>
                 <option value="HIGH">HIGH</option>
                 <option value="MEDIUM">MEDIUM</option>
                 <option value="LOW">LOW</option>

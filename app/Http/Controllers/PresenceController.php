@@ -19,7 +19,7 @@ use App\PresenceLocationUser;
 class PresenceController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth', ['except' => ['getPresenceParameter','checkIn','checkOut']]);
+        $this->middleware('auth', ['except' => ['getPresenceParameter','checkIn','checkOut','personalHistoryMsp']]);
     }
 
     public function notification_legacy(){
@@ -249,6 +249,46 @@ class PresenceController extends Controller
 
 
         return view('presence.personal_history', compact('presenceHistoryDetail','presenceHistoryCounted','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+    }
+
+    public function personalHistoryMsp(Request $req){
+
+        if (isset(Auth::User()->nik)) {
+            $presenceHistoryTemp = PresenceHistory::select(
+                DB::raw("*"),
+                DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`")
+            )->whereRaw('`nik` = ' . Auth::User()->nik);
+        }else{
+            $presenceHistoryTemp = PresenceHistory::select(
+                DB::raw("*"),
+                DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`")
+            )->whereRaw('`nik` = ' . $req->nik);
+        }        
+
+        $presenceHistory = DB::table(DB::raw("(" . $presenceHistoryTemp->toSql() . ") AS `presence__history_temp`"))
+            ->select('presence__history_temp.nik')
+            ->selectRaw("CAST(MIN(`presence__history_temp`.`presence_actual`) AS DATE) AS `date`")
+            ->selectRaw("MIN(`presence__history_temp`.`presence_schedule`) AS `schedule`")
+            ->selectRaw("MIN(`presence__history_temp`.`presence_actual`) AS `checkin`")
+            ->selectRaw("MAX(`presence__history_temp`.`presence_actual`) AS `checkout`")
+            ->selectRaw("MAX(`presence__history_temp`.`presence_condition`) AS `condition`")
+            ->groupBy('presence__history_temp.presence_actual_date');
+
+        $presenceHistoryDetail = $presenceHistory->get();
+        $presenceHistoryCounted = $presenceHistory->get()->groupBy('condition');
+
+        $presenceHistoryCounted = $presenceHistoryCounted->map(function ($item, $key) {
+            if($key == "On-Time"){
+                return ['count' => collect($item)->count(),'color' => "#00a65a"];
+            }else if($key == "Injury-Time"){
+                return ['count' => collect($item)->count(),'color' => "#f39c12"];
+            } else {
+                return ['count' => collect($item)->count(),'color' => "#dd4b39"];
+            }
+        })->sortBy('count');
+
+        return ["data"=>$presenceHistoryDetail,"datas"=>$presenceHistoryCounted,"datas2"=>$presenceHistoryCounted->keys(),"datas3"=>$presenceHistoryCounted->pluck('count'),"datas4"=>$presenceHistoryCounted->pluck('color')];
+
     }
 
     public function teamHistory() {
