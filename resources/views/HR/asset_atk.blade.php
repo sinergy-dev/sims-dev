@@ -236,8 +236,8 @@
                     </td>
                     <td>
                       @if($data->status == 'PENDING')
-                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#accept_modal" data-toggle="modal" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}', '{{$data->nik_peminjam}}', '{{$data->created_at}}')">ACCEPT</button>
-                      <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" data-target="#reject_modal" data-toggle="modal" onclick="id_reject_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}')">REJECT</button>
+                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}', '{{$data->nik_peminjam}}', '{{$data->created_at}}')">ACCEPT</button>
+                      <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;"  onclick="reject_update('{{$data->id_transaction}}')">REJECT</button>
                       @elseif($data->status == 'PROSES')
                       <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
                       @elseif($data->status == 'DONE')
@@ -271,7 +271,7 @@
                       <td>
                         @if($data->status == 'REQUEST')
                         <button class="btn btn-xs btn-success" id="btn_accept_request_atk" value="{{$data->id_barang}}" name="btn_accept" style="width: 90px; height: 25px;">ACCEPT</button>
-                        <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" style="width: 90px; height: 25px;" data-target="#reject_request_modal" data-toggle="modal" onclick="reject_request_atk('{{$data->id_barang}}')">REJECT</button>
+                        <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" style="width: 90px; height: 25px;" onclick="reject_request_atk('{{$data->id_barang}}')">REJECT</button>
                         @elseif($data->status == 'PROCESS')
                         <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_request_modal" data-toggle="modal" name="btn_done" style="width: 90px; height: 25px" onclick="done_request_atk('{{$data->id_barang}}', '{{$data->nama}}', '{{$data->qty}}', '{{$data->nik}}', '{{$data->keterangan}}')">DONE</button>
                         @elseif($data->status == 'DONE')
@@ -682,17 +682,10 @@
 <div class="modal fade" id="accept_modal" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
+        <div class="modal-header">
+          <h4 style="text-align: center;"><b>Are you sure to accept?</b></h4>
+        </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/accept_request')}}" name="modalProgress">
-            @csrf
-          <input name="id_barang_update" id="id_barang_update" hidden>
-          <input name="id_transaction_update" id="id_transaction_update" hidden>
-          <input name="qty_awal_accept" id="qty_awal_accept" hidden>
-          <input name="qty_akhir_accept" id="qty_akhir_accept" hidden>
-          <input name="nik_request" id="nik_request" hidden>
-          <div class="form-group">
-          	<h4 style="text-align: center;"><b>Are you sure to accept?</b></h4>
-          </div>
           <div class="form-group">
             <label>Nama Barang</label>
             <input type="text" name="nama_barang_accept" id="nama_barang_accept" class="form-control" readonly>
@@ -714,7 +707,6 @@
             <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
             <button type="submit" id="btn_accept_atk" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Accept</button>
           </div>
-        </form>
         </div>
       </div>
     </div>
@@ -723,13 +715,11 @@
 <div class="modal fade" id="accept_request_modal" role="dialog">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
+        <div class="modal-header">
+          <h4 style="text-align: center;"><b>Are you sure to accept?</b></h4>
+        </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/accept_request_atk')}}" name="modalProgress">
-            @csrf
           <input name="id_trans" id="id_trans" hidden>
-          <div class="form-group">
-            <h4 style="text-align: center;"><b>Are you sure to accept?</b></h4>
-          </div>
           <div class="form-group">
             <label>Nama Barang</label>
             <input type="text" name="nama_barang_accept" id="nama_barang_accept2" class="form-control" readonly>
@@ -755,7 +745,6 @@
             <button type="button" class="btn btn-xs btn-default" style="width: 70px; height: 25px;" data-dismiss="modal"><i class="fa fa-times"></i>&nbspCANCEL</button>
             <button type="submit" id="btn_accept_request" class="btn btn-xs btn-success" style="width: 70px; height: 25px;"><i class="fa fa-check"></i>&nbsp Accept</button>
           </div>
-        </form>
         </div>
       </div>
     </div>
@@ -766,7 +755,7 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/reject_request')}}" name="modalProgress">
+          <form name="modalProgress">
             @csrf
           <input type="text" name="id_barang_reject" id="id_barang_reject" hidden>
           <input type="text" name="id_transaction_reject" id="id_transaction_reject" hidden>
@@ -942,6 +931,7 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script type="text/javascript">
 
     $(document).ready(function(){
@@ -1006,19 +996,87 @@
   		$('#note_reject2').val(note);
   	}
 
+    // function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan,nik_peminjam,created_at){
+    //   $('#id_transaction_update').val(id_transaction);
+    //   $('#id_barang_update').val(id_barang);
+    //   $('#qty_awal_accept').val(qty);
+    //   $('#qty_akhir_accept').val(qty_akhir);
+    //   $('#nama_barang_accept').val(nama_barang);
+    //   $('#qty_accept').val(qty_akhir);
+    //   $('#description_accept').val(keterangan);
+    //   $('#nik_request').val(nik_peminjam);
+    //   $('#tgl_request_accept').val(created_at.substring(0, 10));
+    // }
+
+
     function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan,nik_peminjam,created_at){
-      $('#id_transaction_update').val(id_transaction);
-      $('#id_barang_update').val(id_barang);
-      $('#qty_awal_accept').val(qty);
-      $('#qty_akhir_accept').val(qty_akhir);
-      $('#nama_barang_accept').val(nama_barang);
-      $('#qty_accept').val(qty_akhir);
-      $('#description_accept').val(keterangan);
-      $('#nik_request').val(nik_peminjam);
+      var swalAccept;
+      var titleStatus = 'Accept Request ATK'  
+
+      $("#accept_modal").modal('show')   
+      $("#nama_barang_accept").val(nama_barang)
+      $("#description_accept").val(keterangan)
+      $("#qty_accept").val(qty_akhir)   
       $('#tgl_request_accept').val(created_at.substring(0, 10));
+
+      $("#btn_accept_atk").click(function(){
+        swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "are you sure?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        })
+
+
+        swalAccept.then((result) => {
+          if (result.value) {
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's updating..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"GET",
+              url:"{{url('asset_atk/accept_request')}}",
+              data:{
+                id_transaction:id_transaction,
+                id_barang:id_barang,
+                qty:qty,
+                qty_akhir:qty_akhir,
+                nama_barang:nama_barang,
+                nik_peminjam:nik_peminjam
+              },
+              success: function(result){
+                Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                  }
+                })
+              },
+            }) 
+          }        
+        })
+      })  
     }
 
     $(document).on('click', '#btn_accept_request_atk', function() {
+      var id_barang = this.value
       $.ajax({
         type:"GET",
         url:'{{url("/asset_atk/detail_produk_request")}}',
@@ -1037,6 +1095,57 @@
         }
       });
       $('#accept_request_modal').modal('show')
+
+      var swalAccept;
+      var titleStatus = 'Accept Request ATK'
+      $("#btn_accept_request").click(function(){
+        swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "are you sure?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        })
+
+        swalAccept.then((result) => {
+          if (result.value) {
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's updating..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"GET",
+              url:"{{url('asset_atk/accept_request_atk')}}",
+              data:{
+                id_barang:id_barang
+              },
+              success: function(result){
+                Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                  }
+                })
+              },
+            }) 
+          }        
+        })
+      })
     });
 
     function update_done_pr(id_transaction,id_barang,qty,qty_request,nama_barang) {
@@ -1068,17 +1177,6 @@
       }
     });
 
-    // $(document).on('keyup keydown', "input[id^='qty_restock_atk']", function(e){
-    //   var qty_before = $("#qty_request_done2").val();
-    //   if ($(this).val() < parseFloat(qty_before)
-    //       && e.keyCode != 46
-    //       && e.keyCode != 8
-    //      ) {
-    //      e.preventDefault();     
-    //      $(this).val(qty_before);
-    //   }
-    // });
-
     $('.hover-biru').click(function(){
       var new_unit = prompt("Enter unit :");
       $("#unit").append($('<option>', { value: new_unit, text: new_unit, selected:true }));
@@ -1092,9 +1190,6 @@
     $('#data_table').DataTable({
       pageLength: 25,
     });
-
-    // $('#datatable').DataTable({
-    // });
 
     $('#datatables').DataTable({
       pageLength: 25,
@@ -1119,30 +1214,6 @@
       $('#request_modal').modal('hide')
       setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
     });
-
-    $('#btn_accept_atk').click(function(){
-      $('#tunggu').modal('show')
-      $('#accept_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
-    });
-
-    $('#btn_accept_request').click(function(){
-      $('#tunggu').modal('show')
-      $('#accept_request_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
-    });
-
-    // $('#btn_reject_atk').click(function(){
-    //   $('#tunggu').modal('show')
-    //   $('#reject_modal').modal('hide')
-    //   setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
-    // });
-
-    // $('#btn_reject_request').click(function(){
-    //   $('#tunggu').modal('show')
-    //   $('#reject_request_modal').modal('hide')
-    //   setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
-    // });
 
     $('#btn_done_request').click(function(){
       $('#tunggu').modal('show')
@@ -1180,15 +1251,101 @@
         });
     });
 
-    function id_reject_update(id_transaction,id_barang,qty,qty_akhir){
-      $('#id_transaction_reject').val(id_transaction);
-      $('#id_barang_reject').val(id_barang);
-      $('#qty_awal_reject').val(qty);
-      $('#qty_akhir_reject').val(qty_akhir);
+
+    function reject_update(id_transaction){
+      var titleStatus = 'Reject Request ATK'
+      swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "Reason for rejecting:",
+          input: 'text',
+          icon: 'warning',
+          showCancelButton: true        
+      })
+
+      swalAccept.then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's updating..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+              popup: 'border-radius-0',
+            },
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"GET",
+            url:"{{url('asset_atk/reject_request')}}",
+            data:{
+              id_transaction:id_transaction,
+              reason:result.value
+            },
+            success: function(result){
+              Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                }
+              })
+            },
+          }) 
+        }        
+      })      
     }
 
-    function reject_request_atk(id_barang) {
-      $('#id_barang_reject2').val(id_barang);
+    function reject_request_atk(id_barang){
+      var titleStatus = 'Reject Request ATK'
+      swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "Reason for rejecting:",
+          input: 'text',
+          icon: 'warning',
+          showCancelButton: true        
+      })
+
+      swalAccept.then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's updating..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+              popup: 'border-radius-0',
+            },
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"GET",
+            url:"{{url('asset_atk/reject_request_atk')}}",
+            data:{
+              id_barang:id_barang,
+              reason:result.value
+            },
+            success: function(result){
+              Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                }
+              })
+            },
+          }) 
+        }        
+      })      
     }
 
     function edit_asset(id_barang,nama_barang,description){
