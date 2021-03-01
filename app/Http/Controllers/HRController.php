@@ -1468,7 +1468,33 @@ class HRController extends Controller
         $notiftp = $notifAll["notiftp"]; 
         $notifClaim = $notifAll["notifClaim"];    
 
-        return view('HR/guideLines',compact('notif','notifOpen','notifsd','notiftp','notifClaim'));
+        $data = GuideLine::select('id','description','link_url','regulation','policy')->get();
 
+        return view('HR/guideLines',compact('data','notif','notifOpen','notifsd','notiftp','notifClaim'));
+
+    }
+
+    public function storeGuideLine(Request $request){
+        $tambah = New GuideLine();
+        $tambah->description = $request->description;
+        $tambah->link_url = $request->link;
+        $tambah->date_add = date('Y-m-d h:i:s');
+        $tambah->save();
+    }
+
+    public function updateGuideLine(Request $request){
+
+        $update = GuideLine::where('id',$request->id)->first();
+        $update->description = $request->description;
+        $update->link_url = $request->link;
+        $update->save();
+    }
+
+    public function deleteGuideLine(Request $request){
+
+        $delete = GuideLine::where('id',$request->id)->first();
+        $delete->delete();
+
+        return redirect()->back('HR/guideLines');
     }
 }

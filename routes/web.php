@@ -315,6 +315,10 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/hu_rec/get_hu','HRController@getdatahu');
 	Route::get('/exportExcelEmployee', 'HRController@exportExcelEmployee');
 	Route::get('/guideLine','HRController@GuideLineIndex');
+	Route::get('/storeGuide','HRController@storeGuideLine');
+	Route::get('/updateGuide','HRController@updateGuideLine');
+	Route::get('/deleteGuide','HRController@deleteGuideLine');
+
 
 	//cuti
 	Route::get('/show_cuti', 'HRGAController@show_cuti');
