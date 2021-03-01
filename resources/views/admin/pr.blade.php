@@ -1,6 +1,19 @@
 @extends('template.template_admin-lte')
 @section('content')
 
+<style type="text/css">
+  th {
+    text-align: center;
+  }
+
+  td>.truncate{
+    word-break:break-all;
+    white-space: normal;
+    width:200px;  
+  }
+
+</style>
+
 <section class="content-header">
   <h1>
     Daftar Buku Admin (PR)
@@ -55,19 +68,19 @@
 
            <div class="box-body">
             <div class="table-responsive">
-                  <table class="table table-bordered table-striped dataTable display nowrap" id="data_pr" width="100%" cellspacing="0">
+                  <table class="table table-bordered table-striped dataTable nowrap" id="data_pr" width="100%" cellspacing="0">
                     <thead>
-                      <tr>
+                      <tr  style="text-align: center;">
                         <th>No</th>
                         <th>Position</th>
-                        <th>Type of Letter</th>
+                        <th>Type</th>
                         <th>Month</th>
                         <th>Date</th>
                         <th>To</th>
-                        <th>Attention</th>
-                        <th>Title</th>
-                        <th>Project</th>
-                        <th>Description</th>
+                        <th><div class="truncate">Attention</div></th>
+                        <th><div class="truncate">Title/Subject</div></th>
+                        <th><div class="truncate">Project</div></th>
+                        <th><div class="truncate">Description</div></th>
                         <th>From</th>
                         <th>Division</th>
                         <th>Issuance</th>
@@ -113,8 +126,8 @@
 
             <!--MODAL ADD PROJECT-->
     <div class="modal fade" id="modal_pr" role="dialog">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content modal-md">
+        <div class="modal-dialog">
+          <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Add Number Purchase Request</h4>
             </div>
@@ -145,15 +158,15 @@
                 <input type="date" class="form-control" name="date" id="date" required>
               </div>
               <div class="form-group">
-                <label for="">To</label>
-                <input type="text" class="form-control" placeholder="To" name="to" id="to" required>
+                <label for="">To (Customer, DIstributor, Pihak External)</label>
+                <input type="text" class="form-control" placeholder="ex. PT. Sinergy Informasi Pratama" name="to" id="to" required>
               </div> 
               <div class="form-group">
-                <label for="">Attention</label>
-                <input type="text" class="form-control" placeholder="Enter Attention" name="attention" id="attention" >
+                <label for="">Attention/PIC (Customer, DIstributor, Pihak External)</label>
+                <input type="text" class="form-control" placeholder="ex. Rama Agastya" name="attention" id="attention" >
               </div> 
               <div class="form-group">
-                <label for="">Title</label>
+                <label for="">Title/Subject</label>
                 <input type="text" class="form-control" placeholder="Enter Title" name="title" id="title" >
               </div>
               <div class="form-group">
@@ -181,8 +194,22 @@
                 <input type="text" class="form-control" placeholder="Enter Issuance" name="issuance" id="issuance">
               </div>
               <div class="form-group">
-                <label for="">Project ID</label>
-                <input type="text" class="form-control" placeholder="Project ID" name="project_id" id="project_id">
+                <label for="">Amount</label>
+                <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="amount">
+              </div>
+              <div class="form-group">
+                <label for="">Project ID</label>                
+                <select type="text" class="form-control" placeholder="Select Division" name="project_id" id="project_id" style="width: 100%">
+                  <option value="">Select project id</option>
+                  @foreach($pid as $data)
+                  <option value="{{$data->id_project}}">{{$data->id_project}}</option>
+                  @endforeach
+                </select>
+                <span id="makeId" style="cursor: pointer;">other?</span>
+              </div>
+              <div class="input-group" style="display: none;" id="project_idNew">
+                <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
@@ -196,8 +223,8 @@
 
     <!--Modal Edit-->
     <div class="modal fade" id="modaledit" role="dialog">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content modal-md">
+        <div class="modal-dialog">
+          <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Edit Purchase Request</h4>
             </div>
@@ -228,6 +255,10 @@
               <div class="form-group">
                 <label for="">Issuance</label>
                 <input type="text" class="form-control" placeholder="Enter Issuance" name="edit_issuance" id="edit_issuance">
+              </div>
+              <div class="form-group">
+                <label for="">Amount</label>
+                <input type="text" class="form-control" placeholder="Enter Amount" name="edit_amount" id="edit_amount">
               </div>
               <div class="form-group">
                 <label for="">Project ID</label>
@@ -285,6 +316,18 @@
   <!-- <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.js"></script>
   <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
   <script type="text/javascript">
+    $('.money').mask('000,000,000,000,000', {reverse: true});
+
+    $('#makeId').click(function(){
+      $('#project_idNew').show()
+      $('#project_id').val("").select2().trigger("change")
+    })
+
+    $('#removeNewId').click(function(){
+      $('#project_idNew').hide('slow')
+      $('#projectIdInputNew').val('')
+    })
+    $('#project_id').select2()
     function edit_pr(no,to,attention,title,project,description,issuance,project_id,note) {
       $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
@@ -365,10 +408,26 @@
           { "data": "month" },
           { "data": "date" },
           { "data": "to" },
-          { "data": "attention"},
-          { "data": "title" },
-          { "data": "project" },
-          { "data": "description" },
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.attention + '</div>'
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.title + '</div>'
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.project + '</div>'
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.description + '</div>'
+              }
+          },
           { "data": "name" },
           { "data": "division" },
           { "data": "issuance" },
@@ -392,6 +451,9 @@
         "pageLength": 20,
       })
     }
+
+    $($.fn.dataTable.tables( true ) ).css('width', '100%');
+    $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
     
     $(".dismisbar").click(function(){
       $(".notification-bar").slideUp(300);

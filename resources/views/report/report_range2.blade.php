@@ -148,6 +148,8 @@
               <p class="pull-right" style="margin-top: 5px">&nbsp&nbsp</p>
               <label style="margin-top: 5px;margin-right: 5px;margin-left: 5px">End Date</label>
               <input type="text" id="enddate" class="form-control pull-right" style="width:200px;margin-right: 10px" placeholder="DD/MM/YYYY">
+              <span id="btn-pdf" style="margin-right: 10px"></span>
+              <span id="btn-excel"></span>
             </div>
           </div>
 
@@ -211,8 +213,6 @@
                         Ganjar Pramudya Wijaya
                       @elseif($data->nik_presales == $rz->nik)
                         Rizaldo Frendy Kurniawan
-                      @elseif($data->nik_presales == $nt->nik)
-                        Aura Anugrah Pranata
                       @endif
                     </td> 
                     <td hidden>{{ $data->priority}}</td>
@@ -342,8 +342,6 @@
                         Ganjar Pramudya Wijaya
                       @elseif($data->nik_presales == $rz->nik)
                         Rizaldo Frendy Kurniawan
-                      @elseif($data->nik_presales == $nt->nik)
-                        Aura Anugrah Pranata
                       @endif
                     </td> 
                     <td hidden>{{ $data->priority}}</td>
@@ -777,7 +775,7 @@
 
   var buttons = new $.fn.dataTable.Buttons(table, {
     buttons: [{
-        text: '<i class="fa fa-cloud-download""></i> <b>PDF</b>',
+        text: '<i class="fa fa-cloud-download"></i> <b>PDF</b>',
         filename: function(){
           var today = new Date();
           // var n = d.getTime();
@@ -848,7 +846,7 @@
         },
       
     }],
-  }).container().appendTo($('#coba'));
+  }).container().appendTo($('#btn-pdf'));
 
   var buttonsexcel = new $.fn.dataTable.Buttons(table, {
     buttons: [{
@@ -876,7 +874,7 @@
           columns: [0, 8, 9, 10, 11, 12, 13], 
         },
     }],
-  }).container().appendTo($('#coba'));
+  }).container().appendTo($('#btn-excel'));
 
   $('.buttons.pdfHtml5').each(function() {
       $(this).removeClass('btn-default').addClass('btn btn-md btn-warning')

@@ -178,7 +178,7 @@ class HRNumberController extends Controller
 
         $year = date("Y");
 
-        $year_before = HRNumber::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+        $year_before = HRNumber::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
         $tahun = HRNumber::select('created_at')->whereYear('created_at', $year)->groupBy('created_at')->get();
 

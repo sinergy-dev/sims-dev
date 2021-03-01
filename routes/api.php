@@ -22,6 +22,16 @@ Route::prefix('pmo/{id_pmo}')->group(function () {
     Route::resource('task', 'GanttTaskPMOController');
 });
 
+Route::post('/presence/checkIn', 'PresenceController@checkIn');
+Route::post('/presence/checkOut', 'PresenceController@checkOut');
+Route::get('/presence/getPresenceParameter','PresenceController@getPresenceParameter');
+Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
+
+// Route::get('/presence/getPresenceParameter',function(){
+// 	return "abcccc";
+// });
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

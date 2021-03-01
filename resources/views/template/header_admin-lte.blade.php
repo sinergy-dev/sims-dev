@@ -26,22 +26,22 @@
 	    max-width: 45px;
 	    max-height: 45px;
 	    object-fit: cover;
-	}
+  	}
 
-	.navbar-nav>.user-menu .user-image {
-	    object-fit: cover;
-	    float: left;
-	    width: 25px;
-	    height: 25px;
-	    border-radius: 50%;
-	    margin-right: 10px;
-	    margin-top: -2px;
-	}
+  	.navbar-nav>.user-menu .user-image {
+      object-fit: cover;
+      float: left;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      margin-right: 10px;
+      margin-top: -2px;
+  	}
 
-	li div a.btn{
-		width: 70px;
-		height: 36px;
-	}
+  	li div a.btn{
+  		width: 70px;
+  		height: 36px;
+  	}
   </style>
 
   <!-- Logo -->
@@ -626,7 +626,7 @@
 	        	@if(Auth::User()->id_division == 'TECHNICAL PRESALES')
 		        	TECH. PRESALES 
 		        @elseif(Auth::User()->id_division == 'TECHNICAL') 
-		        	ECH. 
+		        	TECH. 
 		        @elseif(Auth::User()->id_division == 'HR') 
 		        @else 
 		        	{{ Auth::user()->id_division }} 
@@ -659,6 +659,45 @@
           <span class="nav-link-text" style="font-size: 14px">Dashboard</span>
         </a>
       </li>
+
+      @role('admin')
+        <li class="activeable treeview">
+          <a href="#">
+            <i class="fa fa-clock-o"></i> <span>Presence</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu" style="display: block;">
+            <li class="activeable2">
+              <a href="{{ url('/presence') }}"><i class="fa fa-circle-o"></i>Personal</a>
+            </li>
+            <li class="activeable2">
+              <a href="{{ url('/presence/history/personal') }}"><i class="fa fa-circle-o"></i>My History</a>
+            </li>
+            <li class="activeable2">
+              <a href="{{ url('/presence/history/team') }}"><i class="fa fa-circle-o"></i>Team</a>
+            </li>
+            <li class="activeable2">
+              <a href="{{ url('/presence/shifting') }}"><i class="fa fa-circle-o"></i>Shifting</a>
+            </li>
+            <li class="activeable2">
+              <a href="{{ url('/presence/setting') }}"><i class="fa fa-circle-o"></i>Setting</a>
+            </li>
+            <li class="activeable2">
+              <a href="{{ url('/presence/report') }}"><i class="fa fa-circle-o"></i>Reporting</a>
+            </li>
+          </ul>
+        </li>
+      @else
+        <li class="activeable nav-item">
+          <a href="{{ url('/presence') }}" class="nav-link" >
+            <i class="fa fa-fw fa-clock-o"></i>
+            <span class="nav-link-text" style="font-size: 14px">Presence</span>
+          </a>
+        </li>
+      @endif
+
       @if(Auth::User()->id_territory == 'DVG' && Auth::User()->id_position != 'ADMIN')
       <li class="activeable treeview">
         <a href="#DVGPages" data-parent="#exampleAccordion">

@@ -6,7 +6,7 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">HR/GA - Asset Management</li>
+    <li class="active"><a href="{{url('/asset_hr')}}">HR/GA - Asset Management</a></li>
     <li class="active">SIP</li>
     <li class="active">Detail</li>
   </ol>
@@ -36,15 +36,107 @@
       {{ session('alert') }}
     </div>
   @endif
+  <div class="box box-solid box-default">
+    <div class="box-header">      
+      <div class="pull-right">
+        <span class="label label-primary">Info Asset</span>
+      </div>
+    </div>
 
+    <div class="box-body">
+      <div class="col-md-6">
+        <table class="table table-responsive" width="100%">
+          <tr>
+            <th width="20%">Code</th>
+            <th width="2%"> : </th>
+            <td>{{$detailAsset->code_name}}</td>
+          </tr>
+          <tr>
+            <th>Umur</th>
+            <th> : </th>
+            <td>{{$detailAsset->umur_asset}}</td>
+          </tr>
+          <tr>
+            <th>Nama</th>
+            <th> : </th>
+            <td>{{$detailAsset->nama_barang}}</td>
+          </tr>
+          <tr>
+            <th>Serial Number</th>
+            <th> : </th>
+            <td>{{$detailAsset->serial_number}}</td>
+          </tr>
+          <tr>
+            <th>Status</th>
+            <th> : </th>
+            <td>
+              @if($detailAsset->status == "UNAVAILABLE")
+              <label class="label label-default">UNAVAILABLE</label>
+              @elseif($detailAsset->status == "AVAILABLE")
+              <label class="label label-info">AVAILABLE</label>
+              @elseif($detailAsset->status == "SERVICE")
+              <label class="label label-primary">SERVICE</label>
+              @elseif($detailAsset->status == "RUSAK")
+              <label class="label label-danger">RUSAK</label>
+              @elseif($detailAsset->status == "PENDING")
+              <label class="label label-warning">PENDING</label>
+              @endif
+            </td>
+          </tr>
+          <tr>
+            <th>Price purchase</th>
+            <th> : </th>
+            <td>
+              <label>Rp.<span class="money">{{$detailAsset->harga_beli}}</span></label>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <table class="table table-responsive" width="100%">
+          <tr>
+            <th width="20%">Tanggal Beli</th>
+            <th width="2%"> : </th>
+            <td>{{$detailAsset->tgl_tambah}}</td>
+          </tr>
+          <tr>
+            <th>Merk</th>
+            <th> : </th>
+            <td>{{$detailAsset->merk}}</td>
+          </tr>
+          <tr>
+            <th>Spesifikasi</th>
+            <th> : </th>
+            <td>{{$detailAsset->description}}</td>
+          </tr>
+          <tr>
+            <th>Note</th>
+            <th> : </th>
+            <td>{{$detailAsset->note}}</td>
+          </tr>
+          <tr>
+            <th>Lokasi</th>
+            <th> : </th>
+            <td>{{$detailAsset->lokasi}}</td>
+          </tr>
+      </table>
+      </div>
+    </div>
+  </div>
 
-  <div class="box">
+  <div class="box box-solid box-default">
     <div class="box-header">
-      <a href="{{url('/asset_hr')}}"><button button class="btn btn-xs btn-danger pull-left"><i class="fa fa-arrow-circle-o-left"></i>&nbsp Back</button></a>
+      <div class="pull-left">
+        <label>Total : {{$total_pinjam}}</label>
+      </div>
+      <div class="pull-right">
+        <span class="label label-primary">History Peminjaman</span>
+      </div>
     </div>
 
     <div class="box-body">
       <div class="table-responsive">
+        <div class="col-md-12">
           <table class="table table-bordered display no-wrap" id="data_Table" width="100%" cellspacing="0">
             <thead>
               <tr>
@@ -71,15 +163,16 @@
                 <td>{{$data->keterangan}}</td>
                 <td>
                  @if($data->tgl_pengembalian == "")
-                 	<span class="label label-danger">SUDAH DI AMBIL</span>
+                  <span class="label label-danger">SUDAH DI AMBIL</span>
                   @else
-                  	<span class="label label-success">SUDAH KEMBALI</span>
+                  <span class="label label-success">SUDAH KEMBALI</span>
                   @endif
                 </td>
               </tr>
               @endforeach
             </tbody>
           </table>
+        </div>        
       </div>  
     </div>
   </div>
@@ -132,8 +225,10 @@
 @section('script')
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript">
-     $('.money').mask('000,000,000,000,00', {reverse: true});
+     $('.money').mask('000,000,000,000', {reverse: true});
 
      function return_hr(id_pam){
       $('#no_return_hr').val(id_pam);

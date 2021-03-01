@@ -21,17 +21,17 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     display: none
   }
 
-  .dataTables_paginate{
+  /*.dataTables_paginate{
     display: none;
-  }
+  }*/
 
   .dataTables_filter {
     display: none;
   }
 
-  .dataTables_paging {
+  /*.dataTables_paging {
     display: none;
-  }
+  }*/
 
   th, td { white-space: nowrap; overflow: hidden; };
 
@@ -40,28 +40,35 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   }
 
   .inputWithIcon.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
+    color:#fff;
+    background-color:dodgerBlue;
+  }
 
-   .inputWithIcon.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:10px 9px;
-      border-radius:4px 0 0 4px;
-    }
+  .inputWithIcon.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:10px 9px;
+    border-radius:4px 0 0 4px;
+  }
 
-   .inputWithIcon{
-      position:relative;
-    }
+  .inputWithIcon{
+    position:relative;
+  }
 
-   .inputWithIcon i{
+  .inputWithIcon i{
       position:absolute;
       left:0;
       top:0;
       padding:9px 9px;
       color:#aaa;
       transition:.3s;
+  }
+
+  .nav-tabs .badge{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
   }
 
 </style>
@@ -100,35 +107,34 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'DIRECTOR')
               @if(Auth::User()->id_position == 'MANAGER')
-              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
-              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
-              <li><a href="#request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
-              <li><a href="#history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
+              <li class="tabs_item" id="tabs_sip"><a href="#sip" id="sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
+              <li class="tabs_item" id="tabs_msp"><a href="#msp" id="msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
+              <li class="tabs_item" id="tabs_request"><a href="#request" id="request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
+              <li class="tabs_item" id="tabs_history"><a href="#history" id="history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
               @else
-              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
-              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
+              <li class="tabs_item" id="tabs_sip"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
+              <li class="tabs_item" id="tabs_msp"><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
               @endif
             @else
             @endif
         </ul>
 
         <div class="tab-content">
-
             <div class="tab-pane active" id="sip">
               <div class="box-header">
                 <div class="row">
                   <div class="col-md-8" id="export-table">
                     @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
 
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
                     @else
-                    <a href="{{action('SalesController@export')}}" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
 
-                    <a href="{{action('SalesController@export_msp')}}" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+                    <button onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
                     @endif
                     <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
-                        <option value="{{$year_now}}">&#xf073 &nbsp{{$year_now}}</option>
+                        <option value="{{$year_now}}" selected>&#xf073 &nbsp{{$year_now}}</option>
                         @foreach($year_before as $years)
                           @if($years->year != $year_now)
                             <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
@@ -139,27 +145,27 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                   <div class="col-md-4" id="search-table">
                     <div class="input-group pull-right" style="margin-left: 10px">
                       <div class="input-group-btn">
-	                <button type="button" id="btnShowEntryTicket" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-	                  Show 10 entries
-	                  <span class="fa fa-caret-down"></span>
-	                </button>
-	                <ul class="dropdown-menu" id="selectShowEntryTicket">
-	                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-	                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-	                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-	                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-	                </ul>
-	              </div>
-	              <input id="searchBarTicket" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
-	              <span class="input-group-btn">
-	                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-sm" style="width: 40px">
-	                  <i class="fa fa-fw fa-search"></i>
-	                </button>
-	              </span>
-	                    </div>
+      	                <button type="button" id="btnShowEntryTicket" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+      	                  Show 10 entries
+      	                  <span class="fa fa-caret-down"></span>
+      	                </button>
+      	                <ul class="dropdown-menu" id="selectShowEntryTicket">
+      	                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+      	                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+      	                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+      	                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+      	                </ul>
+      	              </div>
+      	              <input id="searchBarTicket" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
+      	              <span class="input-group-btn">
+      	                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-sm" style="width: 40px">
+      	                  <i class="fa fa-fw fa-search"></i>
+      	                </button>
+      	              </span>
 	                  </div>
 	                </div>
 	              </div>
+	            </div>
 
 	           <div id="pid-table">
 	           	  <table class="table table-bordered table-striped display" id="table-pid">
@@ -225,9 +231,8 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 	                    <th></th>
 	                  </tfoot>
 	              </table>
-          		</div>
+          	 </div>
             </div>
-
         </div>
       </div>
     </div>
@@ -576,6 +581,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
   <script type="text/javascript">
 
+  function exportPID(url){
+    window.location = url + "?year=" + $("#year_filter").val();
+  }
+
   initPID();
 
   function changeNumberEntries(number){
@@ -584,7 +593,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   }
 
   function initPID(){
-  var table = $("#table-pid").DataTable({
+    var table = $("#table-pid").DataTable({
   	"footerCallback": function( row, data, start, end, display ) {
           var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
 
@@ -615,138 +624,139 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     "ajax":{
         "type":"GET",
         "url":"{{url('getPIDIndex')}}",
+    },
+    "paging":   false,
+    "columns": [
+      { "data": "date" },
+      { "data": "id_project" },
+      { "data": "lead_id" },
+      { // No Po
+        render: function ( data, type, row ) {
+          if (row.id_company == 1) {
+            if (row.no_po_customer == null) {
+              return row.quote_number_final;  
+            }else{
+              return row.no_po_customer;  
+            }
+          }else{
+            if (row.lead_id == "MSPPO") {
+              return row.no_po_customer;
+            }else{
+              return row.no_po;  
+            }
+          }
+        }
       },
-      "columns": [
-        { "data": "date" },
-        { "data": "id_project" },
-        { "data": "lead_id" },
-        { // No Po
-          render: function ( data, type, row ) {
-            if (row.id_company == 1) {
-              if (row.no_po_customer == null) {
-                return row.quote_number_final;  
-              }else{
-                return row.no_po_customer;  
-              }
+      { // No Quotation
+        render: function ( data, type, row ) {
+          if (row.id_company == 1) {
+            return "-";
+          }else{
+            if (row.lead_id == "MSPQUO") {
+              return row.no_po_customer;
             }else{
-              if (row.lead_id == "MSPPO") {
-                return row.no_po_customer;
-              }else{
-                return row.no_po;  
-              }
+              return row.quote_number;  
             }
           }
-        },
-        { // No Quotation
-          render: function ( data, type, row ) {
-            if (row.id_company == 1) {
-              return "-";
-            }else{
-              if (row.lead_id == "MSPQUO") {
-                return row.no_po_customer;
-              }else{
-                return row.quote_number;  
-              }
-            }
+        }
+      },
+      { // Customer Name
+        render: function ( data, type, row ) {
+          if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+            return row.customer_name;  
+          }else{
+            return row.customer_legal_name;  
           }
-        },
-        { // Customer Name
-          render: function ( data, type, row ) {
-            if (row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-              return row.customer_name;  
-            }else{
-              return row.customer_legal_name;  
-            }
+        }
+      },
+      { "data": "name_project" },
+      { "data": "amount_idr" },
+      { "data": "amount_idr_before_tax" },
+      { "data": "note" },
+      { // Invoice
+        render: function ( data, type, row ) {
+          if (row.invoice == 'H') {
+            return "Setengah Bayar";  
+          }else if (row.invoice == 'F') {
+            return "Sudah Bayar";
+          }else if (row.invoice == 'N') {
+            return "Belum Bayar";
+          }else{
+            return "";
           }
-        },
-        { "data": "name_project" },
-        { "data": "amount_idr" },
-        { "data": "amount_idr_before_tax" },
-        { "data": "note" },
-        { // Invoice
-          render: function ( data, type, row ) {
-            if (row.invoice == 'H') {
-              return "Setengah Bayar";  
-            }else if (row.invoice == 'F') {
-              return "Sudah Bayar";
-            }else if (row.invoice == 'N') {
-              return "Belum Bayar";
-            }else{
-              return "";
-            }
+        }
+      },
+      { // Status
+        render: function ( data, type, row ) {
+          if (row.progres == null) {
+            return "UnProgress";  
+          }else {
+            return row.progres;
           }
-        },
-        { // Status
-          render: function ( data, type, row ) {
-            if (row.progres == null) {
-              return "UnProgress";  
-            }else {
-              return row.progres;
-            }
+        }
+      },
+      { // Sales
+        render: function ( data, type, row ) {
+          if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+            return row.sales_name;  
+          }else{
+            return row.name;  
           }
-        },
-        { // Sales
-          render: function ( data, type, row ) {
-            if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-              return row.sales_name;  
-            }else{
-              return row.name;  
-            }
-          }
-        },
-        { // Action
-          render: function ( data, type, row ) {
-          	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-          		@if(Auth::User()->id_division == 'FINANCE')
-            		@if(Auth::User()->id_position == 'MANAGER')
-            			return '<i>No Action</i>';
-            		@else
-            			return '<i>No Action</i>';
-              	@endif
-            	@elseif(Auth::User()->id_division == 'PMO')
-            		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-            	@else
-            	 return 'mbuh'; 
-            	@endif  
+        }
+      },
+      { // Action
+        render: function ( data, type, row ) {
+        	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
+        		@if(Auth::User()->id_division == 'FINANCE')
+          		@if(Auth::User()->id_position == 'MANAGER')
+          			return '<i>No Action</i>';
+          		@else
+          			return '<i>No Action</i>';
+            	@endif
+          	@elseif(Auth::User()->id_division == 'PMO')
+          		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+          	@else
+          	 return 'mbuh'; 
+          	@endif  
 
-          	}else{
+        	}else{
 
-          		@if(Auth::User()->id_division == 'FINANCE')
-            		@if(Auth::User()->id_position == 'MANAGER')
-            			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
-            		@else
-            			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
-            		@endif
-            	@elseif(Auth::User()->id_division == 'PMO')
-            		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-            	@else
-            	 return 'mbuh'; 
-            	@endif  
+        		@if(Auth::User()->id_division == 'FINANCE')
+          		@if(Auth::User()->id_position == 'MANAGER')
+          			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
+          		@else
+          			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
+          		@endif
+          	@elseif(Auth::User()->id_division == 'PMO')
+          		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
+          	@else
+          	 return 'mbuh'; 
+          	@endif  
 
-          	}
-          	                
-          }
-        },
-      ],
-      // "info":false,
-      "scrollX": true,
-      "pageLength": 25,
-      "order": [[ 1, "desc" ]],
-      "orderFixed": [[1, 'desc']],
-      "processing": true,
-      "language": {
-        'loadingRecords': '&nbsp;',
-        'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
-      }, 
-      "scrollCollapse":true,
-      // "paging": false,
-      fixedColumns:   {
-        leftColumns: 2,
-        rightColumns: 1
-      },  
-  });
+        	}
+        	                
+        }
+      },
+    ],
+    // "info":false,
+    "scrollX": true,
+    "pageLength": 25,
+    "order": [[ 1, "desc" ]],
+    "orderFixed": [[1, 'desc']],
+    "processing": true,
+    "language": {
+      'loadingRecords': '&nbsp;',
+      'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+    }, 
+    "scrollCollapse":true,
+    // "paging": false,
+    fixedColumns:   {
+      leftColumns: 2,
+      rightColumns: 1
+    },
+    });
 
-  var request_table = $("#request_id").DataTable({
+    var request_table = $("#request_id").DataTable({
     "footerCallback": function( row, data, start, end, display ) {
             var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
 
@@ -819,8 +829,22 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       fixedColumns:   {
         rightColumns: 1
       }, 
-	});	
-
+      initComplete: function() {
+        if("{{Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'FINANCE'}}"){
+          if (this.api().data().length) {
+            $('#request').append('<span class="badge">'+ this.api().data().length +'</span>')
+            $('#tabs_request').addClass('active')   
+            changeTabs('request')
+          }else{
+            $('#tabs_sip').addClass('active')
+            changeTabs('sip')
+          }
+        }else{
+          $('#tabs_sip').addClass('active')
+          changeTabs('sip')
+        }
+      }
+	  });	
 
     @if(Auth::User()->id_division == 'MSM')
 		  // Column Amount IDR
@@ -998,8 +1022,8 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     });
 
     function changeTabs(id) {
-      console.log(id)
-      if (id == "sip") {
+      year = $("#year_filter").val()
+      if (id == "SIP") {
       	$('#export-table').css("display","block")
       	$('#search-table').css("display","block")
       	$('#request-table').css("display","none")
@@ -1007,8 +1031,8 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('#pid-table').css("display","block")
       	$('.export-msp').css("display","none")
       	$('.export').css("display","block")
-        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
-      }else if(id == "msp"){
+        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
+      }else if(id == "MSP"){
       	$('.export-msp').css("display","block")
       	$('.export').css("display","none")
       	$('#export-table').css("display","block")
@@ -1016,7 +1040,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('#request-table').css("display","none")
       	$('#history-table').css("display","none")
       	$('#pid-table').css("display","block")
-        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id).load();
+        $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
       }else if (id == "request") {
       	$('#request-table').show()
       	$('#pid-table').css("display","none")
@@ -1095,7 +1119,18 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     //     console.log(result)
     //   }
     // })
-    $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
+    
+    if("{{Auth::User()->id_division == 'FINANCE'}}"){
+      var companyString = $('.nav-tabs .active').text()
+      if(companyString == "SIP" || companyString == "MSP"){
+        $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
+      } else {
+        console.log('bukan tab perusahaan')
+      }
+    }else{
+      $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
+    }
+      
  })
 
 </script>

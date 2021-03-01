@@ -51,6 +51,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/testRemainderEmail', 'TestController@testRemainderEmail');
 	Route::get('/testEmailViewSales', 'TestController@view_mail_to_sales');
 	Route::get('/testEmailViewFinance', 'TestController@view_mail_to_finance');
+	Route::get('/testEmailPeminjaman','TestController@testEmailPeminjaman');
 
 	Route::get('/data/{id}', 'ImplementationController@get');
 	Route::get('/data_pmo/{id_pmo}', 'PMOController@getGantt');
@@ -76,6 +77,19 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	Route::get('/','DASHBOARDController@index')->middleware('HRDash');
 	/*Route::get('/','DASHBOARDController@index')->middleware('Maintenance');*/
+
+	Route::get('/presence', 'PresenceController@index');
+	Route::get('/presence/getPresenceParameter','PresenceController@getPresenceParameter');
+	Route::post('/presence/checkIn', 'PresenceController@checkIn');
+	Route::post('/presence/checkOut', 'PresenceController@checkOut');
+	Route::get('/presence/history/personal', 'PresenceController@personalHistory');
+	Route::get('/presence/history/team', 'PresenceController@teamHistory');
+	Route::get('/presence/report', 'PresenceController@presenceReport');
+	Route::get('/presence/report/getData', 'PresenceController@getPresenceReportData');
+	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportRerport');
+	
+	Route::get('/presence/setting', 'PresenceController@presenceSetting');
+	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
 
 	Route::get('/project','SalesController@index')->middleware('ManagerStaffMiddleware');
 	/*Route::get('/project','SalesController@index')->middleware('Maintenance');*/
@@ -211,6 +225,10 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/report_excel_presales', 'ReportController@download_excel_presales_win');
 	Route::get('/report_product_technology','ReportController@report_product_technology');
 	Route::get('/getFilterTags','ReportController@getFilterTags');
+	Route::get('/get_data_sd_report_sales', 'ReportController@get_data_sd_report_sales');
+	Route::get('/get_data_tp_report_sales', 'ReportController@get_data_tp_report_sales');
+	Route::get('/get_data_win_report_sales', 'ReportController@get_data_win_report_sales');
+	Route::get('/get_data_lose_report_sales', 'ReportController@get_data_lose_report_sales');
 
 	Route::get('/report_product_index','ReportController@report_product_index');
 	Route::get('/getreportproduct','ReportController@getreportproduct');
@@ -296,6 +314,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/profile/delete_pict','HRController@delete_pict');
 	Route::get('/hu_rec/get_hu','HRController@getdatahu');
 	Route::get('/exportExcelEmployee', 'HRController@exportExcelEmployee');
+	Route::get('/guideLine','HRController@GuideLineIndex');
 
 	//cuti
 	Route::get('/show_cuti', 'HRGAController@show_cuti');
@@ -315,6 +334,11 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/delete_cuti/{id_cuti}', 'HRGAController@delete_cuti');
 	Route::get('/follow_up/{id_cuti}', 'HRGAController@follow_up');
 	Route::get('/downloadPdfcuti', 'HRGAController@cutipdf');
+	Route::get('/get_list_cuti', 'HRGAController@get_list_cuti');
+	Route::get('/get_cuti_byMonth', 'HRGAController@get_request_cuti_byMonth');
+	Route::get('/getFilterCom', 'HRGAController@getFilterCom');
+	Route::get('/get_history_cuti', 'HRGAController@get_history_cuti');
+
 	Route::get('/index_delivery_person', 'HRGAController@index_delivery_person');
 	Route::get('/detail_delivery_person/{id_messenger}', 'HRGAController@detail_delivery_person');
 	Route::get('/getDataMessenger','HRGAController@getDataMessenger');
@@ -719,10 +743,12 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('imp/getprogress','ImplementationController@get_data_progress');
 	Route::get('imp/getproblem','ImplementationController@get_data_problem');
 
+	//asset HR
 
 	Route::get('/asset_hr', 'AssetHRController@index');
 	Route::post('/store_asset_hr', 'AssetHRController@store');
 	Route::post('/peminjaman_hr', 'AssetHRController@peminjaman');
+	Route::post('/requestPeminjaman','AssetHRController@requestPeminjaman');
 	Route::post('/penghapusan_hr', 'AssetHRController@penghapusan');
 	Route::post('/accept_pinjam_hr', 'AssetHRController@accept_pinjam');
 	Route::post('/reject_pinjam_hr', 'AssetHRController@reject_pinjam');
@@ -734,17 +760,36 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getEditAsset', 'AssetHRController@getEditAsset');
 	Route::post('/edit_asset', 'AssetHRController@edit_asset');
 	Route::get('exportExcelAsset', 'AssetHRController@export');
+	Route::get('/getAssetCategoriHR','AssetHRController@getCategory');
+	Route::get('/getCategoryPinjam','AssetHRController@getCategoryPinjam');
+	Route::post('/store_kategori_asset','AssetHRController@store_kategori');
+	Route::get('/getDetailBorrowed','AssetHRController@getDetailBorrowed');
+	Route::get('/acceptPeminjaman','AssetHRController@acceptPeminjaman');
+	Route::get('/storeRequestAsset','AssetHRController@storeRequestAsset');
+	Route::get('/acceptNewAsset','AssetHRController@acceptNewAsset');
+	Route::post('/createNewAsset','AssetHRController@createNewAsset');
+	Route::get('/getRequestAssetBy','AssetHRController@getRequestAssetBy');
+	Route::get('/AddNoteReq','AssetHRController@AddNoteReq');
+	Route::get('/batalkanReq','AssetHRController@batalkanReq');
+	Route::get('/getListAsset','AssetHRController@getListAsset');
+
 
 	Route::get('asset_atk', 'AssetAtkController@index');
 	Route::post('asset_atk/store_asset_atk', 'AssetAtkController@store');
 	Route::get('asset_atk/get_qty_atk','AssetAtkController@getqtyatk');
 	Route::post('asset_atk/request_atk', 'AssetAtkController@request_atk');
-	Route::post('asset_atk/accept_request', 'AssetAtkController@accept_request');
+	Route::get('asset_atk/accept_request', 'AssetAtkController@accept_request');
 	Route::post('asset_atk/edit_atk', 'AssetAtkController@edit_atk');
-	Route::post('asset_atk/reject_request', 'AssetAtkController@reject_request');
+	Route::get('asset_atk/reject_request', 'AssetAtkController@reject_request');
 	Route::get('asset_atk/detail_asset_atk/{id_barang}','AssetAtkController@detail');
 	Route::post('asset_atk/update_stok', 'AssetAtkController@update_stok');
 	Route::post('asset_atk/done_request_pr', 'AssetAtkController@done_request_pr');
+	Route::get('asset_atk/getAssetAtk', 'AssetAtkController@getAtk');
+	Route::post('asset_atk/store_request_atk', 'AssetAtkController@store_request_atk');
+	Route::get('asset_atk/accept_request_atk', 'AssetAtkController@accept_request_atk');
+	Route::post('asset_atk/done_request_atk', 'AssetAtkController@request_done');
+	Route::get('asset_atk/reject_request_atk', 'AssetAtkController@reject_request_atk');
+	Route::get('asset_atk/detail_produk_request', 'AssetAtkController@detail_produk_request');
 
 	//PMO
 	Route::get('PMO/detail/{lead_id}','PMOController@detail');

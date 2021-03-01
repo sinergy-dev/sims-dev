@@ -529,6 +529,11 @@
           
           <div class="pull-right">
             @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
+          	<button class="btn btn-sm btn-warning" style="margin-bottom: 5px" id="btnExport" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-download">&nbspExport</i></button>
+          	<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 43px; right: 32px; transform : translate3d(0px, 37px, 30px); margin-bottom: 5px">
+              <a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}"> EXCEL </a>
+            </div>
+
             <button class="btn btn-sm btn-primary" style="margin-bottom: 5px" id="btnAdd" data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i>&nbsp Employee</button>
             @endif
           </div>
@@ -562,6 +567,8 @@
                           <th>Position</th>
                           <th>Mulai Bekerja</th>
                           <th>Status Karyawan</th>
+                          <th>KTP</th>
+                          <th>KK</th>
                           <th>NPWP</th>
                           <th>Attach File</th>
                           <!-- <th>NPWP File</th> -->
@@ -743,6 +750,12 @@
                           	-
                           	<!-- <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i> -->
                           	@endif
+                          </td>
+                          <td>
+                          	{{ $data->no_ktp }}
+                          </td>
+                          <td>
+                          	{{ $data->no_kk }}
                           </td>
                           <td>{{ $data->no_npwp }}</td>
                           <td>
@@ -1990,6 +2003,20 @@
 	                        </div>
 
 	                        <div class="form-group row">
+	                            <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="date_of_birth" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
+
+	                                @if ($errors->has('date_of_birth'))
+	                                    <span class="invalid-feedback">
+	                                        <strong>{{ $errors->first('date_of_birth') }}</strong>
+	                                    </span>
+	                                @endif
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
 	                            <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
 
 	                            <div class="col-md-8">
@@ -2004,18 +2031,30 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
+		                        <label for="status_karyawan" class="col-md-4 col-form-label text-md-right">{{ __('Employee Status') }}</label>
 
-	                            <div class="col-md-8">
-	                                <input id="date_of_birth" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
+		                        <div class="col-md-8">
+		                            <select id="status_kerja" class="form-control" name="status_kerja" onchange="statusSelect(this)">
+		                                <option value="">-- Select Status --</option>
+		                                <option value="tetap">Karyawan Tetap</option>
+		                                <option value="kontrak">Karyawan Kontrak</option>
+		                            </select>
+		                        </div>
+		                    </div>
 
-	                                @if ($errors->has('date_of_birth'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('date_of_birth') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
+	                        <div class="form-group row">
+		                        <label for="akhir_kontrak" class="col-md-4 col-form-label text-md-right">{{ __('Last Contract Date') }}</label>
+
+		                         <div class="col-md-8">
+		                            <input id="akhir_kontrak" type="date" class="form-control" name="akhir_kontrak" onkeyup="copytextbox();" required autofocus>
+
+		                            @if ($errors->has('last_contract date'))
+		                                <span class="invalid-feedback">
+		                                    <strong>{{ $errors->first('last_contract date') }}</strong>
+		                                </span>
+		                            @endif
+		                        </div>
+		                    </div>	                        
 
 	                        <div class="form-group row">
 	                            <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
@@ -2046,6 +2085,22 @@
 	                        </div>
 
 	                        <div class="form-group row">
+	                            <label for="no_ktp" class="col-md-4 col-form-label text-md-right">{{ __('KTP') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="no_ktp" type="text" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
+	                            <label for="no_kk" class="col-md-4 col-form-label text-md-right">{{ __('KK') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="no_kk" type="text" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
+	                            </div>
+	                        </div>
+
+	                        <div class="form-group row">
 	                            <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
 
 	                            <div class="col-md-8">
@@ -2053,7 +2108,7 @@
 	                            </div>
 	                        </div>
 
-	                        <div class="form-group row">
+	                        <!-- <div class="form-group row">
 	                            <div class="col-md-8">
 	                                <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
 	                            </div>
@@ -2065,7 +2120,7 @@
 	                            <div class="col-md-8">
 	                                <input id="inputgambarnpwp" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
-	                        </div>
+	                        </div> -->
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -2079,6 +2134,11 @@
 	    </div>
 	</div>
 
+
+
+	
+
+  	
 	<div class="modal fade" id="modal_update" role="dialog">
 	    <div class="modal-dialog modal-md">
 	    
@@ -2146,6 +2206,20 @@
                                 <option value="tetap">Karyawan Tetap</option>
                                 <option value="kontrak">Karyawan Kontrak</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="akhir_kontrak_update" class="col-md-4 col-form-label text-md-right">{{ __('Last Contract Date') }}</label>
+
+                         <div class="col-md-8">
+                            <input id="akhir_kontrak_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="akhir_kontrak_update" onkeyup="copytextbox();" required autofocus>
+
+                            @if ($errors->has('last_contract date'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('last_contract date') }}</strong>
+                                </span>
+                            @endif
                         </div>
                     </div>
 
@@ -2562,6 +2636,22 @@
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <label for="no_ktp" class="col-md-4 col-form-label text-md-right">{{ __('KTP') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="no_ktp_update" type="text" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="no_kk" class="col-md-4 col-form-label text-md-right">{{ __('KK') }}</label>
+
+                        <div class="col-md-8">
+                            <input id="no_kk_update" type="text" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
+                        </div>
+                    </div>
+
 
                     <div class="form-group row">
                         <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
@@ -2585,6 +2675,7 @@
 	    </div>
 
   	</div>
+  	
 
   	<div class="modal fade" id="modal_edit_status" role="dialog">
   		<div class="modal-dialog modal-md">
@@ -2634,19 +2725,53 @@
 	                        </div>
 
 	                        <div class="form-group row">
-	                            <div class="col-md-8">
-	                                <img src="" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;" />
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
 	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="inputgambarnpwp_update" type="file" value= class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+	                                <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
 	                            </div>
 	                        </div>
 
+	                        <center>
+	                        <div class="form-group row">
+	                            <div class="col-md-12">
+	                                <img src="" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;" />
+	                            </div>
+	                        </div>
+	                        </center>
+
+	                        <div class="form-group row">
+	                            <label for="bpjs_kes" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Kesehatan') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="inputgambarbpjs_kes_update" type="file" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" class="validate" autofocus>
+	                            </div>
+	                        </div>
+
+	                        <center>
+	                        <div class="form-group row">
+	                            <div class="col-md-12">
+	                                <img src="" class="zoom center" id="showgambarbpjs_kes_update" style="max-width:400px;max-height:400px;" />
+	                            </div>
+	                        </div>
+	                        </center>
+
+
+	                        <div class="form-group row">
+	                            <label for="bpjs_ket" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Ketenagakerjaan') }}</label>
+
+	                            <div class="col-md-8">
+	                                <input id="inputgambarbpjs_ket_update" type="file" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" class="validate" autofocus>
+	                            </div>
+	                        </div>
+
+	                        <center>
+	                        <div class="form-group row">
+	                            <div class="col-md-12">
+	                                <img src="" class="zoom center" id="showgambarbpjs_ket_update" style="max-width:400px;max-height:400px;" />
+	                            </div>
+	                        </div>
+	                        </center>
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -2751,6 +2876,24 @@
                }
             });
 
+            $.each(result[0], function(key, value){
+            	$("#nik_update_attach").val(value.nik);
+               if (value.bpjs_kes == null) {
+               	$("#showgambarbpjs_kes_update").attr("src","http://placehold.it/100x100");
+               } else {
+               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+               }
+            });
+
+            $.each(result[0], function(key, value){
+            	$("#nik_update_attach").val(value.nik);
+               if (value.bpjs_ket == null) {
+               	$("#showgambarbpjs_ket_update").attr("src","http://placehold.it/100x100");
+               } else {
+               	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+               }
+            });
+
           }
         }); 
         $("#modal_update_file").modal("show");
@@ -2775,8 +2918,11 @@
                $("#email_update").val(value.email);
                $("#date_of_entry_update").val(value.date_of_entry);
                $("#date_of_birth_update").val(value.date_of_birth);
+               $("#akhir_kontrak_update").val(value.akhir_kontrak);
                $("#address_update").val(value.address);
                $("#phone_number_update").val(value.phone);
+               $("#no_ktp_update").val(value.no_ktp);
+               $("#no_kk_update").val(value.no_kk);
                $("#no_npwp_update").val(value.no_npwp);
                if (value.status_kerja == 'tetap') {
                	$("#status_karyawan_update").val("Karyawan Tetap");
@@ -2789,6 +2935,16 @@
                	$("#showgambarnpwp_update").attr("src","http://placehold.it/100x100");
                } else {
                	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+               }
+               if (value.bpjs_kes == null) {
+               	$("#showgambarbpjs_kes_update").attr("src","http://placehold.it/100x100");
+               } else {
+               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+               }
+               if (value.bpjs_ket == null) {
+               	$("#showgambarbpjs_ket_update").attr("src","http://placehold.it/100x100");
+               } else {
+               	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
                }
                
 
@@ -3661,14 +3817,46 @@
   			var reader = new FileReader();
 
   			reader.onload = function (e) {
-  				$('#showgambarnpwp').attr('src', e.target.result);
+  				$('#showgambarnpwp_update').attr('src', e.target.result);
   			}
 
   			reader.readAsDataURL(input.files[0]);
   		}
   	}
 
-  	$("#inputgambarnpwp").change(function () {
+  	function readURL(input) {
+  		if (inpu.files && input.files[0]) {
+  			var reader = new FileReader();
+
+  			reader.onload = function (e) {
+  				$('#showgambarbpjs_kes_update').attr('src', e.target.result);
+  			}
+
+  			reader.readAsDataURL(input.files[0]);
+  		}
+  	}
+
+  	function readURL(input) {
+  		if (inpu.files && input.files[0]) {
+  			var reader = new FileReader();
+
+  			reader.onload = function (e) {
+  				$('#showgambarbpjs_ket_update').attr('src', e.target.result);
+  			}
+
+  			reader.readAsDataURL(input.files[0]);
+  		}
+  	}
+
+  	$("#inputgambarnpwp_update").change(function () {
+  		readURL(this);
+  	});
+
+  	$('#inputgambarbpjs_kes_update').change(function () {
+  		readURL(this);
+  	});
+
+  	$('#inputgambarbpjs_ket_update').change(function () {
   		readURL(this);
   	});
 

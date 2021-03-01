@@ -73,6 +73,21 @@
       background-color: #ffd324;
   }
 
+  .outer-reset {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    background: red;
+  }
+
+  .inner-reset {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    padding: 2rem;
+    font-size: 60px;
+  }
+
 </style>
 
 <section class="content-header">
@@ -97,7 +112,7 @@
             <!-- small box -->
             <div class="small-box bg-aqua">
               <div class="inner">
-                <h3>
+                <p>
                   @if($counts < 1)
                   0
                   @else
@@ -1208,6 +1223,27 @@
         </div>
     </div>
 
+      <div id="changePassword" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content modal-style">
+            <div class="outer-reset">
+              <button type="button" class="close pull-right" style="width: 20px;" data-dismiss="modal">&times;</button>
+              <div class="inner-reset">
+                <i class="fa fa-warning fa-7x" style="color: white"></i>
+              </div>
+            </div>
+            <div class="modal-body">
+              <h4 style="text-align: center;"><b>Please change default password to protect your account !</b></h4>
+              <a href="{{url('/profile_user')}}#changePassword"><span class="btn btn-info btn-block" style="border-radius: 24px">Change Password directly</span></a>
+              <span data-dismiss="modal" style="cursor: pointer;"><h5 class="text-center" style="color: #00acd6">No, thanks</h5></span>
+            </div>
+            <div class="modal-footer">
+              <p class="text-center">©SIMS - 2021</p>              
+            </div>
+          </div>
+        </div>
+      </div>
+
 </section>
 
 @endsection
@@ -1219,6 +1255,15 @@
 <script>
 
   $('.money').mask('000,000,000,000,000', {reverse: true});
+
+  $(document).ready(function(){
+    // $("#changePassword").modal('show')
+    console.log("{{Auth::User()->isDefaultPassword}}")
+    if("{{Auth::User()->isDefaultPassword}}" == 'true'){
+      $("#changePassword").modal('show')
+    }
+        
+  })
 
   function startTime() {
     var today = new Date();

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Http\Request;
+use Auth;
 
 class LoginController extends Controller
 {
@@ -61,6 +62,14 @@ class LoginController extends Controller
 
     public function authenticated(Request $request, $user)
     {
+        
+        if ($request->password == 'sinergy') {
+            Auth::User()->is_default_password = 'true';
+        }else{
+            Auth::User()->is_default_password = 'false';
+        }
+        syslog(LOG_ERR, Auth::User()->is_default_password);
+
         syslog(LOG_ERR, $request->getClientIp());
         $log = new HistoryAuth;
         $log->nik = $user->nik;

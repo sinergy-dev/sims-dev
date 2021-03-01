@@ -1,10 +1,25 @@
 @extends('template.template_admin-lte')
 @section('content')
 <style type="text/css">
-	.DTFC_LeftBodyLiner {
+/*	.DTFC_LeftBodyLiner {
   		overflow: hidden;
-	}
+	}*/
 
+  th {
+    text-align: center;
+  }
+
+/*  td {
+    text-wrap: normal;
+    word-wrap: break-word;
+  }*/
+
+  td>.truncate{
+    /*word-wrap: break-word; */
+    word-break:break-all;
+    white-space: normal;
+    width:200px;    
+  }
 	/*.data tr:nth-child(1){
 	  counter-reset: rowNumber;
 	  }
@@ -16,7 +31,7 @@
 	      min-width: 1em;
 	      margin-left: 1.5em;
 	      text-align: center;
-	}*/
+	}
 </style>
 <section class="content-header">
   <h1>
@@ -101,19 +116,19 @@
 
 	          <div class="tab-pane active">
 	          	<div class="table-responsive DTFC_LeftBodyLiner">
-	                <table class="table table-bordered nowrap table-striped dataTable" id="data_all" width="100%" cellspacing="0">
+	                <table class="table table-bordered nowrap display table-striped dataTable" id="data_all" width="100%" cellspacing="0">
 	                  <thead>
 	                    <tr>
 	                      <th>No Letter</th>
 	                      <th>Position</th>
-	                      <th>Type of Letter</th>
+	                      <th>Type</th>
 	                      <th>Month</th>
 	                      <th>Date</th>
 	                      <th>To</th>
-	                      <th>Attention</th>
-	                      <th>Title</th>
-	                      <th>Project</th>
-	                      <th>Description</th>
+	                      <th><div class="truncate">Attention</div></th>
+	                      <th><div class="truncate">Title</div></th>
+	                      <th><div class="truncate">Project</div></th>
+	                      <th><div class="truncate">Description</div></th>
 	                      <th>From</th>
 	                      <th>Division</th>
 	                      <th>Project ID</th>
@@ -203,7 +218,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-            <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            <button type="submit" class="btn btn-primary" id="addLetter"><i class="fa fa-check"> </i>&nbspSubmit</button>
           </div>
         </form>
         </div>
@@ -293,7 +308,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-            <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            <button type="submit" class="btn btn-primary" id="addBackdate"><i class="fa fa-check"> </i>&nbspSubmit</button>
           </div>
         </form>
         </div>
@@ -350,6 +365,19 @@
     </div>
 </div>
 
+<div class="modal fade" id="tunggu" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="">Sedang diproses. . .</div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
 </section>
 
 <style type="text/css">
@@ -381,6 +409,18 @@
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
+    $('#addLetter').click(function(){
+      $('#tunggu').modal('show')
+      $('#modal_pr').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
+    });
+
+    $('#addBackdate').click(function(){
+      $('#tunggu').modal('show')
+      $('#letter_backdate').modal('hide')
+      setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
+    });
+
     function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
       $('#modaledit').modal('show');
       $('#edit_no_letter').val(no_letter);
@@ -448,35 +488,57 @@
           }
         },
         "columns": [
-          { "data": "no_letter" },
-          { "data": "position" },
-          { "data": "type_of_letter" },
-          { "data": "month" },
-          { "data": "date" },
-          { "data": "to" },
-          { "data": "attention"},
-          { "data": "title" },
-          { "data": "project" },
-          { "data": "description" },
-          { "data": "name" },
-          { "data": "division" },
-          { "data": "project_id" },
-          { "data": "note" },
+          { "data": "no_letter","width": "20%"},
+          { "data": "position","width": "20%"},
+          { "data": "type_of_letter","width": "20%"},
+          { "data": "month","width": "20%"},
+          { "data": "date","width": "20%"},
+          { "data": "to","width": "20%"},
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.attention + '</div>'
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.title + '</div>'
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.project + '</div>'
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                return '<div class="truncate">' + row.description + '</div>'
+              }
+          },
+          { "data": "name","width": "20%"},
+          { "data": "division","width": "20%"},
+          { "data": "project_id","width": "20%"},
+          { "data": "note","width": "20%"},
           {
             "className": 'btn_edit',
             "orderable": false,
             "data": "btn_edit",
             "defaultContent": ''
           },
+
         ],
+        // "columnDefs": [
+        //   { "width": "20%", "targets": 7 },
+        // ],
         "searching": true,
-        "lengthChange": false,
+        // "lengthChange": false,
         "info":false,
         "scrollX": true,
         "order": [[ 0, "desc" ]],
         "fixedColumns":   {
             leftColumns: 1
         },
+        "responsive":true,
+        "orderCellsTop": true,
         "pageLength": 20,
       })
     }

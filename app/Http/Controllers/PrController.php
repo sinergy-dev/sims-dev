@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use DB;
 use App\PR;
+use App\SalesProject;
 use Illuminate\Support\Facades\Route;
 use Excel;
 use Validator;
@@ -191,9 +192,11 @@ class PrController extends Controller
 
         $sidebar_collapse = true;
 
-        $year_before = PR::select(DB::raw('YEAR(created_at) year'))->groupBy('year')->get();
+        $year_before = PR::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse','year_before','tahun'));
+        $pid = SalesProject::select('id_project')->get();
+
+        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse','year_before','tahun','pid'));
     }
 
     /**
@@ -219,24 +222,26 @@ class PrController extends Controller
                 ->where('date','like',$tahun."%")
                 ->count('no');
 
-        if ($cek > 0) {
-            $type = $request['type'];
-            $posti = $request['position'];
-            $month_pr = substr($request['date'],5,2);
-            $year_pr = substr($request['date'],0,4);
+        $type = $request['type'];
+        $posti = $request['position'];
+        $month_pr = substr($request['date'],5,2);
+        $year_pr = substr($request['date'],0,4);
 
-            $array_bln = array('01' => "I",
-                                '02' => "II",
-                                '03' => "III",
-                                '04' => "IV",
-                                '05' => "V",
-                                '06' => "VI",
-                                '07' => "VII",
-                                '08' => "VIII",
-                                '09' => "IX",
-                                '10' => "X",
-                                '11' => "XI",
-                                '12' => "XII");
+
+        $array_bln = array('01' => "I",
+                    '02' => "II",
+                    '03' => "III",
+                    '04' => "IV",
+                    '05' => "V",
+                    '06' => "VI",
+                    '07' => "VII",
+                    '08' => "VIII",
+                    '09' => "IX",
+                    '10' => "X",
+                    '11' => "XI",
+                    '12' => "XII");
+
+        if ($cek > 0) {
             $bln = $array_bln[$month_pr];
 
             $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
@@ -287,7 +292,18 @@ class PrController extends Controller
             $tambah->from = Auth::User()->nik;
             $tambah->division = $request['division'];
             $tambah->issuance = $request['issuance'];
-            $tambah->project_id = $request['project_id'];
+            if ($request['amount'] == NULL) {
+                $amount = $request['amount'];
+            }else{
+                $amount = str_replace(',', '', $request['amount']);
+            }
+            $tambah->amount = $amount;
+            if ($request['project_id'] == null) {
+                $tambah->project_id = $request['project_idInputNew'];
+            }else{
+                $tambah->project_id = $request['project_id'];
+                
+            }
             $tambah->result = 'T';
             $tambah->save();
 
@@ -298,18 +314,6 @@ class PrController extends Controller
             $month_pr = substr($request['date'],5,2);
             $year_pr = substr($request['date'],0,4);
 
-            $array_bln = array('01' => "I",
-                                '02' => "II",
-                                '03' => "III",
-                                '04' => "IV",
-                                '05' => "V",
-                                '06' => "VI",
-                                '07' => "VII",
-                                '08' => "VIII",
-                                '09' => "IX",
-                                '10' => "X",
-                                '11' => "XI",
-                                '12' => "XII");
             $bln = $array_bln[$month_pr];
 
             $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
@@ -359,14 +363,18 @@ class PrController extends Controller
             $tambah->from = Auth::User()->nik;
             $tambah->division = $request['division'];
             $tambah->issuance = $request['issuance'];
-            $tambah->project_id = $request['project_id'];
+            $tambah->amount = $request['amount'];  
+            if ($request['project_id'] == null) {
+                $tambah->project_id = $request['project_id'];
+            }else{
+                $tambah->project_id = $request['project_idInputNew'];
+                
+            }
             $tambah->result = 'T';
             $tambah->save();
 
             return redirect('pr')->with('success', 'Created Purchase Request Successfully!');
-        }
-
-        
+        }        
     }
 
     /**
@@ -389,6 +397,13 @@ class PrController extends Controller
         $update->issuance = $request['edit_issuance'];
         $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
+        if ($request['edit_amount'] == NULL) {
+            $amount = $request['edit_amount'];
+        }else{
+            $amount = str_replace(',', '', $request['edit_amount']);
+        }
+        $update->amount = $amount;
+
 
         $update->update();
 
