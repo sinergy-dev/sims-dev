@@ -154,7 +154,7 @@
                 <ul class="nav nav-tabs" style="margin-top: 10px" id="cutis">
                     <li class="tabs_item">
                       @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                      <a href="#bos" id="bos" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
+                      <a href="#bos" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
                       @endif
                     </li>
                     <li class="tabs_item">
@@ -162,9 +162,9 @@
                     </li>
                     <li class="tabs_item">
                       @if(Auth::User()->id_position == 'HR MANAGER')
-                      <a href="#staff" id="staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
+                      <a href="#staff"  data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
                       @else
-                      <a href="#staff" id="staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
+                      <a href="#staff"  data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
                       @endif
                     </li>
                 </ul>
@@ -192,7 +192,7 @@
                           @endif
                         </tr>
                       </thead>
-                        <tbody id="all_cuti" name="all_cuti">
+                      <tbody id="all_cuti" name="all_cuti">
                       </tbody>
                   </table>
                 </div>
@@ -218,46 +218,6 @@
                           </tr>
                         </thead>
                           <tbody>
-                            <!-- @foreach($cuti2 as $data)
-                              @if($data->status == 'n' || $data->status == 'R')
-                              <tr>
-                                  <td>{{$data->name}}</td>
-                                  <td>{{$data->id_division}}</td>
-                                  <td>{{$data->date_req}}</td>
-                                  <td>
-                                    <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
-                                    border: none;">{{$data->days}}
-                                  Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
-                                  </td>                                  
-                                  <td>
-                                    @if($data->status == 'v')
-                                     <span class="label label-success">Approved</span>
-                                    @elseif($data->status == 'd')
-                                     <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
-                                    @else
-                                     <span class="label label-warning">Pending</span> 
-                                    @endif
-                                  </td>
-                                  <td>
-                                    @if(Auth::User()->nik == $data->nik)
-                                      @if($data->status == NULL || $data->status == 'n' || $data->status == 'R')
-                                      <button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="{{$data->id_cuti}}" type="button"></button>
-                                      <a href="{{ url('delete_cuti', $data->id_cuti) }}"><button class="btn btn-sm btn-danger fa fa-trash" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="return confirm('Are you sure want to delete this?')" data-toggle="tooltip" title="Delete" data-placement="bottom" type="button"></button></a>
-                                      <a href="{{ url('follow_up',$data->id_cuti)}}"><button class="btn btn-sm btn-success fa fa-paper-plane" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" type="button"></button></a>
-                                      @endif
-                                    @else
-                                      @if($data->status == NULL || $data->status == 'n' || $data->status == 'R')
-                                          <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
-                                          <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
-                                      @else
-                                          <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
-                                          <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
-                                      @endif
-                                    @endif
-                                  </td>
-                              </tr>
-                              @endif
-                            @endforeach -->
                           </tbody>
                   </table>
                 </div>
@@ -1834,6 +1794,7 @@
 
     function changeTabs(id) {
       com = $("#filter_com").val()
+      console.log(id)
       if (id == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
       } else if(id == "request"){
