@@ -9,6 +9,7 @@ use Mail;
 use App\Mail\EmailRemainderWeekly;
 use App\Mail\MailResult;
 use App\Mail\mailPID;
+use App\Mail\RequestNewAssetHr;
 use App\Notifications\Testing;
 use Notification;
 use App\Notifications\NewLead;
@@ -36,6 +37,17 @@ class TestController extends Controller
         	Mail::to($data->email)->send(new MailResult($users,$pid_info));
         }
 	}
+
+  public function testEmailPeminjaman(){
+
+      $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+
+      $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+
+
+      Mail::to($to)->send(new RequestNewAssetHr($users,'[SIMS-APP] Permohonan untuk Peminjaman Asset'));
+
+  }
 
   public function testRemainderEmail(){
     $parameterEmail = collect([
