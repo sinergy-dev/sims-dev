@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\HRCrud;
 use App\User;
+use App\GuideLine;
 use Validator;
 use Response;
 use Illuminate\Support\Facades\input;
@@ -28,15 +29,13 @@ class HRController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function __construct()
     {
         $this->middleware('auth');
     }
-    
-    public function index(Request $request)
-    {
-        // $hr = HRCrud::all();
-        // return view('HR/human_resource')->with('hr', $hr);
+
+    public function Notification(){
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -44,25 +43,6 @@ class HRController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
-
-        $hr = DB::table('users')
-                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
-                ->where('users.status_karyawan','!=','dummy')
-                ->where('users.email','!=','dev@sinergy.co.id')
-                ->where('tb_company.id_company','1')
-                ->get();
-
-        $hr_msp = DB::table('users')
-                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
-                ->where('users.status_karyawan','!=','dummy')
-                ->where('users.email','!=','dev@sinergy.co.id')
-                ->where('tb_company.id_company','2')
-                ->get();
-
-        $code = $request['code_input'];
-
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -194,7 +174,46 @@ class HRController extends Controller
                             ->get();
         }
 
-        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','ter','code', 'notifClaim'));
+        return collect([
+            "notif" => $notif,
+            "notifOpen" => $notifOpen,
+            "notifsd" => $notifsd,
+            "notiftp" => $notiftp,
+            "notifClaim" => $notifClaim
+        ]);
+    }
+    
+    public function index(Request $request)
+    {
+        // $hr = HRCrud::all();
+        // return view('HR/human_resource')->with('hr', $hr);  
+        $notifAll = $this->notification();
+        
+        $notif = $notifAll["notif"];
+        $notifOpen = $notifAll["notifOpen"];
+        $notifsd = $notifAll["notifsd"];
+        $notiftp = $notifAll["notiftp"]; 
+        $notifClaim = $notifAll["notifClaim"];    
+
+        $hr = DB::table('users')
+                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
+                ->where('users.status_karyawan','!=','dummy')
+                ->where('users.email','!=','dev@sinergy.co.id')
+                ->where('tb_company.id_company','1')
+                ->get();
+
+        $hr_msp = DB::table('users')
+                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
+                ->where('users.status_karyawan','!=','dummy')
+                ->where('users.email','!=','dev@sinergy.co.id')
+                ->where('tb_company.id_company','2')
+                ->get();
+
+        $code = $request['code_input'];        
+
+        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim'));
     }
 
     public function getemps(Request $request)
@@ -1436,5 +1455,18 @@ class HRController extends Controller
         });
 
         })->export('xls');
+    }
+
+    public function GuideLineIndex(Request $request){
+        $notifAll = $this->notification();
+        
+        $notif = $notifAll["notif"];
+        $notifOpen = $notifAll["notifOpen"];
+        $notifsd = $notifAll["notifsd"];
+        $notiftp = $notifAll["notiftp"]; 
+        $notifClaim = $notifAll["notifClaim"];    
+
+        return view('HR/guideLines',compact('notif','notifOpen','notifsd','notiftp','notifClaim'));
+
     }
 }
