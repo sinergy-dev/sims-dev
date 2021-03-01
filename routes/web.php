@@ -314,6 +314,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/profile/delete_pict','HRController@delete_pict');
 	Route::get('/hu_rec/get_hu','HRController@getdatahu');
 	Route::get('/exportExcelEmployee', 'HRController@exportExcelEmployee');
+	Route::get('/guideLine','HRController@GuideLineIndex');
 
 	//cuti
 	Route::get('/show_cuti', 'HRGAController@show_cuti');
@@ -777,17 +778,17 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('asset_atk/store_asset_atk', 'AssetAtkController@store');
 	Route::get('asset_atk/get_qty_atk','AssetAtkController@getqtyatk');
 	Route::post('asset_atk/request_atk', 'AssetAtkController@request_atk');
-	Route::post('asset_atk/accept_request', 'AssetAtkController@accept_request');
+	Route::get('asset_atk/accept_request', 'AssetAtkController@accept_request');
 	Route::post('asset_atk/edit_atk', 'AssetAtkController@edit_atk');
-	Route::post('asset_atk/reject_request', 'AssetAtkController@reject_request');
+	Route::get('asset_atk/reject_request', 'AssetAtkController@reject_request');
 	Route::get('asset_atk/detail_asset_atk/{id_barang}','AssetAtkController@detail');
 	Route::post('asset_atk/update_stok', 'AssetAtkController@update_stok');
 	Route::post('asset_atk/done_request_pr', 'AssetAtkController@done_request_pr');
 	Route::get('asset_atk/getAssetAtk', 'AssetAtkController@getAtk');
 	Route::post('asset_atk/store_request_atk', 'AssetAtkController@store_request_atk');
-	Route::post('asset_atk/accept_request_atk', 'AssetAtkController@accept_request_atk');
+	Route::get('asset_atk/accept_request_atk', 'AssetAtkController@accept_request_atk');
 	Route::post('asset_atk/done_request_atk', 'AssetAtkController@request_done');
-	Route::post('asset_atk/reject_request_atk', 'AssetAtkController@reject_request_atk');
+	Route::get('asset_atk/reject_request_atk', 'AssetAtkController@reject_request_atk');
 	Route::get('asset_atk/detail_produk_request', 'AssetAtkController@detail_produk_request');
 
 	//PMO
