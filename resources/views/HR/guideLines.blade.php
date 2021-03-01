@@ -1,5 +1,11 @@
 @extends('template.template_admin-lte')
 @section('content')
+<style type="text/css">
+	body{
+		zoom:90%;
+	}
+	div.dataTables_processing { z-index: 1; 
+</style>
 <section class="content-header">
   <h1>Kebijakan & Peraturan</h1>
     <ol class="breadcrumb">
@@ -26,27 +32,14 @@
 		            </tr>
 		          </thead>
 		          <tbody>
-		          	<tr>
-		          		<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-		          		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-		          		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-		          		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-		          		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-		          		proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</td>
-		          		<td><u><a style="cursor: pointer;"><i>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</i></a></u</td>
-		          		<td>
-		          			<button class="btn btn-sm btn-warning" onclick="editGuide()"><i class="fa fa-edit"></i> edit</button>
-		          			<button class="btn btn-sm btn-danger" onclick="deleteGuide()"><i class="fa fa-trash"></i> delete</button>
-		          		</td>
-		          	</tr>
 		          	@foreach($data as $data)
 		          		<tr>
 			          		<td>{!!nl2br(e($data->description))!!}</td>
-			          		<td class="desc-hidden" style="display: none">{{$data->description}}</td>
 			          		<td><u><a style="cursor: pointer;"><i>{{$data->link_url}}</i></a></u></td>
 			          		<td>
+			          			<span class="desc-hidden" hidden></span>
 			          			<button class="btn btn-sm btn-warning" onclick="editGuide('{{$data->id}}','{{$data->link_url}}')"><i class="fa fa-edit"></i> edit</button>
-			          			<button class="btn btn-sm btn-danger" onclick="deleteGuide()"><i class="fa fa-trash"></i> delete</button>
+			          			<button class="btn btn-sm btn-danger" onclick="deleteGuide('{{$data->id}}')"><i class="fa fa-trash"></i> delete</button>
 			          		</td>
 			          	</tr>
 		          	@endforeach
@@ -87,29 +80,33 @@
 <script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script type="text/javascript">
-	
-	$(document).ready(function(){
-		function autosizeWow(){
-			autosize(document.getElementById("description"));
-			autosize(document.getElementById("link"));
-		}
-	})
-	
+	autosizeWow() 
+
+	function autosizeWow(){
+		autosize(document.getElementById("description"));
+		autosize(document.getElementById("link"));
+	}	
 
 	$("#AddGuide").click(function(){
 		$('#titleModal').text('Add Guide Line')		
 		$('#AddGuideModal').modal('show')
+
+		$('#submitGuide').attr("onclick","submitGuide('submit')")
+		title = 'Buat Kebijakan dan Peraturan'
 	})
 
-	function editGuide(id,link){
-		autosizeWow()
+	function editGuide(id,link){		
 		$('#titleModal').text('Update Guide Line')
 		$('#AddGuideModal').modal('show')
 		$('#description').val($('.desc-hidden').text())
+		autosizeWow()
 		$('#link').val(link)
+
+		$('#submitGuide').attr("onclick","submitGuide('"+id+"','update')")
+		title = 'Update Kebijakan dan Peraturan'
 	}
 
-	function deleteGuide(){
+	function deleteGuide(id){
 		Swal.fire({
 		  title: 'Hapus Kebijakan & Peraturan?',
 		  text: "Anda Yakin?",
@@ -119,28 +116,75 @@
 		  cancelButtonColor: '#d33',
 		  confirmButtonText: 'Ya, Hapus!'
 		}).then((result) => {
-		  if (result.isConfirmed) {
-		    Swal.fire(
-		      'Deleted!',
-		      'Your file has been deleted.',
-		      'success'
-		    )
-		  }
+			if (result.value) {
+  		        Swal.fire({
+	              title: 'Please Wait..!',
+	              text: "Deleting..",
+	              allowOutsideClick: false,
+	              allowEscapeKey: false,
+	              allowEnterKey: false,
+	              customClass: {
+	                popup: 'border-radius-0',
+	              },
+	              onOpen: () => {
+	                Swal.showLoading()
+	              }
+	            })
+
+	            $.ajax({
+	              type:"GET",
+	              url:"{{url('deleteGuide')}}",
+	              data:{
+	              	id:id
+	              },
+	              success: function(result){
+	                Swal.showLoading()
+	                Swal.fire(
+	                  'Successfully!',
+	                  'success'
+	                ).then((result) => {
+	                  if (result.value) {
+	                    location.reload()
+	                    datatable.columns.adjust().draw();
+	                  }
+	                })
+	              },
+	            });
+          	}	
 		})
 	}
-	$("#tableIndex").DataTable()
+	datatable = $("#tableIndex").DataTable({
+		 // "processing": true,
+	})
 
-	$("#submitGuide").click(function(){
-		swalAccept = Swal.fire({
-          title: "Buat Kebijakan dan Peraturan",
-          text: "Yakin?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-        })
+	function submitGuide(id,status){
+		if (status == 'submit') {
+			swalAccept = Swal.fire({
+	          title: title,
+	          text: "Yakin?",
+	          icon: 'warning',
+	          showCancelButton: true,
+	          confirmButtonColor: '#3085d6',
+	          cancelButtonColor: '#d33',
+	          confirmButtonText: 'Yes',
+	          cancelButtonText: 'No',
+	        })
+
+	        url = "{{url('storeGuide')}}"
+		}else{
+			swalAccept = Swal.fire({
+	          title: title,
+	          text: "Yakin?",
+	          icon: 'warning',
+	          showCancelButton: true,
+	          confirmButtonColor: '#3085d6',
+	          cancelButtonColor: '#d33',
+	          confirmButtonText: 'Yes',
+	          cancelButtonText: 'No',
+	        })
+
+	        url = "{{url('updateGuide')}}"
+		}		
 
         swalAccept.then((result) => {
   		    if (result.value) {
@@ -161,8 +205,9 @@
 
 	            $.ajax({
 	              type:"GET",
-	              url:"{{url('storeGuide')}}",
+	              url:url,
 	              data:{
+	              	id:id,
 	                description:$('#description').val(),
 	                link:$('#link').val()
 	              },
@@ -175,12 +220,13 @@
 	                  if (result.value) {
 	                    location.reload()
 	                    $("#AddGuideModal").modal('toggle')
+	                    datatable.columns.adjust().draw();
 	                  }
 	                })
 	              },
 	            });
           	}	        
         })
-	})
+	}
 </script>
 @endsection

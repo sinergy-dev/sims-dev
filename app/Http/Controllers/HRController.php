@@ -1494,7 +1494,5 @@ class HRController extends Controller
 
         $delete = GuideLine::where('id',$request->id)->first();
         $delete->delete();
-
-        return redirect()->back('HR/guideLines');
     }
 }
