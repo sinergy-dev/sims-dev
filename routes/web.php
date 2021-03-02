@@ -318,6 +318,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/storeGuide','HRController@storeGuideLine');
 	Route::get('/updateGuide','HRController@updateGuideLine');
 	Route::get('/deleteGuide','HRController@deleteGuideLine');
+	Route::get('/getGuideIndex','HRController@getGuideIndex');
+	Route::get('/getGuideIndexById','HRController@getGuideIndexById');
+
 
 	//cuti
 	Route::get('/show_cuti', 'HRGAController@show_cuti');
