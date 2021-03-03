@@ -2069,7 +2069,8 @@ class HRGAController extends Controller
             ->whereIn('id_cuti',function($query){
                 $query->select('id_cuti')
                     ->from('tb_cuti')
-                    ->where('nik','=',Auth::user()->nik);
+                    ->where('nik','=',Auth::user()->nik)
+                    ->where('status','<>','d');
             })
             ->pluck('date_off');
 
