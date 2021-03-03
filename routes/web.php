@@ -352,6 +352,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getdataquote', 'QuoteController@getdataquote');
 	Route::get('/getdatabackdatequote', 'QuoteController@getdatabackdate');
 	Route::get('/getfilteryearquote', 'QuoteController@getfilteryear');
+	Route::get('/get_backdate_num', 'QuoteController@get_backdate_num');
 
 	Route::get('/delete_detail_sho/{id_transaction}', 'SHOController@destroy_detail');
 
@@ -494,6 +495,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/store_letterbackdate', 'LetterController@store_backdate');
 	Route::get('/getdataletter', 'LetterController@getdataletter');
 	Route::get('/getfilteryearletter', 'LetterController@getfilteryear');
+	Route::get('/get_backdate_letter', 'LetterController@get_backdate_num');
 
 
 	Route::get('/do', 'DONumberController@index');
