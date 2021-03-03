@@ -269,7 +269,7 @@ class HRController extends Controller
     	$id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_npwp','npwp_file','ktp_file','status_kerja')
+                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_npwp','npwp_file','ktp_file','status_kerja','akhir_kontrak')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -370,6 +370,10 @@ class HRController extends Controller
         $tambah->email = $request['email'];
         $tambah->id_company = $request['company'];
         $tambah->status_karyawan = 'belum_cuti';
+
+        if ($request['status_kerja'] != "") {
+            $update->status_kerja = $request['status_kerja'];
+        }
 
         if($request['id_sub_division_tech_'] == 'PRESALES'){
             $tambah->id_division = 'TECHNICAL PRESALES';
@@ -596,9 +600,9 @@ class HRController extends Controller
         
         if ($request['name_update'] != "") {
             $update->name = $request['name_update'];
-        } elseif ($request['email_update'] != "") {
+        } else if ($request['email_update'] != "") {
             $update->email = $request['email_update'];
-        }
+        } 
         
         
         if ($request['company_update'] != "") {
