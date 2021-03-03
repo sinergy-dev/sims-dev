@@ -76,6 +76,13 @@
     .dataTables_paging {
       display: none;
     }
+
+    .nav-tabs .badge{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
+    }
       
   </style>
   <!---->
@@ -114,59 +121,61 @@
           @if($cek_cuti->status_karyawan == 'cuti')
             @if($total_cuti > 0)
             	@if($cek->status == null)
-	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
-	            <button class="btn btn-sm btn-success show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
+	            <button type="button" class="btn btn-sm bg-navy pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+	            <button class="btn btn-sm bg-maroon show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
 	            @elseif($cek_cuti->status == 'v' || $cek_cuti->status == 'd')
-	            <button type="button" class="btn btn-sm btn-primary pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
-	            <button class="btn btn-sm btn-success show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
+	            <button type="button" class="btn btn-sm bg-navy pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+	            <button class="btn btn-sm bg-maroon show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
 	            @else
-	            <button type="button" class="btn btn-sm btn-primary pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+	            <button type="button" class="btn btn-sm bg-navy pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
             	@endif
             @else
-            <button type="button" class="btn btn-sm btn-primary pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+            <button type="button" class="btn btn-sm bg-navy pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
             @endif
           @else
           @endif
             
           @if(Auth::User()->id_position == 'HR MANAGER')
-          <a href="{{action('HRGAController@cutipdf')}}" target="_blank" onclick="print()">
-          <button class="btn btn-sm btn-danger" style="width: 120px"><i class="fa fa-file-pdf-o"></i>&nbsp Preview PDF</button></a>
-          <button class="btn btn-sm btn-success" onclick="exportExcel()"><i class="fa fa-file-excel-o"></i>&nbspExcel</button>
-          <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#setting_cuti"><i class="fa fa-wrench"></i>&nbspTotal Cuti</button>
-           @endif
+          <!-- <a href="{{action('HRGAController@cutipdf')}}" target="_blank" onclick="print()">
+          <button class="btn btn-sm btn-danger" style="width: 120px"><i class="fa fa-file-pdf-o"></i>&nbsp Preview PDF</button></a> -->      
+          <button class="btn btn-sm bg-purple" style="margin-left: 10px;" data-toggle="modal" data-target="#setting_cuti"><i class="fa fa-wrench"></i>&nbspTotal Cuti</button>
+          <select class="btn btn-sm bg-blue pull-left" style="width: 70px; margin-right: 10px" id="filter_com">
+            <option value="all">All</option>
+            <option value="1">SIP</option>
+            <option value="2">MSP</option>
+          </select>
+          @endif
           </div>
       </div>
-
-
 
       <div class="box-body">
         <div class="table-responsive">          
             <div class="nav-tabs-custom">
-                <ul class="nav nav-tabs" id="cutis">
-                    <li>
-                      @if(Auth::User()->id_position == 'HR MANAGER')
-                      <a href="#bos" data-toggle="tab">List Cuti Karyawan</a>
+                <ul class="nav nav-tabs" style="margin-top: 10px" id="cutis">
+                    <li class="tabs_item">
+                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
+                      <a href="#bos" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
                       @endif
                     </li>
-                    <li class="active">
-                      <a href="#cuti" data-toggle="tab">Request Cuti {{$bulan}}</a>
+                    <li class="tabs_item">
+                      <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
                     </li>
                     <li>
                       @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
                       <a href="#staff" data-toggle="tab">Report Cuti</a>
                       @else
-                      <a href="#staff" data-toggle="tab">History Cuti</a>
+                      <a href="#staff"  data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
                       @endif
                     </li>
                 </ul>
 
               <div class="tab-content">
-                @if(Auth::User()->id_position == 'HR MANAGER')
+                @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
                 <div class="tab-pane" id="bos"> 
                   <table class="table table-bordered table-striped dataTable" id="datatables" width="100%" cellspacing="0">
                       <thead>
                         <tr>
-                          @if(Auth::User()->id_position == 'HR MANAGER') 
+                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER') 
                             <th rowspan="2"><center>Employees Name</center></th>
                             <th rowspan="2"><center>Email</center></th>
                             <th rowspan="2"><center>Division</center></th>
@@ -177,94 +186,19 @@
                           @endif
                         </tr>
                         <tr>
-                          @if(Auth::User()->id_position == 'HR MANAGER')
+                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
                             <th>{{$tahun_lalu}}<small>(*s/d 31 maret {{$tahun_ini}})</small></th>
                             <th>{{$tahun_ini}}</th>
                           @endif
                         </tr>
                       </thead>
-                        <tbody id="all_cuti" name="all_cuti">
-                          @if(Auth::User()->id_position == 'HR MANAGER')
-                            @foreach($cuti_index as $datas)
-                              <tr>
-                                <td>{{ucwords(strtolower($datas->name))}}</td>
-                                <td>{{$datas->email}}</td>
-                                <td>{{$datas->id_division}}</td>
-                                <td>{{str_replace('-', '/', $datas->date_of_entry)}}</td>
-                                <td>
-                                  @if($datas->date_of_entrys > 365)
-                                  {{ floor($datas->date_of_entrys / 365) }} Tahun {{ round($datas->date_of_entrys % 365 / 30 )}} Bulan
-                                  @elseif($datas->date_of_entrys > 31)
-                                  {{ floor($datas->date_of_entrys / 30)}} Bulan
-                                  @else
-                                  {{$datas->date_of_entrys}} Hari
-                                  @endif
-                                </td>
-                                <td>
-                                  @if($datas->niks < 1)
-                                  1
-                                  @else
-                                  {{$datas->niks}}
-                                  @endif
-                                Hari
-                                </td>
-                                <td>
-                                  @if($datas->cuti == NULL)
-                                  -
-                                  @else
-                                  {{$datas->cuti}} Hari
-                                  @endif
-                                </td>
-                                <td>
-                                  @if($datas->status_karyawan == 'belum_cuti')
-                                  -
-                                  @else
-                                  {{$datas->cuti2}} Hari
-                                  @endif
-                                </td>
-                              </tr>
-                            @endforeach
-                            @foreach($cuti_list as $data)
-                              <tr>
-                                <td>{{ucwords(strtolower($data->name))}}</td>
-                                <td>{{$data->email}}</td>
-                                <td>{{$data->id_division}}</td>
-                                <td>{{str_replace('-', '/', $data->date_of_entry)}}</td>
-                                <td>
-                                  @if($data->date_of_entrys > 365)
-                                  {{ floor($data->date_of_entrys / 365) }} Tahun {{ round($data->date_of_entrys % 365 / 30 )}} Bulan
-                                  @elseif($data->date_of_entrys > 31)
-                                  {{ floor($data->date_of_entrys / 30)}} Bulan
-                                  @else
-                                  {{$data->date_of_entrys}} Hari
-                                  @endif
-                                </td>
-                                <td>
-                                  0 Hari
-                                </td>
-                                <td>
-                                  @if($data->cuti == NULL)
-                                  -
-                                  @else
-                                  {{$data->cuti}} Hari
-                                  @endif
-                                </td>
-                                <td>
-                                  @if($data->status_karyawan == 'belum_cuti')
-                                  -
-                                  @else
-                                  {{$data->cuti2}} Hari
-                                  @endif
-                                </td>
-                              </tr>
-                            @endforeach
-                          @endif
+                      <tbody id="all_cuti" name="all_cuti">
                       </tbody>
                   </table>
                 </div>
                 @endif
 
-                <div class="tab-pane active" id="cuti">
+                <div class="tab-pane" id="cuti">
                   <table class="table table-bordered table-striped dataTable" id="datatablew" width="100%" cellspacing="0">
                         <thead>
                           <tr>
@@ -284,75 +218,34 @@
                           </tr>
                         </thead>
                           <tbody>
-                            @foreach($cuti2 as $data)
-                              @if($data->status == 'n' || $data->status == 'R')
-                              <tr>
-                                  <td>{{$data->name}}</td>
-                                  <td>{{$data->id_division}}</td>
-                                  <td>{{$data->date_req}}</td>
-                                  <td>
-                                    <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
-                                    border: none;">{{$data->days}}
-                                  Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
-                                  </td>                                  
-                                  <td>
-                                    @if($data->status == 'v')
-                                     <span class="label label-success">Approved</span>
-                                    @elseif($data->status == 'd')
-                                     <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
-                                    @else
-                                     <span class="label label-warning">Pending</span> 
-                                    @endif
-                                  </td>
-                                  <td>
-                                    @if(Auth::User()->nik == $data->nik)
-                                      @if($data->status == NULL || $data->status == 'n' || $data->status == 'R')
-                                      <button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="{{$data->id_cuti}}" type="button"></button>
-                                      <a href="{{ url('delete_cuti', $data->id_cuti) }}"><button class="btn btn-sm btn-danger fa fa-trash" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" onclick="return confirm('Are you sure want to delete this?')" data-toggle="tooltip" title="Delete" data-placement="bottom" type="button"></button></a>
-                                      <a href="{{ url('follow_up',$data->id_cuti)}}"><button class="btn btn-sm btn-success fa fa-paper-plane" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" type="button"></button></a>
-                                      @endif
-                                    @else
-                                      @if($data->status == NULL || $data->status == 'n' || $data->status == 'R')
-                                          <button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="{{$data->id_cuti}}" >Approve</button>
-                                          <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px; margin-left: 5px" data-target="#reason_decline" data-toggle="modal" onclick="decline('{{$data->id_cuti}}','{{$data->decline_reason}}')">Decline</button>
-                                      @else
-                                          <button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>
-                                          <button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>
-                                      @endif
-                                    @endif
-                                  </td>
-                              </tr>
-                              @endif
-                            @endforeach
                           </tbody>
                   </table>
                 </div>
 
-
                 <div class="tab-pane" id="staff">
                   @if(Auth::User()->id_position == 'HR MANAGER')
                     <div class="row" style="margin-bottom: 10px">
-                        <div style="margin-left: 15px">
+                        <!-- <div style="margin-left: 15px;float: right;">
                             <select class="form-control" style="width: 200px" id="pilih" name="pilih">
                               <option value="Select">-- Select Filter By --</option>
                               <option value="date">Filter By Date</option>
                               <option value="div">Filter By Division</option>
                               <option value="all">Filter By Date & Div</option>
                             </select>
-                        </div>
+                        </div> -->
 
-                        <div class="input-group date" style="width: 300px;margin-left: 15px">
+                        <div class="input-group date" style="width: 300px;margin-left: 15px;float: right;">
                             <div class="input-group-addon">
                               <i class="fa fa-calendar"></i>
                             </div>
-                            <input type="text" class="form-control" id="dates" name="dates" disabled="">
+                            <input type="text" class="form-control" id="dates" name="dates">
                         </div>
 
-                        <div  class="input-group date disabled" style="width: 300px;margin-left: 15px">
+                        <div  class="input-group date disabled" style="width: 300px;margin-left: 15px;float: right;">
                           <div class="input-group-addon">
                             <i class="fa fa-filter"></i>
                           </div>
-                          <select class="form-control" id="division_cuti" name="division_cuti" disabled="">
+                          <select class="form-control" id="division_cuti" name="division_cuti">
                             <option value="alldeh">ALL DIVISION</option>
                             @foreach($division as $data)
                               @if($data->id_division != 'NULL')
@@ -366,9 +259,10 @@
                             @endforeach
                           </select>
                         </div>
+
+                        <button class="btn btn-sm bg-olive" style="float: left;margin-left: 15px" onclick="exportExcel()">&nbspExport to <i class="fa fa-file-excel-o"></i></button>
                     </div>
-                  @endif
-                  <table class="table table-bordered table-striped dataTable" id="datatable" width="100%" cellspacing="0">
+                    <table class="table table-bordered table-striped dataTable" id="datatable" width="100%" cellspacing="0">
                       <thead>
                         <tr>
                           <th>Employees Name</th>
@@ -381,35 +275,25 @@
                         </tr>
                       </thead>
                         <tbody id="report" name="report">
-                          @foreach($cuti as $data)
-                              <tr>
-                                  <td>{{$data->name}}</td>
-                                  <td>{{$data->name_division}}</td>
-                                  <td>
-                                    {{$data->date_req}}
-                                  </td>
-                                  <td>
-                                    <button name="date_off" id="date_off" class="date_off" value="{{$data->id_cuti}}" style="outline: none;background-color: transparent;background-repeat:no-repeat;
-                                    border: none;">{{$data->days}}
-                                  Days<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>
-                                  </td>
-                                  <td>{{$data->updated_at}}</td>
-                                  <td>{{$data->pic}}</td>
-                                  <td>
-                                    @if($data->status == 'v' && $data->decline_reason != "")
-                                     <span class="label label-info">Approved with cancelation</span>
-                                    @elseif($data->status == 'v')
-                                     <span class="label label-success">Approved</span>
-                                    @elseif($data->status == 'd')
-                                     <span class="label label-danger" data-target="#decline_reason" data-toggle="modal" onclick="decline('{{$data->id_cuti}}', '{{$data->decline_reason}}')">Declined</span>
-                                    @else
-                                     <span class="label label-warning">Pending</span> 
-                                    @endif
-                                  </td>
-                              </tr>
-                          @endforeach
                       </tbody>
                   </table>
+                  @else
+                  <table class="table table-bordered table-striped dataTable" id="datatableq" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>Employees Name</th>
+                          <th>Division</th>
+                          <th>Request Date</th>
+                          <th>Date Off</th>
+                          <th>Approved Date</th>
+                          <th>Approved By</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                        <tbody id="report" name="report">
+                      </tbody>
+                  </table>
+                  @endif
                 </div>
               </div>
             </div>
@@ -700,7 +584,7 @@
               <h4 class="modal-title">Decline Information</h4>
             </div>
             <div class="modal-body">
-              <form method="POST" action="{{url('/decline_cuti')}}" id="reason_decline" name="reason_decline">
+              <!-- <form method="POST" action="{{url('/decline_cuti')}}" id="reason_decline" name="reason_decline"> -->
                 @csrf
               <input type="" name="id_cuti_decline" id="id_cuti_decline" hidden="">
               <div class="form-group">
@@ -710,9 +594,9 @@
 
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-                  <button type="submit" class="btn btn-success-absen"><i class="fa fa-check"></i>&nbsp Decline</button>
+                  <button type="submit" class="btn btn-success-absen" onclick="submitDecline()"><i class="fa fa-check"></i>&nbsp Decline</button>
                 </div>
-            </form>
+            <!-- </form> -->
             </div>
           </div>
         </div>
@@ -783,16 +667,16 @@
       });
     });
 
-    var tables = $('#datatables').DataTable();
-    var tablew = $("#datatablew").DataTable({
-      "columnDefs":[
-            {"width": "20%", "targets":0},
-            {"width": "10%", "targets":2},
-            {"width": "10%", "targets":3},
-            {"width": "10%", "targets":4},
-           ],
-        "order": [[ "4", "desc" ]],
-    });
+    // var tables = $('#datatables').DataTable();
+    // var tablew = $("#datatablew").DataTable({
+    //   "columnDefs":[
+    //         {"width": "20%", "targets":0},
+    //         {"width": "10%", "targets":2},
+    //         {"width": "10%", "targets":3},
+    //         {"width": "10%", "targets":4},
+    //        ],
+    //     "order": [[ "4", "desc" ]],
+    // });
 
     var table  = $('#datatable').DataTable({
        "columnDefs":[
@@ -1154,9 +1038,39 @@
     }
 
     function decline(id_cuti,decline_reason){
-      $("#id_cuti_decline").val(id_cuti);
-      $("#keterangan").val(decline_reason);
-      $("#keterangan_decline").val(decline_reason);
+      $.ajax({
+        type:"GET",
+        url:'{{url("/detilcuti")}}',
+        data:{
+          cuti:id_cuti,
+        },
+        success: function(result){
+          var table = "";
+          $.each(result[0], function(key, value){
+            $("#keterangan_decline").val(value.decline_reason);
+          });
+        }
+      });
+      $('#decline_reason').modal('show')
+    }
+
+    function decline_cuti(id_cuti,decline_reason){
+      $.ajax({
+        type:"GET",
+        url:'{{url("/detilcuti")}}',
+        data:{
+          cuti:id_cuti,
+        },
+        success: function(result){
+          console.log(decline_reason)
+          var table = "";
+          $.each(result[0], function(key, value){
+            $("#id_cuti_decline").val(value.id_cuti);
+            $("#keterangan").val(value.decline_reason);
+          });
+        }
+      });
+      $('#reason_decline').modal('show')
     }
 
     $('#cutis a').click(function(e) {
@@ -1199,16 +1113,319 @@
       location.assign(myUrl)
     }
 
-    $('input[name="dates"]').daterangepicker({
-    }, function(start, end, label) {
+    var start_date = moment().startOf('year');
+    var end_date = moment().endOf('year');
 
-      // table.draw();
+    var monthCuti;
+
+    get_list_cuti();
+    get_cuti_byMonth();
+    get_history_cuti(); 
+
+    function get_cuti_byMonth(){
+      monthCuti = $("#datatablew").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('get_cuti_byMonth')}}",
+        },
+        "columns": [
+          { 
+            render: function ( data, type, row ) {
+              return row.name.toUpperCase()
+            } 
+          },
+          { 
+            render: function ( data, type, row ) {
+              if (row.id_division == '-') {
+                  return 'Admin';
+              }else{
+                  return row.id_division;  
+              }
+            } 
+          },
+          { "data": "date_req"},
+          { 
+            render: function (data, type, row) {
+              return '<button name="date_off" id="date_off" class="date_off" value="'+row.id_cuti+'" style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">' + row.days +' Days <i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>'
+            }
+          },
+          {
+            render: function (data, type, row) {
+              if(row.status == 'v'){
+               return '<span class="label label-success">Approved</span>'
+              }else if(row.status == 'd'){
+               return '<span class="label label-danger" onclick="decline('+ row.id_cuti +')">Declined</span>'
+              }else{
+               return '<span class="label label-warning">Pending</span>'
+              }
+            } 
+          },
+          {
+            render: function (data, type, row) {
+              if({{Auth::User()->nik}} == row.nik){
+                if( row.status == 'n'){
+                  return '<button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
+                  '<button class="btn btn-sm btn-danger fa fa-trash btn_delete" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Delete" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
+                  '<button class="btn btn-sm btn-success fa fa-paper-plane btn_fu" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>'
+                }
+              }else{
+                if(row.status == null || row.status == 'n' || row.status == 'R'){
+                  return '<button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="'+row.id_cuti+'" >Approve</button>' + ' ' +
+                    '<button class="btn btn-xs btn-danger btn_decline" style="vertical-align: top; width: 60px; margin-left: 5px" value="'+row.id_cuti+'" onclick="decline_cuti('+row.id_cuti+')" >Decline</button>'
+                }else{
+                    return '<button class="btn btn-xs btn-success disabled" style="vertical-align: top; width: 60px">Approve</button>' + ' ' +
+                    '<button class="btn btn-xs btn-danger disabled" style="vertical-align: top; width: 60px; margin-left: 5px">Decline</button>'
+                }
+              }
+            } 
+          },
+        ],
+        initComplete: function() {
+          if ("{{Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'HRD MANAGER'}}") {
+            if (this.api().data().length) {
+              $('#cuti_tab').append('<span class="badge">'+ this.api().data().length +'</span>')
+              activeTab('cuti')
+            }else{
+              activeTab('cuti') 
+            }
+          }else{
+            activeTab('cuti')
+          }
+        },
+        "searching": true,
+        "lengthChange": true,
+        "order": [[ 0, "asc" ]],
+        "fixedColumns":   {
+            leftColumns: 1
+        },
+        "pageLength": 25,
+      })
+    }
+
+    function get_history_cuti(){
+      $("#datatableq").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('get_history_cuti')}}",
+        },
+        "columns": [
+          { 
+            render: function ( data, type, row ) {
+              return row.name.toUpperCase()
+            } 
+          },
+          { "data": "id_division" },
+          { "data": "date_req"},
+          { 
+            render: function (data, type, row) {
+              return '<button name="date_off" id="date_off" class="date_off" value="'+row.id_cuti+'" style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">' + row.days +' Days <i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"></i></button>'
+            }
+          },
+          { "data": "updated_at" },
+          { "data": "pic"},
+          {
+            render: function (data, type, row) {
+              if(row.status == 'v'){
+               return '<span class="label label-success">Approved</span>'
+              }else if(row.status == 'd'){
+               return '<span class="label label-danger" onclick="decline('+ row.id_cuti +')">Declined</span>'
+              }else{
+               return '<span class="label label-warning">Pending</span>'
+              }
+            } 
+          },
+        ],
+        "searching": true,
+        "lengthChange": true,
+        "order": [[ 2, "desc" ]],
+        "fixedColumns":   {
+            leftColumns: 1
+        },
+        "pageLength": 10,
+      })
+    }
+
+    function activeTab(tab){
+      $('#cutis a[href="#' + tab + '"]').tab('show');
+    }
+
+    function submitDecline(){
+
+      $('#tunggu').modal('show');
+      $('#reason_decline').modal('hide')
+
+      $.ajax({
+        type:"POST",
+        url:"{{url('/decline_cuti')}}",
+        data:{
+          _token: "{{ csrf_token() }}",
+          id_cuti:($("#id_cuti_decline").val()),
+          decline_reason:($("#keterangan").val()),
+        },
+        success:function(result){
+          $('#tunggu').modal('hide');
+          $('#reason_decline').modal('hide')
+          location.reload()
+        }
+      })
+    }
+
+    $('#datatablew').on('click', '.btn_delete', function(e){
+      Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes!'
+      }).then((result) => {
+        if (result.value) {
+          var id_cuti = this.value;
+          $('#tunggu').modal('show');
+            $.ajax({
+              type:"GET",
+              url:"{{url('delete_cuti/')}}/"+id_cuti,
+              success: function(result){
+                $('#tunggu').modal('hide');
+                Swal.fire(
+              'Deleted!',
+              'Your file has been deleted.',
+              'success'
+            ),
+                setTimeout(function(){
+                    $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+                },2000);
+              }
+            })
+        }
+      })
+        
+    })
+
+
+    $('#datatablew').on('click', '.btn_fu', function(e){
+        Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes!'
+      }).then((result) => {
+        if (result.value) {
+          var id_cuti = this.value;
+          $('#tunggu').modal('show');
+            $.ajax({
+              type:"GET",
+              url:"{{url('follow_up/')}}/"+id_cuti,
+              success: function(result){
+                $('#tunggu').modal('hide');
+                Swal.fire(
+              'Successfully!',
+              'Your request has been sent.',
+              'success'
+            ),
+                setTimeout(function(){
+                    $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+                },2000);
+              }
+            })
+        }
+      })
+        
+    })
+
+    function get_list_cuti(){
+      $("#datatables").DataTable({
+        "ajax":{
+          "type":"GET",
+          "url":"{{url('get_list_cuti')}}",
+        },
+        "columns": [
+          { 
+            render: function ( data, type, row ) {
+              return row.name.toUpperCase()
+            } 
+          },
+          { "data": "email" },
+          { 
+            render: function ( data, type, row ) {
+              if (row.id_division == '-') {
+                  return 'Admin';
+              }else{
+                  return row.id_division;  
+              }
+            } 
+          },
+          { 
+            render: function (data, type, row) {
+              return moment(row.date_of_entry).format('L');
+            } 
+          },
+          { 
+            render: function (data, type, row) {
+              if(row.date_of_entrys > 365){
+                return Math.floor(row.date_of_entrys / 365) + ' Tahun ' + Math.floor(row.date_of_entrys % 365 / 30) + ' Bulan';
+              }else if(row.date_of_entrys > 31){
+                return Math.floor(row.date_of_entrys / 30) + ' Bulan';
+              }else{
+                return row.date_of_entrys + ' Hari';
+              }
+            }
+          },
+          {
+            render: function (data, type, row) {
+              if(row.niks < 1){
+                return '1 Hari';
+              }else if(row.niks == undefined){
+                return '-'
+              }else{
+                return row.niks + ' Hari';
+              }
+            } 
+          },
+          {
+            render: function (data, type, row) {
+              if(row.cuti == null){
+                return '-';
+              }else{
+                return row.cuti + ' Hari';
+              }
+            } 
+          },
+          {
+            render: function (data, type, row) {
+              if(row.status_karyawan == 'belum_cuti'){
+                return '-';
+              }else{
+                return row.cuti2 + ' Hari';
+              }
+            } 
+          },
+        ],
+        "searching": true,
+        "lengthChange": true,
+        "order": [[ 0, "asc" ]],
+        "fixedColumns":   {
+            leftColumns: 1
+        },
+        "pageLength": 10,
+      })
+    }
+
+    function cb(start_date,end_date,url,division){
+        start  = start_date.format("YYYY-MM-DD 00:00:00");
+        end    = end_date.format("YYYY-MM-DD 00:00:00");
+
         $.ajax({
               type:"GET",
-              url:"{{url('getfilterCutiByDate')}}",
+              url:url,
               data:{
-                start:start.format('YYYY-MM-DD'),
-                end:end.format('YYYY-MM-DD')
+                division:division,
+                start:start,
+                end:end
               },
               success: function(result){
                 $('#datatable').DataTable({
@@ -1231,8 +1448,8 @@
                   table = table + '<tr>';
                   table = table + '<td>' +value.name+ '</td>';
                   table = table + '<td>' +value.id_division+ '</td>';
-                  table = table + '<td>' +'<button name="date_off" id="date_off" class="date_off" value="'+value.id_cuti+'" style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">'+ value.days + ' Hari' + '<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"/>'+'</button>'+'</td>';
                   table = table + '<td>' +value.date_req+ '</td>';
+                  table = table + '<td>' +'<button name="date_off" id="date_off" class="date_off" value="'+value.id_cuti+'" style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">'+ value.days + ' Hari' + '<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"/>'+'</button>'+'</td>';
                   if (value.updated_at == null) {
                     table = table + '<td> - </td>';
                     table = table + '<td> - </td>';
@@ -1240,8 +1457,14 @@
                     table = table + '<td>' +value.updated_at+ '</td>';
                     table = table + '<td>' +value.pic+ '</td>';
                   }
-                  table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
-                  table = table + '<td>' +' '+ '</td>';
+                  if (value.status == 'v') {
+                    table = table + '<td>' +'<label class="label label-success">Approved</label>'+ '</td>';
+                  }else if (value.status == 'd') {
+                    table = table + '<td>' +'<label class="label label-danger" onclick="decline('+value.id_cuti+')">Declined</label>'+ '</td>';
+                  }else{
+                    table = table + '<td>' +'<label class="label label-warning">Pending</label>'+ '</td>';
+                  }
+                  // table = table + '<td>' +' '+ '</td>';
                   
                   table = table + '</tr>';
 
@@ -1249,60 +1472,21 @@
                 $('#report').append(table);
                 
               },
-          });
+        });
 
-          $("#division_cuti").change(function(){
-            $.ajax({
-              type:"GET",
-              url:"/getfilterCutiByDateDiv",
-              data:{
-                division:this.value,
-                start:start.format('YYYY-MM-DD'),
-                end:end.format('YYYY-MM-DD')
-              },
-              success: function(result){
-                $('#datatable').DataTable({
-                   "destroy": true,
-             "columnDefs":[
-                  {"width": "30%", "targets":0},
-                  {"width": "10%", "targets":2},
-                  {"width": "10%", "targets":3},
-                  {"width": "10%", "targets":4},
-                 ],
-              "order": [[ "2", "desc" ]],
-              "lengthChange": false,
-              "paging": false,
-          });
-                $('#report').empty();
+        
+    }
 
-                var table = "";
+    cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val());
 
-                $.each(result, function(key, value){
-                  table = table + '<tr>';
-                  table = table + '<td>' +value.name+ '</td>';
-                  table = table + '<td>' +value.id_division+ '</td>';
-                  table = table + '<td>' +'<button name="date_off" id="date_off" class="date_off" value="'+value.id_cuti+'"  style="outline: none;background-color: transparent;background-repeat:no-repeat;border: none;">'+ value.days + ' Hari' + '<i class="glyphicon glyphicon-zoom-in" style="padding-left: 5px"/>'+'</button>'+'</td>';
-                  table = table + '<td>' +value.date_req+ '</td>';
-                  if (value.updated_at == null) {
-                    table = table + '<td> - </td>';
-                    table = table + '<td> - </td>';
-                  }else{
-                    table = table + '<td>' +value.updated_at+ '</td>';
-                    table = table + '<td>' +value.pic+ '</td>';
-                  }
-                  table = table + '<td>' +'<label class="status-win">Approved</label>'+ '</td>';
-                  table = table + '<td>' +' '+ '</td>';
-                  
-                  table = table + '</tr>';
-
-                });
-                $('#report').append(table);
-              },
-            });
-            
-          });
-          
-        // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+    $('input[name="dates"]').daterangepicker({
+      startDate: start_date,
+      endDate: end_date,
+      locale: {
+        format: 'MM/DD/YYYY'
+      },
+      }, function(start, end, label) {
+      cb(start,end,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val())
     });
 
     $("#pilih").change(function(){
@@ -1314,8 +1498,6 @@
          $('input[name="dates"]').daterangepicker({
 
         }, function(start, end, label) {
-            console.log(start.format('YYYY-MM-DD'))
-             console.log(end.format('YYYY-MM-DD'))
             $.ajax({
                   type:"GET",
                   url:"/getfilterCutiByDate",
@@ -1585,19 +1767,63 @@
       window.print();
     }
 
+
+    $("#filter_com").change(function(){
+      var filter_com = this.value;
+      var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
+      console.log(filter_com)
+      if (companyString == "all_lis") {
+        $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString).load();
+      } else if (companyString == "request") {
+        $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString).load();
+      } else if (companyString == "report_"){
+        var start_date = $('input[name="dates"]').data('daterangepicker').startDate
+        var end_date = $('input[name="dates"]').data('daterangepicker').endDate
+        cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString,$("#division_cuti").val());
+      } else {
+        $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
+      }
+    });
+
+    $("#division_cuti").change(function(){
+        var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
+        var start_date = $('input[name="dates"]').data('daterangepicker').startDate
+        var end_date = $('input[name="dates"]').data('daterangepicker').endDate
+        cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id="+companyString,this.value);
+    });
+
+    function changeTabs(id) {
+      com = $("#filter_com").val()
+      console.log(id)
+      if (id == "all_lis") {
+        $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
+      } else if(id == "request"){
+        @if(Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER')
+          $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
+        @else 
+          $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
+        @endif
+      } else if(id == "report_"){
+        var start_date = $('input[name="dates"]').data('daterangepicker').startDate
+        var end_date = $('input[name="dates"]').data('daterangepicker').endDate
+        cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
+      } else {
+        $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
+      }
+    }
+
     $(".disabled-permission").hover(function(){
       swal({
 		  text: "Not Allowed to Leaving Permit Access!",
-	  });
-    });
+  	  });
+      });
 
     $(document).ready(function(){
-	  $('[data-toggle="tooltip"]').tooltip();   
-	});
-
+  	  $('[data-toggle="tooltip"]').tooltip(); 
+  	});
 
     $(".alert").fadeTo(2000, 500).slideUp(500, function(){
-         $(".alert").slideUp(300);
+      $(".alert").slideUp(300);
     });
     
 

@@ -3,7 +3,10 @@
   <style type="text/css">
     .DTFC_LeftBodyLiner {
       overflow: hidden;
-  }
+    }
+    th{
+      text-align: center;
+    }
   </style>
   <section class="content-header">
     <h1>
@@ -137,6 +140,11 @@
                           <option value="MSM">MSM</option>
                       </select>
                   </div>
+                  <!-- <div class="form-group">
+                      <label>Date</label>
+                      <input type="date" class="form-control" id="date" name="date" required>
+                  </div> -->
+
                   <div class="form-group">
                     <label for="">Date</label>
                     <div class="input-group date">
@@ -433,6 +441,18 @@
         $('#edit_note').val(note);
       }
     }
+
+    var nowDate = new Date();
+    var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+
+    $('#date_quote').datepicker({
+      autoclose: true,
+      startDate: today 
+    }).attr('readonly','readonly').css('background-color','#fff');
+
+    $('#date_backdate').datepicker({
+      autoclose: true,
+    }).attr('readonly','readonly').css('background-color','#fff');
 
     initQuoTable();
 

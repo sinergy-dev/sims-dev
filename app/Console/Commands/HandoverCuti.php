@@ -47,5 +47,7 @@ class HandoverCuti extends Command
             $data->save();
         }
         //
+
+        syslog(LOG_ERR, "sukses");
     }
 }

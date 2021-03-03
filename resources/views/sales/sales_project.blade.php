@@ -40,28 +40,35 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   }
 
   .inputWithIcon.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
+    color:#fff;
+    background-color:dodgerBlue;
+  }
 
-   .inputWithIcon.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:10px 9px;
-      border-radius:4px 0 0 4px;
-    }
+  .inputWithIcon.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:10px 9px;
+    border-radius:4px 0 0 4px;
+  }
 
-   .inputWithIcon{
-      position:relative;
-    }
+  .inputWithIcon{
+    position:relative;
+  }
 
-   .inputWithIcon i{
+  .inputWithIcon i{
       position:absolute;
       left:0;
       top:0;
       padding:9px 9px;
       color:#aaa;
       transition:.3s;
+  }
+
+  .nav-tabs .badge{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
   }
 
 </style>
@@ -100,20 +107,19 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'DIRECTOR')
               @if(Auth::User()->id_position == 'MANAGER')
-              <li class="tabs_item active"><a href="#sip" data-toggle="tab" onclick="changeTabs('SIP')">SIP</a></li>
-              <li class="tabs_item"><a href="#msp" data-toggle="tab" onclick="changeTabs('MSP')">MSP</a></li>
-              <li class="tabs_item"><a href="#request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
-              <li class="tabs_item"><a href="#history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
+              <li class="tabs_item" id="tabs_sip"><a href="#sip" id="sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
+              <li class="tabs_item" id="tabs_msp"><a href="#msp" id="msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
+              <li class="tabs_item" id="tabs_request"><a href="#request" id="request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
+              <li class="tabs_item" id="tabs_history"><a href="#history" id="history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
               @else
-              <li class="active"><a href="#sip" data-toggle="tab" onclick="changeTabs('SIP')">SIP</a></li>
-              <li><a href="#msp" data-toggle="tab" onclick="changeTabs('MSP')">MSP</a></li>
+              <li class="tabs_item" id="tabs_sip"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
+              <li class="tabs_item" id="tabs_msp"><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
               @endif
             @else
             @endif
         </ul>
 
         <div class="tab-content">
-
             <div class="tab-pane active" id="sip">
               <div class="box-header">
                 <div class="row">
@@ -139,27 +145,27 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
                   <div class="col-md-4" id="search-table">
                     <div class="input-group pull-right" style="margin-left: 10px">
                       <div class="input-group-btn">
-	                <button type="button" id="btnShowEntryTicket" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-	                  Show 10 entries
-	                  <span class="fa fa-caret-down"></span>
-	                </button>
-	                <ul class="dropdown-menu" id="selectShowEntryTicket">
-	                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-	                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-	                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-	                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-	                </ul>
-	              </div>
-	              <input id="searchBarTicket" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
-	              <span class="input-group-btn">
-	                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-sm" style="width: 40px">
-	                  <i class="fa fa-fw fa-search"></i>
-	                </button>
-	              </span>
-	                    </div>
+      	                <button type="button" id="btnShowEntryTicket" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+      	                  Show 10 entries
+      	                  <span class="fa fa-caret-down"></span>
+      	                </button>
+      	                <ul class="dropdown-menu" id="selectShowEntryTicket">
+      	                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+      	                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+      	                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+      	                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+      	                </ul>
+      	              </div>
+      	              <input id="searchBarTicket" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
+      	              <span class="input-group-btn">
+      	                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-sm" style="width: 40px">
+      	                  <i class="fa fa-fw fa-search"></i>
+      	                </button>
+      	              </span>
 	                  </div>
 	                </div>
 	              </div>
+	            </div>
 
 	           <div id="pid-table">
 	           	  <table class="table table-bordered table-striped display" id="table-pid">
@@ -225,9 +231,8 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 	                    <th></th>
 	                  </tfoot>
 	              </table>
-          		</div>
+          	 </div>
             </div>
-
         </div>
       </div>
     </div>
@@ -588,7 +593,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   }
 
   function initPID(){
-  var table = $("#table-pid").DataTable({
+    var table = $("#table-pid").DataTable({
   	"footerCallback": function( row, data, start, end, display ) {
           var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
 
@@ -749,9 +754,9 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       leftColumns: 2,
       rightColumns: 1
     },
-  });
+    });
 
-  var request_table = $("#request_id").DataTable({
+    var request_table = $("#request_id").DataTable({
     "footerCallback": function( row, data, start, end, display ) {
             var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
 
@@ -824,8 +829,22 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       fixedColumns:   {
         rightColumns: 1
       }, 
-	});	
-
+      initComplete: function() {
+        if("{{Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'FINANCE'}}"){
+          if (this.api().data().length) {
+            $('#request').append('<span class="badge">'+ this.api().data().length +'</span>')
+            $('#tabs_request').addClass('active')   
+            changeTabs('request')
+          }else{
+            $('#tabs_sip').addClass('active')
+            changeTabs('sip')
+          }
+        }else{
+          $('#tabs_sip').addClass('active')
+          changeTabs('sip')
+        }
+      }
+	  });	
 
     @if(Auth::User()->id_division == 'MSM')
 		  // Column Amount IDR
@@ -1101,19 +1120,17 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     //   }
     // })
     
-    @if(Auth::User()->id_division == 'FINANCE')
+    if("{{Auth::User()->id_division == 'FINANCE'}}"){
       var companyString = $('.nav-tabs .active').text()
-      // var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
-
-      // console.log(companyString)
       if(companyString == "SIP" || companyString == "MSP"){
         $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
       } else {
         console.log('bukan tab perusahaan')
       }
-    @else
+    }else{
       $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
-    @endif
+    }
+      
  })
 
 </script>

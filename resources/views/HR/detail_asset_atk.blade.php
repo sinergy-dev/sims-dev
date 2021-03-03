@@ -2,11 +2,11 @@
 @section('content')
 <section class="content-header">
   <h1>
-    SIP Detail Asset Management
+    SIP Detail ATK
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">HR/GA - Asset Management</li>
+    <li class="active">HR/GA - Detail ATK</li>
     <li class="active">SIP</li>
     <li class="active">Detail</li>
   </ol>
@@ -37,58 +37,120 @@
     </div>
   @endif
 
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3>Detail Barang</h3>
+        </div>
 
-  <div class="box">
-    <div class="box-header">
-      <a href="{{url('/asset_atk')}}"><button button class="btn btn-xs btn-danger pull-left" style="width: 150px"><i class="fa fa-arrow-circle-o-left"></i>&nbsp back to Asset</button></a>
-    </div>
-
-    <div class="box-body">
-      <div class="table-responsive">
-          <table class="table table-bordered display no-wrap" id="data_Table" width="100%" cellspacing="0">
-            <thead>
-              <tr>
-                <th>No</th>
-                <!-- <th>No Peminjaman</th> -->
-                <th>Nama Barang</th>
-                <th>Nama</th>
-                <th>Tgl Request</th>
-                <th>Keterangan</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="products-list" name="products-list">
-              <?php $no = 1; ?>
-              @foreach($asset as $data)
-              <tr>
-                <td>{{$no++}}</td>
-                <!-- <td>{{$data->no_transac}}</td> -->
-                <td>{{$data->nama_barang}}</td>
-                <td>{{$data->name}}</td>
-                <td>{!!substr($data->created_at,0,10)!!}</td>
-                <td>{{$data->keterangan}}</td>
-                <td>
-                  @if($data->status == 'PENDING')
-                    <label class="status-open">PENDING</label>
-                  @elseif($data->status == 'ACCEPT')
-                    <label class="status-win" style="width: 90px">ACCEPTED</label>
-                  @elseif($data->status == 'REJECT')
-                    <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
-                  @endif
-                </td>
-              </tr>
-              @endforeach
-            </tbody>
+        <div class="box-body">
+          <table class="table table-bordered">
+            <tr>
+              <td style="width:30%">Name</td>
+              <td>: {{$data->nama_barang}}</td>
+            </tr>
+            <tr>
+              <td style="width:30%">Current Stock</td>
+              <td>: {{$data->qty}} {{$data->unit}}</td>
+            </tr>
+            <tr>
+              <td style="width:30%">Last Activity</td>
+              <td>:
+                @if($last_update->status == 'In') 
+                  Stock Added 
+                @else 
+                  Requested @endif by {{$last_update->name}} at {{date('F, d - Y', strtotime($last_update->created_at))}}
+              </td>
+            </tr>
           </table>
-      </div>  
+        </div>
+      </div>
+
+      <div class="box box-success">
+        <div class="box-header with-border">
+        <h3 class="box-title">Summary Table</h3>
+        </div>
+
+        <div class="box-body">
+          <div class="table-responsive">
+              <table class="table table-bordered display no-wrap" id="summary_table" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Month</th>
+                    <th>In</th>
+                    <th>Out</th>
+                  </tr>
+                </thead>
+                <tbody id="products-list" name="products-list">
+                  <?php $no = 1; ?>
+                  @foreach($summary as $data)
+                  <tr>
+                    <td>{{$no++}}</td>
+                    <td>{{date("F",strtotime($data->month))}}</td>
+                    <td>{{$data->sum_in}}</td>
+                    <td>{{$data->sum_out}}</td>
+                  </tr>
+                  @endforeach
+                </tbody>
+              </table>
+          </div>  
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-6">
+      <div class="box box-primary">
+        <div class="box-header with-border">
+        <h3 class="box-title">Saldo Table</h3>
+        </div>
+
+        <div class="box-body">
+          <div class="table-responsive">
+              <table class="table table-bordered display no-wrap" id="data_Table" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Date</th>
+                    <th>In/Out</th>
+                    <th>Requested By</th>
+                  </tr>
+                </thead>
+                <tbody id="products-list" name="products-list">
+                  <?php $no = 1; ?>
+                  @foreach($detail as $data)
+                  <tr>
+                    <td>{{$no++}}</td>
+                    <td>{{$data->created_at}}</td>
+                    @if($data->status == 'In')
+                    <td>+ {{$data->qty}} {{$data->unit}}</td>
+                    @else
+                    <td>- {{$data->qty}} {{$data->unit}}</td>
+                    @endif
+                    <td>{{$data->name}}</td>
+                  </tr>
+                  @endforeach
+                </tbody>
+              </table>
+          </div>  
+        </div>
+      </div>
     </div>
   </div>
+
 </section>
 @endsection
 @section('script')
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript">
-    $('#data_Table').DataTable({})
+    $('#data_Table').DataTable({
+      pageLength: 25,
+    })
+
+    $('#summary_table').DataTable({
+      pageLength: 25,
+    })
 </script>
 @endsection

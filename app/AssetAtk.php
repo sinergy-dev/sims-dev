@@ -8,5 +8,5 @@ class AssetAtk extends Model
 {
     protected $table = 'tb_asset_atk';
     protected $primaryKey = 'id_barang';
-    protected $fillable = ['nik', 'nama_barang', 'qty','description'];
+    protected $fillable = ['nik', 'nama_barang', 'qty','description', 'merk'];
 }

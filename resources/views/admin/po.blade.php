@@ -1,6 +1,12 @@
 @extends('template.template_admin-lte')
 @section('content')
 
+<style type="text/css">
+  th {
+    text-align: center;
+  }
+</style>
+
 <section class="content-header">
   <h1>
     Daftar Buku Admin (PO)
@@ -58,11 +64,11 @@
          <div class="table-responsive">
             <table class="table table-bordered table-striped dataTable nowrap" id="data_po" width="100%" cellspacing="0">
               <thead>
-                <tr>
+                <tr  style="text-align: center;">
                   <th>No PO</th>
                   <th>No. PR</th>
                   <th>Position</th>
-                  <th>Type of Letter</th>
+                  <th>Type</th>
                   <th>Month</th>
                   <th>Date</th>
                   <th>To</th>
