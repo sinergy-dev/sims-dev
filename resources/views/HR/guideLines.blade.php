@@ -1,11 +1,6 @@
 @extends('template.template_admin-lte')
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
-<style type="text/css">
-	body{
-		zoom:90%;
-	}
-</style>
 <section class="content-header">
   <h1>Kebijakan & Peraturan</h1>
     <ol class="breadcrumb">
@@ -145,7 +140,7 @@
 	        success:function(result){
 	        	console.log(result)
 	        	prepend = ''
-				$('#titleModal').html('<h4 style="color:red">'+result[0].title_guide+'</h4>')
+				$('#titleModal').html('<label>'+result[0].title_guide+'</label>')
 				prepend = prepend + '<div class="form-group"><label>Description</label>'
 				prepend = prepend + '<div>' + result[0].description + '</div>'
 				prepend = prepend + '</div>'
