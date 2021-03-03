@@ -35,8 +35,7 @@
       <div class="pull-left">
         <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
         <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
-            <option value="2020">&#xf073 &nbsp2020</option>
-            <option value="2019">&#xf073 &nbsp2019</option>
+            <option value="2021">&#xf073 &nbsp2021</option>
         </select>
       </div>
       <div class="pull-right">
