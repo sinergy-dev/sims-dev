@@ -2242,7 +2242,7 @@ class HRGAController extends Controller
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
 			            ->whereNotIn('nik',function($query) { 
-			            	$query->select('nik')->from('tb_cuti');
+			            	$query->select('nik')->whereYear('tb_cuti.date_req',date('Y'))->from('tb_cuti');
 
 			            })->get();
                 	}
