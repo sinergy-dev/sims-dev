@@ -2921,7 +2921,7 @@ class SALESController extends Controller{
             $update = Sales::where('lead_id', $lead_id)->first();
             $update->result = $request['result'];
             $update->keterangan = $request['keterangan'];
-            $update->closing_date = $edate;
+            $update->closing_date = date("Y-m-d");
             $update->result4    = $request['project_type'];
             $update->update();
 
