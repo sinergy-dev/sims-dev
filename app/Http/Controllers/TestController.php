@@ -16,6 +16,9 @@ use App\Notifications\NewLead;
 use App\PID;
 use Auth;
 use DB;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 // use App\Notifications\Result;
 
 
@@ -136,5 +139,149 @@ class TestController extends Controller
 
     return new MailResult($users,$pid_info);
   }
+
+  public function postEventCalendar(Request $request){
+    // $calenderId = "kfo8st45f546hr112s6ia4mgmo@group.calendar.google.com";
+    $calenderId = $request->group;
+
+    $client = new Client();
+    $url = "https://www.googleapis.com/calendar/v3/calendars/".$calenderId."/events?key=".env('APPSINERGY_GOOGLE_API_KEY')."&sendNotifications=true";
+    $token = $this->getOauth2AccessToken();
+
+    $response =  $client->request(
+          'POST', 
+          $url,        
+          [
+            // 'form_params' => [
+            //     'sendNotifications' => true,
+            // ],
+            'headers' => [
+              'Content-Type'=>'application/json',
+              'Authorization'=>$token
+            ],'json' => [
+                "summary" => $request->summary,
+                "start" => array(
+                  'dateTime' => $request->startDateTime,
+                ),
+                "end" => array(
+                  'dateTime' => $request->endDateTime,
+                ),
+                "description" => $request->description,
+                'reminders' => array(
+                  'useDefault' => FALSE,
+                  'overrides' => array(
+                    array('method' => 'email', 'minutes' => 24 * 60),
+                    array('method' => 'popup', 'minutes' => 10),
+                  ),
+                ),
+                'attendees'=> array(
+                  array('email'=> $request->email),
+                ),
+            ]
+          ]
+    );
+
+    return $response->getBody();
+  }
+
+  public function getOauth2AccessToken(){
+    $client = new Client();
+
+    $response = $client->request(
+        'POST',
+        'https://oauth2.googleapis.com/token',
+        [
+          'headers' => [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+          ],
+          'form_params' => [
+            'grant_type' => 'refresh_token',
+            'client_id' => env('OAUTH2_CLIENT_ID'),
+            'client_secret' => env('OAUTH2_CLIENT_SECRET'),
+            'refresh_token' => env('OAUTH2_REFRESH_TOKEN')
+          ]
+        ]
+      );
+
+    $response = json_decode($response->getBody());
+
+    return "Bearer " . $response->access_token;
+    // if(Cache::store('file')->has('webex_access_token')){
+    //   Log::info('Webex Access Token still falid');
+    //   return "Bearer " . Cache::store('file')->get('webex_access_token');
+    // } else {
+    //   Log::error('Webex Access Token not falid. Try to refresh token');
+    //   $client = new Client();
+    //   $response = $client->request(
+    //     'POST',
+    //     'https://webexapis.com/v1/access_token',
+    //     [
+    //       'headers' => [
+    //         'Content-Type' => 'application/x-www-form-urlencoded',
+    //       ],
+    //       'form_params' => [
+    //         'grant_type' => 'refresh_token',
+    //         'client_id' => env('WEBEX_CLIENT_ID'),
+    //         'client_secret' => env('WEBEX_CLIENT_SECRET'),
+    //         'refresh_token' => env('WEBEX_REFRESH_TOKEN')
+    //       ]
+    //     ]
+    //   );
+
+    //   $response = json_decode($response->getBody());
+
+    //   if(isset($response->access_token)){
+    //     Log::info('Refresh Token success. Save token to cache file');
+    //     Cache::store('file')->put('webex_access_token',$response->access_token,now()->addSeconds($response->expires_in));
+    //     return "Bearer " . Cache::store('file')->get('webex_access_token');
+    //   } else {
+    //     Log::error('Refresh Token failed. Please to try change "refresh token"');
+    //   }
+    // }
+  }
+
+  public function getListEvent(){
+    $client = new Client();
+    $url = "https://www.googleapis.com/calendar/v3/calendars/primary/events?key=".env('APPSINERGY_GOOGLE_API_KEY');
+    $token = $this->getOauth2AccessToken();
+
+    $response = $client->request(
+      'GET',
+      $url,
+      [
+        'headers' => [
+          'Accept'=>'application/json',
+          'Content-Type'=>'application/json',
+          'Authorization'=>$token
+        ]
+      ]
+    );
+
+    return $response->getBody();
+  }
+
+  public function getCalendarList(){
+    $client = new Client();
+    $url = "https://www.googleapis.com/calendar/v3/users/me/calendarList?key=".env('APPSINERGY_GOOGLE_API_KEY');
+    $token = $this->getOauth2AccessToken();
+
+    $response = $client->request(
+      'GET',
+      $url,
+      [
+        'headers' => [
+          'Accept'=>'application/json',
+          'Content-Type'=>'application/json',
+          'Authorization'=>$token
+        ]
+      ]
+    );
+
+    $json = (string)$response->getBody();
+    $responses = json_decode($json,true);
+
+    return $responses;
+  }
+
 
 }

@@ -52,6 +52,11 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/testEmailViewSales', 'TestController@view_mail_to_sales');
 	Route::get('/testEmailViewFinance', 'TestController@view_mail_to_finance');
 	Route::get('/testEmailPeminjaman','TestController@testEmailPeminjaman');
+	Route::get('/testPostEventCalendar','TestController@postEventCalendar');
+	Route::get('/testgetOauth2AccessToken','TestController@getOauth2AccessToken');
+	Route::get('/testgetListEvent','TestController@getListEvent');
+	Route::get('/testgetCalendarList','TestController@getCalendarList');
+	
 
 	Route::get('/data/{id}', 'ImplementationController@get');
 	Route::get('/data_pmo/{id_pmo}', 'PMOController@getGantt');
