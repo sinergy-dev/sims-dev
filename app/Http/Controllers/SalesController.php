@@ -2915,8 +2915,8 @@ class SALESController extends Controller{
         if ($request['result'] == 'WIN' && $request['deal_price_result'] == null) {
             return back()->with('submit-price','Deal Price Wajib Diisi!');
         } else{
-            $edate = strtotime($_POST['update_closing_date']); 
-            $edate = date("Y-m-d",$edate);
+            // $edate = strtotime($_POST['update_closing_date']); 
+            // $edate = date("Y-m-d",$edate);
 
             $update = Sales::where('lead_id', $lead_id)->first();
             $update->result = $request['result'];
