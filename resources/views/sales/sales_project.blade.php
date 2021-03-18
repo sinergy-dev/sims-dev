@@ -781,7 +781,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       "url":"{{url('getShowPIDReq')}}",
       },
       "columns": [
-        { "data": "created_at" },
+        { "data": "date_po" },
         { "data": "code_company" },
         {
           render: function ( data, type, row ) {

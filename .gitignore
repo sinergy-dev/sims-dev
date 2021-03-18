@@ -49,3 +49,5 @@ public/image
 ._*
 .DS*
 
+# Ignore file pathnership
+public/public/*

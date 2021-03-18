@@ -160,9 +160,9 @@
                     <li class="tabs_item">
                       <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
                     </li>
-                    <li class="tabs_item">
-                      @if(Auth::User()->id_position == 'HR MANAGER')
-                      <a href="#staff"  data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
+                    <li>
+                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                      <a href="#staff" data-toggle="tab">Report Cuti</a>
                       @else
                       <a href="#staff"  data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
                       @endif
@@ -740,7 +740,7 @@
               var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
               if(index > 0){
                 return {
-                  enabled: false,
+                  // enabled: false,
                   tooltip: hari_libur_nasional_tooltip[index],
                   classes: 'hari_libur'
                 };
@@ -1167,9 +1167,11 @@
                   return '<button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
                   '<button class="btn btn-sm btn-danger fa fa-trash btn_delete" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Delete" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
                   '<button class="btn btn-sm btn-success fa fa-paper-plane btn_fu" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>'
+                }else{
+                  return ''
                 }
               }else{
-                if(row.status == null || row.status == 'n' || row.status == 'R'){
+                if(row.status == 'n' || row.status == 'R'){
                   return '<button name="approve_date" id="approve_date" class="approve_date btn btn-success btn-xs" style="width: 60px" value="'+row.id_cuti+'" >Approve</button>' + ' ' +
                     '<button class="btn btn-xs btn-danger btn_decline" style="vertical-align: top; width: 60px; margin-left: 5px" value="'+row.id_cuti+'" onclick="decline_cuti('+row.id_cuti+')" >Decline</button>'
                 }else{
@@ -1181,7 +1183,7 @@
           },
         ],
         initComplete: function() {
-          if ("{{Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'HRD MANAGER'}}") {
+          if ("{{Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'HR MANAGER'}}") {
             if (this.api().data().length) {
               $('#cuti_tab').append('<span class="badge">'+ this.api().data().length +'</span>')
               activeTab('cuti')
