@@ -36,6 +36,11 @@ sftp-config.json.backup
 # Ignore Firebase-key
 app/Http/Controllers/firebase-key.json
 
+# Ignore google calender-key
+app/Http/Controllers/token.json
+app/Http/Controllers/client_secrets.json
+
+
 # Ignore Image
 public/img
 public/image
