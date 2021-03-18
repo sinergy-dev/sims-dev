@@ -18,6 +18,10 @@ use Auth;
 use DB;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Google_Client;
+use Google_Service_Drive;
+use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
 
 // use App\Notifications\Result;
 
@@ -196,9 +200,9 @@ class TestController extends Controller
           ],
           'form_params' => [
             'grant_type' => 'refresh_token',
-            'client_id' => env('OAUTH2_CLIENT_ID'),
-            'client_secret' => env('OAUTH2_CLIENT_SECRET'),
-            'refresh_token' => env('OAUTH2_REFRESH_TOKEN')
+            'client_id' => env('GCALENDER_CLIENT_ID'),
+            'client_secret' => env('GCALENDER_CLIENT_SECRET'),
+            'refresh_token' => env('GCALENDER_REFRESH_TOKEN')
           ]
         ]
       );
@@ -283,5 +287,153 @@ class TestController extends Controller
     return $responses;
   }
 
+  public function storeEvents(Request $request){
+    $client = $this->getClient();   
+    $service  = new Google_Service_Calendar($client);
+
+    $calendarId = $request->group;
+    $event    = new Google_Service_Calendar_Event(array(
+        'summary' => $request->summary,
+        // 'location' => 'Gelora Bung Karno',
+        'description' => $request->description,
+        "start" => array(
+          'dateTime' => $request->startDateTime,
+        ),
+        "end" => array(
+          'dateTime' => $request->endDateTime,
+        ),
+        'attendees' => array(
+          array('email' => $request->email),
+        ),
+        'reminders' => array(
+          'useDefault' => FALSE,
+          'overrides' => array(
+            array('method' => 'email', 'minutes' => 24 * 60),
+            array('method' => 'popup', 'minutes' => 10),
+          ),
+        ),
+    ));
+
+    $optParams = Array(
+      'sendNotifications' => true,
+    );
+
+    $event = $service->events->insert($calendarId, $event, $optParams);
+    printf('Event created: %s\n', $event->htmlLink); 
+  }
+
+  public function getClient(){
+    $client = new Google_Client();
+    $client->setScopes(Google_Service_Calendar::CALENDAR);
+    // $client->setAuthConfig('/home/dinar/sims-dev/app/Http/Controllers/client_secrets.json');
+    $tokenPath = '/home/dinar/sims-dev/app/Http/Controllers/token.json';
+    echo "string";
+
+    if (file_exists($tokenPath)) {
+        $accessToken = json_decode(file_get_contents($tokenPath), true);
+        $client->setAccessToken($accessToken);
+    }
+
+    if (!$client->isAccessTokenExpired()) {
+        // echo "string";
+        return $client;
+        // $service = new Google_Service_Calendar($client);
+
+        // Print the next 10 events on the user's calendar.
+        // $optParams = array(
+        //   'maxResults' => 10,
+        //   'orderBy' => 'startTime',
+        //   'singleEvents' => true,
+        //   'timeMin' => date('c'),
+        // );
+        // $results = $service->events->listEvents($calendarId, $optParams);
+        // $events = $results->getItems();
+
+        // if (empty($events)) {
+        //     print "No upcoming events found.\n";
+        // } else {
+        //     print "Upcoming events:\n";
+        //     foreach ($events as $event) {
+        //         $start = $event->start->dateTime;
+        //         if (empty($start)) {
+        //             $start = $event->start->date;
+        //         }
+        //         printf("%s (%s)\n", $event->getSummary(), $start);
+        //     }
+        // }
+
+        
+    } else {
+      $redirect_uri = 'https://' . $_SERVER['HTTP_HOST'] . '/oauth2callback';
+      return redirect()->away($redirect_uri);
+    }
+                            
+  }
+
+  public function testJson(){
+    $client = $this->getClient();   
+    $service  = new Google_Service_Calendar($client);
+
+      $calendarId = "gbivof9sl2pmd7vok9bopi03oc@group.calendar.google.com";
+      $event    = new Google_Service_Calendar_Event(array(
+          'summary' => 'Hari Kartono',
+          'location' => 'Gelora Bung Karno',
+          'description' => 'A chance to hear more about Google\'s developer products.',
+          'start' => array(
+            'dateTime' => '2021-04-22T09:00:00+07:00',
+            'timeZone' => 'Asia/Jakarta',
+          ),
+          'end' => array(
+            'dateTime' => '2021-04-22T17:00:00+07:00',
+            'timeZone' => 'Asia/Jakarta',
+          ),
+          'recurrence' => array(
+            'RRULE:FREQ=DAILY;COUNT=2'
+          ),
+          'attendees' => array(
+            array('email' => 'faiqoh11.fa@gmail.com'),
+            array('email' => 'ladinarnanda@gmail.com'),
+          ),
+          'reminders' => array(
+            'useDefault' => FALSE,
+            'overrides' => array(
+              array('method' => 'email', 'minutes' => 24 * 60),
+              array('method' => 'popup', 'minutes' => 10),
+            ),
+          ),
+      ));
+
+      $optParams = Array(
+        'sendNotifications' => true,
+      );
+
+      $event = $service->events->insert($calendarId, $event, $optParams);
+      printf('Event created: %s\n', $event->htmlLink); 
+  }
+
+  public function oauth2callback(Request $request){
+    $client = new Google_Client();
+    $client->setAuthConfigFile('/home/dinar/sims-dev/app/Http/Controllers/client_secrets.json');
+    $client->setRedirectUri('https://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+
+    $client->setScopes(Google_Service_Calendar::CALENDAR);
+
+    if (! isset($_GET['code'])) {
+      $auth_url = $client->createAuthUrl();
+      return redirect()->away($auth_url);
+      echo "stringss";
+    } else {
+      $client->authenticate($_GET['code']);
+      echo "string";
+      $request->session()->put('access_token',$client->getAccessToken());
+      $tokenPath = '/home/dinar/sims-dev/app/Http/Controllers/token.json';
+      if (!file_exists(dirname($tokenPath))) {
+          mkdir(dirname($tokenPath), 0700, true);
+      }
+      file_put_contents($tokenPath, json_encode($client->getAccessToken()));
+      $redirect_uri = 'https://' . $_SERVER['HTTP_HOST'] . '/';
+      return redirect()->away($redirect_uri);
+    }
+  }
 
 }
