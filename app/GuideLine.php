@@ -8,7 +8,7 @@ class GuideLine extends Model
 {
     protected $table = 'tb_guide_line';
     protected $primaryKey = 'id';
-    protected $fillable = ['description','link_url','regulation','policy'];
+    protected $fillable = ['description','link_url','title','efective_date'];
 
     public $timestamps = false;
 }
