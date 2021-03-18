@@ -17,7 +17,4 @@ dinar imut banget
 dinduyy
 dinduttt
 
-halo dinduy
 
-<!--aku di tempat baru-->
-nananana

@@ -217,8 +217,12 @@ class HRNumberController extends Controller
         if ($cek > 0 ) {
             $type = $request['type'];
             $divisi = 'HR';
-            $month_hr = substr($request['date'],5,2);
-            $year_hr = substr($request['date'],0,4);
+            
+            $edate = strtotime($_POST['date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $month_hr = substr($edate,5,2);
+            $year_hr = substr($edate,0,4);
 
             $array_bln = array('01' => "I",
                                 '02' => "II",
@@ -263,7 +267,7 @@ class HRNumberController extends Controller
             $tambah->divsion = $divisi;
             $tambah->pt = $request['pt'];
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             $tambah->to = $request['to'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];
@@ -278,8 +282,12 @@ class HRNumberController extends Controller
         } else {
             $type = $request['type'];
             $divisi = 'HR';
-            $month_hr = substr($request['date'],5,2);
-            $year_hr = substr($request['date'],0,4);
+            
+            $edate = strtotime($_POST['date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $month_hr = substr($edate,5,2);
+            $year_hr = substr($edate,0,4);
 
             $array_bln = array('01' => "I",
                                 '02' => "II",
@@ -323,7 +331,7 @@ class HRNumberController extends Controller
             $tambah->divsion = $divisi;
             $tambah->pt = $request['pt'];
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             $tambah->to = $request['to'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];

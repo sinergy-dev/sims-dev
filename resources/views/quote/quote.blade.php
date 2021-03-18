@@ -224,13 +224,19 @@
             <div class="modal-body">
               <form method="POST" action="{{url('/store_quotebackdate')}}" id="quote_backdate" name="quote_backdate">
                 @csrf
+              <div class="form-group">
+                <label for="">Date</label>
+                <div class="input-group date">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="text" class="form-control pull-right date" name="date" id="date_backdate">
+                </div>
+              </div>
 
               <div class="form-group">
                 <label>Backdate Number</label>
-                <select type="text" class="form-control" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" required>
-                  @foreach($backdate_num as $data)
-                  <option value="{{$data->quote_number}}">{{$data->quote_number}}</option>
-                  @endforeach
+                <select type="text" class="form-control disabled" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" disabled>
                 </select>
               </div>
               <div class="form-group">
@@ -241,23 +247,6 @@
                     <option value="MSM">MSM</option>
                 </select>
               </div>
-              <!-- <div class="form-group">
-                <label for="">Date</label>
-                <input type="date" class="form-control" name="date" id="date" required>
-              </div> -->
-              <div class="form-group">
-                <label for="">Date</label>
-                <div class="input-group date">
-                  <div class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
-                  </div>
-                  <input type="text" class="form-control pull-right date" name="date" id="date_backdate">
-                </div>
-              </div>
-              <!-- <div class="form-group">
-                <label for="">To</label>
-                <input type="text" class="form-control" placeholder="Enter To" name="to" id="to" required>
-              </div>  -->
               <div class="form-group">
                 <label>Customer</label>
                 <select class="form-control" id="customer_quote_backdate" name="customer_quote_backdate" required style="width: 100%">
@@ -380,12 +369,34 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
-  <!-- bootstrap datepicker -->
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript">
     $('#customer_quote').select2();
-    $("#backdate_num").select2();
+    // $("#backdate_num").select2();
     $("#customer_quote_backdate").select2();
+    $('#date_backdate').datepicker({
+      autoclose: true,
+    }).css('background-color','#fff');
+
+    var nowDate = new Date();
+    var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+
+    $('#date_quote').datepicker({
+      autoclose: true,
+      startDate: today 
+    }).attr('readonly','readonly').css('background-color','#fff');
+
+    $('#date_backdate').change(function (argument) {
+      console.log($('#date_backdate').val())
+      $("#backdate_num").prop("disabled",false);
+      $("#backdate_num").select2({
+        ajax: {
+          url: '{{url("/get_backdate_num")}}' + '?tanggal=' + $('#date_backdate').val(),
+          dataType: 'json'
+        }
+      });
+    })
+
     function edit_quote(quote_number,customer_legal_name,attention,title,project,description, project_id,note) {
       $('#modalEdit').modal('show');
       $('#edit_quote_number').val(quote_number);
