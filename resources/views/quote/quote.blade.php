@@ -310,9 +310,17 @@
                   <label>Quote Number</label>
                   <input class="form-control" id="edit_quote_number" name="quote_number">
               </div>
-              <div class="form-group">
+              <!-- <div class="form-group">
                   <label>To</label>
                   <input class="form-control" id="edit_to" placeholder="Enter To" name="edit_to" >
+              </div> -->
+              <div class="form-group">
+                <label>To</label>
+                <select class="form-control" id="edit_to" name="edit_to" required style="width: 100%">
+                  @foreach($customer as $data)
+                  <option value="{{$data->id_customer}}">{{$data->customer_legal_name}}</option>
+                  @endforeach
+                </select>
               </div>
 
               <div class="form-group">
@@ -364,6 +372,8 @@
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript">
     $('#customer_quote').select2();
+    $('#edit_to').select2();
+
     // $("#backdate_num").select2();
     $("#customer_quote_backdate").select2();
     $('#date_backdate').datepicker({
@@ -389,13 +399,13 @@
       });
     })
 
-    function edit_quote(quote_number,customer_legal_name,attention,title,project,description, project_id,note) {
+    function edit_quote(quote_number,id_customer,attention,title,project,description, project_id,note) {
       $('#modalEdit').modal('show');
       $('#edit_quote_number').val(quote_number);
-      if (customer_legal_name == "null") {
+      if (id_customer == "null") {
         ''
       } else {
-        $('#edit_to').val(customer_legal_name);
+        $('#edit_to').val(id_customer).trigger('change');
       }
       if (attention == "null") {
         '';
@@ -445,7 +455,7 @@
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.nik) {
-                var x = '"' + data.quote_number + '","' + data.customer_legal_name + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
+                var x = '"' + data.quote_number + '","' + data.id_customer + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_quote(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";

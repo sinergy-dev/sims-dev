@@ -586,13 +586,14 @@ class QuoteController extends Controller
         $update = Quote::where('quote_number', $quote_number)->first();
         $update->quote_number = $request['quote_number'];
         
-        $update->to = $request['edit_to'];
+        // $update->to = $request['edit_to'];
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
         $update->project = $request['edit_project'];
         $update->description = $request['edit_description'];
         $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
+        $update->id_customer = $request['edit_to'];        
         $update->update();
 
         return redirect('quote')->with('update', 'Update Quote Number Successfully!');
