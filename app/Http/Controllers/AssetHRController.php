@@ -833,6 +833,8 @@ class AssetHRController extends Controller
 
             $req_asset = collect(['asset'=>$asset]);
 
+            // return $req_asset;
+
             $to = User::select('email')->where('nik',$store->nik_peminjam)->get();
 
             $users = User::select('name')->where('nik',$store->nik_peminjam)->first();
