@@ -12,7 +12,9 @@
 	<div class="box">
 	    <div class="box-header with-border">
 	        <div class="pull-right">
+	        	@if(Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR Manager')
 	            <button class="btn btn-sm btn-success pull-right float-right margin-left-custom" id="AddGuide"><i class="fa fa-plus"> </i>&nbsp Guide</button>
+	            @endif
 	        </div>
 	    </div>
 

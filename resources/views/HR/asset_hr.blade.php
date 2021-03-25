@@ -32,6 +32,12 @@
   .no-active-tab{
     display: none;
   }
+
+  td>.truncate{
+    word-break:break-all;
+    white-space: normal;
+    width:200px;  
+  }
 </style>
 <section class="content">
   @if (session('update'))
@@ -242,7 +248,7 @@
                       <td>{{$datas->id_request}}</td>
                       <td>{{$datas->name}}</td>
                       <td>{{$datas->nama}}</td>
-                      <td><a href="{{$datas->link}}" target="_blank">{!!substr($datas->link, 0, 35) !!}...</a></td> 
+                      <td><div class="truncate">{{$datas->link}}</div></td> 
                       <td style="display: none" class="links{{$datas->id_request}}">{{$datas->link}}</td>
                       <td>
                         @if($datas->status == 'REQUEST')
@@ -483,20 +489,6 @@
                   </div>
                 </div>
                 
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="col-md-6 form-group">
-                      <label for="sow">Date of Purchase</label>
-                      <input type="text" name="asset_date" id="asset_date" placeholder="input date" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6 form-group">
-                      <label for="sow">Location</label>
-                      <textarea name="lokasi" id="lokasi" class="form-control" placeholder="input location"></textarea>
-                    </div>
-                  </div>
-                </div>
-
                 <div class="row">
                   <div class="col-md-12">
                     <div class="col-md-6 form-group">
@@ -1602,6 +1594,9 @@ REJECT
     	 
 	      $.ajax({
 		    type:"GET",
+        data:{
+          category:note
+        },
 		    url: "getListAsset",
 		    success:function(result){
 		      	var arr = result.results;        

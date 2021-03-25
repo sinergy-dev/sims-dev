@@ -264,7 +264,7 @@
                       <th>Keterangan</th>
                       <th>Lokasi Barang</th>
                       <th>Status</th>
-                      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+                      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
                       <th>Action</th>
                       @endif
                     </tr>
@@ -302,7 +302,7 @@
             </div>
             
           </div>
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
           <div class="tab-pane fade" id="peminjaman" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered DataTable" id="datatable1" width="100%" cellspacing="0">
@@ -974,7 +974,7 @@
               }
             }
           },
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK')
+          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
           {
             render: function ( data, type, row, meta ) {
               if (row.status == 'AVAILABLE') {
@@ -1078,7 +1078,7 @@
           {
             render: function ( data, type, row, meta ) {
               if (row.status == 'PENDING') {
-                return  "<button class='btn btn-xs btn-success btn_accept' value="+row.id_transaction+" id='btn_accept' value=''>ACCEPT</button><button class='btn btn-xs btn-danger btn_reject' id='btn_reject' value="+row.id_transaction+">REJECT</button>";
+                return  "<button class='btn btn-xs btn-success btn_accept' style='margin-right:5px' value="+row.id_transaction+" id='btn_accept' value=''>ACCEPT</button><button class='btn btn-xs btn-danger btn_reject' id='btn_reject' value="+row.id_transaction+">REJECT</button>";
               }else if (row.status == 'ACCEPT') {
                 return "<button class='btn btn-xs btn-danger btn_kembali' value="+row.id_transaction+" id='btn_kembali'> RETURN</button>"
               }else if (row.status == 'KEMBALI') {
@@ -1196,7 +1196,7 @@
         }
       })
       $.ajax({
-        type:"POST",
+        type:"GET",
         url:'/store_kategori_asset',
         data:$('#modalAddKategori').serialize(),
         success: function(result){
