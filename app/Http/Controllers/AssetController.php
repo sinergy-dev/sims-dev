@@ -41,6 +41,8 @@ class AssetController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $notifClaim = '';
+
 		if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -282,7 +284,7 @@ class AssetController extends Controller
         			->select('status')
         			->first();
 
-		return view('TECH.asset.asset_peminjaman', compact('notifc','pinjaman','assets','assetsd','asset','lead','notif','notifOpen','notifsd','notiftp','notifc', 'count_qty', 'kategori', 'nik_peminjam', 'serial_number', 'asset2', 'asset3', 'status', 'notifClaim', 'kategori2'));
+		return view('TECH.asset.asset_peminjaman', compact('notifc','pinjaman','assets','assetsd','asset','notif','notifOpen','notifsd','notiftp','notifc', 'kategori', 'nik_peminjam', 'serial_number', 'asset2', 'asset3', 'status', 'notifClaim', 'kategori2'));
 	}
 
     public function detail_asset_peminjaman($id_barang){
@@ -318,6 +320,8 @@ class AssetController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $notifClaim = '';
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
