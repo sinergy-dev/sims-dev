@@ -186,13 +186,18 @@ class PONumberController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
         }
 
         $sidebar_collapse = true;
 
         $year_before = PONumber::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('admin/po', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse', 'no_pr','tahun','year_before'));
+        return view('admin/po', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim','pops', 'sidebar_collapse', 'no_pr','tahun','year_before'));
     }
 
     public function getPRNumber(){
