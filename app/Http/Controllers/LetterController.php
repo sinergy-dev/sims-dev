@@ -199,13 +199,18 @@ class LetterController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        }  else{
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
         }
 
         $sidebar_collapse = true;
 
         $year_before = Letter::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('admin/letter', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun'));
+        return view('admin/letter', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun'));
 	}
 
     public function getdataletter(Request $request)
