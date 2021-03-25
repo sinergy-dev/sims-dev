@@ -174,7 +174,7 @@ class ProductTechnologyTag extends Controller
 
         $technology = TechnologyTag::all(); 
 
-    	return view('sales/tag_product_technology',compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim','product','technology'));
+    	return view('sales/tag_product_technology',compact('notif','notifOpen','notifsd','notiftp','product','technology'));
     
     }
 
