@@ -172,6 +172,8 @@ class PMOController extends Controller
             ->get();
         }
 
+        $notifClaim = '';
+
         if (Auth::User()->id_position == 'ADMIN') {
             $notifClaim = DB::table('dvg_esm')
                             ->select('nik_admin', 'personnel', 'type')
