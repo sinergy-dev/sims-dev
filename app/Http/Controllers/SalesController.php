@@ -724,7 +724,7 @@ class SALESController extends Controller{
                             ->where('users.id_company','1')
                             ->count('lead_id');
 
-                $total_leads = count($lead);
+                // $total_leads = count($lead);
             
             } else if ($ter == 'DVG' && $pos == 'MANAGER'){
                 $leads = DB::table('sales_lead_register')
@@ -1150,15 +1150,11 @@ class SALESController extends Controller{
 
         $year_now = date('Y');
         // return $leadsnow;
-
-        if (Auth::User()->id_division == 'FINANCE') {
-            
+        
+        if (Auth::User()->id_division == 'FINANCE') {            
             return view('sales/lead_id_project', compact('lead','leads','notif','notifOpen','notifsd','notiftp','notifClaim'));
-
         }else{
-
-            return view('sales/sales', compact('lead','leads', 'total_ter','total_ters','notif','notifOpen','notifsd','notiftp','id_pro','contributes','users','pmo_nik','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose','total_leads','total_opens','total_sds','total_tps','total_wins','total_loses', 'notifClaim','cek_note','cek_initial','datas','rk','gp','st','rz','jh','leadspre','year','year_now','year_dif','coba','leadsprenow','leadsnow','leadnow','tag_product','tag_technology'));
-
+            return view('sales/sales', compact('lead','leads','notif','notifOpen','notifsd','notiftp','users','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'notifClaim','cek_note','datas','rk','gp','st','rz','jh','leadspre','year','year_now','year_dif','leadsprenow','leadsnow','leadnow','tag_product','tag_technology'));
         }
     }
 
@@ -2046,6 +2042,10 @@ class SALESController extends Controller{
         $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
         $com = $company->id_company;
 
+        $pre_cont = '';
+
+        $notifClaim = '';
+
         if ($div == 'SALES') {
             try {
                 $lead_id = Crypt::decrypt($lead_id);
@@ -2130,10 +2130,6 @@ class SALESController extends Controller{
                     ->first();
 
         if ($div == 'SALES' && $ter == null) {
-            /*$tampilkans = DB::table('sales_solution_design')
-                    ->select('lead_id','assessment','pov','pd','pb','priority','project_size','status', 'assessment_date', 'pd_date', 'pov_date')
-                    ->where('lead_id',$lead_id)
-                    ->first();*/
 
             $tampilkans = DB::table('sales_solution_design')
                     ->join('users','users.nik','=','sales_solution_design.nik')
@@ -2177,7 +2173,6 @@ class SALESController extends Controller{
                     ->select('sales_tender_process.lead_id','auction_number','submit_price','win_prob','project_name','submit_date','quote_number','status','result','sales_lead_register.nik', 'sales_tender_process.assigned_by','quote_number2', 'sales_lead_register.amount', 'sales_lead_register.deal_price', 'sales_lead_register.deal_price_total', 'sales_lead_register.jumlah_tahun', 'sales_lead_register.project_class','id_tp')
                     ->where('sales_tender_process.lead_id',$lead_id)
                     ->first();
-        // return collect($tampilkanc);
 
         $tampilkan_po = POCustomer::select('date','no_po','nominal','note','id_tb_po_cus')->where('lead_id',$lead_id)->get();
 
@@ -2432,7 +2427,7 @@ class SALESController extends Controller{
                             ->get();
         }
 
-        return view('sales/detail_sales',compact('pre_cont','lead','tampilkan','tampilkans','tampilkan_com', 'tampilkana', 'tampilkanc','notif','notifOpen','notifsd','notiftp','tampilkan_progress','pmo_id','engineer_id','current_eng','tampilkan_progress_engineer','pmo_contribute','engineer_contribute','q_num','sd_id', 'get_quote_number', 'q_num2', 'change_log','notifClaim','tampilkan_po','productTag','technologyTag','productTech'));
+        return view('sales/detail_sales',compact('pre_cont','lead','tampilkan','tampilkans','tampilkan_com', 'tampilkana', 'tampilkanc','notif','notifOpen','notifsd','notiftp','tampilkan_progress','engineer_id','current_eng','tampilkan_progress_engineer','engineer_contribute','q_num','sd_id', 'get_quote_number', 'q_num2', 'change_log','notifClaim','tampilkan_po','productTag','technologyTag','productTech'));
     
     }
 
@@ -3917,7 +3912,7 @@ class SALESController extends Controller{
 
         $data = TB_Contact::all();  
 
-        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp'));
     }
 
     public function customer_store(Request $request)
@@ -3988,6 +3983,8 @@ class SALESController extends Controller{
 	    $pos = $position->id_position;
 
         $pops = SalesProject::select('id_project')->orderBy('created_at','desc')->first();
+
+        $notifClaim = '';
 
         if ($div == 'SALES' && $pos != 'ADMIN') {
             $salessp = DB::table('tb_id_project')
@@ -4349,7 +4346,7 @@ class SALESController extends Controller{
 
         $year_now = date('Y');
 
-      return view('sales/sales_project',compact('hitung_msp','salessp','salesmsp','lead_sp','lead_msp','notif','notifOpen','notifsd','notiftp', 'notifClaim','pops','datas','pid_request','pid_request_done','pid_request_lead','pid_request_lead_done','year_now','year_before'));
+      return view('sales/sales_project',compact('hitung_msp','salessp','salesmsp','lead_sp','lead_msp','notif','notifOpen','notifsd','notiftp', 'notifClaim','pops','pid_request','pid_request_done','pid_request_lead','pid_request_lead_done','year_now','year_before'));
     }
 
     public function getPIDIndex(Request $request){
