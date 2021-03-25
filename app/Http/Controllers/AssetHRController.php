@@ -28,6 +28,10 @@ class AssetHRController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $notifClaim = '';
+
+        $user_pinjam = '';
+
 		if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -366,8 +370,9 @@ class AssetHRController extends Controller
     }
 
     public function getListAsset(Request $request){
+    	$category = DB::table('tb_kategori_asset_hr')->where('kategori',$request->category)->first()->id;
 
-        return array("results" => DB::table('tb_asset_hr')->select(DB::raw("`id_barang` AS `id`,`nama_barang` AS `text`"))->where('status','AVAILABLE')->get());
+        return array("results" => DB::table('tb_asset_hr')->select(DB::raw("`id_barang` AS `id`,`nama_barang` AS `text`"))->where('status','AVAILABLE')->where('kategori',$category)->get());
     }
 
     public function getCategoryPinjam(Request $request){
@@ -592,6 +597,8 @@ class AssetHRController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $notifClaim = '';
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -886,19 +893,11 @@ class AssetHRController extends Controller
         return redirect()->back()->with(['alert'=> $line,'id'=>$req_asset->id_transaction]);
     }
 
-    public function acceptPeminjaman(Request $request){
-        // $update = AssetHR::where('id_barang',$request->id_barang)->first();
-        // if ($request->status == 'ACCEPT') {
-        //     $update->status = 'UNAVAILABLE';
-        // }else{
-        //     $update->status = 'AVAILABLE';
-        // }
-        // $update->update(); 
-
+    public function acceptPeminjaman(Request $request){   
         $update_accept =  DetailAssetHR::where('id_transaction',$request->id_transaction)
                 ->first();
         $update_accept->id_barang = $request->id_barang; 
-        if ($request->status == 'ACCEPT') {
+        if ($request->status == 'PENDING') {
             $update_accept->status = "ACCEPT";
             $emailSubject = '[SIMS-APP] Accepting Peminjaman Asset';
 
@@ -917,6 +916,14 @@ class AssetHRController extends Controller
 	                ->first();
         }
         $update_accept->save();
+
+        $update = AssetHR::where('id_barang',$request->id_barang)->first();
+        if ($request->status == 'ACCEPT') {
+            $update->status = 'UNAVAILABLE';
+        }else{
+            $update->status = 'AVAILABLE';
+        }
+        $update->update(); 
 
         // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
         //     ->where('nik_peminjam','<>',$request->nik_peminjam)
