@@ -21,6 +21,13 @@ use App\DetailMessenger;
 use PDF;
 use Log;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class HRGAController extends Controller
 {
     /**
@@ -2095,555 +2102,180 @@ class HRGAController extends Controller
         return $getcuti;
     }
 
-    public function CutiExcel(Request $request)
-    {
-    	$client = new Client();
-        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=AIzaSyAf8ww4lC-hR6mDPf4RA4iuhhGI2eEoEiI');
+    public function CutiExcel(Request $request) {
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->removeSheetByIndex(0);
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Sinergy informasi Pratama'));
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Multi Solusindo Perkasa'));
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Detail Report Cuti SIP & MSP'));
+        $sipSheet = $spreadsheet->setActiveSheetIndex(0);
+        $mspSheet = $spreadsheet->setActiveSheetIndex(1);
+        $detailSheet = $spreadsheet->setActiveSheetIndex(2);
+
+        $sipSheet->mergeCells('A1:H1');
+        $mspSheet->mergeCells('A1:H1');
+        $detailSheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $titleStyle['font']['bold'] = true;
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+
+        $client = new Client();
+        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_KEY'));
         $variable = json_decode($client->getBody())->items;
 
         $hitung_cuti_bersama = 0;
         foreach ($variable as $key => $value) {
           if(strpos($value->summary,'Cuti Bersama') === 0){
+            // echo $value->start->date . "<br>";
             if(strpos($value->start->date ,date('Y')) === 0){
-              // echo $value->start->date . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
+              // echo $value->start->date . " " . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
               $hitung_cuti_bersama++;
             }
           }
         }
-        $hitung_cuti_bersama;
-        // $nama = 'Report Cuti SIP & MSP '. $request->date_start . ' sampai ' . $request->date_end;
-        $nama = 'Report Cuti SIP & MSP '. date('F') .' '. date('Y');
-        Excel::create($nama, function ($excel) use ($request,$hitung_cuti_bersama) {
-            $excel->sheet('Sinergy informasi Pratama', function ($sheet) use ($request,$hitung_cuti_bersama) {
+
+
+        $sipSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sipSheet->setCellValue('A1','Report Cuti SIP');
+
+        $sipCutiData = User::orderBy('users.id_division')
+            ->select(
+                'users.name',
+                DB::raw('CONCAT(12, " Hari") AS `hak_cuti`'),
+                DB::raw('CONCAT(' . $hitung_cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
+                DB::raw('IF(`tb_cuti_counted`.`cuti_diambil` > 0,CONCAT(`tb_cuti_counted`.`cuti_diambil`, " Hari"),"-") AS `cuti_diambil_' . date('Y') . '`'),
+                DB::raw('IF(`users`.`cuti` > 0,CONCAT(`users`.`cuti`, " Hari"),"-") AS `sisah_cuti_' . (date('Y')-1) . '`'),
+                DB::raw('IF(`users`.`cuti2` > 0,CONCAT(`users`.`cuti2`, " Hari"),"-") AS `sisah_cuti_' . date('Y') . '`'),
+                DB::raw('IF(`users`.`status_karyawan` = "belum_cuti","Belum 1 tahun",IF((`users`.`cuti` + `users`.`cuti2`) = 0,"Habis","-")) AS `status`')
+            )
+            ->leftJoinSub(DB::table('tb_cuti')
+                ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
+                ->join('tb_cuti_detail','tb_cuti.id_cuti', '=', 'tb_cuti_detail.id_cuti')
+                ->where('status','=','v')
+                ->whereYear('date_req',date('Y'))
+                ->groupBy('nik')
+                ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
+            ->where('users.status_karyawan','!=','dummy')
+            ->where('users.id_company','1')
+            ->get();
+
+        $headerContent = ["No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ", "Sisa Cuti " . date('Y'),"Status Hak Cuti Karyawan"];
+        $sipSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
+        $sipSheet->fromArray($headerContent,NULL,'A2');
+
+        $sipCutiData->map(function($item,$key) use ($sipSheet){
+            $sipSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        });
+
+        $sipSheet->getColumnDimension('A')->setAutoSize(true);
+        $sipSheet->getColumnDimension('B')->setAutoSize(true);
+        $sipSheet->getColumnDimension('C')->setAutoSize(true);
+        $sipSheet->getColumnDimension('D')->setAutoSize(true);
+        $sipSheet->getColumnDimension('E')->setAutoSize(true);
+        $sipSheet->getColumnDimension('F')->setAutoSize(true);
+        $sipSheet->getColumnDimension('G')->setAutoSize(true);
+        $sipSheet->getColumnDimension('H')->setAutoSize(true);
+
+        $mspSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $mspSheet->setCellValue('A1','Report Cuti MSP');
+
+        $mspCutiData = User::orderBy('users.id_division')
+            ->select(
+                'users.name',
+                DB::raw('CONCAT(12, " Hari") AS `hak_cuti`'),
+                DB::raw('CONCAT(' . $hitung_cuti_bersama . ', " Hari") AS `cuti_bersama_' . date('Y') . '`'),
+                DB::raw('IF(`tb_cuti_counted`.`cuti_diambil` > 0,CONCAT(`tb_cuti_counted`.`cuti_diambil`, " Hari"),"-") AS `cuti_diambil_' . date('Y') . '`'),
+                DB::raw('IF(`users`.`cuti` > 0,CONCAT(`users`.`cuti`, " Hari"),"-") AS `sisah_cuti_' . (date('Y')-1) . '`'),
+                DB::raw('IF(`users`.`cuti2` > 0,CONCAT(`users`.`cuti2`, " Hari"),"-") AS `sisah_cuti_' . date('Y') . '`'),
+                DB::raw('IF(`users`.`status_karyawan` = "belum_cuti","Belum 1 tahun",IF((`users`.`cuti` + `users`.`cuti2`) = 0,"Habis","-")) AS `status`')
+            )
+            ->leftJoinSub(DB::table('tb_cuti_msp')
+                ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
+                ->join('tb_detail_cuti_msp','tb_cuti_msp.id_cuti', '=', 'tb_detail_cuti_msp.id_cuti')
+                ->where('status','=','v')
+                ->whereYear('date_req',date('Y'))
+                ->groupBy('nik')
+                ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
+            ->where('users.status_karyawan','!=','dummy')
+            ->where('users.id_company','2')
+            ->get();
+
+        $headerContent = ["No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ", "Sisa Cuti " . date('Y'),"Status Hak Cuti Karyawan"];
+        $mspSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
+        $mspSheet->fromArray($headerContent,NULL,'A2');
+
+        $mspCutiData->map(function($item,$key) use ($mspSheet){
+            $mspSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        });
+
+        $mspSheet->getColumnDimension('A')->setAutoSize(true);
+        $mspSheet->getColumnDimension('B')->setAutoSize(true);
+        $mspSheet->getColumnDimension('C')->setAutoSize(true);
+        $mspSheet->getColumnDimension('D')->setAutoSize(true);
+        $mspSheet->getColumnDimension('E')->setAutoSize(true);
+        $mspSheet->getColumnDimension('F')->setAutoSize(true);
+        $mspSheet->getColumnDimension('G')->setAutoSize(true);
+        $mspSheet->getColumnDimension('H')->setAutoSize(true);
+
+        $detailSheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $detailSheet->setCellValue('A1','Detail Report Bulanan Cuti');
+
+        $detailCutiData = Cuti::join('users','users.nik','=','tb_cuti.nik')
+            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+            ->join('tb_position','tb_position.id_position','=','users.id_position')
+            ->join('tb_division','tb_division.id_division','=','users.id_division')
+            ->join('tb_company','tb_company.id_company','=','users.id_company')
+            ->select(
+                'users.name',
+                'code_company',
+                'tb_division.name_division',
+                DB::raw('CONCAT(COUNT(`tb_cuti_detail`.`id_cuti`), " Hari") AS `days`'),
+                DB::raw('REPLACE(GROUP_CONCAT(`date_off`),"-","/") AS `date_off`'),
+                'tb_cuti.date_req',
+                DB::raw('CONCAT("[ ",`jenis_cuti`," ]/[ ",`reason_leave`," ]") AS `detail`')
+            )
+            ->where('status','v')
+            ->whereBetween('date_off',array($request->date_start,$request->date_end))
+            ->groupby('tb_cuti.id_cuti')
+            ->get();
+
+        $headerContent = ["No", "Nama Karyawan","Company", "Division", "Request Cuti", "Date Off", "Tanggal Request", "[Jenis Cuti]/[keterangan]"];
+        $detailSheet->getStyle('A2:H2')->applyFromArray($headerStyle);
+        $detailSheet->fromArray($headerContent,NULL,'A2');
+
+        $detailCutiData->map(function($item,$key) use ($detailSheet){
+            $detailSheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        });
+
+        $detailSheet->getColumnDimension('A')->setAutoSize(true);
+        $detailSheet->getColumnDimension('B')->setAutoSize(true);
+        $detailSheet->getColumnDimension('C')->setAutoSize(true);
+        $detailSheet->getColumnDimension('D')->setAutoSize(true);
+        $detailSheet->getColumnDimension('E')->setAutoSize(true);
+        $detailSheet->getColumnDimension('F')->setAutoSize(true);
+        $detailSheet->getColumnDimension('G')->setAutoSize(true);
+        $detailSheet->getColumnDimension('H')->setAutoSize(true);
+
+        $fileName = 'Report Cuti SIP & MSP '. date('F') .' '. date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
         
-                $sheet->mergeCells('A1:H1');
-                $sheet->setBorder('A1:H1', 'thin');
-
-                $sheet->row(1, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(11);
-                    $row->setAlignment('center');
-                    $row->setFontWeight('bold');
-                    $row->setBackground('#fcd703');
-                });
-
-                $sheet->row(1, array('Report Cuti SIP'));
-
-                $sheet->row(2, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(11);
-                    $row->setFontWeight('bold');
-                });
-
-                	if ($request->filter == 'date') {
-                		$cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-			            ->join('tb_position','tb_position.id_position','=','users.id_position')
-			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-			            ->groupby('tb_cuti.nik')
-                        ->where('id_company','1')
-                        ->orderBy('users.id_division')
-			            ->where('tb_cuti.status','v')
-			            ->where('status_karyawan','!=','dummy')
-			            ->get();
-
-
-			            $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-			            ->where('status_karyawan','!=','dummy')
-                        ->where('id_company','1')
-                        ->orderBy('users.id_division')
-			            ->whereNotIn('nik',function($query) { 
-			            	$query->select('nik')->from('tb_cuti');
-
-			            })->get();
-                	}else if($request->filter == 'div'){
-                		$cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-			            ->join('tb_position','tb_position.id_position','=','users.id_position')
-			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-			            ->groupby('tb_cuti.nik')
-			            ->where('tb_cuti.status','v')
-                        ->where('id_company','1')
-                        ->orderBy('users.id_division')
-                        ->whereYear('date_req',date('Y'))
-			            ->where('tb_division.id_division',$request->division)
-			            ->get();
-
-			             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-			            ->where('status_karyawan','!=','dummy')
-                        ->where('id_company','1')
-                        ->orderBy('users.id_division')
-			            ->whereNotIn('nik',function($query) { 
-			            	$query->select('nik')->from('tb_cuti');
-
-			            })->get();
-                	}else if($request->filter == 'all'){
-                        if ($request->division == 'alldeh') {
-                            $cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                            ->join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-                            ->groupby('tb_cuti.nik')
-                            ->where('id_company','1')
-                            ->whereYear('date_req',date('Y'))
-                            ->orderBy('users.id_division')
-                            ->where('tb_cuti.status','v')
-                            ->get();
-
-                             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-				            ->join('tb_division','tb_division.id_division','=','users.id_division')
-				            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-				            ->where('status_karyawan','!=','dummy')
-                            ->where('id_company','1')
-                            ->orderBy('users.id_division')
-				            ->whereNotIn('nik',function($query) { 
-				            	$query->select('nik')->from('tb_cuti');
-
-				            })->get();
-                        }else{
-                            $cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                            ->join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-                            ->groupby('tb_cuti.nik')
-                            ->where('tb_cuti.status','v')
-                            ->orderBy('users.id_division')
-                            ->whereYear('date_req',date('Y'))
-                            ->where('tb_division.id_division',$request->division)
-                            ->where('id_company','1')
-                            ->get();
-
-                            $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-				            ->join('tb_division','tb_division.id_division','=','users.id_division')
-				            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-				            ->where('status_karyawan','!=','dummy')
-                            ->where('id_company','1')
-                            ->orderBy('users.id_division')
-				            ->whereNotIn('nik',function($query) { 
-				            	$query->select('nik')->from('tb_cuti');
-
-				            })->get();
-                        }
-                		
-                	}else{
-                		$cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-			            ->join('tb_position','tb_position.id_position','=','users.id_position')
-			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-			            ->groupby('tb_cuti.nik')
-                        ->where('id_company','1')
-                        ->orderBy('users.id_division')
-			            ->where('tb_cuti.status','v')
-			            ->whereYear('tb_cuti.date_req',date('Y'))
-			            ->get();
-
-			             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-			            ->join('tb_division','tb_division.id_division','=','users.id_division')
-			            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-			            ->where('status_karyawan','!=','dummy')
-                        ->where('id_company','1')
-                        ->orderBy('users.id_division')
-			            ->whereNotIn('nik',function($query) { 
-			            	$query->select('nik')->whereYear('tb_cuti.date_req',date('Y'))->from('tb_cuti');
-
-			            })->get();
-                	}
-	                
-                	$tahun_lalu = date('Y') - 1;
-                    $datasheetcuti = array();
-                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ".$tahun_lalu , "Sisa Cuti ".date('Y'),"Status Hak Cuti Karyawan");
-                    $i=1;
-
-                    foreach ($cuti_index as $data) {
-                    	if ($data->status_karyawan == 'belum_cuti') {
-                    		$habis = "Belum 1 tahun";
-                    	}else{
-                    		if ($data->cuti == 0) {
-                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
-                    		}else if($data->cuti2 == 0){
-                    			$habis = "Sisa Cuti ".date('Y')." Habis";
-                    		}
-                    		$habis = "-";
-                    	}
-                        $datasheetcuti[$i] = array($i,
-                                    $data['name'],
-                                    $data['']."12 hari",
-                                    $hitung_cuti_bersama." hari",
-                                    $data['niks']." Hari",
-                                    $data['cuti']." Hari",
-                                    $data['cuti2']." Hari",
-                                    $habis
-                                );
-                        $i++;
-                    }
-
-                    foreach ($cuti_list as $datas ) {
-                    	if ($datas->status_karyawan == 'belum_cuti') {
-                    		$habis = "Belum 1 tahun";
-                    	}else{
-                    		if ($datas->cuti == 0) {
-                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
-                    		}else if($datas->cuti2 == 0){
-                    			$habis = "Sisa Cuti ".date('Y')." Habis";
-                    		}
-                    		$habis = "-";
-                    	}
-                    	$datasheetcuti[$i] = array($i,
-                                    $datas['name'],
-                                    $datas['']."12 hari",
-                                    $hitung_cuti_bersama." hari",
-                                    $datas['']."0 Hari",
-                                    $datas['cuti']." Hari",
-                                    $datas['cuti2']." Hari",
-                                    $habis
-                                );
-                        $i++;
-                    }
-
-                    $sheet->fromArray($datasheetcuti);
-                    
-            });
-
-            $excel->sheet('Multi Solusindo Perkasa', function ($sheet) use ($request,$hitung_cuti_bersama) {
-        
-                $sheet->mergeCells('A1:H1');
-                $sheet->setBorder('A1:h1', 'thin');
-
-                $sheet->row(1, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(11);
-                    $row->setAlignment('center');
-                    $row->setFontWeight('bold');
-                    $row->setBackground('#fcd703');
-                });
-
-                $sheet->row(1, array('Report Cuti MSP'));
-
-                $sheet->row(2, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(11);
-                    $row->setFontWeight('bold');
-                });
-
-                    if ($request->filter == 'date') {
-                        $cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                        ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-                        ->groupby('tb_cuti.nik')
-                        ->where('tb_cuti.status','v')
-                        ->where('status_karyawan','!=','dummy')
-                        ->where('id_company','2')
-                        ->orderBy('users.id_division')
-                        ->get();
-
-                        $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-                        ->where('status_karyawan','!=','dummy')
-                        ->where('id_company','2')
-                        ->orderBy('users.id_division')
-                        ->whereNotIn('nik',function($query) { 
-                            $query->select('nik')->from('tb_cuti');
-
-                        })->get();
-                    }else if($request->filter == 'div'){
-                        $cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                        ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-                        ->groupby('tb_cuti.nik')
-                        ->where('tb_cuti.status','v')
-                        ->where('id_company','2')
-                        ->orderBy('users.id_division')
-                        ->whereYear('date_req',date('Y'))
-                        ->where('tb_division.id_division',$request->division)
-                        ->get();
-
-                         $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-                        ->where('status_karyawan','!=','dummy')
-                        ->where('id_company','2')
-                        ->orderBy('users.id_division')
-                        ->whereNotIn('nik',function($query) { 
-                            $query->select('nik')->from('tb_cuti');
-
-                        })->get();
-                    }else if($request->filter == 'all'){
-                        if ($request->division == 'alldeh') {
-                            $cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                            ->join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-                            ->groupby('tb_cuti.nik')
-                            ->where('id_company','2')
-                            ->orderBy('users.id_division')
-                            ->whereYear('date_req',date('Y'))
-                            ->where('tb_cuti.status','v')
-                            ->get();
-
-                             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-                            ->where('status_karyawan','!=','dummy')
-                            ->where('id_company','2')
-                            ->orderBy('users.id_division')
-                            ->whereNotIn('nik',function($query) { 
-                                $query->select('nik')->from('tb_cuti');
-
-                            })->get();
-                        }else{
-                            $cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                            ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                            ->join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'status_karyawan','cuti','cuti2')
-                            ->groupby('tb_cuti.nik')
-                            ->where('tb_cuti.status','v')
-                            ->where('id_company','2')
-                            ->whereYear('date_req',date('Y'))
-                            ->orderBy('users.id_division')
-                            ->where('tb_division.id_division',$request->division)
-                            ->get();
-
-                             $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-                            ->join('tb_division','tb_division.id_division','=','users.id_division')
-                            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan','cuti','cuti2')
-                            ->where('status_karyawan','!=','dummy')
-                            ->where('id_company','2')
-                            ->orderBy('users.id_division')
-                            ->whereNotIn('nik',function($query) { 
-                                $query->select('nik')->from('tb_cuti');
-
-                            })->get();
-                        }
-                        
-                    }else{
-                        $cuti_index = User::join('tb_cuti','tb_cuti.nik','=','users.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                        ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'), DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'cuti','cuti2','status_karyawan')
-                        ->groupby('tb_cuti.nik')
-                        ->orderBy('users.id_division')
-                        ->where('tb_cuti.status','v')
-                        ->whereYear('date_req',date('Y'))
-                        ->where('id_company','2')
-                        ->get();
-
-                         $cuti_list = User::join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division',DB::raw("(CASE WHEN (cuti IS NULL) THEN '0' ELSE cuti END) as cutis"),'users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'cuti2','status_karyawan','cuti')
-                        ->where('status_karyawan','!=','dummy')
-                        ->where('id_company','2')
-                        ->orderBy('users.id_division')
-                        ->whereNotIn('nik',function($query) { 
-                            $query->select('nik')->from('tb_cuti');
-
-                        })->get();
-                    }
-                    
-
-                    $tahun_lalu = date('Y') -1;
-                    $datasheetcuti = array();
-                    $datasheetcuti[0] = array("No","Nama Karyawan", "Hak Cuti Tahunan","Cuti Bersama", "Cuti Sudah diambil", "Sisa Cuti ".$tahun_lalu , "Sisa Cuti".date('Y'), "Status Hak Cuti Karyawan");
-                    $i=1;
-
-                    foreach ($cuti_index as $data) {
-                    	if ($data->status_karyawan == 'belum_cuti') {
-                    		$habis = "Belum 1 tahun";
-                    	}else{
-                    		if ($data->cuti == 0) {
-                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
-                    		}else if($data->cuti2 == 0){
-                    			$habis = "Sisa Cuti ".date('Y')." Habis";
-                    		}
-                    		$habis = "-";
-                    	}
-
-                        $datasheetcuti[$i] = array($i,
-                                    $data['name'],
-                                    $data['']."12 Hari",
-                                    $hitung_cuti_bersama. " Hari",
-                                    $data['niks']." Hari",
-                                    $data['cuti']." Hari",
-                                    $data['cuti2']." Hari",
-                                    $habis
-                                );
-                        $i++;
-                    }
-
-                    foreach ($cuti_list as $datas ) {
-                    	if ($datas->status_karyawan == 'belum_cuti') {
-                    		$habis = "Belum 1 tahun";
-                    	}else{
-                    		if ($datas->cuti == 0) {
-                    			$habis = "Sisa Cuti ".$tahun_lalu." Habis";
-                    		}else if($datas->cuti2 == 0){
-                    			$habis = "Sisa Cuti ".date('Y')." Habis";
-                    		}
-                    		$habis = "-";
-                    	}
-                        $datasheetcuti[$i] = array($i,
-                                    $datas['name'],
-                                    $datas['']."12 Hari",
-                                    $hitung_cuti_bersama. " Hari",
-                                    $datas['']."0 Hari",
-                                    $datas['cutis']." Hari",
-                                    $datas['cuti2']." Hari",
-                                    $habis
-                                );
-                        $i++;
-                    }
-
-                    $sheet->fromArray($datasheetcuti);
-                    
-            });
-
-            $excel->sheet('Report Cuti SIP & MSP', function ($sheet) use ($request) {
-        
-                $sheet->mergeCells('A1:H1');
-                $sheet->setBorder('A1:H1', 'thin');
-
-                $sheet->row(1, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(11);
-                    $row->setAlignment('center');
-                    $row->setFontWeight('bold');
-                    $row->setBackground('#fcd703');
-                });
-
-                $sheet->row(1, array('Report Cuti '.$request->date_start.' s/d '.$request->date_end));
-
-                $sheet->row(2, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(11);
-                    $row->setFontWeight('bold');
-                });
-
-                  //   if ($request->filter == 'date') {
-    	             //    $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-    		            // ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-    		            // ->join('tb_position','tb_position.id_position','=','users.id_position')
-    		            // ->join('tb_division','tb_division.id_division','=','users.id_division')
-                  //       ->join('tb_company','tb_company.id_company','=','users.id_company')
-    		            // ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-    		            // ->where('status','v')
-    		            // ->whereBetween('date_off',array($request->date_start,$request->date_end))
-    		            // ->groupby('tb_cuti_detail.id_cuti')
-    		            // ->get();
-
-                  //   }else if($request->filter == 'div'){
-                  //       $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                  //       ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                  //       ->join('tb_position','tb_position.id_position','=','users.id_position')
-                  //       ->join('tb_division','tb_division.id_division','=','users.id_division')
-                  //       ->join('tb_company','tb_company.id_company','=','users.id_company')
-                  //       ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-                  //       ->where('status','v')
-                  //       ->where('tb_division.id_division',$request->division)
-                  //       ->groupby('tb_cuti.id_cuti')
-                  //       ->get();
-
-                  //   }else if($request->filter == 'all'){
-                  //       if ($request->division == 'alldeh') {
-
-                  //           $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                  //           ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                  //           ->join('tb_position','tb_position.id_position','=','users.id_position')
-                  //           ->join('tb_division','tb_division.id_division','=','users.id_division')
-                  //           ->join('tb_company','tb_company.id_company','=','users.id_company')
-                  //           ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-                  //           ->where('status','v')
-                  //           ->whereBetween('date_off',array($request->date_start,$request->date_end))
-                  //           ->groupby('tb_cuti.id_cuti')
-                  //           ->get();
-                  //       }else{
-                  //           $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                  //           ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                  //           ->join('tb_position','tb_position.id_position','=','users.id_position')
-                  //           ->join('tb_division','tb_division.id_division','=','users.id_division')
-                  //           ->join('tb_company','tb_company.id_company','=','users.id_company')
-                  //           ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-                  //           ->where('status','v')
-                  //           ->whereBetween('date_off',array($request->date_start,$request->date_end))
-                  //           ->where('tb_division.id_division',$request->division)
-                  //           ->groupby('tb_cuti.id_cuti')
-                  //           ->get();
-                  //       }
-                        
-                  //   }else{
-                        
-                  //   }
-
-                    if ($request->division == 'alldeh') {
-                        $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                        ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->join('tb_company','tb_company.id_company','=','users.id_company')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-                        ->where('status','v')
-                        // ->whereMonth('tb_cuti.date_req',date('m'))
-                        // ->whereYear('tb_cuti.date_req',date('Y'))
-                        ->whereBetween('date_off',array($request->date_start,$request->date_end))
-                        ->groupby('tb_cuti.id_cuti')
-                        ->get();
-
-                        $cuti = $cuti->sortBy('name');
-                    }else{
-                        $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                        ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->join('tb_division','tb_division.id_division','=','users.id_division')
-                        ->join('tb_company','tb_company.id_company','=','users.id_company')
-                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
-                        ->where('status','v')
-                        // ->whereMonth('tb_cuti.date_req',date('m'))
-                        ->whereBetween('date_off',array($request->date_start,$request->date_end))
-                        ->where('tb_division.id_division',$request->division)
-                        ->groupby('tb_cuti.id_cuti')
-                        ->get();
-
-                        $cuti = $cuti->sortBy('name');
-                    }
-
-                    $datasheetdetail = array();
-                    $datasheetdetail[0] = array("No", "Nama Karyawan","Company", "Division", "Request Cuti", "Date Off", "Tanggal Request", "[Jenis Cuti]/[keterangan]");
-                    $i=1;
-
-                    foreach ($cuti as $data) {
-
-                        $datasheetdetail[$i] = array($i,
-                                    $data['name'],
-                                    $data['code_company'],
-                                    $data['name_division'],
-                                    $data['days']." Hari",
-                                    str_replace('-', '/', $data['date_off']),
-                                    $data['date_req'],
-                                    "[ ".$data['jenis_cuti']." ]/"."[ ".$data['reason_leave']." ]"
-                                );
-                        $i++;
-                    }
-
-                    $sheet->fromArray($datasheetdetail);
-                    
-            });
-
-        })->export('xls');
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 
     public function getFilterCom(Request $request)
