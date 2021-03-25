@@ -693,7 +693,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/kembali_pinjam', 'AssetController@kembali');
 	Route::get('/detail_asset_peminjaman/{id_barang}','AssetController@detail_asset_peminjaman');
 	Route::get('/delete_asset/{id_barang}', 'AssetController@destroy');
-	Route::post('/store_kategori_asset', 'AssetController@store_kategori');
+	Route::get('/store_kategori_asset', 'AssetController@store_kategori');
 	Route::get('/getidkategori', 'AssetController@getdropdownkategori');
 	Route::get('/dropdownSerialNumberAsset', 'AssetController@getdropdownsn');
 	Route::get('/dropdownid_barang', 'AssetController@getid_barang');
