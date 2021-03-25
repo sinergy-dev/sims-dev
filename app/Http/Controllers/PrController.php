@@ -188,6 +188,11 @@ class PrController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'ADMIN')
+                            ->get();
         }
 
         $sidebar_collapse = true;
@@ -196,7 +201,7 @@ class PrController extends Controller
 
         $pid = SalesProject::select('id_project')->get();
 
-        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse','year_before','tahun','pid'));
+        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp', 'datas','pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim'));
     }
 
     /**
