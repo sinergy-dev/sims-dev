@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 use App\PONumber;
 use DB;
 use Auth;
-use Excel;
+// use Excel;
 use App\PR;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PONumberController extends Controller
 {
@@ -447,70 +451,66 @@ class PONumberController extends Controller
         return redirect('po')->with('alert', 'Deleted!');
     }
 
-    public function downloadExcelPO(Request $request)
-    {
-        $nama = 'Daftar Buku Admin (PO) '.date('Y');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Purchase Order', function ($sheet) use ($request) {
-        
+    public function downloadExcelPO(Request $request) {
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Purchase Order');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:O1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:O1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','REKAP PURCHASE ORDER');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:O2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["No", "No Letter", "Position", "Type of Letter", "Month",  "Date", "To", "Attention", "Title", "Project", "Description", "From", "Division", "Issuance", "Project ID"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $dataPO = PONumber::join('users', 'users.nik', '=', 'tb_po.from')
+            ->select('no_po','position','type_of_letter','month','date','to','attention','title','project','description','name','division','issuance','project_id',)
+            ->get();;
+
+        $dataPO->map(function($item,$key) use ($sheet){
+            $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
         });
 
-        $sheet->row(1, array('REKAP PURCHASE ORDER'));
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(25);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setWidth(25);
+        $sheet->getColumnDimension('K')->setWidth(25);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setWidth(25);
+        $sheet->getColumnDimension('O')->setWidth(25);
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
-
-        $datas = PONumber::join('users', 'users.nik', '=', 'tb_po.from')
-                    ->select('no','no_po', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'division', 'issuance', 'project_id','name')
-                    ->get();
-
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0]  =   array("No", "No Letter", "Position", "Type of Letter", "Month",  "Date", "To", "Attention", "Title", "Project", "Description", "From", "Division", "Issuance", "Project ID");
-             $i=1;
-
-            foreach ($datas as $data) {
-
-               // $sheet->appendrow($data);
-              $datasheet[$i] = array(
-                            $i,
-                            $data['no_po'],
-                            $data['position'],
-                            $data['type_of_letter'],
-                            $data['month'],
-                            $data['date'],
-                            $data['to'],
-                            $data['attention'],
-                            $data['title'],
-                            $data['project'],
-                            $data['description'],
-                            $data['name'],
-                            $data['division'],
-                            $data['issuance'],
-                            $data['project_id']
-                        );
-              
-              $i++;
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
+        $fileName = 'Daftar Buku Admin (PO) ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 }
