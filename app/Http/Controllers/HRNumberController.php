@@ -172,6 +172,11 @@ class HRNumberController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
         }
 
         $sidebar_collapse = true;
@@ -182,7 +187,7 @@ class HRNumberController extends Controller
 
         $tahun = HRNumber::select('created_at')->whereYear('created_at', $year)->groupBy('created_at')->get();
 
-        return view('admin/hr_number', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'notifClaim','pops', 'sidebar_collapse', 'tahun','year','year_before'));
+        return view('admin/hr_number', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim','pops', 'sidebar_collapse', 'tahun','year','year_before'));
     }
 
 
