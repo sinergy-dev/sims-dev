@@ -834,6 +834,10 @@ class HRGAController extends Controller
 
         $year = date('Y');
 
+        $cuti_index = '';
+        $cuti_list = '';
+        $detail_cuti = '';
+
         if ($ter != NULL) {
             if($div == 'SALES' && $pos == 'MANAGER'){
                 $cuti = DB::table('tb_cuti')
@@ -1378,6 +1382,11 @@ class HRGAController extends Controller
                             ->where('status', 'HRD')
                             ->get();
         } elseif (Auth::User()->id_division == 'FINANCE') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
+        } else {
             $notifClaim = DB::table('dvg_esm')
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
