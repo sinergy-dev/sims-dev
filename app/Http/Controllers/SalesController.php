@@ -74,6 +74,30 @@ class SALESController extends Controller{
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
 
+        $notifClaim = '';
+
+        $datas = '';
+
+        $rk = '';
+
+        $gp = '';
+
+        $st = '';
+
+        $rz = '';
+
+        $jh = '';
+
+        $leadspre = '';
+
+        $leadsprenow = '';
+
+        $leadsnow = '';
+
+        $leadnow = '';
+
+        $year_dif = '';
+
         $users = DB::table('users')
                     ->select('nik','name','id_division')
                     ->where('id_division','PMO')
