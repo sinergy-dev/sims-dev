@@ -49,6 +49,11 @@ use Notification;
 use App\PIDRequest;
 use App\QuoteMSP;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 
 
 class SALESController extends Controller{
@@ -5339,179 +5344,92 @@ class SALESController extends Controller{
         }
     }
 
-    public function export(Request $request)
-    {
-        $nama = 'ID PROJECT SIP '.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Data ID Project', function ($sheet) use ($request) {
-        
+    public function export(Request $request) {
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Data ID Project');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(12);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
 
-        $sheet->row(1, array('Data ID Project SIP'));
+        $sheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Data ID Project SIP');
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(12);
-            $row->setFontWeight('bold');
-        });
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:H2')->applyFromArray($headerStyle);
 
-        if (Auth::User()->id_division == 'SALES') {
-            $datas = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
+        $dataPID = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('users','users.nik','=','sales_lead_register.nik')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-            ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name')
             ->whereYear('tb_id_project.created_at',$request->year)
-            ->where('users.id_territory',Auth::User()->id_territory)
-            ->where('id_company','1')
             ->orderBy('tb_id_project.id_project','asc')
-            ->get();
-
-        }else{
-            $datas = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
-            ->join('users','users.nik','=','sales_lead_register.nik')
-            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-            ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','status','sales_name','progres','name_project','tb_id_project.created_at','customer_legal_name')
-            ->whereYear('tb_id_project.created_at',$request->year)
-            ->where('id_company','1')
-            ->orderBy('tb_id_project.id_project','asc')
-            ->get();
-        }
-        // $datass = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
-        //     ->join('tb_detail_id_project','tb_detail_id_project.id_pro','=','tb_id_project.id_pro')
-        //     ->join('users','users.nik','=','sales_lead_register.nik')
-        //     ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-        //     ->select('tb_id_project.date', 'tb_detail_id_project.id_project as id_project', 'tb_id_project.no_po_customer',  'sales_lead_register.opp_name', 'tb_id_project.amount_idr', 'users.name', 'tb_contact.customer_legal_name','name_project')
-        //     ->whereYear('tb_id_project.created_at',date('Y'))
-        //     ->where('id_company','1')
-        //     ->orderBy('tb_id_project.id_project','asc')
-        //     ->get();
-
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             
-
-             $datasheet2 = array();
-             $datasheet2[0] = array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Sales");
-             $j = 1;
-
-            // foreach ($datas as $data) {
-            //     if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
-            //         $datasheet[$i] = array(
-            //                 $i,
-            //                 date_format(date_create($data['date']),'d-M-Y'),
-            //                 $data['id_project'],
-            //                 $data['no_po_customer'],
-            //                 $data['customer_name'],
-            //                 $data['name_project'],
-            //                 $data['amount_idr'],
-            //                 $data['sales_name']
-                            
-            //             );
-              
-            //         $i++;
-            //     } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'PMO') {
-            //         $datasheet[$i] = array(
-            //                 $i,
-            //                 date_format(date_create($data['date']),'d-M-Y'),
-            //                 $data['id_project'],
-            //                 $data['no_po_customer'],
-            //                 $data['customer_name'],
-            //                 $data['name_project'],
-            //                 $data['sales_name']
-                            
-            //             );
-              
-            //         $i++;
-            //     } else if ($data->lead_id == 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id == 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO'){
-            //         $datasheet2[$j] = array(
-            //                 $j,
-            //                 date_format(date_create($data['date']),'d-M-Y'),
-            //                 $data['id_project'],
-            //                 $data['no_po_customer'],
-            //                 $data['customer_legal_name'],
-            //                 $data['opp_name'],
-            //                 $data['name']
-                            
-            //             );
-              
-            //         $j++;
-            //     } else if ($data->lead_id != 'SIPPO2020' && Auth::User()->id_division != 'FINANCE' && Auth::User()->id_position != 'MANAGER' || $data->lead_id != 'SIPPO2020' && Auth::User()->id_position != 'MANAGER' && Auth::User()->id_division != 'PMO') {
-            //         $datasheet2[$j] = array(
-            //                 $j,
-            //                 date_format(date_create($data['date']),'d-M-Y'),
-            //                 $data['id_project'],
-            //                 $data['no_po_customer'],
-            //                 $data['customer_legal_name'],
-            //                 $data['opp_name'],
-            //                 $data['name']
-                            
-            //             );
-              
-            //         $j++;
-            //     }
-                
-            // }
-
-            if (Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN') {
-                $datasheet = array();
-                $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name",  "Amount IDR", "Sales");
-                $i=1;
-
-                foreach ($datas as $data) {
-                  $datasheet[$i] = array(
-                        $i,
-                        date_format(date_create($data['date']),'d-M-Y'),
-                        // $data['date'],
-                        $data['id_project'],
-                        $data['no_po_customer'],
-                        $data['customer_legal_name'],
-                        $data['name_project'],
-                        $data['amount_idr'],
-                        $data['name']
-                        
-                    );
-                  
-                  $i++;
-                }
-            }else{
-                $datasheet = array();
-                $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Sales");
-                $i=1;
-
-                foreach ($datas as $data) {
-                  $datasheet[$i] = array(
-                        $i,
-                        date_format(date_create($data['date']),'d-M-Y'),
-                        // $data['date'],
-                        $data['id_project'],
-                        $data['no_po_customer'],
-                        $data['customer_legal_name'],
-                        $data['name_project'],
-                        $data['name']
-                        
-                    );
-                  
-                  $i++;
-                }
-            }
+            ->where('id_company','1');
             
 
-            $sheet->fromArray($datasheet);
-            // $sheet->fromArray($datasheet2);
+        if (Auth::User()->id_division == 'SALES') {
+            $dataPID = $dataPID->where('users.id_territory',Auth::User()->id_territory);
+        }
+
+        if (Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'SALES' && Auth::User()->id_position != 'ADMIN') {
+            $headerContent = ["No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name",  "Amount IDR", "Sales"];
+            $dataPID = $dataPID->select(
+                'tb_id_project.date',
+                'tb_id_project.id_project',
+                'tb_id_project.no_po_customer',
+                'customer_legal_name',
+                'name_project',
+                'tb_id_project.amount_idr',
+                'users.name'
+            )->get();
+            
+        } else {
+            $headerContent = ["No", "Date", "ID Project", "No. PO customer", "Customer Name", "Project Name", "Sales"];
+            $dataPID = $dataPID->select(
+                'tb_id_project.date',
+                'tb_id_project.id_project',
+                'tb_id_project.no_po_customer',
+                'customer_legal_name',
+                'name_project',
+                'users.name'
+            )->get();
+        }
+
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $dataPID->map(function($item,$key) use ($sheet){
+            $item->date = date_format(date_create($item->date),'d-M-Y');
+            $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
         });
 
-        })->export('xls');
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+
+        $fileName = 'ID PROJECT SIP ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 
     public function export_msp(Request $request)
