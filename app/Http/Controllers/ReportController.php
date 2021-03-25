@@ -2170,6 +2170,8 @@ class ReportController extends Controller
         		->groupBy('year')
                 ->get();
 
+        $presales = '';        
+
         // count semua lead
         if($ter != null){
             $lead = DB::table('sales_lead_register')
@@ -2622,7 +2624,7 @@ class ReportController extends Controller
                                 ->where('result','!=','hmm')
                                 ->first();
 
-        return view('report/report_range2', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'year_now', 'year', 'leads_now'));
+        return view('report/report_range2', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'year_now', 'year', 'leads_now'));
     
     }
 
@@ -3478,7 +3480,7 @@ class ReportController extends Controller
             ->get();
         }
 
-        return view('report/report_presales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_presales', 'top_lose_presales', 'years', 'users'));
+        return view('report/report_presales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_presales', 'years', 'users'));
 
     }
 
@@ -3496,6 +3498,8 @@ class ReportController extends Controller
             ->where('id_territory','like','TERRITORY%')
             // ->orWhere('id_territory','=','OPERATION')
             ->get();
+
+        $notifClaim = '';
 
 
         if ($ter != null) {
@@ -3683,6 +3687,8 @@ class ReportController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $notifClaim = '';
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -5303,6 +5309,8 @@ class ReportController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $notifClaim = '';
         
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -5446,7 +5454,7 @@ class ReportController extends Controller
                             ->get();
         }
 
-        return view('report/record_authentication', compact('lead','leads','notif', 'total_ter', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
+        return view('report/record_authentication', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
     
     }
 
@@ -5707,7 +5715,7 @@ class ReportController extends Controller
             $notifc = count($notif);        
         }
 
-        return view('report/report_product', compact('notifc','lead','notif','notifOpen','notifsd','notiftp','notifc','territory_loop'));
+        return view('report/report_product', compact('notifc','notif','notifOpen','notifsd','notiftp','notifc','territory_loop'));
     
     }
 
