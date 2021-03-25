@@ -568,9 +568,68 @@ class LetterController extends Controller
         return redirect('letter')->with('alert', 'Deleted!');
 	}
 
-	public function downloadExcel(Request $request)
-	{
-		$nama = 'Daftar Buku Admin (Letter) '.date('Y');
+	public function downloadExcel(Request $request) {
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Nomor Letter');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:O1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:N1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Nomor Letter');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:N2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["No", "No Letter", "Position", "Type of Letter", "Month",  "Date", "To", "Attention", "Title", "Project", "Description", "From", "Division", "Project ID"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $dataLetter = Letter::select('no_letter','position','type_of_letter','month','date','to','attention','title','project','description','from','division','project_id')
+            ->get();
+
+        $dataLetter->map(function($item,$key) use ($sheet){
+            $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        });
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(25);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setWidth(25);
+        $sheet->getColumnDimension('K')->setWidth(25);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setWidth(25);
+
+        $fileName = 'Daftar Buku Admin (Letter) ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+
+
+		// $nama = 'Daftar Buku Admin (Letter) '.date('Y');
         Excel::create($nama, function ($excel) use ($request) {
         $excel->sheet('Nomor Letter', function ($sheet) use ($request) {
         
