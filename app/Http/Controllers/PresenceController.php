@@ -392,12 +392,12 @@ class PresenceController extends Controller
         }
     }
 
-    public function getPresenceReportData($typeData = "notAll"){
+    public function getPresenceReportData($typeData = "notAll",$typeCompany = "all"){
         
 
 
-        $startDate = Carbon::now()->subMonths(1)->format("Y-m-15");
-        $endDate = Carbon::now()->format("Y-m-15");
+        $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
+        $endDate = Carbon::now()->format("Y-m-16");
 
         // $startDate = "2020-12-15";
         // $endDate = "2021-01-15";
@@ -408,9 +408,15 @@ class PresenceController extends Controller
 
         // return $workDays;
 
-        $parameterUser = PresenceHistory::groupBy('nik')
-            ->whereRaw('`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
-            ->pluck('nik');
+        $parameterUser = PresenceHistory::groupBy('presence__history.nik')
+            ->whereRaw('`presence__history`.`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+            ->join('users','users.nik','=','presence__history.nik');
+
+        if($typeCompany != "all"){
+           $parameterUser = $parameterUser->where('users.id_company','=',$typeCompany)->pluck('presence__history.nik');
+        } else {
+           $parameterUser = $parameterUser->pluck('presence__history.nik');
+        }
         // $parameterUserMsp = Users::where('id_company',1)->get()->pluck('nik');
         // $parameterUser = ['1170498100'];
 
@@ -536,7 +542,7 @@ class PresenceController extends Controller
         return collect(["holiday" => $holiday_indonesia_final_detail, "workdays" => $workDaysMinHolidayKeyed]);
     }
 
-    public function getExportRerport(){
+    public function getExportRerport(Request $req){
 
         // return $this->getPresenceReportData("all")["data"];
 
@@ -557,22 +563,28 @@ class PresenceController extends Controller
         // dd((array)$this->getPresenceReportData()["data"]->first());
         // dd(array_merge(["no" => 1],(array)$this->getPresenceReportData()["data"]->first()));
         // return  $this->getPresenceReportData("all")["data"]->sortBy('name')->values();
-        return Excel::create('Report Presence ' . date("Y-m-d"), function($excel) use ($header) {
-
-            $excel->sheet('All Presence', function($sheet) use ($header){
+        if(isset($req->type)){
+            $typeCompany = ($req->type == "SIP") ? "1" : "2";
+            $dataPresence = $this->getPresenceReportData("all",$typeCompany)["data"]->sortBy('name');
+            $exportName = 'Report Presence ' . $req->type . ' (reported at ' . date("Y-m-d") . ')';
+        } else {
+            $dataPresence = $this->getPresenceReportData("all")["data"]->sortBy('name');
+            $exportName = 'Report Presence (reported at' . date("Y-m-d") . ')';
+        }
+        return Excel::create($exportName, function($excel) use ($header,$dataPresence) {
+            $excel->sheet('All Presence', function($sheet) use ($header,$dataPresence){
                     $sheet->row(1,$header);
                     $row = 2;
-                    $data = $this->getPresenceReportData("all")["data"]->sortBy('name')->values();
+                    $data = $dataPresence->values();
                     foreach ($data as $value) {
                         // $datasheet = array_push($datasheet, (array)$value);
                         $sheet->row($row,array_merge(["no" => $row - 1],(array)$value));
                         $row++;
                     }
-
                     // $sheet->fromArray($datasheet);
                 });
 
-            $sources = $this->getPresenceReportData("all")["data"]->sortBy('name')->groupBy('name');
+            $sources = $dataPresence->groupBy('name');
             // $sources = $this->getPresenceReportData("all")["data"]->sortBy('name')->values()->groupBy('nik');
 
             foreach ($sources as $key => $source){

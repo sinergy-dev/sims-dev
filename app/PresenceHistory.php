@@ -21,4 +21,8 @@ class PresenceHistory extends Model
 		'presence_condition',
 		'presence_type'
 	];
+
+	public function user(){
+		return $this->hasOne(User::class,'nik','nik');
+	}
 }

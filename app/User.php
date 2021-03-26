@@ -41,7 +41,8 @@ class User extends Authenticatable implements HasRoleContract
         'ktp_file', 
         'bpjs_kes', 
         'bpjs-ket',
-        'id_presence_setting'
+        'id_presence_setting',
+        'password'
     ];
 
     /**

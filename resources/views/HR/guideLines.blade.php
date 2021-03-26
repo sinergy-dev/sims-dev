@@ -1,5 +1,10 @@
 @extends('template.template_admin-lte')
 @section('content')
+<style type="text/css">
+	body{
+		zoom:125%;
+	}
+</style>
 <section class="content-header">
   <h1>Kebijakan & Peraturan</h1>
     <ol class="breadcrumb">
@@ -11,7 +16,7 @@
 	<div class="box">
 	    <div class="box-header with-border">
 	        <div class="pull-right">
-	            <button class="btn btn-sm btn-success pull-right float-right margin-left-custom" id="AddGuide"><i class="fa fa-plus"> </i>&nbsp Guide</button>
+	            <button class="btn btn-xs btn-success pull-right float-right margin-left-custom" id="AddGuide"><i class="fa fa-plus"> </i>&nbsp Guide</button>
 	        </div>
 	    </div>
 
@@ -35,8 +40,8 @@
 		          		proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</td>
 		          		<td><u><a style="cursor: pointer;"><i>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</i></a></u</td>
 		          		<td>
-		          			<button class="btn btn-sm btn-warning" onclick="editGuide()"><i class="fa fa-edit"></i> edit</button>
-		          			<button class="btn btn-sm btn-danger" onclick="deleteGuide()"><i class="fa fa-trash"></i> delete</button>
+		          			<button class="btn btn-xs btn-warning" onclick="editGuide()"><i class="fa fa-edit"></i> edit</button>
+		          			<button class="btn btn-xs btn-danger" onclick="deleteGuide()"><i class="fa fa-trash"></i> delete</button>
 		          		</td>
 		          	</tr>
 		          	@foreach($data as $data)
@@ -87,7 +92,7 @@
 <script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script type="text/javascript">
-	
+
 	$(document).ready(function(){
 		function autosizeWow(){
 			autosize(document.getElementById("description"));
@@ -107,6 +112,57 @@
 		$('#AddGuideModal').modal('show')
 		$('#description').val($('.desc-hidden').text())
 		$('#link').val(link)
+
+		swalAccept = Swal.fire({
+          title: "Update Kebijakan & Peraturan",
+          text: "Yakin?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        })
+
+        swalAccept.then((result) => {
+  		    if (result.value) {
+  		    console.log(result.value)
+  		        Swal.fire({
+	              title: 'Please Wait..!',
+	              text: "It's updating..",
+	              allowOutsideClick: false,
+	              allowEscapeKey: false,
+	              allowEnterKey: false,
+	              customClass: {
+	                popup: 'border-radius-0',
+	              },
+	              onOpen: () => {
+	                Swal.showLoading()
+	              }
+	            })
+
+	            $.ajax({
+	              type:"GET",
+	              url:"{{url('updateGuide')}}",
+	              data:{
+	                description:$('#description').val(),
+	                link:$('#link').val()
+	              },
+	              success: function(result){
+	                Swal.showLoading()
+	                Swal.fire(
+	                  'Successfully!',
+	                  'success'
+	                ).then((result) => {
+	                  if (result.value) {
+	                    location.reload()
+	                    $("#AddGuideModal").modal('toggle')
+	                  }
+	                })
+	              },
+	            });
+          	}	        
+        })	
 	}
 
 	function deleteGuide(){

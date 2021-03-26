@@ -2498,7 +2498,7 @@ class HRGAController extends Controller
                     
             });
 
-            $excel->sheet('Report Cuti SIP & MSP', function ($sheet) use ($request) {
+            $excel->sheet('Report Cuti SIP', function ($sheet) use ($request) {
         
                 $sheet->mergeCells('A1:H1');
                 $sheet->setBorder('A1:H1', 'thin');
@@ -2585,6 +2585,7 @@ class HRGAController extends Controller
                         // ->whereMonth('tb_cuti.date_req',date('m'))
                         // ->whereYear('tb_cuti.date_req',date('Y'))
                         ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                        ->where('users.id_company',1)
                         ->groupby('tb_cuti.id_cuti')
                         ->get();
 
@@ -2600,6 +2601,139 @@ class HRGAController extends Controller
                         // ->whereMonth('tb_cuti.date_req',date('m'))
                         ->whereBetween('date_off',array($request->date_start,$request->date_end))
                         ->where('tb_division.id_division',$request->division)
+                        ->where('users.id_company',1)
+                        ->groupby('tb_cuti.id_cuti')
+                        ->get();
+
+                        $cuti = $cuti->sortBy('name');
+                    }
+
+                    $datasheetdetail = array();
+                    $datasheetdetail[0] = array("No", "Nama Karyawan","Company", "Division", "Request Cuti", "Date Off", "Tanggal Request", "[Jenis Cuti]/[keterangan]");
+                    $i=1;
+
+                    foreach ($cuti as $data) {
+
+                        $datasheetdetail[$i] = array($i,
+                                    $data['name'],
+                                    $data['code_company'],
+                                    $data['name_division'],
+                                    $data['days']." Hari",
+                                    str_replace('-', '/', $data['date_off']),
+                                    $data['date_req'],
+                                    "[ ".$data['jenis_cuti']." ]/"."[ ".$data['reason_leave']." ]"
+                                );
+                        $i++;
+                    }
+
+                    $sheet->fromArray($datasheetdetail);
+                    
+            });
+
+            $excel->sheet('Report Cuti MSP', function ($sheet) use ($request) {
+        
+                $sheet->mergeCells('A1:H1');
+                $sheet->setBorder('A1:H1', 'thin');
+
+                $sheet->row(1, function ($row) {
+                    $row->setFontFamily('Calibri');
+                    $row->setFontSize(11);
+                    $row->setAlignment('center');
+                    $row->setFontWeight('bold');
+                    $row->setBackground('#fcd703');
+                });
+
+                $sheet->row(1, array('Report Cuti '.$request->date_start.' s/d '.$request->date_end));
+
+                $sheet->row(2, function ($row) {
+                    $row->setFontFamily('Calibri');
+                    $row->setFontSize(11);
+                    $row->setFontWeight('bold');
+                });
+
+                  //   if ($request->filter == 'date') {
+                     //    $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                        // ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                        // ->join('tb_position','tb_position.id_position','=','users.id_position')
+                        // ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //       ->join('tb_company','tb_company.id_company','=','users.id_company')
+                        // ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                        // ->where('status','v')
+                        // ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                        // ->groupby('tb_cuti_detail.id_cuti')
+                        // ->get();
+
+                  //   }else if($request->filter == 'div'){
+                  //       $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                  //       ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                  //       ->join('tb_position','tb_position.id_position','=','users.id_position')
+                  //       ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //       ->join('tb_company','tb_company.id_company','=','users.id_company')
+                  //       ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                  //       ->where('status','v')
+                  //       ->where('tb_division.id_division',$request->division)
+                  //       ->groupby('tb_cuti.id_cuti')
+                  //       ->get();
+
+                  //   }else if($request->filter == 'all'){
+                  //       if ($request->division == 'alldeh') {
+
+                  //           $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                  //           ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                  //           ->join('tb_position','tb_position.id_position','=','users.id_position')
+                  //           ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //           ->join('tb_company','tb_company.id_company','=','users.id_company')
+                  //           ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                  //           ->where('status','v')
+                  //           ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                  //           ->groupby('tb_cuti.id_cuti')
+                  //           ->get();
+                  //       }else{
+                  //           $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                  //           ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                  //           ->join('tb_position','tb_position.id_position','=','users.id_position')
+                  //           ->join('tb_division','tb_division.id_division','=','users.id_division')
+                  //           ->join('tb_company','tb_company.id_company','=','users.id_company')
+                  //           ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                  //           ->where('status','v')
+                  //           ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                  //           ->where('tb_division.id_division',$request->division)
+                  //           ->groupby('tb_cuti.id_cuti')
+                  //           ->get();
+                  //       }
+                        
+                  //   }else{
+                        
+                  //   }
+
+                    if ($request->division == 'alldeh') {
+                        $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                        ->join('tb_position','tb_position.id_position','=','users.id_position')
+                        ->join('tb_division','tb_division.id_division','=','users.id_division')
+                        ->join('tb_company','tb_company.id_company','=','users.id_company')
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                        ->where('status','v')
+                        // ->whereMonth('tb_cuti.date_req',date('m'))
+                        // ->whereYear('tb_cuti.date_req',date('Y'))
+                        ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                        ->where('users.id_company',2)
+                        ->groupby('tb_cuti.id_cuti')
+                        ->get();
+
+                        $cuti = $cuti->sortBy('name');
+                    }else{
+                        $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
+                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                        ->join('tb_position','tb_position.id_position','=','users.id_position')
+                        ->join('tb_division','tb_division.id_division','=','users.id_division')
+                        ->join('tb_company','tb_company.id_company','=','users.id_company')
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('group_concat(date_off) as date_off'),'code_company','jenis_cuti')
+                        ->where('status','v')
+                        // ->whereMonth('tb_cuti.date_req',date('m'))
+                        ->whereBetween('date_off',array($request->date_start,$request->date_end))
+                        ->where('tb_division.id_division',$request->division)
+                        ->where('users.id_company',2)
                         ->groupby('tb_cuti.id_cuti')
                         ->get();
 
