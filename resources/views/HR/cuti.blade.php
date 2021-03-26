@@ -152,7 +152,7 @@
                       <a href="#cuti" data-toggle="tab">Request Cuti {{$bulan}}</a>
                     </li>
                     <li>
-                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR')
                       <a href="#staff" data-toggle="tab">Report Cuti</a>
                       @else
                       <a href="#staff" data-toggle="tab">History Cuti</a>
@@ -846,7 +846,7 @@
 
           $('#date_start').datepicker({
             weekStart: 1,
-            daysOfWeekDisabled: "0,6",
+            // daysOfWeekDisabled: "0,6",
             daysOfWeekHighlighted: [0,6],
             startDate: moment().format("MM/DD/YYYY"),
             todayHighlight: true,
@@ -1197,6 +1197,8 @@
       date_end    = encodeURI(moment($('#dates').val().slice(13,23)).format("YYYY-MM-DD"))
       myUrl       = url+"/downloadCutiReport?division="+division+"&date_start="+date_start+"&date_end="+date_end+"&filter="+filter
       location.assign(myUrl)
+      console.log(filter)
+      console.log(division)
     }
 
     $('input[name="dates"]').daterangepicker({
