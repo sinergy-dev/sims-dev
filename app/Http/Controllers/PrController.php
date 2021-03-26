@@ -8,8 +8,12 @@ use DB;
 use App\PR;
 use App\SalesProject;
 use Illuminate\Support\Facades\Route;
-use Excel;
+// use Excel;
 use Validator;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PrController extends Controller
 {
@@ -188,6 +192,11 @@ class PrController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'ADMIN')
+                            ->get();
         }
 
         $sidebar_collapse = true;
@@ -196,7 +205,7 @@ class PrController extends Controller
 
         $pid = SalesProject::select('id_project')->get();
 
-        return view('admin/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim','pops', 'sidebar_collapse','year_before','tahun','pid'));
+        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp', 'datas','pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim'));
     }
 
     /**
@@ -224,8 +233,12 @@ class PrController extends Controller
 
         $type = $request['type'];
         $posti = $request['position'];
-        $month_pr = substr($request['date'],5,2);
-        $year_pr = substr($request['date'],0,4);
+
+        $edate = strtotime($_POST['date']); 
+        $edate = date("Y-m-d",$edate);
+
+        $month_pr = substr($edate,5,2);
+        $year_pr = substr($edate,0,4);
 
 
         $array_bln = array('01' => "I",
@@ -283,7 +296,7 @@ class PrController extends Controller
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             $tambah->to = $request['to'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];
@@ -311,8 +324,6 @@ class PrController extends Controller
         } else{
             $type = $request['type'];
             $posti = $request['position'];
-            $month_pr = substr($request['date'],5,2);
-            $year_pr = substr($request['date'],0,4);
 
             $bln = $array_bln[$month_pr];
 
@@ -354,7 +365,7 @@ class PrController extends Controller
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
-            $tambah->date = $request['date'];
+            $tambah->date = $edate;
             $tambah->to = $request['to'];
             $tambah->attention = $request['attention'];
             $tambah->title = $request['title'];
@@ -605,7 +616,7 @@ class PrController extends Controller
                             ->get();
         }
 
-        return view('report/pr', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
+        return view('report/pr', compact('notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
     }
 
     public function PoAdmin()
@@ -766,73 +777,70 @@ class PrController extends Controller
         }
 
 
-        return view('report/po', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
+        return view('report/po', compact('notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
     }
 
-    public function downloadExcelPr(Request $request)
-    {
-        $nama = 'Daftar Buku Admin (PR) '.date('Y');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Purchase Request', function ($sheet) use ($request) {
-        
+    public function downloadExcelPr(Request $request) {
+
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Purchase Request');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:O1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:O1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Purchase Request');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:O2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "DIVISION", "ISSUANCE" ,"ID PROJECT"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $dataPR = PR::join('users', 'users.nik', '=', 'tb_pr.from')
+            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','name','division','issuance','project_id')
+            ->get();
+
+        $dataPR =  $dataPR->map(function($item,$key) use ($sheet){
+            $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
         });
 
-        $sheet->row(1, array('Purchase Request'));
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(25);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setWidth(25);
+        $sheet->getColumnDimension('K')->setWidth(25);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setWidth(25);
+        $sheet->getColumnDimension('O')->setWidth(25);
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
-
-        $datas = PR::join('users', 'users.nik', '=', 'tb_pr.from')
-                    ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','name','division','issuance','project_id')
-                    ->get();
-
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0]  =   array("No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "DIVISION", "ISSUANCE" ,"ID PROJECT");
-             $i=1;
-
-            foreach ($datas as $data) {
-
-               // $sheet->appendrow($data);
-              $datasheet[$i] = array(
-                            $i,
-                            $data['no_pr'],
-                            $data['position'],
-                            $data['type_of_letter'],
-                            $data['month'],
-                            $data['date'],
-                            $data['to'],
-                            $data['attention'],
-                            $data['title'],
-                            $data['project'],
-                            $data['description'],
-                            $data['name'],
-                            $data['division'],
-                            $data['issuance'],
-                            $data['project_id'],
-                        );
-              
-              $i++;
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
+        $fileName = 'Daftar Buku Admin (PR) ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 }

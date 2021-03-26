@@ -1161,6 +1161,13 @@
             </li>
           </ul>
         </li>
+
+        <li class="activable nav-item">
+	        <a href="{{url('/guideLine')}}" class="nav-link" >
+	          <i class="fa fa-fw fa-table"></i>
+	          <span class="nav-link-text" style="font-size: 14px"> Guide Line</span>
+	        </a>
+	    </li>
       
 
     </ul>

@@ -52,6 +52,13 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/testEmailViewSales', 'TestController@view_mail_to_sales');
 	Route::get('/testEmailViewFinance', 'TestController@view_mail_to_finance');
 	Route::get('/testEmailPeminjaman','TestController@testEmailPeminjaman');
+	Route::get('/testPostEventCalendar','TestController@storeEvents');
+	Route::get('/testgetOauth2AccessToken','TestController@getOauth2AccessToken');
+	Route::get('/testgetListEvent','TestController@getListEvent');
+	Route::get('/testgetCalendarList','TestController@getCalendarList');
+	Route::get('/testgetCalendarList','TestController@getCalendarList');
+	Route::get('/testJson','TestController@testJson');	
+	Route::get('/oauth2callback','TestController@oauth2callback');
 
 	Route::get('/data/{id}', 'ImplementationController@get');
 	Route::get('/data_pmo/{id_pmo}', 'PMOController@getGantt');
@@ -320,6 +327,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/storeGuide','HRController@storeGuideLine');
 	Route::get('/updateGuide','HRController@updateGuideLine');
 	Route::get('/deleteGuide','HRController@deleteGuideLine');
+	Route::get('/getGuideIndex','HRController@getGuideIndex');
+	Route::get('/getGuideIndexById','HRController@getGuideIndexById');
 
 
 	//cuti
@@ -684,7 +693,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/kembali_pinjam', 'AssetController@kembali');
 	Route::get('/detail_asset_peminjaman/{id_barang}','AssetController@detail_asset_peminjaman');
 	Route::get('/delete_asset/{id_barang}', 'AssetController@destroy');
-	Route::post('/store_kategori_asset', 'AssetController@store_kategori');
+	Route::get('/store_kategori_asset', 'AssetController@store_kategori');
 	Route::get('/getidkategori', 'AssetController@getdropdownkategori');
 	Route::get('/dropdownSerialNumberAsset', 'AssetController@getdropdownsn');
 	Route::get('/dropdownid_barang', 'AssetController@getid_barang');

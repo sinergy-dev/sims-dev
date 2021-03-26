@@ -6,6 +6,49 @@
     -webkit-appearance: none; 
     margin: 0; 
   }
+
+  .dropbtn {
+    background-color: #F0AD4E;
+    color: white;
+    padding: 5px;
+    font-size: 13px;
+    width: 120px;
+    height: 35px;
+    border: none;
+  }
+
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #ddd;}
+
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {display: block;}
+
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropbtn {background-color: #F0AD4E;}    
 </style>
 
   <section class="content-header">
@@ -42,13 +85,15 @@
         
           <div class="pull-right">
             @if(Auth::User()->email == 'tech@sinergy.co.id' || Auth::User()->id_territory == 'DVG' && Auth::User()->id_position == 'MANAGER')
-              <button type="button" class="btn btn-success-sales pull-right float-right margin-left-custom" data-target="#modalAddPartnership" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspPartnership
+              <button type="button" class="btn btn-success pull-right float-right margin-left-custom" style="width: 120px;" data-target="#modalAddPartnership" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspPartnership
               </button>
-                <button type="button" class="btn btn-warning-eksport dropdown-toggle float-right  margin-left-customt" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><b><i class="fa fa-download"></i> Export</b>
-                </button>
-                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-                  <a class="dropdown-item" href="{{action('PartnershipController@downloadpdf')}}"> PDF </a>
-                  <a class="dropdown-item" href="{{action('PartnershipController@downloadExcel')}}"> EXCEL </a>
+
+                <div class="pull-right dropdown" style="margin-left: 5px">
+                  <button class="dropbtn"><i class="fa fa-download"> </i>&nbspEksport</button>
+                  <div class="dropdown-content">
+                    <a href="{{action('PartnershipController@downloadpdf')}}">PDF</a>
+                    <a href="{{action('PartnershipController@downloadExcel')}}">Excel</a>
+                  </div>
                 </div>
             @endif
           </div>

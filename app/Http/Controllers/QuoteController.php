@@ -191,6 +191,11 @@ class QuoteController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
         }
 
         $sidebar_collapse = true;
@@ -431,7 +436,7 @@ class QuoteController extends Controller
             }            
 
             if (substr($getnumber, -1) == '4') {
-                $no   = $akhirnomor9.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+                $no   = $akhirnomor9.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
 
                 $no9  = $akhirnomor;
 
@@ -487,10 +492,10 @@ class QuoteController extends Controller
                 }
 
             }else {
-                $no   = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+                $no   = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
 
                 $tambah = new Quote();
-                $tambah->no_letter = $no;
+                $tambah->quote_number = $no;
                 $tambah->position = $posti;
                 $tambah->type_of_letter = $type;
                 $tambah->month = $bln;
@@ -501,7 +506,7 @@ class QuoteController extends Controller
                 $tambah->project = $request['project'];
                 $tambah->description = $request['description'];
                 $tambah->nik = Auth::User()->nik;
-                $tambah->status = 'A';
+                $tambah->status_backdate = 'A';
                 $tambah->division = $request['division'];
                 $tambah->project_id = $request['project_id'];
                 $tambah->project_type = $request['project_type'];
@@ -563,10 +568,10 @@ class QuoteController extends Controller
                $akhirnomor = '0' . $lastnumber;
             }
 
-            $noReset = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+            $noReset = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
 
             $tambah = new Quote();
-            $tambah->no_letter = $noReset;
+            $tambah->quote_number = $noReset;
             $tambah->position = $posti;
             $tambah->type_of_letter = $type;
             $tambah->month = $bln;
@@ -577,7 +582,7 @@ class QuoteController extends Controller
             $tambah->project = $request['project'];
             $tambah->description = $request['description'];
             $tambah->nik = Auth::User()->nik;
-            $tambah->status = 'A';
+            $tambah->status_backdate = 'A';
             $tambah->division = $request['division'];
             $tambah->project_id = $request['project_id'];
             $tambah->project_type = $request['project_type'];

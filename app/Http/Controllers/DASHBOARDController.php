@@ -22,6 +22,7 @@ class DASHBOARDController extends Controller
 
     public function index()
     {
+        $pos = '';$div = '';$results = '';$idps = '';$counts = '';$opens = '';$sds = '';$tps = '';$notiftp = '';$notifsd = '';$notifOpen = '';$wins = '';$loses = '';$notif = '';$notifClaim = '';$win1 = '';$win2 = '';$lose1 = '';$lose2 = '';$ba = '';$co = '';$lead_win = '';$top_win_sip = '';$top_win_msp = '';$loop_year = '';$year_now = '';$countmsp = '';$losemsp = '';
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;

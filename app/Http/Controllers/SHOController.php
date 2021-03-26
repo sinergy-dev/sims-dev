@@ -32,6 +32,8 @@ class SHOController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $notifClaim = '';
+
         if($div == 'SALES'){
             $lead = DB::table('sales_sho')
                 ->join('sales_lead_register','sales_lead_register.lead_id','=','sales_sho.lead_id')

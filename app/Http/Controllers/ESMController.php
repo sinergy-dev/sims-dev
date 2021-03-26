@@ -34,6 +34,10 @@ class ESMController extends Controller
 
         $year = DB::table("dvg_esm")->select("year")->groupby('year')->get();
 
+        $datas = '';
+
+        $notifClaim = '';
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -225,7 +229,7 @@ class ESMController extends Controller
                     ->where('no', $no)
                     ->first();*/
 
-        return view('DVG/esm/esm', compact('datas','notif','notifOpen','notifsd','notiftp','owner2','newDate', 'notifClaim','datas_2018', 'datas_2019','year'));
+        return view('DVG/esm/esm', compact('datas','notif','notifOpen','notifsd','notiftp','owner2', 'notifClaim','datas_2018', 'datas_2019','year'));
     }
 
     public function getESM(){

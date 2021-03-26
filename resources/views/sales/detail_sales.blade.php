@@ -1160,10 +1160,10 @@
                   </div>                
                 </div>
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <label><b>Closing Date</b></label>
                   <input type="text" class="form-control" name="update_closing_date" id="update_closing_date" required>
-                </div>
+                </div> -->
 
                 <div class="form-group" id="result-win" style="display: none;">
 

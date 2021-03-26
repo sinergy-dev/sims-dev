@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Route;
 use Excel;
 use Validator;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+
 class HRNumberController extends Controller
 {
     public function __construct()
@@ -172,6 +178,11 @@ class HRNumberController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
         }
 
         $sidebar_collapse = true;
@@ -182,7 +193,7 @@ class HRNumberController extends Controller
 
         $tahun = HRNumber::select('created_at')->whereYear('created_at', $year)->groupBy('created_at')->get();
 
-        return view('admin/hr_number', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'notifClaim','pops', 'sidebar_collapse', 'tahun','year','year_before'));
+        return view('admin/hr_number', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim','pops', 'sidebar_collapse', 'tahun','year','year_before'));
     }
 
 
@@ -376,69 +387,67 @@ class HRNumberController extends Controller
 
     public function downloadExcelAdminHR(Request $request)
     {
-        $nama = 'Daftar Buku Admin (HR) '.date('Y');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Penomoran HR',function ($sheet) use ($request) {
-        
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Penomoran HR');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:O1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:O1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Penomoran HR');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:O2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["No", "No Letter", "Type of Letter", "Division", "PT", "Month",  "Date", "To" , "Attention", "Title", "Project", "Description", "From", "Division", "Id Project"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $dataHR = HRNumber::join('users', 'users.nik', '=', 'tb_hr_number.from')
+            ->select('no_letter','type_of_letter','divsion','pt','month','date','to','attention','title','project','description','name','division','project_id')
+            ->get();;
+
+        $dataHR = $dataHR->map(function($item,$key) use ($sheet){
+            $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
         });
 
-        $sheet->row(1, array('Penomoran HR'));
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setAutoSize(true);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setAutoSize(true);
+        $sheet->getColumnDimension('O')->setAutoSize(true);
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
+        $fileName = 'Daftar Buku Admin (HR) ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
 
-        $datas = HRNumber::join('users', 'users.nik', '=', 'tb_hr_number.from')
-                    ->select('no_letter','type_of_letter', 'divsion', 'pt', 'month', 'date', 'to', 'attention', 'title','project','description','name','division','project_id')
-                    ->get();
-
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0]  =   array("No", "No Letter", "Type of Letter", "Division", "PT", "Month",  "Date", "To" , "Attention", "Title", "Project", "Description", "From", "Division", "Id Project");
-             $i=1;
-
-            foreach ($datas as $data) {
-
-               // $sheet->appendrow($data);
-              $datasheet[$i] = array(
-                            $i,
-                            $data['no_letter'],
-                            $data['type_of_letter'],
-                            $data['divsion'],
-                            $data['pt'],
-                            $data['month'],
-                            $data['date'],
-                            $data['to'],
-                            $data['attention'],
-                            $data['title'],
-                            $data['project'],
-                            $data['description'],
-                            $data['name'],
-                            $data['division'],
-                            $data['project_id'],
-                        );
-              
-              $i++;
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
     }
 
 }

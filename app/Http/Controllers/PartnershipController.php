@@ -10,6 +10,13 @@ use PDF;
 use Excel;
 use File;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class PartnershipController extends Controller
 {
 
@@ -27,6 +34,8 @@ class PartnershipController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position; 
+
+        $notifClaim = '';
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -203,7 +212,7 @@ class PartnershipController extends Controller
                         ->select('id_partnership', 'partner' , 'level', 'renewal_date', 'annual_fee', 'sales_target', 'sales_certification', 'engineer_certification', 'type', 'doc')
                         ->get();
 
-        return view('DVG.partnership', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim', 'notifc'));
+        return view('DVG.partnership', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim', 'notifc'));
     }
 
     public function store(Request $request)
@@ -295,63 +304,60 @@ class PartnershipController extends Controller
         return $pdf->download('SIP Partnership Summary '.date("Y").'.pdf');
     }
 
-    public function downloadExcel(Request $request)
-    {
-        $nama = 'SIP Partnership Summary '.date('Y');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('SIP Partnership Summary', function ($sheet) use ($request) {
+    public function downloadExcel(Request $request) {
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->removeSheetByIndex(0);
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'SIP Partnership Summary'));
+        $summarySheet = $spreadsheet->setActiveSheetIndex(0);
+
+        $summarySheet->mergeCells('A1:I1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $titleStyle['font']['bold'] = true;
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+
+        $summarySheet->getStyle('A1:I1')->applyFromArray($titleStyle);
+        $summarySheet->setCellValue('A1','SIP Partnership Summary');
+
+        $headerContent = ["No", "Type", "Partner", "Level", "Renewal Date", "Annual Fee",  "Sales Target", "Sales Certification", "Engineer Certification"];
+        $summarySheet->getStyle('A2:I2')->applyFromArray($headerStyle);
+        $summarySheet->fromArray($headerContent,NULL,'A2');
+
+        $dataPartnership = Partnership::select('type', 'partner', 'level',  'renewal_date', 'annual_fee', 'sales_target', 'sales_certification', 'engineer_certification')
+            ->get();
+
+        $dataPartnership->map(function($item,$key) use ($summarySheet){
+            $summarySheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        });
+
+        $summarySheet->getColumnDimension('A')->setAutoSize(true);
+        $summarySheet->getColumnDimension('B')->setAutoSize(true);
+        $summarySheet->getColumnDimension('C')->setAutoSize(true);
+        $summarySheet->getColumnDimension('D')->setAutoSize(true);
+        $summarySheet->getColumnDimension('E')->setAutoSize(true);
+        $summarySheet->getColumnDimension('F')->setAutoSize(true);
+        $summarySheet->getColumnDimension('G')->setAutoSize(true);
+        $summarySheet->getColumnDimension('H')->setAutoSize(true);
+        $summarySheet->getColumnDimension('I')->setAutoSize(true);
+
+        $fileName = 'SIP Partnership Summary ' . date("Y") . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
         
-        $sheet->mergeCells('A1:I1');
-
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
-
-        $sheet->row(1, array('SIP Partnership Summary'));
-
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
-
-        $datas = Partnership::select('id_partnership', 'partner', 'level',  'renewal_date', 'annual_fee', 'sales_target', 'sales_certification', 'engineer_certification', 'type')
-                    ->get();
-
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0]  =   array("No", "Type", "Partner", "Level", "Renewal Date", "Annual Fee",  "Sales Target", "Sales Certification", "Engineer Certification");
-             $i=1;
-
-            foreach ($datas as $data) {
-
-               // $sheet->appendrow($data);
-              $datasheet[$i] = array(
-                            $i,
-                            $data['type'],
-                            $data['partner'],
-                            $data['level'],
-                            $data['renewal_date'],
-                            $data['annual_fee'],
-                            $data['sales_target'],
-                            $data['sales_certification'],
-                            $data['engineer_certification']
-                        );
-              
-              $i++;
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 }

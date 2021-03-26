@@ -18,6 +18,13 @@ use App\ProductTag;
 
 use Excel;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class ReportController extends Controller
 {
     /**
@@ -428,6 +435,7 @@ class ReportController extends Controller
         $pos = $position->id_position;
 
         $year = date('Y');
+
 
         // count semua lead
         if($ter != null){
@@ -2170,6 +2178,8 @@ class ReportController extends Controller
         		->groupBy('year')
                 ->get();
 
+        $presales = '';        
+
         // count semua lead
         if($ter != null){
             $lead = DB::table('sales_lead_register')
@@ -2399,7 +2409,6 @@ class ReportController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-
         $year_now = date("Y");
 
         $year = DB::table('sales_lead_register')->select('year')->where('year','!=',NULL)->groupBy('year')->get();
@@ -2622,7 +2631,7 @@ class ReportController extends Controller
                                 ->where('result','!=','hmm')
                                 ->first();
 
-        return view('report/report_range2', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'year_now', 'year', 'leads_now'));
+        return view('report/report_range2', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'year_now', 'year', 'leads_now'));
     
     }
 
@@ -3478,7 +3487,7 @@ class ReportController extends Controller
             ->get();
         }
 
-        return view('report/report_presales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_presales', 'top_lose_presales', 'years', 'users'));
+        return view('report/report_presales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_presales', 'years', 'users'));
 
     }
 
@@ -3496,6 +3505,8 @@ class ReportController extends Controller
             ->where('id_territory','like','TERRITORY%')
             // ->orWhere('id_territory','=','OPERATION')
             ->get();
+
+        $notifClaim = '';
 
 
         if ($ter != null) {
@@ -3683,6 +3694,8 @@ class ReportController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $notifClaim = '';
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -4140,322 +4153,128 @@ class ReportController extends Controller
     
     }
 
-    public function download_excel_presales_win(Request $request)
-    {
-    	$nama = 'Report Presales '.date("d-m-Y");
-        Excel::create($nama, function ($excel) use ($request) {
+    public function download_excel_presales_win(Request $request) {
+        $spreadsheet = new Spreadsheet();
 
-        	$excel->sheet("Total Lead", function ($sheet) use ($request) {
+        $spreadsheet->removeSheetByIndex(0);
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Summary Lead Presales'));
+        $summarySheet = $spreadsheet->setActiveSheetIndex(0);
+
+        $summarySheet->mergeCells('A1:L1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $titleStyle['font']['bold'] = true;
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+
+        $summarySheet->getStyle('A1:L1')->applyFromArray($titleStyle);
+        $summarySheet->setCellValue('A1','Total Lead Register');
+
+        $headerContent = ["No","Presales Name", "Total Initial", "Total Open", "Total Sd","Total Tp","Total Win","Total Lose", "Total Hold", "Total Cancel", "Total Spesial", "Total Lead"];
+        $summarySheet->getStyle('A2:L2')->applyFromArray($headerStyle);
+        $summarySheet->fromArray($headerContent,NULL,'A2');
+
+        $summaryPresales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
+            ->select('presales.name',
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)), "-") AS "INITIAL"'), 
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)), "-") AS "OPEN"'), 
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "SD",1,NULL)), "-") AS "SD"'),
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)), "-") AS "TP"'),
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)), "-") AS "WIN"'),
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)), "-") AS "LOSE"'),
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)), "-") AS "HOLD"'),
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)), "-") AS "CANCEL"'),
+                DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "SPESIAL",1,NULL)), "-") AS "SPESIAL"'),
+                DB::raw('COUNT(*) AS `All`')
+            )
+            ->where('id_company','1')
+            ->where('sales_lead_register.year', $request->year)
+            ->groupBy('sales_solution_design.nik')
+            ->get();
+
+        $summaryPresales->map(function($item,$key) use ($summarySheet){
+            $summarySheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        });
+
+        $summarySheet->getColumnDimension('A')->setAutoSize(true);
+        $summarySheet->getColumnDimension('B')->setAutoSize(true);
+        $summarySheet->getColumnDimension('C')->setAutoSize(true);
+        $summarySheet->getColumnDimension('D')->setAutoSize(true);
+        $summarySheet->getColumnDimension('E')->setAutoSize(true);
+        $summarySheet->getColumnDimension('F')->setAutoSize(true);
+        $summarySheet->getColumnDimension('G')->setAutoSize(true);
+        $summarySheet->getColumnDimension('H')->setAutoSize(true);
+        $summarySheet->getColumnDimension('I')->setAutoSize(true);
+        $summarySheet->getColumnDimension('J')->setAutoSize(true);
+        $summarySheet->getColumnDimension('K')->setAutoSize(true);
+        $summarySheet->getColumnDimension('L')->setAutoSize(true);
+
+        $detailPresales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+            ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+            ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
+            ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+            ->select(
+                'sales_solution_design.lead_id', 
+                'opp_name',
+                'tb_contact.brand_name', 
+                'sales.name',
+                'sales_lead_register.amount',
+                'result',
+                DB::raw('`presales`.`name` AS `presales_name`'))
+            ->where('presales.id_company', '1')
+            ->where('sales_lead_register.year', $request->year)
+            ->orderBy('result')
+            ->get()->sortBy('presales_name')->groupBy('presales_name');
+
+        // return $detailPresales;
+
+        $indexSheet = 0;
+        foreach ($detailPresales as $key => $item) {
+            $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
+            $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
+
+            $detailSheet->getStyle('A1:G1')->applyFromArray($titleStyle);
+            $detailSheet->setCellValue('A1','Lead Register');
+            $detailSheet->mergeCells('A1:G1');
+
+            $headerContent = ["No", "Lead Id", "Customer", "Opp Name", "Owner", "Amount", "Status"];
+            $detailSheet->getStyle('A2:G2')->applyFromArray($headerStyle);
+            $detailSheet->fromArray($headerContent,NULL,'A2');
+
+            foreach ($item as $key => $eachLead) {
+                $eachLead->amount = number_format($eachLead->amount,2,",",".");
+                $eachLead->result = ($eachLead->result == "" ? "OPEN" : $eachLead->result);
+                $detailSheet->fromArray(array_merge([$key + 1],array_values($eachLead->toArray())),NULL,'A' . ($key + 3));
+            }
+            $detailSheet->getColumnDimension('H')->setVisible(false);
+            $detailSheet->getColumnDimension('A')->setAutoSize(true);
+            $detailSheet->getColumnDimension('B')->setAutoSize(true);
+            $detailSheet->getColumnDimension('C')->setAutoSize(true);
+            $detailSheet->getColumnDimension('D')->setAutoSize(true);
+            $detailSheet->getColumnDimension('E')->setAutoSize(true);
+            $detailSheet->getColumnDimension('F')->setAutoSize(true);
+            $detailSheet->getColumnDimension('G')->setAutoSize(true);
+            $indexSheet = $indexSheet + 1;
+        }
+
+        $fileName = 'Report Presales ' . date("d-m-Y") . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
         
-                $sheet->mergeCells('A1:L1');
-
-                $sheet->row(1, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(12);
-                    $row->setAlignment('center');
-                    $row->setFontWeight('bold');
-                });
-
-                $sheet->row(1, array('Total Lead Register'));
-
-                $sheet->row(2, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(11);
-                    $row->setFontWeight('bold');
-                });
-
-                $top_win_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-        					->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-        					->select('presales.name', 
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)), "-") AS "INITIAL"'), 
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)), "-") AS "OPEN"'), 
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "SD",1,NULL)), "-") AS "SD"'),
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)), "-") AS "TP"'),
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)), "-") AS "WIN"'),
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)), "-") AS "LOSE"'),
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "HOLD",1,NULL)), "-") AS "HOLD"'),
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "CANCEL",1,NULL)), "-") AS "CANCEL"'),
-        						DB::raw('IFNULL(COUNT(IF(`sales_lead_register`.`result` = "SPESIAL",1,NULL)), "-") AS "SPESIAL"'),
-        						DB::raw('COUNT(*) AS `All`')
-        					)
-        					->where('id_company','1')
-        					->where('sales_lead_register.year', $request->type)
-        					->groupBy('sales_solution_design.nik')
-        					->get();
-
-                $datasheetpo = array();
-                $datasheetpo[0] = array("No","Presales Name", "Total Initial", "Total Open", "Total Sd","Total Tp","Total Win","Total Lose", "Total Hold", "Total Cancel", "Total Spesial", "Total Lead");
-                $i=1;
-
-                foreach ($top_win_presales as $data) {
-                    $datasheetpo[$i] = array($i,
-                            $data['name'],
-                            $data['INITIAL'],
-                            $data['OPEN'],
-                            $data['SD'],
-                            $data['TP'],
-                            $data['WIN'],
-                            $data['LOSE'],
-                            $data['HOLD'],
-                            $data['CANCEL'],
-                            $data['SPESIAL'],
-                            $data['All'],
-                        );
-                	$i++;  
-                }
-                $sheet->fromArray($datasheetpo);
-                
-        	});
-
-        	$users = User::select('name', 'nik')->where('id_territory', 'PRESALES')->where('name', '!=', 'PRESALES')->get();
-
-        	foreach ($users as $user) {
-        		$excel->sheet($user->name, function ($sheet) use ($request,$user) {
-        
-	                $sheet->mergeCells('A1:G1');
-
-	                $sheet->row(1, function ($row) {
-	                    $row->setFontFamily('Calibri');
-	                    $row->setFontSize(12);
-	                    $row->setAlignment('center');
-	                    $row->setFontWeight('bold');
-	                });
-
-	                $sheet->row(1, array('Lead Register'));
-
-	                $sheet->row(2, function ($row) {
-	                    $row->setFontFamily('Calibri');
-	                    $row->setFontSize(11);
-	                    $row->setFontWeight('bold');
-	                });
-
-	                $win_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'WIN')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-	                $sd_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'SD')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-
-	                $tp_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'TP')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-
-	                $open_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' END) as results"), 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', '')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-
-	                $initial_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' END) as results"), 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'OPEN')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-
-	                $lose_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'LOSE')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-	                $hold_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'HOLD')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-	                $cancel_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'CANCEL')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-	                $spesial_presales = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-	                		->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-	                        ->join('users as presales', 'presales.nik', '=', 'sales_solution_design.nik')
-	                        ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
-	                        ->select('sales_solution_design.lead_id', 'opp_name', 'deal_price', 'result', 'sales_lead_register.amount', 'tb_contact.brand_name',  'sales.name')
-	                        ->where('sales_solution_design.nik',$user->nik)
-	                        ->where('presales.id_company', '1')
-	                        ->where('result', 'SPESIAL')
-	                        ->where('sales_lead_register.year', $request->type)
-	                        ->get();
-
-
-	                    $datasheetpo = array();
-	                    $datasheetpo[0] = array("No", "Lead Id", "Customer", "Opp Name", "Owner", "Amount", "Status");
-	                    $i=1;
-
-	                    foreach ($initial_presales as $data) {
-		                    $datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['amount'],2,",","."),
-                                    $data['results'],
-                                );
-                        	$i++;  
-	                    }
-
-
-	                    foreach ($open_presales as $data) {
-		                    $datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['amount'],2,",","."),
-                                    $data['results'],
-                                );
-                        	$i++;  
-	                    }
-
-
-	                    foreach ($sd_presales as $data) {
-		                    $datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['amount'],2,",","."),
-                                    $data['result'],
-                                );
-                        	$i++;  
-	                    }
-
-
-	                    foreach ($tp_presales as $data) {
-		                    $datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['amount'],2,",","."),
-                                    $data['result'],
-                                );
-                        	$i++;  
-	                    }
-	                    
-
-	                    foreach ($win_presales as $data) {
-		                    $datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['deal_price'],2,",","."),
-                                    $data['result'],
-                                );
-                        	$i++;  
-	                    }
-
-	                    foreach ($lose_presales as $data) {
-	                    	$datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['deal_price'],2,",","."),
-                                    $data['result'],
-                                );
-                        	$i++; 
-	                    }
-
-	                    foreach ($hold_presales as $data) {
-		                    $datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['amount'],2,",","."),
-                                    $data['result'],
-                                );
-                        	$i++;  
-	                    }
-	                    
-
-	                    foreach ($cancel_presales as $data) {
-		                    $datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['deal_price'],2,",","."),
-                                    $data['result'],
-                                );
-                        	$i++;  
-	                    }
-
-	                    foreach ($spesial_presales as $data) {
-	                    	$datasheetpo[$i] = array($i,
-                                    $data['lead_id'],
-                                    $data['brand_name'],
-                                    $data['opp_name'],
-                                    $data['name'],
-                                    number_format($data['deal_price'],2,",","."),
-                                    $data['result'],
-                                );
-                        	$i++; 
-	                    }
-
-	                    $sheet->fromArray($datasheetpo);
-                    
-            	});
-        	}
-
-        })->export('xls');
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 
     public function filter_presales_each_year(Request $req)
@@ -5303,6 +5122,8 @@ class ReportController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $notifClaim = '';
         
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -5446,7 +5267,7 @@ class ReportController extends Controller
                             ->get();
         }
 
-        return view('report/record_authentication', compact('lead','leads','notif', 'total_ter', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
+        return view('report/record_authentication', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
     
     }
 
@@ -5707,7 +5528,7 @@ class ReportController extends Controller
             $notifc = count($notif);        
         }
 
-        return view('report/report_product', compact('notifc','lead','notif','notifOpen','notifsd','notiftp','notifc','territory_loop'));
+        return view('report/report_product', compact('notifc','notif','notifOpen','notifsd','notiftp','notifc','territory_loop'));
     
     }
 

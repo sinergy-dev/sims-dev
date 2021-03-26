@@ -477,7 +477,7 @@
 
     function exportExcel() {
       type = encodeURI($("#year_filter").val())
-      myUrl = url+"/report_excel_presales?type="+type
+      myUrl = url+"/report_excel_presales?year=" + type
       location.assign(myUrl)
     }
 

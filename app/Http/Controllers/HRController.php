@@ -172,6 +172,11 @@ class HRController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else{
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
         }
 
         return collect([
@@ -1472,25 +1477,43 @@ class HRController extends Controller
         $notiftp = $notifAll["notiftp"]; 
         $notifClaim = $notifAll["notifClaim"];    
 
-        $data = GuideLine::select('id','description','link_url','regulation','policy')->get();
+        $data = GuideLine::select('id','description','link_url','title','efective_date')->get();
 
         return view('HR/guideLines',compact('data','notif','notifOpen','notifsd','notiftp','notifClaim'));
 
     }
 
+    public function getGuideIndex(Request $request){
+        if ($request->type == null) {
+            return array("data"=>GuideLine::select('id','description','link_url','title as title_guide','efective_date')->where('type','kebijakan')->get()); 
+        }else{
+            return array("data"=>GuideLine::select('id','description','link_url','title as title_guide','efective_date')->where('type',$request->type)->get());
+        }
+
+    }
+
+    public function getGuideIndexById(Request $request){
+
+        return GuideLine::select('id','description','link_url','title as title_guide','efective_date')->where('id',$request->id)->get();
+
+    }
+
     public function storeGuideLine(Request $request){
-        $tambah = New GuideLine();
-        $tambah->description = $request->description;
-        $tambah->link_url = $request->link;
-        $tambah->date_add = date('Y-m-d h:i:s');
+        $tambah                 = New GuideLine();
+        $tambah->title          = $request->title;
+        $tambah->efective_date  = $request->efective_date;        
+        $tambah->description    = $request->description;
+        $tambah->link_url       = $request->link;
+        $tambah->type           = $request->type;        
+        $tambah->date_add       = date('Y-m-d h:i:s');
         $tambah->save();
     }
 
     public function updateGuideLine(Request $request){
-
-        $update = GuideLine::where('id',$request->id)->first();
-        $update->description = $request->description;
-        $update->link_url = $request->link;
+        $update                 = GuideLine::where('id',$request->id)->first();
+        $update->description    = $request->description;
+        $update->link_url       = $request->link;
+        $update->title          = $request->title;
         $update->save();
     }
 
@@ -1498,7 +1521,5 @@ class HRController extends Controller
 
         $delete = GuideLine::where('id',$request->id)->first();
         $delete->delete();
-
-        return redirect()->back('HR/guideLines');
     }
 }

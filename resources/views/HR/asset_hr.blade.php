@@ -4,6 +4,7 @@
 <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" /> -->
 <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap4-select2-theme@1.0.3/src/css/bootstrap4-select2-theme.css" rel="stylesheet" /> -->
 <!-- <link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css" rel="stylesheet" /> -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <style type="text/css">
   .select2{
     width: 100%!important;
@@ -22,6 +23,20 @@
 
   .padding{
     padding: 10px
+  }
+
+  .active-tab{
+    display: block;
+  }
+
+  .no-active-tab{
+    display: none;
+  }
+
+  td>.truncate{
+    word-break:break-all;
+    white-space: normal;
+    width:200px;  
   }
 </style>
 <section class="content">
@@ -51,7 +66,7 @@
 
   <div class="box">
     <div class="box-body">
-      <div class="nav-tabs-custom active" id="asset" role="tabpanel">
+      <div class="nav-tabs-custom" id="asset" role="tabpanel">
         <ul class="nav nav-tabs" id="myTab" role="tablist"> 
           <li class="nav-item">
             <a class="nav-link" id="list_asset" data-toggle="tab" href="#asset_list" role="tab" aria-controls="asset" aria-selected="false"><i class="fa fa-list"></i>&nbspList Asset</a>
@@ -63,13 +78,14 @@
           <li class="nav-item">
             <a class="nav-link" id="request_list" data-toggle="tab" href="#request_asset" role="tab" aria-controls="kategori" aria-selected="false"><i class="fa fa- fa-exclamation"></i>&nbspRequest</a>
           </li>
+          <button class="btn btn-sm btn-primary pull-right" style="width: 120px;margin-left: 5px" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  
           <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd"><i class="fa fa-plus"> </i>&nbsp Asset</button>
           <a href="{{url('exportExcelAsset')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
           @else
           <li class="nav-item">
             <a class="nav-link" id="my_asset" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Current Borrowed/Request</a>
-          </li>
-          <button class="btn btn-sm btn-success pull-right" style="width: 100px" id="btnRequest"><i class="fa fa-plus"> </i>&nbsp Request Asset</button>
+          </li>          
+          <button class="btn btn-sm btn-success pull-right" style="width: 100px;margin-right: 5px" id="btnRequest"><i class="fa fa-plus"> </i>&nbsp Request Asset</button>
           <button class="btn btn-sm btn-info pull-right" style="width: 100px;margin-right: 5px" id="btnPinjam"><i class="fa fa-plus"> </i>&nbsp Borrow Asset</button>
           @endif
           <li class="nav-item">
@@ -77,7 +93,7 @@
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">           
-          <div class="tab-pane active" id="asset_list" role="tabpanel" aria-labelledby="home-tab">
+          <div class="tab-pane" id="asset_list" role="tabpanel" aria-labelledby="home-tab">
             <br>            
             <div class="table-responsive" >
               <table class="table table-bordered table-striped" id="data_table" width="100%" cellspacing="0">
@@ -198,7 +214,7 @@
               </table>
             </div>
           </div>
-          <div class="tab-pane fade" id="request_asset">
+          <div class="tab-pane" id="request_asset">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered requestTable" id="request_table" width="100%" cellspacing="0">
                 <thead>
@@ -232,7 +248,7 @@
                       <td>{{$datas->id_request}}</td>
                       <td>{{$datas->name}}</td>
                       <td>{{$datas->nama}}</td>
-                      <td><a href="{{$datas->link}}" target="_blank">{!!substr($datas->link, 0, 35) !!}...</a></td> 
+                      <td><div class="truncate">{{$datas->link}}</div></td> 
                       <td style="display: none" class="links{{$datas->id_request}}">{{$datas->link}}</td>
                       <td>
                         @if($datas->status == 'REQUEST')
@@ -394,116 +410,212 @@
           <div class="modal-body">
             <form method="POST" action="{{url('store_asset_hr')}}" id="modal_add_asset" name="modalProgress">          
               @csrf
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Asset Code</label>
-                    <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden>
-                    <input name="asset_code" id="asset_code" class="d-block form-control" value="{{$nomor}}" readonly>
-                  </div>
+              <div class="tab active-tab">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Asset Code</label>
+                      <input name="kode_asset" id="kode_asset" class="form-control hidden" value="{{$nomor}}" hidden>
+                      <input name="asset_code" id="asset_code" class="d-block form-control" value="{{$nomor}}" readonly>
+                    </div>
 
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Category</label>
-                    <select class="d-block form-control category_asset" id="category_asset" name="category_asset" required>
-                    </select>
-                    <input type="text" name="category_id" id="category_id" hidden>
-                    <input type="text" name="category_id_req" id="category_id_req" hidden>
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Category</label>
+                      <select class="d-block form-control category_asset" id="category_asset" name="category_asset" required>
+                      </select>
+                      <input type="text" name="category_id" id="category_id" hidden>
+                      <input type="text" name="category_id_req" id="category_id_req" hidden>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Company</label>
-                    <select class="form-control" id="company_asset" name="company_asset" required>
-                      <option value="">Select Company</option>
-                      <option value="SIP">PT. SIP</option>
-                      <option value="MSP">PT. MSP</option>
-                    </select>
-                  </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Company</label>
+                      <select class="form-control" id="company_asset" name="company_asset" required>
+                        <option value="">Select Company</option>
+                        <option value="SIP">PT. SIP</option>
+                        <option value="MSP">PT. MSP</option>
+                      </select>
+                    </div>
 
-                  <div class="col-md-6 form-group">
-                    <label>Merk</label>
-                    <input type="" class="form-control" name="merk_barang" id="merk_barang" placeholder="input merk">
-                  </div>
-                </div> 
-              </div>
-              
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Name</label>
-                    <input name="nama_barang" id="nama_barang" placeholder="input name" class="form-control" required>
-                  </div>
-
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Serial Number</label>
-                    <input name="asset_sn" id="asset_sn" class="form-control" placeholder="input serial number">
-                  </div>                   
+                    <div class="col-md-6 form-group">
+                      <label>Merk</label>
+                      <input type="" class="form-control" name="merk_barang" id="merk_barang" placeholder="input merk">
+                    </div>
+                  </div> 
                 </div>
-              </div>
+                
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Name</label>
+                      <input name="nama_barang" id="nama_barang" placeholder="input name" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Serial Number</label>
+                      <input name="asset_sn" id="asset_sn" class="form-control" placeholder="input serial number">
+                    </div>                   
+                  </div>
+                </div>
+                      
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Type</label>
+                      <input name="type_asset" id="type_asset" placeholder="input type asset" class="form-control">
+                    </div>
                     
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Type</label>
-                    <input name="type_asset" id="type_asset" placeholder="input type asset" class="form-control">
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Note</label>
+                      <textarea name="note" id="note" placeholder="input note" class="form-control" ></textarea>            
+                    </div>            
                   </div>
-                  
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Note</label>
-                    <textarea name="note" id="note" placeholder="input note" class="form-control" ></textarea>            
-                  </div>            
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Purchase Price</label>
+                      <input name="purchase_price" id="purchase_price" class="form-control money" placeholder="input price asset" required>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Specification</label>
+                      <textarea name="keterangan" id="keterangan" placeholder="input Specification" class="form-control" required=""></textarea>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Date of Purchase</label>
+                      <input type="text" name="asset_date" id="asset_date" placeholder="input date" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                      <label for="sow">Location</label>
+                      <textarea name="lokasi" id="lokasi" class="form-control" placeholder="input location"></textarea>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="col-md-6 form-group" style="display: none;" id="peminjams">
+                      <label for="sow">Request By</label>
+                      <input type="text" name="requestBy" id="requestBy" class="form-control" readonly="">
+                      <input type="text" name="requestNik" id="requestNik" class="form-control hidden">
+                      <input type="text" name="id_requestNewAsset" id="id_requestNewAsset" class="form-control hidden">
+                    </div>
+                  </div>
                 </div>
               </div>
+              <!-- <div class="tab" style="display: none;">
+                <div class="form-group">
+                  <label>Title</label>
+                  <input type="" name="" class="form-control">
+                </div>
 
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Purchase Price</label>
-                    <input name="purchase_price" id="purchase_price" class="form-control money" placeholder="input price asset" required>
-                  </div>
+                <div class="form-group">
+                  <label>Description</label>
+                  <textarea class="form-control"></textarea>
+                </div>
 
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Specification</label>
-                    <textarea name="keterangan" id="keterangan" placeholder="input Specification" class="form-control" required=""></textarea>
+                <div class="form-group">
+                  <label>Date & Time</label>
+                  <div class="input-group">
+                    <div class="input-group-addon">
+                      <i class="fa fa-clock-o"></i>
+                    </div>
+                    <input type="text" class="form-control pull-right" id="eventsCalendar">
                   </div>
                 </div>
-              </div>
-              
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Date of Purchase</label>
-                    <input type="text" name="asset_date" id="asset_date" placeholder="input date" class="form-control" required>
-                  </div>
 
-                  <div class="col-md-6 form-group">
-                    <label for="sow">Location</label>
-                    <textarea name="lokasi" id="lokasi" class="form-control" placeholder="input location"></textarea>
+                <div class="form-group">
+                  <label>Guest</label>
+                  <div class="input-group">
+                    <div class="input-group-addon">
+                      <i class="fa fa-user-plus"></i>
+                    </div>
+                    <select class="form-control" id="guestEmail" name="guestEmail" multiple="multiple">
+                      <option value="ladinarnanda@gmail.com">Ladinar Nanda Aprilia</option>
+                      <option value="faiqoh11.fa@gmail.com">faiqoh</option>
+                    </select>
                   </div>
                 </div>
-              </div>
-              
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="col-md-6 form-group" style="display: none;" id="peminjams">
-                    <label for="sow">Request By</label>
-                    <input type="text" name="requestBy" id="requestBy" class="form-control" readonly="">
-                    <input type="text" name="requestNik" id="requestNik" class="form-control hidden">
-                    <input type="text" name="id_requestNewAsset" id="id_requestNewAsset" class="form-control hidden">
-                  </div>
-                </div>
-              </div>               
+              </div> -->                             
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>                       
               <button type="submit" class="btn btn-sm btn-success" id="btnSubmit"><i class="fa fa-check"></i>&nbsp Submit</button>
           </div>
         </form>
       </div>
     </div>
+</div>
+
+<div class="modal fade" id="modalCalender">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Events Calender</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Date & Time</label>
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="fa fa-clock-o"></i>
+            </div>
+            <input type="text" class="form-control pull-right" id="eventsCalendar">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Title</label>
+          <input type="" name="summaryCal" class="form-control" id="summaryCal">
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" id="descCal" name="descCal"></textarea>
+        </div>        
+
+        <div class="form-group">
+          <label>Guest</label>
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="fa fa-user-plus"></i>
+            </div>
+            <select class="form-control" id="guestEmail" name="guestEmail" multiple="multiple">
+              <option value="ladinarnanda@gmail.com">Ladinar Nanda Aprilia</option>
+              <option value="faiqoh11.fa@gmail.com">faiqoh</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Group calendar</label>
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+            <select class="form-control" id="groupCalendar" name="groupCalendar">
+            </select>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+          <button type="button" class="btn btn-sm btn-info" id="submitCalendar"><i class="fa fa-check"></i>&nbsp Submit</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!--edit asset-->
@@ -701,7 +813,7 @@
           <h4 class="modal-title">Delete Asset</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('penghapusan_hr')}}" id="modal_peminjaman" name="modalProgress">
+          <form method="POST" action="{{url('penghapusan_hr')}}" name="modalProgress">
             @csrf
             <input type="text" name="id_barang" id="id_barang_hapus" hidden>
             <div class="form-group">
@@ -938,8 +1050,12 @@ REJECT
 @endsection
 
 @section('script')
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script> -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script src="https://momentjs.com/downloads/moment-timezone.min.js"></script>
+  <script type="text/javascript" src="https://momentjs.com/downloads/moment-timezone-with-data.js"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> 
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
@@ -948,8 +1064,55 @@ REJECT
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript">
+    $.ajax({
+      type:"GET",
+      url: "/testgetCalendarList",
+      success:function(result){
+        $('#groupCalendar').select2({
+          placeholder: "Select a category",
+          data: $.map(result.items, function (item) {
+            return {
+              id:item.id,
+              text:item.summary
+            }
+          })
+        })        
+      },
+    })
+
     $("#company_asset").select2()
     $("#select-status").select2()
+    $("#guestEmail").select2()
+
+    $("#eventsCalendar").daterangepicker({
+      timePicker: true,
+      start: moment().startOf('hour'),
+      end: moment().startOf('hour').add(32, 'hour'),
+      locale: {
+        format: 'DD/MM/YYYY hh:mm A'
+      }
+    })
+
+    $("#submitCalendar").click(function(){
+      var startDate = $('#eventsCalendar').val().slice(0,19)
+      var endDate = $('#eventsCalendar').val().slice(22,41)
+      console.log(moment.tz(startDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format())
+      $.ajax({
+        type:"GET",
+        url: "testPostEventCalendar",
+        data:{
+          summary:$("#summaryCal").val(),
+          description:$("#descCal").val(),
+          startDateTime:moment.tz(startDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format(),
+          endDateTime:moment.tz(endDate, "DD/MM/YYYY hh:mm A", "Asia/Jakarta").format(),
+          email:$("#guestEmail").val(),
+          group:$("#groupCalendar").val()
+        },
+        success:function(result){
+          alert("event created")      
+        },
+      })
+    })
 
     $('.money').mask('000,000,000,000,000', {reverse: true});
 
@@ -962,6 +1125,11 @@ REJECT
         $('#requestAsset').modal('hide')
       })
     })  
+
+    $("#addEvents").click(function(){
+      $("#modalCalender").modal("show")
+      console.log("cobaalagi")
+    })
 
     $("#category_asset").on('change',function(){
       $("#category_id").val($('#category_asset').select2('data')[0].no)
@@ -1426,6 +1594,9 @@ REJECT
     	 
 	      $.ajax({
 		    type:"GET",
+        data:{
+          category:note
+        },
 		    url: "getListAsset",
 		    success:function(result){
 		      	var arr = result.results;        
@@ -1778,18 +1949,25 @@ REJECT
       pageLength: 20,
     })
 
-    @if(Auth::User()->id_position == 'WAREHOUSE' || Auth::User()->id_position == 'HRD MANAGER')
+    if('{{Auth::User()->id_position == "WAREHOUSE" || Auth::User()->id_position == "HRD MANAGER"}}'){
       if (requestTable.rows().count()) {
         $('#request_list').append('<span class="badge">'+ requestTable.rows().count() +'</span>')
-        // $('.request_list').addClass('active')
-        activeTab('request_asset')      
+        $('#request_asset').addClass('active')
+        $('#asset_listset').removeClass('active')        
+        activeTab('request_asset')  
+        $('#btnAdd').hide()
+        $('#btnExport').hide() 
       }else{
         activeTab('asset_list') 
+        $('#asset_list').addClass('active')
+        $('#request_asset').removeClass('active')
       }
-    @else
-      activeTab('asset_list') 
-    @endif
-    
+    }else{
+      activeTab('asset_list')
+      $('#asset_list').addClass('active')
+      $('#request_asset').removeClass('active')
+
+    }
 
     function activeTab(tab){
       $('#myTab a[href="#' + tab + '"]').tab('show');
