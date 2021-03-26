@@ -953,13 +953,14 @@ class AssetController extends Controller
         $asset2 = DB::table('tb_asset')
                     ->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
                     ->join('tb_detail_asset_transaction', 'tb_detail_asset_transaction.id_barang', '=', 'tb_asset.id_barang')
-                    ->select(DB::raw('count(tb_detail_asset_transaction.id_barang) as qty_pinjam'), 'nama_barang', 'tb_kategori_asset.description', 'serial_number', 'tb_asset.status', 'kategori', 'tb_asset.id_barang', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location')
+                    ->select(DB::raw('count(tb_detail_asset_transaction.id_barang) as qty_pinjam'), 'nama_barang', 'tb_asset.description', 'serial_number', 'tb_asset.status', 'kategori', 'tb_asset.id_barang', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location')
                     ->groupBy('tb_detail_asset_transaction.id_barang')
                     ->get();
 
+
         $asset3 = DB::table('tb_asset')
                 ->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
-                ->select('tb_asset.id_barang','nama_barang','tb_kategori_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location')
+                ->select('tb_asset.id_barang','nama_barang','tb_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location')
                 ->where('status_pinjam', 'TIDAK PERNAH')
                 ->get();
 

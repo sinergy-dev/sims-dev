@@ -4,6 +4,9 @@
     .DTFC_LeftBodyLiner {
       overflow: hidden;
     }
+    th {
+      text-align: center;
+    }
   </style>
 
   <section class="content-header">
@@ -63,7 +66,7 @@
         <div class="table-responsive">
             <table class="table table-bordered nowrap table-striped dataTable" id="data_Table" width="100%" cellspacing="0">
               <thead>
-                <tr>
+                <tr style="text-align: center;">
                   <th>No</th>
                   <th>Type</th>
                   <th>Division</th>

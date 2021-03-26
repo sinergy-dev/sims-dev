@@ -18,7 +18,7 @@
                 display: table;
                 font-weight: 100;
                 font-family: 'Lato';
-                background-image: url("glitch2.jpg");
+                background-image: url("img/notfound.png");
                 background-size: 1370px;
             }
 
