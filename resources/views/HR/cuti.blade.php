@@ -160,9 +160,9 @@
                     <li class="tabs_item">
                       <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
                     </li>
-                    <li class="tabs_item">
-                      @if(Auth::User()->id_position == 'HR MANAGER')
-                      <a href="#staff"  data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
+                    <li>
+                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                      <a href="#staff" data-toggle="tab">Report Cuti</a>
                       @else
                       <a href="#staff"  data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
                       @endif
@@ -740,7 +740,7 @@
               var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
               if(index > 0){
                 return {
-                  enabled: false,
+                  // enabled: false,
                   tooltip: hari_libur_nasional_tooltip[index],
                   classes: 'hari_libur'
                 };

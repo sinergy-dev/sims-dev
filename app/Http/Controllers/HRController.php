@@ -394,6 +394,10 @@ class HRController extends Controller
         $tambah->id_presence_setting = '1';
         $tambah->status_kerja = $request['status_kerja'];
 
+        if ($request['status_kerja'] != "") {
+            $update->status_kerja = $request['status_kerja'];
+        }
+
         if($request['id_sub_division_tech_'] == 'PRESALES'){
             $tambah->id_division = 'TECHNICAL PRESALES';
         } elseif($request['division_sip'] == 'OPERATION'){
@@ -642,9 +646,9 @@ class HRController extends Controller
         
         if ($request['name_update'] != "") {
             $update->name = $request['name_update'];
-        } elseif ($request['email_update'] != "") {
+        } else if ($request['email_update'] != "") {
             $update->email = $request['email_update'];
-        }
+        } 
         
         
         if ($request['company_update'] != "") {

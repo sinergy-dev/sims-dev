@@ -199,6 +199,7 @@ class PONumberController extends Controller
         $tahun = Date('Y');
 
         return array(DB::table('tb_pr')->select('no_pr', 'to', 'no')->where('date','like',$tahun."%")->where('result', '!=', 'used')->orderBy('created_at', 'desc')->get());
+        // return array(DB::table('tb_pr')->select('no_pr', 'to', 'no')->where('date','like','2020'."%")->orWhere('date','like',$tahun."%")->where('result', '!=', 'used')->orderBy('created_at', 'desc')->get());
     }
 
     public function getdatapr(Request $request)
@@ -261,8 +262,12 @@ class PONumberController extends Controller
 
         if ($cek > 0) {
         	$type = 'PO';
-	        $month_pr = substr($request['date'],5,2);
-	        $year_pr = substr($request['date'],0,4);
+	        
+            $edate = strtotime($_POST['date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $month_po = substr($edate,5,2);
+            $year_po = substr($edate,0,4);
 
 	        $array_bln = array('01' => "I",
 	                            '02' => "II",
@@ -276,7 +281,7 @@ class PONumberController extends Controller
 	                            '10' => "X",
 	                            '11' => "XI",
 	                            '12' => "XII");
-	        $bln = $array_bln[$month_pr];
+	        $bln = $array_bln[$month_po];
 
 	        $getnumber = PONumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
 
@@ -297,7 +302,7 @@ class PONumberController extends Controller
 	           $akhirnomor = $lastnumber;
 	        }
 
-	        $no = $akhirnomor.'/'.'FA'.'/'. $type.'/' . $bln .'/'. $year_pr;
+	        $no = $akhirnomor.'/'.'FA'.'/'. $type.'/' . $bln .'/'. $year_po;
 	        $nom = PONumber::select('no')->orderBy('created_at','desc')->first();
 
 
@@ -307,7 +312,7 @@ class PONumberController extends Controller
 	        $tambah->position = 'FA';
 	        $tambah->type_of_letter = $type;
 	        $tambah->month = $bln;
-	        $tambah->date = $request['date'];
+	        $tambah->date = $edate;
 	        $tambah->to = $request['to'];
 	        $tambah->attention = $request['attention'];
 	        $tambah->title = $request['title'];
@@ -327,8 +332,11 @@ class PONumberController extends Controller
 	        return redirect('po')->with('success', 'Created Purchase Order Successfully!');
         } else {
         	$type = 'PO';
-	        $month_pr = substr($request['date'],5,2);
-	        $year_pr = substr($request['date'],0,4);
+	        $edate = strtotime($_POST['date']); 
+            $edate = date("Y-m-d",$edate);
+
+            $month_po = substr($edate,5,2);
+            $year_po = substr($edate,0,4);
 
 	        $array_bln = array('01' => "I",
 	                            '02' => "II",
@@ -342,7 +350,7 @@ class PONumberController extends Controller
 	                            '10' => "X",
 	                            '11' => "XI",
 	                            '12' => "XII");
-	        $bln = $array_bln[$month_pr];
+	        $bln = $array_bln[$month_po];
 
 	        $getnumber = PONumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
 
@@ -363,7 +371,7 @@ class PONumberController extends Controller
 	           $akhirnomor = $lastnumber;
 	        }
 
-	        $no = $akhirnomor.'/'.'FA'.'/'. $type.'/' . $bln .'/'. $year_pr;
+	        $no = $akhirnomor.'/'.'FA'.'/'. $type.'/' . $bln .'/'. $year_po;
 
 	        $tambah = new PONumber();
 	        $tambah->no = $getnumbers->no+1;
@@ -371,7 +379,7 @@ class PONumberController extends Controller
 	        $tambah->position = 'FA';
 	        $tambah->type_of_letter = $type;
 	        $tambah->month = $bln;
-	        $tambah->date = $request['date'];
+	        $tambah->date = $edate;
 	        $tambah->to = $request['to'];
 	        $tambah->attention = $request['attention'];
 	        $tambah->title = $request['title'];

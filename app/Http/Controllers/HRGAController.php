@@ -19,6 +19,7 @@ use GuzzleHttp\Client;
 use App\Messenger;
 use App\DetailMessenger;
 use PDF;
+use Log;
 
 class HRGAController extends Controller
 {
@@ -1573,10 +1574,16 @@ class HRGAController extends Controller
 
         $update_cuti = User::where('nik',$nik)->first();
         
+        Log::debug("$hitung = " . $hitung);
+        Log::debug("$update_cuti->cuti = " . $update_cuti->cuti);
         if ($hitung >= $update_cuti->cuti) {
+            Log::debug("$hitung >= $update_cuti->cuti");
+
             $ambil2020 = $hitung - $update_cuti->cuti;
+            Log::debug("$ambil2020 = " . $ambil2020);            
 
             $hasilsisa = $update_cuti->cuti2 - $ambil2020;
+            Log::debug("$hasilsisa = " . $hasilsisa); 
 
             if ($ambil2020 == 0) {
                 $update_cuti->cuti = $update_cuti->cuti - $hitung;
@@ -2238,7 +2245,7 @@ class HRGAController extends Controller
                         ->where('id_company','1')
                         ->orderBy('users.id_division')
 			            ->whereNotIn('nik',function($query) { 
-			            	$query->select('nik')->from('tb_cuti');
+			            	$query->select('nik')->whereYear('tb_cuti.date_req',date('Y'))->from('tb_cuti');
 
 			            })->get();
                 	}

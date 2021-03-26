@@ -116,6 +116,7 @@
               }
             },       
           ],
+           "order": [[ 0, "desc" ]]
 	});
 
 	var config = {
