@@ -278,6 +278,7 @@ class AssetHRController extends Controller
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
                            ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
                            ->where('nik',Auth::User()->nik)
+                           ->where('tb_asset_hr_request.status','<>','REQUEST')
                            ->where('tb_asset_hr_request.status','<>','PENDING')
                            ->get();
         }
@@ -1048,10 +1049,12 @@ class AssetHRController extends Controller
         $update->updated_at = date('Y-m-d h:i:s');
         $update->update(); 
 
-        $req_asset = AssetHrRequest::join('users','users.nik','=','tb_asset_hr_request.nik')
+        $asset = AssetHrRequest::join('users','users.nik','=','tb_asset_hr_request.nik')
                     ->select('nama','qty','link','merk','users.name','tb_asset_hr_request.updated_at','tb_asset_hr_request.status')
                     ->where('id_request',$request->id_requestNewAsset)
                     ->first();
+
+        $req_asset = collect(['asset'=>$asset]);
 
         $to = User::select('email')->where('nik',$update->nik)->get();
 
