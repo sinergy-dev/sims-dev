@@ -48,13 +48,8 @@ class RequestAssetHr extends Mailable
             return $this->subject($this->subject)
             ->view('mail.MailRequestNewAsset');  
         }else if ($this->status == 'proses') {
-            if($this->req_asset['asset']['status'] == "PENDING"){
-                return $this->subject($this->subject)
-                ->view('mail.MailAcceptRequestAsset');
-            }else{
-                return $this->subject($this->subject)
-                ->view('mail.MailAcceptRequestAsset');
-            }
+            return $this->subject($this->subject)            
+            ->view('mail.MailAcceptRequestAsset');
         }else{
             return $this->subject($this->subject)
             ->view('mail.MailAcceptRequestAsset');

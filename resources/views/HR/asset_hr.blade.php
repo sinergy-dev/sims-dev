@@ -1,9 +1,5 @@
 @extends('template.template_admin-lte')
 @section('content')
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
-<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" /> -->
-<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap4-select2-theme@1.0.3/src/css/bootstrap4-select2-theme.css" rel="stylesheet" /> -->
-<!-- <link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css" rel="stylesheet" /> -->
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <style type="text/css">
   .select2{
@@ -309,7 +305,7 @@
                       <td>{{$datas->code_kat}}</td>
                       <td>{{$datas->nama}}</td>
                       <td>{{$datas->merk}}</td>
-                      <td style="color: blue">{!!substr($datas->link, 0, 35) !!}...</td> 
+                      <td><div class="truncate">{{$datas->link}}</div></td> 
                       <td>
                         @if($datas->status == 'REQUEST')
                         <label class="label label-info">{{$datas->status}}</label>
@@ -363,7 +359,7 @@
                       <td>{{$datas->code_kat}}</td>
                       <td>{{$datas->nama}}</td>
                       <td>{{$datas->merk}}</td>
-                      <td style="color: blue">{!!substr($datas->link, 0, 35) !!}...</td> 
+                      <td><div class="truncate">{{$datas->link}}</div></td> 
                       <td>
                         @if($datas->status == 'ACCEPT')
                         <label class="label label-success">{{$datas->status}}</label>
@@ -1292,6 +1288,7 @@ REJECT
       daysOfWeekDisabled: "0,6",
       daysOfWeekHighlighted: [0,6],
       todayHighlight: true,
+      autoclose: true,
       beforeShowDay: function(date){
         var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
         if(index > 0){
