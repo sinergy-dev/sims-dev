@@ -400,7 +400,7 @@ class HRController extends Controller
         $tambah->status_kerja = $request['status_kerja'];
 
         if ($request['status_kerja'] != "") {
-            $update->status_kerja = $request['status_kerja'];
+            $tambah->status_kerja = $request['status_kerja'];
         }
 
         if($request['id_sub_division_tech_'] == 'PRESALES'){
