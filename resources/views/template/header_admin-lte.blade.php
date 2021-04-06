@@ -520,7 +520,7 @@
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-              <img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="user-image" alt="Yuki">
+              <img src="{{ asset('image/place_profile_3.png')}}" class="user-image" alt="Yuki">
             @else
               <img src="{{asset('image/'.Auth::User()->gambar)}}" class="user-image" alt="User Image">
             @endif
@@ -531,7 +531,7 @@
             <li class="user-header">
               {{-- <img src="{{asset('template2/dist/img/user2-160x160.jpg')}}" class="img-circle" alt="User Image"> --}}
               @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-                <img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="img-circle" alt="Yuki">
+                <img src="{{ asset('image/place_profile_3.png')}}" class="img-circle" alt="Yuki">
               @else
                 <img src="{{asset('image/'.Auth::User()->gambar)}}" class="img-circle" alt="User Image">
               @endif
@@ -612,7 +612,7 @@
     <div class="user-panel">
       <div class="pull-left image">
         @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-          <img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="img-circle" alt="Yuki">
+          <img src="{{ asset('image/place_profile_3.png')}}" class="img-circle" alt="Yuki">
         @else
           <img src="{{asset('image/'.Auth::User()->gambar)}}" class="img-circle" alt="User Image">
         @endif
