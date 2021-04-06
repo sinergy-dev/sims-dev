@@ -275,7 +275,7 @@
                         @elseif($data->status == 'PROCESS')
                         <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_request_modal" data-toggle="modal" name="btn_done" style="width: 90px; height: 25px" onclick="done_request_atk('{{$data->id_barang}}', '{{$data->nama}}', '{{$data->qty}}', '{{$data->nik}}', '{{$data->keterangan}}')">DONE</button>
                         @elseif($data->status == 'DONE')
-                        <button class="btn btn-xs btn-primary disabled" style="width: 90px; height: 25px">DONE</button>
+                        <button class="btn btn-xs btn-primary" style="width: 90px; height: 25px">DONE</button>
                         @else
                         <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
                         <button class="btn btn-xs btn-danger disabled" style="width: 90px; height: 25px;">REJECT</button>
@@ -353,8 +353,8 @@
                     <td>
                       @if($data->status == 'REQUEST' || $data->status == 'PROCESS')
                         <label class="label label-warning" style="width: 90px">PENDING</label>
-                      @elseif($data->status == 'ACCEPT')
-                        <label class="label label-primary" style="width: 90px">ACCEPTED</label>
+                      @elseif($data->status == 'DONE')
+                        <label class="label label-primary">DONE</label>
                       @elseif($data->status == 'REJECT')
                         <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @endif
