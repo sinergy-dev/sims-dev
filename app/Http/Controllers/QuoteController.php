@@ -210,6 +210,18 @@ class QuoteController extends Controller
 
 	}
 
+	public function get_backdate_num(Request $request)
+    {
+        if (isset($request->tanggal)) {
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->whereYear('created_at',substr($request->tanggal, 6,4))->orderBy('created_at','asc')->get();
+            return array('results'=>$backdate_num);
+        } else {
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->orderBy('created_at','asc')->get();
+            return array('results'=>$backdate_num);
+        }
+        
+    }
+
     public function getdataquote(Request $request)
     {
         $tahun = date("Y"); 
@@ -634,9 +646,9 @@ class QuoteController extends Controller
            $akhirnomor = $lastnumber;
         }*/
 
-        $akhirnomor = $request['backdate_num'];
+        // $akhirnomor = $request['backdate_num'];
 
-        $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
+        // $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
 
         // $angka7 = Quote::select('id_quote')
         //         ->where('status_backdate','T')
@@ -645,7 +657,9 @@ class QuoteController extends Controller
 
         // $angka = $angka7->id_quote;
 
-        $update = Quote::where('id_quote',$akhirnomor)->first();
+        // $update = Quote::where('id_quote',$akhirnomor)->first();
+        $update = Quote::where('id_quote',$request['backdate_num'])->first();
+        $no =         $update->quote_number .'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
         $update->quote_number = $no;
         $update->position = $posti;
         $update->type_of_letter = $type;
