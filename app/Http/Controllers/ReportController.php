@@ -2176,6 +2176,7 @@ class ReportController extends Controller
         		->select('year')
         		->where('year','!=',NULL)
         		->groupBy('year')
+                ->orderBy('year','desc')
                 ->get();
 
         $presales = '';        
