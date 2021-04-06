@@ -178,9 +178,19 @@
                 <option value="SGB">SBG (Surat Garansi Bank)</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Date</label>
             <input type="date" class="form-control" name="date" id="date" required>
+          </div> -->
+
+          <div class="form-group">
+            <label for="">Date</label>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right date" name="date" id="date_letter">
+            </div>
           </div>
           <div class="form-group">
             <label for="">To</label>
@@ -235,12 +245,30 @@
         <div class="modal-body">
           <form method="POST" action="{{url('/store_letterbackdate')}}" id="letter_backdate" name="letter_backdate">
             @csrf
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label>Backdate Number</label>
             <select type="text" class="form-control" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" required>
               @foreach($backdate_num as $data)
               <option value="{{$data->no_letter}}">{{$data->no_letter}}</option>
               @endforeach
+            </select>
+          </div> -->
+
+          <div class="form-group">
+            <label for="">Date</label>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right date" name="date" id="date_backdate">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Backdate Number</label>
+            <select type="text" class="form-control" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" disabled>
+              <!-- @foreach($backdate_num as $data)
+              <option value="{{$data->no_letter}}">{{$data->no_letter}}</option>
+              @endforeach -->
             </select>
           </div>
           <div class="form-group">
@@ -264,10 +292,10 @@
                 <option value="SGB">SBG (Surat Garansi Bank)</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Date</label>
             <input type="date" class="form-control" name="date" id="date" required>
-          </div>
+          </div> -->
           <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="to" id="to" required>
@@ -407,8 +435,12 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script type="text/javascript">
+    $('#date_letter').datepicker({
+      autoclose: true,
+    }).attr('readonly','readonly').css('background-color','#fff');
     $('#addLetter').click(function(){
       $('#tunggu').modal('show')
       $('#modal_pr').modal('hide')
@@ -419,6 +451,36 @@
       $('#tunggu').modal('show')
       $('#letter_backdate').modal('hide')
       setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
+    });
+
+    $('#date_backdate').datepicker({
+      autoclose: true,
+    }).on('hide', function(e) {
+        console.log($("#date_backdate").val());
+        // $("#backdate_num").val("").trigger('change')
+        $('#backdate_num').empty().trigger("change");
+        $.ajax({
+            type:"GET",
+            url:"get_backdate_letter",
+            data:{
+              tanggal:$('#date_backdate').val(),
+            },
+            success:function(result){
+              console.log(result.results.length)
+              if (result.results.length == 0) {
+                $('#submitBd').prop("disabled",true)          
+                initCekNum()
+                $("#backdate_num").prop("disabled",true)            
+              }else{
+                $('#submitBd').prop("disabled",false)
+                $("#backdate_num").prop("disabled",false)            
+                $("#backdate_num").select2({
+                  data: result.results
+                })         
+
+              }          
+            }
+          })
     });
 
     function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
@@ -496,22 +558,38 @@
           { "data": "to","width": "20%"},
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.attention + '</div>'
+                if(row.attention == null){
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.attention + '</div>'
+                }
               }
           },
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.title + '</div>'
+                if (row.title == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.title + '</div>'                  
+                }
               }
           },
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.project + '</div>'
+                if (row.project == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.project + '</div>'                  
+                }
               }
           },
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.description + '</div>'
+                if (row.description == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.description + '</div>'                  
+                }
               }
           },
           { "data": "name","width": "20%"},
