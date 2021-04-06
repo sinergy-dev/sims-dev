@@ -246,6 +246,12 @@ class LetterController extends Controller
                 ->whereYear('created_at', $tahun)
                 ->count('no');
 
+        $edate = strtotime($_POST['date']); 
+        $edate = date("Y-m-d",$edate);
+
+        $month_pr = substr($edate,5,2);
+        $year_pr = substr($edate,0,4);
+
         // $getno_new = $getno->no;
         $array_bln = array('01' => "I",
                     '02' => "II",
@@ -259,14 +265,10 @@ class LetterController extends Controller
                     '10' => "X",
                     '11' => "XI",
                     '12' => "XII");
+        $bln = $array_bln[$month_pr];
+
         $type = $request['type'];
-        $posti = $request['position'];
-
-        $edate = strtotime($_POST['date']); 
-        $edate = date("Y-m-d",$edate);
-
-        $month_pr = substr($request['date'],5,2);
-        $year_pr = substr($request['date'],0,4);        
+        $posti = $request['position'];        
 
         if ($cek > 0) {
             $letters = Letter::where('status','A')->orderBy('no','desc')->whereYear('created_at',$tahun)->first()->no_letter;
@@ -276,8 +278,6 @@ class LetterController extends Controller
             $nom = Letter::select('no')->orderBy('created_at','desc')->whereYear('created_at', $tahun)->first()->no;
 
             $skipNum = Letter::select('no_letter')->orderBy('created_at','desc')->first();
-
-            $bln = $array_bln[$month_pr];
 
             $lastnumber = $getnumber+1;
 
@@ -300,7 +300,7 @@ class LetterController extends Controller
                 $no9  = $akhirnomor;
 
                 if (Letter::where('no_letter', '=', $no9)->exists()) {
-                   $tambah = new Letter();
+                    $tambah = new Letter();
                         
                     $tambah->no_letter = $no;
                     $tambah->status = 'A';
@@ -577,6 +577,18 @@ class LetterController extends Controller
         return redirect('letter')->with('alert', 'Deleted!');
 	}
 
+    public function get_backdate_num(Request $request)
+    {
+        if (isset($request->tanggal)) {
+            $backdate_num = Letter::selectRaw('`no_letter` as `text`')->selectRaw('`no` as `id`')->where('status', 'T')->whereYear('created_at',substr($request->tanggal, 6,4))->orderBy('created_at','asc')->get();
+            return array('results'=>$backdate_num);
+        } else {
+            $backdate_num = Letter::selectRaw('`no_letter` as `text`')->selectRaw('`no` as `id`')->where('status', 'T')->orderBy('created_at','asc')->get();
+            return array('results'=>$backdate_num);
+        }
+        
+    }
+
 	public function downloadExcel(Request $request) {
         $spreadsheet = new Spreadsheet();
 
@@ -704,8 +716,11 @@ class LetterController extends Controller
     {
         $type = $request['type'];
         $posti = $request['position'];
-        $month_pr = substr($request['date'],5,2);
-        $year_pr = substr($request['date'],0,4);
+
+        $edate = strtotime($_POST['date']); 
+        $edate = date("Y-m-d",$edate);
+        $month_pr = substr($edate,5,2);
+        $year_pr = substr($edate,0,4);
 
 
         $array_bln = array('01' => "I",
@@ -737,9 +752,10 @@ class LetterController extends Controller
         //    $akhirnomor = '0' . $lastnumber;
         // }
 
-        $akhirnomor = $request['backdate_num'];
+        // $akhirnomor = $request['backdate_num'];
 
-        $no = $akhirnomor . '/' . $posti . '/' . $type . '/' . $bln . '/' . $year_pr;
+        $update = Letter::where('no',$request['backdate_num'])->first();
+        $no = $update->no_letter . '/' . $posti . '/' . $type . '/' . $bln . '/' . $year_pr;
 
         // $angka7 = Letter::select('no')
         //         ->where('status','T')
@@ -747,12 +763,11 @@ class LetterController extends Controller
         //         ->first();
         // $angka = $angka7->no;
 
-        $update = Letter::where('no_letter',$request['backdate_num'])->first();
         $update->no_letter = $no;
         $update->position = $posti;
         $update->type_of_letter = $type;
         $update->month = $bln;
-        $update->date = $request['date'];
+        $update->date = $edate;
         $update->to = $request['to'];
         $update->attention = $request['attention'];
         $update->title = $request['title'];
