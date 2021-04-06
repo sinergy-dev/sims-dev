@@ -1,109 +1,105 @@
 @extends('template.template_admin-lte')
 @section('content')
-  <style type="text/css">
-	    .margin-left-custom-psw{
-	      margin-left: 45px;
-	    }
-		.input-container {
-		  display: -ms-flexbox; /* IE10 */
-		  display: flex;
-		  width: 100%;
-		  margin-bottom: 15px;
-		}
+<style type="text/css">
+    .margin-left-custom-psw{
+      margin-left: 45px;
+    }
+	.input-container {
+	  display: -ms-flexbox; /* IE10 */
+	  display: flex;
+	  width: 100%;
+	  margin-bottom: 15px;
+	}
 
-		.icon {
-		  padding: 10px;
-		  background: dodgerblue;
-		  color: white;
-		  min-width: 50px;
-		  text-align: center;
-		}
+	.icon {
+	  padding: 10px;
+	  background: dodgerblue;
+	  color: white;
+	  min-width: 50px;
+	  text-align: center;
+	}
 
-		.input-field {
-		  width: 100%;
-		  padding: 10px;
-		  outline: none;
-		}
+	.input-field {
+	  width: 100%;
+	  padding: 10px;
+	  outline: none;
+	}
 
-		.input-field:focus {
-		  border: 2px solid dodgerblue;
-		}
+	.input-field:focus {
+	  border: 2px solid dodgerblue;
+	}
 
-		.current {
-		  color: green;
-		}
+	.current {
+	  color: green;
+	}
 
-		#pagin li {
-		  display: inline-block;
-		}
+	#pagin li {
+	  display: inline-block;
+	}
 
-		.prev {
-		  cursor: pointer;
-		}
+	.prev {
+	  cursor: pointer;
+	}
 
-		.next {
-		  cursor: pointer;
-		}
+	.next {
+	  cursor: pointer;
+	}
 
-		.last{
-		  cursor:pointer;
-		  margin-left:5px;
-		}
+	.last{
+	  cursor:pointer;
+	  margin-left:5px;
+	}
 
-		.first{
-		  cursor:pointer;
-		  margin-right:5px;
-		}
+	.first{
+	  cursor:pointer;
+	  margin-right:5px;
+	}
+</style>
 
-  </style>
+<section class="content-header">
+	<h1>Employees</h1>
+	<ol class="breadcrumb">
+	  <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+	  <li class="active">Human Resource</li>
+	  <li class="active">Employees</li>
+	</ol>
+</section>
 
-  <section class="content-header">
-    <h1>
-      Employees
-    </h1>
-    <ol class="breadcrumb">
-      <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li class="active">Human Resource</li>
-      <li class="active">Employees</li>
-    </ol>
-  </section>
+<section class="content">
+	@if (session('update'))
+	  <div class="alert alert-warning" id="alert">
+	      {{ session('update') }}
+	  </div>
+	    @endif
 
-  <section class="content">
-    @if (session('update'))
-      <div class="alert alert-warning" id="alert">
-          {{ session('update') }}
-      </div>
-        @endif
+	    @if (session('success'))
+	  <div class="alert alert-success" id="alert">
+	      {{ session('success') }}
+	  </div>
+	    @endif
 
-        @if (session('success'))
-      <div class="alert alert-success" id="alert">
-          {{ session('success') }}
-      </div>
-        @endif
+	    @if (session('alert'))
+	  <div class="alert alert-danger" id="alert">
+	      {{ session('alert') }}
+	  </div>
+	@endif
 
-        @if (session('alert'))
-      <div class="alert alert-danger" id="alert">
-          {{ session('alert') }}
-      </div>
-    @endif
+	<div class="box">
+		<div class="box-header with-border">
+			<h3 class="box-title"><i class="fa fa-table"></i>&nbsp<b>SIP Employees</b></h3>
+		</div>
 
-    <div class="box">
-      <div class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-table"></i>&nbsp<b>SIP Employees</b></h3>
-
-      </div>
-
-      @if(Auth::User()->email == 'tech@sinergy.co.id')
-      	<div class="row">
-      		<div class="col-md-12">
-      			<div class="pull-right" style="margin-right: 20px">
-      				<div class="input-container">
+	  @if(Auth::User()->email == 'tech@sinergy.co.id')
+	  	<div class="row">
+	  		<div class="col-md-12">
+	  			<div class="pull-right" style="margin-right: 20px">
+	  				<div class="input-container">
 					    <i class="fa fa-search icon"></i>
 					    <input class="input-field form-control Search" id="search" name="search" type="text" placeholder="Search..." name="email">
 					    <!-- <button class="btn btn-primary btn-sm">Cari</button> -->
 					</div>
-      			</div>
-      			<div class="nav-tabs-custom active" id="SIP" role="tabpanel" aria-labelledby="sip-tab">
+	  			</div>
+	  			<div class="nav-tabs-custom active" id="SIP" role="tabpanel" aria-labelledby="sip-tab">
 			      	<ul class="nav nav-tabs" id="myTab" role="tablist">
 			      		<li class="nav-item active">
 				              <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">ALL</a>
@@ -518,73 +514,73 @@
 		            
 		        </div>
 
-      		</div>
-      		<div id="pagination" class="col-md-12 margin-left">tes</div>
-      	</div>
-      @endif
+	  		</div>
+	  		<div id="pagination" class="col-md-12 margin-left">tes</div>
+	  	</div>
+	  @endif
 
-      <div class="box-body">
+	  <div class="box-body">
 
-        <div class="nav-tabs-custom active" id="SIP" role="tabpanel" aria-labelledby="sip-tab">
-          
-          <div class="pull-right">
-            @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-          	<button class="btn btn-sm btn-warning" style="margin-bottom: 5px" id="btnExport" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-download">&nbspExport</i></button>
-          	<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 43px; right: 32px; transform : translate3d(0px, 37px, 30px); margin-bottom: 5px">
-              <a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}"> EXCEL </a>
-            </div>
+	    <div class="nav-tabs-custom active" id="SIP" role="tabpanel" aria-labelledby="sip-tab">
+	      
+	      <div class="pull-right">
+	        @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
+	      	<button class="btn btn-sm btn-warning" style="margin-bottom: 5px" id="btnExport" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-download">&nbspExport</i></button>
+	      	<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 43px; right: 32px; transform : translate3d(0px, 37px, 30px); margin-bottom: 5px">
+	          <a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}"> EXCEL </a>
+	        </div>
 
-            <button class="btn btn-sm btn-primary" style="margin-bottom: 5px" id="btnAdd" data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i>&nbsp Employee</button>
-            @endif
-          </div>
+	        <button class="btn btn-sm btn-primary" style="margin-bottom: 5px" id="btnAdd" data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i>&nbsp Employee</button>
+	        @endif
+	      </div>
 
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item active">
-              <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">ALL</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="tech-tab" data-toggle="tab" href="#tech" role="tab" aria-controls="tech" aria-selected="false">TECHNICAL</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales" role="tab" aria-controls="sales" aria-selected="false"> SALES</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="finance-tab" data-toggle="tab" href="#finance" role="tab" aria-controls="finance" aria-selected="false"> FINANCE</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation" role="tab" aria-controls="operation" aria-selected="false"> OPERATION</a>
-            </li>
-          </ul>
+	      <ul class="nav nav-tabs" id="myTab" role="tablist">
+	        <li class="nav-item active">
+	          <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">ALL</a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link" id="tech-tab" data-toggle="tab" href="#tech" role="tab" aria-controls="tech" aria-selected="false">TECHNICAL</a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales" role="tab" aria-controls="sales" aria-selected="false"> SALES</a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link" id="finance-tab" data-toggle="tab" href="#finance" role="tab" aria-controls="finance" aria-selected="false"> FINANCE</a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation" role="tab" aria-controls="operation" aria-selected="false"> OPERATION</a>
+	        </li>
+	      </ul>
 
-          <div class="tab-content" id="myTabContentSIP">
-            <div class="tab-pane active" id="all" role="tabpanel" aria-labelledby="all-tab">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped dataTable" id="data_all" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>NIK</th>
-                          <th>Employees Name</th>
-                          <th>Position</th>
-                          <th>Mulai Bekerja</th>
-                          <th>Status Karyawan</th>
-                          <th>KTP</th>
-                          <th>KK</th>
-                          <th>NPWP</th>
-                          <th>Attach File</th>
-                          <!-- <th>NPWP File</th> -->
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-                          <th>Action</th>
-                          @endif
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($hr as $data)
-                        @if($data->id_company == '1')
-                        <tr>
-                          <td><?=str_replace('/', '', $data->nik)?></td>
-                          <td>{{ucwords(strtolower($data->name))}}</td>
-                          @if($data->id_position != '')
-                          <td>
+	      <div class="tab-content" id="myTabContentSIP">
+	        <div class="tab-pane active" id="all" role="tabpanel" aria-labelledby="all-tab">
+	            <div class="table-responsive">
+	                <table class="table table-bordered table-striped dataTable" id="data_all" width="100%" cellspacing="0">
+	                  <thead>
+	                    <tr>
+	                      <th>NIK</th>
+	                      <th>Employees Name</th>
+	                      <th>Position</th>
+	                      <th>Mulai Bekerja</th>
+	                      <th>Status Karyawan</th>
+	                      <th>KTP</th>
+	                      <th>KK</th>
+	                      <th>NPWP</th>
+	                      <th>Attach File</th>
+	                      <!-- <th>NPWP File</th> -->
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
+	                      <th>Action</th>
+	                      @endif
+	                    </tr>
+	                  </thead>
+	                  <tbody>
+	                    @foreach($hr as $data)
+	                    @if($data->id_company == '1')
+	                    <tr>
+	                      <td><?=str_replace('/', '', $data->nik)?></td>
+	                      <td>{{ucwords(strtolower($data->name))}}</td>
+	                      @if($data->id_position != '')
+	                      <td>
 	                            @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
 	                              President Director
 	                            @elseif($data->id_division == 'TECHNICAL')
@@ -736,685 +732,685 @@
 	                            @else
 	                              {{ $data->id_position }}
 	                            @endif
-                          </td>
-                          @else
-                          <td>&#8212</td>
-                          @endif
-                          <td>{{date('d-m-Y', strtotime($data->date_of_entry))}}</td>
-                          <td>
-                          	@if($data->status_kerja == 'tetap')
-                          	Karyawan Tetap 
-                          	@elseif($data->status_kerja == 'kontrak')
-                          	Karyawan Kontrak 
-                          	@else
-                          	-
-                          	<!-- <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i> -->
-                          	@endif
-                          </td>
-                          <td>
-                          	{{ $data->no_ktp }}
-                          </td>
-                          <td>
-                          	{{ $data->no_kk }}
-                          </td>
-                          <td>{{ $data->no_npwp }}</td>
-                          <td>
-                          	<button class="btn btn-xs btn-primary btn-attach" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-upload"></i>&nbspUpload</button>
-                          </td>
+	                      </td>
+	                      @else
+	                      <td>&#8212</td>
+	                      @endif
+	                      <td>{{date('d-m-Y', strtotime($data->date_of_entry))}}</td>
+	                      <td>
+	                      	@if($data->status_kerja == 'tetap')
+	                      	Karyawan Tetap 
+	                      	@elseif($data->status_kerja == 'kontrak')
+	                      	Karyawan Kontrak 
+	                      	@else
+	                      	-
+	                      	<!-- <i class="fa fa-pencil modal_edit_status" style="color: #f39c12;cursor: pointer;"></i> -->
+	                      	@endif
+	                      </td>
+	                      <td>
+	                      	{{ $data->no_ktp }}
+	                      </td>
+	                      <td>
+	                      	{{ $data->no_kk }}
+	                      </td>
+	                      <td>{{ $data->no_npwp }}</td>
+	                      <td>
+	                      	<button class="btn btn-xs btn-primary btn-attach" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-upload"></i>&nbspUpload</button>
+	                      </td>
 
-                          <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-                          <td>
-                            <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
+	                      <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
+	                      <td>
+	                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
 
-                            <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                            <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                          </td>
-                          @endif
-                        </tr>
-                        @endif
-                        @endforeach
-                      </tbody>
-                    </table>
-                </div> 
-            </div>
-            <div class="tab-pane" id="tech" role="tabpanel" aria-labelledby="tech-tab">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped dataTable" id="data_tech" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>NIK</th>
-                          <th>Employees Name</th>
-                          <th>Position</th>
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-                          <th>Action</th>
-                          @endif
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($hr as $data)
-                        @if($data->id_division == 'TECHNICAL' || $data->id_division == 'TECHNICAL PRESALES')
-                        <tr>
-                          <td><?=str_replace('/', '', $data->nik)?></td>
-                          <td>{{ucwords(strtolower($data->name))}}</td>
-                          @if($data->id_position != '')
-                          <td>
-                            @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
-                              President Director
-                            @elseif($data->id_division == 'TECHNICAL')
-                              @if($data->id_territory == 'DPG')
-                                @if($data->id_position == 'ENGINEER MANAGER')
-                                  Dept. Implementation Manager
-                                @elseif($data->id_position == 'ENGINEER STAFF')
-                                  Staff. Systems Engineer
-                                @endif
-                              @elseif($data->id_territory == 'DVG')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Development Manager
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Dev Ops
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @elseif($data->id_territory == 'SPECIALIST')
-                                @if($data->id_position == 'EXPERT ENGINEER')
-                                  Expert Engineer
-                                @endif
-                              @else
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Technical Head
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'TECHNICAL PRESALES')
-                              @if($data->id_position == 'MANAGER')
-                                Dept. Presales Manager
-                              @elseif($data->id_position == 'STAFF')
-                                Staff. Presales Engineer
-                              @endif
-                            @elseif($data->id_division == 'SALES')
-                              @if($data->id_territory == 'TERRITORY 1')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (First)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM1
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 2')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Second)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM2
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 3')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Third)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM3
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 4')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fourth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM4
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 5')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fifth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM5
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 6')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Sixth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM6
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'FINANCE')
-                              @if($data->id_position != 'FINANCE DIRECTOR')
-                                @if($data->id_territory == 'FINANCE')
-                                  @if($data->id_position == 'STAFF')
-                                    Staff. Finance
-                                  @elseif($data->id_position == 'COURIER')
-                                    Staff. Courier
-                                  @endif
-                                @elseif($data->id_territory == 'ACC')
-                                  @if($data->id_position == 'MANAGER')
-                                    Div. Accounting
-                                  @elseif($data->id_position == 'STAFF')
-                                    Staff. Accounting
-                                  @endif
-                                @endif
-                              @else
-                                Finance Director
-                              @endif
-                            @elseif($data->id_territory == 'OPERATION')
-                              @if($data->id_division == null)
-                                Operation Director
-                              @elseif($data->id_division == 'PMO')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Project Management Office
-                                @elseif($data->id_position == 'PM')
-                                  Staff. Project Manager
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. PMO Admin
-                                @endif
-                              @elseif($data->id_division == 'MSM')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Managed Services & Maintenance
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. MSM Admin
-                                @elseif($data->id_position == 'CALL SO')
-                                  Staff. Call Center Operator
-                                @elseif($data->id_position == 'HELP DESK')
-                                  Staff. Dedicated Help Desk
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
-                                  Dept. Technical Support
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
-                                  Staff. Support Engineer
-                                @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
-                                  Dept. Services Project Manager
-                                @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
-                                  Staff. Services Project Coordinator
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'HR')
-                              @if($data->id_position == 'HR MANAGER')
-                                Div. Human Resource Head
-                              @elseif($data->id_position == 'STAFF GA')
-                                Staff. General Affair
-                              @elseif($data->id_position == 'STAFF HR')
-                                Staff. Human Resource
-                              @endif
-                            @else
-                              {{ $data->id_position }}
-                            @endif
-                          </td>
-                          @else
-                          <td>&#8212</td>
-                          @endif
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                          <td>
-                            <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+	                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+	                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+	                      </td>
+	                      @endif
+	                    </tr>
+	                    @endif
+	                    @endforeach
+	                  </tbody>
+	                </table>
+	            </div> 
+	        </div>
+	        <div class="tab-pane" id="tech" role="tabpanel" aria-labelledby="tech-tab">
+	            <div class="table-responsive">
+	                <table class="table table-bordered table-striped dataTable" id="data_tech" width="100%" cellspacing="0">
+	                  <thead>
+	                    <tr>
+	                      <th>NIK</th>
+	                      <th>Employees Name</th>
+	                      <th>Position</th>
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
+	                      <th>Action</th>
+	                      @endif
+	                    </tr>
+	                  </thead>
+	                  <tbody>
+	                    @foreach($hr as $data)
+	                    @if($data->id_division == 'TECHNICAL' || $data->id_division == 'TECHNICAL PRESALES')
+	                    <tr>
+	                      <td><?=str_replace('/', '', $data->nik)?></td>
+	                      <td>{{ucwords(strtolower($data->name))}}</td>
+	                      @if($data->id_position != '')
+	                      <td>
+	                        @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
+	                          President Director
+	                        @elseif($data->id_division == 'TECHNICAL')
+	                          @if($data->id_territory == 'DPG')
+	                            @if($data->id_position == 'ENGINEER MANAGER')
+	                              Dept. Implementation Manager
+	                            @elseif($data->id_position == 'ENGINEER STAFF')
+	                              Staff. Systems Engineer
+	                            @endif
+	                          @elseif($data->id_territory == 'DVG')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Development Manager
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Dev Ops
+	                            @elseif($data->id_position == 'INTERNAL IT')
+	                              Staff. Internal IT Engineer
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. TEC Admin
+	                            @endif
+	                          @elseif($data->id_territory == 'SPECIALIST')
+	                            @if($data->id_position == 'EXPERT ENGINEER')
+	                              Expert Engineer
+	                            @endif
+	                          @else
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Technical Head
+	                            @elseif($data->id_position == 'INTERNAL IT')
+	                              Staff. Internal IT Engineer
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. TEC Admin
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'TECHNICAL PRESALES')
+	                          @if($data->id_position == 'MANAGER')
+	                            Dept. Presales Manager
+	                          @elseif($data->id_position == 'STAFF')
+	                            Staff. Presales Engineer
+	                          @endif
+	                        @elseif($data->id_division == 'SALES')
+	                          @if($data->id_territory == 'TERRITORY 1')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (First)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM1
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 2')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Second)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM2
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 3')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Third)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM3
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 4')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Fourth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM4
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 5')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Fifth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM5
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 6')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Sixth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM6
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'FINANCE')
+	                          @if($data->id_position != 'FINANCE DIRECTOR')
+	                            @if($data->id_territory == 'FINANCE')
+	                              @if($data->id_position == 'STAFF')
+	                                Staff. Finance
+	                              @elseif($data->id_position == 'COURIER')
+	                                Staff. Courier
+	                              @endif
+	                            @elseif($data->id_territory == 'ACC')
+	                              @if($data->id_position == 'MANAGER')
+	                                Div. Accounting
+	                              @elseif($data->id_position == 'STAFF')
+	                                Staff. Accounting
+	                              @endif
+	                            @endif
+	                          @else
+	                            Finance Director
+	                          @endif
+	                        @elseif($data->id_territory == 'OPERATION')
+	                          @if($data->id_division == null)
+	                            Operation Director
+	                          @elseif($data->id_division == 'PMO')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Project Management Office
+	                            @elseif($data->id_position == 'PM')
+	                              Staff. Project Manager
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. PMO Admin
+	                            @endif
+	                          @elseif($data->id_division == 'MSM')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Managed Services & Maintenance
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. MSM Admin
+	                            @elseif($data->id_position == 'CALL SO')
+	                              Staff. Call Center Operator
+	                            @elseif($data->id_position == 'HELP DESK')
+	                              Staff. Dedicated Help Desk
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+	                              Dept. Technical Support
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
+	                              Staff. Support Engineer
+	                            @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
+	                              Dept. Services Project Manager
+	                            @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
+	                              Staff. Services Project Coordinator
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'HR')
+	                          @if($data->id_position == 'HR MANAGER')
+	                            Div. Human Resource Head
+	                          @elseif($data->id_position == 'STAFF GA')
+	                            Staff. General Affair
+	                          @elseif($data->id_position == 'STAFF HR')
+	                            Staff. Human Resource
+	                          @endif
+	                        @else
+	                          {{ $data->id_position }}
+	                        @endif
+	                      </td>
+	                      @else
+	                      <td>&#8212</td>
+	                      @endif
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	                      <td>
+	                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
-                            <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                            <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                          </td>
-                          @endif
-                        </tr>
-                        @endif
-                        @endforeach
-                      </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-pane" id="finance" role="tabpanel" aria-labelledby="finance-tab">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped dataTable" id="data_finance" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>NIK</th>
-                          <th>Employees Name</th>
-                          <th>Position</th>
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-                          <th>Action</th>
-                          @endif
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($hr as $data)
-                        @if($data->id_division == 'FINANCE')
-                        <tr>
-                          <td><?=str_replace('/', '', $data->nik)?></td>
-                          <td>{{ucwords(strtolower($data->name))}}</td>
-                          @if($data->id_position != '')
-                          <td>
-                            @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
-                              President Director
-                            @elseif($data->id_division == 'TECHNICAL')
-                              @if($data->id_territory == 'DPG')
-                                @if($data->id_position == 'ENGINEER MANAGER')
-                                  Dept. Implementation Manager
-                                @elseif($data->id_position == 'ENGINEER STAFF')
-                                  Staff. Systems Engineer
-                                @endif
-                              @elseif($data->id_territory == 'DVG')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Development Manager
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Dev Ops
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @else
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Technical Head
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'TECHNICAL PRESALES')
-                              @if($data->id_position == 'MANAGER')
-                                Dept. Presales Manager
-                              @elseif($data->id_position == 'STAFF')
-                                Staff. Presales Engineer
-                              @endif
-                            @elseif($data->id_division == 'SALES')
-                              @if($data->id_territory == 'TERRITORY 1')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (First)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM1
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 2')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Second)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM2
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 3')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Third)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM3
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 4')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fourth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM4
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 5')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fifth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM5
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 6')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Sixth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM6
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'FINANCE')
-                              @if($data->id_position != 'FINANCE DIRECTOR')
-                                @if($data->id_territory == 'FINANCE')
-                                  @if($data->id_position == 'STAFF')
-                                    Staff. Finance
-                                  @elseif($data->id_position == 'COURIER')
-                                    Staff. Courier
-                                  @endif
-                                @elseif($data->id_territory == 'ACC')
-                                  @if($data->id_position == 'MANAGER')
-                                    Div. Accounting
-                                  @elseif($data->id_position == 'STAFF')
-                                    Staff. Accounting
-                                  @endif
-                                @endif
-                              @else
-                                Finance Director
-                              @endif
-                            @elseif($data->id_territory == 'OPERATION')
-                              @if($data->id_division == null)
-                                Operation Director
-                              @elseif($data->id_division == 'PMO')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Project Management Office
-                                @elseif($data->id_position == 'PM')
-                                  Staff. Project Manager
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. PMO Admin
-                                @endif
-                              @elseif($data->id_division == 'MSM')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Managed Services & Maintenance
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. MSM Admin
-                                @elseif($data->id_position == 'CALL SO')
-                                  Staff. Call Center Operator
-                                @elseif($data->id_position == 'HELP DESK')
-                                  Staff. Dedicated Help Desk
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
-                                  Dept. Technical Support
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
-                                  Staff. Support Engineer
-                                @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
-                                  Dept. Services Project Manager
-                                @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
-                                  Staff. Services Project Coordinator
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'HR')
-                              @if($data->id_position == 'HR MANAGER')
-                                Div. Human Resource Head
-                              @elseif($data->id_position == 'STAFF GA')
-                                Staff. General Affair
-                              @elseif($data->id_position == 'STAFF HR')
-                                Staff. Human Resource
-                              @endif
-                            @else
-                              {{ $data->id_position }}
-                            @endif
-                          </td>
-                          @else
-                          <td>&#8212</td>
-                          @endif
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                          <td>
-                            <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+	                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+	                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+	                      </td>
+	                      @endif
+	                    </tr>
+	                    @endif
+	                    @endforeach
+	                  </tbody>
+	                </table>
+	            </div>
+	        </div>
+	        <div class="tab-pane" id="finance" role="tabpanel" aria-labelledby="finance-tab">
+	            <div class="table-responsive">
+	                <table class="table table-bordered table-striped dataTable" id="data_finance" width="100%" cellspacing="0">
+	                  <thead>
+	                    <tr>
+	                      <th>NIK</th>
+	                      <th>Employees Name</th>
+	                      <th>Position</th>
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
+	                      <th>Action</th>
+	                      @endif
+	                    </tr>
+	                  </thead>
+	                  <tbody>
+	                    @foreach($hr as $data)
+	                    @if($data->id_division == 'FINANCE')
+	                    <tr>
+	                      <td><?=str_replace('/', '', $data->nik)?></td>
+	                      <td>{{ucwords(strtolower($data->name))}}</td>
+	                      @if($data->id_position != '')
+	                      <td>
+	                        @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
+	                          President Director
+	                        @elseif($data->id_division == 'TECHNICAL')
+	                          @if($data->id_territory == 'DPG')
+	                            @if($data->id_position == 'ENGINEER MANAGER')
+	                              Dept. Implementation Manager
+	                            @elseif($data->id_position == 'ENGINEER STAFF')
+	                              Staff. Systems Engineer
+	                            @endif
+	                          @elseif($data->id_territory == 'DVG')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Development Manager
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Dev Ops
+	                            @elseif($data->id_position == 'INTERNAL IT')
+	                              Staff. Internal IT Engineer
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. TEC Admin
+	                            @endif
+	                          @else
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Technical Head
+	                            @elseif($data->id_position == 'INTERNAL IT')
+	                              Staff. Internal IT Engineer
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. TEC Admin
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'TECHNICAL PRESALES')
+	                          @if($data->id_position == 'MANAGER')
+	                            Dept. Presales Manager
+	                          @elseif($data->id_position == 'STAFF')
+	                            Staff. Presales Engineer
+	                          @endif
+	                        @elseif($data->id_division == 'SALES')
+	                          @if($data->id_territory == 'TERRITORY 1')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (First)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM1
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 2')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Second)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM2
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 3')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Third)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM3
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 4')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Fourth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM4
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 5')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Fifth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM5
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 6')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Sixth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM6
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'FINANCE')
+	                          @if($data->id_position != 'FINANCE DIRECTOR')
+	                            @if($data->id_territory == 'FINANCE')
+	                              @if($data->id_position == 'STAFF')
+	                                Staff. Finance
+	                              @elseif($data->id_position == 'COURIER')
+	                                Staff. Courier
+	                              @endif
+	                            @elseif($data->id_territory == 'ACC')
+	                              @if($data->id_position == 'MANAGER')
+	                                Div. Accounting
+	                              @elseif($data->id_position == 'STAFF')
+	                                Staff. Accounting
+	                              @endif
+	                            @endif
+	                          @else
+	                            Finance Director
+	                          @endif
+	                        @elseif($data->id_territory == 'OPERATION')
+	                          @if($data->id_division == null)
+	                            Operation Director
+	                          @elseif($data->id_division == 'PMO')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Project Management Office
+	                            @elseif($data->id_position == 'PM')
+	                              Staff. Project Manager
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. PMO Admin
+	                            @endif
+	                          @elseif($data->id_division == 'MSM')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Managed Services & Maintenance
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. MSM Admin
+	                            @elseif($data->id_position == 'CALL SO')
+	                              Staff. Call Center Operator
+	                            @elseif($data->id_position == 'HELP DESK')
+	                              Staff. Dedicated Help Desk
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+	                              Dept. Technical Support
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
+	                              Staff. Support Engineer
+	                            @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
+	                              Dept. Services Project Manager
+	                            @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
+	                              Staff. Services Project Coordinator
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'HR')
+	                          @if($data->id_position == 'HR MANAGER')
+	                            Div. Human Resource Head
+	                          @elseif($data->id_position == 'STAFF GA')
+	                            Staff. General Affair
+	                          @elseif($data->id_position == 'STAFF HR')
+	                            Staff. Human Resource
+	                          @endif
+	                        @else
+	                          {{ $data->id_position }}
+	                        @endif
+	                      </td>
+	                      @else
+	                      <td>&#8212</td>
+	                      @endif
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	                      <td>
+	                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
-                            <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                            <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                          </td>
-                          @endif
-                        </tr>
-                        @endif
-                        @endforeach
-                      </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-pane" id="sales" role="tabpanel" aria-labelledby="sales-tab">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped dataTable" id="data_sales" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>NIK</th>
-                          <th>Employees Name</th>
-                          <th>Position</th>
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                          <th>Action</th>
-                          @endif
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($hr as $data)
-                        @if($data->id_division == 'SALES')
-                        <tr>
-                          <td><?=str_replace('/', '', $data->nik)?></td>
-                          <td>{{ucwords(strtolower($data->name))}}</td>
-                          @if($data->id_position != '')
-                          <td>
-                            @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
-                              President Director
-                            @elseif($data->id_division == 'TECHNICAL')
-                              @if($data->id_territory == 'DPG')
-                                @if($data->id_position == 'ENGINEER MANAGER')
-                                  Dept. Implementation Manager
-                                @elseif($data->id_position == 'ENGINEER STAFF')
-                                  Staff. Systems Engineer
-                                @endif
-                              @elseif($data->id_territory == 'DVG')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Development Manager
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Dev Ops
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @else
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Technical Head
-                                @elseif($data->id_position == 'INTERNAL IT')
-                                  Staff. Internal IT Engineer
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. TEC Admin
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'TECHNICAL PRESALES')
-                              @if($data->id_position == 'MANAGER')
-                                Dept. Presales Manager
-                              @elseif($data->id_position == 'STAFF')
-                                Staff. Presales Engineer
-                              @endif
-                            @elseif($data->id_division == 'SALES')
-                              @if($data->id_territory == 'TERRITORY 1')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (First)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM1
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 2')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Second)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM2
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 3')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Third)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM3
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 4')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fourth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM4
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 5')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Fifth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM5
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'TERRITORY 6')
-                                @if($data->id_position == 'MANAGER')
-                                  Dept. Account Manager (Sixth)
-                                @elseif($data->id_position == 'STAFF')
-                                  Staff. Account Executive AM6
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. Admin Sales
-                                @endif
-                              @elseif($data->id_territory == 'SPECIALIST')
-                                @if($data->id_position == 'EXPERT SALES')
-                                  Expert Sales
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'FINANCE')
-                              @if($data->id_position != 'FINANCE DIRECTOR')
-                                @if($data->id_territory == 'FINANCE')
-                                  @if($data->id_position == 'STAFF')
-                                    Staff. Finance
-                                  @elseif($data->id_position == 'COURIER')
-                                    Staff. Courier
-                                  @endif
-                                @elseif($data->id_territory == 'ACC')
-                                  @if($data->id_position == 'MANAGER')
-                                    Div. Accounting
-                                  @elseif($data->id_position == 'STAFF')
-                                    Staff. Accounting
-                                  @endif
-                                @endif
-                              @else
-                                Finance Director
-                              @endif
-                            @elseif($data->id_territory == 'OPERATION')
-                              @if($data->id_division == null)
-                                Operation Director
-                              @elseif($data->id_division == 'PMO')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Project Management Office
-                                @elseif($data->id_position == 'PM')
-                                  Staff. Project Manager
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. PMO Admin
-                                @endif
-                              @elseif($data->id_division == 'MSM')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Managed Services & Maintenance
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. MSM Admin
-                                @elseif($data->id_position == 'CALL SO')
-                                  Staff. Call Center Operator
-                                @elseif($data->id_position == 'HELP DESK')
-                                  Staff. Dedicated Help Desk
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
-                                  Dept. Technical Support
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
-                                  Staff. Support Engineer
-                                @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
-                                  Dept. Services Project Manager
-                                @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
-                                  Staff. Services Project Coordinator
-                                @endif
-                              @endif
-                            @elseif($data->id_division == 'HR')
-                              @if($data->id_position == 'HR MANAGER')
-                                Div. Human Resource Head
-                              @elseif($data->id_position == 'STAFF GA')
-                                Staff. General Affair
-                              @elseif($data->id_position == 'STAFF HR')
-                                Staff. Human Resource
-                              @endif
-                              @elseif($data->id_territory == 'SPECIALIST')
-                              @if($data->id_position == 'EXPERT ENGINEER')
-                                Expert Engineer
-                              @endif
-                            @else
-                              {{ $data->id_position }}
-                            @endif
-                          </td>
-                          @else
-                          <td>&#8212</td>
-                          @endif
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                          <td>
-                            <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+	                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+	                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+	                      </td>
+	                      @endif
+	                    </tr>
+	                    @endif
+	                    @endforeach
+	                  </tbody>
+	                </table>
+	            </div>
+	        </div>
+	        <div class="tab-pane" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+	            <div class="table-responsive">
+	                <table class="table table-bordered table-striped dataTable" id="data_sales" width="100%" cellspacing="0">
+	                  <thead>
+	                    <tr>
+	                      <th>NIK</th>
+	                      <th>Employees Name</th>
+	                      <th>Position</th>
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	                      <th>Action</th>
+	                      @endif
+	                    </tr>
+	                  </thead>
+	                  <tbody>
+	                    @foreach($hr as $data)
+	                    @if($data->id_division == 'SALES')
+	                    <tr>
+	                      <td><?=str_replace('/', '', $data->nik)?></td>
+	                      <td>{{ucwords(strtolower($data->name))}}</td>
+	                      @if($data->id_position != '')
+	                      <td>
+	                        @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
+	                          President Director
+	                        @elseif($data->id_division == 'TECHNICAL')
+	                          @if($data->id_territory == 'DPG')
+	                            @if($data->id_position == 'ENGINEER MANAGER')
+	                              Dept. Implementation Manager
+	                            @elseif($data->id_position == 'ENGINEER STAFF')
+	                              Staff. Systems Engineer
+	                            @endif
+	                          @elseif($data->id_territory == 'DVG')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Development Manager
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Dev Ops
+	                            @elseif($data->id_position == 'INTERNAL IT')
+	                              Staff. Internal IT Engineer
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. TEC Admin
+	                            @endif
+	                          @else
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Technical Head
+	                            @elseif($data->id_position == 'INTERNAL IT')
+	                              Staff. Internal IT Engineer
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. TEC Admin
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'TECHNICAL PRESALES')
+	                          @if($data->id_position == 'MANAGER')
+	                            Dept. Presales Manager
+	                          @elseif($data->id_position == 'STAFF')
+	                            Staff. Presales Engineer
+	                          @endif
+	                        @elseif($data->id_division == 'SALES')
+	                          @if($data->id_territory == 'TERRITORY 1')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (First)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM1
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. Admin Sales
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 2')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Second)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM2
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. Admin Sales
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 3')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Third)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM3
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. Admin Sales
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 4')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Fourth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM4
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. Admin Sales
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 5')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Fifth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM5
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. Admin Sales
+	                            @endif
+	                          @elseif($data->id_territory == 'TERRITORY 6')
+	                            @if($data->id_position == 'MANAGER')
+	                              Dept. Account Manager (Sixth)
+	                            @elseif($data->id_position == 'STAFF')
+	                              Staff. Account Executive AM6
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. Admin Sales
+	                            @endif
+	                          @elseif($data->id_territory == 'SPECIALIST')
+	                            @if($data->id_position == 'EXPERT SALES')
+	                              Expert Sales
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'FINANCE')
+	                          @if($data->id_position != 'FINANCE DIRECTOR')
+	                            @if($data->id_territory == 'FINANCE')
+	                              @if($data->id_position == 'STAFF')
+	                                Staff. Finance
+	                              @elseif($data->id_position == 'COURIER')
+	                                Staff. Courier
+	                              @endif
+	                            @elseif($data->id_territory == 'ACC')
+	                              @if($data->id_position == 'MANAGER')
+	                                Div. Accounting
+	                              @elseif($data->id_position == 'STAFF')
+	                                Staff. Accounting
+	                              @endif
+	                            @endif
+	                          @else
+	                            Finance Director
+	                          @endif
+	                        @elseif($data->id_territory == 'OPERATION')
+	                          @if($data->id_division == null)
+	                            Operation Director
+	                          @elseif($data->id_division == 'PMO')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Project Management Office
+	                            @elseif($data->id_position == 'PM')
+	                              Staff. Project Manager
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. PMO Admin
+	                            @endif
+	                          @elseif($data->id_division == 'MSM')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Managed Services & Maintenance
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. MSM Admin
+	                            @elseif($data->id_position == 'CALL SO')
+	                              Staff. Call Center Operator
+	                            @elseif($data->id_position == 'HELP DESK')
+	                              Staff. Dedicated Help Desk
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+	                              Dept. Technical Support
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
+	                              Staff. Support Engineer
+	                            @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
+	                              Dept. Services Project Manager
+	                            @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
+	                              Staff. Services Project Coordinator
+	                            @endif
+	                          @endif
+	                        @elseif($data->id_division == 'HR')
+	                          @if($data->id_position == 'HR MANAGER')
+	                            Div. Human Resource Head
+	                          @elseif($data->id_position == 'STAFF GA')
+	                            Staff. General Affair
+	                          @elseif($data->id_position == 'STAFF HR')
+	                            Staff. Human Resource
+	                          @endif
+	                          @elseif($data->id_territory == 'SPECIALIST')
+	                          @if($data->id_position == 'EXPERT ENGINEER')
+	                            Expert Engineer
+	                          @endif
+	                        @else
+	                          {{ $data->id_position }}
+	                        @endif
+	                      </td>
+	                      @else
+	                      <td>&#8212</td>
+	                      @endif
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	                      <td>
+	                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
-                            <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                            <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                          </td>
-                          @endif
-                        </tr>
-                        @endif
-                        @endforeach
-                      </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped dataTable" id="data_operation" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>NIK</th>
-                          <th>Employees Name</th>
-                          <th>Position</th>
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                          <th>Action</th>
-                          @endif
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @foreach($hr as $data)
-                        @if($data->id_territory == 'OPERATION')
-                        <tr>
-                          <td><?=str_replace('/', '', $data->nik)?></td>
-                          <td>{{ucwords(strtolower($data->name))}}</td>
-                          @if($data->id_position != '')
-                          <td>
-                              @if($data->id_division == null)
-                                Operation Director
-                              @elseif($data->id_division == 'PMO')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Project Management Office
-                                @elseif($data->id_position == 'PM')
-                                  Staff. Project Manager
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. PMO Admin
-                                @endif
-                              @elseif($data->id_division == 'MSM')
-                                @if($data->id_position == 'MANAGER')
-                                  Div. Managed Services & Maintenance
-                                @elseif($data->id_position == 'ADMIN')
-                                  Staff. MSM Admin
-                                @elseif($data->id_position == 'CALL SO')
-                                  Staff. Call Center Operator
-                                @elseif($data->id_position == 'HELP DESK')
-                                  Staff. Dedicated Help Desk
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
-                                  Dept. Technical Support
-                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
-                                  Staff. Support Engineer
-                                @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
-                                  Dept. Services Project Manager
-                                @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
-                                  Staff. Services Project Coordinator
-                                @endif
-                              @endif
-                          </td>
-                          @else
-                          <td>&#8212</td>
-                          @endif
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                          <td>
-                            <!-- <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button> -->
+	                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+	                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+	                      </td>
+	                      @endif
+	                    </tr>
+	                    @endif
+	                    @endforeach
+	                  </tbody>
+	                </table>
+	            </div>
+	        </div>
+	        <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
+	            <div class="table-responsive">
+	                <table class="table table-bordered table-striped dataTable" id="data_operation" width="100%" cellspacing="0">
+	                  <thead>
+	                    <tr>
+	                      <th>NIK</th>
+	                      <th>Employees Name</th>
+	                      <th>Position</th>
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	                      <th>Action</th>
+	                      @endif
+	                    </tr>
+	                  </thead>
+	                  <tbody>
+	                    @foreach($hr as $data)
+	                    @if($data->id_territory == 'OPERATION')
+	                    <tr>
+	                      <td><?=str_replace('/', '', $data->nik)?></td>
+	                      <td>{{ucwords(strtolower($data->name))}}</td>
+	                      @if($data->id_position != '')
+	                      <td>
+	                          @if($data->id_division == null)
+	                            Operation Director
+	                          @elseif($data->id_division == 'PMO')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Project Management Office
+	                            @elseif($data->id_position == 'PM')
+	                              Staff. Project Manager
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. PMO Admin
+	                            @endif
+	                          @elseif($data->id_division == 'MSM')
+	                            @if($data->id_position == 'MANAGER')
+	                              Div. Managed Services & Maintenance
+	                            @elseif($data->id_position == 'ADMIN')
+	                              Staff. MSM Admin
+	                            @elseif($data->id_position == 'CALL SO')
+	                              Staff. Call Center Operator
+	                            @elseif($data->id_position == 'HELP DESK')
+	                              Staff. Dedicated Help Desk
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+	                              Dept. Technical Support
+	                            @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
+	                              Staff. Support Engineer
+	                            @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
+	                              Dept. Services Project Manager
+	                            @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
+	                              Staff. Services Project Coordinator
+	                            @endif
+	                          @endif
+	                      </td>
+	                      @else
+	                      <td>&#8212</td>
+	                      @endif
+	                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	                      <td>
+	                        <!-- <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button> -->
 
-                            <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+	                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
-                            <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                            <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                          </td>
-                          @endif
-                        </tr>
-                        @endif
-                        @endforeach
-                      </tbody>
-                    </table>
-                </div>
-            </div>
-          </div>
+	                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+	                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+	                      </td>
+	                      @endif
+	                    </tr>
+	                    @endif
+	                    @endforeach
+	                  </tbody>
+	                </table>
+	            </div>
+	        </div>
+	      </div>
 
-        </div>
-      </div>
-    </div>
+	    </div>
+	  </div>
+	</div>
 
-    <div class="box">
-      <div class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-table"></i>&nbsp<b>MSP Employees</b></h3>
+	<div class="box">
+	  <div class="box-header with-border">
+	    <h3 class="box-title"><i class="fa fa-table"></i>&nbsp<b>MSP Employees</b></h3>
 
-        <!-- <div class="box-tools pull-right">
-          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-          </button>
-          <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-        </div> -->
-      </div>
+	    <!-- <div class="box-tools pull-right">
+	      <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+	      </button>
+	      <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+	    </div> -->
+	  </div>
 
-      <div class="box-body">
-      	@if(Auth::User()->email == 'tech@sinergy.co.id')
+	  <div class="box-body">
+	  	@if(Auth::User()->email == 'tech@sinergy.co.id')
 
-      	<div class="row">
-      		<div class="col-md-12">
-      			<div class="pull-right" style="margin-right: 20px">
-      				<div class="input-container">
+	  	<div class="row">
+	  		<div class="col-md-12">
+	  			<div class="pull-right" style="margin-right: 20px">
+	  				<div class="input-container">
 					    <i class="fa fa-search icon"></i>
 					    <input class="input-field form-control Search" id="search" name="search" type="text" placeholder="Search..." name="email">
 					</div>
-      			</div>
-      			<div class="nav-tabs-custom active" id="SIP" role="tabpanel" aria-labelledby="sip-tab">
+	  			</div>
+	  			<div class="nav-tabs-custom active" id="SIP" role="tabpanel" aria-labelledby="sip-tab">
 			      	<ul class="nav nav-tabs" id="myTab" role="tablist">
 			      		<li class="nav-item active">
 				              <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">ALL</a>
@@ -1472,162 +1468,162 @@
 		            <br>
 
 		        </div>	
-      		</div>
-      	</div>
-      @endif
-        <div class="pull-right">
-          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-          <button class="btn btn-sm btn-primary" style="margin-bottom: 20px" id="btnAdd" data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i>&nbsp Employee</button>
-          @endif
-        </div>
-        <ul class="nav" id="myTab" role="tablist"></ul>
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped dataTable" id="data_all_msp" width="100%" cellspacing="0">
-              <thead>
-                <tr>
-                  <th>NIK</th>
-                  <th>Employees Name</th>
-                  <th>Position</th>
-                  @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                  <th>Action</th>
-                  @endif
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($hr_msp as $data)
-                @if($data->id_company == '2')
-                <tr>
-                  <td><?=str_replace('/', '', $data->nik)?></td>
-                  <td>{{ $data->name }}</td>
-                  @if($data->id_position != '')
-                  <td>
-                    @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
-                      President Director
-                    @elseif($data->id_division == 'TECHNICAL')
-                      @if($data->id_territory == 'DPG')
-                        @if($data->id_position == 'ENGINEER MANAGER')
-                          Dept. Implementation Manager
-                        @elseif($data->id_position == 'ENGINEER STAFF')
-                          Staff. Systems Engineer
-                        @endif
-                      @elseif($data->id_territory == 'DVG')
-                        @if($data->id_position == 'MANAGER')
-                          Dept. Development Manager
-                        @elseif($data->id_position == 'STAFF')
-                          Staff. Dev Ops
-                        @elseif($data->id_position == 'INTERNAL IT')
-                          Staff. Internal IT Engineer
-                        @elseif($data->id_position == 'ADMIN')
-                          Staff. TEC Admin
-                        @endif
-                      @elseif($data->id_territory == 'SPECIALIST')
-                        @if($data->id_position == 'EXPERT ENGINEER')
-                          Expert Engineer
-                        @endif
-                      @else
-                        @if($data->id_position == 'MANAGER')
-                          Div. Technical Head
-                        @elseif($data->id_position == 'INTERNAL IT')
-                          Staff. Internal IT Engineer
-                        @elseif($data->id_position == 'ADMIN')
-                          Staff. TEC Admin
-                        @endif
-                      @endif
-                    @elseif($data->id_division == 'TECHNICAL PRESALES')
-                      @if($data->id_position == 'MANAGER')
-                        Dept. Presales Manager
-                      @elseif($data->id_position == 'STAFF')
-                        Staff. Presales Engineer
-                      @endif
-                    @elseif($data->id_division == 'SALES')
-                      @if($data->id_position == 'MANAGER')
-                        Dept. MSP Sales
-                      @else
-                        Staff. Sales Executive
-                      @endif
-                    @elseif($data->id_division == 'FINANCE')
-                      @if($data->id_position != 'FINANCE DIRECTOR')
-                        @if($data->id_territory == 'FINANCE')
-                          @if($data->id_position == 'STAFF')
-                            Staff. Finance
-                          @elseif($data->id_position == 'COURIER')
-                            Staff. Courier
-                          @endif
-                        @elseif($data->id_territory == 'ACC')
-                          @if($data->id_position == 'MANAGER')
-                            Div. Accounting
-                          @elseif($data->id_position == 'STAFF')
-                            Staff. Accounting
-                          @endif
-                        @endif
-                      @else
-                        Finance Director
-                      @endif
-                    @elseif($data->id_territory == 'OPERATION')
-                      @if($data->id_division == null)
-                        Operation Director
-                      @elseif($data->id_division == 'PMO')
-                        @if($data->id_position == 'MANAGER')
-                          Div. Project Management Office
-                        @elseif($data->id_position == 'PM')
-                          Staff. Project Manager
-                        @elseif($data->id_position == 'ADMIN')
-                          Staff. PMO Admin
-                        @endif
-                      @elseif($data->id_division == 'MSM')
-                        @if($data->id_position == 'MANAGER')
-                          Div. Managed Services & Maintenance
-                        @elseif($data->id_position == 'ADMIN')
-                          Staff. MSM Admin
-                        @elseif($data->id_position == 'CALL SO')
-                          Staff. Call Center Operator
-                        @elseif($data->id_position == 'HELP DESK')
-                          Staff. Dedicated Help Desk
-                        @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
-                          Dept. Technical Support
-                        @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
-                          Staff. Support Engineer
-                        @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
-                          Dept. Services Project Manager
-                        @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
-                          Staff. Services Project Coordinator
-                        @endif
-                      @endif
-                    @elseif($data->id_division == 'HR')
-                      @if($data->id_position == 'HR MANAGER')
-                        Div. Human Resource Head
-                      @elseif($data->id_position == 'STAFF GA')
-                        Staff. General Affair
-                      @elseif($data->id_position == 'STAFF HR')
-                        Staff. Human Resource
-                      @endif
-                    @elseif($data->id_position == 'ADMIN')
-                      Staff. Admin MSP
-                    @else
-                      {{ $data->id_position }}
-                    @endif
-                  </td>
-                  @else
-                  <td>&#8212</td>
-                  @endif
-                  @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
-                  <td>
-                    <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
+	  		</div>
+	  	</div>
+	  @endif
+	    <div class="pull-right">
+	      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
+	      <button class="btn btn-sm btn-primary" style="margin-bottom: 20px" id="btnAdd" data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i>&nbsp Employee</button>
+	      @endif
+	    </div>
+	    <ul class="nav" id="myTab" role="tablist"></ul>
+	    <div class="table-responsive">
+	        <table class="table table-bordered table-striped dataTable" id="data_all_msp" width="100%" cellspacing="0">
+	          <thead>
+	            <tr>
+	              <th>NIK</th>
+	              <th>Employees Name</th>
+	              <th>Position</th>
+	              @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	              <th>Action</th>
+	              @endif
+	            </tr>
+	          </thead>
+	          <tbody>
+	            @foreach($hr_msp as $data)
+	            @if($data->id_company == '2')
+	            <tr>
+	              <td><?=str_replace('/', '', $data->nik)?></td>
+	              <td>{{ $data->name }}</td>
+	              @if($data->id_position != '')
+	              <td>
+	                @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
+	                  President Director
+	                @elseif($data->id_division == 'TECHNICAL')
+	                  @if($data->id_territory == 'DPG')
+	                    @if($data->id_position == 'ENGINEER MANAGER')
+	                      Dept. Implementation Manager
+	                    @elseif($data->id_position == 'ENGINEER STAFF')
+	                      Staff. Systems Engineer
+	                    @endif
+	                  @elseif($data->id_territory == 'DVG')
+	                    @if($data->id_position == 'MANAGER')
+	                      Dept. Development Manager
+	                    @elseif($data->id_position == 'STAFF')
+	                      Staff. Dev Ops
+	                    @elseif($data->id_position == 'INTERNAL IT')
+	                      Staff. Internal IT Engineer
+	                    @elseif($data->id_position == 'ADMIN')
+	                      Staff. TEC Admin
+	                    @endif
+	                  @elseif($data->id_territory == 'SPECIALIST')
+	                    @if($data->id_position == 'EXPERT ENGINEER')
+	                      Expert Engineer
+	                    @endif
+	                  @else
+	                    @if($data->id_position == 'MANAGER')
+	                      Div. Technical Head
+	                    @elseif($data->id_position == 'INTERNAL IT')
+	                      Staff. Internal IT Engineer
+	                    @elseif($data->id_position == 'ADMIN')
+	                      Staff. TEC Admin
+	                    @endif
+	                  @endif
+	                @elseif($data->id_division == 'TECHNICAL PRESALES')
+	                  @if($data->id_position == 'MANAGER')
+	                    Dept. Presales Manager
+	                  @elseif($data->id_position == 'STAFF')
+	                    Staff. Presales Engineer
+	                  @endif
+	                @elseif($data->id_division == 'SALES')
+	                  @if($data->id_position == 'MANAGER')
+	                    Dept. MSP Sales
+	                  @else
+	                    Staff. Sales Executive
+	                  @endif
+	                @elseif($data->id_division == 'FINANCE')
+	                  @if($data->id_position != 'FINANCE DIRECTOR')
+	                    @if($data->id_territory == 'FINANCE')
+	                      @if($data->id_position == 'STAFF')
+	                        Staff. Finance
+	                      @elseif($data->id_position == 'COURIER')
+	                        Staff. Courier
+	                      @endif
+	                    @elseif($data->id_territory == 'ACC')
+	                      @if($data->id_position == 'MANAGER')
+	                        Div. Accounting
+	                      @elseif($data->id_position == 'STAFF')
+	                        Staff. Accounting
+	                      @endif
+	                    @endif
+	                  @else
+	                    Finance Director
+	                  @endif
+	                @elseif($data->id_territory == 'OPERATION')
+	                  @if($data->id_division == null)
+	                    Operation Director
+	                  @elseif($data->id_division == 'PMO')
+	                    @if($data->id_position == 'MANAGER')
+	                      Div. Project Management Office
+	                    @elseif($data->id_position == 'PM')
+	                      Staff. Project Manager
+	                    @elseif($data->id_position == 'ADMIN')
+	                      Staff. PMO Admin
+	                    @endif
+	                  @elseif($data->id_division == 'MSM')
+	                    @if($data->id_position == 'MANAGER')
+	                      Div. Managed Services & Maintenance
+	                    @elseif($data->id_position == 'ADMIN')
+	                      Staff. MSM Admin
+	                    @elseif($data->id_position == 'CALL SO')
+	                      Staff. Call Center Operator
+	                    @elseif($data->id_position == 'HELP DESK')
+	                      Staff. Dedicated Help Desk
+	                    @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+	                      Dept. Technical Support
+	                    @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
+	                      Staff. Support Engineer
+	                    @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
+	                      Dept. Services Project Manager
+	                    @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
+	                      Staff. Services Project Coordinator
+	                    @endif
+	                  @endif
+	                @elseif($data->id_division == 'HR')
+	                  @if($data->id_position == 'HR MANAGER')
+	                    Div. Human Resource Head
+	                  @elseif($data->id_position == 'STAFF GA')
+	                    Staff. General Affair
+	                  @elseif($data->id_position == 'STAFF HR')
+	                    Staff. Human Resource
+	                  @endif
+	                @elseif($data->id_position == 'ADMIN')
+	                  Staff. Admin MSP
+	                @else
+	                  {{ $data->id_position }}
+	                @endif
+	              </td>
+	              @else
+	              <td>&#8212</td>
+	              @endif
+	              @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL'|| Auth::User()->id_position == 'DIRECTOR')
+	              <td>
+	                <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
 
-                    <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                    <i class="fa fa-trash"></i>&nbspDelete</button></a>
-                  </td>
-                  @endif
-                </tr>
-                @endif
-                @endforeach
-              </tbody>
-            </table>
-        </div>
-      </div>
-    </div>
+	                <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+	                <i class="fa fa-trash"></i>&nbspDelete</button></a>
+	              </td>
+	              @endif
+	            </tr>
+	            @endif
+	            @endforeach
+	          </tbody>
+	        </table>
+	    </div>
+	  </div>
+	</div>
 
-    <div class="modal fade" id="modalAdd" role="dialog">
+	<div class="modal fade" id="modalAdd" role="dialog">
 	    <div class="modal-dialog modal-md">
 	    
 	      <!-- Modal content-->
@@ -2074,7 +2070,7 @@
 	                            <label for="phone_number" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="phone_number" type="number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
+	                                <input id="phone_number" type="text" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
 
 	                                @if ($errors->has('phone_number'))
 	                                    <span class="invalid-feedback">
@@ -2104,7 +2100,7 @@
 	                            <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
 
 	                            <div class="col-md-8">
-	                                <input id="no_npwp" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" autofocus>
+	                                <input type="text" class="form-control" id="no_npwp" name="no_npwp" value="{{ old('no_npwp') }}" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask autofocus>
 	                            </div>
 	                        </div>
 
@@ -2133,12 +2129,7 @@
 	      </div>
 	    </div>
 	</div>
-
-
-
-	
-
-  	
+		
 	<div class="modal fade" id="modal_update" role="dialog">
 	    <div class="modal-dialog modal-md">
 	    
@@ -2150,517 +2141,623 @@
 	        <div class="modal-body">
 
 	          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-group row">
-                        <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
+	                @csrf
+	                <div class="form-group row">
+	                    <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
 
-                        <div class="col-md-8">
-                            <input id="nik_update" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
+	                    <div class="col-md-8">
+	                        <input id="nik_update" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
 
-                            @if ($errors->has('nik'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('nik') }}</strong>
-                                </span>
-                            @endif
-                        </div>
+	                        @if ($errors->has('nik'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('nik') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="name" class="col-md-4 col-form-label">{{ __('Employees Name') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name_update" value="{{ old('name') }}" autofocus>
+
+	                        @if ($errors->has('name'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('name') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email_update" value="{{ old('email') }}" required>
+
+	                        @if ($errors->has('email'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('email') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="status_karyawan" class="col-md-4 col-form-label text-md-right">{{ __('Employee Status') }}</label>
+
+	                    <div class="col-md-4">
+	                    	<input id="status_karyawan_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+	                	</div>
+
+	                    <div class="col-md-4">
+	                        <select id="status_kerja_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="status_kerja_update" value="{{ old('company') }}" onchange="statusSelect(this)">
+	                            <option value="">-- Select Status --</option>
+	                            <option value="tetap">Karyawan Tetap</option>
+	                            <option value="kontrak">Karyawan Kontrak</option>
+	                        </select>
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="akhir_kontrak_update" class="col-md-4 col-form-label text-md-right">{{ __('Last Contract Date') }}</label>
+
+	                     <div class="col-md-8">
+	                        <input id="akhir_kontrak_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="akhir_kontrak_update" onkeyup="copytextbox();" required autofocus>
+
+	                        @if ($errors->has('last_contract date'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('last_contract date') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company') }}</label>
+
+	                    <div class="col-md-4">
+	                    	<input id="company_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+	                	</div>
+
+	                    <div class="col-md-4">
+	                        <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onchange="companySelect(this)" autofocus>
+	                            <option value="">-- Select Company --</option>
+	                            <option value="1" data-target="sip" id="1">SIP</option>
+	                            <option value="2" data-target="msp" id="2">MSP</option>
+	                        </select>
+	                        @if ($errors->has('company'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('company') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <!--tampilkan divisi berdasarkan divisi-->
+	                <div class="form-group row">
+	                    <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
+
+	                    <div class="col-md-4">
+	                    	<input id="divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+	                	</div>
+
+	                    <div class="col-md-4">
+	                        <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="divisi_update" value="{{ old('company') }}" autofocus>
+	                        </select>
+	                        @if ($errors->has('company'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('company') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <!--tampilkan divisi berdasarkan sub-divisi-->
+	                <div class="form-group row">
+	                    <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
+
+	                    <div class="col-md-4">
+	                    	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
+	                	</div>
+
+	                    <div class="col-md-4">
+	                        <select id="sub_divisi_update" onchange="subdivisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="sub_divisi_update" value="{{ old('company') }}" autofocus>
+	                        </select>
+	                        @if ($errors->has('company'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('company') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <!--tampilkan divisi berdasarkan posisi-->
+	                <div class="form-group row">
+	                    <label for="posisi" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+	                    <div class="col-md-4">
+	                    	<input id="posisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
+	                	</div>
+
+	                    <div class="col-md-4">
+	                        <select id="posisi_update" onchange="posisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="posisi_update" value="{{ old('company') }}" autofocus>
+	                        </select>
+	                        @if ($errors->has('company'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('company') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+	              <!--SIP-->
+
+	                <!-- <div class="form-group row"  style="display:none;"  id="company_update-sip">
+	                    <label for="division" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="division_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select division --</option>
+	                            <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
+	                            <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
+	                            <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
+	                            <option value="SALES" data-target="sales" id="sales">SALES</option>
+	                            <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
+	                            <option value="NULL" data-target="director" id="director">NONE</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!--DIRECTOR-->
+	                <!-- <div class="form-group row"  style="display:none;"  id="division_update-director">
+	                    <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="position-dir-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_dir_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Position --</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+	                
+	                <!-- Technical -->
+	                <!-- <div class="form-group row"  style="display:none;"  id="division_update-technical">
+	                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="subdivision-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Sub Division --</option>
+	                            <option value="DPG" data-target="dvg" id="dvg">IMPLEMENTATION</option>
+	                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
+	                            <option value="DVG" data-target="dvg" id="dvg">DEVELOPMENT</option>
+	                            <option value="NONE" data-target="dpg" id="dpg">NONE</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+
+	                    <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8 margin-top">
+	                        <select id="position-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Position --</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- Sales -->
+	                <!-- <div class="form-group row"  style="display:none;"  id="division_update-sales" >
+
+	                    <label for="territory" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="territory-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Territory --</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+
+	                    <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8 margin-top">
+	                        <select id="position-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Position --</option>
+	                            <option value="MANAGER">MANAGER</option>
+	                            <option value="STAFF">STAFF</option>
+	                            <option value="ADMIN">ADMIN</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- Finance -->
+	                <!-- <div class="form-group row"  style="display:none;"  id="division_update-finance">
+	                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="subdivision-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_finance_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Sub Division --</option>
+	                            <option value="FINANCE" data-target="dvg" id="dvg">FINANCE</option>
+	                            <option value="ACC" data-target="dpg" id="dpg">ACCOUNTING</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+
+	                    <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8 margin-top">
+	                        <select id="position-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_finance_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Position --</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- Operation -->
+	                <!-- <div class="form-group row"  style="display:none;"  id="division_update-operation">
+	                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="subdivision-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Sub Division --</option>
+	                            <option value="MSM" data-target="MSM" id="MSM">MSM</option>
+	                            <option value="PMO" data-target="PMO" id="PMO">PMO</option>
+	                            <option value="DIR" data-target="DIR" id="PMO">NONE</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+
+	                    <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8 margin-top">
+	                        <select id="position-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_operation_update" autofocus>
+	                          <option value="">-- Select position --</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- HR -->
+	                <!-- <div class="form-group row"  style="display:none;"  id="division_update-hr">
+	                    <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="position-hr-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_hr_update" value="{{ old('division') }}" autofocus>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- MSP -->
+
+	               <!--  <div class="form-group row"  style="display:none;"  id="company_update-msp">
+	                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Division --</option>
+	                            <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
+	                            <option value="ADMIN_MSP" >NONE</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+
+	                    <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Position --</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- <div class="form-group row"  style="display:none;"  id="company_update-msp">
+	                    <label for="division-msp" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Division --</option>
+	                            <option value="SALES_MSP" data-target="sales_msp_update" id="sales_msp">SALES</option>
+	                            <option value="TECHNICAL_MSP" data-target="technical_msp_update" id="TECHNICAL_MSP">TECHNICAL</option>
+	                            <option value="WAREHOUSE_MSP" data-target="sales_msp_update" id="warehouse_msp">WAREHOUSE</option>
+	                            <option value="OPERATION_MSP" data-target="sales_msp_update" id="operation_msp">OPERATION</option>
+	                            <option value="ADMIN_MSP" data-target="sales_msp_update">NONE</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-sales_msp_update">
+	                  <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales" value="{{ old('division') }}" autofocus>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-technical_msp_update">
+	                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="subdivision-tech-msp_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Sub Division --</option>
+	                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
+	                            <option value="NONE_MSP" data-target="dpg" id="dpg">NONE</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+
+	                    <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
+
+	                    <div class="col-md-8">
+	                        <select id="position-tech-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp_update" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Position --</option>
+	                        </select>
+	                        @if ($errors->has('division'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('division') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div> -->
+
+	                <div class="form-group row">
+	                    <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="date_of_entry_update" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry_update" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
+
+	                        @if ($errors->has('date_of_entry'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('date_of_entry') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="date_of_birth_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth_update" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
+
+	                        @if ($errors->has('date_of_birth'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('date_of_birth') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
+
+	                    <div class="col-md-8">
+	                        <textarea id="address_update" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address" value="{{ old('address') }}" autofocus></textarea>
+
+	                        @if ($errors->has('address'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('address') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="phone_number" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="phone_number_update" type="number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
+
+	                        @if ($errors->has('phone_number'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('phone_number') }}</strong>
+	                            </span>
+	                        @endif
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="no_ktp" class="col-md-4 col-form-label text-md-right">{{ __('KTP') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="no_ktp_update" type="text" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="no_kk" class="col-md-4 col-form-label text-md-right">{{ __('KK') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="no_kk_update" type="text" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
+	                    </div>
+	                </div>
+
+	                <div class="form-group row">
+	                    <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
+
+	                    <div class="col-md-8">
+	                        <input id="no_npwp_update" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask autofocus>
+	                    </div>
+	                </div>
+
+
+	            <div class="modal-footer">
+	              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	              <button type="submit" class="btn btn-primary btn-submit-update">
+	                  {{ __('Update') }}
+	              </button>
+	            </div>
+	          </form>
+	        </div>
+	      </div>
+	      
+	    </div>
+	</div>
+
+	<div class="modal fade" id="modal_edit_status" role="dialog">
+		<div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Ubah Status Employees</h4>
+        </div>
+	        <div class="modal-body">
+	        	<div class="form-group row">
+                    <label for="Entry" class="col-md-4 col-form-label text-md-right">{{ __('Mulai Bekerja') }}</label>
+
+                    <div class="col-md-8">
+                        <input id="mulai_kerja" type="text" class="form-control" name="mulai_kerja" required>
                     </div>
+                </div>
+	        </div>
+	    </div>
+	</div>
+	</div>
 
-                    <div class="form-group row">
-                        <label for="name" class="col-md-4 col-form-label">{{ __('Employees Name') }}</label>
+	<div class="modal fade" id="modal_update_file" role="dialog">
+    <div class="modal-dialog modal-lg">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Attach File</h4>
+        </div>
+        <div class="modal-body">
 
-                        <div class="col-md-8">
-                            <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name_update" value="{{ old('name') }}" autofocus>
+          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
+                        @csrf
 
-                            @if ($errors->has('name'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('name') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
+                        <div class="form-group row">
+                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
 
-                    <div class="form-group row">
-                        <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+                            <div class="col-md-8">
+                                <input id="nik_update_attach" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
 
-                        <div class="col-md-8">
-                            <input id="email_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email_update" value="{{ old('email') }}" required>
-
-                            @if ($errors->has('email'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('email') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="status_karyawan" class="col-md-4 col-form-label text-md-right">{{ __('Employee Status') }}</label>
-
-                        <div class="col-md-4">
-                        	<input id="status_karyawan_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
-                    	</div>
-
-                        <div class="col-md-4">
-                            <select id="status_kerja_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="status_kerja_update" value="{{ old('company') }}" onchange="statusSelect(this)">
-                                <option value="">-- Select Status --</option>
-                                <option value="tetap">Karyawan Tetap</option>
-                                <option value="kontrak">Karyawan Kontrak</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="akhir_kontrak_update" class="col-md-4 col-form-label text-md-right">{{ __('Last Contract Date') }}</label>
-
-                         <div class="col-md-8">
-                            <input id="akhir_kontrak_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="akhir_kontrak_update" onkeyup="copytextbox();" required autofocus>
-
-                            @if ($errors->has('last_contract date'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('last_contract date') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company') }}</label>
-
-                        <div class="col-md-4">
-                        	<input id="company_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
-                    	</div>
-
-                        <div class="col-md-4">
-                            <select id="company_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company_update" value="{{ old('company') }}" onchange="companySelect(this)" autofocus>
-                                <option value="">-- Select Company --</option>
-                                <option value="1" data-target="sip" id="1">SIP</option>
-                                <option value="2" data-target="msp" id="2">MSP</option>
-                            </select>
-                            @if ($errors->has('company'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('company') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!--tampilkan divisi berdasarkan divisi-->
-                    <div class="form-group row">
-                        <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
-
-                        <div class="col-md-4">
-                        	<input id="divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
-                    	</div>
-
-                        <div class="col-md-4">
-                            <select id="divisi_update" onchange="divisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="divisi_update" value="{{ old('company') }}" autofocus>
-                            </select>
-                            @if ($errors->has('company'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('company') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!--tampilkan divisi berdasarkan sub-divisi-->
-                    <div class="form-group row">
-                        <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
-
-                        <div class="col-md-4">
-                        	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
-                    	</div>
-
-                        <div class="col-md-4">
-                            <select id="sub_divisi_update" onchange="subdivisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="sub_divisi_update" value="{{ old('company') }}" autofocus>
-                            </select>
-                            @if ($errors->has('company'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('company') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!--tampilkan divisi berdasarkan posisi-->
-                    <div class="form-group row">
-                        <label for="posisi" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-                        <div class="col-md-4">
-                        	<input id="posisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
-                    	</div>
-
-                        <div class="col-md-4">
-                            <select id="posisi_update" onchange="posisiSelect(this)" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="posisi_update" value="{{ old('company') }}" autofocus>
-                            </select>
-                            @if ($errors->has('company'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('company') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                  <!--SIP-->
-
-                    <!-- <div class="form-group row"  style="display:none;"  id="company_update-sip">
-                        <label for="division" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="division_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select division --</option>
-                                <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
-                                <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
-                                <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
-                                <option value="SALES" data-target="sales" id="sales">SALES</option>
-                                <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
-                                <option value="NULL" data-target="director" id="director">NONE</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-
-                    <!--DIRECTOR-->
-                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-director">
-                        <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="position-dir-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_dir_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Position --</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-                    
-                    <!-- Technical -->
-                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-technical">
-                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="subdivision-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Sub Division --</option>
-                                <option value="DPG" data-target="dvg" id="dvg">IMPLEMENTATION</option>
-                                <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-                                <option value="DVG" data-target="dvg" id="dvg">DEVELOPMENT</option>
-                                <option value="NONE" data-target="dpg" id="dpg">NONE</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
+                                @if ($errors->has('nik'))
+                                    <span class="invalid-feedback">
+                                        <strong>{{ $errors->first('nik') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
                         </div>
 
-                        <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
+                        <div class="form-group row">
+                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
 
-                        <div class="col-md-8 margin-top">
-                            <select id="position-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Position --</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-
-                    <!-- Sales -->
-                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-sales" >
-
-                        <label for="territory" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="territory-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Territory --</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
+                            <div class="col-md-8">
+                                <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+                            </div>
                         </div>
 
-                        <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-                        <div class="col-md-8 margin-top">
-                            <select id="position-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Position --</option>
-                                <option value="MANAGER">MANAGER</option>
-                                <option value="STAFF">STAFF</option>
-                                <option value="ADMIN">ADMIN</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
+                        <center>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <img src="" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;" />
+                            </div>
                         </div>
-                    </div> -->
+                        </center>
 
-                    <!-- Finance -->
-                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-finance">
-                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+                        <div class="form-group row">
+                            <label for="bpjs_kes" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Kesehatan') }}</label>
 
-                        <div class="col-md-8">
-                            <select id="subdivision-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_finance_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Sub Division --</option>
-                                <option value="FINANCE" data-target="dvg" id="dvg">FINANCE</option>
-                                <option value="ACC" data-target="dpg" id="dpg">ACCOUNTING</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
+                            <div class="col-md-8">
+                                <input id="inputgambarbpjs_kes_update" type="file" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" class="validate" autofocus>
+                            </div>
                         </div>
 
-                        <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-                        <div class="col-md-8 margin-top">
-                            <select id="position-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_finance_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Position --</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
+                        <center>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <img src="" class="zoom center" id="showgambarbpjs_kes_update" style="max-width:400px;max-height:400px;" />
+                            </div>
                         </div>
-                    </div> -->
+                        </center>
 
-                    <!-- Operation -->
-                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-operation">
-                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
 
-                        <div class="col-md-8">
-                            <select id="subdivision-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Sub Division --</option>
-                                <option value="MSM" data-target="MSM" id="MSM">MSM</option>
-                                <option value="PMO" data-target="PMO" id="PMO">PMO</option>
-                                <option value="DIR" data-target="DIR" id="PMO">NONE</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
+                        <div class="form-group row">
+                            <label for="bpjs_ket" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Ketenagakerjaan') }}</label>
+
+                            <div class="col-md-8">
+                                <input id="inputgambarbpjs_ket_update" type="file" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" class="validate" autofocus>
+                            </div>
                         </div>
 
-                        <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-                        <div class="col-md-8 margin-top">
-                            <select id="position-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_operation_update" autofocus>
-                              <option value="">-- Select position --</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
+                        <center>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <img src="" class="zoom center" id="showgambarbpjs_ket_update" style="max-width:400px;max-height:400px;" />
+                            </div>
                         </div>
-                    </div> -->
-
-                    <!-- HR -->
-                    <!-- <div class="form-group row"  style="display:none;"  id="division_update-hr">
-                        <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="position-hr-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_hr_update" value="{{ old('division') }}" autofocus>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-
-
-                    <!-- MSP -->
-
-                   <!--  <div class="form-group row"  style="display:none;"  id="company_update-msp">
-                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Division --</option>
-                                <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
-                                <option value="ADMIN_MSP" >NONE</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-
-                        <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Position --</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-
-                    <!-- <div class="form-group row"  style="display:none;"  id="company_update-msp">
-                        <label for="division-msp" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Division --</option>
-                                <option value="SALES_MSP" data-target="sales_msp_update" id="sales_msp">SALES</option>
-                                <option value="TECHNICAL_MSP" data-target="technical_msp_update" id="TECHNICAL_MSP">TECHNICAL</option>
-                                <option value="WAREHOUSE_MSP" data-target="sales_msp_update" id="warehouse_msp">WAREHOUSE</option>
-                                <option value="OPERATION_MSP" data-target="sales_msp_update" id="operation_msp">OPERATION</option>
-                                <option value="ADMIN_MSP" data-target="sales_msp_update">NONE</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-
-                    <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-sales_msp_update">
-                      <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales" value="{{ old('division') }}" autofocus>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-
-                    <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-technical_msp_update">
-                        <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="subdivision-tech-msp_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Sub Division --</option>
-                                <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-                                <option value="NONE_MSP" data-target="dpg" id="dpg">NONE</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-
-                        <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-                        <div class="col-md-8">
-                            <select id="position-tech-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp_update" value="{{ old('division') }}" autofocus>
-                                <option value="">-- Select Position --</option>
-                            </select>
-                            @if ($errors->has('division'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('division') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div> -->
-
-                    <div class="form-group row">
-                        <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
-
-                        <div class="col-md-8">
-                            <input id="date_of_entry_update" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry_update" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
-
-                            @if ($errors->has('date_of_entry'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('date_of_entry') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
-
-                        <div class="col-md-8">
-                            <input id="date_of_birth_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth_update" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
-
-                            @if ($errors->has('date_of_birth'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('date_of_birth') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
-
-                        <div class="col-md-8">
-                            <textarea id="address_update" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address" value="{{ old('address') }}" autofocus></textarea>
-
-                            @if ($errors->has('address'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('address') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="phone_number" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
-
-                        <div class="col-md-8">
-                            <input id="phone_number_update" type="number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
-
-                            @if ($errors->has('phone_number'))
-                                <span class="invalid-feedback">
-                                    <strong>{{ $errors->first('phone_number') }}</strong>
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="no_ktp" class="col-md-4 col-form-label text-md-right">{{ __('KTP') }}</label>
-
-                        <div class="col-md-8">
-                            <input id="no_ktp_update" type="text" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="no_kk" class="col-md-4 col-form-label text-md-right">{{ __('KK') }}</label>
-
-                        <div class="col-md-8">
-                            <input id="no_kk_update" type="text" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
-                        </div>
-                    </div>
-
-
-                    <div class="form-group row">
-                        <label for="no_npwp" class="col-md-4 col-form-label text-md-right">{{ __('NPWP') }}</label>
-
-                        <div class="col-md-8">
-                            <input id="no_npwp_update" type="text" class="form-control" name="no_npwp" value="{{ old('no_npwp') }}" autofocus>
-                        </div>
-                    </div>
-
+                        </center>
 
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -2668,127 +2765,13 @@
                       {{ __('Update') }}
                   </button>
                 </div>
-	          </form>
-	        </div>
-	      </div>
-	      
-	    </div>
-
-  	</div>
-  	
-
-  	<div class="modal fade" id="modal_edit_status" role="dialog">
-  		<div class="modal-dialog modal-md">
-	      <div class="modal-content">
-	        <div class="modal-header">
-	          <h4 class="modal-title">Ubah Status Employees</h4>
-	        </div>
-		        <div class="modal-body">
-		        	<div class="form-group row">
-                        <label for="Entry" class="col-md-4 col-form-label text-md-right">{{ __('Mulai Bekerja') }}</label>
-
-                        <div class="col-md-8">
-                            <input id="mulai_kerja" type="text" class="form-control" name="mulai_kerja" required>
-                        </div>
-                    </div>
-		        </div>
-		    </div>
-		</div>
-  	</div>
-
-
-  	<div class="modal fade" id="modal_update_file" role="dialog">
-	    <div class="modal-dialog modal-lg">
-	    
-	      <!-- Modal content-->
-	      <div class="modal-content">
-	        <div class="modal-header">
-	          <h4 class="modal-title">Attach File</h4>
-	        </div>
-	        <div class="modal-body">
-
-	          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
-	                        @csrf
-
-	                        <div class="form-group row">
-	                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="nik_update_attach" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
-
-	                                @if ($errors->has('nik'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('nik') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
-
-	                        <div class="form-group row">
-	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
-	                            </div>
-	                        </div>
-
-	                        <center>
-	                        <div class="form-group row">
-	                            <div class="col-md-12">
-	                                <img src="" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;" />
-	                            </div>
-	                        </div>
-	                        </center>
-
-	                        <div class="form-group row">
-	                            <label for="bpjs_kes" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Kesehatan') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="inputgambarbpjs_kes_update" type="file" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" class="validate" autofocus>
-	                            </div>
-	                        </div>
-
-	                        <center>
-	                        <div class="form-group row">
-	                            <div class="col-md-12">
-	                                <img src="" class="zoom center" id="showgambarbpjs_kes_update" style="max-width:400px;max-height:400px;" />
-	                            </div>
-	                        </div>
-	                        </center>
-
-
-	                        <div class="form-group row">
-	                            <label for="bpjs_ket" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Ketenagakerjaan') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="inputgambarbpjs_ket_update" type="file" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" class="validate" autofocus>
-	                            </div>
-	                        </div>
-
-	                        <center>
-	                        <div class="form-group row">
-	                            <div class="col-md-12">
-	                                <img src="" class="zoom center" id="showgambarbpjs_ket_update" style="max-width:400px;max-height:400px;" />
-	                            </div>
-	                        </div>
-	                        </center>
-
-	                <div class="modal-footer">
-	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	                  <button type="submit" class="btn btn-primary btn-submit-update">
-	                      {{ __('Update') }}
-	                  </button>
-	                </div>
-	          </form>
-	        </div>
-	      </div>
-	      
-	    </div>
-
-  	</div>
-
-    
-  </section>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+	</div>
+</section>
 
   <style type="text/css">
     .margin-left-custom2{
@@ -2825,7 +2808,14 @@
 
   	<script src="{{url('js/pagination.js')}}"></script>
   	<script src="{{url('js/pagination.min.js')}}"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
     <script type="">
+    	$(":input").inputmask();
+		$("#phone_number").inputmask({"mask": "(+62) 999-9999-9999"});
+
+    	$(document).ready(function(){
+    		$("[data-mask]").inputmask();
+    	})
 
        $(".btn-submit-update").click(function(){
        	 $('#modal_update_file').delay(1000).fadeOut(450);

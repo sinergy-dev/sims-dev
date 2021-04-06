@@ -2,414 +2,234 @@
 @section('content')
   <style type="text/css">
     #tes {
-    text-align: center;
-    background-color: #7c21a3;
-    color: white;
-    width: 4em;
-    height: 4em;
-    line-height: 4em;
-    border-radius: 50%;
-    font-size: 50px;
-    font-family: helvetica;
-    font-style: bold;
-    box-shadow: 3px 3px 5px 6px #ccc;
+    width: 200px;
+    height: 200px;
+    }
+    .form-horizontal .control-label {
+      padding-top: 7px;
+      margin-bottom: 0;
+      text-align: left;
     }
   </style>
-  <section class="content-header">
-    <h1>
-      Profile
-    </h1>
-    <ol class="breadcrumb">
-      <li><a href="#"><i class="fa fa-user"></i> User Profile</a></li>
-    </ol>
-  </section>
+<section class="content-header">
+  <h1>
+    Profile
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-user"></i> User Profile</a></li>
+  </ol>
+</section>
 
-  <section class="content">
-    <div class="box">
-      <div class="box-body">
-        @if (session('success'))
-          <div class="alert-box notice" id="alert">
-              {{ session('success') }}
+<section class="content">
+  <div class="row">
+    <!-- card foto + profile singkat -->
+    <div class="col-md-3">
+      <div class="box box-primary">
+        <div class="box-body box-profile">
+          <div style="align-items: center;">
+            @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-" || Auth::User()->gambar == "")
+              <img id="tes" class="profile-user-img img-responsive img-circle" src="{{ asset('image/place_profile_3.png')}}" alt="User profile picture">
+            @else
+              <img id="tes" class="profile-user-img img-responsive img-circle" src="{{ asset('image/'.$user_profile->gambar)}}" alt="User profile picture" data-toggle="modal" data-target="#pict_profile" onclick="nik_profile('{{$user_profile->nik}}')">
+            @endif
           </div>
-        @endif
-        <div class="col-md-12 col-xs-12">
-          <div class="col-md-3 col-xs-3">
-            <div class="pull-left" style="padding:20px">
-              @if(Auth::User()->gambar == NULL)
-                <div id="tes">
-                {!! strtoupper(substr($user_profile->name, 0, 2))!!}
-                </div>
-              @elseif(Auth::User()->gambar != NULL)
-                <img id="tes" class="profile-user img-responsive" src="{{ asset('image/'.$user_profile->gambar)}}" alt="Avatar" style="border:solid white;" data-toggle="modal" data-target="#pict_profile" onclick="nik_profile('{{$user_profile->nik}}')">
-              @endif
-            </div>
-          </div>
-          <div class="col-md-9 col-xs-9">
-            <h1 style="padding-left: 5px;font-family: Arial, Helvetica, sans-serif;">{{ucfirst(strtolower($user_profile->name))}}</h1>
-            <div class="row" style="padding-left:20px">
-              <h4 class="pull-left" style="margin-right: 15px"><i class="fa fa-address-card" style="margin-left: 5px"></i><b>&nbsp&nbsp {{$user_profile->nik}} </b></h4>
-              <h4 class="pull-left" style="margin-right: 15px"><i class="fa fa-envelope" style="margin-left: 5px"></i><b>&nbsp&nbsp {{$user_profile->email}} </b></h4> 
-              <h4 class="pull-left" style="margin-right: 15px"><i class="fa fa-phone" style="margin-left: 5px"></i><b>&nbsp&nbsp +62{{$user_profile->phone}} </b></h4>
-            </div>
-            <div class="row" style="padding-left:25px">
-              <button class="btn btn-md btn-primary btn-edit" type="button" style="width: 150px"><i class="fa fa-key"></i> Change Password</button>
-              <a href="{{url('show_cuti')}}" style="margin-left: 10px"><button class="btn btn-md btn-success" style="width: 150px"><i class="fa fa-user"></i> Leaving Permite</button></a>
-            </div>
-            <div class="nav" style="margin-top:20px">
-              <ul class="nav nav-tabs">
-                <li class="active">
-                  <a data-toggle="tab" href="#profile">Profile</a>
-                </li>
-                <li>
-                  <a data-toggle="tab" href="#attachfile">Attach File</a>
-                </li>
-              </ul>
-              <div class="tab-content">
-                <div id="profile" class="tab-pane fade in active">
-                    <div class="tab-content">
-                        <div class="tab-pane fade in active" id="profile">
-                          <div class="content-header" style="font-size: 24px;"><b>User Profile</b>
-                          </div><br>
-
-                          <form action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
-                            <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
-                              @csrf
-                                <div class="form-group row">
-                                    <div class="col-md-3">
-                                      <label style="margin: 12px">Employee Name</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                      <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="name" name="name" placeholder="Type Name" value="{{$user_profile->name}}" required>
-                                    </div>  
-                                </div>
-
-                                <div class="form-group row">
-                                    <div class="col-md-3">
-                                      <label style="margin: 12px">Email</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                      <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="email" name="email"  placeholder="Type Email" value="{{$user_profile->email}}" readonly required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                      <div class="col-md-3">
-                                        <label style="margin: 12px">Date of Birth</label>
-                                      </div>
-                                      <div class="col-md-7">
-                                        <input type="date" style="width: 300px;margin: 12px;" class="form-control"required id="date_of_birth" name="date_of_birth" value="{{$user_profile->date_of_birth}}" required>
-                                      </div>
-                                </div>
-
-                                <div class="form-group row">
-                                      <div class="col-md-3">
-                                        <label style="margin: 12px">Date of Entry</label>
-                                      </div>
-                                      <div class="col-md-7">
-                                        <input type="date" style="width: 300px;margin: 12px;" class="form-control" required id="date_of_entry" name="date_of_entry" value="{{$user_profile->date_of_entry}}">
-                                      </div>
-                                </div>
-
-                                <div class="form-group row">
-                                      <div class="col-md-3">
-                                        <label style="margin: 12px">Lama Bekerja</label>
-                                      </div>
-                                      <div class="col-md-7" style="margin-top: 12px">
-                                        <span style="margin-left: 12px;">
-                                        @if($user_profile->date_of_entrys > 365)
-                                        {{ floor($user_profile->date_of_entrys / 365) }} Tahun {{ round($user_profile->date_of_entrys % 365 / 30 )}} Bulan
-                                        @elseif($user_profile->date_of_entrys > 31)
-                                        {{ floor($user_profile->date_of_entrys / 30)}} Bulan
-                                        @else
-                                        {{$user_profile->date_of_entrys}} Hari
-                                        @endif
-                                          <!-- {{ floor($user_profile->date_of_entrys / 365) }} tahun {{ $user_profile->date_of_entrys % 365 }} hari</span> -->
-                                      </div>
-                                </div>
-
-                                <div class="form-group row">
-                                      <div class="col-md-3">
-                                        <label style="margin: 12px">Phone</label>
-                                      </div>
-                                      
-                                      <div class="col-md-7">
-                                        @if($user_profile->phone != null)
-                                        <input type="number" style="width: 300px;margin: 12px;" class="form-control" id="phone" name="phone" value="0{{$user_profile->phone}}" onKeyPress="if(this.value.length==12) return false;">
-                                        @else
-                                        <input type="number" style="width: 300px;margin: 12px;" class="form-control" id="phone" name="phone" value="" onKeyPress="if(this.value.length==12) return false;">
-                                        @endif
-                                      </div>
-                                </div>
-
-                                <div class="form-group row">
-                                      <div class="col-md-3">
-                                        <label style="margin: 12px">Address</label>
-                                      </div>
-                                      <div class="col-md-8">
-                                        <input type="text-area" class="form-control" id="address" name="address" style="white-space: nowrap;margin: 12px;width: 300px" value="{{$user_profile->address}}">
-                                      </div>
-                                </div>
-
-                                <div class="form-group row">
-                                      <div class="col-md-3">
-                                        <label style="margin: 12px">Image</label>
-                                      </div>
-                                      <div class="col-md-7">
-                                        
-                                        <div class="col-md-4">
-                                          <input type="file" id="inputgambar" name="gambar" class="validate" / >
-                                          <span class="help-block">*<b>Max 2MB</b></span>  
-                                        </div>
-                                      </div>
-                                </div>
-
-
-                                <div class="form-group row">
-                                    <div class="col-md-3">
-                                      <label style="margin: 12px">NPWP</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                      <input type="text" style="width: 300px;padding: 12px;margin: 12px;" class="form-control" id="no_npwp" name="no_npwp" placeholder="Type NPWP" value="{{$user_profile->no_npwp}}">
-                                    </div>  
-                                </div>
-
-                                <div class="form-group row">
-                                  <div class="col-md-3">
-                                    <button class="btn btn-sm btn-warning" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
-                                  </div>
-                                </div>
-                          </form>
-                        </div>
-                        <div class="tab-pane" id="">
-                        </div>
+          <h3 class="profile-username text-center" style="padding-left: 5px;font-family: Arial, Helvetica, sans-serif;">{{ucfirst(strtolower($user_profile->name))}}</h3>
+          <!-- <p class="text-muted text-center">Software Engineer</p> -->
+          <ul class="list-group list-group-unbordered">
+            <li class="list-group-item">
+              <i class="fa fa-address-card">&nbsp</i><b class="">NIK</b> <b class="pull-right">{{$user_profile->nik}}</b>
+            </li>
+            <li class="list-group-item">
+              <i class="fa fa-envelope">&nbsp</i><b class="">Email</b> <b class="pull-right">{{$user_profile->email}}</b>
+            </li>
+            <li class="list-group-item">
+              <i class="fa fa-phone">&nbsp</i><b class="">Phone</b> <b class="pull-right">+62{{$user_profile->phone}}</b>
+            </li>
+          </ul>
+          <!-- <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a> -->
+        </div>
+      </div>
+    </div>
+    <!-- card profile + upload image -->
+    <div class="col-md-9">
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a data-toggle="tab" href="#profile">Profile</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#attachfile">Attach File</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <!-- tab profile -->
+          <div class="active tab-pane" id="profile">
+            <div class="post">
+              <h4 style="padding-left: 10px"><b>User Profile</b></h4>
+              <p style="padding-left: 10px">Make sure your data is correct and up to date</p>
+              <form class="form-horizontal" action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
+                <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
+                @csrf
+                <div class="box-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Employee Name</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="name" name="name" placeholder="Type Name" value="{{$user_profile->name}}" required>
                     </div>
-                </div>
-
-
-                <div id="attachfile" class="tab-pane fade">
-                    <div class="tab-content">
-                         <div class="tab-pane fade in active" id="attachfile">
-                          <div class="content-header" style="font-size: 24px;"><b>Attach file</b>
-                          </div><br>
-
-                          <form action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
-                            <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
-                              @csrf
-
-                                <div class="form-group row">
-                                    <div class="col-md-8">
-                                      <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
-                                    </div>
-                                </div>
-
-
-                                <div class="form-group row">
-                                      <div class="col-md-2">
-                                        <label style="margin: 12px">NPWP File</label>
-                                      </div>
-                                      <div class="col-md-8">
-                                        
-                                        <div class="col-md-4">
-                                          <input type="file" id="inputgambarnpwp" name="npwp_file" value="{{$user_profile->npwp_file}}">
-                                        </div>
-                                      </div>
-                                </div>
-
-
-                                <div class="form-group row">
-                                    <div class="col-md-8">
-                                      <img src="http://placehold.it/100x100" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
-                                    </div>
-                                </div>
-
-
-                                <div class="form-group row">
-                                      <div class="col-md-2">
-                                        <label style="margin: 12px">KTP</label>
-                                      </div>
-                                      <div class="col-md-8">
-                                        
-                                        <div class="col-md-4">
-                                          <input type="file" id="inputgambarktp" name="ktp_file" value="">
-                                        </div>
-                                      </div>
-                                </div>
-
-
-                                <div class="form-group row">
-                                  <div class="col-md-6">
-                                    <button class="btn btn-sm btn-warning pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
-                                  </div>
-                                </div>
-                          </form>
-                        </div>
-                        <div class="tab-pane" id="">
-                        </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Email</label>
+                    <div class="col-sm-10">
+                      <input type="email" class="form-control" id="email" name="email" placeholder="Type Email" value="{{$user_profile->email}}" readonly>
                     </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Date of Birth</label>
+                    <div class="col-sm-10">
+                      <div class="input-group">
+                        <div class="input-group-addon">
+                          <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" class="form-control pull-right" id="date_of_birth" name="date_of_birth" value="{{date('d/m/Y',strtotime($user_profile->date_of_birth))}}" required>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Date of Entry</label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <div class="input-group-addon">
+                          <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" class="form-control pull-right" id="date_of_entry" name="date_of_entry" value="{{date('d/m/Y',strtotime($user_profile->date_of_entry))}}" readonly>
+                      </div>
+                    </div>
+                    <label class="col-sm-5 control-label">
+                      Has served for  
+                      @if($user_profile->date_of_entrys > 365)
+                        {{ floor($user_profile->date_of_entrys / 365) }} Years {{ round($user_profile->date_of_entrys % 365 / 30 )}} Months
+                      @elseif($user_profile->date_of_entrys > 31)
+                        {{ floor($user_profile->date_of_entrys / 30)}} Months
+                      @else
+                        {{$user_profile->date_of_entrys}} Days
+                      @endif
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Phone</label>
+                    <div class="col-sm-10">
+                      <div class="input-group">
+                        <div class="input-group-addon">
+                          <i class="fa fa-phone"></i>
+                        </div>
+                        {{-- <input type="text" class="form-control" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask> --}}
+                        <!-- <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask> -->
+                        @if($user_profile->phone != null)
+                          <input type="text" class="form-control" id="phone" data-inputmask='"mask": "9999.9999.9999"' data-mask name="phone" placeholder="Type Phone" required>
+                        @else
+                          <input type="text" class="form-control" id="phone" name="phone" placeholder="Type Phone" value="-" required>
+                        @endif
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Address</label>
+                    <div class="col-sm-10">
+                      <textarea class="form-control" rows="3" id="address" name="address" placeholder="Type Your Addres" required>
+                      </textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Profile Photo</label>
+                    <div class="col-sm-10">
+                      <input type="file" id="inputgambar" name="gambar">
+                      <span class="help-block"><b>The file size must not exceed 2MB</b></span>  
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">NPWP</label>
+                    <div class="col-sm-10">
+                      @if($user_profile->no_npwp == "-" || $user_profile->no_npwp == null)
+                        <input type="text" class="form-control" rows="3" id="no_npwp" name="no_npwp" placeholder="xx.xxx.xxx.x-xxx.xxx" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask>
+                      @else
+                        <input type="text" class="form-control" rows="3" id="no_npwp" name="no_npwp" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask readonly>
+                      @endif
+                    </div>
+                  </div> 
                 </div>
-              </div>
+                <div class="box-footer">
+                  <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i> Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- tab attach file -->
+          <div class="tab-pane" id="attachfile">
+            <div class="tab-content">
+              <div class="tab-pane fade in active" id="attachfile">
+                <h4 style="padding-left: 10px"><b>Attach File</b></h4>
+              </div><br>
+              <form action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
+                <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
+                @csrf
+                <div class="box-body">
+                  <div class="form-group row">
+                    <div class="col-md-8">
+                      @if($user_profile->npwp_file == "-" || $user_profile->npwp_file == null || $user_profile->npwp_file == "")
+                        <img src="{{url('img/placeholder100x100.png')}}" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @else
+                        <img src="{{url('image') . "/" . $user_profile->npwp_file}}" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @endif
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <div class="col-md-2">
+                        <label style="margin: 12px">NPWP File</label>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="col-md-4">
+                          <input type="file" id="inputgambarnpwp" name="npwp_file" value="{{$user_profile->npwp_file}}">
+                        </div>
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-8">
+                      <img src="{{url('img/placeholder100x100.png')}}" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-2">
+                      <label style="margin: 12px">KTP</label>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="col-md-4">
+                        <input type="file" id="inputgambarktp" name="ktp_file" value="">
+                      </div>
+                    </div>
+                  </div>
+                          <!-- <div class="form-group row">
+                            <div class="col-md-6">
+                              <button class="btn btn-primary pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
+                              <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i> Update</button>
+                            </div>
+                          </div> -->
+                </div>
+                <div class="box-footer">
+                  <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-edit"></i> Update</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!--modal tic tac toe-->
-    <div class="modal fade" id="modal_tic">
-  	<div class="modal-dialog modal-md">
-  		<div class="modal-content">
-  			<div class="modal-header">
-  				<h4 class="modal-title">Tic Tac Toe</h4>
-  			</div>
-  			<div class="modal-body">
-  				<div class="row">
-  					<button onclick="initialize()" class="btn btn-sm btn-primary">Start Game</button>
-  					<div class="col-md-6">
-	  					<table id="table_game">
-					      <tr><td class="td_game"><div id="cell0" onclick="cellClicked(this.id)" class="fixed"></div></td><td class="td_game"><div id="cell1" onclick="cellClicked(this.id)" class="fixed"></div></td><td class="td_game"><div id="cell2" onclick="cellClicked(this.id)" class="fixed"></div></td></tr>
-					      <tr><td class="td_game"><div id="cell3" onclick="cellClicked(this.id)" class="fixed"></div></td><td class="td_game"><div id="cell4" onclick="cellClicked(this.id)" class="fixed"></div></td><td class="td_game"><div id="cell5" onclick="cellClicked(this.id)" class="fixed"></div></td></tr>
-					      <tr><td class="td_game"><div id="cell6" onclick="cellClicked(this.id)" class="fixed"></div></td><td class="td_game"><div id="cell7" onclick="cellClicked(this.id)" class="fixed"></div></td><td class="td_game"><div id="cell8" onclick="cellClicked(this.id)" class="fixed"></div></td></tr>
-						</table>
-  					</div>
-  					<div class="col-md-3">
-  						<table>
-					      <tr><th class="th_list">Computer</th><th class="th_list" style="padding-right:10px;padding-left:10px">Seri</th><th class="th_list">Player</th></tr>
-					      <tr><td class="td_list" id="computer_score">0</td><td class="td_list" style="padding-right:10px;padding-left:10px" id="tie_score">0</td><td class="td_list" id="player_score">0</td></tr>
-						</table>
-						<button data-dismiss="modal" class="btn btn-sm btn-danger margin-top" style="width: 165px" onclick="selesai()">End Game</button>
-  					</div>
-  				</div>
-  			</div>
-  		</div>
-  	</div>
   </div>
-
-  <div class="modal fade" id="modalEdit" role="dialog">
-    <div class="modal-dialog modal-sm">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Edit Profile</h4>
-        </div>
-        <div class="modal-body">
-          <form method="POST" enctype="multipart/form-data" action="{{url('changePassword')}}" id="modalEditProfile" name="modalEditProfile">
-            @csrf
-            <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden> 
-
-            <div class="form-group ">
-              <label class="margin-top">Current Password</label>
-              <input class="form-control" id="current-password" name="current-password" type="Password"  placeholder="Enter Your Current Password">
-            </div>
-
-
-            <div class="form-group">
-              <label class="margin-top">New Password</label>
-              <input class="form-control" id="new-password" name="new-password" type="Password" placeholder="Enter New Password">
-            </div>
-
-            <div class="form-group">
-              <label class="margin-top">Confirm Password</label>
-            <input class="form-control" id="new-password-confirm" name="new-password-confirm" type="Password" placeholder="Enter Confirm Password">
-            </div>
-
-         <!--    <div class="form-group">
-              <label class="margin-top">Image</label>
-              <div class="col s6">
-                 <img src="{{ asset('image/'.$user_profile->gambar) }}" id="tes" style="max-width:100px;max-height:100px;float:left;" />
-              </div>
-                
-              <div class="col-md-4">
-                <input type="file" id="inputgambar" name="gambar" class="validate" / >
-                <span class="help-block">*<b>Max 2MB</b></span>  
-              </div>
-            
-            </div>  -->     
-             
-            <div class="modal-footer">
-              <button class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
-            </div>
-        </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="delete_pict" role="dialog">
-    <div class="modal-dialog modal-md">
-      <!-- Modal content-->
-      <div class="modal-content modal-md">
-        <div class="modal-header">
-          <h4 class="modal-title"></h4>
-        </div>
-        <div class="modal-body">
-          <form action="{{url('profile/delete_pict')}}" method="POST" hidden>
-            {!! csrf_field() !!}
-            <input type="" name="pick_nik" id="pick_nik" value="{{$user_profile->nik}}">
-            <div style="text-align: center;">
-              <h3>Are you sure?</h3><br><h3>DELETE PICTURE!</h3>
-            </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal"><b>Close</b></button>
-            <button class="btn btn-sm btn-success-raise" type="submit"><b>Yes</b></button>
-          </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="pict_profile" role="dialog">
-    <div class="modal-dialog modal-md">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title"></h4>
-        </div>
-        <div class="modal-body">
-          <form action="{{url('profile/delete_pict')}}" method="POST">
-            {!! csrf_field() !!}
-            <input type="" name="pick_nik" id="pick_nik" value="{{$user_profile->nik}}" hidden>
-            <div style="text-align: center;">
-              <h3>Are you sure?</h3><br><h3>DELETE PICTURE!</h3>
-            </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-dismiss="modal"><b>Close</b></button>
-            <button class="btn btn-sm btn-success-raise" type="submit"><b>Yes</b></button>
-          </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="winAnnounce" class="modal modal_tic_tac">
-	  <!-- Modal content -->
-	  <div class="modal-content">
-	    <span class="close" onclick="closeModal('winAnnounce')">&times;</span>
-	    <p id="winText"></p>
-	  </div>
-  </div>
-	<!-- The options dialog -->
-	<div id="optionsDlg" class="modal modal_tic_tac">
-	  <!-- Modal content -->
-	  <div class="modal-content">
-	    <h2>How would you like to play?</h2>
-	      <h3>Difficulty:</h3>
-	      <label><input type="radio" name="difficulty" id="r0" value="0">easy&nbsp;</label>
-	      <label><input type="radio" name="difficulty" id="r1" value="1" checked>hard</label><br>
-	      <h3>Play as:</h3>
-	      <label><input type="radio" name="player" id="rx" value="x" checked>X (go first)&nbsp;</label>
-	      <label><input type="radio" name="player" id="ro" value="o">O<br></label>
-	      <p><button id="okBtn" onclick="getOptions()">Play</button></p>
-	  </div>
-	</div>
-
-  </section>
+</section>
 
 @endsection
-
 @section('script')
+
 
 <style type="text/css">
   .alert-box {
@@ -546,24 +366,37 @@
 }
 
 </style>
+{{-- <script src="../../plugins/input-mask/jquery.inputmask.js"></script> --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
 <script type="text/javascript">
   $(document).ready(function(){
+    $("[data-mask]").inputmask();
+
+    $("#phone").val("{{'0' . $user_profile->phone}}")
+    $("#address").val("{{$user_profile->address}}")
+    $("#no_npwp").val("{{$user_profile->no_npwp}}")
+
+
     if (window.location.hash == '#changePassword') {
       $("#modalEdit").modal("show")
     }
+
+    $('#date_of_birth').datepicker({
+      autoclose: true,
+      format: 'dd/mm/yyyy',
+    })
   })
 
   $('#inputgambar').on('change', function() { 
 
-      const size =  
-         (this.files[0].size / 1024 / 1024).toFixed(2); 
+      const size = (this.files[0].size / 1024 / 1024).toFixed(2); 
 
-      if (size > 4 || size < 2) { 
-          alert("File must be between the size of 2-4 MB"); 
+      if (size > 2) { 
+          alert("The file size must not exceed 2 MB"); 
       } else { 
-          $("#output").html('<b>' + 
-             'This file size is: ' + size + " MB" + '</b>'); 
+          $("#output").html('<b>This file size is: ' + size + ' MB</b>'); 
       } 
   }); 
 
