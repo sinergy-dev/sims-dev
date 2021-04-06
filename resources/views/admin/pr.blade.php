@@ -423,22 +423,38 @@
           { "data": "to" },
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.attention + '</div>'
+                if(row.attention == null){
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.attention + '</div>'
+                }
               }
           },
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.title + '</div>'
+                if (row.title == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.title + '</div>'                  
+                }
               }
           },
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.project + '</div>'
+                if (row.project == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.project + '</div>'                  
+                }
               }
           },
           {
              "render": function ( data, type, row, meta ) {
-                return '<div class="truncate">' + row.description + '</div>'
+                if (row.description == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.description + '</div>'                  
+                }
               }
           },
           { "data": "name" },
