@@ -31,6 +31,8 @@ Route::get('/testEmailTrap',function(){
 	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
 });
 
+Route::get('testPermission','TestController@testPermission');
+
 //dinar cantik3
 //dinar cantik
 //dinar cantik2
