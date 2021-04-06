@@ -1023,7 +1023,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
     function changeTabs(id) {
       year = $("#year_filter").val()
-      if (id == "SIP") {
+      if (id == "sip") {
       	$('#export-table').css("display","block")
       	$('#search-table').css("display","block")
       	$('#request-table').css("display","none")
@@ -1032,7 +1032,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('.export-msp').css("display","none")
       	$('.export').css("display","block")
         $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
-      }else if(id == "MSP"){
+      }else if(id == "msp"){
       	$('.export-msp').css("display","block")
       	$('.export').css("display","none")
       	$('#export-table').css("display","block")
