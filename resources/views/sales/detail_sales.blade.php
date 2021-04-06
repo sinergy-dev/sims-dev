@@ -450,7 +450,7 @@
               <form action="{{ url('update_tp', $tampilkanc->lead_id)}}"  method="POST" >
                 {!! csrf_field() !!}
               @if(Auth::User()->id_company == '1')
-                @if(Auth::User()->id_division == 'SALES' && $tampilkanc->status == 'ready' && Auth::User()->nik == $tampilkanc->nik || Auth::User()->id_division == 'SALES' && $tampilkanc->result == 'HOLD' && Auth::User()->nik == $tampilkanc->nik || Auth::User()->id_division == 'SALES' && $tampilkanc->result == 'WIN' && Auth::User()->nik == $tampilkanc->nik)
+                @if(Auth::User()->id_division == 'SALES' && $tampilkanc->status == 'ready' && Auth::User()->nik == $tampilkanc->nik || Auth::User()->id_division == 'SALES' && $tampilkanc->result == 'HOLD' && Auth::User()->nik == $tampilkanc->nik)
                 <fieldset>
                 @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkanc->status == 'ready')
                 <fieldset>
