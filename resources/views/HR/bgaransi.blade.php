@@ -1,6 +1,9 @@
-@extends('template.template_admin-lte')
-@section('content')
-
+@extends('template.main')
+@section('head_css')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <style type="text/css">
   .radios {
     display: block;
@@ -188,7 +191,10 @@
       transition:.3s;
     }
 </style>
+@endsection
 
+
+@section('content')
 <section class="content-header">
   <h1>Bank Garansi</h1>
     <ol class="breadcrumb">
@@ -205,11 +211,9 @@
   <div class="box">
     <div class="box-header with-border">
       <div class="pull-right">
-        @if(Auth::User()->id_division == 'SALES')
           <a href="{{url('/add_bgaransi')}}">
-            <button class="btn btn-sm btn-success pull-right float-right margin-left-custom" id=""><i class="fa fa-plus"> </i>&nbsp Add</button>
+            <button class="btn btn-sm btn-success pull-right float-right margin-left-custom" style="display: none;" id="btnAdd"><i class="fa fa-plus"> </i>&nbsp Add</button>
           </a>
-        @endif
       </div>
     </div>
 
@@ -242,19 +246,19 @@
               <td>{{$data->penerbit}}</td>
               <td>{{$data->dok_ref}} <i>&nbsp&nbsp&nbsp{{$data->no_dok}}</i></td>
               <td>
-                  @if($data->status == 'new' && Auth::User()->id_division != 'HR')
+                  @if($data->status == 'new' && $data->nik == Auth::User()->nik)
                   <a href="{{url('/edit_bg',$data->id_bank_garansi)}}"><button class="btn btn-xs btn-primary" style="width: 70px; height: 30px;float: left">Edit</button></a>
-                  @elseif($data->status != 'done' && Auth::User()->id_division == 'HR')
-                  <a href="{{url('/edit_bg',$data->id_bank_garansi)}}"><button class="btn btn-xs btn-primary" style="width: 70px; height: 30px;float: left">Edit</button></a>
-                  @else
+                  @elseif($data->status == 'done' || $data->status == 'proses' && $data->nik == Auth::User()->nik)
                   <button class="btn btn-xs btn-primary" style="width: 70px; height: 30px;float: left;" disabled>Edit</button>
+                  @else
+                  <a href="{{url('/edit_bg',$data->id_bank_garansi)}}"><button class="btn btn-xs btn-primary" id="btnEdit" style="width: 70px; height: 30px;float: left">Edit</button></a>
                   @endif
-                  @if($data->status == 'new' && Auth::User()->id_division == 'HR')
-                  <button class="btn btn-xs btn-default" style="width: 70px; height: 30px;float: left" data-toggle="modal" data-target="#modal_accept" onclick="accept('{{$data->id_bank_garansi}}')">Accept</button>
+                  @if($data->status == 'new' && $data->nik != Auth::User()->nik)
+                  <button class="btn btn-xs btn-default" style="width: 70px; height: 30px;float: left; margin-top: 5px" id="btnAccept" data-toggle="modal" data-target="#modal_accept" onclick="accept('{{$data->id_bank_garansi}}')">Accept</button>
                   @endif
-                  @if(Auth::User()->id_division == 'HR' && $data->status != 'new')
+                  @if($data->status != 'new' && $data->nik != Auth::User()->nik)
                   <div class="dropdown" style="float: left">
-                    <button class="btn btn-warning-eksport dropdown-toggle margin-left-customt" style="width: 70px; height: 30px;" type="button" data-toggle="dropdown" >Pdf
+                    <button class="btn btn-warning-eksport dropdown-toggle margin-left-customt" style="width: 70px; height: 30px; margin-top: 5px" id="btnExport" type="button" data-toggle="dropdown" >Pdf
                     <span class="caret"></span></button>
                     <ul class="dropdown-menu">
                       <li><a href="{{action('BGaransiController@pdf',$data->id_bank_garansi)}}" target="_blank" onclick="print()">Form Request</a></li>
@@ -262,8 +266,8 @@
                     </ul>
                   </div>
                   @endif
-                  @if($data->status == 'proses' && Auth::User()->id_division == 'HR')
-                  <button class="btn btn-xs btn-success" style="width: 70px; height: 30px;float: left" data-toggle="modal" data-target="#modal_submit" onclick="submit('{{$data->id_bank_garansi}}')">Submit</button>
+                  @if($data->status == 'proses' && $data->nik != Auth::User()->nik)
+                  <button class="btn btn-xs btn-success" style="width: 70px; height: 30px;float: left; margin-top: 5px" id="btnSubmit" data-toggle="modal" data-target="#modal_submit" onclick="submit('{{$data->id_bank_garansi}}')">Submit</button>
                   @endif
                 </div>
               </td>
@@ -271,7 +275,7 @@
                 @if($data->status == 'new')
                   <i style="opacity: 0.01">A</i><label class="status-initial">NEW</label>
                 @elseif($data->status == 'done')
-                  <i style="opacity: 0.01">C</i><label class="status-open btn-success" >DONE</label> &nbsp <label class="btn-primary">{!!substr($data->updated_at,0,10)!!}</label>
+                  <i style="opacity: 0.01">C</i><label class="status-open btn-success" >DONE</label> &nbsp {!!substr($data->updated_at,0,10)!!}
                 @elseif($data->status == 'proses')
                   <i style="opacity: 0.01">B</i><label class="status-tp">PENDING</label>
                 @endif
