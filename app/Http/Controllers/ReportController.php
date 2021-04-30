@@ -39,27 +39,37 @@ class ReportController extends Controller
 
     public function exportExcelLead(Request $request)
     {
-        $nama = 'Lead Register '.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Lead Register', function ($sheet) use ($request) {
-        
+
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Report Lead Register');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
 
-        $sheet->row(1, array('LEAD REGISTER'));
+        $sheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Report Lead Register');
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:H2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["NO", "LEAD ID", "CUSTOMER LEGAL NAME", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $year = date('Y');
 
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -72,101 +82,98 @@ class ReportController extends Controller
         if ($pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
             $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('year','2019')
+                    ->select(
+                        'sales_lead_register.lead_id', 
+                        'tb_contact.customer_legal_name', 
+                        'sales_lead_register.opp_name',
+                        DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'),
+                        'users.name', 
+                        'sales_lead_register.amount',
+                        'sales_lead_register.result'
+                    )
+                    ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')
                     ->get();
         }else if ($div == 'SALES' && Auth::User()->id_company == '1') {
             $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
+                    ->select('sales_lead_register.lead_id', 'tb_contact.customer_legal_name', 'sales_lead_register.opp_name',DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'), 'users.name', 'sales_lead_register.amount',
+                        'sales_lead_register.result')
                     ->where('id_territory', $ter)
-                    ->where('year','2019')
+                    ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')
                     ->get();
         }else{
             $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
+                    ->select('sales_lead_register.lead_id', 'tb_contact.customer_legal_name', 'sales_lead_register.opp_name',DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'), 'users.name', 'sales_lead_register.amount',
+                        'sales_lead_register.result')
                     ->where('id_territory', $ter)
-                    ->where('year','2019')
+                    ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')
                     ->get();
         }
+
+        foreach ($datas as $key => $eachLead) {
+            $eachLead->amount = number_format($eachLead->amount,2,",",".");
+            $eachLead->result = ($eachLead->result == "" ? "OPEN" : $eachLead->result);
+            $sheet->fromArray(array_merge([$key + 1],array_values($eachLead->toArray())),NULL,'A' . ($key + 3));
+        }
+
+        // $datas =  $datas->map(function($item,$key) use ($sheet){
+        //     $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        // });
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(25);
+
+        $fileName = 'Report Lead ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
         
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0]  =   array("NO", "LEAD ID", "CUSTOMER LEGAL NAME", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS");
-             $i=1;
-
-            foreach ($datas as $data) {
-
-                if($data->result == 'OPEN') {
-                    $datasheet[$i] = array($i,
-                                $data['lead_id'],
-                                $data['customer_legal_name'],
-                                $data['opp_name'],
-                                $data['created_at'],
-                                $data['name'],
-                                $data['amount'],
-                                'INITIAL'
-                            );
-                    $i++;   
-                } elseif($data->result == '') {
-                    $datasheet[$i] = array($i,
-                                $data['lead_id'],
-                                $data['customer_legal_name'],
-                                $data['opp_name'],
-                                $data['created_at'],
-                                $data['name'],
-                                $data['amount'],
-                                'OPEN'
-                            );
-                    $i++;   
-                } else {
-                    $datasheet[$i] = array($i,
-                            $data['lead_id'],
-                            $data['customer_legal_name'],
-                            $data['opp_name'],
-                            $data['created_at'],
-                            $data['name'],
-                            $data['amount'],
-                            $data['result']
-                        );
-                    $i++;
-                }
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 
     public function exportExcelOpen(Request $request)
     {
-        $nama = 'Lead Register Open '.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Lead Register (Open)', function ($sheet) use ($request) {
-        
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Report Lead Register SD');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
 
-        $sheet->row(1, array('LEAD REGISTER OPEN'));
+        $sheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Report Lead Register SD');
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:H2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["NO", "LEAD ID", "CUSTOMER LEGAL NAME", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $year = date('Y');
 
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -370,58 +377,49 @@ class ReportController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select(
+                        'sales_lead_register.lead_id', 
+                        'tb_contact.customer_legal_name', 
+                        'sales_lead_register.opp_name',
+                        DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'),
+                        'users.name', 
+                        'sales_lead_register.amount',
+                        'sales_lead_register.result'
+                    )
+                    ->where('result', 'LOSE')
+                    ->where('year',date('Y'))
+                    ->orderBy('sales_lead_register.created_at','DESC');
+
         if ($pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('year','2019')
-                    ->get();
-        }else if ($div == 'SALES' && Auth::User()->id_company == '1') {
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('id_territory', $ter)
-                    ->where('year','2019')
-                    ->get();
+            $datas = $datas->get();
         }else{
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('id_territory', $ter)
-                    ->where('year','2019')
+            $datas = $datas->where('id_territory', $ter)
                     ->get();
         }
 
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
+        foreach ($datas as $key => $eachLead) {
+            $eachLead->amount = number_format($eachLead->amount,2,",",".");
+            $sheet->fromArray(array_merge([$key + 1],array_values($eachLead->toArray())),NULL,'A' . ($key + 3));
+        }
 
-             $datasheet = array();
-             $datasheet[0]  =   array("NO", "LEAD ID", "CUSTOMER", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS");
-             $i=1;
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(25);
 
-
-            foreach ($datas as $data) {
-
-                if($data->result == 'LOSE') {
-                    $datasheet[$i] = array($i,
-                                $data['lead_id'],
-                                $data['customer_legal_name'],
-                                $data['opp_name'],
-                                $data['created_at'],
-                                $data['name'],
-                                $data['amount'],
-                                'LOSE'
-                            );
-                    $i++;   
-                }
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
+        $fileName = 'Report Lead Register LOSE ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 
     public function view_lead()
