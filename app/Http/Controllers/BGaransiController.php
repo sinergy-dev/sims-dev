@@ -352,7 +352,7 @@ class BGaransiController extends Controller
         }
 
 
-   		return view('HR/add_bgaransi', compact('notiftp', 'notifsd', 'notif', 'notifOpen', 'notifClaim'));
+   		return view('HR/add_bgaransi', compact('notiftp', 'notifsd', 'notif', 'notifOpen', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
    	}
 
    	public function edit_bg($id_bank_garansi)
@@ -525,7 +525,7 @@ class BGaransiController extends Controller
                             ->get();
         }
 
-   		return view('HR/edit_bgaransi', compact('datas', 'notiftp', 'notifsd', 'notif', 'notifOpen', 'notifClaim'));
+   		return view('HR/edit_bgaransi', compact('datas', 'notiftp', 'notifsd', 'notif', 'notifOpen', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
    	}
 
    	public function store(Request $request)
