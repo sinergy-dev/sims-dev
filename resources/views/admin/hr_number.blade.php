@@ -334,8 +334,6 @@
           },
         ],
         "searching": true,
-        "lengthChange": false,
-        "info":false,
         "scrollX": true,
         "order": [[ 0, "desc" ]],
         "fixedColumns":   {
@@ -354,7 +352,7 @@
     });
 
     $(".dismisbar").click(function(){
-         $(".notification-bar").slideUp(300);
-        }); 
+     $(".notification-bar").slideUp(300);
+    }); 
   </script>
 @endsection

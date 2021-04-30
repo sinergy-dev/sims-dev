@@ -1,38 +1,63 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <style type="text/css">
+    .DTFC_LeftBodyLiner {
+        overflow: hidden;
+    }
+
+    th {
+      text-align: center;
+    }
+
+  /*  td {
+      text-wrap: normal;
+      word-wrap: break-word;
+    }*/
+
+    td>.truncate{
+      /*word-wrap: break-word; */
+      word-break:break-all;
+      white-space: normal;
+      width:200px;    
+    }
+    /*.data tr:nth-child(1){
+      counter-reset: rowNumber;
+      }
+    .data tr {
+          counter-increment: rowNumber;
+      }
+    .data tr td:first-child::before {
+          content: counter(rowNumber);
+          min-width: 1em;
+          margin-left: 1.5em;
+          text-align: center;
+    }*/
+
+    .transparant{
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      width: 25px;
+    }
+
+    .btnPR{
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+      width: 170px;
+      padding-top: 4px;
+      padding-left: 10px;
+    }
+  </style>
+@endsection
 @section('content')
-<style type="text/css">
-/*	.DTFC_LeftBodyLiner {
-  		overflow: hidden;
-	}*/
-
-  th {
-    text-align: center;
-  }
-
-/*  td {
-    text-wrap: normal;
-    word-wrap: break-word;
-  }*/
-
-  td>.truncate{
-    /*word-wrap: break-word; */
-    word-break:break-all;
-    white-space: normal;
-    width:200px;    
-  }
-	/*.data tr:nth-child(1){
-	  counter-reset: rowNumber;
-	  }
-	.data tr {
-	      counter-increment: rowNumber;
-	  }
-	.data tr td:first-child::before {
-	      content: counter(rowNumber);
-	      min-width: 1em;
-	      margin-left: 1.5em;
-	      text-align: center;
-	}
-</style>
 <section class="content-header">
   <h1>
     Daftar Buku Admin (Letter)
@@ -408,36 +433,25 @@
 
 </section>
 
-<style type="text/css">
-    .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-    .btnPR{
-      color: #fff;
-      background-color: #007bff;
-      border-color: #007bff;
-      width: 170px;
-      padding-top: 4px;
-      padding-left: 10px;
-    }
-</style>
-
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
+  	$(document).ready(function(){
+        $("#addBackdate").prop("disabled",true)  
+  	})
+
     $('#date_letter').datepicker({
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
@@ -468,16 +482,16 @@
             success:function(result){
               console.log(result.results.length)
               if (result.results.length == 0) {
-                $('#submitBd').prop("disabled",true)          
-                initCekNum()
-                $("#backdate_num").prop("disabled",true)            
+                $('#submitBd').prop("disabled",true)  
+                $("#backdate_num").prop("disabled",true)    
+                $("#addBackdate").prop("disabled",true)        
               }else{
                 $('#submitBd').prop("disabled",false)
                 $("#backdate_num").prop("disabled",false)            
                 $("#backdate_num").select2({
                   data: result.results
                 })         
-
+                $("#addBackdate").prop("disabled",false)       
               }          
             }
           })
