@@ -1,14 +1,20 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+    <style type="text/css">
+        .select2{
+            width:100%!important;
+        }
+        .selectpicker{
+            width:100%!important;
+        }
+    </style>
+    <!-- Select2 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+@endsection
 @section('content')
-<style type="text/css">
-    .select2{
-        width:100%!important;
-    }
-    .selectpicker{
-        width:100%!important;
-    }
-</style>
-
     <section class="content-header">
         <h1>
             Project Manager
@@ -78,9 +84,7 @@
                 </h3>
 
                 <div class="box-tools pull-right">
-                    @if(Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'PMO')
-                        <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#project_add" style="width: 75px;"><i class="fa fa-plus"> </i>&nbsp Project</button>
-                    @endif
+                    <button class="btn btn-xs btn-primary" id="btnAddProject" data-toggle="modal" data-target="#project_add" style="width: 75px; display: none;"><i class="fa fa-plus"> </i>&nbsp Project</button>
                 </div>
             </div>
           
@@ -92,9 +96,7 @@
                             <th style="width: 10%"><center>Lead ID</center></th>
                             <th><center>Project Title</center></th>
                             <th style="width: 10%"><center>Status</center></th>
-                            @if(Auth::User()->id_position == 'ENGINEER MANAGER')
-                                <th style="width: 10%"><center>Action</center></th>
-                            @endif
+                            <th style="width: 10%"><center>Action</center></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,16 +109,15 @@
                                     <a href="{{ url('/PMO/detail', $datas->lead_id) }}">{{ $datas->title }}</a>
                                 </td>
                                 <td><center>{{ $datas->current_phase }}</center></td>
-                                @if(Auth::User()->id_position == 'ENGINEER MANAGER')
-                                    <td><center>
-                                        <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#project_edit" onclick="edit('{{$datas->id}}','{{$datas->lead_id}}','{{$datas->title}}')" style="width: 40px"><i class="fa fa-pencil"></i></button>
-                                        <a href="{{ url('project_delete', $datas->id) }}">
-                                            <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 40px" onclick="return confirm('Are you sure want to delete this Project? (Seluruh data absen dan progress akan terhapus secara PERMANEN)')">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </a>
-                                    </center></td>
-                                @endif
+                                <td><center>
+                                    <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#project_edit" onclick="edit('{{$datas->id}}','{{$datas->lead_id}}','{{$datas->title}}')" style="width: 40px"><i class="fa fa-pencil"></i></button>
+                                    <a href="{{ url('project_delete', $datas->id) }}">
+                                        <button class="btn btn-xs btn-danger" style="vertical-align: top; width: 40px;" onclick="return confirm('Are you sure want to delete this Project? (Seluruh data absen dan progress akan terhapus secara PERMANEN)')">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </a>
+                                    </center>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -281,17 +282,36 @@
 
 @endsection
 
-@section('script')
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+@endsection
 
-    <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-    <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
-    
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+@section('script')
 
     <script type="text/javascript">
 
-        $('#implementation_table').DataTable();
+        $(document).ready(function(){
+          var accesable = @json($feature_item);
+          accesable.forEach(function(item,index){
+            $("#" + item).show()
+          })
+          if (accesable.includes('col-action-2')) {
+            var column = table.column(4);
+            column.visible(column.visible());
+          }else{
+            var column = table.column(4);
+            column.visible(!column.visible());
+          }
+        })
+
+        var table = $('#implementation_table').DataTable();
 
         $('input[name="design_date"]').daterangepicker();
         $('input[name="staging_date"]').daterangepicker();
