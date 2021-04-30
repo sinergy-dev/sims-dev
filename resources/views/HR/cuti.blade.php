@@ -1627,7 +1627,7 @@
         });
 
       }else if (this.value == 'div') {
-        $("#dates").prop('disabled', true);
+        $("#datesReport").prop('disabled', true);
         $("#division_cuti").prop('disabled', false);
 
         table.draw();
@@ -1700,11 +1700,11 @@
             
       });
 
-        $("#dates").daterangepicker(
-           $("#dates").val('')
+        $("#datesReport").daterangepicker(
+           $("#datesReport").val('')
         )
       }else{
-        $("#dates").prop('disabled', false);
+        $("#datesReport").prop('disabled', false);
         $("#division_cuti").prop('disabled', false);
 
         // table.draw();
@@ -1724,40 +1724,40 @@
       }
     })
 
-    @if(Auth::User()->id_position == 'HR MANAGER') {
+    @if(Auth::User()->id_position == 'HR MANAGER')
       $(document).on('click',"button[class^='date_off']",function(e) {
-      console.log($(".date_off").val());
-        $.ajax({
-          type:"GET",
-          url:'{{url("/detilcuti")}}',
-          data:{
-            pilih:$("#pilih").val(),
-            date_start:moment($('#dates').val().slice(0,10)).format("YYYY-MM-DD"),
-            date_end:moment($('#dates').val().slice(13,23)).format("YYYY-MM-DD"),
-            cuti:this.value,
-          },
-          success: function(result){
-            var table = "";
+        console.log($(".date_off").val());
+          $.ajax({
+            type:"GET",
+            url:'{{url("/detilcuti")}}',
+            data:{
+              pilih:$("#pilih").val(),
+              date_start:moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),
+              date_end:moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"),
+              cuti:this.value,
+            },
+            success: function(result){
+              var table = "";
 
-            $.each(result[0], function(key, value){
-              $("#date_request_detils").val(moment(value.date_req).format('LL'));
-              $("#reason_detils").val(value.reason_leave);
-              $('#tanggal_cutis').empty();
-              table = table + '<tr>';
-              table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
-              table = table + '</tr>';
-            });
+              $.each(result[0], function(key, value){
+                $("#date_request_detils").val(moment(value.date_req).format('LL'));
+                $("#reason_detils").val(value.reason_leave);
+                $('#tanggal_cutis').empty();
+                table = table + '<tr>';
+                table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
+                table = table + '</tr>';
+              });
 
-            $('#tanggal_cutis').append(table);
+              $('#tanggal_cutis').append(table);
 
-          }
-        });
+            }
+          });
 
-        $("#details_cuti").modal("show");
-     });
-    }@else{
+          $("#details_cuti").modal("show");
+       });
+    @else
       $(document).on('click',"button[class^='date_off']",function(e) {
-      console.log($(".date_off").val());
+        console.log($(".date_off").val());
         $.ajax({
           type:"GET",
           url:'{{url("/detilcuti")}}',
@@ -1776,10 +1776,10 @@
               table = table + '</tr>';
 
               if (value.decline_reason != null) {
-              	$("#alasan_reject_detail").css("display","block");
-              	$("#reason_reject_detil").val(value.decline_reason);
+                $("#alasan_reject_detail").css("display","block");
+                $("#reason_reject_detil").val(value.decline_reason);
               }else if(value.status == 'v'){
-              	$("#alasan_reject_detail").css("display","none");
+                $("#alasan_reject_detail").css("display","none");
               }
             });
 
@@ -1789,8 +1789,7 @@
         });
 
         $("#details_cuti").modal("show");
-     });
-    }
+      });
     @endif
     
     
@@ -1826,7 +1825,6 @@
 
     $(".toggle-arrow").click(function(){
       $(this).toggleClass("fa-angle-down");
-
       $(".div-libur").toggle('1000');
     })
 
@@ -1849,46 +1847,53 @@
       } else if (companyString == "request") {
         $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString).load();
       } else if (companyString == "report_"){
-        var start_date = $('input[name="dates"]').data('daterangepicker').startDate
-        var end_date = $('input[name="dates"]').data('daterangepicker').endDate
-        cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString,$("#division_cuti").val());
+        if($('#datesReport').length){
+          var start_date = $('#datesReport').data('daterangepicker').startDate
+          var end_date = $('#datesReport').data('daterangepicker').endDate
+          cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString,$("#division_cuti").val());
+        } else {
+          cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString,$("#division_cuti").val());
+        }
+        
       } else {
         $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
       }
     });
 
     $("#division_cuti").change(function(){
-        var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
-        var start_date = $('input[name="dates"]').data('daterangepicker').startDate
-        var end_date = $('input[name="dates"]').data('daterangepicker').endDate
-        cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id="+companyString,this.value);
+      var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
+      var start_date = $('#datesReport').data('daterangepicker').startDate
+      var end_date = $('#datesReport').data('daterangepicker').endDate
+      cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id="+companyString,this.value);
     });
 
     function changeTabs(id) {
-      com = $("#filter_com").val()
+      com = ($("#filter_com").val() != undefined ? $("#filter_com").val() : "all") 
       console.log(id)
       if (id == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
-      } else if(id == "request"){
+      } else if(id == "request") {
         @if(Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER')
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
         @else 
           $('#datatablew').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
         @endif
-      } else if(id == "report_"){
-        var start_date = $('input[name="dates"]').data('daterangepicker').startDate
-        var end_date = $('input[name="dates"]').data('daterangepicker').endDate
-        cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
+      } else if(id == "report_") {
+        if($('#datesReport').length){
+          var start_date = $('#datesReport').data('daterangepicker').startDate
+          var end_date = $('#datesReport').data('daterangepicker').endDate
+          cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
+        } else {
+          cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
+        }
       } else {
         $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
       }
     }
 
-    $(".disabled-permission").hover(function(){
-      swal({
-		  text: "Not Allowed to Leaving Permit Access!",
-  	  });
-      });
+    $(".disabled-permission").on('click',function(){
+      Swal.fire("Not Allowed",'You still have a leaving permit that is in process<br>It must be completed first to make a new leaving permit.','error');
+    });
 
     $(document).ready(function(){
   	  $('[data-toggle="tooltip"]').tooltip(); 

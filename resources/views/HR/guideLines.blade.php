@@ -1,8 +1,14 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+	<!-- Select2 -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+	<!-- DataTables -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+@endsection
 @section('content')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
 <section class="content-header">
-  <h1>Kebijakan & Peraturan</h1>
+  <h1>Bookmark</h1>
     <ol class="breadcrumb">
       <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
     </ol>
@@ -12,9 +18,9 @@
 	<div class="box">
 	    <div class="box-header with-border">
 	        <div class="pull-right">
-	        	@if(Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER')
-	            <button class="btn btn-sm btn-success pull-right float-right margin-left-custom" id="AddGuide"><i class="fa fa-plus"> </i>&nbsp Guide</button>
-	            @endif
+            	<button class="btn btn-sm btn-success pull-right float-right margin-left-custom" id="AddGuide" style="display: none">
+            		<i class="fa fa-plus"> </i>&nbsp Bookmark
+            	</button>
 	        </div>
 	    </div>
 
@@ -23,7 +29,8 @@
 	            <ul class="nav nav-tabs" id="myTab">
 	              <li class="active" id="tab_1"><a href="#kebijakan" data-toggle="tab" onclick="changeTab('kebijakan')" aria-expanded="false">Kebijakan</a></li>
 	              <li class="" id="tab_2"><a href="#peraturan" data-toggle="tab" onclick="changeTab('peraturan')" aria-expanded="true">Peraturan</a></li>
-	              <li class="" id="tab_3"><a href="#other" data-toggle="tab" onclick="changeTab('other')" aria-expanded="false">Other</a></li>
+	              <li class="" id="tab_3"><a href="#peraturan" data-toggle="tab" onclick="changeTab('panduan')" aria-expanded="true">Panduan</a></li>	              
+	              <li class="" id="tab_4"><a href="#other" data-toggle="tab" onclick="changeTab('other')" aria-expanded="false">Other</a></li>
 	            </ul>
 	            <div class="tab-content">
 	              <div class="tab-pane active" id="kebijakan">
@@ -36,6 +43,7 @@
 				            <th>Description</th>
 				            <th width="30%">Source of Information</th>
 				            <th width="15%">Action</th>
+				            <th width="15%">Action</th>				            
 				            </tr>
 				          </thead>
 				          <tbody>
@@ -55,7 +63,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title" id="titleModal">Add Guide Line</h3>
+        <h3 class="modal-title" id="titleModal">Add Bookmark</h3>
       </div>
       <div class="modal-body" id="modal-body">
       	
@@ -68,12 +76,32 @@
   </div>
 </div>
 @endsection
+@section('scriptImport')
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+	<script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
 @section('script')
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
 <script type="text/javascript">
+	$(document).ready(function(){
+		var accesable = @json($feature_item);
+		accesable.forEach(function(item,index){
+			$("#" + item).show()
+		})
+
+		if (accesable.includes('AddGuide')) {
+			var columns = datatable.columns(5)
+			columns.visible(!columns.visible()) 
+		}else{
+			var columns = datatable.columns(4)
+			columns.visible(!columns.visible())
+		}
+	})
+	
 	autosizeWow() 
 
 	function autosizeWow(){
@@ -82,7 +110,7 @@
 	}	
 
 	$("#AddGuide").click(function(){
-		$('#titleModal').text('Add Guide Line')
+		$('#titleModal').text('Add Bookmark')
 		$('#submitGuide').show().attr("onclick","submitGuide('','submit')")
 
 		$('#efective-date-form').show()
@@ -96,6 +124,7 @@
       			prepend = prepend + '<option value="">Select Type...</option>'
       			prepend = prepend + '<option value="kebijakan">Kebijakan</option>'
       			prepend = prepend + '<option value="peraturan">Peraturan</option>'
+      			prepend = prepend + '<option value="panduan">Panduan</option>'      			
       			prepend = prepend + '<option value="other">Other</option>'
       		prepend = prepend + '</select>'
       	prepend = prepend + '</div>'
@@ -161,7 +190,7 @@
 	}
 
 	function editGuide(id){		
-		$('#titleModal').text('Update Guide Line')
+		$('#titleModal').text('Update Bookmark')
 		$('#AddGuideModal').modal('show')
 
 		$('#modal-body').empty()
@@ -281,23 +310,25 @@
 	      { "data": "title_guide" },
 	      {
 	      	render: function(data,type,row,meta){
-	      		return row.description.substring(0, 50) + ". . .";
+	      		return row.description;
 	      	}
 	      },
 	      { 
 	      	render: function(data,type,row,meta){
-	      		return "<a href="+ row.link_url+"><u><i>"+ row.link_url +"</i></u></a>"
+	      		return "<a href="+ row.link_url+" target='_blank'><u><i>"+ row.link_url.substring(0, 50) + ". . ." +"</i></u></a>"
 
 	      	}
 	      },
 	      { 
 	      	render: function ( data, type, row, meta ) {
-	      		if ('{{Auth::User()->id_division == "HR" && Auth::User()->id_position == "HR MANAGER"}}') {
-	      			return '<button class="btn btn-sm btn-primary" style="width:35px;margin-right:5px" onclick="viewGuide('+row.id+')"><i class="fa fa-eye"></i></button><button class="btn btn-sm btn-warning" style="width:35px;margin-right:5px" onclick="editGuide('+row.id+')"><i class="fa fa-edit"></i></button><button class="btn btn-sm btn-danger" style="width:35px;margin-right:5px"  onclick="deleteGuide('+row.id+')"><i class="fa fa-trash"></i></button>'
-	      		}else{
-	      			return '<button class="btn btn-sm btn-primary" style="width:35px;margin-right:5px" onclick="viewGuide('+row.id+')"><i class="fa fa-eye"></i></button>'
-	      		}   	            
+	      		return '<button class="btn btn-sm btn-primary" style="width:35px;margin-right:5px" onclick="viewGuide('+row.id+')"><i class="fa fa-eye"></i></button><button class="btn btn-sm btn-warning" style="width:35px;margin-right:5px" onclick="editGuide('+row.id+')"><i class="fa fa-edit"></i></button><button class="btn btn-sm btn-danger" style="width:35px;margin-right:5px"  onclick="deleteGuide('+row.id+')"><i class="fa fa-trash"></i></button>'  	            
 	        }
+	      },
+	      {
+	      	render: function (data, type, row, meta){
+	      		return '<button class="btn btn-sm btn-primary" style="width:35px;margin-right:5px" onclick="viewGuide('+row.id+')"><i class="fa fa-eye"></i></button>'
+
+	      	}
 	      },
 	    ],
 	})
@@ -376,14 +407,21 @@
       						$('#tab_1').addClass('active')
       						$('#tab_2').removeClass('active')
       						$('#tab_3').removeClass('active')
+      						$('#tab_4').removeClass('active')
       					}else if (type == 'peraturan') {
       						$('#tab_1').removeClass('active')
       						$('#tab_2').addClass('active')
       						$('#tab_3').removeClass('active')
-      					}else{
+      					}else if(type == 'panduan'){
       						$('#tab_1').removeClass('active')
       						$('#tab_2').removeClass('active')
       						$('#tab_3').addClass('active')
+      						$('#tab_4').removeClass('active')
+      					}else{
+      						$('#tab_1').removeClass('active')
+      						$('#tab_2').removeClass('active')
+      						$('#tab_3').removeClass('active')
+      						$('#tab_4').addClass('active')
       					}
 	                  }
 	                })
