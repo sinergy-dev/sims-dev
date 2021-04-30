@@ -1,18 +1,46 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <style type="text/css">
+    th {
+      text-align: center;
+    }
+
+    td>.truncate{
+      word-break:break-all;
+      white-space: normal;
+      width:200px;  
+    }
+
+    .transparant{
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      width: 25px;
+    }
+
+    .btnPR{
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+      width: 170px;
+      padding-top: 4px;
+      padding-left: 10px;
+    }
+
+    .DTFC_LeftBodyLiner {
+      overflow: hidden;
+    }
+
+  </style>
+@endsection
 @section('content')
-
-<style type="text/css">
-  th {
-    text-align: center;
-  }
-
-  td>.truncate{
-    word-break:break-all;
-    white-space: normal;
-    width:200px;  
-  }
-
-</style>
 
 <section class="content-header">
   <h1>
@@ -289,42 +317,19 @@
     
 </section>
 
-
-<style type="text/css">
-    .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-    .btnPR{
-      color: #fff;
-      background-color: #007bff;
-      border-color: #007bff;
-      width: 170px;
-      padding-top: 4px;
-      padding-left: 10px;
-    }
-
-    .DTFC_LeftBodyLiner {
-      overflow: hidden;
-    }
-</style>
-
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
-  <!-- <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.js"></script>
-  <script type="text/javascript" src="cdn.datatables.net/fixedcolumns/3.0.0/js/dataTables.fixedColumns.min.js"></script> -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+@endsection
+@section('script')
   <script type="text/javascript">
     $('.money').mask('000,000,000,000,000', {reverse: true});
 

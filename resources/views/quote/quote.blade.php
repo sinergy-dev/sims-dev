@@ -1,5 +1,9 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <style type="text/css">
     .DTFC_LeftBodyLiner {
       overflow: hidden;
@@ -7,7 +11,15 @@
     th{
       text-align: center;
     }
+    td>.truncate{
+      /*word-wrap: break-word; */
+      word-break:break-all;
+      white-space: normal;
+      width:200px;    
+    }
   </style>
+@endsection
+@section('content')
   <section class="content-header">
     <h1>
       Daftar Buku Admin (Quote Number)
@@ -58,9 +70,7 @@
             </select>
           </div>
           <div class="pull-right">
-            @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL'  || Auth::User()->id_position == 'STAFF GA' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM' || Auth::User()->id_position == 'OPERATION DIRECTOR' && Auth::User()->id_division == 'PMO')
             <button type="button" class="btn btn-success pull-right" style="width: 100px" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspAdd Quote</button>
-            @endif
             @if($counts)
             <button type="button" class="btn btn-success pull-right" id="" data-target="#letter_backdate" data-toggle="modal" style="margin-right: 10px;width: 100px"><i class="fa fa-plus"> </i>&nbsp Back Date</button>
             @else
@@ -96,19 +106,17 @@
                       <th>Type of Letter</th>
                       <th>Month</th>
                       <th>Date</th>
-                      <th>To</th>
-                      <th>Attention</th>
-                      <th>Title</th>
-                      <th>Project</th>
-                      <th>Description</th>
+                      <th class="truncate">To</th>
+                      <th class="truncate">Attention</th>
+                      <th class="truncate">Title</th>
+                      <th class="truncate">Project</th>
+                      <th class="truncate">Description</th>
                       <th>From</th>
                       <th>Division</th>
                       <th>Project ID</th>
                       <th>Project Type</th>
                       <th>Note</th>
-                      @if(Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'OPERATION DIRECTOR' && Auth::User()->id_division == 'PMO')
-                        <th>Action</th>
-                      @endif
+                      <th>Action</th>
                     </tr>
                   </thead>
                 </table>
@@ -364,12 +372,17 @@
 
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+@section('script')
   <script type="text/javascript">
     $('#customer_quote').select2();
     // $("#backdate_num").select2();
@@ -477,21 +490,61 @@
           }
         },
         "columns": [
-          { "data": "quote_number" },
-          { "data": "position" },
-          { "data": "type_of_letter" },
-          { "data": "month" },
-          { "data": "date" },
-          { "data": "customer_legal_name" },
-          { "data": "attention"},
-          { "data": "title" },
-          { "data": "project" },
-          { "data": "description" },
-          { "data": "name" },
-          { "data": "division" },
-          { "data": "project_id" },
-          { "data": "project_type" },
-          { "data": "note" },
+          { "data": "quote_number","width": "20%" },
+          { "data": "position" ,"width": "20%"},
+          { "data": "type_of_letter","width": "20%" },
+          { "data": "month","width": "20%" },
+          { "data": "date","width": "20%" },
+          {
+             "render": function ( data, type, row, meta ) {
+                if(row.attention == null){
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.customer_legal_name + '</div>'
+                }
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                if(row.attention == null){
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.attention + '</div>'
+                }
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                if (row.title == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.title + '</div>'                  
+                }
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                if (row.project == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.project + '</div>'                  
+                }
+              }
+          },
+          {
+             "render": function ( data, type, row, meta ) {
+                if (row.description == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.description + '</div>'                  
+                }
+              }
+          },
+          { "data": "name","width": "20%" },
+          { "data": "division","width": "20%" },
+          { "data": "project_id","width": "20%" },
+          { "data": "project_type","width": "20%" },
+          { "data": "note","width": "20%","width": "20%" },
           {
             "className": 'btn_edit',
             "orderable": false,
@@ -500,8 +553,6 @@
           },
         ],
         "searching": true,
-        "lengthChange": false,
-        "info":false,
         "scrollX": true,
         "order": [[ 0, "desc" ]],
         "fixedColumns":   {
