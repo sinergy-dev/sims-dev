@@ -37,14 +37,14 @@ class BGaransiController extends Controller
         if ($div == 'SALES' ) {
         	$datas = DB::table('tb_bank_garansi')
    				->join('users', 'users.nik', '=', 'tb_bank_garansi.nik')
-   				->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'status', 'tb_bank_garansi.updated_at')
+   				->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'status', 'tb_bank_garansi.updated_at','tb_bank_garansi.nik')
    				->where('tb_bank_garansi.nik', $nik)
                 ->orderBy('tb_bank_garansi.created_at', 'desc')
    				->get();
         }elseif ($div == 'HR') {
         	$datas = DB::table('tb_bank_garansi')
    				->join('users', 'users.nik', '=', 'tb_bank_garansi.nik')
-   				->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'status', 'tb_bank_garansi.updated_at')
+   				->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'status', 'tb_bank_garansi.updated_at','tb_bank_garansi.nik')
                 ->orderBy('tb_bank_garansi.created_at', 'desc')
    				->get();
         }
