@@ -21,6 +21,13 @@ use App\Notifications\DeleteUser;
 use Excel;
 // use Image;
 use Intervention\Image\ImageManagerStatic as Image;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
 class HRController extends Controller
 {
@@ -202,7 +209,9 @@ class HRController extends Controller
 
         $hr = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
+                ->join('role_user','users.nik','=','role_user.user_id')
+                ->join('roles','role_user.role_id','=','roles.id')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja','roles.name as roles','roles.group')
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')

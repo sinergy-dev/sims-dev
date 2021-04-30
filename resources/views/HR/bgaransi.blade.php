@@ -345,30 +345,25 @@
 </div>
 
 @endsection
-
-@section('script')
+@section('scriptImport')
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/lins/jqeury/1.12.0/jqeury.min.js"></script>
 <script src="http://www.position-absolute.com/creation/print/jquery.printPage.js"></script>
-<script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+@section('script')
 <script type="text/javascript">
-   
 
-      @if (Auth::User()->id_division != 'HR') {
-        $('#datasmu').DataTable({
-          pageLength: 25,
-        });
-      }@elseif(Auth::User()->id_division == 'HR'){
-        $('#datasmu').DataTable({
-          pageLength: 25,
-        "columnDefs":[
-           {"width": "12%", "targets":8},
-        ],
-          });
-        } 
-      @endif   
+    $(document).ready(function(){
+      var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
+    })
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
          $("#alert").slideUp(300);

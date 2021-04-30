@@ -1,10 +1,13 @@
-@extends('template.template_admin-lte')
-@section('content')
-  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
+  
   <style type="text/css">
-   /* #datatable_wrapper{
-      margin-top: 20px;
-    }*/
     .hari_libur {
       color: red !important;
     }
@@ -26,7 +29,7 @@
 
     time.icon
     {
-      font-size: 1em; /* change icon size */
+      font-size: 1em;
       display: block;
       position: relative;
       width: 10em;
@@ -85,7 +88,8 @@
     }
       
   </style>
-  <!---->
+@endsection
+@section('content')
 
   <section class="content-header">
     <h1>
@@ -102,204 +106,181 @@
   	@if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
      @endif
-<!-- 
-    <div class="box">
+
+    {{-- <div class="box">
       <div class="box-header with-border">
         <h3 class="box-title">Hari Libur Nasional Tahun {{$year}}</h3>
         <div class="box-tools pull-right">
           <i class="fa fa-fw fa-lg fa-angle-left field-icon toggle-arrow"></i>
         </div>
       </div>
-        <div class="box-body div-libur" style="display: none;">
-
-        </div>
-    </div> -->
+        <div class="box-body div-libur" style="display: none;"></div>
+    </div> --}}
 
     <div class="box">
       <div class="box-header">
-          <div class="pull-right">
+        <div class="pull-right">
           @if($cek_cuti->status_karyawan == 'cuti')
             @if($total_cuti > 0)
             	@if($cek->status == null)
-	            <button type="button" class="btn btn-sm bg-navy pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
-	            <button class="btn btn-sm bg-maroon show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
+                <button type="button" class="btn btn-sm bg-navy pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px">
+                  <i class="fa fa-plus" style="margin-right: 5px"> </i> Permission
+                </button>
+                <button class="btn btn-sm bg-maroon show-sisa-cuti" style="width: 100px">
+                  Show Sisa Cuti
+                </button>
 	            @elseif($cek_cuti->status == 'v' || $cek_cuti->status == 'd')
-	            <button type="button" class="btn btn-sm bg-navy pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
-	            <button class="btn btn-sm bg-maroon show-sisa-cuti" style="width: 100px">Show Sisa Cuti</button>
+    	          <button type="button" class="btn btn-sm bg-navy pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px">
+                  <i class="fa fa-plus" style="margin-right: 5px"> </i> Permission
+                </button>
+  	            <button class="btn btn-sm bg-maroon show-sisa-cuti" style="width: 100px">
+                  Show Sisa Cuti
+                </button>
 	            @else
-	            <button type="button" class="btn btn-sm bg-navy pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+                <button type="button" class="btn btn-sm bg-navy pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px">
+                  <i class="fa fa-plus" style="margin-right: 5px"> </i> Permission
+                </button>
             	@endif
             @else
-            <button type="button" class="btn btn-sm bg-navy pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px"><i class="fa fa-plus"> </i> &nbspPermission</button>
+              <button type="button" class="btn btn-sm bg-navy pull-right disabled disabled-permission" style="margin-left: 10px;width: 100px">
+                <i class="fa fa-plus" style="margin-right: 5px"> </i> Permission
+              </button>
             @endif
-          @else
           @endif
             
-          @if(Auth::User()->id_position == 'HR MANAGER')
           <!-- <a href="{{action('HRGAController@cutipdf')}}" target="_blank" onclick="print()">
-          <button class="btn btn-sm btn-danger" style="width: 120px"><i class="fa fa-file-pdf-o"></i>&nbsp Preview PDF</button></a> -->      
-          <button class="btn btn-sm bg-purple" style="margin-left: 10px;" data-toggle="modal" data-target="#setting_cuti"><i class="fa fa-wrench"></i>&nbspTotal Cuti</button>
-          <select class="btn btn-sm bg-blue pull-left" style="width: 70px; margin-right: 10px" id="filter_com">
+            <button class="btn btn-sm btn-danger disabled" style="width: 120px">
+              <i class="fa fa-file-pdf-o" style="margin-right: 5px"></i>Preview PDF
+            </button>
+          </a>  -->
+          <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
+            <i class="fa fa-wrench" style="margin-right: 5px"></i>Total Cuti
+          </button>
+          <select class="btn btn-sm bg-blue pull-left" style="width: 70px; margin-right: 10px; display: none;" id="filter_com">
             <option value="all">All</option>
             <option value="1">SIP</option>
             <option value="2">MSP</option>
           </select>
-          @endif
-          </div>
+        </div>
       </div>
 
       <div class="box-body">
         <div class="table-responsive">          
-            <div class="nav-tabs-custom">
-                <ul class="nav nav-tabs" style="margin-top: 10px" id="cutis">
-                    <li class="tabs_item">
-                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                      <a href="#bos" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
-                      @endif
-                    </li>
-                    <li class="tabs_item">
-                      <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
-                    </li>
-                    <li>
-                      @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-                      <a href="#staff" data-toggle="tab">Report Cuti</a>
-                      @else
-                      <a href="#staff"  data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
-                      @endif
-                    </li>
-                </ul>
+          <div class="nav-tabs-custom">
 
-              <div class="tab-content">
-                @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                <div class="tab-pane" id="bos"> 
-                  <table class="table table-bordered table-striped dataTable" id="datatables" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER') 
-                            <th rowspan="2"><center>Employees Name</center></th>
-                            <th rowspan="2"><center>Email</center></th>
-                            <th rowspan="2"><center>Division</center></th>
-                            <th rowspan="2"><center>Tanggal Masuk Kerja</center></th>
-                            <th rowspan="2"><center>Lama Bekerja</center></th>
-                            <th rowspan="2"><center>Cuti sudah diambil</center></th>
-                            <th colspan="2"><center>Sisa Cuti</center></th>
-                          @endif
-                        </tr>
-                        <tr>
-                          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                            <th>{{$tahun_lalu}}<small>(*s/d 31 maret {{$tahun_ini}})</small></th>
-                            <th>{{$tahun_ini}}</th>
-                          @endif
-                        </tr>
-                      </thead>
-                      <tbody id="all_cuti" name="all_cuti">
-                      </tbody>
-                  </table>
-                </div>
-                @endif
+            <ul class="nav nav-tabs" style="margin-top: 10px" id="cutis">
+              <li class="tabs_item">
+                <a href="#bos" style="display: none;" id="tab-list-cuti" data-toggle="tab" onclick="changeTabs('all_lis')">List Cuti Karyawan</a>
+              </li>
+              <li class="tabs_item">
+                <a href="#cuti" id="cuti_tab" data-toggle="tab" onclick="changeTabs('request')">Request Cuti {{$bulan}}</a>
+              </li>
+              <li class="tabs_item">
+                {{-- @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+                  <a href="#staff" data-toggle="tab" onclick="changeTabs('report_')">Report Cuti</a>
+                @else
+                  <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
+                @endif --}}
+                <a href="#staff" data-toggle="tab" onclick="changeTabs('history')">History Cuti</a>
+              </li>
+            </ul>
 
-                <div class="tab-pane" id="cuti">
-                  <table class="table table-bordered table-striped dataTable" id="datatablew" width="100%" cellspacing="0">
-                        <thead>
-                          <tr>
-                            <th>Employees Name</th>
-                            <th>Division</th>
-                            @if(Auth::User()->id_position == 'HR MANAGER')
-                            <th>Cuti Request</th>
-                            <th>Request Date</th>
-                            @else
-                            <th>Date of Request</th>
-                            <th>Time Off</th>
-                            @endif
-                            <th>Status</th>
-                            <th>
-                             Action
-                            </th>
-                          </tr>
-                        </thead>
-                          <tbody>
-                          </tbody>
-                  </table>
-                </div>
+            <div class="tab-content">
 
-                <div class="tab-pane" id="staff">
-                  @if(Auth::User()->id_position == 'HR MANAGER')
-                    <div class="row" style="margin-bottom: 10px">
-                        <!-- <div style="margin-left: 15px;float: right;">
-                            <select class="form-control" style="width: 200px" id="pilih" name="pilih">
-                              <option value="Select">-- Select Filter By --</option>
-                              <option value="date">Filter By Date</option>
-                              <option value="div">Filter By Division</option>
-                              <option value="all">Filter By Date & Div</option>
-                            </select>
-                        </div> -->
-
-                        <div class="input-group date" style="width: 300px;margin-left: 15px;float: right;">
-                            <div class="input-group-addon">
-                              <i class="fa fa-calendar"></i>
-                            </div>
-                            <input type="text" class="form-control" id="dates" name="dates">
-                        </div>
-
-                        <div  class="input-group date disabled" style="width: 300px;margin-left: 15px;float: right;">
-                          <div class="input-group-addon">
-                            <i class="fa fa-filter"></i>
-                          </div>
-                          <select class="form-control" id="division_cuti" name="division_cuti">
-                            <option value="alldeh">ALL DIVISION</option>
-                            @foreach($division as $data)
-                              @if($data->id_division != 'NULL')
-                               @if($data->id_division == '-')
-                               <option value="{{$data->id_division}}">WAREHOUSE</option>
-                               @else
-                               <option value="{{$data->id_division}}">{{$data->id_division}}</option>
-                               @endif
-                              
-                              @endif
-                            @endforeach
-                          </select>
-                        </div>
-
-                        <button class="btn btn-sm bg-olive" style="float: left;margin-left: 15px" onclick="exportExcel()">&nbspExport to <i class="fa fa-file-excel-o"></i></button>
-                    </div>
-                    <table class="table table-bordered table-striped dataTable" id="datatable" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>Employees Name</th>
-                          <th>Division</th>
-                          <th>Request Date</th>
-                          <th>Date Off</th>
-                          <th>Approved Date</th>
-                          <th>Approved By</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                        <tbody id="report" name="report">
-                      </tbody>
-                  </table>
-                  @else
-                  <table class="table table-bordered table-striped dataTable" id="datatableq" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>Employees Name</th>
-                          <th>Division</th>
-                          <th>Request Date</th>
-                          <th>Date Off</th>
-                          <th>Approved Date</th>
-                          <th>Approved By</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                        <tbody id="report" name="report">
-                      </tbody>
-                  </table>
-                  @endif
-                </div>
+              <div class="tab-pane" id="bos"> 
+                <table class="table table-bordered table-striped dataTable" id="datatables" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th rowspan="2"><center>Employees Name</center></th>
+                      <th rowspan="2"><center>Email</center></th>
+                      <th rowspan="2"><center>Division</center></th>
+                      <th rowspan="2"><center>Tanggal Masuk Kerja</center></th>
+                      <th rowspan="2"><center>Lama Bekerja</center></th>
+                      <th rowspan="2"><center>Cuti sudah diambil</center></th>
+                      <th colspan="2"><center>Sisa Cuti</center></th>
+                    </tr>
+                      <tr>
+                        {{-- <th>{{$tahun_lalu}}<small>(*s/d 31 maret {{$tahun_ini}})</small></th> --}}
+                        <th>{{$tahun_lalu}}</th>
+                        <th>{{$tahun_ini}}</th>
+                      </tr>
+                  </thead>
+                  <tbody id="all_cuti" name="all_cuti">
+                  </tbody>
+                </table>
               </div>
+
+              <div class="tab-pane" id="cuti">
+                <table class="table table-bordered table-striped dataTable" id="datatablew" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Employees Name</th>
+                      <th>Division</th>
+                      <th id="col-cuti-request">Cuti Request</th>
+                      <th>Request Date</th>
+                      <!-- <th>Date of Request</th>
+                      <th>Time Off</th> -->
+                      <th>Status</th>
+                      <th>action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="tab-pane" id="staff">
+                <div class="row" style="margin-bottom: 10px; display: none;" id="div_filter">
+                  <div class="input-group date" style="width: 300px;margin-left: 15px;float: right;">
+                    <div class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+                    <input type="text" class="form-control" id="datesReport" name="dates">
+                  </div>
+
+                  <div  class="input-group date disabled" style="width: 300px;margin-left: 15px;float: right;">
+                    <div class="input-group-addon">
+                      <i class="fa fa-filter"></i>
+                    </div>
+                    <select class="form-control" id="division_cuti" name="division_cuti">
+                      <option value="alldeh">ALL DIVISION</option>
+                      @foreach($division as $data)
+                        @if($data->id_division != 'NULL')
+                          @if($data->id_division == '-')
+                            <option value="{{$data->id_division}}">WAREHOUSE</option>
+                          @else
+                            <option value="{{$data->id_division}}">{{$data->id_division}}</option>
+                          @endif
+                        @endif
+                      @endforeach
+                    </select>
+                  </div>
+
+                  <button class="btn btn-sm bg-olive" style="float: left;margin-left: 15px" onclick="exportExcel()">&nbspExport to <i class="fa fa-file-excel-o"></i></button>
+                </div>
+                <table class="table table-bordered table-striped dataTable" id="datatableq" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Employees Name</th>
+                      <th>Division</th>
+                      <th>Request Date</th>
+                      <th>Date Off</th>
+                      <th>Approved Date</th>
+                      <th>Approved By</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="report" name="report">
+                  </tbody>
+                </table>
+              </div>
+
             </div>
+
           </div>
         </div>
       </div>
+    </div>
 
 
     <!--MODAL ADD-->  
