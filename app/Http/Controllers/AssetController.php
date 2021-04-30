@@ -23,6 +23,14 @@ use Excel;
 use App\SalesProject;
 use App\LogAssetTech;
 
+//phpOfficeExcel
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 
 class AssetController extends Controller
 {
@@ -284,7 +292,7 @@ class AssetController extends Controller
         			->select('status')
         			->first();
 
-		return view('TECH.asset.asset_peminjaman', compact('notifc','pinjaman','assets','assetsd','asset','notif','notifOpen','notifsd','notiftp','notifc', 'kategori', 'nik_peminjam', 'serial_number', 'asset2', 'asset3', 'status', 'notifClaim', 'kategori2'));
+		return view('TECH.asset.asset_peminjaman', compact('notifc','pinjaman','assets','assetsd','asset','notif','notifOpen','notifsd','notiftp','notifc', 'kategori', 'nik_peminjam', 'serial_number', 'asset2', 'asset3', 'status', 'notifClaim', 'kategori2'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_peminjaman')]);
 	}
 
     public function detail_asset_peminjaman($id_barang){
@@ -494,7 +502,7 @@ class AssetController extends Controller
         }
 
 
-        return view('TECH.asset.detail_asset_peminjaman',compact('asset','notif','notifOpen','notifsd','notiftp','notifc', 'tampilkan', 'notifClaim'));
+        return view('TECH.asset.detail_asset_peminjaman',compact('asset','notif','notifOpen','notifsd','notiftp','notifc', 'tampilkan', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
     }
 
 	public function store(Request $request){
@@ -1103,51 +1111,58 @@ class AssetController extends Controller
         $tambah_log->keterangan     = "Exporting List Asset";
         $tambah_log->save();
 
-        $nama = 'Warehouse '.date('d M Y');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Data ID Project', function ($sheet) use ($request) {
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Report List Asset');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:F1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:G1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Report List Asset');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:G2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["NO", "NAMA BARANG", "DESCRYPTION/TYPE", "SERIAL NUMBER","KETERANGAN", "DATE","STATUS"];
+        $sheet->fromArray($headerContent,NULL,'A2');
         
-        $sheet->mergeCells('A1:J1');
+        $datas = Tech_asset::select('nama_barang','description','serial_number','location','updated_at','status')->orderBy('updated_at','DESC')->get();
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(12);
-            $row->setFontWeight('bold');
-        });
+        foreach ($datas as $key => $eachLead) {
+            $sheet->fromArray(array_merge([$key + 1],array_values($eachLead->toArray())),NULL,'A' . ($key + 3));
+        }
 
-        $datas = Tech_asset::select('nama_barang','description','serial_number','status','location','updated_at')->get();
-
-
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0] = array("No", "Nama Barang", "Description/Type", "Serial Number", "Status Barang", "Keterangan", "Date");
-             $i=1;
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
 
 
-            foreach ($datas as $data) {
-                $datasheet[$i] = array(
-                    $i,
-                    $data['nama_barang'],
-                    $data['description'],
-                    $data['serial_number'],
-                    $data['status'],
-                    $data['location'],
-                    $data['updated_at']                
-                );
-              
-                $i++;
-            }
-              
+        $fileName = 'Report List Asset ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
 
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
-
-        return redirect()->back();
+        // return redirect()->back();
     }
 }
