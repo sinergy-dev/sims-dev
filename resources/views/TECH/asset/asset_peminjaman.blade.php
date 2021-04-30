@@ -239,15 +239,16 @@
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="home" aria-selected="true">List Asset</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#peminjaman" role="tab" aria-controls="profile" aria-selected="false">Peminjaman Asset</a>
+            <a class="nav-link" id="peminjaman_asset" style="display: none;" data-toggle="tab" href="#peminjaman" role="tab" aria-controls="profile" aria-selected="false">Peminjaman Asset</a>
           </li>
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
-        	<button class="btn btn-xs btn-warning pull-right display-none" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
-        	<button class="btn btn-xs btn-primary pull-right" id="kategori-asset" style="margin-right: 5px" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
-          <a href="{{action('AssetController@exportExcelTech')}}" id="export-excel" class="btn btn-xs btn-success pull-right display-none" style="margin-right: 5px"><i class="fa fa-cloud-download"></i> Excel</a>
-          @else
-          <button class="btn btn-xs btn-success pull-right btn-add-peminjaman" style="width: 100px;"><i class="fa fa-plus" > </i>&nbsp Peminjaman</button>
-          @endif
+          <li class="nav-item">
+            <a class="nav-link" id="peminjaman_asset2" style="display: none;" data-toggle="tab" href="#peminjaman2" role="tab" aria-controls="profile" aria-selected="false">Peminjaman Asset</a>
+          </li>
+
+        	<button class="btn btn-xs btn-warning pull-right display-none" style="display: none;" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
+        	<button class="btn btn-xs btn-primary pull-right" id="kategori-asset" style="display: none; margin-right: 5px" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
+          <a href="{{action('AssetController@exportExcelTech')}}" id="export-excel" style="display: none; margin-right: 5px" class="btn btn-xs btn-success pull-right display-none"><i class="fa fa-cloud-download"></i> Excel</a>
+          <button class="btn btn-xs btn-success pull-right btn-add-peminjaman" style="display: none; width: 120px;" id="btn_add_peminjaman"><i class="fa fa-plus" > </i>&nbsp Peminjaman</button>
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
