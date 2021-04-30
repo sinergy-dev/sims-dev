@@ -15,9 +15,15 @@ use Nasution\Terbilang;
 use App\Letter;
 
 class BGaransiController extends Controller
-{
+{    
    	public function index()
    	{
+        $datas = "";
+        $notiftp = "";
+        $notifsd = "";
+        $notif = "";
+        $notifOpen = "";
+        $notifClaim = "";
 
    		$nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
