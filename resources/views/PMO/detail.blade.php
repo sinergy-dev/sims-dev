@@ -1,14 +1,22 @@
-@extends('template.template_admin-lte')
-@section('content')
-    <style type="text/css">
-        .select2{
-            width:100%!important;
-        }
-        .selectpicker{
-            width:100%!important;
-        }
-    </style>
+@extends('template.main')
+@section('head_css')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+<link rel="stylesheet" type="text/css" href="codebase/dhtmlxgantt.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<style type="text/css">
+    .select2{
+        width:100%!important;
+    }
+    .selectpicker{
+        width:100%!important;
+    }
+</style>
+@endsection
+@section('content')
     <section class="content-header">
         <h1>
             Detail Project / {{$imp_id}}
@@ -844,27 +852,21 @@
     </section>
 
 @endsection
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
 
+<script src="codebase/dhtmlxgantt.js"></script>
+<script src="https://export.dhtmlx.com/gantt/api.js"></script>
+@endsection
 @section('script')
-
-    <link rel="stylesheet" type="text/css" href="codebase/dhtmlxgantt.css">
-
-    <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-    <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-
-    <script src="codebase/dhtmlxgantt.js"></script>
-    <script src="https://export.dhtmlx.com/gantt/api.js"></script>
-
     <script type="text/javascript">
 
         gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
