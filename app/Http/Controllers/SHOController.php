@@ -202,7 +202,7 @@ class SHOController extends Controller
                             ->get();
         }
 
-        return view('sales/sho',compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('sales/sho',compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('salesHandover')]);
     }
 
     public function detail_sho($id_sho)
