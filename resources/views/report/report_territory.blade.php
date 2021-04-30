@@ -1,60 +1,62 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <style type="text/css">
+        .header th:first-child{
+          background-color: #dddddd;
+        }
 
-	    .header th:first-child{
-	      background-color: #dddddd;
-	    }
+        .header th:nth-child(2){
+          color: white;
+          background-color: #7735a3;
+        }
 
-	    .header th:nth-child(2){
-	      color: white;
-	      background-color: #7735a3;
-	    }
+        .header th:nth-child(3){
+          color: white;
+          background-color: #f2562b;
+        }
 
-	    .header th:nth-child(3){
-	      color: white;
-	      background-color: #f2562b;
-	    }
+        .header th:nth-child(4){
+          color: white;
+          background-color: #04dda3;
+        }
 
-	    .header th:nth-child(4){
-	      color: white;
-	      background-color: #04dda3;
-	    }
+        .header th:nth-child(5){
+          color: white;
+          background-color: #f7e127;
+        }
 
-	    .header th:nth-child(5){
-	      color: white;
-	      background-color: #f7e127;
-	    }
+        .header th:nth-child(6){
+          color: white;
+          background-color: #246d18;
+        }
 
-	    .header th:nth-child(6){
-	      color: white;
-	      background-color: #246d18;
-	    }
+        .header th:nth-child(7){
+          color: white;
+          background-color: #e5140d;
+        }
 
-	    .header th:nth-child(7){
-	      color: white;
-	      background-color: #e5140d;
-	    }
+        .header-child th{
+          background-color: #f5f3ed;
+        }
 
-	    .header-child th{
-	      background-color: #f5f3ed;
-	    }
+        tr.group,
+        tr.group:hover {
+            font-style: bold;
+            background-color: #7c74a6 !important;
+        }
 
-	    tr.group,
-	    tr.group:hover {
-	        font-style: bold;
-	        background-color: #7c74a6 !important;
-	    }
-
-      tr.group-end,
-      tr.group-end:hover {
-          font-style: bold;
-          background-color: #18113d !important;
-      }
-      
-      .dataTables_filter {display: none;}
+        tr.group-end,
+        tr.group-end:hover {
+            font-style: bold;
+            background-color: #18113d !important;
+        }
+        
+        .dataTables_filter {display: none;}
   </style>
-  
+@endsection
+@section('content')  
   <section class="content-header">
     <h1>
       Report Customer
@@ -71,12 +73,8 @@
       <div class="col-md-12">
         <div class="box">
           <div class="box-header with-border">
-            <h3 class="box-title"><i>Report Customer By Territory</i></h3>
-          </div>
-
-          <div class="row">
-            <div class="col-md-12" style="margin-top: 10px">
-              <div class="col-md-8">
+            <div class="row">
+              <div class="col-md-4">
                 <div class="pull-left">
                   <div class="input-group" style="float: left">
                     <div class="input-group-addon">
@@ -84,18 +82,18 @@
                     </div>
                     <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
                     <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
-                    <button class="btn btn-info reload-table" style="float: right;margin-left: 5px"><i class="fa fa-refresh"></i> Refresh</button>
                   </div>
                 </div> 
               </div>
-            </div>         
-          </div>
-          
+              <div class="col-md-2">
+                <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
+              </div>
+            </div>
+          </div>   
 
           <div class="box-body">
             <div class="nav-tabs-custom">
-            	@if(Auth::User()->id_division != 'SALES')
-                <ul class="nav nav-tabs" id="myTab">
+                <ul class="nav nav-tabs" id="tabTerritory" style="display: none;">
                    <!--  <li class="nav-item active">
                         <a class="nav-link" id="all" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true" onclick="changeTerritory('all')">
                             All
@@ -119,11 +117,9 @@
                         <a class="nav-link" id="ter_opp" data-toggle="tab" href="#ter_opp" role="tab" aria-controls="ter_opp" aria-selected="true" onclick="changeTerritory('OPERATION')">OPERATION</a>
                     </li>
                 </ul>
-                @endif
-
+              
                 <div class="tab-content">
                   <div class="tab-pane active"  role="tabpanel" id="sip">
-                  
                     <div class="table-responsive">
                       <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
                         <thead>
@@ -141,12 +137,8 @@
                         </thead>
                       </table>
                     </div>
-
                   </div>
-      @if(Auth::User()->id_division != 'SALES') 
-
                   <div id="msp" class="tab-pane"  role="tabpanel" >
-                  
                     <div class="table-responsive">
                       <table class="table table-bordered table-striped" id="data_leadmsp" width="100%" cellspacing="0">
                         <thead>
@@ -164,10 +156,8 @@
                         </thead>
                       </table>
                     </div>
-                    
                   </div>
-            @endif
-
+                
                 </div>
             </div>
           </div>
@@ -176,12 +166,22 @@
     </div>
   </section>
 @endsection
-@section('script')
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-  <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.min.js"></script>
+@section('scriptImport')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<!-- <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.min.js"></script> -->
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.2/js/dataTables.rowGroup.min.js"></script>
+@endsection
+@section('script')  
   <script type="text/javascript">
+    var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+      $("#" + item).show()          
+    })  
     initReportTerritory();
 
     function initReportTerritory(){
