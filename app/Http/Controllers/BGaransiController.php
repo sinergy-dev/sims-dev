@@ -206,6 +206,8 @@ class BGaransiController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position; 
 
+        $notifClaim = '';
+
    		if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
