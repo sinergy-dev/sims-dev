@@ -1,207 +1,221 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+
+@section('head_css')
 <style type="text/css">
 
-input[type=text], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-}
+  .transparant{
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+        width: 25px;
+      }
 
-label {
-  padding: 12px 12px 12px 0;
-  display: inline-block;
-}
+  input[type=text], select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+  }
 
-.container-form {
-  border-radius: 5px;
-  background-color: #fff;
-  padding: 20px;
-  border-style: solid;
-  border-color: rgb(212, 217, 219);
-}
+  label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+  }
 
-.col-25 {
-  float: left;
-  width: 25%;
-  margin-top: 6px;
-}
+  .container-form {
+    border-radius: 5px;
+    background-color: #fff;
+    padding: 20px;
+    border-style: solid;
+    border-color: rgb(212, 217, 219);
+  }
 
-.col-75 {
-  float: left;
-  width: 75%;
-  margin-top: 6px;
-}
+  .col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+  }
 
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
+  .col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 6px;
+  }
 
-    .modalIcon input[type=text]{
-      padding-left:40px;
-    }
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
 
-
-    .modalIcon.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
-
-   .modalIcon.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:7px 4px ;
-      border-radius:4px 0 0 4px;
-    }
-
-    .modalIcon{
-      position:relative;
-    }
-
-    .modalIcon i{
-      position:absolute;
-      left:9px;
-      top:0px;
-      padding:9px 8px;
-      color:#aaa;
-      transition:.3s;
-    }
-
-    .modalIconn input[type=text]{
-      padding-left:10px;
-    }
-
-    .modalIconn i{
-      position:absolute;
-      right:0px;
-      top:0px;
-      padding:9px 8px;
-      color:#aaa;
-      transition:.3s;
-    }
-
-    .modalIconn.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
-
-    .modalIconn.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:7px 4px ;
-      border-radius:0px 4px 4px 0px;
-    }
-
-    .modalIconn{
-      position:relative;
-    }
+  .modalIcon input[type=text]{
+    padding-left:40px;
+  }
 
 
-    .newIcon input[type=text]{
-      padding-left:34px;
-    }
+  .modalIcon.inputIconBg input[type=text]:focus + i{
+    color:#fff;
+    background-color:dodgerBlue;
+  }
 
-    .newIcon.inputIconBg input[type=text]:focus + i{
-      color:#fff;
-      background-color:dodgerBlue;
-    }
+  .modalIcon.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:7px 4px ;
+    border-radius:4px 0 0 4px;
+  }
 
-   .newIcon.inputIconBg i{
-      background-color:#aaa;
-      color:#fff;
-      padding:6px 6px ;
-      border-radius:4px 0 0 4px;
-    }
+  .modalIcon{
+    position:relative;
+  }
+
+  .modalIcon i{
+    position:absolute;
+    left:9px;
+    top:0px;
+    padding:9px 8px;
+    color:#aaa;
+    transition:.3s;
+  }
+
+  .modalIconn input[type=text]{
+    padding-left:10px;
+  }
+
+  .modalIconn i{
+    position:absolute;
+    right:0px;
+    top:0px;
+    padding:9px 8px;
+    color:#aaa;
+    transition:.3s;
+  }
+
+  .modalIconn.inputIconBg input[type=text]:focus + i{
+    color:#fff;
+    background-color:dodgerBlue;
+  }
+
+  .modalIconn.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:7px 4px ;
+    border-radius:0px 4px 4px 0px;
+  }
+
+  .modalIconn{
+    position:relative;
+  }
+
+
+  .newIcon input[type=text]{
+    padding-left:34px;
+  }
+
+  .newIcon.inputIconBg input[type=text]:focus + i{
+    color:#fff;
+    background-color:dodgerBlue;
+  }
+
+  .newIcon.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:6px 6px ;
+    border-radius:4px 0 0 4px;
+  }
 
   .newIcon{
       position:relative;
     }
 
-   .newIcon i{
-      position:absolute;
-      left:0px;
-      top:34px;
-      padding:9px 8px;
-      color:#aaa;
-      transition:.3s;
-    }
+  .newIcon i{
+    position:absolute;
+    left:0px;
+    top:34px;
+    padding:9px 8px;
+    color:#aaa;
+    transition:.3s;
+  }
 
 
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+  }
 
-.radios {
-  display: block;
-  position: relative;
-  padding-left: 35px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  font-size: 14px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
+  .radios {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 
-/* Hide the browser's default radio button */
-.radios input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-}
+  /* Hide the browser's default radio button */
+  .radios input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
 
-/* Create a custom radio button */
-.checkmark {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 25px;
-  width: 25px;
-  background-color: #0d1b33;
-  border-radius: 50%;
-}
+  /* Create a custom radio button */
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #0d1b33;
+    border-radius: 50%;
+  }
 
-/* On radiosmouse-over, add a grey background color */
-.radios:hover input ~ .checkmark {
-  background-color: #ccc;
-}
+  /* On radiosmouse-over, add a grey background color */
+  .radios:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
 
-/* When the radio button is checked, add a blue background */
-.radios input:checked ~ .checkmark {
-  background-color: #2196F3;
-}
+  /* When the radio button is checked, add a blue background */
+  .radios input:checked ~ .checkmark {
+    background-color: #2196F3;
+  }
 
-/* Create the indicator (the dot/circle - hidden when not checked) */
-.checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
-}
+  /* Create the indicator (the dot/circle - hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
 
-/* Show the indicator (dot/circle) when checked */
-.radios input:checked ~ .checkmark:after {
-  display: block;
-}
+  /* Show the indicator (dot/circle) when checked */
+  .radios input:checked ~ .checkmark:after {
+    display: block;
+  }
 
-/* Style the indicator (dot/circle) */
-.radios .checkmark:after {
-  top: 9px;
-  left: 9px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: white;
-}
+  /* Style the indicator (dot/circle) */
+  .radios .checkmark:after {
+    top: 9px;
+    left: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+  }
 </style>
+@endsection
+
+@section('content')
 
 <section class="content-header">
   <h1 style="opacity: 0.01;">
@@ -563,25 +577,16 @@ input[type=number]::-webkit-outer-spin-button {
   </div>
 </section>
 
-<style type="text/css">
-   .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-</style>
-
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script src="{{asset("template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script>
+@endsection()
+
+@section('script')
+  
   <script type="text/javascript">
   	function showMe(e) {
 	// i am spammy!
