@@ -1,8 +1,12 @@
-@extends('template.template_admin-lte')
-@section('content')
-<style type="text/css">
-  .modalIconsubject input[type=text]{
-      padding-left:115px;
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <style type="text/css">
+    .modalIconsubject input[type=text]{
+        padding-left:115px;
     }
 
     .modalIconsubject.inputIconBg input[type=text]:focus + i{
@@ -10,32 +14,32 @@
       background-color:dodgerBlue;
     }
 
-   .modalIconsubject.inputIconBg i{
+    .modalIconsubject.inputIconBg i{
       background-color:#aaa;
       color:#fff;
       padding:7px 4px ;
       border-radius:4px 0 0 4px;
     }
 
-  .modalIconsubject{
+    .modalIconsubject{
       position:relative;
     }
 
-  .nav-tabs .badge{
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        background: red;
+    .nav-tabs .badge{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
     }
 
 
-   .modalIconsubject i{
-      position:absolute;
-      left:9px;
-      top:0px;
-      padding:9px 8px;
-      color:#aaa;
-      transition:.3s;
+    .modalIconsubject i{
+        position:absolute;
+        left:9px;
+        top:0px;
+        padding:9px 8px;
+        color:#aaa;
+        transition:.3s;
     }
 
     /* Dropdown Button */
@@ -80,7 +84,19 @@
 
     /* Change the background color of the dropdown button when the dropdown content is shown */
     .dropdown:hover .dropbtn {background-color: #3e8e41;}
-</style>
+
+    .transparant{
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      width: 25px;
+    }
+  </style>
+@endsection
+@section('content')
 <section class="content">
 
   @if (session('update'))
@@ -122,24 +138,24 @@
             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="kategori" aria-selected="false">List Asset</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#peminjaman_asset" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
+            <a class="nav-link active" id="home-tab" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" id="home-tab-2" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk_2" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
           </li>
           <!-- @if(Auth::User()->id_division == 'HR')
           <li class="nav-item">
             <a class="nav-link" id="home-tab" data-toggle="tab" href="#request_pr" role="tab" aria-controls="home" aria-selected="true">Request PR</a>
           </li>
           @endif -->
-          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
-          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbsp Asset</button>
-          @else
+          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="tambah_asset_atk" data-target="#add_asset" style="display: none"><i class="fa fa-plus"> </i>&nbsp Asset</button>
           <div class="pull-right dropdown" style="margin-left: 5px">
-            <button class="dropbtn"><i class="fa fa-plus"> </i>&nbspRequest ATK</button>
+            <button class="dropbtn" id="request_atk" style="display: none;"><i class="fa fa-plus"> </i>&nbspRequest ATK</button>
             <div class="dropdown-content">
               <a data-toggle="modal" data-target="#peminjaman_modal">Available</a>
               <a data-toggle="modal" data-target="#request_modal">Unavailable</a>
             </div>
           </div>
-          @endif
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane active" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
@@ -154,9 +170,7 @@
                     <th>Unit</th>
                     <th>Brand Name</th>
                     <th>Description</th>
-                    @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
-                    <th>Action</th>
-                    @endif
+                    <th id="col_action" style="display: none;">Action</th>
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
@@ -169,16 +183,11 @@
                     <td>{{$data->unit}}</td>
                     <td>{{$data->merk}}</td>
                     <td>{{$data->description}}</td>
-                    @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
-                    <td>
-                      <!-- @if($data->status == 'NN') -->
-                      <!-- @else -->
+                    <td id="col_action_2" style="display: none;">
                       <a href="{{url('/asset_atk/detail_asset_atk', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
-                      <!-- @endif -->
                       <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->description}}')"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
                       <button class="btn btn-xs btn-default btn-peminjaman" data-toggle="modal" data-target="#modalrestock" onclick="update_stok('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->qty}}', '{{$data->description}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Restock" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
                     </td>
-                    @endif
                   </tr>
                   @endforeach
                 </tbody>
@@ -187,8 +196,7 @@
               </table>
             </div>
           </div>
-          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
-          <div class="tab-pane fade" id="peminjaman_asset" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="tab-pane fade" id="peminjaman_asset_atk" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered nowrap requestTable" id="datatable" width="100%" cellspacing="0">
                 <thead>
@@ -289,8 +297,7 @@
               </table>
             </div>
           </div>
-          @else 
-          <div class="tab-pane fade" id="peminjaman_asset" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="tab-pane fade" id="peminjaman_asset_atk_2" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered nowrap DataTable" id="datatables" width="100%" cellspacing="0">
                 <thead>
@@ -367,8 +374,7 @@
               </table>
             </div>
           </div>
-          @endif
-          @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
+         <!--  @if(Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'WAREHOUSE')
           <div class="tab-pane fade" id="request_pr" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered nowrap DataTable" id="pr_request" width="100%" cellspacing="0">
@@ -434,25 +440,12 @@
               </table>
             </div>
           </div>
-          @endif
+          @endif -->
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<style type="text/css">
-   .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-</style>
 
 <!--add asset-->
 <div class="modal fade" id="add_asset" role="dialog">
@@ -927,12 +920,25 @@
 </div>
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
+
+    $(document).ready(function(){
+      var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
+    })
 
     $(document).ready(function(){
       initatk();

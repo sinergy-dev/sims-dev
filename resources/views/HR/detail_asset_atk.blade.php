@@ -1,4 +1,11 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+@endsection
+
 @section('content')
 <section class="content-header">
   <h1>
@@ -141,9 +148,16 @@
 
 </section>
 @endsection
+
+@section('scriptImport')
+  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
 @section('script')
-<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript">
     $('#data_Table').DataTable({
       pageLength: 25,
