@@ -193,7 +193,7 @@ class BGaransiController extends Controller
                             ->get();
         }
 
-   		return view('HR/bgaransi', compact('datas', 'notiftp', 'notifsd', 'notif', 'notifOpen', 'notifClaim'));
+   		return view('HR/bgaransi', compact('datas', 'notiftp', 'notifsd', 'notif', 'notifOpen', 'notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('bgaransi')]);
    	}
 
    	public function add_bgaransi()
