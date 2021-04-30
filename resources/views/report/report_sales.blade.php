@@ -1,8 +1,8 @@
-@extends('template.template_admin-lte')
-@section('content')
-<!-- bootstrap datepicker -->
-<link rel="stylesheet" href="{{asset("template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css")}}">
-
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="stylesheet" href="{{asset('template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
   <style type="text/css">
     .btn-warning-export{
       background-color: #ffc107;
@@ -11,9 +11,9 @@
     .dataTables_paging {
      display: none;
     }
-
   </style>
-
+@endsection
+@section('content')
   <section class="content-header">
     <h1>
       Report Sales
@@ -51,12 +51,8 @@
     </div>
 
     <div class="row">
-      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
-      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-        <div class="col-lg-6">
-      @elseif(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
-        <div class="col-lg-12">
-      @endif
+      <!-- <div class="col-lg-6" id="col-small"> -->
+      <div style="display: none;" id="col-large">
         <div class="box box-primary">
           <div class="box-header with-border">
             <h3 class="box-title"><i>TOP 5</i></h3>
@@ -87,11 +83,9 @@
           </div>
         </div>
       </div>
-      @endif
-      
-      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
+
       <div class="col-lg-6">
-        <div class="box box-primary">
+        <div class="box box-primary" id="box-msp" style="display: none;float: right;">
           <div class="box-header with-border">
             <h3 class="box-title"><i>TOP 5</i></h3>
             <h3 class="box-title pull-right"><b>MSP</b></h3>
@@ -121,7 +115,6 @@
           </div>
         </div>
       </div>
-      @endif
     </div>
     
     <div class="row">
@@ -130,21 +123,21 @@
           <div class="box-header with-border">
             <form action="" method="get" class="margin-bottom">
               <div class="row">
-
-                <label style="margin-top: 5px;margin-right: 5px">&nbsp&nbsp&nbspFilter Year</label>
-                <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter2">
-                  @foreach($years as $data)
-                  <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
-                  @endforeach
-                </select>
-
                 <div class="col-md-2">
-                  <input type="text" id="startdate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY">
-                </div>
-                <div>
-                  <p class="pull-right" style="margin-top: 5px">&nbspto&nbsp</p>
+                  <label style="margin-top: 5px;margin-right: 5px">&nbsp&nbsp&nbspFilter Year</label>
+                  <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter2">
+                    @foreach($years as $data)
+                    <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
+                    @endforeach
+                  </select>
                 </div>
                 <div class="col-md-2">
+                  <input type="text" style="float: left;" id="startdate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY">          
+                </div>
+                <div style="float: left;margin-top: 5px">
+                  <small>TO</small>
+                </div>
+                <div class="col-md-2" style="float: left;">
                   <input type="text" id="enddate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY" disabled>
                 </div>
                 <div class="col-md-2">
@@ -157,191 +150,203 @@
       </div>
     </div>
 
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="box box-primary">
-            <div class="box-header with-border">
-            <h3 class="box-title">Solution Design</h3>
-  
-              <div class="box-tools pull-right">
-              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-              </button>
-              <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+          <h3 class="box-title">Solution Design</h3>
 
-            <div class="box-body">
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="data_sd" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th width="5%"><center>No.</center></th>
-                      <th><center>Sales Name</center></th>
-                      <th width="15%"><center>Company</center></th>
-                      <th width="20%"><center>Total Amount</center></th>
-                      <th width="10%"><center>Total</center></th>
-                      <th width="10%"><center>Total</center></th>
-                    </tr>
-                  </thead>
-                  <tbody id="report_sd" name="report_sd">
-                  </tbody>
-                  <tfoot>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tfoot>
-                </table>
-              </div>
+            <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
             </div>
           </div>
-        </div>
-  
-        <div class="col-lg-6">
-          <div class="box box-warning">
-            <div class="box-header with-border">
-            <h3 class="box-title">Tender Process</h3>
-    
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
 
-            <div class="box-body">
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="data_tp" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th width="5%"><center>No.</center></th>
-                      <th><center>Sales Name</center></th>
-                      <th width="15%"><center>Company</center></th>
-                      <th width="20%"><center>Total Amount</center></th>
-                      <th width="10%"><center>Total</center></th>
-                      <th width="10%"><center>Total</center></th>
-                    </tr>
-                  </thead>
-                  <tbody id="report_tp" name="report_tp">
-                  </tbody>
-                  <tfoot>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tfoot>
-                </table>
-              </div>
+          <div class="box-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="data_sd" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th width="5%"><center>No.</center></th>
+                    <th><center>Sales Name</center></th>
+                    <th width="15%"><center>Company</center></th>
+                    <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>
+                    <th width="10%"><center>Total</center></th>
+                  </tr>
+                </thead>
+                <tbody id="report_sd" name="report_sd">
+                </tbody>
+                <tfoot>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tfoot>
+              </table>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="box box-success">
-            <div class="box-header with-border">
-            <h3 class="box-title">Win</h3>
-              <div class="box-tools pull-right">
+      <div class="col-lg-6">
+        <div class="box box-warning">
+          <div class="box-header with-border">
+          <h3 class="box-title">Tender Process</h3>
+  
+            <div class="box-tools pull-right">
               <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
               </button>
               <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
             </div>
+          </div>
 
-            <div class="box-body">
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="data_win" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th width="5%"><center>No.</center></th>
-                      <th><center>Sales Name</center></th>
-                      <th width="15%"><center>Company</center></th>
-                      <th width="20%"><center>Total Amount</center></th>
-                      <th width="10%"><center>Total</center></th>
-                      <th width="10%"><center>Total</center></th>
-                    </tr>
-                  </thead>
-                  <tbody id="report_win" name="report_win">
-                  </tbody>
-                  <tfoot>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tfoot>
-                </table>
-              </div>
+          <div class="box-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="data_tp" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th width="5%"><center>No.</center></th>
+                    <th><center>Sales Name</center></th>
+                    <th width="15%"><center>Company</center></th>
+                    <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>
+                    <th width="10%"><center>Total</center></th>
+                  </tr>
+                </thead>
+                <tbody id="report_tp" name="report_tp">
+                </tbody>
+                <tfoot>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tfoot>
+              </table>
             </div>
           </div>
         </div>
-  
-        <div class="col-lg-6">
-          <div class="box box-danger">
-            <div class="box-header with-border">
-            <h3 class="box-title">Lose</h3>
-    
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
+      </div>
+    </div>
 
-            <div class="box-body">
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="data_lose" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th width="5%"><center>No.</center></th>
-                      <th><center>Sales Name</center></th>
-                      <th width="15%"><center>Company</center></th>
-                      <th width="20%"><center>Total Amount</center></th>
-                      <th width="10%"><center>Total</center></th>
-                      <th width="10%"><center>Total</center></th>
-                    </tr>
-                  </thead>
-                  <tbody id="report_lose" name="report_lose">
-                  </tbody>
-                  <tfoot>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                  </tfoot>
-                </table>
-              </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="box box-success">
+          <div class="box-header with-border">
+          <h3 class="box-title">Win</h3>
+            <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+
+          <div class="box-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="data_win" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th width="5%"><center>No.</center></th>
+                    <th><center>Sales Name</center></th>
+                    <th width="15%"><center>Company</center></th>
+                    <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>
+                    <th width="10%"><center>Total</center></th>
+                  </tr>
+                </thead>
+                <tbody id="report_win" name="report_win">
+                </tbody>
+                <tfoot>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tfoot>
+              </table>
             </div>
           </div>
         </div>
       </div>
 
-  </section>
+      <div class="col-lg-6">
+        <div class="box box-danger">
+          <div class="box-header with-border">
+          <h3 class="box-title">Lose</h3>
+  
+            <div class="box-tools pull-right">
+              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+
+          <div class="box-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="data_lose" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th width="5%"><center>No.</center></th>
+                    <th><center>Sales Name</center></th>
+                    <th width="15%"><center>Company</center></th>
+                    <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>
+                    <th width="10%"><center>Total</center></th>
+                  </tr>
+                </thead>
+                <tbody id="report_lose" name="report_lose">
+                </tbody>
+                <tfoot>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
 
 @endsection
-
-@section('script')
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.24/api/sum().js"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
 <!-- bootstrap datepicker -->
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
-
-<!-- <script type="text/javascript" src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"></script> -->
-
+@endsection
+@section('script')
 <script>
+  var accesable = @json($feature_item);
+    if (accesable.includes('col-small')) {
+      $('#box-msp').show()
+      $('#col-large').show().addClass('col-lg-6')
+    }else{
+      $('#col-large').addClass('col-lg-12')
 
+    } 
+
+    accesable.forEach(function(item,index){
+    $("#" + item).show() 
+
+            
+  })
   $("#startdate").on('change',function(){
     $("#enddate").attr('disabled',false)
     
@@ -358,134 +363,143 @@
     autoclose: true
   })
 
+  // $('#filter_submit').click(function() {
+  //   var type = this.value;
+  //     $.ajax({
+  //       type:"GET",
+  //       url:"/getfiltersd",
+  //       data:{
+  //         data:this.value,
+  //         type:type,
+  //         start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+  //         end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+  //       },
+  //       success: function(result){
+  //         $('#report_sd').empty();
+
+  //         var table = "";
+
+  //         $.each(result, function(key, value){
+  //           table = table + '<tr>';
+  //           table = table + '<td></td>';
+  //           table = table + '<td>' +value.name+ '</td>';
+  //           table = table + '<td><center>' +value.code_company+ '</center></td>';
+  //           table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
+  //           table = table + '<td><center>(' +value.leads+ ')</center></td>';
+  //           table = table + '</tr>';
+
+  //         });
+  //         $('#report_sd').append(table);
+          
+  //       },
+  //     });
+
+  //     $.ajax({
+  //       type:"GET",
+  //       url:"/getfiltertp",
+  //       data:{
+  //         data:this.value,
+  //         type:type,
+  //         start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+  //         end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+  //       },
+  //       success: function(result){
+  //         $('#report_tp').empty();
+
+  //         var table = "";
+
+  //         $.each(result, function(key, value){
+  //           table = table + '<tr>';
+  //           table = table + '<td></td>';
+  //           table = table + '<td>' +value.name+ '</td>';
+  //           table = table + '<td><center>' +value.code_company+ '</center></td>';
+  //           if(value.amounts == null) {
+  //             table = table + '<td><center> - </center></td>';
+  //           } else {
+  //             table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
+  //           }
+  //           table = table + '<td><center>(' +value.leads+ ')</center></td>';
+  //           table = table + '</tr>';
+
+  //         });
+  //         $('#report_tp').append(table);
+          
+  //       },
+  //     });
+
+  //     $.ajax({
+  //       type:"GET",
+  //       url:"/getfilterwin",
+  //       data:{
+  //         data:this.value,
+  //         type:type,
+  //         start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+  //         end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+  //       },
+  //       success: function(result){
+  //         $('#report_win').empty();
+
+  //         var table = "";
+
+  //         $.each(result, function(key, value){
+  //           table = table + '<tr>';
+  //           table = table + '<td></td>';
+  //           table = table + '<td>' +value.name+ '</td>';
+  //           table = table + '<td><center>' +value.code_company+ '</center></td>';
+  //           table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
+  //           table = table + '<td><center>(' +value.leads+ ')</center></td>';
+  //           table = table + '</tr>';
+
+  //         });
+  //         $('#report_win').append(table);
+          
+  //       },
+  //     });
+
+  //     $.ajax({
+  //       type:"GET",
+  //       url:"/getfilterlose",
+  //       data:{
+  //         data:this.value,
+  //         type:type,
+  //         start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
+  //         end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
+  //       },
+  //       success: function(result){
+  //         $('#report_lose').empty();
+
+  //         var table = "";
+
+  //         $.each(result, function(key, value){
+  //           table = table + '<tr>';
+  //           table = table + '<td></td>';
+  //           table = table + '<td>' +value.name+ '</td>';
+  //           table = table + '<td><center>' +value.code_company+ '</center></td>';
+  //           table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
+  //           table = table + '<td><center>(' +value.leads+ ')</center></td>';
+  //           table = table + '</tr>';
+
+  //         });
+  //         $('#report_lose').append(table);
+          
+  //       },
+  //     });
+
+  // });
+
   $('#filter_submit').click(function() {
-    var type = this.value;
-    console.log(this.value);
-      $.ajax({
-        type:"GET",
-        url:"/getfiltersd",
-        data:{
-          data:this.value,
-          type:type,
-          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-        },
-        success: function(result){
-          $('#report_sd').empty();
-
-          var table = "";
-
-          $.each(result, function(key, value){
-            table = table + '<tr>';
-            table = table + '<td></td>';
-            table = table + '<td>' +value.name+ '</td>';
-            table = table + '<td><center>' +value.code_company+ '</center></td>';
-            table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-            table = table + '<td><center>(' +value.leads+ ')</center></td>';
-            table = table + '</tr>';
-
-          });
-          $('#report_sd').append(table);
-          
-        },
-      });
-
-      $.ajax({
-        type:"GET",
-        url:"/getfiltertp",
-        data:{
-          data:this.value,
-          type:type,
-          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-        },
-        success: function(result){
-          $('#report_tp').empty();
-
-          var table = "";
-
-          $.each(result, function(key, value){
-            table = table + '<tr>';
-            table = table + '<td></td>';
-            table = table + '<td>' +value.name+ '</td>';
-            table = table + '<td><center>' +value.code_company+ '</center></td>';
-            if(value.amounts == null) {
-              table = table + '<td><center> - </center></td>';
-            } else {
-              table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-            }
-            table = table + '<td><center>(' +value.leads+ ')</center></td>';
-            table = table + '</tr>';
-
-          });
-          $('#report_tp').append(table);
-          
-        },
-      });
-
-      $.ajax({
-        type:"GET",
-        url:"/getfilterwin",
-        data:{
-          data:this.value,
-          type:type,
-          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-        },
-        success: function(result){
-          $('#report_win').empty();
-
-          var table = "";
-
-          $.each(result, function(key, value){
-            table = table + '<tr>';
-            table = table + '<td></td>';
-            table = table + '<td>' +value.name+ '</td>';
-            table = table + '<td><center>' +value.code_company+ '</center></td>';
-            table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-            table = table + '<td><center>(' +value.leads+ ')</center></td>';
-            table = table + '</tr>';
-
-          });
-          $('#report_win').append(table);
-          
-        },
-      });
-
-      $.ajax({
-        type:"GET",
-        url:"/getfilterlose",
-        data:{
-          data:this.value,
-          type:type,
-          start:moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00"),
-          end:moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59")
-        },
-        success: function(result){
-          $('#report_lose').empty();
-
-          var table = "";
-
-          $.each(result, function(key, value){
-            table = table + '<tr>';
-            table = table + '<td></td>';
-            table = table + '<td>' +value.name+ '</td>';
-            table = table + '<td><center>' +value.code_company+ '</center></td>';
-            table = table + '<td align="right"><i>' +value.amounts.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '.00</i></td>';
-            table = table + '<td><center>(' +value.leads+ ')</center></td>';
-            table = table + '</tr>';
-
-          });
-          $('#report_lose').append(table);
-          
-        },
-      });
-
-  });
+    var data = this.value;
+    // console.log(data);
+    var start = moment($( "#startdate" ).datepicker("getDate")).format("YYYY-MM-DD 00:00:00");
+    var end = moment($( "#enddate" ).datepicker("getDate")).format("YYYY-MM-DD 23:59:59");
+    $('#data_sd').DataTable().ajax.url("{{url('getfiltersd')}}?data="+data+"&type=" + data + "&start=" + start + "&end=" + end).load();
+    $('#data_tp').DataTable().ajax.url("{{url('getfiltertp')}}?data="+data+"&type=" + data+ "&start=" + start + "&end=" + end).load();
+    $('#data_win').DataTable().ajax.url("{{url('getfilterwin')}}?data="+data+"&type=" + data+ "&start=" + start + "&end=" + end).load();
+    $('#data_lose').DataTable().ajax.url("{{url('getfilterlose')}}?data="+data+"&type=" + data+ "&start=" + start + "&end=" + end).load();
+  })
 
   $('#year_filter2').change(function() {
     var data = this.value;
-    console.log(this.value);
     $('#data_sd').DataTable().ajax.url("{{url('getfiltersdyear')}}?data="+data+"&type=" + data).load();
     $('#data_tp').DataTable().ajax.url("{{url('getfiltertpyear')}}?data="+data+"&type=" + data).load();
     $('#data_win').DataTable().ajax.url("{{url('getfilterwinyear')}}?data="+data+"&type=" + data).load();
@@ -848,8 +862,6 @@
               column.search(val ? '^' + val + '$' : '', true, false)
                   .draw();
           });
-          
-          console.log(select);
 
           column.data().unique().sort().each(function (d, j) {
               select.append('<option>' + d + '</option>')
@@ -869,10 +881,8 @@
 
 
   $('#year_filter').change(function(){
-    console.log(this.value);
     var tahun = this.value;
     $("#dropdown").change(function(){
-      console.log(this.value);
       var type = this.value;
       $.ajax({
         type:"GET",
@@ -934,7 +944,5 @@
 
   $('.money').mask('000,000,000,000,000,000', {reverse: true});
   $('.total').mask('000,000,000,000,000,000.00', {reverse: true});
-  
 </script>
-
 @endsection
