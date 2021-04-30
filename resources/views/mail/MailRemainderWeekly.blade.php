@@ -1,8 +1,159 @@
-<div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;">
+<!DOCTYPE html>
+<html>
+<head>
+	<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+	<style type="text/css">
+		table {
+		  border-collapse: collapse;
+		}
+
+		table, th, td {
+		  border: 0px solid grey;
+		}
+
+		table, th {
+			padding-left: 15px;
+		}
+
+		#bg_ket {
+			border-radius: 10px;
+		}
+
+		#txt_center {
+			text-align: center;
+		}
+
+		.money:before{
+			content:"Rp";
+		}
+
+		/*.centered{
+			position: absolute;
+		  	top: 50%;
+		  	left: 50%;
+		  	transform: translate(-50%, -40%);
+		}*/
+	</style>
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+	<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+	<script type="text/javascript">
+		console.log( $("#amounts").text())
+	    $('.money').mask('000,000,000,000,000', {reverse: true});
+	</script>
+</head>
+<body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
+	<div style="line-height: 1.5em">
+		<img src="{{ asset('image/sims_sangar_2.png')}}" style="width: 30%; height: 30%">
+	</div>
+	<div style="line-height: 1.5em;padding-left: 13px;">
+		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
+			<p style="font-size: 20px">
+				<b>Dear {{$data["to"]}},</b>
+			</p>
+			<p style="font-size: 16px">
+				the following bellow is the weekly report as {{date('D, d F Y')}}.
+			</p>
+			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
+				<table style="text-align: left;margin: 5px; font-size: 16px" class="tableLead">
+					<tr>
+						<th>{{$data["proses_count"]}} Lead - On Prosses</th>
+						<th></th>
+						<td></td>
+					</tr>
+					@if($data["sd_count"] != 0)
+					<tr>
+						<th>{{$data["sd_count"]}} Lead - SD Phase</th>
+						<th></th>
+						<td></td>
+					</tr>
+					<tr>
+						<th valign="top">Detail</th>
+						<th></th>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<ul>
+								@foreach($data["sd_detail"] as $sd)
+								<li>
+									<span style="font-family: 'Lucida Console', Monaco, monospace;">
+										<a href="https://app.sinergy.co.id/detail_project/{{$sd->lead_id}}">{{$sd->lead_id}}</a> 
+										[{{str_limit($sd->brand_name, 20)}}]
+									</span>
+									 - {{$sd->opp_name}}
+									</li>
+								@endforeach
+							</ul>
+						</td>
+					</tr>
+					@endif
+					@if($data["tp_count"] != 0)
+					<tr>
+						<th>{{$data["tp_count"]}} Lead - TP Phase</th>
+						<th></th>
+						<td></td>
+					</tr>
+					<tr>
+						<th valign="top">Detail</th>
+						<th></th>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<ul>
+								@foreach($data["tp_detail"] as $tp)
+								<li>
+									<span style="font-family: 'Lucida Console', Monaco, monospace;">
+										<a href="https://app.sinergy.co.id/detail_project/{{$tp->lead_id}}">{{$tp->lead_id}}</a> 
+										[{{str_limit($tp->brand_name, 20)}}]
+									</span>
+									 - {{$tp->opp_name}}
+								</li>
+								@endforeach
+							</ul>
+						</td>
+					</tr>
+					@endif
+				</table>
+			</div>
+			<p style="font-size: 16px">
+				Please immediately check back on those leads. If there are further progress updates, please immediately update the intended lead on the <a href="https://app.sinergy.co.id/">SIMS App</a>.
+			</p>
+			<p style="font-size: 16px">
+				Please check again, if there are errors or questions please contact the Developer Team (Ext: 384) or email to development@sinergy.co.id.<br>
+				Thank you.
+			</p>
+			<p style="font-size: 16px">
+				Best Regard,
+			</p><br>
+			<p style="font-size: 16px">
+				Tech - Dev
+			</p>
+		</div>
+	</div>
+</body>
+<footer style="display:block;width:600px;margin-left:auto;margin-right:auto;">
+	<div style="background-color: #7868e6; padding: 20px; color: #ffffff; font-size: 12px; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
+		<p>
+			<center>PT. Sinergy Informasi Pratama</center>
+		</p>
+		<p>
+			<center>Jl. Puri Raya, Blok A 2/3 No. 33-35 Puri Indah, Kembangan, Jakarta, Indonesia 11610</center>
+		</p>
+		<p>
+			<center><i class="fa fa-phone"></i>021 - 58355599</center>
+		</p>
+	</div>
+</footer>
+</html>
+
+
+<!-- <div style="color: #141414;font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;">
 	<p>
 		Dear {{$data["to"]}},<br>
 		<br>
-		Berikut report mingguan per {{date('D, d F Y')}}<br>
+		Following bellow report mingguan per {{date('D, d F Y')}}<br>
 		Diharapkan untuk menjadi perhatian
 	</p>
 	<table style="text-align: left;margin: 5px;">
@@ -64,7 +215,7 @@
 				</ul>
 			</td>
 		</tr>
-		@endif		
+		@endif	
 	</table>
 	<p>
 		Mohon untuk segera di periksa kembali terhadap lead tersebut. Bila ada update progres lebih lanjut harap segera update lead yang di maksud pada <a href="https://app.sinergy.co.id/">SIMS App</a><br>
@@ -86,4 +237,4 @@
 		| Phone | 021 - 58355599 |<br>
 		----------------------------------------<br>
 	</p>
-</div>
+</div> -->
