@@ -183,105 +183,150 @@ class ReportController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        if ($pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
+        $datas_open = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('year','2019')
+                    ->select(
+                        'sales_lead_register.lead_id', 
+                        'tb_contact.customer_legal_name', 
+                        'sales_lead_register.opp_name',
+                        DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'),
+                        'users.name', 
+                        'sales_lead_register.amount',
+                        'sales_lead_register.result'
+                    )
+                    ->where('result','')
+                    ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC');
+
+
+        if ($pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
+                $datas_open = $datas_open
+                                ->get();
+        }else if ($div == 'SALES' && Auth::User()->id_company == '1') {
+            $datas_open = $datas_open
+                            ->where('id_territory', $ter)
+                            ->get();
+        }else{
+            $datas_open = $datas_open
+                            ->where('id_territory', $ter)
+                            ->get();
+        }
+
+
+        $datas_sd = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select(
+                        'sales_lead_register.lead_id', 
+                        'tb_contact.customer_legal_name', 
+                        'sales_lead_register.opp_name',
+                        DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'),
+                        'users.name', 
+                        'sales_lead_register.amount',
+                        'sales_lead_register.result'
+                    )
+                    ->where('result', 'SD')
+                    ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC');
+
+
+        if ($pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
+                $datas_sd = $datas_sd
                     ->get();
         }else if ($div == 'SALES' && Auth::User()->id_company == '1') {
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
+            $datas_sd = $datas_sd
                     ->where('id_territory', $ter)
-                    ->where('year','2019')
                     ->get();
         }else{
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
+            $datas_sd = $datas_sd
                     ->where('id_territory', $ter)
-                    ->where('year','2019')
                     ->get();
         }
 
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
+        $datas_tp = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select(
+                        'sales_lead_register.lead_id', 
+                        'tb_contact.customer_legal_name', 
+                        'sales_lead_register.opp_name',
+                        DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'),
+                        'users.name', 
+                        'sales_lead_register.amount',
+                        'sales_lead_register.result'
+                    )
+                    ->where('result', 'TP')
+                    ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC');
 
-             $datasheet = array();
-             $datasheet[0]  =   array("NO", "LEAD ID", "CUSTOMER", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS");
-             $i=1;
 
+        if ($pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
+            $datas_tp =$datas_tp
+                    ->get();
+        }else if ($div == 'SALES' && Auth::User()->id_company == '1') {
+            $datas_tp = $datas_tp
+                    ->where('id_territory', $ter)
+                    ->get();
+        }else{
+            $datas_tp = $datas_tp
+                    ->where('id_territory', $ter)
+                    ->get();
+        }
 
-            foreach ($datas as $data) {
+        $result = $datas_open->concat($datas_sd)->concat($datas_tp);
+        foreach ($result->all() as $key => $eachLead) {
+            $eachLead->amount = number_format($eachLead->amount,2,",",".");
+            $eachLead->result = ($eachLead->result == "" ? "OPEN" : $eachLead->result);
+            $sheet->fromArray(array_merge([$key + 1],array_values($eachLead->toArray())),NULL,'A' . ($key + 3));
+        }
 
-                if($data->result == '') {
-                    $datasheet[$i] = array($i,
-                                $data['lead_id'],
-                                $data['customer_legal_name'],
-                                $data['opp_name'],
-                                $data['created_at'],
-                                $data['name'],
-                                $data['amount'],
-                                'OPEN'
-                            );
-                    $i++;   
-                } elseif($data->result == 'SD') {
-                    $datasheet[$i] = array($i,
-                                $data['lead_id'],
-                                $data['customer_legal_name'],
-                                $data['opp_name'],
-                                $data['created_at'],
-                                $data['name'],
-                                $data['amount'],
-                                'SD'
-                            );
-                    $i++;   
-                } elseif($data->result == 'TP') {
-                    $datasheet[$i] = array($i,
-                                $data['lead_id'],
-                                $data['customer_legal_name'],
-                                $data['opp_name'],
-                                $data['created_at'],
-                                $data['name'],
-                                $data['amount'],
-                                'TP'
-                            );
-                    $i++;   
-                }
-            }
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(25);
 
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
+        $fileName = 'Report Lead Register Open ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 
     public function exportExcelWin(Request $request)
     {
-        $nama = 'Lead Register Win '.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Lead Register (Win)', function ($sheet) use ($request) {
-        
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Report Lead Register WIN');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
 
-        $sheet->row(1, array('LEAD REGISTER WIN'));
+        $sheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Report Lead Register WIN');
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:H2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["NO", "LEAD ID", "CUSTOMER LEGAL NAME", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
 
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -291,83 +336,84 @@ class ReportController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select(
+                        'sales_lead_register.lead_id', 
+                        'tb_contact.customer_legal_name', 
+                        'sales_lead_register.opp_name',
+                        DB::raw('SUBSTRING(`sales_lead_register`.`created_at`,1,10) AS `created_at_formated`'),
+                        'users.name', 
+                        'sales_lead_register.amount',
+                        'sales_lead_register.result'
+                    )
+                    ->where('result', 'WIN')
+                    ->where('year',date('Y'))
+                    ->orderBy('sales_lead_register.created_at','DESC');
+
+
         if ($pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('year','2019')
-                    ->get();
-        }else if ($div == 'SALES' && Auth::User()->id_company == '1') {
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('id_territory', $ter)
-                    ->where('year','2019')
-                    ->get();
+            $datas = $datas->get();
         }else{
-            $datas = Sales2::join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name','sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho')
-                    ->where('id_territory', $ter)
-                    ->where('year','2019')
+            $datas = $datas->where('id_territory', $ter)
                     ->get();
         }
 
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
+        foreach ($datas as $key => $eachLead) {
+            $eachLead->amount = number_format($eachLead->amount,2,",",".");
+            $sheet->fromArray(array_merge([$key + 1],array_values($eachLead->toArray())),NULL,'A' . ($key + 3));
+        }
 
-             $datasheet = array();
-             $datasheet[0]  =   array("NO", "LEAD ID", "CUSTOMER", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS");
-             $i=1;
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(25);
 
+        $fileName = 'Report Lead Register WIN ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
 
-            foreach ($datas as $data) {
-
-                if($data->result == 'WIN') {
-                    $datasheet[$i] = array($i,
-                                $data['lead_id'],
-                                $data['customer_legal_name'],
-                                $data['opp_name'],
-                                $data['created_at'],
-                                $data['name'],
-                                $data['amount'],
-                                'WIN'
-                            );
-                    $i++;   
-                }
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
     }
 
     public function exportExcelLose(Request $request)
     {
-        $nama = 'Lead Register Lose '.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Lead Register (Lose)', function ($sheet) use ($request) {
-        
+       $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Report Lead Register LOSE');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
 
-        $sheet->row(1, array('LEAD REGISTER LOSE'));
+        $sheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Report Lead Register LOSE');
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:H2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["NO", "LEAD ID", "CUSTOMER LEGAL NAME", "OPTY NAME", "CREATE DATE", "OWNER", "AMOUNT", "STATUS"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
 
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -434,6 +480,8 @@ class ReportController extends Controller
 
         $year = date('Y');
 
+        $notifClaim = null;
+
 
         // count semua lead
         if($ter != null){
@@ -445,6 +493,7 @@ class ReportController extends Controller
                     'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'sales_lead_register.deal_price', 'users.name')
                     ->where('result','win')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                    
                     ->get();
             } elseif ($div == 'PMO' && $pos == 'MANAGER') {
                 $lead = DB::table('sales_lead_register')
@@ -455,7 +504,8 @@ class ReportController extends Controller
                     ->where('year',$year)
                     ->where('id_company', '1')
                     ->where('result','!=','hmm')
-                ->get();
+                    ->orderBy('sales_lead_register.created_at','DESC')                    
+                    ->get();
             } elseif ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $lead = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -465,6 +515,7 @@ class ReportController extends Controller
                     ->where('year',$year)
                     ->where('id_company', '1')
                     ->where('result','!=','hmm')
+                    ->orderBy('sales_lead_register.created_at','DESC')                    
                     ->get();
             } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $lead = DB::table('sales_lead_register')
@@ -477,6 +528,7 @@ class ReportController extends Controller
                     ->where('result','!=','hmm')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             } else {
                 $lead = DB::table('sales_lead_register')
@@ -486,6 +538,7 @@ class ReportController extends Controller
                     'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'sales_lead_register.deal_price', 'users.name')
                     ->where('id_territory', $ter)
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                    
                     ->get();
             }
         }elseif ($ter == null && $div == 'SALES') {
@@ -497,6 +550,7 @@ class ReportController extends Controller
                 ->where('id_territory', $ter)
                 ->where('year',$year)
                 ->where('id_company','2')
+                ->orderBy('sales_lead_register.created_at','DESC')                   
                 ->get();
         } elseif ($ter == 'DPG' && $pos == 'ENGINEER MANAGER') {
             $lead = DB::table('sales_lead_register')
@@ -506,6 +560,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
                 ->where('result','win')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')                   
                 ->get();
         } elseif ($ter == 'DPG' && $pos == 'ENGINEER STAFF') {
             $lead = DB::table('sales_lead_register')
@@ -516,6 +571,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
                 ->where('tb_engineer.nik', $nik)
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')                   
                 ->get();
         }  else {
             $lead = DB::table('sales_lead_register')
@@ -525,6 +581,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'sales_lead_register.deal_price', 'users.name')
                 ->where('year',$year)
                 ->where('result','!=','hmm')
+                ->orderBy('sales_lead_register.created_at','DESC')                   
                 ->get();
         }
 
@@ -670,7 +727,7 @@ class ReportController extends Controller
                             ->get();
         }
 
-        return view('report/lead', compact('lead','leads','notif', 'total_ter', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
+        return view('report/lead', compact('lead','notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
     }
 
     public function view_open()
@@ -695,6 +752,7 @@ class ReportController extends Controller
                     ->where('result', '')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $open = DB::table('sales_lead_register')
@@ -707,6 +765,7 @@ class ReportController extends Controller
                     ->where('result', '')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $open = DB::table('sales_lead_register')
@@ -718,6 +777,7 @@ class ReportController extends Controller
                     ->where('result', '')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             } else {
                 $open = DB::table('sales_lead_register')
@@ -728,6 +788,7 @@ class ReportController extends Controller
                     ->where('result', '')
                     ->where('id_territory', $ter)
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             }
         } elseif ($div == 'FINANCE') {
@@ -739,6 +800,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
                 ->where('sales_lead_register.status_sho','')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')                   
                 ->get();
         } else {
             $open = DB::table('sales_lead_register')
@@ -748,6 +810,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.deal_price')
                 ->where('result', '')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')                   
                 ->get();
         }
 
@@ -761,6 +824,7 @@ class ReportController extends Controller
                     ->where('result', 'SD')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $sd = DB::table('sales_lead_register')
@@ -772,6 +836,7 @@ class ReportController extends Controller
                     ->where('sales_solution_design.nik', $nik)
                     ->where('year',$year)
                     ->where('result', 'SD')
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             }elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $sd = DB::table('sales_lead_register')
@@ -783,6 +848,7 @@ class ReportController extends Controller
                     ->where('year',$year)
                     ->where('id_company', '1')
                     ->where('result', 'SD')
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             } else {
                 $sd = DB::table('sales_lead_register')
@@ -793,6 +859,7 @@ class ReportController extends Controller
                     ->where('result', 'SD')
                     ->where('id_territory', $ter)
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
                     ->get();
             }
         }elseif ($div == 'FINANCE') {
@@ -804,6 +871,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
                 ->where('sales_lead_register.lead_id','tb_id_project.lead_id')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')                                   
                 ->get();
         } else {
             $sd = DB::table('sales_lead_register')
@@ -813,6 +881,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.deal_price')
                 ->where('result', 'SD')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC') 
                 ->get();
         }
 
@@ -826,6 +895,7 @@ class ReportController extends Controller
                     ->where('result', 'TP')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')   
                     ->get();
             } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $tp = DB::table('sales_lead_register')
@@ -837,6 +907,7 @@ class ReportController extends Controller
                     ->where('sales_solution_design.nik', $nik)
                     ->where('result', 'TP')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')   
                     ->get();
             }  elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $tp = DB::table('sales_lead_register')
@@ -848,6 +919,7 @@ class ReportController extends Controller
                     ->where('id_company', '1')
                     ->where('result', 'TP')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')
                     ->get();
             } else {
                 $tp = DB::table('sales_lead_register')
@@ -858,6 +930,7 @@ class ReportController extends Controller
                     ->where('result', 'TP')
                     ->where('id_territory', $ter)
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')
                     ->get();
             }
         }elseif ($div == 'FINANCE') {
@@ -869,6 +942,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.deal_price')
                 ->where('sales_lead_register.lead_id','tb_id_project.lead_id')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')
                 ->get();
         } else {
             $tp = DB::table('sales_lead_register')
@@ -878,6 +952,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.deal_price')
                 ->where('result', 'TP')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')
                 ->get();
         }
 
@@ -1022,9 +1097,11 @@ class ReportController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = NULL;
         }
 
-        return view('report/open_status', compact('open','sd','tp','notif','total_ter_open', 'total_ter_sd', 'total_ter_tp', 'notifOpen', 'notifsd', 'notiftp','notifClaim'));
+        return view('report/open_status', compact('open','sd','tp','notif', 'notifOpen', 'notifsd', 'notiftp','notifClaim'));
     }
 
     public function view_win()
@@ -1049,6 +1126,8 @@ class ReportController extends Controller
                     ->where('result', 'win')
                     ->where('id_company', '1')
                     ->where('year', $year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
             } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $win = DB::table('sales_lead_register')
@@ -1061,6 +1140,8 @@ class ReportController extends Controller
                     ->where('result', 'WIN')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
             } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $win = DB::table('sales_lead_register')
@@ -1072,6 +1153,8 @@ class ReportController extends Controller
                     ->where('result', 'WIN')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
             } else {
                 $win = DB::table('sales_lead_register')
@@ -1082,6 +1165,8 @@ class ReportController extends Controller
                     ->where('result', 'win')
                     ->where('id_territory', $ter)
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
             }
         }elseif ($div == 'FINANCE') {
@@ -1089,6 +1174,8 @@ class ReportController extends Controller
                     ->join('users', 'users.nik', '=', 'dvg_esm.personnel')
                     ->select('no','date','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'status', 'sales_lead_register.deal_price')
                     ->where('status', 'FINANCE')
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
         } else {
             $win = DB::table('sales_lead_register')
@@ -1098,6 +1185,8 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.deal_price')
                 ->where('result', 'win')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')                   
+
                 ->get();
         }
 
@@ -1241,9 +1330,11 @@ class ReportController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = NULL;
         }
 
-        return view('report/win_status', compact('win', 'notif', 'total_ter', 'notifOpen', 'notifsd', 'notiftp','notifClaim'));
+        return view('report/win_status', compact('win', 'notif', 'notifOpen', 'notifsd', 'notiftp','notifClaim'));
     }
 
     public function view_lose()
@@ -1268,6 +1359,8 @@ class ReportController extends Controller
                     ->where('result', 'lose')
                     ->where('id_company', '1')
                     ->where('year', $year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
             }  elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $lose = DB::table('sales_lead_register')
@@ -1280,6 +1373,8 @@ class ReportController extends Controller
                     ->where('result', 'LOSE')
                     ->where('id_company', '1')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
             }  elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $lose = DB::table('sales_lead_register')
@@ -1291,8 +1386,10 @@ class ReportController extends Controller
                     ->where('id_company', '1')
                     ->where('result', 'LOSE')
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')                   
+
                     ->get();
-            } else {
+            }  else {
                 $lose = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -1301,10 +1398,12 @@ class ReportController extends Controller
                     ->where('result', 'lose')
                     ->where('id_territory', $ter)
                     ->where('year',$year)
+                    ->orderBy('sales_lead_register.created_at','DESC')
                     ->get();
             }
-        }elseif ($ter == null && $div == 'SALES') {
-            $lose = DB::table('sales_lead_register')
+        }elseif ($ter == null) {
+            if ($div == 'SALES') {
+                $lose = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.brand_name',
@@ -1313,7 +1412,20 @@ class ReportController extends Controller
                 ->where('id_territory', $ter)
                 ->where('id_company','2')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC') 
                 ->get();
+            }else{
+                $lose = DB::table('sales_lead_register')
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.brand_name',
+                'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.deal_price')
+                ->where('result', 'lose')
+                ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC') 
+                ->get();
+            }
+            
         }elseif ($div == 'FINANCE') {
             $lose = DB::table('dvg_esm')
                     ->join('users', 'users.nik', '=', 'dvg_esm.personnel')
@@ -1328,6 +1440,7 @@ class ReportController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.deal_price')
                 ->where('result', 'lose')
                 ->where('year',$year)
+                ->orderBy('sales_lead_register.created_at','DESC')                   
                 ->get();
         }
 
@@ -1471,9 +1584,11 @@ class ReportController extends Controller
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')
                             ->get();
+        } else {
+            $notifClaim = null;
         }
 
-        return view('report/lose_status', compact('lose', 'notif', 'total_ter', 'notifOpen', 'notifsd', 'notiftp','notifClaim'));
+        return view('report/lose_status', compact('lose', 'notif', 'notifOpen', 'notifsd', 'notiftp','notifClaim'));
     }
 
     public function downloadPdflead()
@@ -2388,7 +2503,7 @@ class ReportController extends Controller
                                 ->where('result','!=','hmm')
                                 ->first();
 
-        return view('report/report_range', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years'));
+        return view('report/report_range', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function total_deal_price(Request $request){
@@ -2412,42 +2527,7 @@ class ReportController extends Controller
 
         $year = DB::table('sales_lead_register')->select('year')->where('year','!=',NULL)->groupBy('year')->get();
 
-        // count semua lead
-        /*if($ter != null){
-            $lead = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                ->join('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
-                ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.brand_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'users.name', 'sales_lead_register.closing_date','tb_territory.name_territory','sales_solution_design.nik as nik_presales','sales_solution_design.priority','sales_tender_process.win_prob','sales_lead_register.deal_price')
-                ->where('users.id_territory', $ter)
-                ->where('result','!=','hmm')
-                ->where('sales_solution_design.status',NULL)
-                ->orWhere('sales_solution_design.status','closed')
-                ->orderBy('created_at','desc')
-                ->get();
-
-        } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $lead = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-                ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                ->join('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
-                ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id','tb_contact.brand_name', 'sales_lead_register.opp_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.closing_date','tb_territory.name_territory','sales_solution_design.nik as nik_presales','sales_solution_design.priority','sales_tender_process.win_prob','sales_lead_register.deal_price')
-                ->where('sales_solution_design.nik', $nik)
-                ->where('result','!=','hmm')
-                ->where('sales_solution_design.status',NULL)
-                ->orWhere('sales_solution_design.status','closed')
-                ->orderBy('created_at','desc')
-                ->get();
-
-        } else {*/
-            $lead = DB::table('sales_lead_register')
+           	$lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
@@ -2630,7 +2710,7 @@ class ReportController extends Controller
                                 ->where('result','!=','hmm')
                                 ->first();
 
-        return view('report/report_range2', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'year_now', 'year', 'leads_now'));
+        return view('report/report_range2', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'year_now', 'year', 'leads_now'))->with(['initView'=>$this->initMenuBase()]);
     
     }
 
@@ -2647,7 +2727,7 @@ class ReportController extends Controller
                         ->orderBy('amounts', 'desc')
                         ->get();
 
-        return $filter_sd;
+        return array("data" => $filter_sd);
 
     }
 
@@ -2664,7 +2744,7 @@ class ReportController extends Controller
                         ->orderBy('amounts', 'desc')
                         ->get();
 
-        return $filter_tp;
+        return array("data" => $filter_tp);
 
     }
 
@@ -2681,7 +2761,7 @@ class ReportController extends Controller
                         ->orderBy('amounts', 'desc')
                         ->get();
 
-        return $filter_win;
+        return array("data" => $filter_win);
 
     }
 
@@ -2698,7 +2778,7 @@ class ReportController extends Controller
                         ->orderBy('amounts', 'desc')
                         ->get();
 
-        return $filter_lose;
+        return array("data" => $filter_lose);
 
     }
 
@@ -3124,7 +3204,7 @@ class ReportController extends Controller
             ->get();
         }
 
-        return view('report/report_sales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_sip', 'top_win_msp', 'years'));
+        return view('report/report_sales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_sip', 'top_win_msp', 'years'))->with(['initView'=>$this->initMenuBase(),'feature_item'=>$this->RoleDynamic('report_sales')]);
 
     }
 
@@ -3486,7 +3566,7 @@ class ReportController extends Controller
             ->get();
         }
 
-        return view('report/report_presales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_presales', 'years', 'users'));
+        return view('report/report_presales', compact('lead', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'total_ter', 'lead_sales','cek_sales', 'lead_sd', 'lead_tp', 'lead_win', 'lead_lose', 'lead_summary', 'top_win', 'top_win_presales', 'years', 'users'))->with(['initView'=>$this->initMenuBase()]);
 
     }
 
@@ -3637,7 +3717,7 @@ class ReportController extends Controller
                             ->where('status', 'FINANCE')
                             ->get();
         }
-        return view('report/report_territory', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim' ,'territory_loop'));
+        return view('report/report_territory', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim' ,'territory_loop'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('report_territory')]);
     
     }
 
@@ -3825,7 +3905,7 @@ class ReportController extends Controller
                             ->where('status', 'FINANCE')
                             ->get();
         }
-        return view('report/report_product_technology', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
+        return view('report/report_product_technology', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     
     }
 
@@ -5266,7 +5346,7 @@ class ReportController extends Controller
                             ->get();
         }
 
-        return view('report/record_authentication', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'));
+        return view('report/record_authentication', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('record_log_history')]);
     
     }
 
@@ -5527,7 +5607,7 @@ class ReportController extends Controller
             $notifc = count($notif);        
         }
 
-        return view('report/report_product', compact('notifc','notif','notifOpen','notifsd','notiftp','notifc','territory_loop'));
+        return view('report/report_product', compact('notifc','notif','notifOpen','notifsd','notiftp','notifc','territory_loop'))->with(['initView'=>$this->initMenuBase()]);
     
     }
 
