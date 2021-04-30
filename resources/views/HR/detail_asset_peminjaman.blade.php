@@ -226,11 +226,13 @@
     </div>
 </div>
 @endsection
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+@endsection
 @section('script')
-<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript">
      $('.money').mask('000,000,000,000', {reverse: true});
 

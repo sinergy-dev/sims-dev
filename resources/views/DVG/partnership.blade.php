@@ -1,56 +1,50 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <style type="text/css">
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 120px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {background-color: #ddd;}
+
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {display: block;}
+
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .dropdown:hover .dropbtn {background-color: #F0AD4E;}    
+  </style>
+@endsection
 @section('content')
-<style type="text/css">
-  input[type=number]::-webkit-inner-spin-button, 
-  input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-  }
-
-  .dropbtn {
-    background-color: #F0AD4E;
-    color: white;
-    padding: 5px;
-    font-size: 13px;
-    width: 120px;
-    height: 35px;
-    border: none;
-  }
-
-  /* The container <div> - needed to position the dropdown content */
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-
-  /* Dropdown Content (Hidden by Default) */
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 120px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-
-  /* Links inside the dropdown */
-  .dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-  }
-
-  /* Change color of dropdown links on hover */
-  .dropdown-content a:hover {background-color: #ddd;}
-
-  /* Show the dropdown menu on hover */
-  .dropdown:hover .dropdown-content {display: block;}
-
-  /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .dropbtn {background-color: #F0AD4E;}    
-</style>
-
   <section class="content-header">
     <h1>
       Partnership
@@ -327,19 +321,49 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 
   </section>
 
 @endsection
 
-@section('script')
+@section('scriptImport')
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+@endsection
+@section('script')  
   <script type="text/javascript">
+      $(document).ready(function(){
+          var accesable = @json($feature_item);
+          accesable.forEach(function(item,index){
+            $("#" + item).show()
+
+          })
+
+          if (!(accesable.includes('th-action'))) {
+            var column1 = table.column(11);
+            column1.visible(!column1.visible());
+
+            var column2 = table.column(9);
+            column2.visible(!column2.visible());
+          }else{
+            var column1 = table.column(11);
+            column1.visible(column1.visible());
+
+            var column2 = table.column(10);
+            column2.visible(!column2.visible());
+          }
+
+          // if (!(accesable)) {
+          //   var column1 = table.column(9);
+          //   column1.visible( ! column1.visible() );
+          // }  
+      })
     
-     $('#datastable').DataTable({
+     var table = $('#datastable').DataTable({
       "scrollX": 200,
       pageLength:25,
      });
