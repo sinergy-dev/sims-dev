@@ -1,145 +1,152 @@
-@extends('template.template_admin-lte')
-@section('content')
-<style type="text/css">
-  .a{
-    vertical-align: middle;
-  }
-  .speech-bubble {
-    position: relative;
-    background:white;
-    border-radius: .4em;
-    padding: 10px;
-    margin-top: 10px;
-    box-shadow: 10px 5px 10px 5px #8f9aff;
-  }
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <style type="text/css">
+    .a{
+      vertical-align: middle;
+    }
 
-  .speech-bubble:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 3%;
-    width: 0;
-    height: 0;
-    border: 9px solid transparent;
-    border-bottom-color: white;
-    border-top: 0;
-    margin-left: -9px;
-    margin-top: -9px;
-  }
+    .speech-bubble {
+      position: relative;
+      background:white;
+      border-radius: .4em;
+      padding: 10px;
+      margin-top: 10px;
+      box-shadow: 10px 5px 10px 5px #8f9aff;
+    }
 
-  .dataTables_filter {display: none;}
+    .speech-bubble:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 3%;
+      width: 0;
+      height: 0;
+      border: 9px solid transparent;
+      border-bottom-color: white;
+      border-top: 0;
+      margin-left: -9px;
+      margin-top: -9px;
+    }
 
-  .header th{
-    background-color: #dddddd;
-  }
+    .dataTables_filter {display: none;}
 
-  .capitalize{
-     text-transform:capitalize;
-  }
-</style>
-<section class="content-header">
-  <h1>
-    Report Lead Product Technology
-  </h1>
-  <ol class="breadcrumb">
-    <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">Report</li>
-    <li class="active">Report Lead Product Technology</li>
-  </ol>
-</section>
+    .header th{
+      background-color: #dddddd;
+    }
 
-<section class="content">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title"><i class="fa fa-table"></i> Report Lead</h3>
-        </div>
-
-        <div class="row">   
-          <div class="col-md-12">
-            <div class="col-md-4">
-              <label>Filter by Product</label>
-              <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsProduct"></select>
-            </div>
-            <div class="col-md-4">
-              <label>Filter by Technology</label>
-              <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsTechnology"></select>
-            </div>
-            <div class="col-md-4">
-              <label>Filter by Person</label>
-              <select class="form-control capitalize" style="width: 100%;max-width: 250px" id="searchTagsPerson"></select>
-            </div>
-          </div>  
-          <div class="col-md-12" style="margin-top: 10px">
-            <div class="col-md-4">
-              <label>Filter by Date</label>
-              <div class="input-group">
-                <div class="input-group-addon">
-                  <i class="fa fa-calendar"></i>
-                </div>
-                <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
-                <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
-               <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
-            </div>
-          </div>     
-          
-          <!-- <div class="col-md-8" style="margin-top: 10px;"> -->
-          <!--   <div class="input-group">
-                <select class="form-control a" style="width: 100%;max-width: 250px" id="searchTags"></select>
-                <span class="input-group-btn">
-                    <button class="btn btn-info">MyButton</button>
-                </s
-
-                pan>
-            </div> -->
-         <!--    <label>Filter by Tags</label>
-            <select class="form-control a" style="width: 100%" id="searchTags"></select>
-            <button class="btn btn-primary a">Apply</button>    -->     
-          <!-- </div>  -->
-          </div>  
-
-          <div class="box-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
-                <thead>
-                  <tr class="header">
-                    <th>Lead ID</th>
-                    <th>Customer</th>
-                    <th>Opty Name</th>                    
-                    <th>Persona</th>
-                    <th>Nominal</th>
-                    <th>Product/Technology</th>
-                    <th>List Price</th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-          </div>       
-        
-        </div>
-      </div>  
-    </div>
-  </div>
-</section>
-
+    .capitalize{
+       text-transform:capitalize;
+    }
+  </style>
 @endsection
-@section('script')
+@section('content')
+  <section class="content-header">
+    <h1>
+      Report Lead Product Technology
+    </h1>
+    <ol class="breadcrumb">
+      <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+      <li class="active">Report</li>
+      <li class="active">Report Lead Product Technology</li>
+    </ol>
+  </section>
+
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-table"></i> Report Lead</h3>
+          </div>
+
+          <div class="row">   
+            <div class="col-md-12">
+              <div class="col-md-4">
+                <label>Filter by Product</label>
+                <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsProduct"></select>
+              </div>
+              <div class="col-md-4">
+                <label>Filter by Technology</label>
+                <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsTechnology"></select>
+              </div>
+              <div class="col-md-4">
+                <label>Filter by Person</label>
+                <select class="form-control capitalize" style="width: 100%;max-width: 250px" id="searchTagsPerson"></select>
+              </div>
+            </div>  
+            <div class="col-md-12" style="margin-top: 10px">
+              <div class="col-md-4">
+                <label>Filter by Date</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
+                  <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
+                 <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+              </div>
+            </div>     
+            
+            <!-- <div class="col-md-8" style="margin-top: 10px;"> -->
+            <!--   <div class="input-group">
+                  <select class="form-control a" style="width: 100%;max-width: 250px" id="searchTags"></select>
+                  <span class="input-group-btn">
+                      <button class="btn btn-info">MyButton</button>
+                  </s
+
+                  pan>
+              </div> -->
+           <!--    <label>Filter by Tags</label>
+              <select class="form-control a" style="width: 100%" id="searchTags"></select>
+              <button class="btn btn-primary a">Apply</button>    -->     
+            <!-- </div>  -->
+            </div>  
+
+            <div class="box-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
+                  <thead>
+                    <tr class="header">
+                      <th>Lead ID</th>
+                      <th>Customer</th>
+                      <th>Opty Name</th>                    
+                      <th>Persona</th>
+                      <th>Nominal</th>
+                      <th>Product/Technology</th>
+                      <th>List Price</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>       
+          
+          </div>
+        </div>  
+      </div>
+    </div>
+  </section>
+@endsection
+@section('scriptImport')
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.min.js"></script>
+  <script src="{{asset('template2/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
+@endsection
+@section('script')  
   <script type="text/javascript">
-
     $.ajax({
         url:"sales/getProductTag",
         type:"GET",
         success:function(result){
-          console.log(result)
           $("#searchTagsProduct").select2().val("");
           var arr = result.results;
           var selectOption = [];
@@ -177,7 +184,6 @@
             }else {
               disableAllOpt(evt, this, true);
             }
-            console.log(select_val);
           });
 
           $('#searchTagsProduct').on("select2:unselect", function(evt) {
@@ -194,8 +200,6 @@
               if (data.id != "-1") {
                 data.disabled = disabled;
               }
-
-               console.log(data);
             });
           }
 
@@ -208,8 +212,6 @@
               if (data.id == "-1") {
                 data.disabled = disabled;
               }
-
-               console.log(data);
             });
           }
         }
@@ -262,7 +264,6 @@
             }else {
               disableAllOpt(evt, this, true);
             }
-            console.log(select_val);
           });
 
           $('#searchTagsTechnology').on("select2:unselect", function(evt) {
@@ -279,8 +280,6 @@
               if (data.id != "-1") {
                 data.disabled = disabled;
               }
-
-               console.log(data);
             });
           
           }
@@ -294,8 +293,6 @@
               if (data.id == "-1") {
                 data.disabled = disabled;
               }
-
-               console.log(data);
             });
           
           }
@@ -333,7 +330,6 @@
             multiple:true,
             data:selectOption,
             templateSelection: function(selection,container) {
-              console.log(selection)
               if (selection.text == 'All') {
                 return $.parseHTML('<span>' + selection.text + '</span>');
               }else{
@@ -416,8 +412,6 @@
       TagsProduct = $("#searchTagsProduct").val();
       TagsTechno  = $("#searchTagsTechnology").val();
       TagsPersona = $("#searchTagsPerson").val();
-
-      console.log(TagsPersona)
 
       if (TagsProduct == "" || TagsTechno == "" || TagsPersona == "") {
         Swal.fire({
