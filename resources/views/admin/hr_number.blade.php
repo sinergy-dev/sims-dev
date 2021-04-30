@@ -1,5 +1,9 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <style type="text/css">
     .DTFC_LeftBodyLiner {
       overflow: hidden;
@@ -7,8 +11,27 @@
     th {
       text-align: center;
     }
-  </style>
+    .transparant{
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      width: 25px;
+    }
 
+    .btnPR{
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+      width: 170px;
+      padding-top: 4px;
+      padding-left: 10px;
+    }
+  </style>
+@endsection
+@section('content')
   <section class="content-header">
     <h1>
       Daftar Buku Admin (HR)
@@ -104,6 +127,7 @@
             <label for="">Type of Letter</label>
             <select type="text" class="form-control" placeholder="Select Type of Letter" name="type" id="type" required>
                 <option value="PKWT">PKWT</option>
+                <option value="PKWTT">PKWTT</option>
                 <option value="SK">SK</option>
                 <option value="SP">SP</option>
             </select>
@@ -115,10 +139,6 @@
                 <option>MSP</option>
             </select>
           </div>
-          <!-- <div class="form-group">
-            <label for="">Date</label>
-            <input type="date" class="form-control" name="date" id="date" required>
-          </div> -->
           <div class="form-group">
             <label for="">Date</label>
             <div class="input-group date">
@@ -160,10 +180,10 @@
                 <option>AM</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Project ID</label>
             <input type="text" class="form-control" placeholder="Project ID" name="project_id" id="project_id">
-          </div>
+          </div> -->
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
             <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
@@ -218,35 +238,21 @@
 
 </section>
 
-<style type="text/css">
-    .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-    .btnPR{
-      color: #fff;
-      background-color: #007bff;
-      border-color: #007bff;
-      width: 170px;
-      padding-top: 4px;
-      padding-left: 10px;
-    }
-</style>
 
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
 
     $('#date_hr').datepicker({
