@@ -626,7 +626,7 @@ class BGaransiController extends Controller
         $tgl_selesai = date("d-M-y", strtotime($origdate->tgl_selesai));
         $created_at = date("d-M-y", strtotime($origdate->created_at));
 
-   		return view('HR.bg_pdf', compact('datas', 'kata', 'tgl_mulai', 'tgl_selesai', 'created_at'));
+   		return view('HR.bg_pdf', compact('datas', 'kata', 'tgl_mulai', 'tgl_selesai', 'created_at'))->with(['initView'=> $this->initMenuBase()]);
    	}
 
     public function update_status(Request $request)
@@ -665,7 +665,7 @@ class BGaransiController extends Controller
         $terbilang = new Terbilang();
         $kata = $terbilang->convert($nominals2); 
 
-   		return view('HR.surat_kuasa_pdf', compact('datas', 'tgl_selesai', 'tgl_mulai', 'created_at', 'kata'));
+   		return view('HR.surat_kuasa_pdf', compact('datas', 'tgl_selesai', 'tgl_mulai', 'created_at', 'kata'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function accept_status(Request $request)
