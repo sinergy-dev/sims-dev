@@ -235,7 +235,7 @@ class PMOController extends Controller
                             ->where('id_company',1)
                             ->first();
         
-        return view('PMO.index', compact('notifClaim', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'count_d', 'count_s', 'count_i', 'count_m', 'count_t', 'count_done', 'lead_win', 'data', 'engineer_staff', 'engineer_manager'));
+        return view('PMO.index', compact('notifClaim', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'count_d', 'count_s', 'count_i', 'count_m', 'count_t', 'count_done', 'lead_win', 'data', 'engineer_staff', 'engineer_manager'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('pmo_index')]);
     }
 
     public function detail($lead_id) {
@@ -249,6 +249,8 @@ class PMOController extends Controller
         $pos = $position->id_position; 
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
+
+        $notifClaim = '';
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -494,10 +496,10 @@ class PMOController extends Controller
                                     //             ->from('tb_imp_engineer_assign');
                                     // })->get();
 
-            return view('PMO/detail', compact('list_engineer', 'notifClaim', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'imp_id', 'current_engineer', 'detail', 'detail_id_engineer', 'detail_id_phase', 'engineer_problem', 'engineer_progress', 'project_leader', 'member', 'engineer_staff', 'engineer_manager', 'current_engineer_manager', 'phase', 'detail_problem', 'change_log','id'));
+            return view('PMO/detail', compact('list_engineer', 'notifClaim', 'notif', 'notifOpen', 'notifsd', 'notiftp', 'imp_id', 'current_engineer', 'detail', 'detail_id_engineer', 'detail_id_phase', 'engineer_problem', 'engineer_progress', 'project_leader', 'member', 'engineer_staff', 'engineer_manager', 'current_engineer_manager', 'phase', 'detail_problem', 'change_log','id'))->with(['initView'=>$this->initMenuBase()]);
         }
         
-        return view('PMO/detail', compact('id','imp_id','notifClaim', 'notif', 'notifOpen', 'notifsd', 'notiftp','engineer_staff', 'engineer_manager'));
+        return view('PMO/detail', compact('id','imp_id','notifClaim', 'notif', 'notifOpen', 'notifsd', 'notiftp','engineer_staff', 'engineer_manager'))->with(['initView'=>$this->initMenuBase()]);
 
         // Untuk seleksi siapa saja yang absen dan yang belum
         // $current_engineer = DB::table('tb_imp_engineer_assign')
