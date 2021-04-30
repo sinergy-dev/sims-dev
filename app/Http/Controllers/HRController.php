@@ -227,7 +227,7 @@ class HRController extends Controller
 
         $code = $request['code_input'];        
 
-        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim'));
+        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
     }
 
     public function getemps(Request $request)
@@ -251,7 +251,7 @@ class HRController extends Controller
                 ->where('tb_company.id_company','2')
                 ->paginate(9);
 
-        return view('HR/human_resource', compact('hr','hr_msp'));
+        return view('HR/human_resource', compact('hr','hr_msp'))->with(['initView'=> $this->initMenuBase()]);
 
     }
 
@@ -304,7 +304,7 @@ class HRController extends Controller
     	$id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak')
+                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -405,6 +405,7 @@ class HRController extends Controller
         $tambah->email = $request['email'];
         $tambah->id_company = $request['company'];
         $tambah->status_karyawan = 'belum_cuti';
+        $tambah->status_delete = '-';
         $tambah->id_presence_setting = '1';
         $tambah->status_kerja = $request['status_kerja'];
 
@@ -514,10 +515,17 @@ class HRController extends Controller
         $tambah->date_of_entry = $request['date_of_entry'];
         $tambah->date_of_birth = $request['date_of_birth'];
         $tambah->address = $request['address'];
-        $tambah->phone = $request['phone_number'];
+        $tambah->phone = substr(str_replace('-', '', $request['phone_number']),6);
         $tambah->no_ktp = $request['no_ktp'];
         $tambah->no_kk = $request['no_kk'];
         $tambah->no_npwp = $request['no_npwp'];
+        $tambah->bpjs_kes = $request['bpjs_kes'];
+        $tambah->bpjs_ket = $request['bpjs_ket'];
+        $tambah->jenis_kelamin = $request['jenis_kelamin'];
+        $tambah->pend_terakhir = $request['pend_terakhir'];
+        $tambah->email_pribadi = $request['email_personal'];
+        $tambah->tempat_lahir = $request['tempat_lahir'];
+        $tambah->alamat_ktp = $request['address_ktp'];
 
         //upload file gambar npwp user
 
@@ -532,25 +540,25 @@ class HRController extends Controller
 
         $tambah->npwp_file = $fileName;
 
-        $file = $request->file('bpjs_kes');
-        if ($file !== null) {
-            $fileName = $nik."_bpjs_kes_ver1".".jpg";
-            $request->file('bpjs_kes')->move("image/", $fileName);
-        }else{
-            $fileName = "";
-        }
+        // $file = $request->file('bpjs_kes');
+        // if ($file !== null) {
+        //     $fileName = $nik."_bpjs_kes_ver1".".jpg";
+        //     $request->file('bpjs_kes')->move("image/", $fileName);
+        // }else{
+        //     $fileName = "";
+        // }
 
-        $tambah->bpjs_kes = $fileName;
+        // $tambah->bpjs_kes = $fileName;
 
-        $file = $request->file('bpjs_ket');
-        if ($file !== null) {
-            $fileName = $nik."_bpjs_ket_ver1".".jpg";
-            $request->file('bpjs_ket')->move("image/", $fileName);
-        }else{
-            $fileName = "";
-        }
+        // $file = $request->file('bpjs_ket');
+        // if ($file !== null) {
+        //     $fileName = $nik."_bpjs_ket_ver1".".jpg";
+        //     $request->file('bpjs_ket')->move("image/", $fileName);
+        // }else{
+        //     $fileName = "";
+        // }
 
-        $tambah->bpjs_ket = $fileName;
+        // $tambah->bpjs_ket = $fileName;
         
         $tambah->save();
 
@@ -604,6 +612,7 @@ class HRController extends Controller
      */
     public function update_humanresource(Request $request)
     {
+        // return $request->no_npwp;
         $id_company = substr($request['nik_update'],0,1);
         $year_entry = substr($request['date_of_entry_update'],2,2);
         $month_entry = substr($request['date_of_entry_update'],5,2);
@@ -660,9 +669,28 @@ class HRController extends Controller
         
         if ($request['name_update'] != "") {
             $update->name = $request['name_update'];
-        } else if ($request['email_update'] != "") {
+        } 
+        if ($request['email_update'] != "") {
             $update->email = $request['email_update'];
         } 
+        if ($request['pend_terakhir_update'] != "") {
+            $update->pend_terakhir = $request['pend_terakhir_update'];
+        } 
+        if ($request['tempat_lahir_update'] != "") {
+            $update->tempat_lahir = $request['tempat_lahir_update'];
+        } 
+        if ($request['email_personal_update'] != "") {
+            $update->email_pribadi = $request['email_personal_update'];
+        } 
+        if ($request['bpjs_ket_update'] != "") {
+            $update->bpjs_ket = $request['bpjs_ket_update'];
+        } 
+        if ($request['bpjs_kes_update'] != "") {
+            $update->bpjs_kes = $request['bpjs_kes_update'];
+        } 
+        if ($request['address_ktp_update'] != "") {
+            $update->alamat_ktp = $request['address_ktp_update'];
+        }
         
         
         if ($request['company_update'] != "") {
@@ -794,17 +822,23 @@ class HRController extends Controller
         // }
 
 
-        if ($request['address'] != "") {
-            $update->address = $request['address'];
-        }elseif ($request['phone_number'] != "") {
-            $update->phone = $request['phone_number'];
-        }elseif ($request['no_ktp_update'] != "") {
-            $update->no_ktp = $request['no_ktp'];
-        }elseif ($request['no_kk_update'] != "") {
-            $update->no_kk = $request['no_kk'];
-        }elseif ($request['no_npwp'] != "") {
-            $update->no_npwp = $request['no_npwp'];
+        if ($request['address_update'] != "") {
+            $update->address = $request['address_update'];
         }
+        if ($request['phone_number_update'] != "") {
+            $update->phone = substr(str_replace('-', '', $request['phone_number_update']),6);
+        }
+        if ($request['no_ktp_update'] != "") {
+            $update->no_ktp = $request['no_ktp_update'];
+        }
+        if ($request['no_kk_update'] != "") {
+            $update->no_kk = $request['no_kk_update'];
+        }
+        if ($request['no_npwp_update'] != "") {
+            $update->no_npwp = $request['no_npwp_update'];
+        }
+
+        // return ($request['no_npwp'] != "" ? "true" : "false");
         
         $file       = $request->file('npwp_file');
 
@@ -818,29 +852,31 @@ class HRController extends Controller
             $update->npwp_file = $fileName;
         }
 
-        $file = $request->file('bpjs_kes');
-        if ($file == "") {
+        // $file = $request->file('bpjs_kes');
+        // if ($file == "") {
             
-        }else{
-            $fileName = $nik."_bpjs_kes_ver1".".jpg";
-            $request->file('bpjs_kes')->move("image/", $fileName);
-            $update->bpjs_kes = $fileName;
-        }
+        // }else{
+        //     $fileName = $nik."_bpjs_kes_ver1".".jpg";
+        //     $request->file('bpjs_kes')->move("image/", $fileName);
+        //     $update->bpjs_kes = $fileName;
+        // }
 
-        $file = $request->file('bpjs_ket');
-        if ($file == "") {
+        // $file = $request->file('bpjs_ket');
+        // if ($file == "") {
             
-        }else{
-            $fileName = $nik."_bpjs_ket_ver1".".jpg";
-            $request->file('bpjs_ket')->move("image/", $fileName);
-            $update->bpjs_ket = $fileName;
-        }
+        // }else{
+        //     $fileName = $nik."_bpjs_ket_ver1".".jpg";
+        //     $request->file('bpjs_ket')->move("image/", $fileName);
+        //     $update->bpjs_ket = $fileName;
+        // }
 
         if ($request['status_kerja_update'] != "") {
             $update->status_kerja = $request['status_kerja_update'];
         } else if ($request['akhir_kontrak_update'] != "") {
             $update->email = $request['akhir_kontrak_update'];
         }
+
+        // return $update;
 
         $update->update();
 
@@ -863,23 +899,30 @@ class HRController extends Controller
 
         $arr = ['name' => $userName->name];
 
-        $kirim = User::select('email')->where('email', 'ladinar@sinergy.co.id')->first();
-        Notification::send($kirim, new DeleteUser($arr));
+        // $kirim = User::select('email')->where('email', 'ladinar@sinergy.co.id')->first();
+        // Notification::send($kirim, new DeleteUser($arr));
 
-        if (User::where('nik',$nik)->first()->id_division == 'SALES') {
-            $update = User::where('nik',$nik)->first();
-            $update->status_karyawan = 'dummy';
-            $update->update();
-        }else{
-            $hapus = HRCrud::find($nik);
-            $hapus->delete();
-        }
+        // if (User::where('nik',$nik)->first()->id_division == 'SALES') {
+        //     $update = User::where('nik',$nik)->first();
+        //     $update->status_karyawan = 'dummy';
+        //     $update->update();
+        // }else{
+        //     $hapus = HRCrud::find($nik);
+        //     $hapus->delete();
+        // }
+
+        $update = User::where('nik',$nik)->first();
+        $update->status_karyawan = 'dummy';
+        $update->status_delete = 'D';
+        $update->password = Hash::make("Sinergy".date('dmy'));
+        $update->update();
 
         return redirect()->back()->with('alert', 'Deleted Employee!');
     }
 
     public function user_profile()
     {
+        $notif = '';$notifOpen = '';$notifsd = '';$notiftp = '';$ter = '';$user_profile = '';$notifClaim = '';
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -893,84 +936,84 @@ class HRController extends Controller
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','ktp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.id_division','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'FINANCE' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.id_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','ktp_file','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'MANAGER'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'STAFF'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'PMO' && $pos == 'ADMIN'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL' && $pos == 'INTERNAL IT'){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'SALES' && $ter == ''){
              $user_profile = DB::table('users')
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','ktp_file','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }
         else{
            $user_profile = DB::table('users')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
-                        ->select('users.name','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','ktp_file','users.npwp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }
@@ -1165,12 +1208,13 @@ class HRController extends Controller
         // $nims = str_replace('/', '', $nim);
 
         $update = User::where('nik',$nik)->first();
-        $update->nik            = $nik;
+        // $update->nik            = $nik;
         $update->name           = $req['name'];
         $update->email          = $req['email'];
-        $update->date_of_birth  = $req['date_of_birth'];
-        $update->date_of_entry  = $req['date_of_entry'];
-        $update->phone          = $req['phone'];
+        $update->date_of_birth  = date("Y-m-d",strtotime(str_replace('/','-',$req['date_of_birth'])));
+        $update->date_of_entry  = date("Y-m-d",strtotime(str_replace('/','-',$req['date_of_entry'])));
+        $update->phone          = substr(str_replace('.','',$req['phone']),1);
+        $update->address        = $req['address'];
         $update->no_ktp         = $req['no_ktp'];
         $update->no_kk          = $req['no_kk'];
         $update->no_npwp        = $req['no_npwp'];
@@ -1178,34 +1222,55 @@ class HRController extends Controller
         $update->bpjs_kes       = $req['bpjs_kes'];
         $update->bpjs_ket       = $req['bpjs_ket'];
 
-        if($req->file('npwp_file') == "")
-        {
-            $update->npwp_file = $update->npwp_file;
-        } 
-        else
-        {
-            $file       = $req->file('npwp_file');
-            $fileName   = $nik."_npwp_ver1".".jpg";
+        // if($req->file('npwp_file') === null) {
+        //     $update->npwp_file = $update->npwp_file;
+        // } else {
+        //     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+        //     $file                   = $req->file('npwp_file');
+        //     $fileName               = $nik."_npwp_ver1".".jpg";
+        //     $extension              = $file->getClientOriginalExtension();
+        //     $check                  = in_array($extension,$allowedfileExtension);
 
-            $req->file('npwp_file')->move("image/", $fileName);
-            $update->npwp_file = $fileName;
-        }
-
-        $file = $request->file('bpjs_kes');
-        if ($File == "") {
+        //     if ($check) {
+        //         $req->file('npwp_file')->move("image/", $fileName);
+        //         $update->npwp_file = $fileName;
+        //     } else {
+        //         return redirect()->back()->with('alert','Oops! Only jpg, png');
+        //     }
             
-        }else{
+        // }
+
+        // if($req->file('ktp_file') === null) {
+        //     $update->ktp_file = $update->ktp_file;
+        // } else {
+        //     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+        //     $file                   = $req->file('ktp_file');
+        //     $fileName               = $nik."_ktp_ver1".".jpg";
+        //     $extension              = $file->getClientOriginalExtension();
+        //     $check                  = in_array($extension,$allowedfileExtension);
+
+        //     if ($check) {
+        //         $req->file('ktp_file')->move("image/", $fileName);
+        //         $update->npwp_file = $fileName;
+        //     } else {
+        //         return redirect()->back()->with('alert','Oops! Only jpg, png');
+        //     }
+            
+        // }
+
+        if ($req->file('bpjs_kes') === null) {
+            
+        } else {
             $fileName = $nik."_bpjs_kes_ver1".".jpg";
-            $request->file('bpjs_kes')->move("image/", $fileName);
+            $req->file('bpjs_kes')->move("image/", $fileName);
             $update->bpjs_kes = $fileName;
         }
 
-        $file = $request->file('bpjs_ket');
-        if ($File == "") {
+        if ($req->file('bpjs_ket') === null) {
             
-        }else{
+        } else {
             $fileName = $nik."_bpjs_ket_ver1".".jpg";
-            $request->file('bpjs_ket')->move("image/", $fileName);
+            $req->file('bpjs_ket')->move("image/", $fileName);
             $update->bpjs_ket = $fileName;
         }
 
@@ -1214,23 +1279,24 @@ class HRController extends Controller
         //   'image'  => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:'
         // ]);
 
-        if($req->file('gambar') == "")
-        {
+        if($req->file('gambar') === null) {
             $update->gambar = $update->gambar;
-        } 
-        else
-        {
+        } else {
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $file                   = $req->file('gambar');
+            $fileName               = $file->getClientOriginalName();
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                Image::make($file->getRealPath())->resize(1024, 1024)->save('image/'.$fileName);
+
+                $update->gambar = $fileName;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png');
+            }
+
             
-            $file       = $req->file('gambar');
-            $fileName   = $file->getClientOriginalName();
-
-
-            Image::make($file->getRealPath())->resize(1024, 1024)->save('image/'.$fileName);
-
-            // $req->file('gambar')->move("image/", $fileName);
-            
-            $update->gambar = $fileName;
-
         }
         
         $update->update();
@@ -1239,28 +1305,76 @@ class HRController extends Controller
 
     }
 
-    public function changePassword(Request $req){
+    public function update_profile_npwp(Request $req)
+    {
+        $nik = $req['nik_profile'];
 
+        $update = User::where('nik',$nik)->first();
+        if($req->file('npwp_file') === null) {
+            $update->npwp_file = $update->npwp_file;
+        } else {
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $file                   = $req->file('npwp_file');
+            $fileName               = $nik."_npwp_ver1".".jpg";
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                $req->file('npwp_file')->move("image/", $fileName);
+                $update->npwp_file = $fileName;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png');
+            }
+            
+        }
+
+        if($req->file('ktp_file') === null) {
+            $update->ktp_file = $update->ktp_file;
+        } else {
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $file                   = $req->file('ktp_file');
+            $fileName               = $nik."_ktp_ver1".".jpg";
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                $req->file('ktp_file')->move("image/", $fileName);
+                $update->ktp_file = $fileName;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png');
+            }
+            
+        }
+        $update->update();
+        return redirect()->back()->with('success','Successfully Updated Profile!');
+
+    }
+
+    public function changePassword(Request $req){
         $nik = $req['nik_profile'];
 
         $update = User::where('nik',$nik)->first();
 
         if (!(Hash::check($req->get('current-password'), Auth::user()->password))) {
             // The passwords matches
-            return redirect()->back()->with("error","Your current password does not matches with the password you provided. Please try again.");
+            return redirect()->back()->with("alert","Your current password does not matches with the password you provided. Please try again.");
         }
  
-        if(strcmp($req->get('current-password'), $req->get('new-password')) == 0){
+        if(strcmp($req->get('current-password'), $req->get('password')) == 0){
             //Current password and new password are same
-            return redirect()->back()->with("error","New Password cannot be same as your current password. Please choose a different password.");
+            return redirect()->back()->with("alert","New Password cannot be same as your current password. Please choose a different password.");
         }
- 
+
         $validatedData = $req->validate([
-            'current-password' => 'required',
-            'new-password' => 'required|string|min:6',
+            'current-password'  => ['required'],
+            'password'      => ['required', 
+               'min:8', 
+               'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/',
+               'confirmed']
         ]);
- 
-        $update->password = bcrypt($req->get('new-password'));
+
+
+        $update->password = Hash::make($req->get('password'));
 
         $update->update();
 
@@ -1412,69 +1526,91 @@ class HRController extends Controller
     }
 
     public function exportExcelEmployee(Request $request){
-        $nama = 'SIP Employee'.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('SIP Employee', function ($sheet) use ($request) {
+
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'SIP Employee');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:X1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:X1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','SIP Employee');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $head['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $sheet->getStyle('A2:X2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["No", "NIK", "Nama Lengkap", "Status Karyawan" ,"Divisi", "Jabatan" , "Territory", "Tanggal Mulai Tugas", "Tempat Lahir", "Tanggal Lahir", "Jenis Kelamin", "KTP", "Alamat KTP", "KK", "NPWP", "BPJS Kesehatan", "BPJS Ketenagakerjaan", "Pendidikan Terakhir", "Email Pribadi", "Telepon", "Email Kantor", "Nama Emergency Contact", "Telepon Emergency Contact", "Hubungan Emergency Contact"];
+        $sheet->fromArray($headerContent,NULL,'A2');  
+
+        $datas = User::join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                    ->select('nik', 'name', 'status_kerja', 'id_division', 'id_position', 'id_territory', 'date_of_entry', 'tempat_lahir', 'date_of_birth', 'jenis_kelamin', 'no_ktp', 'alamat_ktp', 'no_kk', 'no_npwp', 'bpjs_kes', 'bpjs_ket', 'pend_terakhir', 'email_pribadi', 'phone', 'email', 'name_ec', 'phone_ec', 'hubungan_ec')
+                    ->where('status_karyawan', 'cuti')
+                    ->where('users.id_company', '1')
+                    ->where('nik', '<>', '1100463060')
+                    ->where('nik', '<>', '1100881060')
+                    ->where('nik', '<>', '1050165120')
+                    ->where('nik', '<>', '1171294021')
+                    ->get();      
+                    // return $datas;
+
+        $datas =  $datas->map(function($item,$key) use ($sheet){
+            $item->phone = "0" . $item->phone;
+            $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+            $sheet->setCellValueExplicit('L'.($key + 3),$item->no_ktp,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('N'.($key + 3),$item->no_kk,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('O'.($key + 3),$item->no_npwp,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('P'.($key + 3),$item->bpjs_kes,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('Q'.($key + 3),$item->bpjs_ket,DataType::TYPE_STRING);
+        });
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setAutoSize(true);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setAutoSize(true);
+        $sheet->getColumnDimension('O')->setAutoSize(true);
+        $sheet->getColumnDimension('P')->setAutoSize(true);
+        $sheet->getColumnDimension('Q')->setAutoSize(true);
+        $sheet->getColumnDimension('R')->setAutoSize(true);
+        $sheet->getColumnDimension('S')->setAutoSize(true);
+        $sheet->getColumnDimension('T')->setAutoSize(true);
+        $sheet->getColumnDimension('U')->setAutoSize(true);
+        $sheet->getColumnDimension('V')->setAutoSize(true);
+        $sheet->getColumnDimension('W')->setAutoSize(true);
+        $sheet->getColumnDimension('X')->setAutoSize(true);
+
+        $fileName = 'SIP Employee ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
         
-        $sheet->mergeCells('A1:O1');
-
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
-
-        $sheet->row(1, array('SIP Employee'));
-
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(11);
-            $row->setFontWeight('bold');
-        });
-
-        $datas = User::select('nik','id_company','id_position','id_division','id_territory','name','email','date_of_entry','date_of_birth','address','phone','no_ktp','no_kk','no_npwp')
-                    ->get();
-
-        $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0]  =   array("No", "NIK", "Company", "Position", "Division", "Territory", "Name",  "Email", "Date of entry", "Date of birth", "Address", "Phone", "KTP", "KK", "NPWP");
-             $i=1;
-
-        foreach ($datas as $data) {
-                       // $sheet->appendrow($data);
-                foreach ($datas as $data) {
-                    if($data->no == $data->no)
-                     $datasheet[$i] = array($i,
-
-
-                        $data['nik'],
-                        $data['id_company'],
-                        $data['id_position'],
-                        $data['id_division'],
-                        $data['id_territory'],
-                        $data['name'],
-                        $data['email'],
-                        $data['date_of_entry'],
-                        $data['date_of_birth'],
-                        $data['address'],
-                        $data['phone'],
-                        $data['no_ktp'],
-                        $data['no_kk'],
-                        $data['no_npwp'],
-                    );
-                  $i++;
-                }        
-            }
-
-            $sheet->fromArray($datasheet);
-        });
-
-        })->export('xls');
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 
     public function GuideLineIndex(Request $request){
@@ -1488,7 +1624,7 @@ class HRController extends Controller
 
         $data = GuideLine::select('id','description','link_url','title','efective_date')->get();
 
-        return view('HR/guideLines',compact('data','notif','notifOpen','notifsd','notiftp','notifClaim'));
+        return view('HR/guideLines',compact('data','notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('guideLines')]);
 
     }
 
