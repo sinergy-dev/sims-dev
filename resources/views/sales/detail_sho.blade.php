@@ -1,6 +1,91 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <style type="text/css">
+    /* Style the list items */
+      .cek ul li {
+        cursor: pointer;
+        position: relative;
+        padding: 12px 8px 12px 40px;
+        list-style-type: none;
+        background: #eee;
+        font-size: 18px;
+        transition: 0.2s;
+        
+        /* make the list items unselectable */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
 
+      .cek ul{ 
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Set all odd list items to a different color (zebra-stripes) */
+      .cek ul li:nth-child(odd) {
+        background: #f9f9f9;
+      }
+
+      /* Darker background-color on hover */
+      .cek ul li:hover {
+        background: #ddd;
+      }
+
+      /* When clicked on, add a background color and strike out text */
+      .cek ul li.checked {
+        background: #888;
+        color: #fff;
+      }
+
+
+      /* Add a "checked" mark when clicked on */
+      .cek ul li.checked::before {
+        content: '';
+        position: absolute;
+        border-color: #fff;
+        border-style: solid;
+        border-width: 0 2px 2px 0;
+        top: 10px;
+        left: 16px;
+        transform: rotate(45deg);
+        height: 15px;
+        width: 7px;
+      }
+
+          /* Style the close button */
+      .close {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 12px 16px 12px 16px;
+      }
+
+      .close:hover {
+        background-color: #f44336;
+        color: white;
+      }
+
+      .del{
+        color: red
+      }
+
+      .transparant{
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+        width: 25px;
+      }
+  </style>
+@endsection
+@section('content')
 <section class="content-header">
   <h1>
       Detail SHO - {{ $tampilkanb->id_sho }}
@@ -43,8 +128,11 @@
   </div>
 
   @if($tampilkan->meeting_date == date('Y-m-d'))
-    @if($tampilkanb->nik == Auth::User()->nik || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-      <div class="margin-bottom">
+    @if(!($tampilkanb->nik == Auth::User()->nik))
+    <div class="margin-bottom" id="divListEmployee" style="display: none;">  
+    @else
+    <div class="margin-bottom" id="divListEmployee">
+    @endif  
         <div style="background-color:#3a66ad;height:35px;color: white;padding-top:5px;padding-left:15px;">
           <h6>List Employees</h6>
         </div>
@@ -190,8 +278,7 @@
           </div>
               </form>
         </div>
-      </div>
-    @endif
+    </div>
   @endif
 
   <div class="box">
@@ -220,9 +307,7 @@
                     <th>Name</th>
                     <th>Attendee Date</th>
                     <th>Information</th>
-                    @if($tampilkanb->nik == Auth::User()->nik || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                     <th>Action</th>
-                    @endif
                   </tr>
                 </thead>
                 <tbody>
@@ -231,16 +316,23 @@
                     <td>{{$data->name}}</td>
                     <td>{!!substr($data->tanggal_hadir,0,10)!!}</td>
                     <td>{{$data->keterangan}}</td>
-                    @if($tampilkanb->nik == Auth::User()->nik || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                     <td>
                       @if($data->status == '')
-                      <label class="status-sho">Absen at {!!substr($data->updated_at,11,8)!!}</label>
+                        @if(!($tampilkanb->nik == Auth::User()->nik))
+                        <label class="status-sho">Absen at {!!substr($data->updated_at,11,8)!!}</label>
                         @else
-                      <a href="{{ url('delete_detail_sho', $data->id_transaction) }}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-                      </button></a>
+                        <label class="status-sho" id="labelStatusSho">Absen at {!!substr($data->updated_at,11,8)!!}</label>                          
+                        @endif
+                      @else
+                        @if(!($tampilkanb->nik == Auth::User()->nik))
+                        <a href="{{ url('delete_detail_sho', $data->id_transaction) }}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+                        </button></a>
+                        @else
+                        <a href="{{ url('delete_detail_sho', $data->id_transaction) }}"><button class="btn btn-sm btn-danger fa fa-trash fa-lg" id="btnDeleteSho" style="width: 40px;height: 40px;text-align: center;" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+                        </button></a>                        
+                        @endif
                       @endif
                     </td>
-                    @endif
                   </tr>
                   @endforeach
                 </tbody>
@@ -253,89 +345,7 @@
 
 </section>
 
-<style type="text/css">
-  /* Style the list items */
-    .cek ul li {
-      cursor: pointer;
-      position: relative;
-      padding: 12px 8px 12px 40px;
-      list-style-type: none;
-      background: #eee;
-      font-size: 18px;
-      transition: 0.2s;
-      
-      /* make the list items unselectable */
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
 
-    .cek ul{ 
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Set all odd list items to a different color (zebra-stripes) */
-    .cek ul li:nth-child(odd) {
-      background: #f9f9f9;
-    }
-
-    /* Darker background-color on hover */
-    .cek ul li:hover {
-      background: #ddd;
-    }
-
-    /* When clicked on, add a background color and strike out text */
-    .cek ul li.checked {
-      background: #888;
-      color: #fff;
-    }
-
-
-    /* Add a "checked" mark when clicked on */
-    .cek ul li.checked::before {
-      content: '';
-      position: absolute;
-      border-color: #fff;
-      border-style: solid;
-      border-width: 0 2px 2px 0;
-      top: 10px;
-      left: 16px;
-      transform: rotate(45deg);
-      height: 15px;
-      width: 7px;
-    }
-
-        /* Style the close button */
-    .close {
-      position: absolute;
-      right: 0;
-      top: 0;
-      padding: 12px 16px 12px 16px;
-    }
-
-    .close:hover {
-      background-color: #f44336;
-      color: white;
-    }
-
-    .del{
-      color: red
-    }
-
-    .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-
-  </style>
 
   <div class="modal fade" id="keterangan" role="dialog">
     <div class="modal-dialog modal-sm">
@@ -362,12 +372,22 @@
     </div>
 </div>
 @endsection
-
-@section('script')
-  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+@endsection
+@section('script')  
   <script type="text/javascript">
+      $(document).ready(function(){
+        var accesable = @json($feature_item);
+        accesable.forEach(function(item,index){
+          $("#" + item).show()          
+        })  
+      })
+
       $('.money').mask('000,000,000,000,000.00', {reverse: true});
 
 
