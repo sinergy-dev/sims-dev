@@ -76,20 +76,16 @@
 
     <div class="box">
       <div class="box-header">
-        
           <div class="pull-right">
-            @if(Auth::User()->email == 'tech@sinergy.co.id' || Auth::User()->id_territory == 'DVG' && Auth::User()->id_position == 'MANAGER')
-              <button type="button" class="btn btn-success pull-right float-right margin-left-custom" style="width: 120px;" data-target="#modalAddPartnership" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspPartnership
-              </button>
-
-                <div class="pull-right dropdown" style="margin-left: 5px">
-                  <button class="dropbtn"><i class="fa fa-download"> </i>&nbspEksport</button>
-                  <div class="dropdown-content">
-                    <a href="{{action('PartnershipController@downloadpdf')}}">PDF</a>
-                    <a href="{{action('PartnershipController@downloadExcel')}}">Excel</a>
-                  </div>
-                </div>
-            @endif
+            <button type="button" class="btn btn-primary pull-right float-right margin-left-custom" id="btnAdd" style="display: none;" style="width: 120px;" data-target="#modalAddPartnership" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspPartnership
+              </button>  
+            <div class="pull-right dropdown" style="margin-right: 5px;display: none;" id="divExport">
+              <button class="btn btn-success"><i class="fa fa-download"> </i>&nbspEksport</button>
+              <div class="dropdown-content">
+                <a href="{{action('PartnershipController@downloadpdf')}}">PDF</a>
+                <a href="{{action('PartnershipController@downloadExcel')}}">Excel</a>
+              </div>
+            </div> 
           </div>
       </div>
 
@@ -108,9 +104,8 @@
                   <th>Sales Certification</th>
                   <th>Engineer Certification</th>
                   <th>Sert.</th>
-                  @if(Auth::User()->email == 'tech@sinergy.co.id' || Auth::User()->id_territory == 'DVG' && Auth::User()->id_position == 'MANAGER')
-                  <th>Action</th>
-                  @endif
+                  <th>Sert.</th>
+                  <th id="th-action">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,9 +123,16 @@
                   <td>{{ $data->engineer_certification }}</td>
                   <td>
                     <center>
-                      @if(Auth::User()->email == 'tech@sinergy.co.id' || Auth::User()->id_territory == 'DVG' && Auth::User()->id_position == 'MANAGER')
-                        <button type="button" data-target="#uploadFile" data-toggle="modal" onclick="upload('{{$data->id_partnership}}', '{{$data->doc}}')" class="btn btn-xs btn-submit" style="vertical-align: top; width: 80px"><i class="fa fa-upload"></i>&nbspUpload</button>
+                      <button type="button" data-target="#uploadFile" data-toggle="modal" onclick="upload('{{$data->id_partnership}}', '{{$data->doc}}')" class="btn btn-xs btn-submit" style="vertical-align: top; width: 80px"><i class="fa fa-upload"></i>&nbspUpload</button>
+                      @if($data->doc == NULL)
+                        <button class="btn btn-xs btn-submit disabled" style="vertical-align: top; width: 80px"><i class="fa fa-download"></i>&nbspDownload</button>
+                      @else
+                        <a href="{{ url('download_partnership', $data->doc) }}" target="_blank" style="color: black"><button class="btn btn-xs btn-submit" style="vertical-align: top; width: 80px"><i class="fa fa-download"></i>&nbspDownload</button></a>
                       @endif
+                    </center>
+                  </td>
+                  <td>
+                    <center>
                       @if($data->doc == NULL)
                         <button class="btn btn-xs btn-submit disabled" style="vertical-align: top; width: 80px"><i class="fa fa-download"></i>&nbspDownload</button>
                       @else
@@ -138,16 +140,13 @@
                       @endif
                     <center> 
                   </td>
-                  @if(Auth::User()->email == 'tech@sinergy.co.id' || Auth::User()->id_territory == 'DVG' && Auth::User()->id_position == 'MANAGER')
                   <td>
-
                     <button class="btn btn-xs btn-primary" data-target="#modalEdit" data-toggle="modal" style="vertical-align: top; width: 60px" onclick="partnership('{{$data->id_partnership}}', '{{$data->type}}','{{$data->partner}}', '{{$data->level}}','{{$data->renewal_date}}','{{$data->annual_fee}}','{{$data->sales_target}}','{{$data->sales_certification}}','{{$data->engineer_certification}}')"><i class="fa fa-search"></i>&nbspEdit</button>
 
                     <a href="{{ url('delete_partnership', $data->id_partnership) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top;width: 60px" onclick="return confirm('Are you sure want to delete this data?')"><i class="fa fa-trash"></i>&nbspDelete
                     </button></a>
 
                   </td>
-                  @endif
                 </tr>
                 @endforeach
               </tbody>
@@ -189,71 +188,71 @@
 
     <!--MODAL ADD INCIDENT-->
     <div class="modal fade" id="modalAddPartnership" role="dialog">
-    <div class="modal-dialog modal-lg">
-      <!-- Modal content-->
-      <div class="modal-content modal-md">
-        <div class="modal-header">
-          <h4 class="modal-title">Add Partnership</h4>
+        <div class="modal-dialog modal-lg">
+          <!-- Modal content-->
+          <div class="modal-content modal-md">
+            <div class="modal-header">
+              <h4 class="modal-title">Add Partnership</h4>
+            </div>
+            <div class="modal-body">
+              <form action="/store_partnership" method="POST" id="modalAdd" name="modalAdd">
+                @csrf
+
+                <div class="form-group">
+                    <label>Type</label>
+                    <select class="form-control" id="type" name="type" required>
+                          <option value="Network">Network</option>
+                          <option value="Server">Server</option>
+                          <option value="Security">Security</option>
+                          <option value="Other">Other</option>
+                      </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Partner</label>
+                    <input class="form-control" placeholder="Enter Partner" id="partner" name="partner" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Level</label>
+                    <input class="form-control" placeholder="Enter Level" id="level" name="level" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Renewal Date</label>
+                    <input type="date" class="form-control" id="renewal_date" name="renewal_date">
+                </div>
+
+                <div class="form-group">
+                    <label>Annual Fee</label>
+                    <input class="form-control" placeholder="Enter Annual Fee" id="annual_fee" name="annual_fee">
+                </div>
+
+                <div class="form-group">
+                    <label>Sales Target</label>
+                    <input class="form-control" placeholder="Enter Sales Target" id="sales_target" name="sales_target">
+                </div>
+
+                <div class="form-group">
+                    <label>Sales Certification</label>
+                    <input class="form-control" placeholder="Enter Sales Certification" id="sales_certification" name="sales_certification">
+                </div>
+
+                <div class="form-group">
+                    <label>Engineer Certification</label>
+                    <input class="form-control" placeholder="Enter Engineer Certification" id="engineer_certification" name="engineer_certification">
+                </div>         
+                 
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
+                  <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+                  <!-- <input type="button" name="add_incident" id="add_incident" class="btn btn-sm btn-primary" value="Submit" /> -->
+                </div>
+            </form>
+            </div>
+          </div>
         </div>
-        <div class="modal-body">
-          <form action="/store_partnership" method="POST" id="modalAdd" name="modalAdd">
-            @csrf
-
-            <div class="form-group">
-                <label>Type</label>
-                <select class="form-control" id="type" name="type" required>
-                      <option value="Network">Network</option>
-                      <option value="Server">Server</option>
-                      <option value="Security">Security</option>
-                      <option value="Other">Other</option>
-                  </select>
-            </div>
-
-            <div class="form-group">
-                <label>Partner</label>
-                <input class="form-control" placeholder="Enter Partner" id="partner" name="partner" required>
-            </div>
-
-            <div class="form-group">
-                <label>Level</label>
-                <input class="form-control" placeholder="Enter Level" id="level" name="level" required>
-            </div>
-
-            <div class="form-group">
-                <label>Renewal Date</label>
-                <input type="date" class="form-control" id="renewal_date" name="renewal_date">
-            </div>
-
-            <div class="form-group">
-                <label>Annual Fee</label>
-                <input class="form-control" placeholder="Enter Annual Fee" id="annual_fee" name="annual_fee">
-            </div>
-
-            <div class="form-group">
-                <label>Sales Target</label>
-                <input class="form-control" placeholder="Enter Sales Target" id="sales_target" name="sales_target">
-            </div>
-
-            <div class="form-group">
-                <label>Sales Certification</label>
-                <input class="form-control" placeholder="Enter Sales Certification" id="sales_certification" name="sales_certification">
-            </div>
-
-            <div class="form-group">
-                <label>Engineer Certification</label>
-                <input class="form-control" placeholder="Enter Engineer Certification" id="engineer_certification" name="engineer_certification">
-            </div>         
-             
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
-              <!-- <input type="button" name="add_incident" id="add_incident" class="btn btn-sm btn-primary" value="Submit" /> -->
-            </div>
-        </form>
-        </div>
-      </div>
     </div>
-</div>
   
   <!--MODAL EDIT INCIDENT-->
   <div class="modal fade" id="modalEdit" role="dialog">
