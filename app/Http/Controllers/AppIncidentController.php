@@ -9,7 +9,7 @@ use Notification;
 use Auth;
 
 class AppIncidentController extends Controller
-{
+{   
     public function index(Request $request)
 	{
 		$nik = Auth::User()->nik;
@@ -197,7 +197,7 @@ class AppIncidentController extends Controller
                 ->get();
         
 
-		return view('DVG.incident_app', compact('notifc','lead','notif','notifOpen','notifsd','notiftp','notifc', 'datas', 'users'));
+		return view('DVG.incident_app', compact('notifc','notif','notifOpen','notifsd','notiftp','notifc', 'datas', 'users'))->with(['initView'=> $this->initMenuBase()]);
 	}
 
     public function store(Request $request)
