@@ -193,7 +193,7 @@ class HRNumberController extends Controller
 
         $tahun = HRNumber::select('created_at')->whereYear('created_at', $year)->groupBy('created_at')->get();
 
-        return view('admin/hr_number', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim','pops', 'sidebar_collapse', 'tahun','year','year_before'));
+        return view('admin/hr_number', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim','pops', 'sidebar_collapse', 'tahun','year','year_before'))->with(['initView'=> $this->initMenuBase()]);
     }
 
 
@@ -286,7 +286,7 @@ class HRNumberController extends Controller
             $tambah->description = $request['description'];
             $tambah->from = Auth::User()->nik;
             $tambah->division = $request['division'];
-            $tambah->project_id = $request['project_id'];
+            // $tambah->project_id = $request['project_id'];
             $tambah->save();
 
             return redirect('admin_hr')->with('success', 'Success!');
@@ -350,7 +350,7 @@ class HRNumberController extends Controller
             $tambah->description = $request['description'];
             $tambah->from = Auth::User()->nik;
             $tambah->division = $request['division'];
-            $tambah->project_id = $request['project_id'];
+            // $tambah->project_id = $request['project_id'];
             $tambah->save();
 
             return redirect('admin_hr')->with('success', 'Success!');
@@ -369,7 +369,7 @@ class HRNumberController extends Controller
         $update->title = $request['edit_title'];
         $update->project = $request['edit_project'];
         $update->description = $request['edit_description'];
-        $update->project_id = $request['edit_project_id'];
+        // $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
 
         $update->update();

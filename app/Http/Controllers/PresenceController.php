@@ -206,7 +206,7 @@ class PresenceController extends Controller
             $presenceStatus = "done-checkout";
         }
 
-        return view('presence.presence', compact('presenceStatus','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('presence.presence', compact('presenceStatus','notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     }
 
     public function personalHistory() {
@@ -248,7 +248,7 @@ class PresenceController extends Controller
         // return $presenceHistoryCounted->sortBy('count');
 
 
-        return view('presence.personal_history', compact('presenceHistoryDetail','presenceHistoryCounted','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('presence.personal_history', compact('presenceHistoryDetail','presenceHistoryCounted','notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     }
 
     public function personalHistoryMsp(Request $req){
@@ -272,6 +272,7 @@ class PresenceController extends Controller
             ->selectRaw("MIN(`presence__history_temp`.`presence_actual`) AS `checkin`")
             ->selectRaw("MAX(`presence__history_temp`.`presence_actual`) AS `checkout`")
             ->selectRaw("MAX(`presence__history_temp`.`presence_condition`) AS `condition`")
+            // ->orderBy("date","DESC")
             ->groupBy('presence__history_temp.presence_actual_date');
 
         $presenceHistoryDetail = $presenceHistory->get();
@@ -300,7 +301,7 @@ class PresenceController extends Controller
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
 
-        return view('presence.team_history', compact('lead','notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('presence.team_history', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'));
     }
 
     public function presenceReport() {

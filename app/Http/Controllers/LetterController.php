@@ -214,7 +214,7 @@ class LetterController extends Controller
 
         $year_before = Letter::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('admin/letter', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun'));
+        return view('admin/letter', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun'))->with(['initView'=> $this->initMenuBase()]);
 	}
 
     public function getdataletter(Request $request)

@@ -205,7 +205,7 @@ class PrController extends Controller
 
         $pid = SalesProject::select('id_project')->get();
 
-        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp', 'datas','pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim'));
+        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp', 'datas','pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     /**

@@ -236,7 +236,7 @@ class AssetAtkController extends Controller
         $cek = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk_transaction.id_barang', '=', 'tb_asset_atk.id_barang', 'left')->select('tb_asset_atk_transaction.id_barang')->get();
         // return $cek;
 
-    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request', 'request2'));
+    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request', 'request2'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_atk')]);
     }
 
     public function getAtk(Request $request){
@@ -432,7 +432,7 @@ class AssetAtkController extends Controller
 
          // return $summary;   
 
-        return view('HR/detail_asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'detail', 'data', 'last_update', 'summary'));
+        return view('HR/detail_asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'detail', 'data', 'last_update', 'summary'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function store(Request $request)
