@@ -1,6 +1,10 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+@endsection
 @section('content')
-
   <section class="content-header">
     <h1>
       Sales Handover
@@ -29,9 +33,7 @@
                   <th>Term of Payment</th>
                   <th>Service Budget</th>
                   <th>Meeting Date</th>
-                  @if(Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
-                      <th>Action</th>
-                  @endif
+                  <th>Action</th>
                 </tr>
               </thead>
                 <tbody>
@@ -44,15 +46,12 @@
                   <td>{{$data->top}}</td>
                   <td class="money">{{$data->service_budget}}</td>
                   <td>{!!substr($data->meeting_date,0,10)!!}</td>
-                  @if(Auth::User()->id_division == 'SALES' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_position == 'DIRECTOR')
                   <td>  
-                    @if(Auth::User()->name == $data->name && $data->status_sho != 'PID' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' && $data->status_sho != 'PID' || Auth::User()->id_position == 'DIRECTOR' && $data->status_sho != 'PID')
-                    <button class="btn btn-xs btn-primary" data-target="#edit_sho" data-toggle="modal" style="vertical-align: top; width: 60px" onclick="sho('{{$data->id_sho}}','{{$data->sow}}','{{$data->timeline}}','{{$data->top}}','{{$data->service_budget}}','{{$data->meeting_date}}')"><i class="fa fa-search"></i>&nbspEdit</button>
-                    @else
-                      <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px"></button>
+                    @if($data->status_sho != 'PID')
+                      <button class="btn btn-xs btn-primary" id="btnEditSho" data-target="#edit_sho" data-toggle="modal" style="vertical-align: top; width: 60px;display: none;" onclick="sho('{{$data->id_sho}}','{{$data->sow}}','{{$data->timeline}}','{{$data->top}}','{{$data->service_budget}}','{{$data->meeting_date}}')"><i class="fa fa-search"></i>&nbspEdit</button>
+                      <button class="btn btn-xs btn-primary disabled" id="btnEditShoDisable" style="vertical-align: top; width: 60px;display: none;">Edit</button>
                     @endif
                   </td>
-                  @endif
                 </tr>
                 @endforeach
                 </tbody>
@@ -108,10 +107,20 @@
 
 @endsection
 
-@section('script')
-  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-  <script type="text/javascript">
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+@endsection
+@section('script')  
+  <script type="text/javascript">    
+    $(document).ready(function(){
+        var accesable = @json($feature_item);
+        accesable.forEach(function(item,index){
+          $("#" + item).show()          
+        })  
+    })
     function sho(id_sho,sow,timeline,top,service_budget,meeting_date) {
       $("#id_sho").val(id_sho);
       $("#sow").val(sow);
@@ -122,9 +131,7 @@
       // body...
     }
 
-    $('#dataTable').DataTable({
-
-    });
+    var table = $('#dataTable').DataTable();
 
     $('.money').mask('000,000,000,000,000.00', {reverse: true});
   </script>
