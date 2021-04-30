@@ -1,8 +1,8 @@
-@extends('template.template_admin-lte')
-@section('content')
-<!-- bootstrap datepicker -->
-<link rel="stylesheet" href="{{asset("template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css")}}">
-
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="stylesheet" href="{{asset('template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
   <style type="text/css">
     .btn-warning-export{
       background-color: #ffc107;
@@ -11,9 +11,9 @@
     .dataTables_paging {
      display: none;
     }
-
   </style>
-
+@endsection
+@section('content') 
   <section class="content-header">
     <h1>
       Report Presales
@@ -49,8 +49,7 @@
     </div>
 
     <div class="row">
-      @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
-        <div class="col-lg-12">
+      <div class="col-lg-12">
         <div class="box box-primary">
           <div class="box-header with-border">
             <h3 class="box-title"><i>Total Lead</i></h3>
@@ -96,7 +95,6 @@
           </div>
         </div>
       </div>
-      @endif
     </div>
     
     <!-- <div class="row">
@@ -327,12 +325,11 @@
         </div>
       </div>
     </div>
-
   </section>
-
 @endsection
-
-@section('script')
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -342,11 +339,9 @@
 <!-- bootstrap datepicker -->
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
-
-<!-- <script type="text/javascript" src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"></script> -->
-
+@endsection
+@section('script')
 <script>
-
     $('.money').mask('000,000,000,000,000,000', {reverse: true});
     $('.total').mask('000,000,000,000,000,000.00', {reverse: true});
 
@@ -933,9 +928,6 @@
 	        
 	      },
 	    });
-  	});
-
-  
+  	});  
 </script>
-
 @endsection
