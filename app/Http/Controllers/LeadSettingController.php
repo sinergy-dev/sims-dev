@@ -190,7 +190,7 @@ class LeadSettingController extends Controller
     	$notifsd = $notifAll["notifsd"];
     	$notiftp = $notifAll["notiftp"];
     	
-    	return view('sales/setting/index',compact('notif','notifOpen','notifsd','notiftp'));
+    	return view('sales/setting/index',compact('notif','notifOpen','notifsd','notiftp'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     private function getData(){
