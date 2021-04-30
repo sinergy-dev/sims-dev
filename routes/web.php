@@ -85,6 +85,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('/update_next_status', 'SalesController@update_next_status');
 
 	Route::get('/','DASHBOARDController@index')->middleware('HRDash');
+	Route::get('/getDashboardBox','DASHBOARDController@getDashboardBox');
 	/*Route::get('/','DASHBOARDController@index')->middleware('Maintenance');*/
 
 	Route::get('/presence', 'PresenceController@index');
