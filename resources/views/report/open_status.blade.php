@@ -163,7 +163,7 @@
         "pagination":true,
         "ordering":false,
         // "scrollX": true,
-        "order": [[ 0, "desc" ]],
+        "order": [[ 3, "desc" ]],
         "footerCallback": function( row, data, start, end, display ) {
         
           var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Rp' ).display;

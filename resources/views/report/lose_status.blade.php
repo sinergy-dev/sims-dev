@@ -101,7 +101,7 @@
      $('.money').mask('000,000,000,000,000,000', {reverse: true});
 
      $('#data_Table').DataTable( {
-      "order": [[ 0, "desc" ]],
+        "order": [[ 3, "desc" ]],
         // scrollX:        true,
         scrollCollapse: true,
 
