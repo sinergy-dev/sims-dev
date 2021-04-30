@@ -1,5 +1,5 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+@section('head_css')
 <style type="text/css">
 
 input[type=text], select, textarea {
@@ -197,7 +197,19 @@ input[type=number]::-webkit-outer-spin-button {
   border-radius: 50%;
   background: white;
 }
+
+.transparant{
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      width: 25px;
+    }
 </style>
+@endsection
+@section('content')
 
 <section class="content-header">
   <h1>
@@ -425,32 +437,22 @@ input[type=number]::-webkit-outer-spin-button {
   </div>
 </section>
 
-<style type="text/css">
-   .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-</style>
-
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script src="{{asset("template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
   	function showMe(e) {
 	// i am spammy!
 	  alert(e.value);
 	}
 
-  $('.money').mask('000,000,000,000,000', {reverse: true});
+    $('.money').mask('000,000,000,000,000', {reverse: true});
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
          $("#alert").slideUp(300);
