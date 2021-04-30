@@ -1,6 +1,9 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
 @section('content')
+@section('head_css')
 <!-- bootstrap datepicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet"/>
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/skins/all.css">
 <style type="text/css">
@@ -226,91 +229,91 @@
 		width:50em !important;
 	}
 </style>
-
-<section class="content-header">
-	<h1>
-		Lead Register Setting
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
-		<li class="active">Lead Register Setting</li>
-	</ol>
-</section>
-<section class="content">
-	<div class="box">
-		<div class="box-header">
-			<h3 class="box-title">Data Table With Full Features</h3>
-		</div>
-		<div class="box-body">
-			<table id="tableSetting" class="table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th>name</th>
-						<th>lead_id</th>
-						<th>opp_name</th>
-						<th>brand_name</th>
-					</tr>
-				</thead>
-			</table>
-		</div>
-	</div>
-</section>
-
-<div class="modal fade" id="modal-show-lead">
-	<div class="vertical-alignment-helper">
-		<div class="modal-dialog vertical-align-center">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Change Sales Lead</h4>
-				</div>
-				<div class="modal-body">
-					<p id="sales-name"></p>
-					<ul id="list-lead">
-					</ul>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-default" onclick="saveChange()">Save</button>
-				</div>
+@endsection
+	<section class="content-header">
+		<h1>
+			Lead Register Setting
+		</h1>
+		<ol class="breadcrumb">
+			<li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+			<li class="active">Lead Register Setting</li>
+		</ol>
+	</section>
+	<section class="content">
+		<div class="box">
+			<div class="box-header">
+				<h3 class="box-title">Data Table With Full Features</h3>
+			</div>
+			<div class="box-body">
+				<table id="tableSetting" class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>name</th>
+							<th>lead_id</th>
+							<th>opp_name</th>
+							<th>brand_name</th>
+						</tr>
+					</thead>
+				</table>
 			</div>
 		</div>
-	</div>
-</div>
-<div class="modal fade" id="modal-select-sales">
-	<div class="vertical-alignment-helper">
-		<div class="modal-dialog vertical-align-center">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Chose Sales</h4>
-				</div>
-				<div class="modal-body">
-					<p>Chose selected sales for this change</p>
-					<p id="leadName"></p>
-					<input type="hidden" id="leadId">
-					<input type="hidden" id="leadSales">
-					<div class="form-group" id="list-sales">
+	</section>
+
+	<div class="modal fade" id="modal-show-lead">
+		<div class="vertical-alignment-helper">
+			<div class="modal-dialog vertical-align-center">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Change Sales Lead</h4>
+					</div>
+					<div class="modal-body">
+						<p id="sales-name"></p>
+						<ul id="list-lead">
+						</ul>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-default" onclick="saveChange()">Save</button>
 					</div>
 				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="changeSales()">Save</button>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="modal-select-sales">
+		<div class="vertical-alignment-helper">
+			<div class="modal-dialog vertical-align-center">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Chose Sales</h4>
+					</div>
+					<div class="modal-body">
+						<p>Chose selected sales for this change</p>
+						<p id="leadName"></p>
+						<input type="hidden" id="leadId">
+						<input type="hidden" id="leadSales">
+						<div class="form-group" id="list-sales">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal" onclick="changeSales()">Save</button>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
 @endsection
-
-@section('script')
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script> -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
-
-	<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script> -->
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+@endsection
+@section('script')	
 	<script>
 		var groupColumn = 0;
 		var table = $('#tableSetting').DataTable({
