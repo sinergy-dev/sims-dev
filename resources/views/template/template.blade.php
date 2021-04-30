@@ -101,6 +101,14 @@
     <!-- <script src="{{asset('js/jquery.mask.min.js')}}"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+
+    <script type="text/javascript">
+      $(function(){
+        $(".activeable_group").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+
+        $(".activeable_menu").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+      })
+    </script>
     
     @yield('script')
   </div>
