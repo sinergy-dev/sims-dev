@@ -233,7 +233,7 @@ class ESMController extends Controller
                     ->where('no', $no)
                     ->first();*/
 
-        return view('DVG/esm/esm', compact('datas','notif','notifOpen','notifsd','notiftp','owner2', 'notifClaim','datas_2018', 'datas_2019','year'));
+        return view('DVG/esm/esm', compact('datas','notif','notifOpen','notifsd','notiftp','owner2', 'notifClaim','datas_2018', 'datas_2019','year'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('claim')]);
     }
 
     public function getESM(){
@@ -242,7 +242,7 @@ class ESMController extends Controller
         if (Auth::User()->id_position == 'ADMIN') {
             return array("data" => EngineerSpent::join('users', 'users.nik', '=', 'dvg_esm.personnel')
                     ->select('no','date','nik_admin','users.name', 'type', 'description', 'amount', 'id_project', 'remarks', 'dvg_esm.status','dvg_esm.created_at', 'dvg_esm.personnel', 'dvg_esm.year','dvg_esm.id_ems')
-                    ->orderBy("status","ADMIN")
+                    ->where("status","ADMIN")
                     ->where('year','2020')
                     ->where('nik_admin',$nik)
                     ->get());
@@ -401,6 +401,8 @@ class ESMController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $notifClaim = '';
 
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
@@ -564,7 +566,7 @@ class ESMController extends Controller
                             ->get();
         }
 
-        return view('DVG/esm/detail_esm',compact('detail_esm', 'notif', 'notifsd', 'notifOpen', 'notiftp', 'nomor', 'tampilkan','notifClaim'));
+        return view('DVG/esm/detail_esm',compact('detail_esm', 'notif', 'notifsd', 'notifOpen', 'notiftp', 'nomor', 'tampilkan','notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     }
 
     public function tambah_return_hr(Request $request)
