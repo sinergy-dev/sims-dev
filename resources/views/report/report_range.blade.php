@@ -1,9 +1,9 @@
-@extends('template.template_admin-lte')
-@section('content')
-<!-- bootstrap datepicker -->
-<link rel="stylesheet" href="{{asset("template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css")}}">
-
-  <style type="text/css">
+@extends('template.main')
+@section('head_css')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+<link rel="stylesheet" href="{{asset('template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
+<style type="text/css">
     .btn-warning-export{
       background-color: #ffc107;
       border-color: #ffc107;
@@ -18,8 +18,9 @@
       /*margin-bottom: 10px;*/
     }
 
-  </style>
-
+</style>
+@endsection
+@section('content')
   <section class="content-header">
     <h1>
       Report Range
@@ -29,95 +30,87 @@
       <li class="active">Report Range</li>
     </ol>
   </section>
-
   <section class="content">
+    <div class="row mb-3">
+      <div class="col-lg-2 col-xs-6">
 
-      @if(Auth::User()->id_division == "SALES" && Auth::User()->id_position != 'ADMIN' || Auth::User()->id_division == "TECHNICAL PRESALES" || Auth::User()->id_position == "DIRECTOR" || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-      <div class="row mb-3">
-        <div class="col-lg-2 col-xs-6">
-  
-          <div class="small-box bg-purple">
-              <div class="inner">
-                <div id="lead_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_lead}}</h3></center></div>
-  
-                <center><p>Lead Register</p></center>
-  
-              </div>
-          </div>
-  
+        <div class="small-box bg-purple">
+            <div class="inner">
+              <div id="lead_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_lead}}</h3></center></div>
+
+              <center><p>Lead Register</p></center>
+
+            </div>
         </div>
-        <div class="col-lg-2 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-orange">
-              <div class="inner">
-                <div id="open_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_open}}</h3></center></div>
-  
-                <center><p>Open</p></center>
-  
-              </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-2 col-xs-6">
-          <!-- small box -->
-  
-          <div class="small-box bg-aqua">
-              <div class="inner">
-                <div id="sd_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_sd}}</h3></center></div>
-  
-                <center><p>Solution Design</p></center>
-  
-              </div>
-          </div>
-        </div>
-  
-        <div class="col-lg-2 col-xs-6">
-          <!-- small box -->
-            <div class="small-box bg-yellow">
-              <div class="inner">
-                <div id="tp_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_tp}}</h3></center></div>
-  
-                <center><p>Tender Process</p></center>
-  
-              </div>
-          </div>
-  
-        </div>
-        <div class="col-lg-2 col-xs-6">
-          <!-- small box -->
-  
-        <div class="small-box bg-green">
-              <div class="inner">
-                <div id="win_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_win}}</h3></center></div>
-  
-                <center><p>Win</p></center>
-  
-              </div>
-        </div>
-  
-        </div>
-        <div class="col-lg-2 col-xs-6">
-          <!-- small box -->
-  
-          <div class="small-box bg-red">
-              <div class="inner">
-                <div id="lose_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_lose}}</h3></center></div>
-  
-                <center><p>Lose</p></center>
-  
-              </div>
-          </div>
-  
+
+      </div>
+      <div class="col-lg-2 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-orange">
+            <div class="inner">
+              <div id="open_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_open}}</h3></center></div>
+
+              <center><p>Open</p></center>
+
+            </div>
         </div>
       </div>
-    @endif
+      
+      <div class="col-lg-2 col-xs-6">
+        <!-- small box -->
 
+        <div class="small-box bg-aqua">
+            <div class="inner">
+              <div id="sd_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_sd}}</h3></center></div>
+
+              <center><p>Solution Design</p></center>
+
+            </div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-xs-6">
+        <!-- small box -->
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <div id="tp_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_tp}}</h3></center></div>
+
+              <center><p>Tender Process</p></center>
+
+            </div>
+        </div>
+
+      </div>
+      <div class="col-lg-2 col-xs-6">
+        <!-- small box -->
+
+      <div class="small-box bg-green">
+            <div class="inner">
+              <div id="win_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_win}}</h3></center></div>
+
+              <center><p>Win</p></center>
+
+            </div>
+      </div>
+
+      </div>
+      <div class="col-lg-2 col-xs-6">
+        <!-- small box -->
+
+        <div class="small-box bg-red">
+            <div class="inner">
+              <div id="lose_2019" class="txt_serif stats_item_number"><center><h3 class="counter">{{$total_lose}}</h3></center></div>
+
+              <center><p>Lose</p></center>
+
+            </div>
+        </div>
+
+      </div>
+    </div>
     <div class="box">
       <div class="box-header with-border">
-
-          @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
           <div class="box-body">
-            
             {{-- <div class="input-group date">
               <div class="input-group-addon">
                 <i class="fa fa-calendar"></i>
@@ -125,65 +118,37 @@
               <input type="text" class="form-control pull-right" id="datepicker">
             </div> --}}
 
-            <div id="coba" class="row">
+            <div class="row">              
               <legend><b>Filter Data Between Range Date Below</b></legend>
-
-              <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
-              <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_dif">
-                @foreach($years as $data)
-                <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
-                @endforeach
-              </select>
-              
-              <label style="margin-top: 5px;margin-right: 5px">Start Date</label>
-              <input type="text" id="startdate" class="form-control" style="width:200px" placeholder="DD/MM/YYYY">
-              <p class="pull-right" style="margin-top: 5px">&nbsp&nbsp</p>
-              <label style="margin-top: 5px;margin-right: 5px;margin-left: 5px">End Date</label>
-              <input type="text" id="enddate" class="form-control pull-right" style="width:200px;margin-right: 10px" placeholder="DD/MM/YYYY">  
-
-
-<!-- 
-            <select class="form-control pull-right select2" style="width:200px;margin-right: 10px" id="dropdown">
-               <option value="customer">Customer</option>
-               <option value="sales">Sales</option>
-               <option value="territory">Territory</option>
-               <option value="status">Status</option>
-               <option value="presales">Presales</option>
-               <option value="priority">Priority</option>
-               <option value="win">Win Probability</option>
-            </select>
-            <p style="margin-right:10px"></p>
-            <select class="form-control select2" style="width: 200px;margin-left: 10px" id="dropdown2">
-            </select> -->
-           
-            <!-- <tooltip title="Choose Date First" placement="top"> -->
-             <!-- <button class="btn btn-sm btn-warning pull-right margin-left-custom btn-export-pdf" id="btnSubmit" onclick="exportPdf()"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button> -->
-            <!-- </tooltip> -->
-           
+              <div class="col-md-3">
+                <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+                <select style="margin-right: 5px" class="form-control fa" id="year_dif">
+                  @foreach($years as $data)
+                  <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label style="margin-top: 5px;">Start Date</label>
+                <input type="text" id="startdate" class="form-control pull-right" placeholder="DD/MM/YYYY">
+              </div>
+              <div class="col-md-3">
+                <label style="margin-top: 5px;margin-right: 5px;margin-left: 5px">End Date</label>
+                <input type="text" id="enddate" class="form-control pull-right" placeholder="DD/MM/YYYY">  
+              </div>
+              <div id="coba">
+                <label style="margin-top: 5px">Export</label>
+                
+              </div>  
             </div>
 
             <h3><b>Total Deal Price : Rp <span id="total_deal_prices" class="money"> </span>,-</b></h3>
-
-    <!--         <table>
-            	<tr>
-	                <td>Minimum Date:</td>
-	                <td><input name="min" class="form-control" id="min" autocomplete="off" placeholder="DD/MM/YYYY"></td>
-	            </tr>
-	            <tr>
-	                <td>Maximum Date:</td>
-	                <td><input name="max" id="max" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY"></td>
-	            </tr>
-            </table> -->
             
           </div>
-
-          @endif
-
       </div>
 
       <div class="box-body">
         <div class="table-responsive">
-          <!-- <h4>Total Deal Price: <b><i>Rp</i><i class="money">{{ $total_deal_price->deal_prices }}</i><i>.00</i></b></h4> -->
           <table class="table table-bordered table-striped dataTable" style="border-collapse: noseparate !important;" id="data_all" width="100%" cellspacing="0">
               <thead>
               	<tr>
@@ -387,16 +352,15 @@
       </div>
     </div>
   </section>
-
 @endsection
-
-@section('script')
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/button.download.js')}}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
@@ -405,9 +369,19 @@
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
-<!-- <script type="text/javascript" src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"></script> -->
-
+@endsection
+@section('script')
 <script type = "text/javascript" >
+  var d = new Date();
+  var n = d.getFullYear();
+  $.ajax({
+    type:"GET",
+    url:'/total_deal_price?year='+n,
+    success: function(result){
+      $('#total_deal_prices').text(result[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g,","));
+    }
+  });
+
   $('.select2').select2();
 
   $('#enddate').datepicker({
@@ -441,22 +415,19 @@
     location.assign(myUrl)
   }
 
-</script>
-
-<script type = "text/javascript" >
   $('#year_dif').on('change', function() {
     console.log($('#year_dif').val());
 
     $.ajax({
-        type:"GET",
-        url:'/total_deal_price',
-        data:{
-          year:this.value,
-        },
-        success: function(result){
-          $('#total_deal_prices').text(result[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g,","));
-        }
-      });
+      type:"GET",
+      url:'/total_deal_price',
+      data:{
+        year:this.value,
+      },
+      success: function(result){
+        $('#total_deal_prices').text(result[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g,","));
+      }
+    });
 
     $.fn.dataTable.ext.search.push(
       function(settings, data, dataIndex) {
@@ -503,6 +474,7 @@
       changeYear: true,
       autoclose: true
   });
+
   $("#enddate").datepicker({
       onSelect: function() {
           table.draw();
@@ -513,7 +485,7 @@
   });
 
   $('#startdate, #enddate').change(function() {
-      table.draw();
+    table.draw();
   });
 
 
@@ -664,7 +636,5 @@
   }
 
   $('.money').mask('000,000,000,000,000', {reverse: true});
-
-
 </script>
 @endsection

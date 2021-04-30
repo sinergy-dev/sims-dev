@@ -1,187 +1,194 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <style type="text/css">
+    .transparant{
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+        width: 25px;
+    }
+
+    .modalIconsubject input[type=text]{
+      padding-left:115px;
+    }
+
+    .modalIconsubject.inputIconBg input[type=text]:focus + i{
+      color:#fff;
+      background-color:dodgerBlue;
+    }
+
+    .modalIconsubject.inputIconBg i{
+      background-color:#aaa;
+      color:#fff;
+      padding:7px 4px ;
+      border-radius:4px 0 0 4px;
+    }
+
+    .modalIconsubject{
+      position:relative;
+    }
+
+    .modalIconsubject i{
+      position:absolute;
+      left:9px;
+      top:0px;
+      padding:9px 8px;
+      color:#aaa;
+      transition:.3s;
+    }
+
+    .modalIcontgl input[type=text]{
+      padding-left:115px;
+    }
+
+    .modalIcontgl.inputIconBg input[type=text]:focus + i{
+      color:#fff;
+      background-color:dodgerBlue;
+    }
+
+    .modalIcontgl.inputIconBg i{
+      background-color:#aaa;
+      color:#fff;
+      padding:7px 4px ;
+      border-radius:4px 0 0 4px;
+    }
+
+    .modalIcontgl{
+      position:relative;
+    }
+
+    .modalIcontgl i{
+      position:absolute;
+      left:9px;
+      top:0px;
+      padding:9px 8px;
+      color:#aaa;
+      transition:.3s;
+    }
+
+    .btn{
+      width: 80px; 
+      height: 25px;
+    }
+
+    .btn-icon{
+      width: 30px;
+      height: 25px;
+    }
+
+    tr.group,
+    tr.group:hover {
+      font-size: 14px;
+      font-style: italic;
+      color: #f02424;
+      background-color: white !important;
+    }
+
+    .datatablelog tbody tr:first-child td {
+      background-color: #f02424;
+      color: white;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 55px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #d1523f;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2d9c43;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2d9c43;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    .available-on{
+      color: #2d9c43;
+    }
+
+    .available-off{
+      color: #d1523f;
+    }
+
+    .color-switch{
+      color: #dfebe1;
+    }
+
+    .display-none{
+      display: none;
+    }
+
+    .display-block{
+      display: block;
+    }
+
+    /* Firefox */
+
+  </style>
+@endsection
 @section('content')
-<style type="text/css">
-  .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-  }
-
-  .modalIconsubject input[type=text]{
-    padding-left:115px;
-  }
-
-  .modalIconsubject.inputIconBg input[type=text]:focus + i{
-    color:#fff;
-    background-color:dodgerBlue;
-  }
-
-  .modalIconsubject.inputIconBg i{
-    background-color:#aaa;
-    color:#fff;
-    padding:7px 4px ;
-    border-radius:4px 0 0 4px;
-  }
-
-  .modalIconsubject{
-    position:relative;
-  }
-
-  .modalIconsubject i{
-    position:absolute;
-    left:9px;
-    top:0px;
-    padding:9px 8px;
-    color:#aaa;
-    transition:.3s;
-  }
-
-  .modalIcontgl input[type=text]{
-    padding-left:115px;
-  }
-
-  .modalIcontgl.inputIconBg input[type=text]:focus + i{
-    color:#fff;
-    background-color:dodgerBlue;
-  }
-
-  .modalIcontgl.inputIconBg i{
-    background-color:#aaa;
-    color:#fff;
-    padding:7px 4px ;
-    border-radius:4px 0 0 4px;
-  }
-
-  .modalIcontgl{
-    position:relative;
-  }
-
-  .modalIcontgl i{
-    position:absolute;
-    left:9px;
-    top:0px;
-    padding:9px 8px;
-    color:#aaa;
-    transition:.3s;
-  }
-
-  .btn{
-    width: 80px; 
-    height: 25px;
-  }
-
-  .btn-icon{
-    width: 30px;
-    height: 25px;
-  }
-
-  tr.group,
-  tr.group:hover {
-    font-size: 14px;
-    font-style: italic;
-    color: #f02424;
-    background-color: white !important;
-  }
-
-  .datatablelog tbody tr:first-child td {
-    background-color: #f02424;
-    color: white;
-  }
-
-  /* Chrome, Safari, Edge, Opera */
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 55px;
-    height: 28px;
-  }
-
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #d1523f;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-
-  input:checked + .slider {
-    background-color: #2d9c43;
-  }
-
-  input:focus + .slider {
-    box-shadow: 0 0 1px #2d9c43;
-  }
-
-  input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-  }
-
-  /* Rounded sliders */
-  .slider.round {
-    border-radius: 34px;
-  }
-
-  .slider.round:before {
-    border-radius: 50%;
-  }
-
-  .available-on{
-    color: #2d9c43;
-  }
-
-  .available-off{
-    color: #d1523f;
-  }
-
-  .color-switch{
-    color: #dfebe1;
-  }
-
-  .display-none{
-    display: none;
-  }
-
-  .display-block{
-    display: block;
-  }
-
-  /* Firefox */
-
-</style>
 
 <section class="content-header">
   <h1>
