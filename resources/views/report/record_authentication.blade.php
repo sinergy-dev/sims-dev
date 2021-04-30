@@ -1,6 +1,12 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+	<!-- Select2 -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+	<!-- DataTables -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+@endsection
 @section('content')
-
 <section class="content-header">
 	<h1>
     	Record Auth User
@@ -20,13 +26,12 @@
 		        </div>
 		        <div class="row">
 		        	<div class="col-md-12">
-		        		@if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL' || Auth::User()->id_division == 'HR' && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'DIRECTOR')
-		        		<div class="col-md-3">
+		        		<div class="col-md-3" id="divFilterByPerson" style="display: none;">
 			              <label>Filter by Person</label>
 			              <select class="form-control capitalize" style="width: 100%;max-width: 250px" id="searchTagsPerson"></select>
 			            </div>
 
-			            <div class="col-md-3">
+			            <div class="col-md-3" id="divFilterByDate" style="display: none;">
 				          <label>Filter by Date</label>
 				          <div class="input-group">
 				            <div class="input-group-addon">
@@ -35,22 +40,10 @@
 				            <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
 				            <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
 				          </div>
-				        </div>
-			            @else
-			            <div class="col-md-3">
-				          <label>Filter by Date</label>
-				          <div class="input-group">
-				            <div class="input-group-addon">
-				              <i class="fa fa-calendar"></i>
-				            </div>
-				            <input type="text" class="form-control" style="width: 100%" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
-				            <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
-				          </div>
-				        </div>
-			            @endif			            
+				        </div>			            
 				        <div class="col-md-3">
-				          <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
-				           <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+				          	<button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
+				           	<button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
 				        </div>
 				    </div>
 		        </div>
@@ -103,11 +96,22 @@
 	</div>
 </section>
 @endsection
+@section('scriptImport')
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
 @section('script')
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script type="text/javascript">
+	$(document).ready(function(){
+		var accesable = @json($feature_item);
+		accesable.forEach(function(item,index){
+			$("#" + item).show()
+		})
+	})
+
 	initTableBefore();
 
 	function initTableBefore(){
