@@ -271,9 +271,7 @@
                       <th>Keterangan</th>
                       <th>Lokasi Barang</th>
                       <th>Status</th>
-                      @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
-                      <th>Action</th>
-                      @endif
+                      <th id="col_action" style="display: none;">Action</th>
                     </tr>
                   </thead>
                   <tfoot>
@@ -309,7 +307,6 @@
             </div>
             
           </div>
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
           <div class="tab-pane fade" id="peminjaman" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered DataTable" id="datatable1" width="100%" cellspacing="0">
@@ -383,8 +380,7 @@
               </table>
             </div>
           </div>
-          @else
-          <div class="tab-pane fade" id="peminjaman" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="tab-pane fade" id="peminjaman2" role="tabpanel" aria-labelledby="profile-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered DataTable" id="datatable2" width="100%" cellspacing="0">
                 <thead>
@@ -438,7 +434,6 @@
               </table>
             </div>
           </div>
-          @endif
           <div class="tab-pane active" id="kategori" role="tabpanel" aria-labelledby="kategori-tab">
             <div class="table-responsive" style="margin-top: 15px">
               <table class="table table-bordered DataTable" id="datatable3" width="100%" cellspacing="0">
@@ -975,7 +970,7 @@
 
     //datatable list asset
     var groupColumn = 0;
-    $("#data_Table").DataTable({
+    var table = $("#data_Table").DataTable({
       "ajax":{
           "type":"GET",
           "url":"{{url('/getAssetTech')}}",
@@ -995,12 +990,11 @@
               }
             }
           },
-          @if(Auth::User()->id_position == 'INTERNAL IT' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_territory == 'DVG' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'ADMIN' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'HELP DESK' || Auth::User()->id_position == 'WAREHOUSE')
           {
             render: function ( data, type, row, meta ) {
               if (row.status == 'AVAILABLE') {
                 if (row.status_pinjam == 'PERNAH') {
-                  return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'><button class='btn btn-info btn-xs btn-icon'><i class='fa fa-info'></i></button></a> <button class='btn btn-xs btn-primary btn-icon edit_asset' value='"+row.id_barang+"' margin-right:5px'><i class='fa fa-pencil'></i></button> <button class='btn btn-xs btn-danger btn-icon hapus_asset' value='"+row.id_barang+"'><i class='fa fa-trash'></i></button>";
+                  return "<a href='{{url('/detail_asset_peminjaman')}}/"+row.id_barang+"'><button class='btn btn-info btn-xs btn-icon'><i class='fa fa-info'></i></button></a> <button class='btn btn-xs btn-primary btn-icon edit_asset' id='btn_edit' value='"+row.id_barang+"' margin-right:5px'><i class='fa fa-pencil'></i></button> <button class='btn btn-xs btn-danger btn-icon hapus_asset' value='"+row.id_barang+"'><i class='fa fa-trash'></i></button>";
                 }else{
                   return "<button class='btn btn-info btn-xs btn-icon disabled' style='cursor:not-allowed'><i class='fa fa-info'></i></button> <button class='btn btn-xs btn-primary btn-icon edit_asset' value='"+row.id_barang+"' margin-right:5px'><i class='fa fa-pencil'></i></button> <button class='btn btn-xs btn-danger btn-icon hapus_asset' value='"+row.id_barang+"'><i class='fa fa-trash'></i></button>";
                 }
@@ -1012,8 +1006,7 @@
                 }
               }
             }
-          },
-          @endif        
+          },      
         ],
         "order": [[ groupColumn, 'asc' ]],
         "scrollX": false,
