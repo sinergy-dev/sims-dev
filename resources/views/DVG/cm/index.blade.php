@@ -1,4 +1,10 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+@endsection
 @section('content')
   <section class="content-header">
     <h1>
@@ -18,7 +24,7 @@
             <button type="button" class="btn btn-primary pull-right float-right margin-left-custom" data-target="#modalAdd" data-toggle="modal"><i class="fa fa-plus"> </i> &nbspAdd CM </button>
           </div>
           <div class="pull-left">
-            <button type="button" class="btn btn-warning-eksport dropdown-toggle float-left  margin-left-customt" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-download">&nbspExport</i>
+            <button type="button" class="btn btn-warning dropdown-toggle float-left  margin-left-customt" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-download">&nbspExport</i>
             </button>
               <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 13px; left: 10px; transform : translate3d(0px, 37px, 30px);">
               <a class="dropdown-item" href="{{action('INCIDENTController@downloadPDF')}}"> PDF </a><br>
@@ -219,11 +225,16 @@
 
 @endsection
 
-@section('script')
-
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
 
      $('#datastable').DataTable( {
