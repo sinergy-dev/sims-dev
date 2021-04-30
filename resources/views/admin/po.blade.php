@@ -1,11 +1,46 @@
-@extends('template.template_admin-lte')
-@section('content')
-
+@extends('template.main')
+@section('head_css')
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <style type="text/css">
   th {
     text-align: center;
   }
+
+  .transparant{
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    width: 25px;
+  }
+
+  td>.truncate{
+      /*word-wrap: break-word; */
+      word-break:break-all;
+      white-space: normal;
+      width:200px;    
+    }
+
+  .btnPR{
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+    width: 170px;
+    padding-top: 4px;
+    padding-left: 10px;
+  }
+
+  .DTFC_LeftBodyLiner {
+    overflow: hidden;
+  }
 </style>
+@endsection
+@section('content')
 
 <section class="content-header">
   <h1>
@@ -53,10 +88,8 @@
             </select>
           </div>
           <div class="pull-right">
-          	@if(Auth::User()->name == 'Felicia Debi Noor' || Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'TECHNICAL')
             <button type="button" class="btn btn-success margin-bottom pull-right add-po" id="" style="width: 200px;color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
             <a href="{{url('/downloadExcelPO')}}"><button class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel </button></a>
-            @endif
           </div>
        </div>
 
@@ -75,7 +108,7 @@
                   <th>Attention</th>
                   <th>Title</th>
                   <th>Project</th>
-                  <th>Description</th>
+                  <th><div class="truncate">Description</div></th>
                   <th>From</th>
                   <th>Division</th>
                   <th>Issuance</th>
@@ -267,39 +300,20 @@
 </div>
 </section>
 
-<style type="text/css">
-  .transparant{
-    background-color: Transparent;
-    background-repeat:no-repeat;
-    border: none;
-    cursor:pointer;
-    overflow: hidden;
-    outline:none;
-    width: 25px;
-  }
-
-  .btnPR{
-    color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
-    width: 170px;
-    padding-top: 4px;
-    padding-left: 10px;
-  }
-
-  .DTFC_LeftBodyLiner {
-    overflow: hidden;
-  }
-</style>
-
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
 
     initTablePo();
@@ -336,7 +350,15 @@
           { "data": "attention"},
           { "data": "title" },
           { "data": "project" },
-          { "data": "description" },
+          {
+             "render": function ( data, type, row, meta ) {
+                if (row.description == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.description + '</div>'                  
+                }
+              }
+          },
           { "data": "name" },
           { "data": "division" },
           { "data": "issuance" },
