@@ -2490,6 +2490,11 @@ class HRGAController extends Controller
                         ->where('users.id_company',$request->filter_com)
                         ->where('users.id_division','FINANCE')
                         ->get();
+                }elseif($div == 'PMO' && $pos == 'MANAGER'){
+                    $cuti = $cuti
+                        ->where('users.id_company',$request->filter_com)
+                        ->where('users.id_division','PMO')
+                        ->get();
                 } else{
                     $cuti = $cuti
                         ->where('users.id_company',$request->filter_com)
@@ -2573,8 +2578,7 @@ class HRGAController extends Controller
                     ->get();
             } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
                 $cuti = $cuti
-                    ->where('users.id_division','TECHNICAL')
-                    ->where('users.id_territory','DVG')
+                    ->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'DVG' AND `users`.`id_company` = '1')")->orwhereRaw("(`users`.`id_position` = 'WAREHOUSE'  AND `users`.`id_company` = '1')")
                     ->get();
             } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
                 $cuti = $cuti
@@ -2594,6 +2598,10 @@ class HRGAController extends Controller
             } elseif($div == 'FINANCE' && $pos == 'MANAGER'){
                 $cuti = $cuti
                     ->where('users.id_division','FINANCE')
+                    ->get();
+            } elseif($div == 'PMO' && $pos == 'MANAGER'){
+                $cuti = $cuti
+                    ->where('users.id_division','PMO')
                     ->get();
             } else{
                 $cuti = $cuti
@@ -2697,8 +2705,7 @@ class HRGAController extends Controller
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_territory','DVG')
-                    ->where('tb_cuti.status','n')
+                    ->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'DVG'  AND `users`.`id_company` = '1' AND `tb_cuti`.`status` = 'n')")->orwhereRaw("(`users`.`id_position` = 'WAREHOUSE'  AND `users`.`id_company` = '1' AND `tb_cuti`.`status` = 'n')")
                     ->groupby('nik')
                     ->get());
             }elseif ($div == 'PMO' && $ter == 'OPERATION' && $pos == 'MANAGER') {
