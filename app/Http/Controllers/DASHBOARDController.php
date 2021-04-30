@@ -918,8 +918,67 @@ class DASHBOARDController extends Controller
                             ->get();
         }
 
-        return view('dashboard/dashboard', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip', 'top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'));
+        return view('dashboard/dashboard_edit', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip', 'top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'))->with(['initView'=> $this->initMenuBase()]);
 
+    }
+
+    public function getDashboardBox(){
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+        $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
+        $com = $company->id_company;
+
+        $year = date('Y');
+        $count_lead = DB::table('sales_lead_register')->join('users','sales_lead_register.nik','=','users.nik')->whereYear('sales_lead_register.created_at',$year);
+        $count_open = DB::table('sales_lead_register')
+                    ->join('users','sales_lead_register.nik','=','users.nik')
+                    ->whereRaw('(result = "" || result = "SD" || result = "TP")')
+                    ->whereYear('sales_lead_register.created_at',$year);
+        $count_win = DB::table('sales_lead_register')
+                    ->join('users','sales_lead_register.nik','=','users.nik')
+                    ->where('result','WIN')
+                    ->whereYear('sales_lead_register.created_at',$year);
+        $count_lose = DB::table('sales_lead_register')
+                    ->join('users','sales_lead_register.nik','=','users.nik')
+                    ->where('result','LOSE')
+                    ->whereYear('sales_lead_register.created_at',$year);
+
+        if ($div == 'SALES' && $pos != 'ADMIN') {
+            $count_leads = $count_lead->where('id_territory', $ter)
+                ->where('id_company', '1')
+                ->count();
+            $count_opens = $count_open->where('id_territory', $ter)
+                ->where('id_company', '1')
+                ->count();
+            $count_wins = $count_win->where('id_territory', $ter)
+                ->where('id_company', '1')
+                ->count();
+            $count_loses = $count_lose->where('id_territory', $ter)
+                ->where('id_company', '1')
+                ->count();
+        }else{
+            $count_leads = $count_lead->where('id_company', '1')
+                ->count();
+            $count_opens = $count_open->where('id_company','1')
+                ->count();
+            $count_wins = $count_win->where('id_company', '1')
+                ->count();
+            $count_loses = $count_lose->where('id_company', '1')
+                ->count();
+        }       
+
+
+        return collect([
+            'lead'=>$count_leads,
+            'open'=>$count_opens,
+            'win'=>$count_wins,
+            'lose'=>$count_loses
+        ]);
     }
 
 

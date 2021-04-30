@@ -36,6 +36,10 @@ class ESMController extends Controller
 
         $datas = '';
 
+        $datas_2018 = '';
+
+        $datas_2019 = '';
+
         $notifClaim = '';
 
         if ($ter != null) {
