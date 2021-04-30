@@ -1,78 +1,60 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <?php
+  header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
+  ?>
+
+  <style type="text/css">
+      div.dataTables_processing { z-index: 1; }
+      .DTFC_LeftBodyLiner {
+        overflow: hidden;
+      }
+      .dataTables_length{
+        display: none
+      }
+      .dataTables_filter {
+        display: none;
+      }
+      th, td { white-space: nowrap; overflow: hidden; };
+      .inputWithIcon input[type=text]{
+        padding-left:40px;
+      }
+      .inputWithIcon.inputIconBg input[type=text]:focus + i{
+        color:#fff;
+        background-color:dodgerBlue;
+      }
+      .inputWithIcon.inputIconBg i{
+        background-color:#aaa;
+        color:#fff;
+        padding:10px 9px;
+        border-radius:4px 0 0 4px;
+      }
+      .inputWithIcon{
+          position:relative;
+      }
+      .inputWithIcon i{
+          position:absolute;
+          left:0;
+          top:0;
+          padding:9px 9px;
+          color:#aaa;
+          transition:.3s;
+      }
+      .nav-tabs .badge{
+          position: absolute;
+          top: -10px;
+          right: -10px;
+          background: red;
+      }
+  </style>
+@endsection
 @section('content')
-<?php
-header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
-?>
-
-<style type="text/css">
-  div.dataTables_processing { z-index: 1; }
-
-/*  .DTFC_LeftBodyLiner {
-    overflow-y: hidden; // hide vertical
-	  overflow-x: hidden; // hide horizontal
-    opacity:0.8;
-  }*/
-
-  .DTFC_LeftBodyLiner {
-    overflow: hidden;
-  }
-
-  .dataTables_length{
-    display: none
-  }
-
-  /*.dataTables_paginate{
-    display: none;
-  }*/
-
-  .dataTables_filter {
-    display: none;
-  }
-
-  /*.dataTables_paging {
-    display: none;
-  }*/
-
-  th, td { white-space: nowrap; overflow: hidden; };
-
-  .inputWithIcon input[type=text]{
-    padding-left:40px;
-  }
-
-  .inputWithIcon.inputIconBg input[type=text]:focus + i{
-    color:#fff;
-    background-color:dodgerBlue;
-  }
-
-  .inputWithIcon.inputIconBg i{
-    background-color:#aaa;
-    color:#fff;
-    padding:10px 9px;
-    border-radius:4px 0 0 4px;
-  }
-
-  .inputWithIcon{
-    position:relative;
-  }
-
-  .inputWithIcon i{
-      position:absolute;
-      left:0;
-      top:0;
-      padding:9px 9px;
-      color:#aaa;
-      transition:.3s;
-  }
-
-  .nav-tabs .badge{
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      background: red;
-  }
-
-</style>
-
 <section class="content-header">
   <h1>
     ID Project
@@ -105,18 +87,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     <div class="box-body">
       <div class="nav-tabs-custom active" id="project_tab" role="tabpanel" aria-labelledby="project-tab">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
-            @if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_position == 'DIRECTOR')
-              @if(Auth::User()->id_position == 'MANAGER')
-              <li class="tabs_item" id="tabs_sip"><a href="#sip" id="sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
-              <li class="tabs_item" id="tabs_msp"><a href="#msp" id="msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
-              <li class="tabs_item" id="tabs_request"><a href="#request" id="request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
-              <li class="tabs_item" id="tabs_history"><a href="#history" id="history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
-              @else
-              <li class="tabs_item" id="tabs_sip"><a href="#sip" data-toggle="tab" onclick="changeTabs('sip')">SIP</a></li>
-              <li class="tabs_item" id="tabs_msp"><a href="#msp" data-toggle="tab" onclick="changeTabs('msp')">MSP</a></li>
-              @endif
-            @else
-            @endif
+          <li class="tabs_item" id="tabs_sip" style="display: none;"><a href="#sip" id="sip" data-toggle="tab" onclick="changeTabs('SIP')">SIP</a></li>
+          <li class="tabs_item" id="tabs_msp" style="display: none;"><a href="#msp" id="msp" data-toggle="tab" onclick="changeTabs('MSP')">MSP</a></li>
+          <li class="tabs_item" id="tabs_request" style="display: none;"><a href="#request" id="request" data-toggle="tab" onclick="changeTabs('request')">ID Request</a></li>
+          <li class="tabs_item" id="tabs_history" style="display: none;"><a href="#history" id="history" data-toggle="tab" onclick="changeTabs('history')">History Request</a></li>
         </ul>
 
         <div class="tab-content">
@@ -124,15 +98,9 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
               <div class="box-header">
                 <div class="row">
                   <div class="col-md-8" id="export-table">
-                    @if(Auth::User()->id_division == 'FINANCE' && Auth::User()->id_position == 'MANAGER')
-                    <button onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
+                    <button id="btnExportSip" onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
 
-                    <button onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-                    @else
-                    <button onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-
-                    <button onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-sm pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-                    @endif
+                    <button id="btnExportMsp" onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-flat pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
                     <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
                         <option value="{{$year_now}}" selected>&#xf073 &nbsp{{$year_now}}</option>
                         @foreach($year_before as $years)
@@ -569,9 +537,10 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   </section>
 
 @endsection
-
-@section('script')
-  <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+@section('scriptImport')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <!-- <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script> -->
@@ -579,46 +548,77 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
-  <script type="text/javascript">
+@endsection
+@section('script')
+<script type="text/javascript">
+  $(document).ready(function(){
+    var accesable = @json($feature_item);
+    accesable.forEach(function(item,index){
+      $("#" + item).show()  
+    })
+
+    if (!(accesable.includes('amount_pid'))) {
+      // Column Amount IDR
+      var column1 = table.column(7);
+      column1.visible(!column1.visible() );
+      // Column Amount IDR Before Tax
+      var column2 = table.column(8);
+      column2.visible(!column2.visible() );
+    }
+
+    if (!(accesable.includes('btnEdit'))) {
+      //action
+      console.log('gaada')
+      var column3 = table.column(13);
+      column3.visible(!column3.visible() );
+    }
+
+
+  })  
 
   function exportPID(url){
     window.location = url + "?year=" + $("#year_filter").val();
   }
-
-  initPID();
 
   function changeNumberEntries(number){
     $("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
     $("#table-pid").DataTable().page.len( number ).draw();
   }
 
-  function initPID(){
-    var table = $("#table-pid").DataTable({
+  var table = $("#table-pid").DataTable({
   	"footerCallback": function( row, data, start, end, display ) {
           var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
 
           var api = this.api(),data;  
           // Remove the formatting to get integer data for summation
 
-          var total = api.column(7, {page:'current'}).data().sum();
+          // console.log(api.column(7))
+          // Remove the formatting to get integer data for summation
 
-          var filtered = api.column(7, {"filter": "applied"} ).data().sum();
+          var total = api.column(14, {page:'current'}).data().sum();
 
-          var totalpage = api.column(7).data().sum();
+          var filtered = api.column(14, {"filter": "applied"} ).data().sum();
 
-          var filteredgrand = api.column(8, {"filter": "applied"} ).data().sum();
+          var totalpage = api.column(14).data().sum();
+ 
+          var filteredgrand = api.column(15, {"filter": "applied"} ).data().sum();
 
-          var totalpagegrand = api.column(8).data().sum();
+          var totalpagegrand = api.column(15).data().sum();
 
+          $( api.column( 6 ).footer() ).addClass('text-right');
           $( api.column( 6 ).footer() ).html("Total Amount");
 
-          $( api.column( 7 ).footer() ).html(totalpage);
 
-          $( api.column( 7 ).footer() ).html(filtered);
+          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(totalpage));
 
-          $( api.column( 8 ).footer() ).html(totalpagegrand);
 
-          $( api.column( 8 ).footer() ).html(filteredgrand);
+          $( api.column( 7 ).footer() ).html(new Intl.NumberFormat('id').format(filtered));
+
+
+          $( api.column( 8 ).footer() ).html(new Intl.NumberFormat('id').format(totalpagegrand));
+
+
+          $( api.column( 8 ).footer() ).html(new Intl.NumberFormat('id').format(filteredgrand));
 
     },
     "ajax":{
@@ -670,8 +670,18 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
         }
       },
       { "data": "name_project" },
-      { "data": "amount_idr" },
-      { "data": "amount_idr_before_tax" },
+      {
+        render: function ( data, type, row ) {
+          return new Intl.NumberFormat('id').format(row.amount_idr)
+        }
+      },
+      {
+        render: function ( data, type, row ) {
+          return new Intl.NumberFormat('id').format(row.amount_idr_before_tax)
+        }
+      },
+      // { "data": "amount_idr" },
+      // { "data": "amount_idr_before_tax" },
       { "data": "note" },
       { // Invoice
         render: function ( data, type, row ) {
@@ -707,42 +717,25 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       { // Action
         render: function ( data, type, row ) {
         	if (row.lead_id == 'SIPPO2020' || row.lead_id == 'MSPQUO' || row.lead_id == 'MSPPO') {
-        		@if(Auth::User()->id_division == 'FINANCE')
-          		@if(Auth::User()->id_position == 'MANAGER')
-          			return '<i>No Action</i>';
-          		@else
-          			return '<i>No Action</i>';
-            	@endif
-          	@elseif(Auth::User()->id_division == 'PMO')
-          		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-          	@else
-          	 return 'mbuh'; 
-          	@endif  
-
+              return ''
         	}else{
-
-        		@if(Auth::User()->id_division == 'FINANCE')
-          		@if(Auth::User()->id_position == 'MANAGER')
-          			return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
-          		@else
-          			return '<button class="btn btn-xs btn-warning btn-edit" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-edit"></i>&nbspEdit</button>' 
-          		@endif
-          	@elseif(Auth::User()->id_division == 'PMO')
-          		return '<button class="btn btn-xs btn-warning btn-status" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>'
-          	@else
-          	 return 'mbuh'; 
-          	@endif  
-
+        		return '<button class="btn btn-xs btn-warning btn-edit" style="width: 70px" value="'+row.id_pro+'"><i class="fa fa-edit"></i>&nbspEdit</button>' + ' ' + '<button class="btn btn-xs btn-danger btn-delete" value="'+row.id_pro+'" style="width: 70px"><i class="fa fa-trash"></i>&nbspDelete</button>'
         	}
         	                
         }
+      },
+      { 
+        "data": "amount_idr"
+      },
+      { 
+        "data": "amount_idr_before_tax"
       },
     ],
     // "info":false,
     "scrollX": true,
     "pageLength": 25,
     "order": [[ 1, "desc" ]],
-    "orderFixed": [[1, 'desc']],
+    // "orderFixed": [[1, 'desc']],
     "processing": true,
     "language": {
       'loadingRecords': '&nbsp;',
@@ -754,6 +747,27 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       leftColumns: 2,
       rightColumns: 1
     },
+    columnDefs: [
+      {
+        targets: [7],
+        orderData: [14],
+        className: 'text-right',
+      },
+      {
+        targets: [8],
+        orderData: [15],
+        className: 'text-right'
+      },
+      {
+        targets: [14] ,
+        visible: false,
+        searchable: false
+      },{
+        targets: [15] ,
+        visible: false,
+        searchable: false
+      },
+    ]
     });
 
     var request_table = $("#request_id").DataTable({
@@ -826,9 +840,6 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
           'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
         },
       "paging": true,
-      fixedColumns:   {
-        rightColumns: 1
-      }, 
       initComplete: function() {
         if("{{Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'FINANCE'}}"){
           if (this.api().data().length) {
@@ -837,29 +848,15 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
             changeTabs('request')
           }else{
             $('#tabs_sip').addClass('active')
-            changeTabs('sip')
+            changeTabs('SIP')
           }
         }else{
           $('#tabs_sip').addClass('active')
-          changeTabs('sip')
+          changeTabs('SIP')
         }
       }
 	  });	
 
-    @if(Auth::User()->id_division == 'MSM')
-		  // Column Amount IDR
-      var column1 = table.column(7);
-	    column1.visible( ! column1.visible() );
-      // Column Amount IDR Before Tax
-	    var column2 = table.column(8);
-	    column2.visible( ! column2.visible() );
-    @endif
-
-    @if(Auth::User()->id_division == "SALES" || Auth::User()->id_division == "TECHNICAL" || Auth::User()->id_division == "MSM" || Auth::User()->id_position == "DIRECTOR")
-    	// Column Action
-      var column3 = table.column(13);
-      column3.visible(! column3.visible());
-    @endif
 
     $('#searchBarTicket').keyup(function(){
       table.search($('#searchBarTicket').val()).draw();
@@ -877,7 +874,6 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       table.search($('#searchBarTicketmsp').val()).draw();
     })
     
-  }
 
   function submitRequestID(){
     if($("#inputCustomer").val() == ""){
@@ -1023,7 +1019,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 
     function changeTabs(id) {
       year = $("#year_filter").val()
-      if (id == "sip") {
+      if (id == "SIP") {
       	$('#export-table').css("display","block")
       	$('#search-table').css("display","block")
       	$('#request-table').css("display","none")
@@ -1031,8 +1027,9 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('#pid-table').css("display","block")
       	$('.export-msp').css("display","none")
       	$('.export').css("display","block")
+
         $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
-      }else if(id == "msp"){
+      }else if(id == "MSP"){
       	$('.export-msp').css("display","block")
       	$('.export').css("display","none")
       	$('#export-table').css("display","block")
@@ -1040,6 +1037,7 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
       	$('#request-table').css("display","none")
       	$('#history-table').css("display","none")
       	$('#pid-table').css("display","block")
+
         $('#table-pid').DataTable().ajax.url("{{url('getPIDIndex')}}?id="+id+"&year_filter="+year).load();
       }else if (id == "request") {
       	$('#request-table').show()
@@ -1120,16 +1118,22 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
     //   }
     // })
     
-    if("{{Auth::User()->id_division == 'FINANCE'}}"){
-      var companyString = $('.nav-tabs .active').text()
+    @if(Auth::User()->id_division == 'FINANCE')
+      
+      var companyString = $('.tabs_item.active').text()
+      console.log(companyString)
+      // var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,15)
+
+      // console.log(companyString)
       if(companyString == "SIP" || companyString == "MSP"){
         $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear+"&id=" + companyString).load();
       } else {
         console.log('bukan tab perusahaan')
       }
-    }else{
+
+    @else
       $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
-    }
+    @endif
       
  })
 
