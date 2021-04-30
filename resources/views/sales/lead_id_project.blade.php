@@ -1,4 +1,5 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+
 @section('content')
 <?php
 header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');

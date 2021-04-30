@@ -10,6 +10,17 @@
       margin-bottom: 0;
       text-align: left;
     }
+
+    .entry {
+        transition: transform .2s;
+        margin: 0 auto;
+    }
+
+    .entry:hover {
+        -ms-transform: scale(1.5); /* IE 9 */
+        -webkit-transform: scale(1.5); /* Safari 3-8 */
+        transform: scale(1.5); 
+    }
   </style>
 <section class="content-header">
   <h1>
@@ -21,6 +32,22 @@
 </section>
 
 <section class="content">
+
+  @if (session('alert'))
+  <div class="alert alert-danger" id="alert">
+    {{ session('alert') }}
+  </div>
+  @endif
+  @if($errors->any())
+  <div class="alert alert-danger" id="alert2">
+    @foreach ($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+  </div>
+  @endif
+  @if (session('success'))
+    <div class="alert alert-success notification-bar"><span>Notice : </span> {{ session('success') }}</div>
+  @endif
   <div class="row">
     <!-- card foto + profile singkat -->
     <div class="col-md-3">
@@ -46,7 +73,13 @@
               <i class="fa fa-phone">&nbsp</i><b class="">Phone</b> <b class="pull-right">+62{{$user_profile->phone}}</b>
             </li>
           </ul>
-          <!-- <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a> -->
+
+          <!-- <div class="row" style="padding-left:25px">
+            <button class="btn btn-md btn-primary btn-edit" type="button" style="width: 150px"><i class="fa fa-key"></i> Change Password</button>
+            <a href="{{url('show_cuti')}}" style="margin-left: 10px"><button class="btn btn-md btn-success" style="width: 150px"><i class="fa fa-user"></i> Leaving Permite</button></a>
+          </div> -->
+          <a class="btn btn-primary btn-block btn-edit" type="button"><b>Change Password</b></a>
+          <a href="{{url('show_cuti')}}" class="btn btn-success btn-block" type="button"><b>Leaving Permit</b></a>
         </div>
       </div>
     </div>
@@ -153,7 +186,7 @@
                       @if($user_profile->no_npwp == "-" || $user_profile->no_npwp == null)
                         <input type="text" class="form-control" rows="3" id="no_npwp" name="no_npwp" placeholder="xx.xxx.xxx.x-xxx.xxx" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask>
                       @else
-                        <input type="text" class="form-control" rows="3" id="no_npwp" name="no_npwp" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask readonly>
+                        <input type="text" class="form-control" rows="3" id="no_npwp" name="no_npwp" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask>
                       @endif
                     </div>
                   </div> 
@@ -170,16 +203,22 @@
               <div class="tab-pane fade in active" id="attachfile">
                 <h4 style="padding-left: 10px"><b>Attach File</b></h4>
               </div><br>
-              <form action="{{url('update_profile')}}" enctype="multipart/form-data" method="POST">
+              <form action="{{url('update_profile_npwp')}}" enctype="multipart/form-data" method="POST">
                 <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden>
                 @csrf
+                <div class="form-group hidden">
+                  <label class="col-sm-2 control-label">Employee Name</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Type Name" value="{{$user_profile->name}}">
+                  </div>
+                </div>
                 <div class="box-body">
                   <div class="form-group row">
                     <div class="col-md-8">
                       @if($user_profile->npwp_file == "-" || $user_profile->npwp_file == null || $user_profile->npwp_file == "")
-                        <img src="{{url('img/placeholder100x100.png')}}" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                        <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarnpwp" style="max-width: 300px;max-height: 300px;float: left;"/>
                       @else
-                        <img src="{{url('image') . "/" . $user_profile->npwp_file}}" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                        <img class="entry" src="{{url('image') . "/" . $user_profile->npwp_file}}" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
                       @endif
                       </div>
                   </div>
@@ -195,7 +234,11 @@
                   </div>
                   <div class="form-group row">
                     <div class="col-md-8">
-                      <img src="{{url('img/placeholder100x100.png')}}" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @if($user_profile->ktp_file == "-" || $user_profile->ktp_file == null || $user_profile->ktp_file == "")
+                        <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarktp" style="max-width: 300px;max-height: 300px;float: left;"/>
+                      @else
+                        <img class="entry" src="{{url('image') . "/" . $user_profile->ktp_file}}" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @endif
                     </div>
                   </div>
                   <div class="form-group row">
@@ -224,6 +267,46 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="modalEdit" role="dialog">
+    <div class="modal-dialog modal-md">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Edit Profile</h4>
+        </div>
+        <div class="modal-body">
+          <form method="POST" enctype="multipart/form-data" action="{{url('changePassword')}}" id="modalEditProfile" name="modalEditProfile">
+            @csrf
+            <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden> 
+
+            <div class="form-group">
+              <label class="margin-top">Current Password</label>
+              <input class="form-control pull-right password" id="current-password" name="current-password" type="Password" required  placeholder="Enter Your Current Password">
+                <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon" id="toggle1"></i> -->
+            </div>
+
+            <div class="form-group">
+              <label class="margin-top">New Password</label>
+              <input class="form-control" id="new-password" name="password" type="Password" required placeholder="Enter New Password">
+              <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" id="toggle2"></i> -->
+            </div>
+
+            <div class="form-group">
+              <label class="margin-top">Confirm Password</label>
+              <input class="form-control" id="new-password-confirm" name="password_confirmation" required type="Password" placeholder="Enter Confirm Password">
+              <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" id="toggle3"></i> -->
+            </div> 
+             
+            <div class="modal-footer">
+              <button class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            </div>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
   </div>
 </section>
 
@@ -400,6 +483,38 @@
       } 
   }); 
 
+
+  $("#toggle1").click(function() {
+      $(this).toggleClass("fa-eye fa-eye-slash");
+      var x = document.getElementById("current-password");
+      if (x.type === "password") {
+          x.type = "text";
+      } else {
+          x.type = "password";
+      }
+  });
+
+  $("#toggle2").click(function() {
+      $(this).toggleClass("fa-eye fa-eye-slash");
+      var y = document.getElementById("new-password");
+      if (y.type === "password") {
+          y.type = "text";
+      } else {
+          y.type = "password";
+      }
+  });
+
+  $("#toggle3").click(function() {
+      $(this).toggleClass("fa-eye fa-eye-slash");
+      var z = document.getElementById("new-password-confirm");
+
+      if (z.type === "password") {
+          z.type = "text";
+      } else {
+          z.type = "password";
+      }
+  });
+
   $(".btn-edit").click(function(){
   	$("#modalEdit").modal("show");
   	console.log('coba');
@@ -423,11 +538,16 @@
 
         reader.onload = function (e) {
           $('#showgambarnpwp').attr('src', e.target.result);
+          
+          $('#showgambarktp').attr('src', e.target.result);
+          
         }
 
         reader.readAsDataURL(input.files[0]);
       }
     }
+
+
 
   $("#inputgambar").change(function () {
       readURL(this);
@@ -435,6 +555,10 @@
 
 
   $("#inputgambarnpwp").change(function () {
+      readURL(this);
+    });
+
+  $("#inputgambarktp").change(function () {
       readURL(this);
     });
 
@@ -446,6 +570,12 @@
 
   $("#alert").fadeTo(2000, 500).slideUp(500, function(){
     $("#alert").slideUp(300);
+  });
+
+  $("#alert2").show(); 
+
+  $(".notification-bar").fadeTo(2000, 500).slideUp(500, function(){
+    $(".notification-bar").slideUp(300);
   }); 
 
 </script>
