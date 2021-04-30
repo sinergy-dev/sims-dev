@@ -345,7 +345,7 @@
 
     @foreach($cuti as $data)
     @if(Auth::User()->nik == $data->nik)
-        <!--MODAL EDIT-->  
+    <!--MODAL EDIT-->  
     <div class="modal fade" id="modalCuti_edit" role="dialog">
         <div class="modal-dialog modal-md">
           <!-- Modal content-->
@@ -400,8 +400,6 @@
               <h4 class="modal-title">Leaving Permit</h4>
             </div>
             <div class="modal-body">
-              <form method="POST" action="{{url('approve_cuti')}}">
-                @csrf
                 <input type="" name="id_cuti_detil" id="id_cuti_detil" hidden="">
                 <input type="" name="nik_cuti" id="nik_cuti" hidden="">
                 <div class="form-group">
@@ -435,7 +433,6 @@
                   <button type="submit" id="submit_approve" class="btn btn-success"><i class=" fa fa-check"></i>&nbspApprove</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
                 </div>
-            </form>
             </div>
           </div>
         </div>
@@ -625,16 +622,41 @@
 
 @endsection
 
-@section('script')
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script src="{{asset('js/fullcalendar.js')}}"></script>
-<script type='text/javascript' src="{{asset('js/gcal.js')}}"></script>
-<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> 
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+@section('scriptImport')
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  {{-- <script src="{{asset('js/fullcalendar.js')}}"></script> --}}
+  {{-- <script type='text/javascript' src="{{asset('js/gcal.js')}}"></script> --}}
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+@endsection
 
+@section('script')
 <script type="text/javascript">
+
+    $(document).ready(function(){
+      var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
+      if (accesable.includes('col-cuti-request')) {
+        var column = monthCuti.column(2).header();
+        $(column).text('Cuti Request');
+        var column2 = monthCuti.column(3).header();
+        $(column2).text('Request Date');
+      }else{
+        var column = monthCuti.column(2).header();
+        $(column).text('Date of Request');
+        var column2 = monthCuti.column(3).header();
+        $(column2).text('Time Off');
+        console.log('dinar dindut')
+      }
+    })
+
     $(".show-sisa-cuti").click(function(){
       $.ajax({
         type:"GET",
@@ -759,7 +781,7 @@
           if($("input[name='jenis_cuti']:checked").val()){
             Swal.fire({
             title: 'Are you sure?',
-            text: "to submit your leaving permite",
+            text: "to submit your leaving permit",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -796,7 +818,7 @@
                     Swal.showLoading()
                     Swal.fire(
                       'Successfully!',
-                      'Leaving permite has been created.',
+                      'Leaving permit has been created.',
                       'success'
                     ).then((result) => {
                       if (result.value) {
@@ -806,9 +828,7 @@
                     })
                   }
                 })
-              }else if(
-                 result.dismiss === Swal.DismissReason.cancel
-                ){
+              }else if(result.dismiss === Swal.DismissReason.cancel){
                 $("#modalCuti").modal('hide');
               }
             }) 
@@ -953,7 +973,7 @@
 
         Swal.fire({
           title: 'Are you sure?',
-          text: "to update your leaving permite",
+          text: "to update your leaving permit",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -990,7 +1010,7 @@
                 Swal.showLoading()
                 Swal.fire(
                   'Updated!',
-                  'Leaving permite has been update.',
+                  'Leaving permit has been update.',
                   'success'
                 ).then((result) => {
                   if (result.value) {
@@ -1080,6 +1100,57 @@
 
       $("#cuti_fix").val(updates.join(","));
 
+      Swal.fire({
+        title: 'Approve Cuti',
+        text: "kamu yakin?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's updating..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+              popup: 'border-radius-0',
+            },
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"POST",
+            url:"{{url('approve_cuti')}}",
+            data:{
+              _token:"{{csrf_token()}}",
+              id_cuti_detil:$('#id_cuti_detil').val(),
+
+              nik_cuti:$('#nik_cuti').val(),
+              reason_reject:$('#reason_reject').val(),
+              cuti_fix:$('#cuti_fix').val()
+            },
+            success: function(result){
+              Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                  $("#detail_cuti").modal('toggle')
+                }
+              })
+            },
+          });
+        }        
+      })
+
       // document.getElementById("cuti_fix").innerHTML = updates.join(",") ;
     })
 
@@ -1088,8 +1159,8 @@
     function exportExcel() {
       filter      = encodeURI($("#pilih").val())
       division    = encodeURI($("#division_cuti").val())
-      date_start  = encodeURI(moment($('#dates').val().slice(0,10)).format("YYYY-MM-DD"))
-      date_end    = encodeURI(moment($('#dates').val().slice(13,23)).format("YYYY-MM-DD"))
+      date_start  = encodeURI(moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"))
+      date_end    = encodeURI(moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
       myUrl       = url+"/downloadCutiReport?division="+division+"&date_start="+date_start+"&date_end="+date_end+"&filter="+filter
       location.assign(myUrl)
     }
@@ -1164,8 +1235,10 @@
           },
         ],
         initComplete: function() {
-          if ("{{Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'HR MANAGER'}}") {
-            if (this.api().data().length) {
+          if ("{{Auth::User()->id_position == 'MANAGER' || Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_position == 'HR MANAGER'}}") 
+          {
+            if (this.api().data().length) 
+            {
               $('#cuti_tab').append('<span class="badge">'+ this.api().data().length +'</span>')
               activeTab('cuti')
             }else{
@@ -1347,7 +1420,8 @@
               return moment(row.date_of_entry).format('L');
             } 
           },
-          { 
+          {
+
             render: function (data, type, row) {
               if(row.date_of_entrys > 365){
                 return Math.floor(row.date_of_entrys / 365) + ' Tahun ' + Math.floor(row.date_of_entrys % 365 / 30) + ' Bulan';
@@ -1387,13 +1461,27 @@
               }
             } 
           },
+          {
+            'data':'date_of_entrys',
+            'visible': false,
+            'searchable': false,
+          }
         ],
         "searching": true,
         "lengthChange": true,
         "order": [[ 0, "asc" ]],
         "fixedColumns":   {
-            leftColumns: 1
+          leftColumns: 1
         },
+        'columnDefs': [
+            { 'orderData':[8], 'targets': [3] },
+            { 'orderData':[8], 'targets': [4] },
+            {
+                'targets': [8],
+                'visible': false,
+                'searchable': false
+            },
+        ],
         "pageLength": 10,
       })
     }
@@ -1462,23 +1550,24 @@
 
     cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val());
 
-    $('input[name="dates"]').daterangepicker({
+    $('#datesReport').daterangepicker({
       startDate: start_date,
       endDate: end_date,
       locale: {
         format: 'MM/DD/YYYY'
       },
       }, function(start, end, label) {
-      cb(start,end,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val())
+        var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
+        cb(start,end,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id=" + companyString,$("#division_cuti").val())
     });
 
     $("#pilih").change(function(){
       console.log(this.value)
       if(this.value == 'date'){
         table.draw();
-        $("#dates").prop('disabled', false);
+        $("#datesReport").prop('disabled', false);
         $("#division_cuti").prop('disabled', true);
-         $('input[name="dates"]').daterangepicker({
+         $('#datesReport').daterangepicker({
 
         }, function(start, end, label) {
             $.ajax({
