@@ -1,4 +1,4 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
 @section('head_css')
 	<style>
 		#analog-clock {
@@ -180,8 +180,12 @@
 		</div> 
 	</section>
 @endsection
+@section('scriptImport')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+@endsection
 @section('script')
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 	<script>
 		var presenceLocation;
 
