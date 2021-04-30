@@ -215,6 +215,8 @@ class SHOController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $notifClaim = "";
+
         $presales = DB::table('users')
                     ->select('name','nik')
                     ->where('id_division','TECHNICAL PRESALES')
@@ -439,7 +441,7 @@ class SHOController extends Controller
                             ->get();
         }
 
-        return view('sales/detail_sho',compact('tampilkan','tampilkans','notif','notifOpen','tampilkanc','tampilkant','tampilkanb','now','tampilkanx','tampilkanz','notifsd','presales','notiftp','ter1','ter2','ter3','ter4','ter5','ter6','engineer','pmo', 'notifClaim'));
+        return view('sales/detail_sho',compact('tampilkan','tampilkans','notif','notifOpen','tampilkanc','tampilkant','tampilkanb','now','tampilkanx','tampilkanz','notifsd','presales','notiftp','ter1','ter2','ter3','ter4','ter5','ter6','engineer','pmo', 'notifClaim'))->with(['initView'=>$this->initMenuBase(),'feature_item'=>$this->RoleDynamic('salesHandover')]);
         // return view('sales/detail_sho')->with('tampilkan',$tampilkan);
     }
 

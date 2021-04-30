@@ -1,4 +1,37 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+
+  <style type="text/css">
+    div.table-responsive {
+      overflow: auto;
+      white-space: nowrap;
+      }
+
+    /* width */
+    ::-webkit-scrollbar {
+      width: 20px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1; 
+    }
+     
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888; 
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #ffb523;
+    }
+  </style>
+@endsection
 @section('content')
 
   <section class="content-header">
@@ -221,10 +254,16 @@
 
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
      $('#datastable').DataTable( {
         "scrollX": true,
@@ -260,40 +299,4 @@
          $("#alert").slideUp(300);
     });
   </script>
-
-  <style type="text/css">
-
-div.table-responsive {
-  overflow: auto;
-  white-space: nowrap;
-  }
-
-/*div.table-responsive a {
-  display: inline-block;
-  color: white;
-  text-align: center;
-  padding: 10px;
-  text-decoration: none;
-}*/
-
-/* width */
-::-webkit-scrollbar {
-  width: 20px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888; 
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background-color: #ffb523;
-}
-  </style>
 @endsection
