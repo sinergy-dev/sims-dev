@@ -1636,7 +1636,7 @@ class HRGAController extends Controller
 
         $ardetil_after = "";
 
-        Mail::to($kirim)->cc('yudhi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));        
+        Mail::to($kirim)->cc('elfi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));        
 
         // Notification::send($kirim, new CutiKaryawan($id_cuti,$status));
 
@@ -2165,7 +2165,9 @@ class HRGAController extends Controller
                 ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
                 ->join('tb_cuti_detail','tb_cuti.id_cuti', '=', 'tb_cuti_detail.id_cuti')
                 ->where('status','=','v')
-                ->whereYear('date_req',date('Y'))
+                ->where('date_req','>','2021-03-16')
+                ->where('date_req','<','2021-04-15')
+                // ->whereYear('date_req',date('Y'))
                 ->groupBy('nik')
                 ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
             ->where('users.status_karyawan','!=','dummy')
@@ -2202,11 +2204,13 @@ class HRGAController extends Controller
                 DB::raw('IF(`users`.`cuti2` > 0,CONCAT(`users`.`cuti2`, " Hari"),"-") AS `sisah_cuti_' . date('Y') . '`'),
                 DB::raw('IF(`users`.`status_karyawan` = "belum_cuti","Belum 1 tahun",IF((`users`.`cuti` + `users`.`cuti2`) = 0,"Habis","-")) AS `status`')
             )
-            ->leftJoinSub(DB::table('tb_cuti_msp')
+            ->leftJoinSub(DB::table('tb_cuti')
                 ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
-                ->join('tb_detail_cuti_msp','tb_cuti_msp.id_cuti', '=', 'tb_detail_cuti_msp.id_cuti')
+                ->join('tb_cuti_detail','tb_cuti.id_cuti', '=', 'tb_cuti_detail.id_cuti')
                 ->where('status','=','v')
-                ->whereYear('date_req',date('Y'))
+                ->where('date_req','>','2021-03-16')
+                ->where('date_req','<','2021-04-15')
+                // ->whereYear('date_req',date('Y'))
                 ->groupBy('nik')
                 ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
             ->where('users.status_karyawan','!=','dummy')
@@ -2248,7 +2252,9 @@ class HRGAController extends Controller
                 DB::raw('CONCAT("[ ",`jenis_cuti`," ]/[ ",`reason_leave`," ]") AS `detail`')
             )
             ->where('status','v')
-            ->whereBetween('date_off',array($request->date_start,$request->date_end))
+            // ->whereBetween('date_off',array($request->date_start,$request->date_end))
+            ->where('date_off','>','2021-03-16')
+            ->where('date_off','<','2021-04-15')
             ->groupby('tb_cuti.id_cuti')
             ->get();
 
@@ -2351,8 +2357,7 @@ class HRGAController extends Controller
                     } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_division','TECHNICAL')
-                            ->where('users.id_territory','DVG')
+                            ->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'DVG'  AND `users`.`id_company` = '1' AND `tb_cuti`.`status` = 'n')")->orwhereRaw("(`users`.`id_position` = 'WAREHOUSE'  AND `users`.`id_company` = '1' AND `tb_cuti`.`status` = 'n')")
                             ->where('tb_cuti.status','n')
                             ->get();
                     } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
@@ -2460,8 +2465,7 @@ class HRGAController extends Controller
                 } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
                     $cuti = $cuti
                         ->where('users.id_company',$request->filter_com)
-                        ->where('users.id_division','TECHNICAL')
-                        ->where('users.id_territory','DVG')
+                        ->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'DVG'  AND `users`.`id_company` = '1')")->orwhereRaw("(`users`.`id_position` = 'WAREHOUSE'  AND `users`.`id_company` = '1')")
                         ->get();
                 } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
                     $cuti = $cuti
