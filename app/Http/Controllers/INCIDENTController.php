@@ -206,7 +206,7 @@ class INCIDENTController extends Controller
                             ->get();
         }
 
-        return view('DVG/im/incident',compact('datas', 'notifClaim'));
+        return view('DVG/im/incident',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim','datas',))->with(['initView'=> $this->initMenuBase()]);
     }
 
     /**
