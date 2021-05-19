@@ -36,7 +36,9 @@ use App\Detail_IdProject;
 use App\POCustomer;
 use App\Mail\MailResult;
 use App\Mail\mailPID;
-
+use App\Mail\CreateLeadRegister;
+use App\Mail\AssignPresales;
+use App\Mail\RaiseTender;
 
 use Mail;
 use App\Notifications\NewLead;
@@ -52,9 +54,9 @@ use App\QuoteMSP;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
-
 
 class SALESController extends Controller{
     /**
@@ -102,6 +104,20 @@ class SALESController extends Controller{
         $leadnow = '';
 
         $year_dif = '';
+
+        $total_lead = null;
+
+        $total_open = null;
+
+        $total_sd = null;
+
+        $total_tp = null;
+
+        $total_win = null;
+
+        $total_lose = null;
+
+
 
         $users = DB::table('users')
                     ->select('nik','name','id_division')
@@ -746,17 +762,43 @@ class SALESController extends Controller{
                 $dates = Date('Y');
 
                 $lead = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory')
-                ->where('result','!=','hmm')
-                ->whereYear('sales_lead_register.created_at', '=', $dates-1)
-                ->orwhere('year',$dates)
-                ->orderBy('created_at','desc')
-                ->get();
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                    ->join('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id','left')
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_product_tag`.`name_product`) AS `name_product`
+                        FROM
+                            `tb_product_tag`
+                        INNER JOIN `tb_product_tag_relation` ON `tb_product_tag_relation`.`id_product_tag` = `tb_product_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_product_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_product_custom.lead_id");
+                    })
+                    ->LeftJoin(DB::raw("(
+                        SELECT
+                            `lead_id`,
+                            GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`
+                        FROM
+                            `tb_technology_tag`
+                        INNER JOIN `tb_technology_tag_relation` ON `tb_technology_tag_relation`.`id_tech_tag` = `tb_technology_tag`.`id`
+                        GROUP BY
+                            `lead_id`
+                      ) as tb_technology_custom"),function($join){
+                        $join->on("sales_lead_register.lead_id","=","tb_technology_custom.lead_id");
+                    })
+                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result', 'sales_lead_register.status_sho','sales_lead_register.status_handover','sales_lead_register.nik','sales_lead_register.status_engineer','sales_lead_register.keterangan','sales_lead_register.year','sales_lead_register.closing_date', 'sales_lead_register.keterangan','tb_company.code_company','tb_company.id_company','sales_lead_register.deal_price', 'tb_pid.status','users.id_territory',DB::raw('GROUP_CONCAT(tb_product_custom.name_product) as result_concat'),DB::raw('GROUP_CONCAT(tb_technology_custom.name_tech) as result_concat_2'))
+                    ->where('result','!=','hmm')
+                    ->whereYear('sales_lead_register.created_at', '=', $dates-1)
+                    ->orwhere('year',$dates)
+                    ->orderBy('created_at','desc')
+                    ->groupBy('sales_lead_register.lead_id')
+                    ->groupBy('tb_pid.status')
+                    ->get();
 
                 $total_lead = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -1157,9 +1199,9 @@ class SALESController extends Controller{
         // return $leadsnow;
         
         if (Auth::User()->id_division == 'FINANCE') {            
-            return view('sales/lead_id_project', compact('lead','leads','notif','notifOpen','notifsd','notiftp','notifClaim'));
+            return view('sales/lead_id_project', compact('lead','leads','notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase()]);
         }else{
-            return view('sales/sales', compact('lead','leads','notif','notifOpen','notifsd','notiftp','users','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'notifClaim','cek_note','datas','rk','gp','st','rz','jh','leadspre','year','year_now','year_dif','leadsprenow','leadsnow','leadnow','tag_product','tag_technology'));
+            return view('sales/sales', compact('lead','leads','notif','notifOpen','notifsd','notiftp','users','owner_by_lead','total_lead','total_open','total_sd','total_tp','total_win','total_lose', 'notifClaim','cek_note','datas','rk','gp','st','rz','jh','leadspre','year','year_now','year_dif','leadsprenow','leadsnow','leadnow','tag_product','tag_technology'))->with(['initView'=> $this->initMenuBase()]);
         }
     }
 
@@ -2432,7 +2474,7 @@ class SALESController extends Controller{
                             ->get();
         }
 
-        return view('sales/detail_sales',compact('pre_cont','lead','tampilkan','tampilkans','tampilkan_com', 'tampilkana', 'tampilkanc','notif','notifOpen','notifsd','notiftp','tampilkan_progress','engineer_id','current_eng','tampilkan_progress_engineer','engineer_contribute','q_num','sd_id', 'get_quote_number', 'q_num2', 'change_log','notifClaim','tampilkan_po','productTag','technologyTag','productTech'));
+        return view('sales/detail_sales',compact('pre_cont','lead','tampilkan','tampilkans','tampilkan_com', 'tampilkana', 'tampilkanc','notif','notifOpen','notifsd','notiftp','tampilkan_progress','engineer_id','current_eng','tampilkan_progress_engineer','engineer_contribute','q_num','sd_id', 'get_quote_number', 'q_num2', 'change_log','notifClaim','tampilkan_po','productTag','technologyTag','productTech'))->with(['initView'=> $this->initMenuBase()]);
     
     }
 
@@ -2605,7 +2647,19 @@ class SALESController extends Controller{
 
             if (is_null($request['po'])) {
                 $users = User::select('email')->where('id_position', 'STAFF')->where('id_division', 'TECHNICAL')->where('id_territory', 'DVG')->get();
-                Notification::send($kirim, new NewLead());
+                // Notification::send($kirim, new NewLead());
+                $data = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'users.name')
+                    ->where('lead_id',$lead)
+                    ->first();
+
+                // return $data->lead_id;
+
+                Mail::to($kirim)->send(new CreateLeadRegister($data));
+                // Mail::to("agastya@sinergy.co.id")->send(new CreateLeadRegister($data));
+
             }
             
             
@@ -2820,7 +2874,19 @@ class SALESController extends Controller{
         $kirim = User::select('email')->where('nik', $nik_assign)->first();
 
         $users = User::where('email','arkhab@sinergy.co.id')->first();
-        Notification::send($kirim, new PresalesAssign());
+
+        $data = DB::table('sales_lead_register')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
+                    ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+                    ->join('users as presales','presales.nik','=','sales_solution_design.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->where('sales_lead_register.lead_id',$tambah->lead_id)
+                    ->first();
+        $status = 'assign';
+        // Notification::send($kirim, new PresalesAssign());
+        Mail::to($kirim)->send(new AssignPresales($data,$status));
+
 
         return redirect('project');
 
@@ -2846,7 +2912,18 @@ class SALESController extends Controller{
         $kirim = User::select('email')->where('nik', $nik_assign)->first();
 
         $users = User::where('email','arkhab@sinergy.co.id')->first();
-        Notification::send($kirim, new PresalesReAssign());
+
+        $data = DB::table('sales_lead_register')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
+                    ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+                    ->join('users as presales','presales.nik','=','sales_solution_design.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->where('sales_lead_register.lead_id',$lead_id)
+                    ->first();
+        $status = 'reAssign';
+        // Notification::send($kirim, new PresalesReAssign());
+        Mail::to($kirim)->send(new AssignPresales($data,$status));
 
         return redirect('project');
     }
@@ -2903,7 +2980,18 @@ class SALESController extends Controller{
                         ->get();
 
         $users = User::where('email','arkhab@sinergy.co.id')->first();
-        Notification::send($kirim, new RaiseToTender());
+        // Notification::send($kirim, new RaiseToTender());
+        $data = DB::table('sales_lead_register')
+                    ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
+                    ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
+                    ->join('users as presales','presales.nik','=','sales_solution_design.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->where('sales_lead_register.lead_id',$lead_id)
+                    ->first();
+
+        Mail::to($kirim)->send(new RaiseTender($data));
+
 
         return redirect()->back();
     }
@@ -3772,6 +3860,8 @@ class SALESController extends Controller{
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $notifClaim = null;
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -3917,7 +4007,7 @@ class SALESController extends Controller{
 
         $data = TB_Contact::all();  
 
-        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp'));
+        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
     }
 
     public function customer_store(Request $request)
@@ -4351,7 +4441,7 @@ class SALESController extends Controller{
 
         $year_now = date('Y');
 
-      return view('sales/sales_project',compact('hitung_msp','salessp','salesmsp','lead_sp','lead_msp','notif','notifOpen','notifsd','notiftp', 'notifClaim','pops','pid_request','pid_request_done','pid_request_lead','pid_request_lead_done','year_now','year_before'));
+      return view('sales/sales_project',compact('hitung_msp','salessp','salesmsp','lead_sp','lead_msp','notif','notifOpen','notifsd','notiftp', 'notifClaim','pops','pid_request','pid_request_done','pid_request_lead','pid_request_lead_done','year_now','year_before'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('idProject')]);
     }
 
     public function getPIDIndex(Request $request){
@@ -4401,7 +4491,7 @@ class SALESController extends Controller{
 
             return array("data" => $pid);  
         
-        }elseif ($div == 'TECHNICAL' && $pos == 'MANAGER' || $pos == 'DIRECTOR') {
+        }elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {
             if ($com == 1) {
 
                  $pid = DB::table('tb_id_project')
@@ -4433,7 +4523,7 @@ class SALESController extends Controller{
 
             return array("data" => $pid);  
         
-        }elseif ($div == 'FINANCE'){
+        }elseif ($div == 'FINANCE' || $pos == 'DIRECTOR'){
             
             if ($request->id == "SIP") {
                 
@@ -5434,130 +5524,141 @@ class SALESController extends Controller{
 
     public function export_msp(Request $request)
     {
-         $nama = 'ID PROJECT MSP '.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-        $excel->sheet('Data ID Project', function ($sheet) use ($request) {
-        
+
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'ID PROJECT MSP');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
         $sheet->mergeCells('A1:I1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-       // $sheet->setAllBorders('thin');
-        $sheet->row(1, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(12);
-            $row->setAlignment('center');
-            $row->setFontWeight('bold');
-        });
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
 
-        $sheet->row(1, array('Data ID Project MSP'));
+        $sheet->getStyle('A1:I1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','ID PROJECT MSP');
 
-        $sheet->row(2, function ($row) {
-            $row->setFontFamily('Calibri');
-            $row->setFontSize(12);
-            $row->setFontWeight('bold');
-        });
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:I2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["No", "Date", "ID Project", "No. PO customer","No. Quote","Customer Name", "Project Name", "Amount IDR", "Sales"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $year = date('Y');
+
 
         $datas = SalesProject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
                 ->join('users','users.nik','=','sales_lead_register.nik')
                 ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                // ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
                 ->LeftJoin('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id')
-
                 ->LeftJoin('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo')
-                ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr','tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','tb_pid.no_po','tb_quote_msp.quote_number')
+                ->select(
+                    'tb_id_project.date',
+                    'tb_id_project.id_project',
+                    'tb_id_project.no_po_customer',
+                    'tb_quote_msp.quote_number',
+                    'tb_id_project.customer_name',
+                    'tb_id_project.name_project',
+                    'tb_id_project.amount_idr',
+                    'sales_name',
+                    'users.name',
+                    'tb_pid.no_po',
+                    'tb_contact.customer_legal_name',
+                    'sales_lead_register.opp_name',
+                    'sales_lead_register.lead_id'
+                )
                 ->where('id_company','2')
                 ->whereYear('tb_id_project.created_at',$request->year)
                 ->where('tb_id_project.status','!=','WO')
                 ->orderBy('tb_id_project.id_project','asc')
                 ->get();
 
+        foreach ($datas as $key => $eachLead) {
+            $eachLead->amount_idr = number_format($eachLead->amount_idr,2,",",".");
+            if($eachLead->lead_id == 'MSPQUO' || $eachLead->lead_id == 'MSPPO'){
+                // $eachLead->no_po_customer = $eachLead->no_po; 
+                $eachLead->quote_number = "-";
+                // $eachLead->customer_name = "-";
 
+            } else {
+                $eachLead->no_po_customer = $eachLead->no_po;
+                $eachLead->customer_name = $eachLead->customer_legal_name;
+                $eachLead->name_project = $eachLead->opp_name;
+                $eachLead->sales_name = $eachLead->name;
 
-        // $datas = DB::table('tb_id_project')
-        //         ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
-        //         ->join('users','users.nik','=','sales_lead_register.nik')
-        //         ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                // ->LeftJoin('tb_pid','tb_pid.lead_id','=','tb_id_project.lead_id')
-                // ->LeftJoin('tb_quote_msp','tb_quote_msp.id_quote','=','tb_pid.no_quo')
-        //         ->join('tb_company','tb_company.id_company','=','users.id_company')
-        //         ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-                // ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','tb_id_project.status','name_project','tb_id_project.created_at','sales_name','customer_legal_name','users.id_company','tb_quote_msp.quote_number','tb_pid.no_po','users.id_company')
-        //         ->where('users.id_company','2')
-        //         ->whereYear('tb_id_project.created_at',$req->filterYear)
-        //         ->where('tb_id_project.status','!=','WO')
-        //         ->get();
+                $eachLead->no_po = "";
+                $eachLead->customer_legal_name = "";
+                $eachLead->opp_name = "";
+                $eachLead->name = "";
+                $eachLead->lead_id = "";
+                
+                // $eachLead->no_po_customer = $eachLead->no_po;
 
-
-       // $sheet->appendRow(array_keys($datas[0]));
-            $sheet->row($sheet->getHighestRow(), function ($row) {
-                $row->setFontWeight('bold');
-            });
-
-             $datasheet = array();
-             $datasheet[0]  =   array("No", "Date", "ID Project", "No. PO customer","No. Quote","Customer Name", "Project Name", "Amount IDR", "Sales");
-             $i=1;
-
-
-            foreach ($datas as $data) {
-              if ($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO') {
-                  $datasheet[$i] = array(
-                    $i,
-                    date_format(date_create($data['date']),'d-M-Y'),
-                    $data['id_project'],
-                    $data['no_po_customer'],
-                    ' - ',
-                    $data['customer_name'],
-                    $data['name_project'],
-                    $data['amount_idr'],
-                    $data['sales_name']
-                    );
-                  
-                  $i++;
-                }else{
-                    $datasheet[$i] = array(
-                        $i,
-                        date_format(date_create($data['date']),'d-M-Y'),
-                        $data['id_project'],
-                        $data['no_po'],
-                        $data['quote_number'],
-                        $data['customer_legal_name'],
-                        $data['opp_name'],
-                        $data['amount_idr'],
-                        $data['name']
-                    
-                    );
-                    // if ($data->no_po == null) {
-                    //     $datasheet[$i] = array(
-                    //         $i,
-                    //         date_format(date_create($data['date']),'d-M-Y'),
-                    //         $data['id_project'],
-                    //         $data['quote_number'],
-                    //         $data['customer_legal_name'],
-                    //         $data['opp_name'],
-                    //         $data['amount_idr'],
-                    //         $data['name']
-                        
-                    //     );
-                    // }else{
-                    //     $datasheet[$i] = array(
-                    //         $i,
-                    //         date_format(date_create($data['date']),'d-M-Y'),
-                    //         $data['id_project'],
-                    //         $data['no_po'],
-                    //         $data['customer_legal_name'],
-                    //         $data['opp_name'],
-                    //         $data['amount_idr'],
-                    //         $data['name']
-                        
-                    //     );
-                    // }              
-                $i++;
-                }
             }
-              
+            $eachLead->date = date("d-m-Y",strtotime($eachLead->date));
+            // $eachLead->result = ($eachLead->result == "" ? "OPEN" : $eachLead->result);
+            $sheet->fromArray(array_merge([$key + 1],array_values($eachLead->toArray())),NULL,'A' . ($key + 3));
+        }
 
-            $sheet->fromArray($datasheet);
-        });
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
 
-        })->export('xls');
+        $fileName = 'ID PROJECT MSP ' . date('Y-m-d') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+
+
+            // foreach ($datas as $data) {
+            //   if ($data->lead_id == 'MSPQUO' || $data->lead_id == 'MSPPO') {
+            //       $datasheet[$i] = array(
+            //         $i,
+            //         date_format(date_create($data['date']),'d-M-Y'),
+            //         $data['id_project'],
+            //         $data['no_po_customer'],
+            //         ' - ',
+            //         $data['customer_name'],
+            //         $data['name_project'],
+            //         $data['amount_idr'],
+            //         $data['sales_name']
+            //         );
+                  
+            //       $i++;
+            //     }else{
+            //         $datasheet[$i] = array(
+            //             $i,
+            //             date_format(date_create($data['date']),'d-M-Y'),
+            //             $data['id_project'],
+            //             $data['no_po'],
+            //             $data['quote_number'],
+            //             $data['customer_legal_name'],
+            //             $data['opp_name'],
+            //             $data['amount_idr'],
+            //             $data['name']
+                    
+            //         );             
+            //     $i++;
+            //     }
+            // }
     }
 }
