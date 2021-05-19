@@ -32,6 +32,32 @@ Route::get('/testEmailTrap',function(){
 });
 
 Route::get('testPermission','TestController@testPermission');
+Route::get('testPermissionConfig','TestController@testPermissionConfig');
+Route::get('permission/getUserList','TestController@getUserList');
+Route::get('permission/getParameter','TestController@getParameter');
+Route::get('permission/getParameterFeature','TestController@getParameterFeature');
+Route::get('permission/getFeatureRole','TestController@getFeatureRole');
+Route::get('permission/setRoles','TestController@setRoles');
+Route::get('permission/setRolesFeature','TestController@setRolesFeature');
+Route::get('permission/getParameterRoles','TestController@getParameterRoles');
+Route::get('permission/getRoles','TestController@getRoles');
+Route::get('permission/getFeature','TestController@getFeature');
+Route::get('permission/addConfigRoles','TestController@addConfigRoles');
+Route::get('permission/addConfigFeature','TestController@addConfigFeature');
+Route::get('permission/getRoleDetail','TestController@getRoleDetail');
+Route::get('permission/getFeatureItem','TestController@getFeatureItem');
+Route::get('permission/getFeatureItemParameter','TestController@getFeatureItemParameter');
+Route::get('permission/changeFeatureItem','TestController@changeFeatureItem');
+
+
+// Route::get('testPermissionConfigFeature','TestController@testPermissionConfigFeature');
+
+Route::get('testRole','TestController2@RoleDynamic');
+Route::get('shoIndex','TestController2@shoIndex');
+
+
+
+
 
 //dinar cantik3
 //dinar cantik
