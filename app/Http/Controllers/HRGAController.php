@@ -2338,7 +2338,9 @@ class HRGAController extends Controller
                     ->groupby('nik');
 
             if ($request->filter_com == 'all') {
-                $cuti = $cuti->get();
+                $cuti = $cuti
+                        ->where('tb_cuti.status','n')
+                        ->get();
             } else {
                 if ($ter != NULL) {
                     if($div == 'SALES' && $pos == 'MANAGER'){
@@ -2394,11 +2396,11 @@ class HRGAController extends Controller
                             ->where('tb_cuti.status','n')
                             ->get();
                     }
-                } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
-                    $cuti = $cuti
-                        ->where('users.id_company',$request->filter_com)
-                        ->where('tb_cuti.status','n')
-                        ->get();
+                // } elseif ($pos == 'HR MANAGER') {
+                //     $cuti = $cuti
+                //         ->where('users.id_company',$request->filter_com)
+                //         ->where('tb_cuti.status','n')
+                //         ->get();
                 } elseif ($pos == 'DIRECTOR') {
                     $cuti = $cuti
                         ->where('users.id_company',$request->filter_com)
