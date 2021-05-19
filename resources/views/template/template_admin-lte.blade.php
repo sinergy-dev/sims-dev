@@ -41,7 +41,8 @@
   <link rel="stylesheet" href="{{asset('template2/bower_components/morris.js/morris.css')}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('template2/dist/css/AdminLTE.min.css')}}">
-  <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet">
+  {{-- Dimatikan sementara sampai di gunakan lagi --}}
+  {{-- <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet"> --}}
   <!-- <link rel="stylesheet" type="text/css" href="codebase/dhtmlxgantt.css"> -->
   <!--Swal-->
   <script src="{{asset('js/sweetalert2.min.js')}}"></script>
@@ -49,10 +50,12 @@
   <script src="{{asset('js/sweetalert2.all.min.js')}}"></script>
   <!-- <script src="http://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script> -->
   <!-- <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script> -->
-  <script src="https://cdn.dhtmlx.com/gantt/edge/sources/dhtmlxgantt.js"></script>
+  {{-- Dimatikan sementara sampai di gunakan lagi --}}
+  {{-- <script src="https://cdn.dhtmlx.com/gantt/edge/sources/dhtmlxgantt.js"></script> --}}
   
   <!-- <script src="codebase/dhtmlxgantt.js"></script> -->
-  <script src="https://export.dhtmlx.com/gantt/api.js"></script>
+  {{-- Dimatikan sementara sampai di gunakan lagi --}}
+  {{-- <script src="https://export.dhtmlx.com/gantt/api.js"></script> --}}
 
   <!-- upload gambar -->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -343,7 +346,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
-
+@yield('scriptImport')
 <!-- DataTables -->
 <script>
   $(function () {
