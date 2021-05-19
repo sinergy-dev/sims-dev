@@ -77,6 +77,10 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	Route::get('/testEmail', 'TestController@send_mail');
 	Route::get('/testRemainderEmail', 'TestController@testRemainderEmail');
+	Route::get('/testNewLead', 'TestController@testNewLead');
+	Route::get('/testAssign', 'TestController@testAssignPresales');
+	Route::get('/testTender', 'TestController@testRaiseToTender');
+
 	Route::get('/testEmailViewSales', 'TestController@view_mail_to_sales');
 	Route::get('/testEmailViewFinance', 'TestController@view_mail_to_finance');
 	Route::get('/testEmailPeminjaman','TestController@testEmailPeminjaman');
