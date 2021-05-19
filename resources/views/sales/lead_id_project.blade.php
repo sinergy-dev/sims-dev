@@ -141,12 +141,14 @@ header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
 </section>
 
 @endsection
-
-@section('script')
+@section('scriptImport')
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
+@endsection
+@section('script')
+
 <script type="text/javascript">
 
   $('.money').mask('000,000,000,000,000', {reverse: true});
