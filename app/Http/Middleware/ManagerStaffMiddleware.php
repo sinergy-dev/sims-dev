@@ -56,6 +56,10 @@ class ManagerStaffMiddleware
         {
             return $next($request);
         }
+        else if (Auth::check() && Auth::User()->id_position == 'WAREHOUSE' && Auth::User()->id_territory == 'OPERATION')
+        {
+            return $next($request);
+        }
         return redirect('/');
     }
 }

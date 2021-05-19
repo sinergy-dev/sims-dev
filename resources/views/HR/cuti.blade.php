@@ -221,7 +221,7 @@
                       <!-- <th>Date of Request</th>
                       <th>Time Off</th> -->
                       <th>Status</th>
-                      <th>action</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -733,8 +733,8 @@
 
           $('#date_start').datepicker({
             weekStart: 1,
-            daysOfWeekDisabled: "0,6",
-            daysOfWeekHighlighted: [0,6],
+            // daysOfWeekDisabled: "0,6",
+            // daysOfWeekHighlighted: [0,6],
             startDate: moment().format("MM/DD/YYYY"),
             todayHighlight: true,
             multidate: true,
@@ -1870,6 +1870,7 @@
     function changeTabs(id) {
       com = ($("#filter_com").val() != undefined ? $("#filter_com").val() : "all") 
       console.log(id)
+      console.log(com)
       if (id == "all_lis") {
         $('#datatables').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com="+com+"&id="+id).load();
       } else if(id == "request") {
