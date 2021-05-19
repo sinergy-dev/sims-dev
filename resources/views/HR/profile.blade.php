@@ -222,6 +222,8 @@
                       @endif
                       </div>
                   </div>
+
+                  <center>
                   <div class="form-group row">
                       <div class="col-md-2">
                         <label style="margin: 12px">NPWP File</label>
@@ -232,6 +234,8 @@
                         </div>
                       </div>
                   </div>
+                  </center>
+
                   <div class="form-group row">
                     <div class="col-md-8">
                       @if($user_profile->ktp_file == "-" || $user_profile->ktp_file == null || $user_profile->ktp_file == "")
@@ -241,16 +245,19 @@
                       @endif
                     </div>
                   </div>
+
+                  <center>
                   <div class="form-group row">
                     <div class="col-md-2">
                       <label style="margin: 12px">KTP</label>
                     </div>
                     <div class="col-md-8">
                       <div class="col-md-4">
-                        <input type="file" id="inputgambarktp" name="ktp_file" value="">
+                        <input type="file" id="inputgambarktp" name="ktp_file" value="{{$user_profile->ktp_file}}">
                       </div>
                     </div>
                   </div>
+                  </center>
                           <!-- <div class="form-group row">
                             <div class="col-md-6">
                               <button class="btn btn-primary pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
@@ -295,6 +302,7 @@
             <div class="form-group">
               <label class="margin-top">Confirm Password</label>
               <input class="form-control" id="new-password-confirm" name="password_confirmation" required type="Password" placeholder="Enter Confirm Password">
+              <h6 style="color: red">*Input must contain at least one digit/lowercase/uppercase/special character letter and be at least eight characters long</h6>
               <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" id="toggle3"></i> -->
             </div> 
              

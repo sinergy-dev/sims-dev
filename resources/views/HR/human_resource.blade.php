@@ -1470,8 +1470,8 @@
 	                    <div class="col-md-8">
 	                        <select id="status_kerja" class="form-control" name="status_kerja" onchange="statusSelect(this)">
 	                            <option value="">-- Select Status --</option>
-	                            <option value="tetap">Karyawan Tetap</option>
-	                            <option value="kontrak">Karyawan Kontrak</option>
+	                            <option value="Tetap">Karyawan Tetap</option>
+	                            <option value="Kontrak">Karyawan Kontrak</option>
 	                        </select>
 	                    </div>
 	                </div>
@@ -1684,8 +1684,8 @@
 		                    <div class="col-md-4">
 		                        <select id="status_kerja_update" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="status_kerja_update" value="{{ old('company') }}" onchange="statusSelect(this)">
 		                            <option value="">-- Select Status --</option>
-		                            <option value="tetap">Karyawan Tetap</option>
-		                            <option value="kontrak">Karyawan Kontrak</option>
+		                            <option value="Tetap">Karyawan Tetap</option>
+		                            <option value="Kontrak">Karyawan Kontrak</option>
 		                        </select>
 		                    </div>
 		                </div>
@@ -2256,25 +2256,39 @@
 	                        <center>
 	                        <div class="form-group row">
 	                            <div class="col-md-12">
-	                                <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;" />
+	                                <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;">
 	                            </div>
 	                        </div>
 	                        </center>
 
 	                        <div class="form-group row">
-	                            <label for="bpjs_kes" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Kesehatan') }}</label>
-
-	                            <div class="col-md-8">
-	                                <input id="inputgambarbpjs_kes_update" type="file" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" class="validate" autofocus>
-	                            </div>
+	                        	<label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('KTP')}}</label>
+	                        	<div class="col-md-8">
+	                        		<input id="inputgambarktp_update" type="file" class="form-control" name="ktp_file" value="{{old('ktp_file')}}" class="validate" autofocus>
+	                        	</div>
 	                        </div>
 
 	                        <center>
+	                        	<div class="form-group row">
+	                        		<div class="col-md-12">
+	                        			<img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarktp_update" style="max-width: 400px; max-height: 400px;">
+	                        		</div>
+	                        	</div>
+	                        </center>
+
 	                        <div class="form-group row">
-	                            <div class="col-md-12">
-	                                <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_kes_update" style="max-width:400px;max-height:400px;" />
-	                            </div>
+	                        	<label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Kesehatan')}}</label>
+	                        	<div class="col-md-8">
+	                        		<input id="inputgambarbpjs_kes_update" type="file" class="form-control" name="bpjs_kes" value="{{old('bpjs_kes')}}" class="validate" autofocus>
+	                        	</div>
 	                        </div>
+
+	                        <center>
+	                        	<div class="form-group row">
+	                        		<div class="col-md-12">
+	                        			<img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_kes_update" style="max-width: 400px; max-height: 400px;">
+	                        		</div>
+	                        	</div>
 	                        </center>
 
 
@@ -2289,7 +2303,7 @@
 	                        <center>
 	                        <div class="form-group row">
 	                            <div class="col-md-12">
-	                                <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_ket_update" style="max-width:400px;max-height:400px;" />
+	                                <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_ket_update" style="max-width:400px;max-height:400px;">
 	                            </div>
 	                        </div>
 	                        </center>
@@ -2388,6 +2402,15 @@
                }
             });
 
+             $.each(result[0], function(key, value){
+            	$("#nik_update_attach").val(value.nik);
+               if (value.ktp_file == null) {
+               	$("#showgambarktp_update").attr("src","http://placehold.it/100x100");
+               } else {
+               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+               }
+            });
+
             $.each(result[0], function(key, value){
             	$("#nik_update_attach").val(value.nik);
                if (value.bpjs_kes == null) {
@@ -2454,16 +2477,21 @@
                } else {
                	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
                }
-               // if (value.bpjs_kes == null) {
-               // 	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
-               // } else {
-               // 	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
-               // }
-               // if (value.bpjs_ket == null) {
-               // 	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
-               // } else {
-               // 	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
-               // }
+               if (value.ktp_file == null) {
+               	$("#showgambarktp_update").attr("src","img/img_nf.png");
+               } else {
+               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+               }
+               if (value.bpjs_kes == null) {
+               	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
+               } else {
+               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+               }
+               if (value.bpjs_ket == null) {
+               	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
+               } else {
+               	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+               }
                
 
                $("#password_update").val(value.password);
@@ -3343,6 +3371,18 @@
   	}
 
   	function readURL(input) {
+		if (input.files && input.files[0]) {
+  			var reader = new FileReader();
+
+  			reader.onload = function (e) {
+  				$('#showgambarktp_update').attr('src', e.target.result);
+  			}
+
+  			reader.readAsDataURL(input.files[0]);
+  		}
+  	}
+
+  	function readURL(input) {
   		if (inpu.files && input.files[0]) {
   			var reader = new FileReader();
 
@@ -3367,6 +3407,10 @@
   	}
 
   	$("#inputgambarnpwp_update").change(function () {
+  		readURL(this);
+  	});
+
+  	$("#inputgambarktp_update").change(function () {
   		readURL(this);
   	});
 
