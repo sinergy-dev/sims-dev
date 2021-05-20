@@ -568,7 +568,7 @@
 		          <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">ALL</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="tech-tab" data-toggle="tab" href="#tech" role="tab" aria-controls="tech" aria-selected="false">TECHNICAL</a>
+		          <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation" role="tab" aria-controls="operation" aria-selected="false">OPERATION</a>
 		        </li>
 		        <li class="nav-item">
 		          <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales" role="tab" aria-controls="sales" aria-selected="false"> SALES</a>
@@ -577,7 +577,7 @@
 		          <a class="nav-link" id="finance-tab" data-toggle="tab" href="#finance" role="tab" aria-controls="finance" aria-selected="false"> FINANCE</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation" role="tab" aria-controls="operation" aria-selected="false"> OPERATION</a>
+		          <a class="nav-link" id="hr-tab" data-toggle="tab" href="#hr" role="tab" aria-controls="hr" aria-selected="false"> HR</a>
 		        </li>
 		      </ul>
 
@@ -647,7 +647,7 @@
 		                </table>
 		            </div> 
 		        </div>
-		        <div class="tab-pane" id="tech" role="tabpanel" aria-labelledby="tech-tab">
+		        <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_tech" width="100%" cellspacing="0">
 		                  <thead>
@@ -660,7 +660,7 @@
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-			                    @if($data->id_division == 'TECHNICAL' || $data->id_division == 'TECHNICAL PRESALES')
+			                    @if($data->group == 'pmo' || $data->group == 'msm' || $data->group == 'presales' || $data->group == 'DVG' || $data->group == 'DPG' || $data->roles == 'Operations Director')
 			                    <tr>
 			                      <td><?=str_replace('/', '', $data->nik)?></td>
 			                      <td>{{ucwords(strtolower($data->name))}}</td>
@@ -732,7 +732,7 @@
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->id_division == 'SALES')
+		                    @if($data->group == 'sales' || $data->roles == 'President Director')
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
@@ -756,7 +756,7 @@
 		                </table>
 		            </div>
 		        </div>
-		        <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
+		        <div class="tab-pane" id="hr" role="tabpanel" aria-labelledby="hr-tab">
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_operation" width="100%" cellspacing="0">
 		                  <thead>
@@ -769,7 +769,7 @@
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->id_territory == 'OPERATION')
+		                    @if($data->group == 'hr')
 		                    <tr>
 		                      <td><?=str_replace('/', '', $data->nik)?></td>
 		                      <td>{{ucwords(strtolower($data->name))}}</td>
