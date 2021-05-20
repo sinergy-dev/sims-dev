@@ -215,6 +215,7 @@ class HRController extends Controller
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
+                ->where('roles.name', '!=', 'PMO Admin')
                 ->get();
 
         $hr_msp = DB::table('users')
