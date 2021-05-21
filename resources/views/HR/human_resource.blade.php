@@ -568,16 +568,19 @@
 		          <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="true">ALL</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation" role="tab" aria-controls="operation" aria-selected="false">OPERATION</a>
-		        </li>
-		        <li class="nav-item">
 		          <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales" role="tab" aria-controls="sales" aria-selected="false"> SALES</a>
 		        </li>
 		        <li class="nav-item">
 		          <a class="nav-link" id="finance-tab" data-toggle="tab" href="#finance" role="tab" aria-controls="finance" aria-selected="false"> FINANCE</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link" id="hr-tab" data-toggle="tab" href="#hr" role="tab" aria-controls="hr" aria-selected="false"> HR</a>
+		          <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation" role="tab" aria-controls="operation" aria-selected="false">OPERATION</a>
+		        </li>
+		        <li class="nav-item">
+		          <a class="nav-link" id="hr-tab" data-toggle="tab" href="#hr" role="tab" aria-controls="hr" aria-selected="false">HR</a>
+		        </li>
+		        <li class="nav-item">
+		          <a class="nav-link" id="resign-tab" data-toggle="tab" href="#resign" role="tab" aria-controls="resign" aria-selected="false">RESIGN</a>
 		        </li>
 		      </ul>
 
@@ -647,9 +650,9 @@
 		                </table>
 		            </div> 
 		        </div>
-		        <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
+		        <div class="tab-pane" id="sales" role="tabpanel" aria-labelledby="sales-tab">
 		            <div class="table-responsive">
-		                <table class="table table-bordered table-striped dataTable" id="data_tech" width="100%" cellspacing="0">
+		                <table class="table table-bordered table-striped dataTable" id="data_sales" width="100%" cellspacing="0">
 		                  <thead>
 		                    <tr>
 		                      <th>NIK</th>
@@ -660,25 +663,25 @@
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-			                    @if($data->group == 'pmo' || $data->group == 'msm' || $data->group == 'presales' || $data->group == 'DVG' || $data->group == 'DPG' || $data->roles == 'Operations Director')
-			                    <tr>
-			                      <td><?=str_replace('/', '', $data->nik)?></td>
-			                      <td>{{ucwords(strtolower($data->name))}}</td>
-			                      @if($data->id_position != '')
-			                      <td>
-			                       {{$data->roles}}
-			                      </td>
-			                      @else
-			                      <td>&#8212</td>
-			                      @endif
-			                      <td>
-			                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+		                    @if($data->group == 'sales' || $data->roles == 'President Director')
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      @if($data->id_position != '')
+		                      <td>
+		                        {{$data->roles}}
+		                      </td>
+		                      @else
+		                      <td>&#8212</td>
+		                      @endif
+		                      <td>
+		                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
-			                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-			                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
-			                      </td>
-			                    </tr>
-			                    @endif
+		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                      </td>
+		                    </tr>
+		                    @endif
 		                    @endforeach
 		                  </tbody>
 		                </table>
@@ -719,9 +722,9 @@
 		                </table>
 		            </div>
 		        </div>
-		        <div class="tab-pane" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+		        <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
 		            <div class="table-responsive">
-		                <table class="table table-bordered table-striped dataTable" id="data_sales" width="100%" cellspacing="0">
+		                <table class="table table-bordered table-striped dataTable" id="data_tech" width="100%" cellspacing="0">
 		                  <thead>
 		                    <tr>
 		                      <th>NIK</th>
@@ -732,25 +735,25 @@
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-		                    @if($data->group == 'sales' || $data->roles == 'President Director')
-		                    <tr>
-		                      <td><?=str_replace('/', '', $data->nik)?></td>
-		                      <td>{{ucwords(strtolower($data->name))}}</td>
-		                      @if($data->id_position != '')
-		                      <td>
-		                        {{$data->roles}}
-		                      </td>
-		                      @else
-		                      <td>&#8212</td>
-		                      @endif
-		                      <td>
-		                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+			                    @if($data->group == 'pmo' || $data->group == 'msm' || $data->group == 'presales' || $data->group == 'DVG' || $data->group == 'DPG' || $data->roles == 'Operations Director')
+			                    <tr>
+			                      <td><?=str_replace('/', '', $data->nik)?></td>
+			                      <td>{{ucwords(strtolower($data->name))}}</td>
+			                      @if($data->id_position != '')
+			                      <td>
+			                       {{$data->roles}}
+			                      </td>
+			                      @else
+			                      <td>&#8212</td>
+			                      @endif
+			                      <td>
+			                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
-		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
-		                      </td>
-		                    </tr>
-		                    @endif
+			                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+			                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+			                      </td>
+			                    </tr>
+			                    @endif
 		                    @endforeach
 		                  </tbody>
 		                </table>
@@ -790,6 +793,43 @@
 		                      </td>
 		                    </tr>
 		                    @endif
+		                    @endforeach
+		                  </tbody>
+		                </table>
+		            </div>
+		        </div>
+		        <div class="tab-pane" id="resign" role="tabpanel" aria-labelledby="resign-tab">
+		            <div class="table-responsive">
+		                <table class="table table-bordered table-striped dataTable" id="data_resign" width="100%" cellspacing="0">
+		                  <thead>
+		                    <tr>
+		                      <th>NIK</th>
+		                      <th>Employees Name</th>
+		                      <th>Position</th>
+		                      <th>Action</th>
+		                    </tr>
+		                  </thead>
+		                  <tbody>
+		                    @foreach($data_resign as $data)
+		                    <tr>
+		                      <td><?=str_replace('/', '', $data->nik)?></td>
+		                      <td>{{ucwords(strtolower($data->name))}}</td>
+		                      @if($data->id_position != '')
+		                      <td>
+		                         {{$data->roles}}
+		                      </td>
+		                      @else
+		                      <td>&#8212</td>
+		                      @endif
+		                      <td>
+		                        <!-- <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button> -->
+
+		                        <button class="btn btn-xs btn-primary btn-editan2" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspShow</button>
+
+		                        <!-- <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+		                        <i class="fa fa-trash"></i>&nbspDelete</button></a> -->
+		                      </td>
+		                    </tr>
 		                    @endforeach
 		                  </tbody>
 		                </table>
@@ -1677,7 +1717,7 @@
 		                <div class="form-group row">
 		                    <label for="status_karyawan" class="col-md-4 col-form-label text-md-right">{{ __('Employee Status') }}</label>
 
-		                    <div class="col-md-4">
+		                    <div class="col-md-4" id="div_status_karyawan_update">
 		                    	<input id="status_karyawan_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
 		                	</div>
 
@@ -1707,7 +1747,7 @@
 		                <div class="form-group row">
 		                    <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company') }}</label>
 
-		                    <div class="col-md-4">
+		                    <div class="col-md-4" id="div_company_view_update">
 		                    	<input id="company_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
 		                	</div>
 
@@ -1729,7 +1769,7 @@
 		                <div class="form-group row">
 		                    <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
 
-		                    <div class="col-md-4">
+		                    <div class="col-md-4" id="div_divisi_view_update">
 		                    	<input id="divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
 		                	</div>
 
@@ -1748,7 +1788,7 @@
 		                <div class="form-group row">
 		                    <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
 
-		                    <div class="col-md-4">
+		                    <div class="col-md-4" id="div_subdivisi_view_update">
 		                    	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
 		                	</div>
 
@@ -1767,7 +1807,7 @@
 		                <div class="form-group row">
 		                    <label for="posisi" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
 
-		                    <div class="col-md-4">
+		                    <div class="col-md-4" id="div_posisi_view_update">
 		                    	<input id="posisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
 		                	</div>
 
@@ -2511,6 +2551,100 @@
         $("#modal_update").modal("show");
     });
 
+    $('.btn-editan2').click(function(){
+        $.ajax({
+          type:"GET",
+          url:"{{url('/hu_rec/get_hu')}}",
+          data:{
+            id_hu:this.value,
+          },
+          "processing": true,
+	      "language": {
+            'loadingRecords': '&nbsp;',
+            'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+          },
+          success: function(result){
+            $.each(result[0], function(key, value){
+               $("#nik_update").val(value.nik).prop("readonly", true);
+               $("#name_update").val(value.name).prop("readonly", true);
+               $("#email_update").val(value.email).prop("readonly", true);
+               $("#date_of_entry_update").val(value.date_of_entry).prop("readonly", true);
+               $("#date_of_birth_update").val(value.date_of_birth).prop("readonly", true);
+               $("#akhir_kontrak_update").val(value.akhir_kontrak).prop("readonly", true);
+               $("#address_update").val(value.address).prop("readonly", true);
+               $("#phone_number_update").val(value.phone).prop("readonly", true);
+               $("#no_ktp_update").val(value.no_ktp).prop("readonly", true);
+               $("#no_kk_update").val(value.no_kk).prop("readonly", true);
+               $("#no_npwp_update").val(value.no_npwp).prop("readonly", true);
+               $("#tempat_lahir_update").val(value.tempat_lahir).prop("readonly", true);
+               $("#email_personal_update").val(value.email_pribadi).prop("readonly", true);
+               $("#bpjs_ket_update").val(value.bpjs_ket).prop("readonly", true);
+               $("#bpjs_kes_update").val(value.bpjs_kes).prop("readonly", true);
+               $("#address_ktp_update").val(value.alamat_ktp).prop("readonly", true);
+               $("#pend_terakhir_update").val(value.pend_terakhir).prop("readonly", true);
+               if (value.status_kerja == 'Tetap') {
+               	$("#status_karyawan_update").val("Karyawan Tetap").prop("readonly", true);
+               }else if (value.status_kerja == 'Kontrak') {
+               	$("#status_karyawan_update").val("Karyawan Kontrak").prop("readonly", true);
+               }else{
+               	$("#status_karyawan_update").val("").prop("readonly", true);
+               }
+               if (value.npwp_file == null) {
+               	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
+               } else {
+               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+               }
+               if (value.ktp_file == null) {
+               	$("#showgambarktp_update").attr("src","img/img_nf.png");
+               } else {
+               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+               }
+               if (value.bpjs_kes == null) {
+               	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
+               } else {
+               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+               }
+               if (value.bpjs_ket == null) {
+               	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
+               } else {
+               	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+               }
+               
+
+               $("#password_update").val(value.password).prop("readonly", true);
+               $("#divisi_view_update").val(value.id_division).prop("readonly", true);
+               $("#subdivisi_view_update").val(value.id_territory).prop("readonly", true);
+               if (value.id_company == '1') {
+               	$("#company_view_update").val("SIP").prop("readonly", true);
+               }else{
+               	$("#company_view_update").val("MSP").prop("readonly", true);
+               }
+               $("#posisi_view_update").val(value.id_position).prop("readonly", true);
+
+               
+            });
+
+          }
+        }); 
+        $(".btn-submit-update").hide();
+        $("#status_kerja_update").hide();
+        $("#company_update").hide();
+        $("#divisi_update").hide();
+        $("#sub_divisi_update").hide();
+        $("#posisi_update").hide();
+        $('#div_company_view_update').removeClass('col-md-4');
+        $('#div_company_view_update').addClass('col-md-8');
+        $('#div_status_karyawan_update').removeClass('col-md-4');
+        $('#div_status_karyawan_update').addClass('col-md-8');
+        $('#div_divisi_view_update').removeClass('col-md-4');
+        $('#div_divisi_view_update').addClass('col-md-8');
+        $('#div_subdivisi_view_update').removeClass('col-md-4');
+        $('#div_subdivisi_view_update').addClass('col-md-8');
+        $('#div_posisi_view_update').removeClass('col-md-4');
+        $('#div_posisi_view_update').addClass('col-md-8');
+        $("#modal_update").modal("show");
+    });
+
     $(".toggle-password").click(function() {
         $(this).toggleClass("fa-eye fa-eye-slash");
         var x = document.getElementById("password");
@@ -3086,6 +3220,9 @@
     } );
 
   	var table6 = $('#data_operation').DataTable( {
+    } );
+
+    var table7 = $('#data_resign').DataTable( {
     } );
 
 
