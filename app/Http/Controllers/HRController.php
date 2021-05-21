@@ -218,6 +218,17 @@ class HRController extends Controller
                 ->where('roles.name', '!=', 'PMO Admin')
                 ->get();
 
+        $data_resign = DB::table('users')
+                ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                ->join('role_user','users.nik','=','role_user.user_id')
+                ->join('roles','role_user.role_id','=','roles.id')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja','roles.name as roles','roles.group')
+                ->where('users.email','!=','dev@sinergy.co.id')
+                ->where('tb_company.id_company','1')
+                ->where('status_delete','D')
+                ->where('roles.name', '!=', 'PMO Admin')
+                ->get();
+
         $hr_msp = DB::table('users')
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                 ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja')
@@ -228,7 +239,7 @@ class HRController extends Controller
 
         $code = $request['code_input'];        
 
-        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
+        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim', 'data_resign'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
     }
 
     public function getemps(Request $request)
