@@ -408,7 +408,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>List Request Date Off</label>
+                    <label>List Request Date Off<i style="color: red">(mark date for approve)</i></label>
                     <table class="table table-bordered" id="detil_cuy" style="margin-top: 10px">
                       <tbody id="tanggal_cuti" class="tanggal_cuti">
                         
@@ -416,6 +416,8 @@
                     </table>
 
                     <input type="text" id="cuti_fix" name="cuti_fix" hidden>
+                    <input type="text" id="cuti_fix_accept" name="cuti_fix_accept" hidden> 
+                    <input type="text" id="cuti_fix_reject" name="cuti_fix_reject" hidden> 
                 </div>
 
                 <div class="form-group" style="display: none;" id="alasan_reject">
@@ -733,8 +735,8 @@
 
           $('#date_start').datepicker({
             weekStart: 1,
-            // daysOfWeekDisabled: "0,6",
-            // daysOfWeekHighlighted: [0,6],
+            daysOfWeekDisabled: "0,6",
+            daysOfWeekHighlighted: [0,6],
             startDate: moment().format("MM/DD/YYYY"),
             todayHighlight: true,
             multidate: true,
@@ -843,6 +845,59 @@
       })
     })
 
+   //  $(document).on('click',"button[class^='approve_date']",function(e) {
+   //      $.ajax({
+   //        type:"GET",
+   //        url:'{{url("/detilcuti")}}',
+   //        data:{
+   //          cuti:this.value,
+   //        },
+   //        success: function(result){
+   //          var table = "";
+
+   //          $.each(result[0], function(key, value){
+   //            $("#id_cuti_detil").val(value.id_cuti);
+   //            $("#nik_cuti").val(value.nik);
+   //            $("#date_request_detil").val(moment(value.date_req).format('LL'));
+   //            $("#reason_detil").val(value.reason_leave);
+   //            $("#time_off").val(value.days);
+   //            $('#tanggal_cuti').empty();
+   //            table = table + '<tr>';
+   //            table = table + '<td>' + '<input type="checkbox" class="check_date" checked name="check_date[]"' +'</td>';
+   //            table = table + '<td hidden>' + value.date_off +'</td>';
+   //            table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
+   //            table = table + '</tr>';
+              
+   //          });
+
+   //          console.log(result[0].length);
+   //          var date_check = result[0].length;
+
+   //          $('#tanggal_cuti').append(table);
+
+   //          var countChecked = function() {
+			//   var n = $( ".check_date:checked" ).length;
+			//   console.log( n + (n === 1 ? " is" : " are") + " checked!")
+
+			//   if (date_check != $( ".check_date:checked" ).length) {
+			//   	$("#alasan_reject").css("display", "block");
+			//   	$("#reason_reject").prop('required',true);
+			//   }else{
+			//   	$("#alasan_reject").css("display", "none");
+			//   	$("#reason_reject").prop('required',false);
+			//   }
+
+			// };
+			// countChecked();
+			 
+			//  $( ".check_date" ).on( "click", countChecked );
+
+   //        }
+   //      });
+
+   //      $("#detail_cuti").modal("show");
+   //  });
+
     $(document).on('click',"button[class^='approve_date']",function(e) {
         $.ajax({
           type:"GET",
@@ -851,49 +906,74 @@
             cuti:this.value,
           },
           success: function(result){
-            var table = "";
+                var table = "";
 
-            $.each(result[0], function(key, value){
-              $("#id_cuti_detil").val(value.id_cuti);
-              $("#nik_cuti").val(value.nik);
-              $("#date_request_detil").val(moment(value.date_req).format('LL'));
-              $("#reason_detil").val(value.reason_leave);
-              $("#time_off").val(value.days);
-              $('#tanggal_cuti').empty();
-              table = table + '<tr>';
-              table = table + '<td>' + '<input type="checkbox" class="check_date" checked name="check_date[]"' +'</td>';
-              table = table + '<td hidden>' + value.date_off +'</td>';
-              table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
-              table = table + '</tr>';
+                var date_default = []
+
+              $.each(result[0], function(key, value){
+                  $("#id_cuti_detil").val(value.id_cuti);
+                  $("#nik_cuti").val(value.nik);
+                  $("#date_request_detil").val(moment(value.date_req).format('LL'));
+                  $("#reason_detil").val(value.reason_leave);
+                  $("#time_off").val(value.days);
+                  $('#tanggal_cuti').empty();
+                  table = table + '<tr>';
+                  table = table + '<td style="width:10%">' + '<input type="checkbox" class="check_date" name="check_date[]"' +'</td>';
+                  table = table + '<td style="display:none">' + value.idtb_cuti_detail +'</td>';              
+                  table = table + '<td style="display:none">' + value.date_off +'</td>';
+                  table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
+                  table = table + '</tr>';
+                  
+                  date_default.push(value.date_off)
+                  $("#cuti_fix_reject").val(date_default)
+                });                
+
+                console.log(result[0].length);
+                var date_check = result[0].length;
+
+                $('#tanggal_cuti').append(table);
+
+                var countChecked = function() {
+                var n = $( ".check_date:checked" ).length;
+                console.log( n + (n === 1 ? " is" : " are") + " checked!")
+
+                if (date_check != $( ".check_date:checked" ).length) {
+                  $("#alasan_reject").css("display", "block");
+                  $("#reason_reject").prop('required',true);
+                }else{
+                  $("#alasan_reject").css("display", "none");
+                  $("#reason_reject").prop('required',false);
+                }
+              };
+              // countChecked();
+             
+              $(".check_date").on("click", function(){  
+                  countChecked()
+                  $("#cuti_fix_accept").val("")
+                  $("#cuti_fix_reject").val("")
+                  var accept = [];
+                  var selector1 = '#detil_cuy tr input:checked'; 
+                  var reject = [];
+                  var selector2 = '#detil_cuy tr input:checkbox:not(:checked)'
+                  console.log('check')
+                  $.each($(selector1), function(idx, val) {
+                    var id = $(this).parent().siblings(":first").text();
+                    accept.push(id);
+                    console.log($(this).parent().siblings(":first").text())
+                    $("#cuti_fix_accept").val(accept)
+                  });
+                  $.each($(selector2), function(idx, val) {   
+                    var id = $(this).parent().siblings(":first").text();                    
+                    reject.push(id);
+                    console.log($(this).parent().siblings(":first").text())
+                    $("#cuti_fix_reject").val(reject)
+                  });
               
-            });
-
-            console.log(result[0].length);
-            var date_check = result[0].length;
-
-            $('#tanggal_cuti').append(table);
-
-            var countChecked = function() {
-			  var n = $( ".check_date:checked" ).length;
-			  console.log( n + (n === 1 ? " is" : " are") + " checked!")
-
-			  if (date_check != $( ".check_date:checked" ).length) {
-			  	$("#alasan_reject").css("display", "block");
-			  	$("#reason_reject").prop('required',true);
-			  }else{
-			  	$("#alasan_reject").css("display", "none");
-			  	$("#reason_reject").prop('required',false);
-			  }
-
-			};
-			countChecked();
-			 
-			$( ".check_date" ).on( "click", countChecked );
-
-          }
+              })
+            }
         });
 
-        $("#detail_cuti").modal("show");
+            $("#detail_cuti").modal("show");
     });
     
     $(document).on('click',"button[id^='btn-edit']",function(e) {
@@ -926,9 +1006,11 @@
 
               $("#Dates").datepicker({
                 weekStart: 1,
-                daysOfWeekDisabled: "0,6",
+                // daysOfWeekDisabled: "0,6",
                 daysOfWeekHighlighted: [0,6],
-                startDate: moment().format("MM/DD/YYYY"),
+                minDate:'0',
+                startDate: moment().format("YYYY-MM-DD"),
+                format: 'yyyy-mm-dd',
                 todayHighlight: true,
                 multidate: true,
                 datesDisabled: disableDate,
@@ -973,7 +1055,7 @@
 
         Swal.fire({
           title: 'Are you sure?',
-          text: "to update your leaving permit",
+          text: "to update your leaving permite",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -1010,7 +1092,7 @@
                 Swal.showLoading()
                 Swal.fire(
                   'Updated!',
-                  'Leaving permit has been update.',
+                  'Leaving permite has been update.',
                   'success'
                 ).then((result) => {
                   if (result.value) {
@@ -1090,18 +1172,74 @@
     $('#cutis a[href="' + hash + '"]').tab('show');
 
 
-    $('#submit_approve').click(function(){
-      var updates = [];
-      var selector = '#detil_cuy tr input:checked'; 
-      $.each($(selector), function(idx, val) {
-        var id = $(this).parent().siblings(":first").text();
-        updates.push(id);
-      });
+    // $('#submit_approve').click(function(){
+    //   var updates = [];
+    //   var selector = '#detil_cuy tr input:checked'; 
+    //   $.each($(selector), function(idx, val) {
+    //     var id = $(this).parent().siblings(":first").text();
+    //     updates.push(id);
+    //   });
 
-      $("#cuti_fix").val(updates.join(","));
+    //   $("#cuti_fix").val(updates.join(","));
 
+    //   Swal.fire({
+    //     title: 'Approve Cuti',
+    //     text: "kamu yakin?",
+    //     icon: 'warning',
+    //     showCancelButton: true,
+    //     confirmButtonColor: '#3085d6',
+    //     cancelButtonColor: '#d33',
+    //     confirmButtonText: 'Yes',
+    //     cancelButtonText: 'No',
+    //   }).then((result) => {
+    //     if (result.value) {
+    //       Swal.fire({
+    //         title: 'Please Wait..!',
+    //         text: "It's updating..",
+    //         allowOutsideClick: false,
+    //         allowEscapeKey: false,
+    //         allowEnterKey: false,
+    //         customClass: {
+    //           popup: 'border-radius-0',
+    //         },
+    //         onOpen: () => {
+    //           Swal.showLoading()
+    //         }
+    //       })
+    //       $.ajax({
+    //         type:"POST",
+    //         url:"{{url('approve_cuti')}}",
+    //         data:{
+    //           _token:"{{csrf_token()}}",
+    //           id_cuti_detil:$('#id_cuti_detil').val(),
+
+    //           nik_cuti:$('#nik_cuti').val(),
+    //           reason_reject:$('#reason_reject').val(),
+    //           cuti_fix:$('#cuti_fix').val()
+    //         },
+    //         success: function(result){
+    //           Swal.showLoading()
+    //           Swal.fire(
+    //             'Successfully!',
+    //             'success'
+    //           ).then((result) => {
+    //             if (result.value) {
+    //               location.reload()
+    //               $("#detail_cuti").modal('toggle')
+    //             }
+    //           })
+    //         },
+    //       });
+    //     }        
+    //   })
+
+    //   // document.getElementById("cuti_fix").innerHTML = updates.join(",") ;
+    // })
+
+    $('#submit_approve').click(function(){  
+      // $("#cuti_fix").val(updates.join(","));
       Swal.fire({
-        title: 'Approve Cuti',
+        title: 'Submit',
         text: "kamu yakin?",
         icon: 'warning',
         showCancelButton: true,
@@ -1130,10 +1268,11 @@
             data:{
               _token:"{{csrf_token()}}",
               id_cuti_detil:$('#id_cuti_detil').val(),
-
               nik_cuti:$('#nik_cuti').val(),
               reason_reject:$('#reason_reject').val(),
-              cuti_fix:$('#cuti_fix').val()
+              // cuti_fix:$('#cuti_fix').val()
+              cuti_fix_accept:$('#cuti_fix_accept').val(),
+              cuti_fix_reject:$('#cuti_fix_reject').val()
             },
             success: function(result){
               Swal.showLoading()
@@ -1167,12 +1306,11 @@
 
     var start_date = moment().startOf('year');
     var end_date = moment().endOf('year');
-
     var monthCuti;
 
     get_list_cuti();
     get_cuti_byMonth();
-    get_history_cuti(); 
+    get_history_cuti($("#filter_com").val(),"alldeh",moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
 
     function get_cuti_byMonth(){
       monthCuti = $("#datatablew").DataTable({
@@ -1215,7 +1353,7 @@
           {
             render: function (data, type, row) {
               if({{Auth::User()->nik}} == row.nik){
-                if( row.status == 'n'){
+                if(row.status == 'n' || row.status == 'R'){
                   return '<button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
                   '<button class="btn btn-sm btn-danger fa fa-trash btn_delete" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Delete" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
                   '<button class="btn btn-sm btn-success fa fa-paper-plane btn_fu" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>'
@@ -1258,9 +1396,16 @@
       })
     }
 
-    function get_history_cuti(){
+    function get_history_cuti(com,division,date_start,date_end){
       $("#datatableq").DataTable({
+        "destroy":true,
         "ajax":{
+          "data":{
+            "com":com,
+            "start_date":date_start,
+            "end_date":date_end,
+            "division":division
+          },
           "type":"GET",
           "url":"{{url('get_history_cuti')}}",
         },
@@ -1348,10 +1493,11 @@
               'Deleted!',
               'Your file has been deleted.',
               'success'
-            ),
-                setTimeout(function(){
-                    $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
-                },2000);
+            ),  
+              location.reload()                
+                // setTimeout(function(){
+                //     $('#datatablew').DataTable().ajax.url("{{url('get_cuti_byMonth')}}").load();
+                // },2000);
               }
             })
         }
@@ -1545,7 +1691,6 @@
               },
         });
 
-        
     }
 
     cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val());
@@ -1557,8 +1702,13 @@
         format: 'MM/DD/YYYY'
       },
       }, function(start, end, label) {
+        date_start  = moment(start).format("YYYY-MM-DD")
+        date_end    = moment(end).format("YYYY-MM-DD")
+        
         var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
-        cb(start,end,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id=" + companyString,$("#division_cuti").val())
+        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),date_start,date_end)
+
+        // cb(start,end,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id=" + companyString,$("#division_cuti").val())
     });
 
     $("#pilih").change(function(){
@@ -1744,7 +1894,11 @@
                 $("#reason_detils").val(value.reason_leave);
                 $('#tanggal_cutis').empty();
                 table = table + '<tr>';
-                table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
+                if (value.status_detail == 'ACCEPT') {
+                  table = table + '<td>' + moment(value.date_off).format('LL') +' <b style="color:green">('+ value.status_detail +')</b></td>'
+                }else{
+                  table = table + '<td>' + moment(value.date_off).format('LL') +' <b style="color:red">('+ value.status_detail +')</b></td>'
+                }
                 table = table + '</tr>';
               });
 
@@ -1772,7 +1926,11 @@
               $("#reason_detils").val(value.reason_leave);
               $('#tanggal_cutis').empty();
               table = table + '<tr>';
-              table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
+              if (value.status_detail == 'ACCEPT') {
+                table = table + '<td>' + moment(value.date_off).format('LL') +' <b style="color:green">('+ value.status_detail +')</b></td>'
+              }else{
+                table = table + '<td>' + moment(value.date_off).format('LL') +' <b style="color:red">('+ value.status_detail +')</b></td>'
+              }
               table = table + '</tr>';
 
               if (value.decline_reason != null) {
@@ -1856,15 +2014,22 @@
         }
         
       } else {
-        $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
+        // cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString,$("#division_cuti").val());
+
+        // $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
+        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
+        // $("#filter_com").val()
       }
     });
 
     $("#division_cuti").change(function(){
       var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
-      var start_date = $('#datesReport').data('daterangepicker').startDate
-      var end_date = $('#datesReport').data('daterangepicker').endDate
-      cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id="+companyString,this.value);
+      // var start_date = $('#datesReport').data('daterangepicker').startDate
+      // var end_date = $('#datesReport').data('daterangepicker').endDate
+      get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
+
+      // $('#datatableq').DataTable().ajax.url("{{url('get_history_cuti')}}?filter_com=1&id="+companyString+"&division="+this.value).load();
+      // cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id="+companyString,this.value);
     });
 
     function changeTabs(id) {
@@ -1888,7 +2053,10 @@
           cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
         }
       } else {
-        $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
+          // cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
+
+        // $('#datatableq').DataTable().ajax.url("{{url('get_history_cuti')}}?filter_com=1&id="+id).load();
+        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
       }
     }
 
