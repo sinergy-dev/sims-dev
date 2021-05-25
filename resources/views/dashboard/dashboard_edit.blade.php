@@ -277,7 +277,7 @@
     <div class="row">
 		@if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
         @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-        <div class="col-lg-6 col-xs-6">
+        <div class="col-lg-6 col-xs-12">
           	<div class="box box-primary">
             <div class="box-header with-border">
               <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
@@ -348,7 +348,7 @@
       @endif
 
       @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
-        <div class="col-lg-6 col-xs-6">
+        <div class="col-lg-6 col-xs-12">
           <div class="box box-primary">
             <div class="box-header with-border">
               <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
