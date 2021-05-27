@@ -384,7 +384,7 @@
       @endif    	      
     </div>
     <div class="row">
-      	<div class="col-lg-8 col-xs-12">
+      	<div class="col-lg-6 col-xs-12">
 	        <div class="box box-primary">
 	          <div class="box-header with-border">
 	            <h3 class="box-title">Total Amount Lead Register (Deal Price)</h3>
@@ -395,7 +395,34 @@
 	        </div>
       	</div>
 
-      	<div class="col-lg-4 col-xs-12">
+      	<div class="col-lg-6 col-xs-12">
+	        <div class="box box-success">
+	          <div class="box-header with-border">
+	            <h3 class="box-title">Total Lead Register</h3>
+	          </div>
+	          <div class="box-body">
+	            <div class="row">
+	              <div class="col-lg-12 col-xs-12">
+	                <canvas id="myBarChart"></canvas>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
+	    </div>
+    </div>
+    <div class="row">
+    	<div class="col-lg-6 col-xs-12">
+	        <div class="box box-warning">
+	          <div class="box-header with-border">
+	            <h3 class="box-title">Total Amount Lead Register (By Status)</h3>
+	          </div>
+	          <div class="box-body">
+	            <canvas id="barChartByStatus"></canvas>
+	          </div>
+	        </div>
+      	</div>
+
+      	<div class="col-lg-3 col-xs-12">
         	<div class="box box-danger">
           		<div class="box-header with-border">
             		<h3 class="box-title">Win/Lose</h3>
@@ -415,33 +442,17 @@
 	          </div>
         	</div>
       	</div>
-    </div>
-    <div class="row">
-      <div class="col-lg-8 col-xs-12">
-        <div class="box box-success">
-          <div class="box-header with-border">
-            <h3 class="box-title">Total Lead Register</h3>
-          </div>
-          <div class="box-body">
-            <div class="row">
-              <div class="col-lg-12 col-xs-12">
-                <canvas id="myBarChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="col-lg-4 col-xs-12">
-        <div class="box box-primary">
-          <div class="box-header with-border">
-            <h3 class="box-title">Status Lead Register</h3>
-          </div>
-          <div class="box-body">
-            <canvas id="myPieChart" width="100%" height="100%"></canvas>
-          </div>
-        </div>
-      </div>
+	    <div class="col-lg-3 col-xs-12">
+	        <div class="box box-primary">
+	          <div class="box-header with-border">
+	            <h3 class="box-title">Status Lead Register</h3>
+	          </div>
+	          <div class="box-body">
+	            <canvas id="myPieChart" width="100%" height="100%"></canvas>
+	          </div>
+	        </div>
+	    </div>
     </div>
   @endif
 	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -641,26 +652,173 @@
     var ctx14 = document.getElementById("AreaChart2019")
     var ctx15 = document.getElementById("myPieChartEmpty");
     var ctx16 = document.getElementById("AreaChart2018");
+    var ctx17 = document.getElementById("barChartByStatus");
 
     $.ajax({
-          type:"GET",
-          url:"getChart",
-          success:function(result){
+    	type:"GET",
+    	url:"getChartByStatus",
+    	success:function(result){
+    		console.log(result)
+    		var INITIAL = result.data.map(function(e) {
+		    	return e.INITIAL
+			})
+
+			var OPEN = result.data.map(function(e) {
+		    	return e.OPEN
+			})
+
+			var SD = result.data.map(function(e) {
+		    	return e.SD
+			})
+
+			var TP = result.data.map(function(e) {
+		    	return e.TP
+			})
+
+			var WIN = result.data.map(function(e) {
+		    	return e.WIN
+			})
+
+			var LOSE = result.data.map(function(e) {
+		    	return e.LOSE
+			})
+
+			var amount_INITIAL = result.data.map(function(e) {
+		    	return e.amount_INITIAL
+			})
+
+			var amount_OPEN = result.data.map(function(e) {
+		    	return e.amount_OPEN
+			})
+
+			var amount_SD = result.data.map(function(e) {
+		    	return e.amount_SD
+			})
+
+			var amount_TP = result.data.map(function(e) {
+		    	return e.amount_TP
+			})
+
+			var amount_WIN = result.data.map(function(e) {
+		    	return e.amount_WIN
+			})
+
+			var amount_LOSE = result.data.map(function(e) {
+		    	return e.amount_LOSE
+			})
+
+    		var babarChartByStatus = new Chart(ctx17, {
+			    type: 'bar',
+			    data: {
+		            labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Desember"],
+		            labels2:[amount_INITIAL,amount_OPEN,amount_SD,amount_TP,amount_WIN,amount_LOSE],	    	
+				    datasets: [{
+				        // barPercentage: 0.5,
+				        // barThickness: 6,
+				        // maxBarThickness: 10,
+				        // minBarLength: 4,
+				        label: "INITIAL",
+			            backgroundColor: "#7735a3",
+			            borderColor: "#7735a3",
+				        data: INITIAL,
+				    },
+				    {
+				        // barPercentage: 0.5,
+				        // barThickness: 6,
+				        // maxBarThickness: 8,
+				        // minBarLength: 2,
+				        label: "OPEN",
+			            backgroundColor: "#f2562b",
+			            borderColor: "#f2562b",
+				        data: OPEN
+				    },
+				    {
+				        // barPercentage: 0.5,
+				        // barThickness: 6,
+				        // maxBarThickness: 8,
+				        // minBarLength: 2,
+				        label: "SD",
+			            backgroundColor: "#04dda3",
+			            borderColor: "#04dda3",
+				        data: SD
+				    },
+				    {
+				        // barPercentage: 0.5,
+				        // barThickness: 6,
+				        // maxBarThickness: 8,
+				        // minBarLength: 2,
+				        label: "TP",
+			            backgroundColor: "#f7e127",
+			            borderColor: "#f7e127",
+				        data: TP
+				    },
+				    {
+				        // barPercentage: 0.5,
+				        // barThickness: 6,
+				        // maxBarThickness: 8,
+				        // minBarLength: 2,
+				        label: "WIN",
+			            backgroundColor: "#246d18",
+			            borderColor: "#246d18",
+				        data: WIN
+				    },
+				    {
+				        // barPercentage: 0.5,
+				        // barThickness: 6,
+				        // maxBarThickness: 8,
+				        // minBarLength: 2,
+				        label: "LOSE",
+			            backgroundColor: "#e5140d",
+			            borderColor: "#e5140d",
+				        data: LOSE
+				    }
+				    ]
+				},
+				options: {
+				    tooltips: {
+				      callbacks: {
+				        title: function(tooltipItem, data) {
+				          // return data.datasets[tooltipItem.datasetIndex].label
+				          // return data['datasets'][tooltipItem['index']];
+				        },
+				        label: function(tooltipItem, data) {
+				          console.log(data)
+				          // return data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']];
+				          // return data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].label;
+				          return data.datasets[tooltipItem.datasetIndex].label + ' = Rp.' + data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+				        },
+				        afterLabel: function(tooltipItem, data) {
+				          // var dataset = data['datasets'][0];
+				          // var percent = Math.round((dataset['data'][tooltipItem['index']] / dataset["_meta"][0]['total']) * 100)
+				          // return '(' + percent + '%)';
+				        }
+				      }
+				    }
+				}
+			});
+    	}
+    })
+    
+
+    $.ajax({
+        type:"GET",
+        url:"getChart",
+        success:function(result){
               var myBarChart = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Desember"],
-            datasets: [{
-              label: "Lead Register"+' '+Date("YYYY").substring(11,15),
-              backgroundColor: "#00a65a",
-              borderColor: "#00a65a",
-              data: result,
-            }],
-          },
-          options: {
-          }
-        });
-      }
+	          type: 'bar',
+	          data: {
+	            labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Desember"],
+	            datasets: [{
+	              label: "Lead Register"+' '+Date("YYYY").substring(11,15),
+	              backgroundColor: "#00a65a",
+	              borderColor: "#00a65a",
+	              data: result,
+	            }],
+	          },
+	          options: {
+	          }
+	        });
+        }
     })
 
 
