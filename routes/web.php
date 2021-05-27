@@ -55,6 +55,8 @@ Route::get('permission/changeFeatureItem','TestController@changeFeatureItem');
 Route::get('testRole','TestController2@RoleDynamic');
 Route::get('shoIndex','TestController2@shoIndex');
 
+Route::get('testGetCutiReportNew','TestController@getReportCuti');
+
 
 
 
@@ -126,7 +128,8 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/presence/history/team', 'PresenceController@teamHistory');
 	Route::get('/presence/report', 'PresenceController@presenceReport');
 	Route::get('/presence/report/getData', 'PresenceController@getPresenceReportData');
-	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportRerport');
+	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportReport');
+	Route::get('/presence/report/getData2', 'PresenceController@getDataReportPresence');
 	
 	Route::get('/presence/setting', 'PresenceController@presenceSetting');
 	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
@@ -197,6 +200,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/getAreaChartAdmin2018', 'DASHBOARDController@getAreaChartAdmin2018');
 	Route::get('/getDoughnutChart', 'DASHBOARDController@getDoughnutChart');
 	Route::get('/getDoughnutChartAFH', 'DASHBOARDController@getDoughnutChartAFH');
+	Route::get('/getChartByStatus','DASHBOARDController@getChartByStatus');
 
 	Route::get('/getChartAdmin', 'DASHBOARDController@getChartAdmin');
 
