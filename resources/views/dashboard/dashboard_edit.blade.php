@@ -417,7 +417,8 @@
 	            <h3 class="box-title">Total Amount Lead Register (By Status)</h3>
 	          </div>
 	          <div class="box-body">
-	            <canvas id="barChartByStatus"></canvas>
+	            	<canvas id="barChartByStatus"></canvas>
+				</div>
 	          </div>
 	        </div>
       	</div>
@@ -713,60 +714,36 @@
 		            labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Oktober", "November", "Desember"],
 		            labels2:[amount_INITIAL,amount_OPEN,amount_SD,amount_TP,amount_WIN,amount_LOSE],	    	
 				    datasets: [{
-				        // barPercentage: 0.5,
-				        // barThickness: 6,
-				        // maxBarThickness: 10,
-				        // minBarLength: 4,
 				        label: "INITIAL",
 			            backgroundColor: "#7735a3",
 			            borderColor: "#7735a3",
 				        data: INITIAL,
 				    },
 				    {
-				        // barPercentage: 0.5,
-				        // barThickness: 6,
-				        // maxBarThickness: 8,
-				        // minBarLength: 2,
 				        label: "OPEN",
 			            backgroundColor: "#f2562b",
 			            borderColor: "#f2562b",
 				        data: OPEN
 				    },
 				    {
-				        // barPercentage: 0.5,
-				        // barThickness: 6,
-				        // maxBarThickness: 8,
-				        // minBarLength: 2,
 				        label: "SD",
 			            backgroundColor: "#04dda3",
 			            borderColor: "#04dda3",
 				        data: SD
 				    },
 				    {
-				        // barPercentage: 0.5,
-				        // barThickness: 6,
-				        // maxBarThickness: 8,
-				        // minBarLength: 2,
 				        label: "TP",
 			            backgroundColor: "#f7e127",
 			            borderColor: "#f7e127",
 				        data: TP
 				    },
 				    {
-				        // barPercentage: 0.5,
-				        // barThickness: 6,
-				        // maxBarThickness: 8,
-				        // minBarLength: 2,
 				        label: "WIN",
 			            backgroundColor: "#246d18",
 			            borderColor: "#246d18",
 				        data: WIN
 				    },
 				    {
-				        // barPercentage: 0.5,
-				        // barThickness: 6,
-				        // maxBarThickness: 8,
-				        // minBarLength: 2,
 				        label: "LOSE",
 			            backgroundColor: "#e5140d",
 			            borderColor: "#e5140d",
@@ -785,7 +762,7 @@
 				          console.log(data)
 				          // return data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']];
 				          // return data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].label;
-				          return data.datasets[tooltipItem.datasetIndex].label + ' = Rp.' + data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+				          return data.datasets[tooltipItem.datasetIndex].label + ' : Rp.' + data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ; Total : ' + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']]
 				        },
 				        afterLabel: function(tooltipItem, data) {
 				          // var dataset = data['datasets'][0];
@@ -793,7 +770,16 @@
 				          // return '(' + percent + '%)';
 				        }
 				      }
-				    }
+				    },
+				    scales: {
+				          	xAxes: [{
+				          		barPercentage: 0.10,
+				             	barThickness: 7,
+				             	gridLines: {
+									display:false
+								}
+				        }]
+			        }
 				}
 			});
     	}
