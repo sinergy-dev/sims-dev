@@ -1468,6 +1468,47 @@ class DASHBOARDController extends Controller
         return $hasil2;
     }
 
+    public function getChartByStatus()
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users' )->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+        $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
+        $com = $company->id_company;
+
+        return array("data" => Sales::join('users','sales_lead_register.nik','=','users.nik')
+                    ->select(
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)) AS "INITIAL"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)) AS "OPEN"'), 
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "SD",1,NULL)) AS "SD"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "TP",1,NULL)) AS "TP"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "WIN",1,NULL)) AS "WIN"'),
+                    DB::raw('COUNT(IF(`sales_lead_register`.`result` = "LOSE",1,NULL)) AS "LOSE"'),
+                    DB::raw('COUNT(*) AS `All`'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "OPEN",amount,NULL)) AS "amount_INITIAL"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "",amount,NULL)) AS "amount_OPEN"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "SD",amount,NULL)) AS "amount_SD"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "TP",amount,NULL)) AS "amount_TP"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "WIN",amount,NULL)) AS "amount_WIN"'),
+                    DB::raw('SUM(IF(`sales_lead_register`.`result` = "LOSE",amount,NULL)) AS "amount_LOSE"'),
+                    DB::raw('SUM(amount) AS `amount_All`'),
+                    'month'
+                )
+                ->where('result','!=','HOLD')
+                ->where('result','!=','SPECIAL')
+                ->where('result','!=','CANCEL')
+                ->where('id_company','1')
+                ->where('sales_lead_register.result','!=','hmm')
+                ->whereYear('sales_lead_register.created_at',date("Y"))
+                ->groupBy('month')
+                ->get());
+
+    }
+
     public function maintenance()
     {
     	return view('maintenance');
