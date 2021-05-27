@@ -1480,7 +1480,7 @@ class DASHBOARDController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik', $nik)->first();
         $com = $company->id_company;
 
-        return array("data" => Sales::join('users','sales_lead_register.nik','=','users.nik')
+        $data = Sales::join('users','sales_lead_register.nik','=','users.nik')
                     ->select(
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "OPEN",1,NULL)) AS "INITIAL"'), 
                     DB::raw('COUNT(IF(`sales_lead_register`.`result` = "",1,NULL)) AS "OPEN"'), 
@@ -1504,8 +1504,15 @@ class DASHBOARDController extends Controller
                 ->where('id_company','1')
                 ->where('sales_lead_register.result','!=','hmm')
                 ->whereYear('sales_lead_register.created_at',date("Y"))
-                ->groupBy('month')
-                ->get());
+                ->groupBy('month');
+
+        if ($div == 'SALES') {        	
+        	$datas = array("data" => $data->where('users.id_territory',$ter)->get());
+        }else{
+        	$datas = array("data" => $data->get());
+        }
+
+        return $datas;
 
     }
 
