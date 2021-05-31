@@ -130,6 +130,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/presence/report/getData', 'PresenceController@getPresenceReportData');
 	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportReport');
 	Route::get('/presence/report/getData2', 'PresenceController@getDataReportPresence');
+	Route::get('/presence/report/getFilterReport', 'PresenceController@getDataReportPresence2');
 	
 	Route::get('/presence/setting', 'PresenceController@presenceSetting');
 	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
