@@ -88,7 +88,7 @@
 		<tr>
 			<th>Lama Cuti</th>
 			<th> : </th>
-			<td>{{$hari->days}} hari</td>
+			<td>{{$hari['cuti_accept']->days}} hari</td>
 		</tr>
 		<tr>
 			<th>Tanggal Off cuti sbb</th>
@@ -110,17 +110,17 @@
 		<tr>
 			<th>Tanggal Request Cuti</th>
 			<th> : </th>
-			<td>{{date('d-M-Y', strtotime($hari->date_req))}}</td>
+			<td>{{date('d-M-Y', strtotime($hari['cuti_accept']->date_req))}}</td>
 		</tr>
 		<tr>
 			<th>Note</th>
 			<th> : </th>
-			<td>{{$hari->reason_leave}}</td>
+			<td>{{$hari['cuti_accept']->reason_leave}}</td>
 		</tr>
 		<tr>
-			<th>Note decline</th>
+			<th>Decline Reason</th>
 			<th> : </th>
-			<td>{{$hari->decline_reason}}</td>
+			<td>{{$hari['cuti_accept']->decline_reason}}</td>
 		</tr>
 	</table>
 	<br>
