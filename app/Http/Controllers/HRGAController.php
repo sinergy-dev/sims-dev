@@ -1416,15 +1416,23 @@ class HRGAController extends Controller
                 ->whereBetween('date_off',array($request->date_start,$request->date_end))
                 ->get(),(int)$request->$cuti);
         }else{
-            return array(DB::table('tb_cuti_detail')
+            if ($request->status == 'detil') {
+                return array(DB::table('tb_cuti_detail')
                 ->join('tb_cuti','tb_cuti.id_cuti','=','tb_cuti_detail.id_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
                 ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik','decline_reason','tb_cuti.status','tb_cuti_detail.status as status_detail','idtb_cuti_detail')
                 ->where('tb_cuti_detail.id_cuti',$cuti)
-                // ->whereRaw("(`tb_cuti_detail`.`status` = 'NEW' OR `tb_cuti_detail`.`status` = 'ACCEPT' OR `tb_cuti_detail`.`status` = 'REJECT')")
-                // ->where('tb_cuti_detail.status','NEW')
-                // ->orwhere('tb_cuti_detail.status','ACCEPT')
                 ->get(),(int)$request->$cuti);
+            }else{
+                return array(DB::table('tb_cuti_detail')
+                ->join('tb_cuti','tb_cuti.id_cuti','=','tb_cuti_detail.id_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->select('date_off','reason_leave','date_req','tb_cuti_detail.id_cuti','users.nik','decline_reason','tb_cuti.status','tb_cuti_detail.status as status_detail','idtb_cuti_detail')
+                ->where('tb_cuti_detail.id_cuti',$cuti)
+                ->whereRaw("(`tb_cuti_detail`.`status` = 'NEW' OR `tb_cuti_detail`.`status` = 'ACCEPT' OR `tb_cuti_detail`.`status` = 'REJECT')")
+                ->get(),(int)$request->$cuti);
+            }
+            
         }
         
     }
