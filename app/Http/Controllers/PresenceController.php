@@ -16,6 +16,13 @@ use Excel;
 use App\PresenceHistory;
 use App\PresenceLocationUser;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class PresenceController extends Controller
 {
     public function __construct() {
@@ -313,7 +320,7 @@ class PresenceController extends Controller
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
         
-        return view('presence.reporting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('presence.reporting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     }
 
     public function presenceSetting() {
@@ -393,29 +400,15 @@ class PresenceController extends Controller
         }
     }
 
-    public function getPresenceReportData($typeData = "notAll"){
-        
-
-
-        $startDate = Carbon::now()->subMonths(1)->format("Y-m-15");
-        $endDate = Carbon::now()->format("Y-m-15");
-
-        // $startDate = "2020-12-15";
-        // $endDate = "2021-01-15";
-        
-        // return $this->getWorkDays($startDate,$endDate);
+    public function getPresenceReportData($typeData = "notAll", $typeCompany = "all"){
+        $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
+        $endDate = Carbon::now()->format("Y-m-16");
 
         $workDays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
-
-        // return $workDays;
 
         $parameterUser = PresenceHistory::groupBy('nik')
             ->whereRaw('`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
             ->pluck('nik');
-        // $parameterUserMsp = Users::where('id_company',1)->get()->pluck('nik');
-        // $parameterUser = ['1170498100'];
-
-        // echo "<pre>";
 
         $presenceHistoryAll = collect();
         foreach ($parameterUser as $value) {
@@ -455,22 +448,6 @@ class PresenceController extends Controller
             }
 
         }
-        // print_r($presenceHistoryAll);
-        // echo "</pre>";
-
-        // dd($presenceHistoryAll);
-        // dd($presenceHistoryAll->pluck('date')->values());
-        // return $this->getWorkDays($startDate,$endDate)["workdays"];
-        // dd($this->getWorkDays($startDate,$endDate)["workdays"]->values());
-        // return $presenceHistoryAll->diffAssoc($this->getWorkDays($startDate,$endDate)["workdays"]);
-        
-        //       return $this->getWorkDays($startDate,$endDate)["workdays"]->values()->diff($presenceHistoryAll->pluck('date')->values())->values();
-        
-        // return $presenceHistoryAll->pluck('date')->diff($this->getWorkDays($startDate,$endDate)["workdays"]);
-        
-        // dd($this->getWorkDays($startDate,$endDate)["workdays"])->diff($presenceHistoryAll->pluck('date'));
-        // dd($presenceHistoryAll->diffAssoc($this->getWorkDays($startDate,$endDate)["workdays"]));
-        // return ;
 
         $presenceHistoryAllLate = $presenceHistoryAll->where('condition','Late');
         $presenceHistoryAllAbsent = $presenceHistoryAll->where('condition','Absent');
@@ -480,7 +457,6 @@ class PresenceController extends Controller
                 $item->condition = "Uncheckout";
             }
         });
-
 
         if($typeData == "all"){
             return collect([
@@ -495,10 +471,9 @@ class PresenceController extends Controller
                 "holiday" => $this->getWorkDays($startDate,$endDate)["workdays"]
             ]);
         }
-
     }
 
-    private function getWorkDays($startDate,$endDate){
+    public function getWorkDays($startDate,$endDate){
         $client = new Client();
         $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_YEY'));
         $json = (string)$api_response->getBody();
