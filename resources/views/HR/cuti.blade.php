@@ -432,7 +432,7 @@
                 </div>      
                  
                 <div class="modal-footer">
-                  <button type="submit" id="submit_approve" class="btn btn-success"><i class=" fa fa-check"></i>&nbspApprove</button>
+                  <button type="submit" id="submit_approve" disabled class="btn btn-success"><i class=" fa fa-check"></i>&nbspApprove</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
                 </div>
             </div>
@@ -938,9 +938,15 @@
                 console.log( n + (n === 1 ? " is" : " are") + " checked!")
 
                 if (date_check != $( ".check_date:checked" ).length) {
-                  $("#alasan_reject").css("display", "block");
+                  $("#submit_approve").prop("disabled",true);
+                  if (result[0].length == 1) {
+                    $("#alasan_reject").css("display", "none");
+                  }else{
+                    $("#alasan_reject").css("display", "block");
+                  }
                   $("#reason_reject").prop('required',true);
                 }else{
+                  $("#submit_approve").prop("disabled",false);
                   $("#alasan_reject").css("display", "none");
                   $("#reason_reject").prop('required',false);
                 }
@@ -1885,6 +1891,7 @@
               date_start:moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),
               date_end:moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"),
               cuti:this.value,
+              status:"detil"
             },
             success: function(result){
               var table = "";
@@ -1917,6 +1924,7 @@
           url:'{{url("/detilcuti")}}',
           data:{
             cuti:this.value,
+            status:'detil'
           },
           success: function(result){
             var table = "";
