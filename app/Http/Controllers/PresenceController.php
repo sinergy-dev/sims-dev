@@ -512,76 +512,288 @@ class PresenceController extends Controller
         return collect(["holiday" => $holiday_indonesia_final_detail, "workdays" => $workDaysMinHolidayKeyed]);
     }
 
-    public function getExportRerport(){
+    public function getDataReportPresence($typeCompany = "all"){
 
-        // return $this->getPresenceReportData("all")["data"];
+        $startDate = Carbon::now()->subMonths()->format("Y-m-16");
+        // $startDate = Carbon::now()->subMonth(1);
+        $endDate = Carbon::now()->format("Y-m-15");
+        // $endDate = "2021-06-15";
 
-        $header = ["No", "Nik", "Name", "-","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
-        // $sources = $this->getPresenceReportData("all")["data"]->sortBy('name')->values()->groupBy('nik');
+        if ($typeCompany != "all") {
+             $parameterUser = DB::table('users')
+                ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
+                ->select('users.nik', 'users.name')
+                ->where('users.id_company', $typeCompany)
+                ->where('presence_actual','>=',$startDate)
+                ->where('presence_actual','<=',$endDate)
+                ->get()
+                ->toArray();
+        } else {
+             $parameterUser = DB::table('users')
+                ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
+                ->select('users.nik', 'users.name')
+                ->where('presence_actual','>=',$startDate)
+                ->where('presence_actual','<=',$endDate)
+                ->get()
+                ->toArray();
+        }
+
+        // return $startDate;
+
+        $status;
         
-        // echo "<pre>";
-        // // print_r(expression)
-        // foreach ($sources as $key => $source){
-        //     $source = $source->keyBy('name');
-        //     foreach ($source as $key => $value) {
-        //         echo $key . "<br>";
-        //     }
-        // }
-        // echo "</pre>";
+        foreach($parameterUser as $user){
+            $status[] = $user->name;
+        }
 
-        // dd($this->getPresenceReportData()["data"]->sortBy('name')->sortBy('date')->values());
-        // dd((array)$this->getPresenceReportData()["data"]->first());
-        // dd(array_merge(["no" => 1],(array)$this->getPresenceReportData()["data"]->first()));
-        // return  $this->getPresenceReportData("all")["data"]->sortBy('name')->values();
-        return Excel::create('Report Presence ' . date("Y-m-d"), function($excel) use ($header) {
+        foreach($parameterUser as $user){
+            $NikUser[] = $user->nik;
+        }
 
-            $excel->sheet('All Presence', function($sheet) use ($header){
-                    $sheet->row(1,$header);
-                    $row = 2;
-                    $data = $this->getPresenceReportData("all")["data"]->sortBy('name')->values();
-                    foreach ($data as $value) {
-                        // $datasheet = array_push($datasheet, (array)$value);
-                        $sheet->row($row,array_merge(["no" => $row - 1],(array)$value));
-                        $row++;
-                    }
+        foreach ($status as $key => $stat) {
 
-                    // $sheet->fromArray($datasheet);
-                });
+            $all = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$startDate)
+                ->where('presence_actual','<=',$endDate)
+                ->get()
+                ->toarray();
+            $late = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$startDate)
+                ->where('presence_actual','<=',$endDate)
+                ->where('presence_condition','=',"Late")
+                ->get()
+                ->toarray();
+            $ontime = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$startDate)
+                ->where('presence_actual','<=',$endDate)
+                ->where('presence_condition','=',"On-Time")
+                ->get()
+                ->toarray();
+            $injury = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$startDate)
+                ->where('presence_actual','<=',$endDate)
+                ->where('presence_condition','=',"Injury-Time")
+                ->get()
+                ->toarray();
+            $absen = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$startDate)
+                ->where('presence_actual','<=',$endDate)
+                ->where('presence_condition','<>',"Injury-Time")
+                ->where('presence_condition','<>',"Late")
+                ->where('presence_condition','<>',"On-Time")
+                ->where('presence_condition','<>',"-")
+                ->get()
+                ->toarray();
 
-            $sources = $this->getPresenceReportData("all")["data"]->sortBy('name')->groupBy('name');
-            // $sources = $this->getPresenceReportData("all")["data"]->sortBy('name')->values()->groupBy('nik');
+            $where =  DB::table('presence__location_user')
+                ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
+                ->select('presence__location.location_name', 'user_id')
+                ->get()
+                ->toarray();
 
-            foreach ($sources as $key => $source){
-                // $source = $source->keyBy('name');
-                // $source->sortBy('checkin');
-                $excel->sheet($key, function($sheet) use ($header,$source){
-                    $sheet->row(1,$header);
-                    $row = 2;
-                    $source = $source->sortBy('date');
-                    // $data = $this->getPresenceReportData()["data"]->sortBy('name')->values();
-                    foreach ($source as $value) {
-                        // $datasheet = array_push($datasheet, (array)$value);
-                        $sheet->row($row,array_merge(["no" => $row - 1],(array)$value));
-                        $row++;
-                    }
 
-                    // $sheet->fromArray($datasheet);
-                });
+            $var[$stat]["all"] = sizeof($all);
+            $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
+            $var[$stat]["late"] = sizeof($late);
+            $var[$stat]["ontime"] = sizeof($ontime);
+            $var[$stat]["injury"] = sizeof($injury);
+            $var[$stat]["absen"] = sizeof($absen);
+            $var[$stat]["where"] = $where[0]->location_name;
+            $var[$stat]["name"] = $status[$key];
+        }
+
+        return collect([
+            "range" => $startDate . " to " . $endDate,
+            "data" => $var,
+        ]);
+    }
+
+    public function getDataReportPresence2(Request $req){
+
+        // $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
+        // $endDate = Carbon::now()->format("Y-m-16");
+
+        $parameterUser = DB::table('users')
+            ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
+            ->select('users.nik', 'users.name')
+            ->where('presence_actual','>=',$req->start)
+            ->where('presence_actual','<=',$req->end)
+            ->get()
+            ->toArray();
+        
+
+        $status;
+
+        foreach($parameterUser as $user){
+            $status[] = $user->name;
+        }
+
+        foreach($parameterUser as $user){
+            $NikUser[] = $user->nik;
+        }
+
+        foreach ($status as $key => $stat) {
+
+            $all = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$req->start)
+                ->where('presence_actual','<=',$req->end)
+                ->get()
+                ->toarray();
+            $late = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$req->start)
+                ->where('presence_actual','<=',$req->end)
+                ->where('presence_condition','=',"Late")
+                ->get()
+                ->toarray();
+            $ontime = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$req->start)
+                ->where('presence_actual','<=',$req->end)
+                ->where('presence_condition','=',"On-Time")
+                ->get()
+                ->toarray();
+            $injury = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$req->start)
+                ->where('presence_actual','<=',$req->end)
+                ->where('presence_condition','=',"Injury-Time")
+                ->get()
+                ->toarray();
+            $absen = DB::table('presence__history')
+                ->where('nik','=',$NikUser[$key])
+                ->where('presence_actual','>=',$req->start)
+                ->where('presence_actual','<=',$req->end)
+                ->where('presence_condition','<>',"Injury-Time")
+                ->where('presence_condition','<>',"Late")
+                ->where('presence_condition','<>',"On-Time")
+                ->where('presence_condition','<>',"-")
+                ->get()
+                ->toarray();
+
+            $where =  DB::table('presence__location_user')
+                ->join('presence__location', 'presence__location_user.location_id', '=', 'presence__location.id')
+                ->select('presence__location.location_name', 'user_id')
+                ->get()
+                ->toarray();
+
+
+            $var[$stat]["all"] = sizeof($all);
+            $var[$stat]["all"] = sizeof($late) + sizeof($ontime) + sizeof($injury);
+            $var[$stat]["late"] = sizeof($late);
+            $var[$stat]["ontime"] = sizeof($ontime);
+            $var[$stat]["injury"] = sizeof($injury);
+            $var[$stat]["absen"] = sizeof($absen);
+            $var[$stat]["where"] = $where[0]->location_name;
+            $var[$stat]["name"] = $status[$key];
+        }
+
+        return collect([
+            "range" => $req->start . " to " . $req->end,
+            "data" => $var,
+        ]);
+    }
+
+    public function getExportReport(Request $req){
+
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->removeSheetByIndex(0);
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'All Presence'));
+        $summarySheet = $spreadsheet->setActiveSheetIndex(0);
+
+        $summarySheet->mergeCells('A1:J1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $titleStyle['font']['bold'] = true;
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+
+        $summarySheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+        $summarySheet->setCellValue('A1','All Presence');
+
+        $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
+        $summarySheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+        $summarySheet->fromArray($headerContent,NULL,'A2');
+
+        if(isset($req->type)){
+            $typeCompany = ($req->type == "SIP") ? "1" : "2";
+            $dataPresence = $this->getPresenceReportData("all",$typeCompany)["data"]->sortBy('name');
+            $exportName = 'Report Presence ' . $req->type . ' (reported at ' . date("Y-m-d") . ')';
+        } else {
+            $dataPresence = $this->getPresenceReportData("all")["data"]->sortBy('name');
+            $exportName = 'Report Presence (reported at' . date("Y-m-d") . ')';
+        }
+
+        $dataPresence->map(function($item,$key) use ($summarySheet){
+            $summarySheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($item))),NULL,'A' . ($key + 3));
+        });
+
+        $summarySheet->getColumnDimension('A')->setAutoSize(true);
+        $summarySheet->getColumnDimension('B')->setAutoSize(true);
+        $summarySheet->getColumnDimension('C')->setAutoSize(true);
+        $summarySheet->getColumnDimension('D')->setAutoSize(true);
+        $summarySheet->getColumnDimension('E')->setAutoSize(true);
+        $summarySheet->getColumnDimension('F')->setAutoSize(true);
+        $summarySheet->getColumnDimension('G')->setAutoSize(true);
+        $summarySheet->getColumnDimension('H')->setAutoSize(true);
+        $summarySheet->getColumnDimension('I')->setAutoSize(true);
+        $summarySheet->getColumnDimension('J')->setAutoSize(true);
+
+        $dataPresenceIndividual = $dataPresence->groupBy('name');
+
+        $indexSheet = 0;
+        foreach ($dataPresenceIndividual as $key => $item) {
+            $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
+            $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
+
+            $detailSheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+            $detailSheet->setCellValue('A1','Presence Report ' . $key);
+            $detailSheet->mergeCells('A1:J1');
+
+            $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
+            $detailSheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+            $detailSheet->fromArray($headerContent,NULL,'A2');
+
+            foreach ($item as $key => $eachPresence) {
+                $detailSheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($eachPresence))),NULL,'A' . ($key + 3));
             }
+            $detailSheet->getColumnDimension('A')->setAutoSize(true);
+            $detailSheet->getColumnDimension('B')->setAutoSize(true);
+            $detailSheet->getColumnDimension('C')->setAutoSize(true);
+            $detailSheet->getColumnDimension('D')->setAutoSize(true);
+            $detailSheet->getColumnDimension('E')->setAutoSize(true);
+            $detailSheet->getColumnDimension('F')->setAutoSize(true);
+            $detailSheet->getColumnDimension('G')->setAutoSize(true);
+            $detailSheet->getColumnDimension('H')->setAutoSize(true);
+            $detailSheet->getColumnDimension('I')->setAutoSize(true);
+            $detailSheet->getColumnDimension('J')->setAutoSize(true);
+            $indexSheet = $indexSheet + 1;
+        }
 
-                // $excel->sheet('Sheet 1', function($sheet) use ($header){
-                //     $sheet->row(1,$header);
-                //     $row = 2;
-                //     $data = $this->getPresenceReportData()["data"]->sortBy('name')->values();
-                //     foreach ($data as $value) {
-                //         // $datasheet = array_push($datasheet, (array)$value);
-                //         $sheet->row($row,array_merge(["no" => $row - 1],(array)$value));
-                //         $row++;
-                //     }
+        $spreadsheet->setActiveSheetIndex(0);
 
-                //     // $sheet->fromArray($datasheet);
-                // });
-            })->download('xlsx');
-        // return "asdfadfa";
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $exportName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 }
