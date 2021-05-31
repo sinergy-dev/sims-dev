@@ -418,10 +418,9 @@
 	          </div>
 	          <div class="box-body">
 	            	<canvas id="barChartByStatus"></canvas>
-				</div>
-	          </div>
-	        </div>
-      	</div>
+			  </div>
+          </div>
+        </div>
 
       	<div class="col-lg-3 col-xs-12">
         	<div class="box box-danger">
