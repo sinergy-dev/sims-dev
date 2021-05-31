@@ -264,7 +264,7 @@
                       <th>Employees Name</th>
                       <th>Division</th>
                       <th>Request Date</th>
-                      <th>Date Off</th>
+                      <th>Dates</th>
                       <th>Approved Date</th>
                       <th>Approved By</th>
                       <th>Status</th>
@@ -416,19 +416,19 @@
                     </table>
 
                     <input type="text" id="cuti_fix" name="cuti_fix" hidden>
-                    <input type="text" id="cuti_fix_accept" name="cuti_fix_accept" hidden> 
-                    <input type="text" id="cuti_fix_reject" name="cuti_fix_reject" hidden> 
+                    <input type="text" id="cuti_fix_accept" name="cuti_fix_accept" > 
+                    <input type="text" id="cuti_fix_reject" name="cuti_fix_reject" > 
                 </div>
 
                 <div class="form-group" style="display: none;" id="alasan_reject">
                 	<span style="color: red"><sup>*harus diisi</sup></span>
                 	<label>Notes Reject Cuti (Pengurangan tanggal cuti)</label>
-                	<textarea class="form-control" class="reason_reject" name="reason_reject" id="reason_reject"></textarea>
+                	<textarea class="form-control" class="reason_reject" name="reason_reject" id="reason_reject" rows="5" style="resize: none;overflow-y: auto;"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>Jenis Cuti/Keterangan</label>
-                    <textarea class="form-control" type="text" id="reason_detil" name="reason_detil" readonly></textarea>
+                    <textarea class="form-control" type="text" id="reason_detil" name="reason_detil" readonly rows="5" style="resize: none;overflow-y: auto;"></textarea>
                 </div>      
                  
                 <div class="modal-footer">
@@ -469,12 +469,12 @@
                 
                 <div class="form-group">
                     <label>Jenis Cuti/Keterangan</label>
-                    <textarea class="form-control" type="text" id="reason_detils" name="reason_detil" readonly></textarea>
+                    <textarea class="form-control" type="text" id="reason_detils" name="reason_detil" readonly rows="5" style="resize: none;overflow-y: auto;"></textarea>
                 </div>   
 
                 <div class="form-group" style="display: none;" id="alasan_reject_detail">
                 	<label>Notes <span style="color: red">(Pengurangan jumlah cuti)</span></label>
-                	<textarea class="form-control" class="reason_reject" readonly="" id="reason_reject_detil"></textarea>
+                	<textarea class="form-control" class="reason_reject" readonly="" id="reason_reject_detil" rows="5" style="resize: none;overflow-y: auto;"></textarea>
                 </div>
    
                  
@@ -569,7 +569,7 @@
               <input type="" name="id_cuti_decline" id="id_cuti_decline" hidden="">
               <div class="form-group">
                 <label for="sow">Decline reason</label>
-                <textarea name="keterangan" id="keterangan" class="form-control" required=""></textarea>
+                <textarea name="keterangan" id="keterangan" class="form-control" required="" rows="5" style="resize: none;overflow-y: auto;"></textarea>
               </div>
 
                 <div class="modal-footer">
@@ -593,7 +593,7 @@
                 @csrf
               <div class="form-group">
                 <label for="sow">Decline reason</label>
-                <textarea name="keterangan_decline" id="keterangan_decline" class="form-control" readonly></textarea>
+                <textarea name="keterangan_decline" id="keterangan_decline" class="form-control" readonly rows="5" style="resize: none;overflow-y: auto;"></textarea>
               </div>
 
                 <div class="modal-footer">
@@ -1396,14 +1396,14 @@
       })
     }
 
-    function get_history_cuti(com,division,date_start,date_end){
+    function get_history_cuti(com,division,start_date,end_date){
       $("#datatableq").DataTable({
         "destroy":true,
         "ajax":{
           "data":{
             "com":com,
-            "start_date":date_start,
-            "end_date":date_end,
+            "start_date":start_date,
+            "end_date":end_date,
             "division":division
           },
           "type":"GET",
@@ -1702,11 +1702,11 @@
         format: 'MM/DD/YYYY'
       },
       }, function(start, end, label) {
-        date_start  = moment(start).format("YYYY-MM-DD")
-        date_end    = moment(end).format("YYYY-MM-DD")
+        start_date  = moment(start).format("YYYY-MM-DD")
+        end_date    = moment(end).format("YYYY-MM-DD")
         
         var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
-        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),date_start,date_end)
+        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),start_date,end_date)
 
         // cb(start,end,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id=" + companyString,$("#division_cuti").val())
     });
