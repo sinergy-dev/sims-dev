@@ -416,8 +416,8 @@
                     </table>
 
                     <input type="text" id="cuti_fix" name="cuti_fix" hidden>
-                    <input type="text" id="cuti_fix_accept" name="cuti_fix_accept" > 
-                    <input type="text" id="cuti_fix_reject" name="cuti_fix_reject" > 
+                    <input type="text" id="cuti_fix_accept" name="cuti_fix_accept" hidden> 
+                    <input type="text" id="cuti_fix_reject" name="cuti_fix_reject" hidden> 
                 </div>
 
                 <div class="form-group" style="display: none;" id="alasan_reject">
