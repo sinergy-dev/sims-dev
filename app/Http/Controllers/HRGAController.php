@@ -1784,25 +1784,44 @@ class HRGAController extends Controller
         $update->updated_at     = date('Y-m-d');
         $update->status = 'v';
         $update->update();
-
+        
         $cuti_accept = explode(',', $request['cuti_fix_accept']);
         $cuti_reject = explode(',', $request['cuti_fix_reject']);
 
-        if ($cuti_accept != null) {
+        $hitung = sizeof($cuti_accept);
+
+        $update_cuti = User::where('nik',$nik)->first();        
+
+        if ($hitung >= $update_cuti->cuti) {
+            Log::debug("$hitung >= $update_cuti->cuti");
+
+            $ambil2020 = $hitung - $update_cuti->cuti;
+            Log::debug("$ambil2020 = " . $ambil2020);            
+
+            $hasilsisa = $update_cuti->cuti2 - $ambil2020;
+            Log::debug("$hasilsisa = " . $hasilsisa); 
+
+            if ($ambil2020 == 0) {
+                $update_cuti->cuti = $update_cuti->cuti - $hitung;
+            }else{
+                $update_cuti->cuti = 0;
+                $update_cuti->cuti2 = $hasilsisa;
+            }
+
+        }else{
+            $update_cuti->cuti = $update_cuti->cuti - $hitung;
+        }
+
+        $update_cuti->update();
+
+
+        if ($cuti_accept[0] != "") {
             foreach ($cuti_accept as $accept_dates) {
                 $update = CutiDetil::where('idtb_cuti_detail',$accept_dates)->first();
                 $update->status = 'ACCEPT';
                 $update->update();
             }
-        }
-        
-        if ($cuti_reject != null) {
-            foreach ($cuti_reject as $reject_dates) {
-                $update = CutiDetil::where('idtb_cuti_detail',$reject_dates)->first();
-                $update->status = 'REJECT';
-                $update->update();
-            }
-        }        
+        }       
 
         $getStatus  = Cuti::select('status')->where('id_cuti',$id_cuti)->first();
         $status     = $getStatus->status;
@@ -1823,21 +1842,31 @@ class HRGAController extends Controller
                 ->where('tb_cuti.id_cuti', $id_cuti)
                 ->first();
 
+        if ($cuti_reject[0] != "") {
+            foreach ($cuti_reject as $reject_dates) {
+                $update = CutiDetil::where('idtb_cuti_detail',$reject_dates)->first();
+                $update->status = 'REJECT';
+                $update->update();
+            }
 
-        $cuti_reject_data = DB::table('tb_cuti')
+            $cuti_reject_data = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
                 ->groupby('tb_cuti_detail.id_cuti')->where('tb_cuti_detail.status','REJECT')
                 ->where('tb_cuti.id_cuti', $id_cuti) 
                 ->first();
-                
+
+            $ardetil_after = explode(',', $cuti_reject_data->dates);
+
+        }else{
+            $ardetil_after = ""; 
+        
+            $cuti_reject_data = "";  
+        }                
 
         $hari = collect(['cuti_accept'=>$cuti_accept_data,'cuti_reject'=>$cuti_reject_data]);
       
-
         $ardetil = explode(',', $cuti_accept_data->dates); 
-
-        $ardetil_after = explode(',', $cuti_reject_data->dates);
 
         Mail::to($kirim)->cc('elfi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));        
 
