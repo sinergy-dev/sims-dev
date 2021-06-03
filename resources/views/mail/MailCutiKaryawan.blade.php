@@ -60,12 +60,18 @@
 				Alasan reject cuti
 			</th>
 			<th> : </th>
-			<td>{{$hari['cuti_reject']->decline_reason}}</td>
+			<td>
+				@if($hari['cuti_reject'] != '')
+					{{$hari['cuti_reject']->decline_reason}}
+				@else
+				 -
+				@endif
+			</td>
 		</tr>
 		<tr>
 			<th>Tanggal Request Cuti</th>
 			<th> : </th>
-			<td>{{date('d-M-Y', strtotime($hari['cuti_reject']->date_req))}}</td>
+			<td>{{date('d-M-Y', strtotime($hari['cuti_accept']->date_req))}}</td>
 		</tr>
 		<tr>
 			<th>Note</th>
