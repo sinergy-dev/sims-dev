@@ -917,14 +917,14 @@
                   $("#reason_detil").val(value.reason_leave);
                   $("#time_off").val(value.days);
                   $('#tanggal_cuti').empty();
+
                   table = table + '<tr>';
-                  table = table + '<td style="width:10%">' + '<input type="checkbox" class="check_date" name="check_date[]"' +'</td>';
-                  table = table + '<td style="display:none">' + value.idtb_cuti_detail +'</td>';              
-                  table = table + '<td style="display:none">' + value.date_off +'</td>';
+                  table = table + '<td>' + '<input type="checkbox" class="check_date" name="check_date[]"' +'</td>';
+                  table = table + '<td hidden>' + value.idtb_cuti_detail +'</td>';
                   table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
                   table = table + '</tr>';
                   
-                  date_default.push(value.date_off)
+                  date_default.push(value.idtb_cuti_detail)
                   $("#cuti_fix_reject").val(date_default)
                 });                
 
@@ -937,17 +937,17 @@
                 var n = $( ".check_date:checked" ).length;
                 console.log( n + (n === 1 ? " is" : " are") + " checked!")
 
-                if (date_check != $( ".check_date:checked" ).length) {
+                if ($(".check_date:checked" ).length < 1) {
                   $("#submit_approve").prop("disabled",true);
-                  if (result[0].length == 1) {
+                  $("#reason_reject").prop('required',true);
+                  $("#alasan_reject").css("display", "block");                  
+                }else{
+                  if ($(".check_date:checked" ).length == result[0].length) {
                     $("#alasan_reject").css("display", "none");
                   }else{
                     $("#alasan_reject").css("display", "block");
                   }
-                  $("#reason_reject").prop('required',true);
-                }else{
                   $("#submit_approve").prop("disabled",false);
-                  $("#alasan_reject").css("display", "none");
                   $("#reason_reject").prop('required',false);
                 }
               };
