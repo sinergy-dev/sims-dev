@@ -1812,16 +1812,7 @@ class HRGAController extends Controller
             $update_cuti->cuti = $update_cuti->cuti - $hitung;
         }
 
-        $update_cuti->update();
-
-
-        if ($cuti_accept[0] != "") {
-            foreach ($cuti_accept as $accept_dates) {
-                $update = CutiDetil::where('idtb_cuti_detail',$accept_dates)->first();
-                $update->status = 'ACCEPT';
-                $update->update();
-            }
-        }       
+        $update_cuti->update();       
 
         $getStatus  = Cuti::select('status')->where('id_cuti',$id_cuti)->first();
         $status     = $getStatus->status;
@@ -1835,12 +1826,25 @@ class HRGAController extends Controller
                 ->select('users.name')
                 ->where('id_cuti', $id_cuti)->first();                 
 
-        $cuti_accept_data = DB::table('tb_cuti')
+        if ($cuti_accept[0] != "") {
+            foreach ($cuti_accept as $accept_dates) {
+                $update = CutiDetil::where('idtb_cuti_detail',$accept_dates)->first();
+                $update->status = 'ACCEPT';
+                $update->update();
+            }
+
+            $cuti_accept_data = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
                 ->groupby('tb_cuti_detail.id_cuti')->where('tb_cuti_detail.status','ACCEPT')
                 ->where('tb_cuti.id_cuti', $id_cuti)
                 ->first();
+        }else{
+            $ardetil_after = ""; 
+        
+            $cuti_accept_data = "";  
+        }
+        
 
         if ($cuti_reject[0] != "") {
             foreach ($cuti_reject as $reject_dates) {
@@ -3136,6 +3140,9 @@ class HRGAController extends Controller
                 } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {  
                     $cuti = $cuti
                             ->where('users.id_company',$request->filter_com) 
+                            ->where('users.id_division','WAREHOUSE')
+                            ->where('users.id_position','ENGINEER MANAGER')
+                            ->orwhere('users.id_position','MANAGER')
                             ->where('tb_cuti_detail.status','NEW')                           
                             // ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` != 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` != 'FINANCE')")
                             ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
