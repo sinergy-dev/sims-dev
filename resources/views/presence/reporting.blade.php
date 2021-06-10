@@ -46,7 +46,12 @@
 					<div class="box-header with-border">
 						<h3 class="box-title"></h3>
 						<div class="pull-right">
-							<a href="{{url('/presence/report/getExportRerport')}}"><button type="button" class="btn btn-success" style="margin-left: 10px;"><i class='fa fa-download'></i>Export</button></a>
+							<select class="btn bg-blue" style="width: 80px; margin-left: 10px;" id="filter_com">
+					            <option value="">All</option>
+					            <option value="SIP">SIP</option>
+					            <option value="MSP">MSP</option>
+				          	</select>
+							<button type="button" class="btn btn-success" style="margin-left: 10px;" onclick="exportExcel('{{action('PresenceController@getExportReport')}}')"><i class='fa fa-download'></i>Export</button>
 							<button type="button" class="btn btn-default pull-left" id="daterange-btn">
 									<i class="fa fa-calendar"></i> Date range picker
 								<span>
@@ -112,37 +117,33 @@
 @endsection
 @section('script')
 	<script type="text/javascript">
-		// $('#report_table').dataTable();
 
 		$(document).ready(function(){
-			// Pace.restart();
-			// Pace.track(function() {
-				$.ajax({
-					type:"GET",
-					url:"{{url('/presence/report/getData2')}}",
-					success: function(result){
-						console.log(result)
-						$(".box-title").text("This period " + result.range)
-						var append = ""
-						var no = 1
-						$.each(result.data,function(index,data){
-							append = append + "<tr>"
-							append = append + "	<td>" + no++ + "</td>"
-							append = append + "	<td>" + data.name + "</td>"
-							append = append + "	<td>" + data.where + "</td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-green'>" + data.ontime + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-yellow'>" + data.injury + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-red'>" + data.late + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-default'>" + data.absen + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-blue'>" + data.all + "</span> </td>"
-							append = append + "</tr>"
-						})
+			$.ajax({
+				type:"GET",
+				url:"{{url('/presence/report/getData2')}}",
+				success: function(result){
+					// console.log(result)
+					$(".box-title").text("This period " + result.range)
+					var append = ""
+					var no = 1
+					$.each(result.data,function(index,data){
+						append = append + "<tr>"
+						append = append + "	<td>" + no++ + "</td>"
+						append = append + "	<td>" + data.name + "</td>"
+						append = append + "	<td>" + data.where + "</td>"
+						append = append + "	<td class='text-center'> <span class='badge bg-green'>" + data.ontime + "</span> </td>"
+						append = append + "	<td class='text-center'> <span class='badge bg-yellow'>" + data.injury + "</span> </td>"
+						append = append + "	<td class='text-center'> <span class='badge bg-red'>" + data.late + "</span> </td>"
+						append = append + "	<td class='text-center'> <span class='badge bg-default'>" + data.absen + "</span> </td>"
+						append = append + "	<td class='text-center'> <span class='badge bg-blue'>" + data.all + "</span> </td>"
+						append = append + "</tr>"
+					})
 
-						$("#table_report").append(append)
-					}
-				})
+					$("#table_report").append(append)
+				}
 			})
-		// })
+		})
 
 		$('#daterange-btn').daterangepicker({
 			ranges: {
@@ -153,8 +154,6 @@
 		},
 		function (start, end) {
 			$('#daterange-btn span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
-			// console.log(start)
-			// var query = "SELECT * FROM `presence__history` WHERE `presence_actual` >= '" + start.format('YYYY-MM-DD') + "' AND `presence_actual` <= '" + end.format('YYYY-MM-DD') + "'";
 
 			var startDay = start.format('YYYY-MM-DD');
 			var endDay = end.format('YYYY-MM-DD');
@@ -174,8 +173,8 @@
 						'end' : endDay,
 					},
 					success: function(result){
-						console.log("abc")
-						console.log(result)
+						// console.log("abc")
+						// console.log(result)
 						$(".box-title").text("This period " + result.range)
 						var append = ""
 						var no = 1
@@ -205,6 +204,16 @@
 		    	$(this).closest('tr').find("input[type=text]").prop('disabled',true)
 		    }
 		});
+
+		function exportExcel(url){
+	    	window.location = url + "?type=" + $("#filter_com").val();
+	  	}
+
+		// $("#filter_com").change(function(){
+	 //      var filter_com = this.value;
+	 //      console.log(filter_com);
+	 //      $('#report_table').DataTable().ajax.url("{{url('/presence/report/getFilterCom')}}?filter_com="+filter_com).load();
+	 //    });
 
 	</script>
 @endsection
