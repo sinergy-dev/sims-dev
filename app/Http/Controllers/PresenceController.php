@@ -406,9 +406,15 @@ class PresenceController extends Controller
 
         $workDays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
 
-        $parameterUser = PresenceHistory::groupBy('nik')
+        $parameterUser = PresenceHistory::select(DB::raw('presence__history.*'))
             ->whereRaw('`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
-            ->pluck('nik');
+            ->join('users','users.nik','=','presence__history.nik');
+
+        if($typeCompany != "all"){
+            $parameterUser = $parameterUser->where('users.id_company','=',$typeCompany);
+        }
+
+        $parameterUser = $parameterUser->pluck('nik')->unique()->values();
 
         $presenceHistoryAll = collect();
         foreach ($parameterUser as $value) {
