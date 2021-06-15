@@ -1599,7 +1599,7 @@
 	                    <label for="no_ktp" class="col-md-4 control-label">{{ __('KTP') }}</label>
 
 	                    <div class="col-md-8">
-	                        <input id="no_ktp" type="text" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
+	                        <input id="no_ktp" type="number" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
 	                    </div>
 	                </div>
 
@@ -1607,7 +1607,7 @@
 	                    <label for="no_kk" class="col-md-4 control-label">{{ __('KK') }}</label>
 
 	                    <div class="col-md-8">
-	                        <input id="no_kk" type="text" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
+	                        <input id="no_kk" type="number" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
 	                    </div>
 	                </div>
 
@@ -1623,7 +1623,7 @@
 	                    <label for="bpjs_kes" class="col-md-4 control-label">{{ __('BPJS KESEHATAN') }}</label>
 
 	                    <div class="col-md-8">
-	                        <input id="bpjs_kes" type="text" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" autofocus>
+	                        <input id="bpjs_kes" type="number" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" autofocus>
 	                    </div>
 	                </div>
 
@@ -1631,7 +1631,7 @@
 	                    <label for="bpjs_ket" class="col-md-4 control-label">{{ __('BPJS KETENAGAKERJAAN') }}</label>
 
 	                    <div class="col-md-8">
-	                        <input id="bpjs_ket" type="text" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" autofocus>
+	                        <input id="bpjs_ket" type="number" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" autofocus>
 	                    </div>
 	                </div>
 
