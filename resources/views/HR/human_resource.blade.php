@@ -84,6 +84,10 @@
 	    .img-hover-zoom{
 	    	overflow: hidden;
 	    }
+
+	    .select2{
+		    width: 100%!important;
+		}
 	</style>
 @endsection
 @section('content')
@@ -1180,9 +1184,9 @@
 	                <!--SIP-->
 
 	                <div class="form-group"  style="display:none;"  id="company-sip">
-	                    <label for="division" class="col-md-4 control-label margin-bottom">{{ __('Division') }}</label>
+	                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Division') }}</label>
 
-	                    <div class="col-md-8">
+	                    <div class="col-md-8 margin-bottom">
 	                        <select id="division" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_sip" value="{{ old('division') }}" autofocus>
 	                            <option value="">-- Select division --</option>
 	                            <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
@@ -1198,6 +1202,17 @@
 	                                <strong>{{ $errors->first('division') }}</strong>
 	                            </span>
 	                        @endif
+	                    </div>
+
+	                    <label for="roles_user" class="col-md-4 control-label margin-top">{{ __('Roles') }}</label>
+
+	                    <div class="col-md-8 margin-top">
+	                        <select id="roles_user" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="roles_user" value="{{ old('division') }}" autofocus>
+	                            <option value="">-- Select Roles --</option>
+	                            @foreach($roles as $data)
+	                            <option value="{{$data->id}}">{{$data->name}}</option>
+	                            @endforeach
+	                        </select>
 	                    </div>
 	                </div>
 
@@ -2365,6 +2380,7 @@
 @section('scriptImport')
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
 @endsection
 @section('script')
@@ -2400,6 +2416,8 @@
 	$(":input").inputmask();
 	$("#phone_number").inputmask({"mask": "(+62) 999-9999-9999"});
 	$("#phone_number_update").inputmask({"mask": "(+62) 999-9999-9999"});
+
+	$("#roles_user").select2();
 
 	$(document).ready(function(){
 		$("[data-mask]").inputmask();
