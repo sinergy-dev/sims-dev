@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\HRCrud;
 use App\User;
 use App\GuideLine;
+use App\RoleUser;
 use Validator;
 use Response;
 use Illuminate\Support\Facades\input;
@@ -237,9 +238,11 @@ class HRController extends Controller
                 ->where('tb_company.id_company','2')
                 ->get();
 
+        $roles = DB::table('roles')->where('name', '!=', 'PMO Admin')->get();
+
         $code = $request['code_input'];        
 
-        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim', 'data_resign'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
+        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim', 'data_resign', 'roles'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
     }
 
     public function getemps(Request $request)
@@ -573,6 +576,11 @@ class HRController extends Controller
         // $tambah->bpjs_ket = $fileName;
         
         $tambah->save();
+
+        $tambah_roles = new RoleUser(); 
+        $tambah_roles->role_id = $request['roles_user'];
+        $tambah_roles->user_id = $nik;
+        $tambah_roles->save(); 
 
         $userCompany = DB::table('tb_company')
                             ->select('code_company')
