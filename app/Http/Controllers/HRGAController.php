@@ -28,6 +28,8 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+use Carbon\Carbon;
+
 class HRGAController extends Controller
 {
     /**
@@ -1255,7 +1257,7 @@ class HRGAController extends Controller
         }
 
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_YEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY_APP'));
         $json = (string)$api_response->getBody();
         $datas_nasional = json_decode($json, true);  
         // return $datas_nasional;
@@ -2468,9 +2470,11 @@ class HRGAController extends Controller
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'Sinergy informasi Pratama'));
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'Multi Solusindo Perkasa'));
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'Detail Report Cuti SIP & MSP'));
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Rekap Cuti SIP & MSP'));
         $sipSheet = $spreadsheet->setActiveSheetIndex(0);
         $mspSheet = $spreadsheet->setActiveSheetIndex(1);
         $detailSheet = $spreadsheet->setActiveSheetIndex(2);
+        $rekapSheet = $spreadsheet->setActiveSheetIndex(3);
 
         $sipSheet->mergeCells('A1:H1');
         $mspSheet->mergeCells('A1:H1');
@@ -2492,7 +2496,7 @@ class HRGAController extends Controller
         $headerStyle['font']['bold'] = true;
 
         $client = new Client();
-        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_KEY'));
+        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_KEY_APP'));
         $variable = json_decode($client->getBody())->items;
 
         $hitung_cuti_bersama = 0;
@@ -2633,6 +2637,218 @@ class HRGAController extends Controller
         $detailSheet->getColumnDimension('F')->setAutoSize(true);
         $detailSheet->getColumnDimension('G')->setAutoSize(true);
         $detailSheet->getColumnDimension('H')->setAutoSize(true);
+
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 8
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        // $titleStyle['alignment'] = ['vertical' => Alignment::VERTICAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        // $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $titleStyle['font']['bold'] = true;
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFC9C9C9"]];
+        $headerStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
+
+        $rekapSheet->getStyle('A1:Y1')->applyFromArray($titleStyle);
+        $rekapSheet->getStyle('A2:Y2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $rekapSheet->getStyle('A2:Y2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $rekapSheet->getStyle('C2:Y2')->getAlignment()->setWrapText(true);
+        $rekapSheet->getStyle('C2:Y2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $rekapSheet->setCellValue('B1','PT. SINERGY INFORMASI PRATAMA');
+        $rekapSheet->setCellValue('D1','Report cuti per ' . Carbon::now()->format("d M Y"));
+
+        $headerContent = ["No","NAMA","Tanggal Mulai Masuk","Hak Cuti 2020","Sisa Cuti 2020","Hak Cuti Tahunan","Cuti Bersama","Hak Cuti 2021","Cuti yg Diminta","Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des","Tgl Kerja Kembali","TOTAL Cuti yg telah diambil","Sisa Cuti 2021","Jenis Cuti / Keterangan"];
+        $rekapSheet->getStyle('A2:Y2')->applyFromArray($headerStyle);
+        $rekapSheet->getStyle('E2')->getFont()->getColor()->setARGB("FF0B24FB");
+        $rekapSheet->getStyle('F2')->getFont()->getColor()->setARGB("FF0B24FB");
+        $rekapSheet->getStyle('V2')->getFont()->getColor()->setARGB("FF0B24FB");
+        $rekapSheet->getStyle('X2')->getFont()->getColor()->setARGB("FF0B24FB");
+        $rekapSheet->getStyle('Y2')->getFont()->getColor()->setARGB("FF0B24FB");
+
+        $rekapSheet->getStyle('G2')->getFont()->getColor()->setARGB("FFF32229");
+        $rekapSheet->getStyle('W2')->getFont()->getColor()->setARGB("FFF32229");
+        $rekapSheet->fromArray($headerContent,NULL,'A2');
+
+        $jumlah_cuti = "7";
+        $total_cuti = "12";
+        $cuti_bersama = "2";
+        $jumlah_cuti_now = "10";
+        // $request_cuti = "5";
+
+        $dataFiltered = DB::table('tb_cuti')
+            ->select(
+                "tb_cuti.id_cuti",
+                "tb_cuti.nik"
+            )->where('status','=','v');
+
+        $dataLeavingPermitCount = DB::table('tb_cuti_detail')
+            ->select(
+                "tb_cuti_filtered.nik", 
+                DB::raw("COUNT(`tb_cuti_detail`.`date_off`) AS `counted`")
+            )->joinSub($dataFiltered,'tb_cuti_filtered',function($join){
+                $join->on('tb_cuti_filtered.id_cuti','=','tb_cuti_detail.id_cuti');
+            })->whereRaw("`tb_cuti_detail`.`date_off` BETWEEN '2021-01-01' AND '2021-12-31'")
+            ->groupBy('nik');
+
+        $dataLeavingPermit = User::select(
+                'users.nik',
+                DB::raw('`roles`.`name` AS `role`'),
+                'users.name',
+                'users.date_of_entry',
+                DB::raw($jumlah_cuti . ' AS `bersih_cuti_' . date('Y', strtotime("-1 year")) . '`'),
+                DB::raw('`users`.`cuti2` AS `sisah_cuti_' . date('Y', strtotime("-1 year")) . '`'),
+                DB::raw($total_cuti . ' AS `total_cuti_' . date('Y') . '`'),
+                DB::raw($cuti_bersama . ' AS `cuti_bersama_' . date('Y') . '`'),
+                DB::raw($jumlah_cuti_now . ' AS `bersih_cuti_' . date('Y') . '`'),
+                DB::raw("IFNULL(`cuti_requested`.`counted`, 0) AS `request_cuti_" . date('Y') . "`"),
+                // DB::raw($request_cuti . ' AS `request_cuti_' . date('Y') . '`')
+            )->join('role_user','role_user.user_id','=','users.nik')
+            ->join('roles','role_user.role_id','=','roles.id')
+            ->leftJoinSub($dataLeavingPermitCount,'cuti_requested',function($join){
+                $join->on('cuti_requested.nik','=','users.nik');
+            })->orderBy('roles.index','DESC')
+            ->orderBy('users.name','DESC')
+            ->where('status_karyawan','<>','dummy')
+            // ->where('nik','=',1170498100)
+            // ->limit(1)
+            ->get();
+
+        $cuti_processed = DB::table(function($query){
+                $query->from('tb_cuti')
+                    ->select(
+                        DB::raw("RIGHT(`tb_cuti_detail`.`date_off`,2) AS `date_off`"),
+                        "tb_cuti.nik",
+                        DB::raw("MONTH(`tb_cuti_detail`.`date_off`) AS `month`")
+                    )
+                    ->join("tb_cuti_detail","tb_cuti_detail.id_cuti","=","tb_cuti.id_cuti")
+                    ->where("tb_cuti.status","=","v")
+                    // ->where("tb_cuti.nik","=",1170498100)
+                    ->whereRaw("`tb_cuti_detail`.`date_off` BETWEEN '2021-01-01' AND '2021-12-31'");
+            }, 'tb_cuti_counted')
+            ->select('tb_cuti_counted.nik','tb_cuti_counted.month')
+            ->selectRaw("GROUP_CONCAT(`tb_cuti_counted`.`date_off`) AS `summarize`")
+            ->selectRaw("COUNT(*) AS `counted`")
+            ->groupBy("tb_cuti_counted.nik","tb_cuti_counted.month");
+
+        $cuti_summary = DB::table(function($query){
+                $query->from('month')
+                ->select(
+                    'users.nik',
+                    'month.id',
+                )->leftJoin('users','month.id','<>','users.nik')
+                // ->where("users.nik","=",1170498100)
+                ->where('users.status_karyawan','<>','dummy');
+            },'users_filtered')
+            ->leftJoinSub($cuti_processed, 'cuti_processed', function ($join) {
+                $join->on('cuti_processed.nik', '=', 'users_filtered.nik')
+                    ->on('cuti_processed.month', '=', 'users_filtered.id');
+            })
+            ->select(
+                "users_filtered.nik",
+                DB::raw("`users_filtered`.`id` AS `month`"),
+                "cuti_processed.summarize",
+                "cuti_processed.counted",
+            )->get()->sortBy('month')->groupBy('nik');
+            // return $cuti_summary;
+
+
+        // return $dataLeavingPermit;
+
+        $itemStyle = $normalStyle;
+        // $itemStyle['font']['bold'] = true;
+        $itemStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFFFE9F"]];
+        $itemStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
+        // echo "<pre>";
+        $dataLeavingPermit->map(function($item,$key) use ($rekapSheet,$itemStyle,$cuti_summary){
+            $item_filtered = array_values($item->toArray());
+            unset($item_filtered[0]);
+            unset($item_filtered[1]);
+            // print_r($item_filtered);
+            // print_r(array_merge(array_merge([$key + 1],array_values($item_filtered)),$cuti_summary[$item->nik]->pluck('summarize')->toArray()));
+            $rekapSheet->fromArray(array_merge(array_merge([$key + 1],array_values($item_filtered)),$cuti_summary[$item->nik]->pluck('summarize')->toArray()),NULL,'A' . ($key + 3));
+            $item->cuti_summary = $cuti_summary[$item->nik]->pluck('summarize');
+            $rekapSheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->applyFromArray($itemStyle);
+            $rekapSheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setWrapText(true);
+            $rekapSheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getFont()->setBold(true);
+            $rekapSheet->getStyle('J' . ($key + 3) . ':U' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
+
+            $rekapSheet->getStyle('G' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
+            $rekapSheet->setCellValue('X' . ($key + 3),'=H'. ($key + 3) . '-I' . ($key + 3));
+
+        });
+        // echo "</pre>";
+
+        // return ;
+        // return $dataLeavingPermit;
+
+        $rekapSheet->getColumnDimension('A')->setAutoSize(true);
+        $rekapSheet->getColumnDimension('B')->setAutoSize(true);
+        $rekapSheet->getColumnDimension('C')->setWidth(8);
+        $rekapSheet->getColumnDimension('D')->setWidth(8);
+        $rekapSheet->getColumnDimension('E')->setWidth(8);
+        $rekapSheet->getColumnDimension('F')->setWidth(8);
+        $rekapSheet->getColumnDimension('G')->setWidth(8);
+        $rekapSheet->getColumnDimension('H')->setWidth(8);
+        $rekapSheet->getColumnDimension('I')->setWidth(8);
+        $rekapSheet->getColumnDimension('J')->setWidth(8);
+        $rekapSheet->getColumnDimension('K')->setWidth(8);
+        $rekapSheet->getColumnDimension('L')->setWidth(8);
+        $rekapSheet->getColumnDimension('M')->setWidth(8);
+        $rekapSheet->getColumnDimension('N')->setWidth(8);
+        $rekapSheet->getColumnDimension('O')->setWidth(8);
+        $rekapSheet->getColumnDimension('P')->setWidth(8);
+        $rekapSheet->getColumnDimension('Q')->setWidth(8);
+        $rekapSheet->getColumnDimension('R')->setWidth(8);
+        $rekapSheet->getColumnDimension('S')->setWidth(8);
+        $rekapSheet->getColumnDimension('T')->setWidth(8);
+        $rekapSheet->getColumnDimension('U')->setWidth(8);
+        $rekapSheet->getColumnDimension('V')->setWidth(8);
+        $rekapSheet->getColumnDimension('W')->setWidth(8);
+        $rekapSheet->getColumnDimension('X')->setWidth(8);
+        $rekapSheet->getColumnDimension('Y')->setWidth(8);
+
+        // $dataPresenceIndividual = $dataPresence->groupBy('name');
+
+        // $indexSheet = 0;
+        // foreach ($dataPresenceIndividual as $key => $item) {
+        //   $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
+        //   $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
+
+        //   $detailSheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+        //   $detailSheet->setCellValue('A1','Presence Report ' . $key);
+        //   $detailSheet->mergeCells('A1:J1');
+
+        //   $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
+        //   $detailSheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+        //   $detailSheet->fromArray($headerContent,NULL,'A2');
+
+        //   foreach ($item as $key => $eachPresence) {
+        //     $detailSheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($eachPresence))),NULL,'A' . ($key + 3));
+        //   }
+        //   $detailSheet->getColumnDimension('A')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('B')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('C')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('D')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('E')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('F')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('G')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('H')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('I')->setAutoSize(true);
+        //   $detailSheet->getColumnDimension('J')->setAutoSize(true);
+        //   $indexSheet = $indexSheet + 1;
+        // }
+
+        $spreadsheet->setActiveSheetIndex(0);
 
         $fileName = 'Report Cuti SIP & MSP '. date('F') .' '. date('Y') . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
