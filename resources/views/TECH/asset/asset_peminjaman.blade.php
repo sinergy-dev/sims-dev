@@ -944,6 +944,13 @@
       accesable.forEach(function(item,index){
         $("#" + item).show()
       })
+
+      if (!(accesable.includes('col_action'))) {
+        // btn action di selain mas franky
+        var column1 = table.column(6);
+        column1.visible(!column1.visible() );
+      }
+      console.log(accesable)
     })
 
 
