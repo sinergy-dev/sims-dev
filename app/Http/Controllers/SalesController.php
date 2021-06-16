@@ -2651,7 +2651,6 @@ class SALESController extends Controller{
 
             if (is_null($request['po'])) {
                 $users = User::select('email')->where('id_position', 'STAFF')->where('id_division', 'TECHNICAL')->where('id_territory', 'DVG')->get();
-                // Notification::send($kirim, new NewLead());
                 $data = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -2659,12 +2658,39 @@ class SALESController extends Controller{
                     ->where('lead_id',$lead)
                     ->first();
 
-                // return $data->lead_id;
 
                 Mail::to($kirim)->send(new CreateLeadRegister($data));
-                // Mail::to("agastya@sinergy.co.id")->send(new CreateLeadRegister($data));
 
             }
+
+            $total = Sales::join('users','sales_lead_register.nik','=','users.nik')
+                    ->where('sales_lead_register.result','OPEN')
+                    ->orwhere('sales_lead_register.result','SD')
+                    ->where('sales_lead_register.year',date('Y'))
+                    ->where('users.id_company', '1')                    
+                    ->count('sales_lead_register.lead_id');
+
+            $user_to = User::select('email')
+                            ->where('id_position', 'MANAGER')
+                            ->where('id_division', 'TECHNICAL PRESALES')->first()->email;
+
+            $jsonSidebarInsert = array(
+                "to"=>$user_to,
+                "total"=>$total
+            );
+
+            $jsonInsert = array(
+                "heximal" => "#7735a3",
+                "lead_id" => $lead,
+                "opty_name" => $tambah->opp_name,
+                "result"=> 'INITIAL',
+                "showed"=>"true",
+                "status"=>"unread",
+                "to"=> $user_to,
+            );
+
+            $this->getNotifSidebarInsert($jsonSidebarInsert);
+            $this->getNotifBadgeInsert($jsonInsert);
             
             
 
@@ -2887,14 +2913,37 @@ class SALESController extends Controller{
                     ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
                     ->where('sales_lead_register.lead_id',$tambah->lead_id)
                     ->first();
+
         $status = 'assign';
         // Notification::send($kirim, new PresalesAssign());
         Mail::to($kirim)->send(new AssignPresales($data,$status));
 
+        $total = solution_design::join('sales_lead_register','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
+                    ->where('sales_lead_register.nik', $nik_assign)
+                    ->where('sales_lead_register.result','SD')
+                    ->orWhere('sales_lead_register.result','')
+                    ->whereYear('sales_solution_design.created_at',date('Y'))
+                    ->count('sales_lead_register.lead_id');
+
+        $jsonSidebarInsert = array(
+            "to"=>$kirim->email,
+            "total"=>$total
+        );
+
+        $jsonInsert = array(
+            "heximal" => "#f2562b",
+            "lead_id" => $data->lead_id,
+            "opty_name" => "(You've been assigned) " . $data->opp_name,
+            "result"=> "OPEN",
+            "showed"=>"true",
+            "status"=>"unread",
+            "to"=> $kirim->email,
+        );
+
+        $this->getNotifSidebarInsert($jsonSidebarInsert);
+        $this->getNotifBadgeInsert($jsonInsert);
 
         return redirect('project');
-
-        // echo $request['coba_lead'];
     }
 
     public function reassign_to_presales(Request $request)
