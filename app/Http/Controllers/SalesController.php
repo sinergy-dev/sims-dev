@@ -58,6 +58,10 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+use Google\Auth\CredentialsLoader;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 class SALESController extends Controller{
     /**
      * Display a listing of the resource.
