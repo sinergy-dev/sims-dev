@@ -12,6 +12,10 @@
     color: white;
   }
 
+  td.highlight {
+    background-color: whitesmoke !important;
+  }
+
   .transparant{
     background-color: Transparent;
     background-repeat:no-repeat;
@@ -4949,11 +4953,11 @@ button{
 @endsection
 
 @section('scriptImport')
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-
-<script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
@@ -4964,7 +4968,7 @@ button{
 @endsection
 
 @section('script')
-   <script type="">
+<script type="">  
     $('.js-product-multiple').select2();
 
     $('.js-technology-multiple').select2();
@@ -5014,6 +5018,13 @@ button{
       $('#notes').text(keterangan);
     }
 
+    $(document).ready(function() {
+      $('#contact').select2({
+        dropdownParent: $('#modal_lead')
+      });
+      $('#contact_edit').select2();
+      $('#owner_sales').select2();
+    });
 
     $('#owner').select2();
     $('#owner_reassign').select2();
@@ -5080,7 +5091,6 @@ button{
     }
 
     
-
     $.ajax({
       url:"sales/getProductTag",
       type:"GET",
@@ -5179,11 +5189,11 @@ button{
       $('#keterangan_lose').val(keterangan);
     }
 
-    /*function id_pro(lead_id,nik,opp_name){
+    function id_pro(lead_id,nik,opp_name){
       $('#customer_name').val(lead_id);
       $('#sales').val(nik);
       $('#name_project').val(opp_name);
-    }*/
+    }
 
     $(".lead_id_pro").click(function(){
       var cn = this.value;
@@ -5211,13 +5221,6 @@ button{
 
       $('.money').mask('000,000,000,000,000', {reverse: true});
       $('.total').mask('000,000,000,000,000,000.00', {reverse: true});
-      $(document).ready(function() {
-        $('#contact').select2({
-          dropdownParent: $('#modal_lead')
-        });
-        $('#contact_edit').select2();
-        $('#owner_sales').select2();
-      });
 
       $("#alert").fadeTo(2000, 500).slideUp(500, function(){
        $("#alert").slideUp(300);
@@ -5390,6 +5393,22 @@ button{
             });
           }
         });
+
+        // datasnow.on( 'draw', function () {
+        //   var body = $(datasnow.table().body());
+
+        //   body.unhighlight();
+        //   body.highlight(datasnow.search('BBJB210601'));  
+        // });
+
+        if (localStorage.getItem('status') == "unread") {
+          datasnow.search(localStorage.getItem('lead_id')).draw()
+        }
+
+
+        if (localStorage.getItem('status') == 'read') {
+          datasnow.search("").draw()
+        }
 
       }@elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'TECHNICAL PRESALES') {
         var datasnow = $('#datasnow').DataTable({

@@ -414,7 +414,7 @@ input[type=text]:focus{
  .inputsp i{
     position:absolute;
     left:0;
-    top:65px;
+    top:58px;
     padding:9px 8px;
     color:#aaa;
     transition:.3s;
@@ -733,20 +733,6 @@ td .form-control-small{
   color:  #1b3868; 
  }
 
-/*.tooltip {
-    background-color:#000;
-    border:1px solid #fff;
-    padding:10px 15px;
-    width:200px;
-    display:none;
-    color:#fff;
-    text-align:left;
-    font-size:12px;
-
-    -moz-box-shadow:0 0 10px #000;
-    -webkit-box-shadow:0 0 10px #000;
-}
-*/
 button{
   width: 90px;
 }
@@ -1207,10 +1193,18 @@ img{
       outline:none;
       width: 25px;
 }
+
 button{
   font-size: 12px;
 }
 
+.active-tab{
+  display: block;
+}
+
+.non-active-tab{
+  display: none;
+}
   
 </style>
 
