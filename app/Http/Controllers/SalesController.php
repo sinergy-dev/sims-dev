@@ -2588,30 +2588,6 @@ class SALESController extends Controller{
                 }
             }
             
-            /*$date_po = strtotime($_POST['date_po']); 
-            $date_po = date("Y-m-d",$date_po);*/
-
-            
-           /* if (!empty($request['po'])) {
-                $tambah_sd = new solution_design();
-                $tambah_sd->lead_id = $lead;
-                $tambah_sd->nik = Auth::User()->nik;
-                $tambah_sd->save();
-
-                $tambah_po = new PID();
-                $tambah_po->lead_id = $lead;
-                $tambah_po->amount_pid = str_replace(',', '', $request['amount_po']);
-                $tambah_po->no_po = $request['no_po'];
-                $tambah_po->date_po = $date_po;
-                $tambah_po->status == 'requested';
-                $tambah_po->save();
-
-
-                $tambahtp = new TenderProcess();
-                $tambahtp->lead_id = $lead;
-                $tambahtp->save();
-            }*/
-
 
             $lead_change_log = $name->code . date('y') . date('m') . $nomor;
             $amount = str_replace(',', '', $request['amount']);
@@ -3039,11 +3015,49 @@ class SALESController extends Controller{
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name','sales.id_territory','sales.email','sales.nik','result')
                     ->where('sales_lead_register.lead_id',$lead_id)
                     ->first();
 
+        $total = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->where('sales_lead_register.nik', $data->nik)
+                    ->where('sales_lead_register.result','TP')
+                    ->whereYear('sales_tender_process.created_at',date('Y'))
+                    ->count('sales_tender_process.lead_id');
+
         Mail::to($kirim)->send(new RaiseTender($data));
+
+        // $json = array(
+        //     "Lead_Register" => [
+        //          $data->id_territory => [
+        //             "to" => $data->email,
+        //             "total" => $total,
+        //         ],
+        //     ]);
+
+        $json = array(
+            "to" => $data->email,
+            "total" => $total,
+        );
+
+        $jsonSidebarInsert = array(
+            "to"    => $data->email,
+            "total" => $total
+        );
+
+        $jsonInsert = array(
+            "heximal" => "#f7e127",
+            "lead_id" => $lead_id,
+            "opty_name" => $data->opp_name,
+            "result"=> $data->result,
+            "showed"=>"true",
+            "status"=>"unread",
+            "to"=> $data->email,
+        );
+
+        $this->getNotifBadgeUpdate($json);
+        $this->getNotifBadgeInsert($jsonInsert);
+        $this->getNotifSidebarInsert($jsonSidebarInsert);
 
 
         return redirect()->back();
@@ -3051,19 +3065,6 @@ class SALESController extends Controller{
 
     public function update_result(Request $request)
     {
-        // echo '<pre>';
-        // print_r($request->tagsOld);
-        // print_r($request->tagData);
-        // echo '</pre>';
-
-        // echo "<pre>";
-        // echo isset($request->tagData) ? "tagData True" : "tagData False";
-        // echo "<br>";
-        // echo !empty($request->tagData["tagProduct"]) ? "tagProduct True" : "tagProduct False";
-        // echo "<br>";
-        // echo !empty($request->tagData["tagService"]) ? "tagService True" : "tagService False";
-        // echo "</pre>";
-        // return $request;
         
         $lead_id = $request['lead_id_result'];
         
@@ -3080,8 +3081,6 @@ class SALESController extends Controller{
         if ($request['result'] == 'WIN' && $request['deal_price_result'] == null) {
             return back()->with('submit-price','Deal Price Wajib Diisi!');
         } else{
-            // $edate = strtotime($_POST['update_closing_date']); 
-            // $edate = date("Y-m-d",$edate);
 
             $update = Sales::where('lead_id', $lead_id)->first();
             $update->result = $request['result'];
@@ -3124,37 +3123,6 @@ class SALESController extends Controller{
                     }
                 }
 
-                // if ($request->tagsOld != ""){
-                //     foreach ($request->tagsOld as $key => $value) {
-                //         $update = ProductTagRelation::where('id',$value['id_product_relation']);
-                //         $update_price = $update->update(['price'=>$value['price_product']]);  
-
-                //         $tambah             = new SalesChangeLog();
-                //         $tambah->lead_id    = $lead_id; 
-                //         $tambah->nik        = Auth::User()->nik; 
-                //         $tambah->status     = "Updated Product " . $value['name_product'] . " - Price [" . number_format($value['price_product']) . "]";
-                //         $tambah->save(); 
-                //     }
-                // }
-                
-
-                // if ($request->tagsNew != "") {
-                //     foreach ($request->tagsNew as $key => $value) {
-                //         $store = new ProductTagRelation;
-                //         $store->lead_id = $lead_id;
-                //         $store->id_product_tag = $value['id_product'];
-                //         $store->price = $value['price_product'];
-                //         $store->save();  
-
-                //         $tambah             = new SalesChangeLog();
-                //         $tambah->lead_id    = $lead_id; 
-                //         $tambah->nik        = Auth::User()->nik; 
-                //         $tambah->status     = "Updated Product " . $value['name_product'] . " - Price [" . number_format($value['price_product']) . "]";
-                //         $tambah->save(); 
-                //     }
-                // }
-
-
 
                 $tambah->status = 'Update WIN';
 
@@ -3176,33 +3144,36 @@ class SALESController extends Controller{
                 if ($request['request_id'] == "true") {
                     $tambahpid->status = 'requested';
 
-                    /*$users = User::select('name')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
-
-                    $pid_info = DB::table('sales_lead_register')
-                        ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                        ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
-                        ->join('users','users.nik','=','sales_lead_register.nik')
-                        ->where('sales_lead_register.lead_id','=',$request['lead_id_result'])
-                        ->select(
-                            'sales_lead_register.lead_id',
-                            'sales_lead_register.opp_name',
-                            'users.name',
-                            'tb_pid.amount_pid',
-                            'tb_pid.no_po',
-                            'sales_tender_process.quote_number2'
-                        )->first(); 
-           
-                        // return "$pid_info";
-
-                    Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
-                    Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));*/
-                    // Mail::to($users->email)->send(new MailResult($users,$pid_info));
-                
                 }else{
                     $tambahpid->status = 'pending';
                 }
 
                 $tambahpid->save();
+
+                $data = Sales::join('users','sales_lead_register.nik','=','users.nik')->where('lead_id',$lead_id)->first();
+
+                $total = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->where('sales_lead_register.nik', $data->nik)
+                    ->where('sales_lead_register.result','TP')
+                    ->whereYear('sales_tender_process.created_at',date('Y'))
+                    ->count('sales_tender_process.lead_id');
+
+                $json = array(
+                    "ID_Project" => [
+                        "manager" => [
+                            "to" => "yuliane@sinergy.co.id",
+                            "total" => PID::where('status','requested')->count('id_pid'),
+                        ],
+                        
+                    ],
+                    "Lead_Register" => [
+                     $data->id_territory => [
+                        "to" => $data->email,
+                        "total" => $total,
+                    ],
+                ]);
+
+                $this->getNotifBadgeUpdate($json);
 
                 $update_quo = TenderProcess::where('lead_id', $lead_id)->first();
                 $update_quo->quote_number_final = $request['quote_number_final'];
@@ -3241,17 +3212,23 @@ class SALESController extends Controller{
 
                     $users = User::select('name', 'email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
            
-                        // return "$pid_info";
-
-                    // Mail::to('ladinar@sinergy.co.id')->send(new MailResult($users,$pid_info));
                     Mail::to('hellosinergy@gmail.com')->send(new MailResult($users,$pid_info));
                     Mail::to($users->email)->send(new MailResult($users,$pid_info));
+
+                    $jsonInsert = array(
+                        "heximal" => "#246d18",
+                        "lead_id" => $lead_id,
+                        "opty_name" => $data->opp_name,
+                        "result"=> $data->result,
+                        "showed"=>"true",
+                        "status"=>"unread",
+                        "to"=> "yuliane@sinergy.co.id",
+                        "id_pid"=>$tambahpid->id_pid
+                    );
+
+                    $this->getNotifBadgeInsert($jsonInsert);
                 }
 
-                
-                // return "asdfasfda";
-
-	            // $tambahpid->status      = 'requested';
 	            
 
             } elseif($request['result'] == 'LOSE'){
@@ -3266,64 +3243,6 @@ class SALESController extends Controller{
             $tambah->save();
 
         }      
-
-        // $nik_sales = DB::table('sales_lead_register')
-        //                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-        //                 ->select('sales_lead_register.nik', 'users.id_territory')
-        //                 ->where('lead_id',$lead_id)
-        //                 ->first();
-
-        // $current_presales = DB::table('sales_solution_design')
-        //                         ->join('users','users.nik','=','sales_solution_design.nik')
-        //                         ->select('sales_solution_design.nik')
-        //                         ->where('lead_id',$lead_id)
-        //                         ->first();
-
-        // $presales_manager = DB::table('users')
-        //                         ->select('nik')
-        //                         ->where('id_position', 'MANAGER')
-        //                         ->where('id_division', 'TECHNICAL PRESALES')
-        //                         ->first();
-
-        // if(Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'SALES' && Auth::User()->id_territory == $nik_sales->id_territory || Auth::User()->email == 'presales@sinergy.co.id'){
-
-        //     if (Auth::User()->email == 'presales@sinergy.co.id') {
-        //         $kirim = User::select('email')
-        //                     ->where('id_division', 'TECHNICAL PRESALES')
-        //                     ->where('email', 'ganjar@sinergy.co.id')
-        //                     ->orWhere('email', 'nabil@sinergy.co.id')
-        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
-        //                     ->get();
-        //     }else{
-        //         $kirim = User::select('email')
-        //                     ->where('id_division', 'TECHNICAL PRESALES')
-        //                     ->where('nik', $current_presales->nik)
-        //                     ->orWhere('nik', $presales_manager->nik)
-        //                     ->orWhere('email', 'nabil@sinergy.co.id')
-        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
-        //                     ->get();
-        //     }                
-        // } elseif(Auth::User()->id_position == 'STAFF' && Auth::User()->id_division == 'SALES' && Auth::User()->id_territory == $nik_sales->id_territory){
-        //     $kirim = User::select('email')
-        //                     ->where('id_position', 'MANAGER')
-        //                     ->where('id_division', 'SALES')
-        //                     ->where('id_territory', $nik_sales->id_territory)
-        //                     ->orWhere('nik', $current_presales->nik)
-        //                     ->orWhere('nik', $presales_manager->nik)
-        //                     ->orWhere('email', 'nabil@sinergy.co.id')
-        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
-        //                     ->get();
-        // } elseif(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER'){
-        //     $kirim = User::select('email')
-        //                     ->where('id_position', 'MANAGER')
-        //                     ->where('id_division', 'SALES')
-        //                     ->where('id_territory', $nik_sales->id_territory)
-        //                     ->orWhere('nik', $current_presales->nik)
-        //                     ->orWhere('nik', $presales_manager->nik)
-        //                     ->orWhere('email', 'nabil@sinergy.co.id')
-        //                     ->orWhere('email', 'yuliane@sinergy.co.id')
-        //                     ->get();
-        // }
            
 
         return "success";
@@ -3522,14 +3441,7 @@ class SALESController extends Controller{
                 $update->status = 'ready';
             }
 
-            // $id_quote = $request['quote_before'];
-            // $id_quote_true = $request['quote_number'];
-            // $update_false = Quote::where('id_quote', $id_quote)->first();
-            // $update_true = Quote::where('id_quote', $id_quote_true)->first();
-
             if($request['submit_price'] != $request['submit_price_before']){
-            /*           $angka = $request['submit_price'];
-                $format_rupiah = number_format($angka, '2', ',', '.'); */
                $update->submit_price = str_replace(',', '', $request['submit_price']);
                $update->update();
               }
@@ -3590,37 +3502,6 @@ class SALESController extends Controller{
                $update->update();   
             }
 
-            //         if ($request['quote_number'] == TRUE) {
-            //             if($request['quote_number'] != $request['quote_before']) {
-            //                 $update->quote_number = $request['quote_number'];
-            //                 $update->update();
-
-            //                 if($update_false == TRUE){
-            //                     $update_false->status = 'F';
-            //                     $update_false->update();
-            //                 }
-
-            //                 if($update_true == TRUE){
-            //                     $update_true->status = 'T';
-            //                     $update_true->update();
-            //                 }
-            //             }
-            //         }else if($request['quote_number'] == NULL) {
-            //         	$q_num = $request['quote_before'];
-            //             $update->quote_number = $q_num;
-            //             $update->update();
-            // /*
-            //             if($update_false == TRUE){
-            //                 $update_false->status = 'F';
-            //                 $update_false->update();
-            //             }
-
-            //             if($update_true == TRUE){
-            //                 $update_true->status = 'T';
-            //                 $update_true->update();
-            //             }*/
-            //         }
-
             if (is_null($request['quote_number'])) {   
                 $update->quote_number2 = $request['quote_number'];
                 $update->update();
@@ -3639,7 +3520,6 @@ class SALESController extends Controller{
                $tambah->deal_price = str_replace(',', '', $request['deal_price']); 
             }
             
-            // $tambah->submit_price = $request['submit_price'];
             $tambah->submit_price = str_replace(',', '', $request['submit_price']);
             $tambah->save();
      
