@@ -923,6 +923,8 @@
 @endsection
 
 @section('scriptImport')
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
@@ -1215,7 +1217,7 @@
         url:'/store_kategori_asset',
         data:$('#modalAddKategori').serialize(),
         success: function(result){
-          swal({
+          Swal.fire({
               title: "Success!",
               text:  "You have been Added Kategori.",
               type: "success",
@@ -1246,7 +1248,7 @@
         url:'/store_asset',
         data:$('#modalAddAsset').serialize(),
         success: function(result){
-          swal({
+          Swal.fire({
               title: "Success!",
               text:  "You have been Added Asset.",
               type: "success",
@@ -1332,7 +1334,7 @@
           status_asset:$("#switch-checkbox").val(),
         },
         success: function(result){
-            swal({
+            Swal.fire({
                 title: "Success!",
                 text:  "You Have been Update Asset",
                 type: "success",
@@ -1383,7 +1385,7 @@
         data:$('#modalDelete').serialize(),
         url:"{{url('/delete_asset')}}"+"/"+ $('#id_barang_delete').val(),
         success: function(result){
-            swal({
+            Swal.fire({
                 title: "Deleted!",
                 text:  "You Have been delete Asset",
                 type: "success",
@@ -1448,7 +1450,7 @@
         url:'/update_asset',
         data:$('#modalPeminjaman').serialize(),
         success: function(result){
-            swal({
+            Swal.fire({
                 title: "Success!",
                 text:  "Successfully Request.",
                 type: "success",
@@ -1535,7 +1537,7 @@
           url:'/accept_pinjam',
           data:$('#modal_accept').serialize(),
           success: function(result){
-              swal({
+              Swal.fire({
                   title: "Success!",
                   text:  "You have been Accepted the progress.",
                   type: "success",
@@ -1618,7 +1620,7 @@
           url:'/kembali_pinjam',
           data:$('#modalKembali').serialize(),
           success: function(result){
-            swal({
+            Swal.fire({
                 title: "Success!",
                 text:  "Asset has benn Returned.",
                 type: "success",
@@ -1695,7 +1697,7 @@
         url:'/reject_pinjam',
         data:$('#modalReject').serialize(),
         success: function(result){
-            swal({
+            Swal.fire({
                 title: "Success!",
                 text:  "You have been rejected the progress.",
                 type: "success",
@@ -1947,7 +1949,7 @@
             url: this.href,
             type: 'GET',
             success: function(result) {
-              swal({
+              Swal.fire({
                  title: "Success!",
                  text:  "You have been Export to Excel.",
                  type: "success",
@@ -1963,7 +1965,7 @@
         // url: '@Url.Action("exportExcelTech", "AssetController")',
         // type: "GET",
         // success: function(result){
-        // // swal({
+        // // Swal({
         // //       title: "Success!",
         // //       text:  "You have been Export Excel.",
         // //       type: "success",
