@@ -1,5 +1,5 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+@section('head_css')
 <style type="text/css">
   .qty {
     width: 40px;
@@ -537,10 +537,14 @@
 </div>
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+@endsection
+  
+@section('script')  
   <script type="text/javascript">
     function warehouse(item_code,item_code,name_item,quantity,information) {
       $('#edit_item_code_before').val(item_code);
