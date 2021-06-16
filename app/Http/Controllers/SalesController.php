@@ -2651,7 +2651,7 @@ class SALESController extends Controller{
                             ->where('id_division', 'TECHNICAL PRESALES')->first()->email;
 
             $jsonSidebarInsert = array(
-                "to"=>$user_to,
+                "to"=>Auth::User()->email,
                 "total"=>$total
             );
 
