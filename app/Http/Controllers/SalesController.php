@@ -3542,12 +3542,6 @@ class SALESController extends Controller{
                $update_lead->amount = str_replace(',', '', $request['deal_price']); 
             }
 
-            /*if ($request['submit_price'] != '') {
-                $update_lead->amount = str_replace(',', '', $request['submit_price']);
-            } elseif ($request['submit_price'] == '') {
-                $update_lead->amount = $request['amount_before'];
-            }*/
-
             if ( is_null($request['project_class'])) {
                 $update_lead->project_class = $request['project_class'];
             }else if ( $request['project_class'] == TRUE) {
@@ -5035,7 +5029,16 @@ class SALESController extends Controller{
         
         }
         // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
+        $json = array(
+            "ID_Project" => [
+                "manager" => [
+                    "to" => "yuliane@sinergy.co.id",
+                    "total" => PID::where('status','requested')->count('id_pid'),
+                ],
+                
+            ]);
             
+        $this->getNotifBadgeUpdate($json);
 
         return redirect()->to('/salesproject')->with('success', 'Create PID Successfully!');
         
@@ -5063,6 +5066,8 @@ class SALESController extends Controller{
                 'tb_pid.amount_pid',
                 'tb_pid.id_pid',
                 'tb_pid.no_po',
+                'sales_lead_register.result',
+                'users.email',
                 'sales_tender_process.quote_number2'
             )->first();
 
@@ -5078,6 +5083,19 @@ class SALESController extends Controller{
         // Mail::to('agastya@sinergy.co.id')->send(new MailResult($users,$pid_info));
         // return $users
         Mail::to($users->email)->send(new MailResult($users,$pid_info));
+
+        $jsonInsert = array(
+            "heximal" => "#246d18",
+            "lead_id" => $pid_info->lead_id,
+            "opty_name" => $pid_info->opp_name,
+            "result"=> $pid_info->result,
+            "showed"=>"true",
+            "status"=>"unread",
+            "to"=> "yuliane@sinergy.co.id",
+            "id_pid" => $pid_info->id_pid
+        );
+
+        $this->getNotifBadgeInsert($jsonInsert);
 
 
         return redirect()->to('/project')->with('success', 'Create PID Successfully!');
