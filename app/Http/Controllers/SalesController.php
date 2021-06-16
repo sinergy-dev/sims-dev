@@ -5612,4 +5612,49 @@ class SALESController extends Controller{
             //     }
             // }
     }
+
+    public function getNotifBadgeUpdate($json){
+        $url = "https://sims-22e41-default-rtdb.firebaseio.com/notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
+        try {
+            $client = new Client();
+            $client->request('PATCH', $url, [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => $json
+            ]);
+        } catch (RequestException $e){
+            $error['error'] = $e->getMessage();
+        }
+    }
+
+    public function getNotifSidebarInsert($json){
+        $url = "https://sims-22e41-default-rtdb.firebaseio.com/notif/Lead_Register.json?auth=".env('REALTIME_FIREBASE_AUTH');
+        try {
+            $client = new Client();
+            $client->request('POST', $url, [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => $json
+            ]);
+        } catch (RequestException $e){
+            $error['error'] = $e->getMessage();
+        }
+    }
+
+    public function getNotifBadgeInsert($json){
+        $url = "https://sims-22e41-default-rtdb.firebaseio.com/notif/web-notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
+        try {
+            $client = new Client();
+            $client->request('POST', $url, [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => $json
+            ]);
+        } catch (RequestException $e){
+            $error['error'] = $e->getMessage();
+        }
+    }
 }
