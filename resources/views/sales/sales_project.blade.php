@@ -21,31 +21,36 @@
       .dataTables_filter {
         display: none;
       }
-      th, td { white-space: nowrap; overflow: hidden; };
+
       .inputWithIcon input[type=text]{
-        padding-left:40px;
+          padding-left:40px;
       }
-      .inputWithIcon.inputIconBg input[type=text]:focus + i{
-        color:#fff;
-        background-color:dodgerBlue;
-      }
-      .inputWithIcon.inputIconBg i{
-        background-color:#aaa;
-        color:#fff;
-        padding:10px 9px;
-        border-radius:4px 0 0 4px;
-      }
-      .inputWithIcon{
+
+       .inputWithIcon.inputIconBg input[type=text]:focus + i{
+          color:#fff;
+          background-color:dodgerBlue;
+        }
+
+       .inputWithIcon.inputIconBg i{
+          background-color:#aaa;
+          color:#fff;
+          padding:7px 4px;
+          /*border-radius:4px 0 0 4px;*/
+        }
+
+       .inputWithIcon{
           position:relative;
-      }
-      .inputWithIcon i{
+        }
+
+       .inputWithIcon i{
           position:absolute;
           left:0;
-          top:0;
-          padding:9px 9px;
+          top:25px;
+          padding:9px 8px;
           color:#aaa;
           transition:.3s;
-      }
+        }
+
       .nav-tabs .badge{
           position: absolute;
           top: -10px;
@@ -236,7 +241,7 @@
           <label for="">Date</label>
           <input type="date" name="date" id="inputDate" class="form-control" required>
         </div>
-        <div class="form-group  modalIcon inputIconBg">
+        <div class="form-group inputWithIcon inputIconBg">
           <label for="">Amount</label>
           <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="inputAmount" required>
           <i class="" aria-hidden="true" style="margin-bottom: 24px">Rp.</i>
@@ -250,7 +255,7 @@
         <button class="btn btn-default" data-dismiss="modal">
           <i class=" fa fa-times">&nbsp</i>Close
         </button>
-        <button class="btn btn-primary-custom" id="btn_submit" onclick="submitRequestID()" >
+        <button class="btn btn-primary" id="btn_submit" onclick="submitRequestID()" >
           <i class="fa fa-check">&nbsp</i>Submit
         </button>
       </div>
@@ -537,20 +542,59 @@
   </section>
 
 @endsection
-@section('scriptImport')
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+@section('scriptImport')  
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-  <!-- <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script> -->
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
-  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+  <!-- <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> -->
   <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
+  $('.money').mask('000,000,000,000,000', {reverse: true});
+
+  if ( window.location.href.split("/")[3].split("#")[1] == 'submitIdProject') {
+    $.ajax({
+      type:"GET",
+      url:"{{url('/salesproject/getAcceptProjectID')}}",
+      data:{
+        id:window.location.href.split("/")[4],
+      },
+      success:function(result){
+        $('#tunggu').modal('hide');
+        $("#code_name").val(result.code)
+        $("#inputCustomer").val(result.lead_id)
+        $("#inputPO").val(result.no_po)
+        $("#inputProject").val(result.opp_name)
+        $("#inputSales").val(result.name)
+        if (result.quote_number_final == null) {
+          $("#inputQuo").val(result.quote_number)
+        }else{
+          $("#inputQuo").val(result.quote_number_final)
+        }
+
+        if (result.date_po == null) {
+          $("#inputDate").val(result.date)
+        }else{
+          $("#inputDate").val(result.date_po)
+        }
+        if (result.amount_pid == null) {
+          $("#inputAmount").val(result.amount)
+        }else{
+          $("#inputAmount").val(result.amount_pid)
+        }
+        $("#inputNote").val(result.note)
+      }
+    })
+
+    $("#showRequestProjectID").modal("show")
+  }
+
+
   $(document).ready(function(){
     var accesable = @json($feature_item);
     accesable.forEach(function(item,index){
@@ -573,6 +617,42 @@
       column3.visible(!column3.visible() );
     }
 
+    if ( window.location.href.split("/")[3].split("#")[1] == 'submitIdProject') {
+      $.ajax({
+        type:"GET",
+        url:"{{url('/salesproject/getAcceptProjectID')}}",
+        data:{
+          id:window.location.href.split("/")[4],
+        },
+        success:function(result){
+          $('#tunggu').modal('hide');
+          $("#code_name").val(result.code)
+          $("#inputCustomer").val(result.lead_id)
+          $("#inputPO").val(result.no_po)
+          $("#inputProject").val(result.opp_name)
+          $("#inputSales").val(result.name)
+          if (result.quote_number_final == null) {
+            $("#inputQuo").val(result.quote_number)
+          }else{
+            $("#inputQuo").val(result.quote_number_final)
+          }
+
+          if (result.date_po == null) {
+            $("#inputDate").val(result.date)
+          }else{
+            $("#inputDate").val(result.date_po)
+          }
+          if (result.amount_pid == null) {
+            $("#inputAmount").val(result.amount)
+          }else{
+            $("#inputAmount").val(result.amount_pid)
+          }
+          $("#inputNote").val(result.note)
+        }
+      })
+
+      $("#showRequestProjectID").modal("show")
+    }
 
   })  
 
@@ -821,7 +901,7 @@
         {
           render: function ( data, type, row ) {
           	if (row.status == 'requested') {
-          		return '<button class="btn btn-xs btn-primary btn-show" style="width: 100%" data-toggle="modal" value="'+row.id_pid+'">Show</button>'
+          		return '<button class="btn btn-xs btn-primary btn-show" data-toggle="modal" value="'+row.id_pid+'">Show</button>'
           	}else if(row.status == 'done'){
           		return '<small class="label label-success"><i class="fa fa-clock-o"></i>Done</small>'
           	}
@@ -904,7 +984,8 @@
       success:function(result){
         $('#tunggu').modal('hide');
     	  $('#showRequestProjectID').modal('hide')
-        location.reload()
+        window.location.href = "{{url('salesproject')}}"
+
       }
     })
   }
@@ -980,7 +1061,7 @@
   })
 
 	$('#request_id').on('click', '.btn-show', function(){
-		$('#tunggu').modal('show');
+		// $('#tunggu').modal('show');
     	$.ajax({
         type:"GET",
         url:"{{url('/salesproject/getAcceptProjectID')}}",
@@ -1134,6 +1215,8 @@
     @else
       $('#table-pid').DataTable().ajax.url("{{url('getFilterYearPID')}}?filterYear="+filterYear).load();
     @endif
+
+    
       
  })
 
