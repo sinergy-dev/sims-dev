@@ -13,19 +13,15 @@
 		<div class="navbar-custom-menu">
 			<ul class="nav navbar-nav">
 				<li class="dropdown notifications-menu">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-						<i class="fa fa-bell-o"></i>
-						<span class="label label-warning">
-							<small>
-								<i class="fa fa-fw fa-circle"></i>
-							</small>
-						</span>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" >	
+						<i id="bell-id"></i>
+						<span class="label label-warning" id="notificationCount"></span>					
 					</a>
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu" id="">
 						<li class="header">New Notifications:</li>
 						<li>
-							<ul class="menu">
-								<li>
+							<ul class="menu" id="notificationContent">
+								<!-- <li>
 									<a href="#">
 										<i class="fa fa-users text-aqua"></i> 5 new members joined today
 									</a>
@@ -50,7 +46,7 @@
 									<a href="#">
 										<i class="fa fa-user text-red"></i> You changed your username
 									</a>
-								</li>
+								</li> -->
 							</ul>
 						</li>
 						<li class="footer">
@@ -120,3 +116,215 @@
 		</div>
 	</nav>
 </header>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+<script type="text/javascript">
+	// $( window ).load(function() {
+ //       localStorage.clear()
+ //    });
+	var firebaseConfig = {
+	    apiKey: "AIzaSyB0MWK6KLjhJlY7cL7G6STOCVGnxzjapXU",
+	    authDomain: "sims-22e41.firebaseapp.com",
+	    projectId: "sims-22e41",
+	    storageBucket: "sims-22e41.appspot.com",
+	    messagingSenderId: "84983392260",
+	    appId: "1:84983392260:web:e10924f37a7a5c189cad51",
+	    measurementId: "G-WK8FWEW0TV"
+	};
+  	// Initialize Firebase
+  	firebase.initializeApp(firebaseConfig);
+
+  	firebase.database().ref('notif/web-notif').once('value', function(snapshot) {
+
+  	 	snapshot_dump = snapshot.val()
+
+  	 	var append = ""
+  	 	var count = 0
+
+  	 	var keys = Object.keys(snapshot_dump)
+  	 	keys = keys.reverse()
+
+  	 	for (var i = 0; i < keys.length; i++) {
+  	 		if (snapshot_dump[keys[i]].status == "unread") {
+  	 			if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
+  	 				// console.log("a")
+
+		  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
+		  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('salesproject')}}#submitIdProject/"+snapshot_dump[keys[i]].id_pid)
+
+		  	 		}else if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+		  	 			if (snapshot_dump[keys[i]].result == 'INITIAL') {
+			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",snapshot_dump[keys[i]].lead_id)
+
+		  	 			}else{
+						    localStorage.setItem("status","read")
+
+			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('detail_project')}}/"+snapshot_dump[keys[i]].lead_id)
+
+		  	 			}
+			  	 		// console.log(snapshot_dump[keys[i]].lead_id)
+
+		  	 		}else{
+			  	 		append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('detail_project')}}/"+snapshot_dump[keys[i]].lead_id)
+
+		  	 		}
+		  	 	}
+	  	 	}
+
+  	 		count++
+
+  	 	}
+
+  	 	$("#notificationContent").append(append)
+
+  	})
+
+  	firebase.database().ref('notif/web-notif').on('value', function(snapshot) {
+        snapshot_dump = snapshot.val()
+        var append = ""
+        var count = 0
+
+        var keys = Object.keys(snapshot_dump)
+  	 	keys = keys.reverse()
+
+  	 	// console.log(keys)
+  	 	for (var i = 0; i < keys.length; i++) {
+
+  	 		if (snapshot_dump[keys[i]].status == "unread") {
+
+  	 			if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
+  	 				count++
+
+		  	 	}
+
+		  	} 
+        }
+
+        if(count != 0){ 	
+        	count = count
+        	$("#bell-id").addClass('fa fa-bell')
+			$("#notificationCount").text(count)
+
+        } else {   
+        	// count = "0"
+        	$("#bell-id").addClass('fa fa-bell-o')
+        }		
+
+        // console.log(count)
+
+    });
+
+    var start = true;
+
+    firebase.database().ref('notif/web-notif').limitToLast(1).on('child_added', function(snapshot) {
+    	console.log(snapshot.val())
+        if(!start){
+
+            // $("#notificationContent").children().last().remove()
+            // $("#notificationContent").children().last().remove()
+            // Show latests notification to Browser Notification
+            // if(snapshot.val().showed == "false"){
+            //     showNotificationBrowser(snapshot.val(),snapshot.key)
+            // }
+
+            // Add latests notification
+
+            // $("#notificationContent").prepend(makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",snapshot_dump[keys[i]].lead_id)) 
+
+            if (snapshot.val().to == "{{Auth::User()->email}}") {
+  	 				// console.log("a")
+
+	  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
+	  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('salesproject')}}#submitIdProject/"+snapshot.val().id_pid))
+
+	  	 		}else if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+	  	 			if (snapshot.val().result == 'INITIAL') {
+            			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread",snapshot.val().lead_id)) 
+	  	 			}else{
+					   localStorage.setItem("status","read")
+				
+		  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('detail_project')}}/"+snapshot.val().lead_id))
+
+	  	 			}
+	  	 		}else{
+		  	 		$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('detail_project')}}/"+snapshot.val().lead_id))
+
+	  	 		}
+	  	 	}
+        } else {
+            start = false
+        }
+    })
+
+
+    function timedRefresh(timeoutPeriod) {
+		setTimeout("location.reload(true);",timeoutPeriod);
+	}
+
+  	function makeNotificationHolder(data,index,status,url){
+        var append = ""
+
+        if(status == "unread"){
+        		append = append + '<li>'
+				append = append +  '<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"><span class="label" style="background-color:'+ data.heximal +'">'+ data.result + '</span> ' + data.opty_name
+				append = append +  '</a>'
+				append = append +  '</li>'
+        	
+        } 
+
+        return append
+    }
+
+    function readNotification(index,url){
+ 
+        firebase.database().ref('notif/web-notif/' + index).once('value').then(function(snapshot) {
+            // console.log(snapshot.val())
+            var data = snapshot.val()
+            if (data.id_pid == null) {
+            	id_pid = ""
+            }else{
+            	id_pid = data.id_pid 
+            }
+
+            firebase.database().ref('notif/web-notif/' + index).set({
+                to: data.to,
+                lead_id: data.lead_id,
+                opty_name: data.opty_name,
+                heximal: data.heximal,
+                status: "read",
+                result : data.result,
+                showed : "true",
+                id_pid : id_pid
+            });
+
+            if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+            	if (snapshot.val().result == 'INITIAL') {
+            		location.reload(true);  
+            		window.location.href = "{{url('project')}}/"
+
+	            	localStorage.setItem("lead_id",url)
+	            	localStorage.setItem("status","unread")
+            	}else{
+					localStorage.setItem("status","read")
+
+            		location.reload(true);  
+            		window.location.href = url
+            	}          	           	 
+            }else{
+            	if (window.location.href.split("/")[3].split("#")[1] == 'submitIdProject') {
+	            	location.reload(true);
+	            	window.location.href = url
+	            }else if (window.location.href.split("/")[3] == 'salesproject') {
+	            	window.location.href = url
+	            	location.reload(true);
+	            }else{
+	            	window.location.href = url
+
+	            }
+            }
+
+        })
+    }
+
+</script>
