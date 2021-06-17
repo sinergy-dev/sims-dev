@@ -29,8 +29,9 @@
 	            <ul class="nav nav-tabs" id="myTab">
 	              <li class="active" id="tab_1"><a href="#kebijakan" data-toggle="tab" onclick="changeTab('kebijakan')" aria-expanded="false">Kebijakan</a></li>
 	              <li class="" id="tab_2"><a href="#peraturan" data-toggle="tab" onclick="changeTab('peraturan')" aria-expanded="true">Peraturan</a></li>
-	              <li class="" id="tab_3"><a href="#peraturan" data-toggle="tab" onclick="changeTab('panduan')" aria-expanded="true">Panduan</a></li>	              
-	              <li class="" id="tab_4"><a href="#other" data-toggle="tab" onclick="changeTab('other')" aria-expanded="false">Other</a></li>
+	              <li class="" id="tab_3"><a href="#peraturan" data-toggle="tab" onclick="changeTab('panduan')" aria-expanded="true">Panduan</a></li>
+	              <li class="" id="tab_4"><a href="#product" data-toggle="tab" onclick="changeTab('product')" aria-expanded="true">Product Update</a></li>
+	              <li class="" id="tab_5"><a href="#other" data-toggle="tab" onclick="changeTab('other')" aria-expanded="false">Other</a></li>
 	            </ul>
 	            <div class="tab-content">
 	              <div class="tab-pane active" id="kebijakan">
@@ -124,7 +125,8 @@
       			prepend = prepend + '<option value="">Select Type...</option>'
       			prepend = prepend + '<option value="kebijakan">Kebijakan</option>'
       			prepend = prepend + '<option value="peraturan">Peraturan</option>'
-      			prepend = prepend + '<option value="panduan">Panduan</option>'      			
+      			prepend = prepend + '<option value="panduan">Panduan</option>'
+      			prepend = prepend + '<option value="product">Product Update</option>'      			
       			prepend = prepend + '<option value="other">Other</option>'
       		prepend = prepend + '</select>'
       	prepend = prepend + '</div>'

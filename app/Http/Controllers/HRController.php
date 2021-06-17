@@ -1644,7 +1644,7 @@ class HRController extends Controller
 
         $data = GuideLine::select('id','description','link_url','title','efective_date')->get();
 
-        return view('HR/guideLines',compact('data','notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('guideLines')]);
+        return view('HR/guideLines',compact('data','notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('bookmark')]);
 
     }
 
