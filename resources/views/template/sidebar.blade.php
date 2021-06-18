@@ -51,13 +51,13 @@
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
 <script type="text/javascript">
 	var firebaseConfig = {
-	    apiKey: "AIzaSyB0MWK6KLjhJlY7cL7G6STOCVGnxzjapXU",
-	    authDomain: "sims-22e41.firebaseapp.com",
-	    projectId: "sims-22e41",
-	    storageBucket: "sims-22e41.appspot.com",
-	    messagingSenderId: "84983392260",
-	    appId: "1:84983392260:web:e10924f37a7a5c189cad51",
-	    measurementId: "G-WK8FWEW0TV"
+	    apiKey: "{{env('FIREBASE_APIKEY')}}",
+	    authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
+	    projectId: "{{env('FIREBASE_PROJECTID')}}",
+	    storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
+	    messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
+	    appId: "{{env('FIREBASE_APPID')}}",
+	    measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
 	};
   	// Initialize Firebase
   	firebase.initializeApp(firebaseConfig);
@@ -75,27 +75,27 @@
 	 		var personale_Ref = firebaseRootRef.child('notif/ID_Project');
    	}
 
-    if ("{{Auth::User()->id_division}}" == 'SALES' || "{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES' || "{{Auth::User()->id_division}}" == 'FINANCE') {
-    	personale_Ref.orderByChild("to").equalTo("{{Auth::User()->email}}").on("value", function(snapshot) {
-    	console.log(snapshot.val() + 'hello')
 
-	    	if (snapshot.exists()) {
-	    		snapshot_key = snapshot.key
-		      	snapshot_child = snapshot.val() 
-			    $(".label").each(function(){
-			    	var id 	= $(this).attr("id")
-					if (id == snapshot_key) {
-			         var keys = Object.keys(snapshot.val())
-			         for (var i = 0; i < keys.length; i++) {
-			         	if (snapshot_child[keys[i]].to == "{{Auth::User()->email}}" && snapshot_child[keys[i]].total != 0) {
-							$("#"+id).text(snapshot_child[keys[i]].total)
-			         	}
-			         }
-					}
-				});
-	    	}
-	    });	
-    }
+	personale_Ref.orderByChild("to").equalTo("{{Auth::User()->email}}").on("value", function(snapshot) {
+	console.log(snapshot.val() + 'hello')
+
+    	if (snapshot.exists()) {
+    		snapshot_key = snapshot.key
+	      	snapshot_child = snapshot.val() 
+		    $(".label").each(function(){
+		    	var id 	= $(this).attr("id")
+				if (id == snapshot_key) {
+		         var keys = Object.keys(snapshot.val())
+		         for (var i = 0; i < keys.length; i++) {
+		         	if (snapshot_child[keys[i]].to == "{{Auth::User()->email}}" && snapshot_child[keys[i]].total != 0) {
+						$("#"+id).text(snapshot_child[keys[i]].total)
+		         	}
+		         }
+				}
+			});
+    	}
+    });	
+    
     
   // $("#Lead_Register").text("haha")
 
