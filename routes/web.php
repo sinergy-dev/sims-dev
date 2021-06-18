@@ -31,6 +31,8 @@ Route::get('/testEmailTrap',function(){
 	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
 });
 
+Route::get('getNotifBadge','SalesController@getNotifBadgeUpdate');
+
 Route::get('testPermission','TestController@testPermission');
 Route::get('testPermissionConfig','TestController@testPermissionConfig');
 Route::get('permission/getUserList','TestController@getUserList');
@@ -54,6 +56,7 @@ Route::get('permission/changeFeatureItem','TestController@changeFeatureItem');
 
 Route::get('testRole','TestController2@RoleDynamic');
 Route::get('shoIndex','TestController2@shoIndex');
+Route::get('testRolesShow','TestController@testRole');
 
 Route::get('testGetCutiReportNew','TestController@getReportCuti');
 
@@ -178,6 +181,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('sales/add_product_technology','SalesController@add_product_technology');
 	Route::get('sales/getAllEmployee','SalesController@getAllEmployee');
 	Route::get('sales/getProductTechByLead','SalesController@getProductTechByLead');
+	Route::get('sales/getLoseReason','SalesController@getLoseReason');
 
 	// Sales Lead Setting
 	Route::get('sales/lead_setting', 'LeadSettingController@index');
@@ -247,7 +251,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	// Add Changelog progress
 	Route::post('/add_changelog_progress','SalesController@add_changelog_progress');
 
-	Route::post('/raise_to_tender', 'SalesController@raise_to_tender');
+	Route::get('/raise_to_tender', 'SalesController@raise_to_tender');
 	/*Route::get('/detail_presales/{lead_id}','PRESALESController@detail_presales');*/
 	/*
 	Route::get('/edit/{id_sd}', 'PRESALESController@edit');
