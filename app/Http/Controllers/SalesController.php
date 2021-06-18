@@ -1313,6 +1313,10 @@ class SALESController extends Controller{
         return array("results" => $getListTechTag);
     }
 
+    public function getLoseReason(Request $request){
+        return Sales::select('keterangan')->where('lead_id',$request->lead_id)->first();
+    }
+
     public function year_initial(Request $request)
     {
         $nik = Auth::User()->nik;
@@ -2638,21 +2642,25 @@ class SALESController extends Controller{
                 Mail::to($kirim)->send(new CreateLeadRegister($data));
 
             }
-
-            $total = Sales::join('users','sales_lead_register.nik','=','users.nik')
-                    ->where('sales_lead_register.result','OPEN')
-                    ->orwhere('sales_lead_register.result','SD')
-                    ->where('sales_lead_register.year',date('Y'))
-                    ->where('users.id_company', '1')                    
-                    ->count('sales_lead_register.lead_id');
-
             $user_to = User::select('email')
                             ->where('id_position', 'MANAGER')
                             ->where('id_division', 'TECHNICAL PRESALES')->first()->email;
 
-            $jsonSidebarInsert = array(
-                "to"=>Auth::User()->email,
-                "total"=>$total
+            $sales_sd_filtered = DB::table('sales_solution_design');
+
+            $total = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                    ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+                        $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+                    })
+                    ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
+                    ->where('year',date('Y'))
+                    ->where('id_company','1')
+                    ->where('sales_sd_filtered.nik','=',$user_to)
+                    ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');          
+
+            $jsonCount = array(
+                "to"=>$user_to,
+                "total"=> $total->first()->progress_counted
             );
 
             $jsonInsert = array(
@@ -2665,7 +2673,7 @@ class SALESController extends Controller{
                 "to"=> $user_to,
             );
 
-            $this->getNotifSidebarInsert($jsonSidebarInsert);
+            $this->getNotifCountLead($jsonCount);
             $this->getNotifBadgeInsert($jsonInsert);
             
             
@@ -2894,17 +2902,72 @@ class SALESController extends Controller{
         // Notification::send($kirim, new PresalesAssign());
         Mail::to($kirim)->send(new AssignPresales($data,$status));
 
-        $total = solution_design::join('sales_lead_register','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
-                    ->where('sales_lead_register.nik', $nik_assign)
-                    ->where('sales_lead_register.result','SD')
-                    ->orWhere('sales_lead_register.result','')
-                    ->whereYear('sales_solution_design.created_at',date('Y'))
-                    ->count('sales_lead_register.lead_id');
+        $user_to = User::select('email','nik')
+                            ->where('id_position', 'MANAGER')
+                            ->where('id_division', 'TECHNICAL PRESALES')->first();
 
-        $jsonSidebarInsert = array(
-            "to"=>$kirim->email,
-            "total"=>$total
-        );
+        $sales_sd_filtered = DB::table('sales_solution_design');
+
+        if ($kirim->email != $user_to->email) {
+            $total_manager = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                    ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+                        $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+                    })
+                    ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
+                    ->where('year',date('Y'))
+                    ->where('id_company','1')
+                    ->where('sales_sd_filtered.nik','=',$user_to->nik)
+                    ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');  
+
+            $total_staff = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                    ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+                        $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+                })
+                ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = '',1,NULL))) AS `progress_counted`")
+                ->where('year',date('Y'))
+                ->where('id_company','1')
+                ->where('sales_sd_filtered.nik','=',$nik_assign);
+
+                $i = 0;
+                do {
+                    if ($i == 0) {
+                        $jsonCount = array(
+                            "to"=>$kirim->email,
+                            "total"=>$total_staff->first()->progress_counted
+                        );
+                    }
+
+                    if ($i == 1) {
+                        $jsonCount = array(
+                            "to"=>$user_to->email,
+                            "total"=>$total_manager->first()->progress_counted
+                        );
+                    }
+                    $i++;
+
+                    $this->getNotifCountLead($jsonCount);
+
+                } while ($i < 2);
+        }else{
+            $total_manager = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                    ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+                        $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+                    })
+                    ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
+                    ->where('year',date('Y'))
+                    ->where('id_company','1')
+                    ->where('sales_sd_filtered.nik','=',$user_to->nik)
+                    ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');          
+
+
+            $jsonCount = array(
+                "to"=>$kirim->email,
+                "total"=>$total_manager->first()->progress_counted
+            );
+
+            $this->getNotifCountLead($jsonCount);
+
+        }
 
         $jsonInsert = array(
             "heximal" => "#f2562b",
@@ -2916,7 +2979,6 @@ class SALESController extends Controller{
             "to"=> $kirim->email,
         );
 
-        $this->getNotifSidebarInsert($jsonSidebarInsert);
         $this->getNotifBadgeInsert($jsonInsert);
 
         return redirect('project');
@@ -3007,43 +3069,96 @@ class SALESController extends Controller{
                         ->where('nik', $nik_sales->nik)
                         ->orWhere('email', 'nabil@sinergy.co.id')
                         ->get();
-
-        $users = User::where('email','arkhab@sinergy.co.id')->first();
         // Notification::send($kirim, new RaiseToTender());
         $data = DB::table('sales_lead_register')
                     ->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')
                     ->join('users as sales', 'sales.nik', '=', 'sales_lead_register.nik')
                     ->join('users as presales','presales.nik','=','sales_solution_design.nik')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name','sales.id_territory','sales.email','sales.nik','result')
+                    ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'sales.name as sales_name','presales.name as presales_name','sales.id_territory','sales.email as sales_email','sales.nik','presales.nik as presales_nik','result','presales.email as presales_email')
                     ->where('sales_lead_register.lead_id',$lead_id)
                     ->first();
 
-        $total = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+        
+        Mail::to($kirim)->send(new RaiseTender($data));
+        $total_sales = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                     ->where('sales_lead_register.nik', $data->nik)
                     ->where('sales_lead_register.result','TP')
                     ->whereYear('sales_tender_process.created_at',date('Y'))
                     ->count('sales_tender_process.lead_id');
 
-        Mail::to($kirim)->send(new RaiseTender($data));
 
-        // $json = array(
-        //     "Lead_Register" => [
-        //          $data->id_territory => [
-        //             "to" => $data->email,
-        //             "total" => $total,
-        //         ],
-        //     ]);
+        $user_to = User::select('email')
+                            ->where('id_position', 'MANAGER')
+                            ->where('id_division', 'TECHNICAL PRESALES')->first()->email;
 
-        $json = array(
-            "to" => $data->email,
-            "total" => $total,
-        );
+        $sales_sd_filtered = DB::table('sales_solution_design');
 
-        $jsonSidebarInsert = array(
-            "to"    => $data->email,
-            "total" => $total
-        );
+  
+        $total_manager = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+                    $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+                })
+                ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
+                ->where('year',date('Y'))
+                ->where('id_company','1')
+                ->where('sales_sd_filtered.nik','=',$user_to)
+                ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');  
+
+        $total_staff = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+                    $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+            })
+            ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = '',1,NULL))) AS `progress_counted`")
+            ->where('year',date('Y'))
+            ->where('id_company','1')
+            ->where('sales_sd_filtered.nik','=',$data->presales_nik);
+
+
+
+        if ($data->presales_email != $user_to) {
+            $i = 0;
+            do {
+                if ($i == 0) {
+                    $jsonCount = array(
+                        "to"=>$data->presales_email,
+                        "total"=>$total_staff->first()->progress_counted
+                    );
+                }
+
+                if ($i == 1) {
+                    $jsonCount = array(
+                        "to"    => $data->sales_email,
+                        "total" => $total_sales
+                    );
+                }
+                $i++;
+
+                $this->getNotifCountLead($jsonCount);
+
+            } while ($i < 2);
+        }else{
+            do {
+                if ($i == 0) {
+                    $jsonCount = array(
+                        "to"=>$user_to,
+                        "total"=>$total_manager->first()->progress_counted
+                    );
+                }
+
+                if ($i == 1) {
+                    $jsonCount = array(
+                        "to"    => $data->sales_email,
+                        "total" => $total_sales
+                    );
+                }
+                $i++;
+
+
+                $this->getNotifCountLead($jsonCount);
+
+            } while ($i < 2);
+        }
 
         $jsonInsert = array(
             "heximal" => "#f7e127",
@@ -3052,12 +3167,10 @@ class SALESController extends Controller{
             "result"=> $data->result,
             "showed"=>"true",
             "status"=>"unread",
-            "to"=> $data->email,
+            "to"=> $data->sales_email,
         );
 
-        $this->getNotifBadgeUpdate($json);
         $this->getNotifBadgeInsert($jsonInsert);
-        $this->getNotifSidebarInsert($jsonSidebarInsert);
 
 
         return redirect()->back();
@@ -3098,6 +3211,9 @@ class SALESController extends Controller{
             $tambah = new SalesChangeLog();
             $tambah->lead_id = $request['lead_id_result'];
             $tambah->nik = Auth::User()->nik;
+
+            $data = Sales::join('users','sales_lead_register.nik','=','users.nik')->where('lead_id',$lead_id)->first();
+
             if($request['result'] == 'WIN'){
 
                 if(isset($request->tagData)){
@@ -3150,31 +3266,6 @@ class SALESController extends Controller{
 
                 $tambahpid->save();
 
-                $data = Sales::join('users','sales_lead_register.nik','=','users.nik')->where('lead_id',$lead_id)->first();
-
-                $total = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                    ->where('sales_lead_register.nik', $data->nik)
-                    ->where('sales_lead_register.result','TP')
-                    ->whereYear('sales_tender_process.created_at',date('Y'))
-                    ->count('sales_tender_process.lead_id');
-
-                $json = array(
-                    "ID_Project" => [
-                        "manager" => [
-                            "to" => "yuliane@sinergy.co.id",
-                            "total" => PID::where('status','requested')->count('id_pid'),
-                        ],
-                        
-                    ],
-                    "Lead_Register" => [
-                     $data->id_territory => [
-                        "to" => $data->email,
-                        "total" => $total,
-                    ],
-                ]);
-
-                $this->getNotifBadgeUpdate($json);
-
                 $update_quo = TenderProcess::where('lead_id', $lead_id)->first();
                 $update_quo->quote_number_final = $request['quote_number_final'];
                 $update_quo->update();
@@ -3222,11 +3313,22 @@ class SALESController extends Controller{
                         "result"=> $data->result,
                         "showed"=>"true",
                         "status"=>"unread",
-                        "to"=> "yuliane@sinergy.co.id",
+                        "to"=> $users->email,
                         "id_pid"=>$tambahpid->id_pid
                     );
 
+                    $jsonCount = array(
+                        "manager"=>[
+                            "to" => $users->email,
+                            "total" => PID::where('status','requested')->count('id_pid'),
+                        
+                    ]);
+
+                    // $this->getNotifBadgeCountPID($json);
+
                     $this->getNotifBadgeInsert($jsonInsert);
+                    $this->getNotifBadgeCountPID($jsonCount);
+
                 }
 
 	            
@@ -3242,9 +3344,20 @@ class SALESController extends Controller{
             }
             $tambah->save();
 
-        }      
-           
+            $total = TenderProcess::join('sales_lead_register','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                    ->where('sales_lead_register.nik', $data->nik)
+                    ->where('sales_lead_register.result','TP')
+                    ->whereYear('sales_tender_process.created_at',date('Y'))
+                    ->count('sales_tender_process.lead_id');
 
+            $jsonCount = array(
+                "to" => $data->email,
+                "total"=> $total
+            );
+
+            $this->getNotifCountLead($jsonCount);            
+
+        }    
         return "success";
     }
 
@@ -5029,16 +5142,15 @@ class SALESController extends Controller{
         
         }
         // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
-        $json = array(
-            "ID_Project" => [
-                "manager" => [
-                    "to" => "yuliane@sinergy.co.id",
-                    "total" => PID::where('status','requested')->count('id_pid'),
-                ],
-                
-            ]);
+        $finance = User::where('id_division','FINANCE')->where('id_position','MANAGER')->first();
+
+        $jsonCount = array(
+            "manager" => [
+                "to" => $finance->email,
+                "total" => PID::where('status','requested')->count('id_pid')
+        ]);
             
-        $this->getNotifBadgeUpdate($json);
+        $this->getNotifBadgeCountPID($jsonCount);
 
         return redirect()->to('/salesproject')->with('success', 'Create PID Successfully!');
         
@@ -5084,6 +5196,15 @@ class SALESController extends Controller{
         // return $users
         Mail::to($users->email)->send(new MailResult($users,$pid_info));
 
+        $total = PID::where('status','requested')->count('id_pid');
+
+        $jsonCount = array(
+            "manager"=>[
+                "to"=> $users->email,
+                "total"=>$total
+            ]
+        );
+
         $jsonInsert = array(
             "heximal" => "#246d18",
             "lead_id" => $pid_info->lead_id,
@@ -5091,12 +5212,12 @@ class SALESController extends Controller{
             "result"=> $pid_info->result,
             "showed"=>"true",
             "status"=>"unread",
-            "to"=> "yuliane@sinergy.co.id",
+            "to"=>  $users->email,
             "id_pid" => $pid_info->id_pid
         );
 
         $this->getNotifBadgeInsert($jsonInsert);
-
+        $this->getNotifBadgeCountPID($jsonCount);
 
         return redirect()->to('/project')->with('success', 'Create PID Successfully!');
     }
@@ -5613,8 +5734,8 @@ class SALESController extends Controller{
             // }
     }
 
-    public function getNotifBadgeUpdate($json){
-        $url = "https://sims-22e41-default-rtdb.firebaseio.com/notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
+    public function getNotifBadgeCountPID($json){
+        $url = env('FIREBASE_DATABASEURL')."/notif/ID_Project.json?auth=".env('REALTIME_FIREBASE_AUTH');
         try {
             $client = new Client();
             $client->request('PATCH', $url, [
@@ -5628,8 +5749,8 @@ class SALESController extends Controller{
         }
     }
 
-    public function getNotifSidebarInsert($json){
-        $url = "https://sims-22e41-default-rtdb.firebaseio.com/notif/Lead_Register.json?auth=".env('REALTIME_FIREBASE_AUTH');
+    public function getNotifCountLead($json){
+        $url = env('FIREBASE_DATABASEURL')."/notif/Lead_Register.json?auth=".env('REALTIME_FIREBASE_AUTH');
         try {
             $client = new Client();
             $client->request('POST', $url, [
@@ -5644,7 +5765,7 @@ class SALESController extends Controller{
     }
 
     public function getNotifBadgeInsert($json){
-        $url = "https://sims-22e41-default-rtdb.firebaseio.com/notif/web-notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
+        $url = env('FIREBASE_DATABASEURL')."/notif/web-notif.json?auth=".env('REALTIME_FIREBASE_AUTH');
         try {
             $client = new Client();
             $client->request('POST', $url, [
