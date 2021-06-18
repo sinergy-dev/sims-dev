@@ -146,16 +146,6 @@
 		.inputWithIconn input[type=text]{
 			padding-left:40px;
 		}
-		label.status-lose:hover{
-			border-radius: 10%;
-			background-color: grey;
-			text-align: center;
-			width: 75px;
-			height: 30px;
-			color: white;
-			padding-top: 3px;
-			cursor: zoom-in;
-		}
 		table.center{
 			text-align: center;
 		}

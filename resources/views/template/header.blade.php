@@ -14,7 +14,7 @@
 			<ul class="nav navbar-nav">
 				<li class="dropdown notifications-menu">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" >	
-						<i id="bell-id"></i>
+						<i id="bell-id" class="fa fa-bell-o"></i>
 						<span class="label label-warning" id="notificationCount"></span>					
 					</a>
 					<ul class="dropdown-menu" id="">
@@ -124,19 +124,18 @@
  //       localStorage.clear()
  //    });
 	var firebaseConfig = {
-	    apiKey: "AIzaSyB0MWK6KLjhJlY7cL7G6STOCVGnxzjapXU",
-	    authDomain: "sims-22e41.firebaseapp.com",
-	    projectId: "sims-22e41",
-	    storageBucket: "sims-22e41.appspot.com",
-	    messagingSenderId: "84983392260",
-	    appId: "1:84983392260:web:e10924f37a7a5c189cad51",
-	    measurementId: "G-WK8FWEW0TV"
+	    apiKey: "{{env('FIREBASE_APIKEY')}}",
+	    authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
+	    projectId: "{{env('FIREBASE_PROJECTID')}}",
+	    storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
+	    messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
+	    appId: "{{env('FIREBASE_APPID')}}",
+	    measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
 	};
   	// Initialize Firebase
   	firebase.initializeApp(firebaseConfig);
 
   	firebase.database().ref('notif/web-notif').once('value', function(snapshot) {
-
   	 	snapshot_dump = snapshot.val()
 
   	 	var append = ""
@@ -203,12 +202,12 @@
 
         if(count != 0){ 	
         	count = count
-        	$("#bell-id").addClass('fa fa-bell')
+        	$("#bell-id").removeClass('fa fa-bell-o').addClass('fa fa-bell')
 			$("#notificationCount").text(count)
 
         } else {   
         	// count = "0"
-        	$("#bell-id").addClass('fa fa-bell-o')
+        	$("#bell-id").removeClass('fa fa-bell').addClass('fa fa-bell-o')
         }		
 
         // console.log(count)
@@ -218,7 +217,6 @@
     var start = true;
 
     firebase.database().ref('notif/web-notif').limitToLast(1).on('child_added', function(snapshot) {
-    	console.log(snapshot.val())
         if(!start){
 
             // $("#notificationContent").children().last().remove()

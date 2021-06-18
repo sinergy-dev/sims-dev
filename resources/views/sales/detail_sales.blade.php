@@ -1205,6 +1205,16 @@ button{
 .non-active-tab{
   display: none;
 }
+
+.transparant{
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+  width: 25px;
+}
   
 </style>
 
@@ -1545,16 +1555,16 @@ button{
                     <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button> -->
                   <!-- </form> -->
                     <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" onclick="raiseToTender('{{$tampilkan->lead_id}}')" data-toggle="modal">Raise To Tender</button>
                   @elseif(Auth::User()->id_division == 'TECHNICAL' && $tampilkans->status != 'closed')
                     <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" onclick="raiseToTender('{{$tampilkan->lead_id}}')" data-toggle="modal">Raise To Tender</button>
                   @elseif(Auth::User()->id_position == 'DIRECTOR' && $tampilkans->status != 'closed')
                     <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" onclick="raiseToTender('{{$tampilkan->lead_id}}')" data-toggle="modal">Raise To Tender</button>
                   @elseif(Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER' && $tampilkans->status != 'closed')
                     <input type="" name="lead_id" id="lead_id" value="{{$tampilkan->lead_id}}" hidden>
-                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" data-target="#modal_raise" data-toggle="modal">Raise To Tender</button>
+                    <button class="btn btn-md btn-sd btn-success float-right margin-bottom" type="button" onclick="raiseToTender('{{$tampilkan->lead_id}}')" data-toggle="modal">Raise To Tender</button>
                   @endif
                 </div>
 
@@ -2795,9 +2805,7 @@ button{
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 
-  @section('script')
-
-    
+  @section('script')    
     <script type="text/javascript">
       $('.money').mask('000,000,000,000,000', {reverse: true});
       function formResult(n){
@@ -3041,19 +3049,6 @@ button{
           }
         
       })
-
-      //   var sum = 0;
-      // function test(){
-      //   $('.new-price').each(function() {
-      //     console.log($(this).val())
-      //       sum += parseInt($(this).val().replace(',',''));
-      //   });
-
-      //   console.log(sum);
-      // }
-
-
-
 
       function initmoney(){
         $('.money').mask('000,000,000,000,000', {reverse: true});
@@ -3715,15 +3710,6 @@ button{
     	}
     });
 
-      // $(document).ready(function(){
-      //     $('#result').on('change', function() {
-      //        var target=$(this).find(":selected").attr("data-target");
-      //        var id=$(this).attr("id");
-      //       $("div[id^='"+id+"']").hide();
-      //      $("#"+id+"-"+target).show();
-      //     });
-      // });
-
             
       if ('{{$tampilkan->result}}' == 'LOSE') {
         var i = 0;
@@ -3745,13 +3731,6 @@ button{
               var ele = document.getElementById('win_lose');
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
-          /*
-          $('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');
-          $('#tp').addClass('active3');
-          $('#win_lose').addClass('active');
-          $('#s_winlose').html("<b> LOSE </b>");*/
       } else if('{{$tampilkan->result}}' == 'WIN'){
         var i = 0;
           setInterval(function (){
@@ -3772,13 +3751,6 @@ button{
               var ele = document.getElementById('win_lose');
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
-          /*
-          $('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');
-          $('#tp').addClass('active3');
-          $('#win_lose').addClass('active4');
-          $('#s_winlose').html("<b> WIN </b>");*/
       }else if('{{$tampilkan->result}}' == 'HOLD'){
         var i = 0;
           setInterval(function (){
@@ -3799,13 +3771,6 @@ button{
               var ele = document.getElementById('win_lose');
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
-          /*
-          $('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');
-          $('#tp').addClass('active3');
-          $('#win_lose').addClass('active4');
-          $('#s_winlose').html("<b> WIN </b>");*/
       }else if('{{$tampilkan->result}}' == 'SPECIAL'){
         var i = 0;
           setInterval(function (){
@@ -3826,13 +3791,6 @@ button{
               var ele = document.getElementById('win_lose');
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
-          /*
-          $('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');
-          $('#tp').addClass('active3');
-          $('#win_lose').addClass('active4');
-          $('#s_winlose').html("<b> WIN </b>");*/
       }else if('{{$tampilkan->result}}' == 'CANCEL'){
         var i = 0;
           setInterval(function (){
@@ -3853,13 +3811,6 @@ button{
               var ele = document.getElementById('win_lose');
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
-          /*
-          $('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');
-          $('#tp').addClass('active3');
-          $('#win_lose').addClass('active4');
-          $('#s_winlose').html("<b> WIN </b>");*/
       } else if('{{$tampilkan->result}}' == ''){
           var i = 0;
           setInterval(function (){
@@ -3875,13 +3826,6 @@ button{
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
 
-          /*
-          setInterval(function (){
-            $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-          })*//*
-          $('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');*/
       } else if('{{$tampilkan->result}}' == 'SD'){
         var i = 0;
           setInterval(function (){
@@ -3898,9 +3842,6 @@ button{
               var ele = document.getElementById('sd');
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
-          /*$('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');*/
       } else if('{{$tampilkan->result}}' == 'TP'){
         var i = 0;
           setInterval(function (){
@@ -3919,10 +3860,6 @@ button{
               var ele = document.getElementById('tp');
               ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
           }, kedipan);
-        /*  $('#init').addClass('active5');
-          $('#open').addClass('active1');
-          $('#sd').addClass('active2');
-          $('#tp').addClass('active3');*/
       } else if ('{{$tampilkan->result}}' == 'OPEN') {
           $('#init').addClass('active5');
       }
@@ -4030,17 +3967,51 @@ button{
         } --}}
       });
 
+      function raiseToTender(lead_id){
+        Swal.fire({
+          title: 'RAISE TO TENDER?',
+          text: "are you sure!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes!'
+        }).then((result) => {
+          if (result.value) {
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"GET",
+              url:"{{url('/raise_to_tender')}}",
+              data:{
+                lead_id:lead_id,
+              },
+              success: function(result){
+                Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'Leaving permit has been created.',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload();
+                  }
+                })
+              }
+            })
+          }
+        })
+      }
     </script>  
-    <style type="text/css">
-    .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-  </style>
-
 @endsection
