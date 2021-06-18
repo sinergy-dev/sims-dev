@@ -133,27 +133,12 @@
   .inputWithIconn input[type=text]{
     padding-left:40px;
   }
-  label.status-lose:hover{
-    border-radius: 10%;
-    background-color: grey;
-   ;
-    width: 75px;
-    height: 30px;
-    color: white;
-    padding-top: 3px;
-    cursor: zoom-in;
-  }
-  table.center{
-  ;
-  }
+
   .stats_item_number {
     white-space: nowrap;
     font-size: 2.25rem;
     line-height: 2.5rem;
-    
-    &:before {
-      display: none;
-    }
+
   }
 
   .txt_success {
@@ -1569,6 +1554,7 @@ button{
                             <td><i></i><i class="money">{{$data->amount}}</i></td>
                           @endif
                         @endif
+
                         <td>
                           @if($data->result == 'OPEN')
                           <label class="btn-xs status-initial">INITIAL</label>
@@ -1581,7 +1567,7 @@ button{
                           @elseif($data->result == 'WIN')
                             <label class="btn-xs status-win">WIN</label>
                           @elseif($data->result == 'LOSE')
-                            <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                            <label class="btn-xs status-lose">LOSE</label>
                           @elseif($data->result == 'CANCEL')
                             <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                           @elseif($data->result == 'HOLD')
@@ -1845,7 +1831,7 @@ button{
                         @elseif($data->result == 'WIN')
                           <label class="btn-xs status-win">WIN</label>
                         @elseif($data->result == 'LOSE')
-                          <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                          <label class="btn-xs status-lose">LOSE</label>
                         @elseif($data->result == 'CANCEL')
                         <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                         @elseif($data->result == 'HOLD')
@@ -1978,8 +1964,6 @@ button{
                       <td>
                         @if($data->keterangan != '')
                         <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
-                        @else
-
                         @endif
                       </td>
                       <td hidden>
@@ -2043,7 +2027,7 @@ button{
                           @elseif($data->result == 'WIN')
                             <label class="btn-xs status-win">WIN</label>
                           @elseif($data->result == 'LOSE')
-                            <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                            <label class="btn-xs status-lose">LOSE</label>
                           @elseif($data->result == 'CANCEL')
                           <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                           @elseif($data->result == 'HOLD')
@@ -2184,6 +2168,7 @@ button{
                         <td>
                           @if($data->keterangan != '')
                           <div type="button" data-target="#modal_notes" style="cursor: pointer;" data-toggle="modal" id="notess" onclick="notes('{{$data->keterangan}}')">{!! substr($data->keterangan, 0, 20) !!}..</div>
+
                           @else
 
                           @endif
@@ -2242,7 +2227,7 @@ button{
                         @elseif($data->result == 'WIN')
                           <label class="status-win">WIN</label>
                         @elseif($data->result == 'LOSE')
-                          <label class="status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                          <label class="status-lose">LOSE</label>
                         @elseif($data->result == 'CANCEL')
                         <label class="status-lose" style="background-color: #071108">CANCEL</label>
                         @elseif($data->result == 'HOLD')
@@ -2314,7 +2299,7 @@ button{
                           @elseif($data->result == 'WIN')
                             <label class="btn-xs status-win">WIN</label>
                           @elseif($data->result == 'LOSE')
-                            <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                            <label class="btn-xs status-lose">LOSE</label>
                           @elseif($data->result == 'CANCEL')
                           <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                           @elseif($data->result == 'HOLD')
@@ -2465,7 +2450,7 @@ button{
                       @elseif($data->result == 'WIN')
                         <label class="status-win">WIN</label>
                       @elseif($data->result == 'LOSE')
-                        <label class="status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                        <label class="status-lose">LOSE</label>
                       @elseif($data->result == 'CANCEL')
                       <label class="status-lose" style="background-color: #071108">CANCEL</label>
                       @elseif($data->result == 'HOLD')
@@ -2819,7 +2804,7 @@ button{
                               @elseif($data->result == 'WIN')
                                 <label class="btn-xs status-win">WIN</label>
                               @elseif($data->result == 'LOSE')
-                                <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                                <label class="btn-xs status-lose">LOSE</label>
                               @elseif($data->result == 'CANCEL')
                               <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                               @elseif($data->result == 'HOLD')
@@ -2963,7 +2948,7 @@ button{
                             @elseif($data->result == 'WIN')
                               <label class="btn-xs status-win">WIN</label>
                             @elseif($data->result == 'LOSE')
-                              <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                              <label class="btn-xs status-lose">LOSE</label>
                             @elseif($data->result == 'CANCEL')
                             <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                             @elseif($data->result == 'HOLD')
@@ -3109,7 +3094,7 @@ button{
                             @elseif($data->result == 'WIN')
                               <label class="btn-xs status-win">WIN</label>
                             @elseif($data->result == 'LOSE')
-                              <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                              <label class="btn-xs status-lose">LOSE</label>
                             @elseif($data->result == 'CANCEL')
                             <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                             @elseif($data->result == 'HOLD')
@@ -3211,7 +3196,7 @@ button{
                             @elseif($data->result == 'WIN')
                               <label class="btn-xs status-win">WIN</label>
                             @elseif($data->result == 'LOSE')
-                              <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                              <label class="btn-xs status-lose">LOSE</label>
                             @elseif($data->result == 'CANCEL')
                             <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                             @elseif($data->result == 'HOLD')
@@ -3315,7 +3300,7 @@ button{
                         @elseif($data->result == 'WIN')
                           <label class="btn-xs status-win">WIN</label>
                         @elseif($data->result == 'LOSE')
-                          <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                          <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->lead_id}}')">LOSE</label>
                         @elseif($data->result == 'CANCEL')
                           <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                         @elseif($data->result == 'HOLD')
@@ -3499,7 +3484,7 @@ button{
                           @elseif($data->result == 'WIN')
                             <label class="btn-xs status-win">WIN</label>
                           @elseif($data->result == 'LOSE')
-                            <label class="btn-xs status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                            <label class="btn-xs status-lose">LOSE</label>
                           @elseif($data->result == 'CANCEL')
                           <label class="btn-xs status-lose" style="background-color: #071108">CANCEL</label>
                           @elseif($data->result == 'HOLD')
@@ -3647,7 +3632,7 @@ button{
                         @elseif($data->result == 'WIN')
                           <label class="status-win">WIN</label>
                         @elseif($data->result == 'LOSE')
-                          <label class="status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                          <label class="status-lose">LOSE</label>
                         @elseif($data->result == 'CANCEL')
                         <label class="status-lose" style="background-color: #071108">CANCEL</label>
                         @elseif($data->result == 'HOLD')
@@ -3887,7 +3872,7 @@ button{
                         @elseif($data->result == 'WIN')
                           <label class="status-win">WIN</label>
                         @elseif($data->result == 'LOSE')
-                          <label class="status-lose" data-toggle="modal" data-target="#modal-reason" onclick="lose('{{$data->keterangan}}')">LOSE</label>
+                          <label class="status-lose">LOSE</label>
                         @elseif($data->result == 'CANCEL')
                         <label class="status-lose" style="background-color: #071108">CANCEL</label>
                         @elseif($data->result == 'HOLD')
@@ -5185,8 +5170,19 @@ button{
 
     }
 
-    function lose(keterangan){
-      $('#keterangan_lose').val(keterangan);
+    function lose(lead_id){
+      $.ajax({
+        url:"sales/getLoseReason",
+        type:"GET",
+        data:{
+          lead_id:lead_id
+        },
+        success:function(result){
+          $('#keterangan_lose').val(result.keterangan);
+        }
+      })
+      // $('#keterangan_lose').val($('#notess').text());
+
     }
 
     function id_pro(lead_id,nik,opp_name){
@@ -5270,7 +5266,7 @@ button{
                 });
 
                 column.data().unique().sort().each(function (d, j) {
-                    select.append('<option>' + d + '</option>')
+                    select.append('<option>'+d+'</option>')
                 });
 
                 initkat();
@@ -5381,7 +5377,7 @@ button{
                 });
                 
                 column.data().unique().sort().each(function (d, j) {
-                    select.append('<option>' + d + '</option>')
+                    select.append('<option>'+d+'</option>')
                 });
 
                 initkat();
@@ -5460,7 +5456,7 @@ button{
                 });
 
                 column.data().unique().sort().each(function (d, j) {
-                    select.append('<option>' + d + '</option>')
+                    select.append('<option>'+d+'</option>')
                 });
 
                 initkat();
@@ -5523,7 +5519,7 @@ button{
                 });
 
                 column.data().unique().sort().each(function (d, j) {
-                    select.append('<option>' + d + '</option>')
+                    select.append('<option>'+d+'</option>')
                 });
 
                 initkat();
@@ -5575,7 +5571,7 @@ button{
                     });
 
                     column.data().unique().sort().each(function (d, j) {
-                        select.append('<option>' + d + '</option>')
+                        select.append('<option>'+d+'</option>')
                     });
 
                     initkat();
@@ -5665,7 +5661,7 @@ button{
                     });
                     
                     column.data().unique().sort().each(function (d, j) {
-                        select.append('<option>' + d + '</option>')
+                        select.append('<option>'+d+'</option>')
                     });
 
                     initkat();
@@ -5776,7 +5772,7 @@ button{
                       });
 
                       column.data().unique().sort().each(function (d, j) {
-                          select.append('<option>' + d + '</option>')
+                          select.append('<option>'+d+'</option>')
                       });
 
                       initkat();
@@ -5844,7 +5840,7 @@ button{
 
                         statusLeadUnique.sort().forEach(function(item) {
                           var title = item;
-                          select.append('<option>' + item + '</option>')
+                          select.append('<option>'+item+'</option>')
 
                         });                        
                     })                    
@@ -5862,7 +5858,7 @@ button{
                     });
 
                     column.data().unique().sort().each(function (d, j) {
-                        select.append('<option>' + d + '</option>')
+                        select.append('<option>'+d+'</option>')
                     });
                   }
 
