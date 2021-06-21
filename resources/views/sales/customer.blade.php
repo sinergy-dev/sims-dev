@@ -213,6 +213,36 @@
           </div>
       </div>
 
+      <div id="popUp" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content modal-style">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">ANNOUNCEMENT</h4>
+            </div>
+            <div class="modal-body">
+              <center><h4 class="box-title"><b>SALES APP<b><br><i>(Customer Data)</i></h4></center>
+              <div class="row">
+                <div class="col-md-12">
+                  <h5>
+                    Dear all,<br><br>
+                    Terdapat penyesuaian untuk penambahan data customer, untuk penambahan data hanya dapat dilakukan oleh Rizki Nugroho, jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>
+                    <ul>
+                      <li>Email: nugroho@sinergy.co.id<br></li>
+                      <li>Phone: 0812-1860-0150<br><br></li>
+                    </ul>
+                    Terima kasih.
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
   </section>
 @endsection
 @section('scriptImport')
@@ -221,6 +251,20 @@
 @endsection
 @section('script')
   <script type="text/javascript">
+    @if (Auth::User()->id_division == 'SALES') {
+      if (sessionStorage.getItem('dontLoad') == null){
+          $("#popUp").modal("show");
+        }
+        sessionStorage.setItem('dontLoad', 'true');
+      }
+    @endif
+
+    $(document).keyup(function(e) {
+      if (e.keyCode == 27) {
+          $('#popUp').modal('hide');
+      }
+    }); 
+
     $(document).ready(function(){
         // var column1 = table.column(3);
         // column1.visible(!column1.visible() );
