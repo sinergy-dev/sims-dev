@@ -228,6 +228,7 @@
 .margin-right-sales{
   margin-right: -25px;
  }
+
 .margin-top-form{
   margin-top: 15px;
  }
@@ -244,8 +245,7 @@
   padding-left: 145px;
  }
 
-.circle-container .dot
-{
+.circle-container .dot{
   height: 25px;
   width: 25px;
   background-color: #939a9b;
@@ -253,8 +253,7 @@
   display: inline-block;
 }
 
-.circle-container .dot1
-{
+.circle-container .dot1{
   height: 25px;
   width: 25px;
   background-color:#f2562b;
@@ -262,8 +261,7 @@
   display: inline-block;
 }
 
-.circle-container .dot2
-{
+.circle-container .dot2{
   height: 25px;
   width: 25px;
 
@@ -272,8 +270,7 @@
   display: inline-block;
 }
 
-.circle-container .dot3
-{
+.circle-container .dot3{
   height: 25px;
   width: 25px;
   background-color: #f7e127;
@@ -281,8 +278,7 @@
   display: inline-block;
 }
 
-.circle-container .dot4
-{
+.circle-container .dot4{
   height: 25px;
   width: 25px;
   background-color: #246d18;
@@ -300,6 +296,7 @@
     margin: 0.90em auto 0;
     border-color:#6dcae8;
 }
+
 .circle-container a {
     display: block;
     position: absolute;
@@ -312,8 +309,7 @@
     padding-left:40px;
 }
 
-input[type=checkbox]
-{
+input[type=checkbox]{
   /* Double-sized Checkboxes */
   -ms-transform: scale(3); /* IE */
   -moz-transform: scale(3); /* FF */
@@ -323,6 +319,7 @@ input[type=checkbox]
     margin-right: 8px;
   
 }
+
 input[type=text]:focus{
     border-color:dodgerBlue;
     box-shadow:0 0 8px 0 dodgerBlue;
@@ -468,8 +465,8 @@ input[type=text]:focus{
   }
 
 .percentageIcon{
-    position:relative;
-  }
+  position:relative;
+}
 
  .percentageIcon i{
     position:absolute;
@@ -1220,9 +1217,6 @@ button{
 
 @endsection
 @section('content')
-
-
-  
 <section class="content-header">
 	<a href="{{url('/project')}}"><button button class="btn btn-s btn-danger"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
 	<ol class="breadcrumb">
@@ -4001,7 +3995,7 @@ button{
                 Swal.showLoading()
                 Swal.fire(
                   'Successfully!',
-                  'Leaving permit has been created.',
+                  'Raise to Tender has been success.',
                   'success'
                 ).then((result) => {
                   if (result.value) {
