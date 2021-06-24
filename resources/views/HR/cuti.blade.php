@@ -919,7 +919,7 @@
                   $('#tanggal_cuti').empty();
 
                   table = table + '<tr>';
-                  table = table + '<td>' + '<input type="checkbox" class="check_date" name="check_date[]"' +'</td>';
+                  table = table + '<td width="5%">' + '<input type="checkbox" class="check_date" name="check_date[]"' +'</td>';
                   table = table + '<td hidden>' + value.idtb_cuti_detail +'</td>';
                   table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
                   table = table + '</tr>';
