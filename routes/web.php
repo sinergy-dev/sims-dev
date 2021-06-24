@@ -24,6 +24,7 @@ Route::post('/update_result2a', 'SalesController@update_result');
 Route::post('/update_result3', 'SalesController@update_result');
 Route::post('/update_result4', 'SalesController@update_result');
 Route::post('/update_result5', 'SalesController@update_result');
+Route::get('testBladeNew','TestController@testBladeNew');
 
 //ghghgjhgjhgjhgjhgjhgjgj
 
@@ -121,6 +122,9 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	Route::get('/','DASHBOARDController@index')->middleware('HRDash');
 	Route::get('/getDashboardBox','DASHBOARDController@getDashboardBox');
+	//notif
+	Route::get('/notif_view_all','DASHBOARDController@notif_view_all');
+
 	/*Route::get('/','DASHBOARDController@index')->middleware('Maintenance');*/
 
 	Route::get('/presence', 'PresenceController@index');
