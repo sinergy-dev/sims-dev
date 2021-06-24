@@ -2663,6 +2663,8 @@ class SALESController extends Controller{
                 "total"=> $total->first()->progress_counted
             );
 
+            
+
             $jsonInsert = array(
                 "heximal" => "#7735a3",
                 "lead_id" => $lead,
@@ -2671,6 +2673,7 @@ class SALESController extends Controller{
                 "showed"=>"true",
                 "status"=>"unread",
                 "to"=> $user_to,
+                "date_time"=>Carbon::now()->timestamp
             );
 
             $this->getNotifCountLead($jsonCount);
@@ -2969,6 +2972,8 @@ class SALESController extends Controller{
 
         }
 
+
+
         $jsonInsert = array(
             "heximal" => "#f2562b",
             "lead_id" => $data->lead_id,
@@ -2977,6 +2982,8 @@ class SALESController extends Controller{
             "showed"=>"true",
             "status"=>"unread",
             "to"=> $kirim->email,
+            "date_time"=>Carbon::now()->timestamp
+
         );
 
         $this->getNotifBadgeInsert($jsonInsert);
@@ -3115,9 +3122,9 @@ class SALESController extends Controller{
             ->where('sales_sd_filtered.nik','=',$data->presales_nik);
 
 
+        $i = 0;
 
         if ($data->presales_email != $user_to) {
-            $i = 0;
             do {
                 if ($i == 0) {
                     $jsonCount = array(
@@ -3168,6 +3175,7 @@ class SALESController extends Controller{
             "showed"=>"true",
             "status"=>"unread",
             "to"=> $data->sales_email,
+            "date_time"=>Carbon::now()->timestamp
         );
 
         $this->getNotifBadgeInsert($jsonInsert);
@@ -3292,6 +3300,7 @@ class SALESController extends Controller{
                             'tb_pid.amount_pid',
                             'tb_pid.id_pid',
                             'tb_pid.no_po',
+                            'users.id_company',
                             'sales_tender_process.quote_number2'
                         )->first();
 
@@ -3307,6 +3316,7 @@ class SALESController extends Controller{
                     Mail::to($users->email)->send(new MailResult($users,$pid_info));
 
                     $jsonInsert = array(
+                        "company"=> $pid_info->id_company,
                         "heximal" => "#246d18",
                         "lead_id" => $lead_id,
                         "opty_name" => $data->opp_name,
@@ -3314,7 +3324,9 @@ class SALESController extends Controller{
                         "showed"=>"true",
                         "status"=>"unread",
                         "to"=> $users->email,
-                        "id_pid"=>$tambahpid->id_pid
+                        "id_pid"=>$tambahpid->id_pid,
+                        "date_time"=>Carbon::now()->timestamp
+
                     );
 
                     $jsonCount = array(
@@ -3323,8 +3335,6 @@ class SALESController extends Controller{
                             "total" => PID::where('status','requested')->count('id_pid'),
                         
                     ]);
-
-                    // $this->getNotifBadgeCountPID($json);
 
                     $this->getNotifBadgeInsert($jsonInsert);
                     $this->getNotifBadgeCountPID($jsonCount);
@@ -5180,7 +5190,8 @@ class SALESController extends Controller{
                 'tb_pid.no_po',
                 'sales_lead_register.result',
                 'users.email',
-                'sales_tender_process.quote_number2'
+                'sales_tender_process.quote_number2',
+                'users.id_company'
             )->first();
 
         if($pid_info->lead_id == "MSPQUO"){
@@ -5206,6 +5217,7 @@ class SALESController extends Controller{
         );
 
         $jsonInsert = array(
+            "company"=> $pid_info->id_company,
             "heximal" => "#246d18",
             "lead_id" => $pid_info->lead_id,
             "opty_name" => $pid_info->opp_name,
@@ -5213,7 +5225,9 @@ class SALESController extends Controller{
             "showed"=>"true",
             "status"=>"unread",
             "to"=>  $users->email,
-            "id_pid" => $pid_info->id_pid
+            "id_pid" => $pid_info->id_pid,
+            "date_time"=>Carbon::now()->timestamp
+
         );
 
         $this->getNotifBadgeInsert($jsonInsert);
