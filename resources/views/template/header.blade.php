@@ -12,7 +12,7 @@
 		</a>
 		<div class="navbar-custom-menu">
 			<ul class="nav navbar-nav">
-				<li class="dropdown notifications-menu">
+				<li class="dropdown messages-menu">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" >	
 						<i id="bell-id" class="fa fa-bell-o"></i>
 						<span class="label label-warning" id="notificationCount"></span>					
@@ -21,36 +21,10 @@
 						<li class="header">New Notifications:</li>
 						<li>
 							<ul class="menu" id="notificationContent">
-								<!-- <li>
-									<a href="#">
-										<i class="fa fa-users text-aqua"></i> 5 new members joined today
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
-										page and may cause design problems
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<i class="fa fa-users text-red"></i> 5 new members joined
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<i class="fa fa-shopping-cart text-green"></i> 25 sales made
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<i class="fa fa-user text-red"></i> You changed your username
-									</a>
-								</li> -->
 							</ul>
 						</li>
 						<li class="footer">
-							<a href="#">View all</a>
+							<a href="#" onclick="view_all('{{Auth::User()->email}}')">View all</a>
 						</li>
 					</ul>
 				</li>
@@ -119,6 +93,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript">
 	// $( window ).load(function() {
  //       localStorage.clear()
@@ -262,12 +237,47 @@
 
   	function makeNotificationHolder(data,index,status,url){
         var append = ""
+        if (data.date_time == null) {
+        	date_time = ""
+        }else{
+        	date_time = moment(data.date_time,"X").fromNow()
+        }
+
+        if (data.opty_name.length > 30) {
+        	opty_name = data.opty_name.substring(0, 30) + '...'
+        }else{
+        	opty_name = data.opty_name
+        }
 
         if(status == "unread"){
-        		append = append + '<li>'
-				append = append +  '<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"><span class="label" style="background-color:'+ data.heximal +'">'+ data.result + '</span> ' + data.opty_name
-				append = append +  '</a>'
-				append = append +  '</li>'
+    			// append = append + '<a href="#">'
+       //            append = append + '<div class="pull-left"><img src="https://thumbs.dreamstime.com/b/yellow-orange-starburst-flower-nature-jpg-192959431.jpg" class="img-circle" alt="User Image" width="20px" height="50px">'
+       //            append = append + '</div>'
+       //            append = append + '<h4>'
+       //              append = append + 'Support Team'
+       //              append = append + '<small><i class="fa fa-clock-o"></i> 5 mins</small>'
+       //            append = append + '</h4>'
+       //            append = append + '<p>Why not buy a new awesometheme?</p>'
+       //          append = append + '</a>'
+       // onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"
+        append = append + '<li>'
+				append = append + '<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"><div class="pull-left"> <small class="label pull-right" style="background-color:'+ data.heximal +'">'+ data.result + '</small> </div>'
+				append = append + ' <h4>' + opty_name + '</h4>' + '<p><small><i class="fa fa-clock-o"></i> '+ date_time +'</small></p>'
+				append = append + '</a>'
+				append = append + '</li>'
+    			
+    // 			append = append +  '<li>'
+				// append = append + '<a href="#" class="pointer">'
+				// append = append + '<div style="display:flex">'
+			 //        append = append + '<div class="pull-left" style="display:inline-block"><span class="label" style="background-color:#f2562b">OPEN</span></div>'
+			 //        append = append + '<div>'
+			 //            append = append + '<span style="display:inline-block">(Youve been assigned) ghghghgh</span>'
+			 //            append = append + '<p><small><i class="fa fa-clock-o"></i>17 hours ago</small></p>'
+			 //        append = append + '</div>'
+			 //    append = append + '</div>'
+			 //    append = append + '<a href="#">'
+			 //    append = append +  '</li>'
+
         	
         } 
 
@@ -279,13 +289,18 @@
         firebase.database().ref('notif/web-notif/' + index).once('value').then(function(snapshot) {
             // console.log(snapshot.val())
             var data = snapshot.val()
-            if (data.id_pid == null) {
+            if (data.id_pid == null || data.company == null || data.date_time == null) {
             	id_pid = ""
+            	company = ""
+            	date_time = ""
             }else{
             	id_pid = data.id_pid 
+            	company = data.company
+            	date_time = data.date_time
             }
 
             firebase.database().ref('notif/web-notif/' + index).set({
+            	company:company,
                 to: data.to,
                 lead_id: data.lead_id,
                 opty_name: data.opty_name,
@@ -293,7 +308,8 @@
                 status: "read",
                 result : data.result,
                 showed : "true",
-                id_pid : id_pid
+                id_pid : id_pid,
+                date_time : date_time
             });
 
             if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
@@ -323,6 +339,10 @@
             }
 
         })
+    }
+
+    function view_all(){
+        window.location = "{{url('notif_view_all')}}"
     }
 
 </script>
