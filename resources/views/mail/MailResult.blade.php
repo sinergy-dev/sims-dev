@@ -28,6 +28,20 @@
 			content:"Rp";
 		}
 
+		.button {
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+			background-color: #7868e6;
+			border-radius: 4px;
+		}
+
 		/*.centered{
 			position: absolute;
 		  	top: 50%;
@@ -93,9 +107,11 @@
 				Click the following link button to create a Project ID.
 			</p>
 
-			<center>
+			<!-- <center>
 				<a href="{{url($pid_info->url_create)}}" class="btn btn-info" role="button">Create ID Project</a>
-			</center>
+			</center> -->
+
+			<center><a href="{{url($pid_info->url_create)}}" target="_blank"><button class="button"> Create ID project </button></a></center>
 
 			<p style="font-size: 16px">
 				Please check again, if there are errors or questions please contact the Developer Team (Ext: 384) or email to development@sinergy.co.id.<br>

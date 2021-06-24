@@ -28,6 +28,20 @@
 			content:"Rp";
 		}
 
+		.button {
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+			background-color: #7868e6;
+			border-radius: 4px;
+		}
+
 		/*.centered{
 			position: absolute;
 		  	top: 50%;
@@ -83,10 +97,12 @@
 			<p style="font-size: 16px">
 				To access the Application please click the following button.<br>
 			</p>
-			<center>
-				<!-- <a href="{{url('/detail_project',$data->lead_id)}}" target="_blank" class="btn btn-danger btn-block" type="button"><b>Lead ID</b></a> -->
+			<!-- <center>
+				<a href="{{url('/detail_project',$data->lead_id)}}" target="_blank" class="btn btn-danger btn-block" type="button"><b>Lead ID</b></a>
 				<a href="{{url('/project')}}" class="btn btn-info" role="button">New lead</a>
-			</center>
+			</center> -->
+
+			<center><a href="{{url('/detail_project',$data->lead_id)}}" target="_blank"><button class="button"> Lead ID </button></a></center>
 			<p style="font-size: 16px">
 				Please check again, if there are errors or questions please contact the Developer Team (Ext: 384) or email to development@sinergy.co.id.<br>
 				Thank you.
