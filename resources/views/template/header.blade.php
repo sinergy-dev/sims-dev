@@ -244,7 +244,7 @@
         }
 
         if (data.opty_name.length > 30) {
-        	opty_name = data.opty_name.substring(0, 30) + '...'
+        	opty_name = data.opty_name.substring(0, 25) + '...'
         }else{
         	opty_name = data.opty_name
         }
