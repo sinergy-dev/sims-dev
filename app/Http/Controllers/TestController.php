@@ -29,6 +29,7 @@ use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 
 use HttpOz\Roles\Models\Role;
+use App\Mail\CutiKaryawan;
 
 // use App\Notifications\Result;
 
@@ -57,6 +58,40 @@ class TestController extends Controller
 
         // return Mail::to('tito@sinergy.co.id')->send(new MailResult($users,$pid_info));
 	}
+
+  public function mailCuti(){
+        $id_cuti = 181;
+        
+
+        $name_cuti = DB::table('tb_cuti')
+                ->join('users','users.nik','=','tb_cuti.nik')
+                ->select('users.name')
+                ->first();                 
+
+        
+            $cuti_accept_data = DB::table('tb_cuti')
+                ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),"decline_reason")
+                ->groupby('tb_cuti_detail.id_cuti')->where('tb_cuti_detail.status','ACCEPT')
+                ->where('tb_cuti.id_cuti', $id_cuti)
+                ->first();
+            
+            $ardetil_after = ""; 
+        
+            $cuti_reject_data = "";  
+
+        $hari = collect(['cuti_accept'=>$cuti_accept_data,'cuti_reject'=>$cuti_reject_data]);
+      
+        $ardetil = explode(',', $cuti_accept_data->dates); 
+
+        return new CutiKaryawan(
+          $name_cuti,
+          $hari,
+          $ardetil,
+          $ardetil_after,
+          '[SIMS-App] Approve - Permohonan Cuti'
+        ); 
+  }
 
   public function testNewLead(){
     // $data = DB::table('sales_lead_register')
@@ -768,6 +803,10 @@ class TestController extends Controller
         ]);
       return "added";
     }
+  }
+
+  public function testRole() {
+    return $this->RoleDynamic('bookmark');
   }
 
 }
