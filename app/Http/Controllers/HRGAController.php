@@ -3992,7 +3992,7 @@ class HRGAController extends Controller
                     ->groupby('nik')
                     ->whereYear('date_req',date('Y'))
                     ->where('tb_cuti_detail.status','=','NEW')
-                    ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null)")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")                   
+                    ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null)")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")                   
                     ->get());
             
         } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'STAFF HR'){
