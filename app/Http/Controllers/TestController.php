@@ -30,6 +30,19 @@ use Google_Service_Calendar_Event;
 
 use HttpOz\Roles\Models\Role;
 
+
+use App\PresenceHistory;
+use App\PresenceLocationUser;
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+use Carbon\Carbon;
+
 // use App\Notifications\Result;
 
 
@@ -65,18 +78,58 @@ class TestController extends Controller
     //                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name','sales_lead_register.amount', 'users.name')
     //                 ->where('lead_id','AEON200201')
     //                 ->first();
-    $data = DB::table('sales_lead_register')
-      ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-      ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-      ->select(
-          'sales_lead_register.lead_id',
-          'tb_contact.customer_legal_name', 
-          'sales_lead_register.opp_name',
-          'sales_lead_register.amount', 
-          'users.name')
-      ->where('lead_id',"BMRI210403")
-      ->first();
-    return new CreateLeadRegister($data); 
+    // $data = DB::table('sales_lead_register')
+    //   ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+    //   ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+    //   ->select(
+    //       'sales_lead_register.lead_id',
+    //       'tb_contact.customer_legal_name', 
+    //       'sales_lead_register.opp_name',
+    //       'sales_lead_register.amount', 
+    //       'users.name')
+    //   ->where('lead_id',"BMRI210403")
+    //   ->first();
+    // return new CreateLeadRegister($data); 
+
+    // $total = Sales::join('users','sales_lead_register.nik','=','users.nik')
+    //                 ->Leftjoin('sales_solution_design','sales_solution_design.lead_id','=','sales_lead_register.lead_id')
+    //                 // ->whereRaw("(`sales_lead_register`.`result` = 'OPEN' OR `sales_lead_register`.`result` = 'SD')")
+    //                 ->whereRaw("(`sales_lead_register`.`result` = '' AND 'sales_solution_design.nik','1110492070')")   
+    //                 // ->where('sales_solution_design.nik','1110492070')
+    //                 ->where('sales_lead_register.year',date('Y'))
+    //                 ->where('users.id_company', '1')                    
+    //                 ->count('sales_lead_register.lead_id');   
+
+            $sales_sd_filtered = DB::table('sales_solution_design');
+
+            // $total = Sales::join('users','users.nik','=','sales_lead_register.nik')
+            //         ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+            //             $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+            //         })
+            //         ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
+            //         ->where('year',date('Y'))
+            //         ->where('id_company','1')
+            //         ->where('sales_sd_filtered.nik','=','1110492070')
+            //         ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');
+
+          $total = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                    ->leftJoinSub($sales_sd_filtered, 'sales_sd_filtered', function ($join) {
+                        $join->on('sales_sd_filtered.lead_id','=','sales_lead_register.lead_id');
+                    })
+                    ->selectRaw("COUNT(IF(`sales_lead_register`.`result` = 'SD',1,IF(`sales_lead_register`.`result` = 'OPEN',1,IF(`sales_lead_register`.`result` = '',1,NULL)))) AS `progress_counted`")
+                    ->where('year',date('Y'))
+                    ->where('id_company','1')
+                    ->where('sales_sd_filtered.nik','=','1110492070')
+                    ->orWhereRaw('`sales_sd_filtered`.`nik` IS NULL');
+
+
+            $test = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                    ->whereRaw("(`sales_lead_register`.`result` = 'OPEN')")
+                    ->where('year',date('Y'))
+                    ->where('id_company','1')
+                    ->count('sales_lead_register.lead_id');
+    return $total->first()->progress_counted;
+                    // return $test;
 
     // return Mail::to('tito@sinergy.co.id')->send(new CreateLeadRegister($data));
 
@@ -768,6 +821,311 @@ class TestController extends Controller
         ]);
       return "added";
     }
+  }
+
+  public function getReportCuti (){
+    $spreadsheet = new Spreadsheet();
+
+    $spreadsheet->removeSheetByIndex(0);
+    $spreadsheet->addSheet(new Worksheet($spreadsheet,'All Leaving Permit'));
+    $summarySheet = $spreadsheet->setActiveSheetIndex(0);
+
+    // $summarySheet->mergeCells('B1:Y1');
+    $normalStyle = [
+      'font' => [
+        'name' => 'Calibri',
+        'size' => 8
+      ],
+    ];
+
+    $titleStyle = $normalStyle;
+    $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+    // $titleStyle['alignment'] = ['vertical' => Alignment::VERTICAL_CENTER];
+    $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+    // $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+    $titleStyle['font']['bold'] = true;
+
+    $headerStyle = $normalStyle;
+    $headerStyle['font']['bold'] = true;
+    $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFC9C9C9"]];
+    $headerStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
+
+    $summarySheet->getStyle('A1:Y1')->applyFromArray($titleStyle);
+    $summarySheet->getStyle('A2:Y2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+    $summarySheet->getStyle('A2:Y2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+    $summarySheet->getStyle('C2:Y2')->getAlignment()->setWrapText(true);
+    $summarySheet->getStyle('C2:Y2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $summarySheet->setCellValue('B1','PT. SINERGY INFORMASI PRATAMA');
+    $summarySheet->setCellValue('D1','Report cuti per ' . Carbon::now()->format("d M Y"));
+
+
+
+    $headerContent = ["No","NAMA","Tanggal Mulai Masuk","Hak Cuti 2020","Sisa Cuti 2020","Hak Cuti Tahunan","Cuti Bersama","Hak Cuti 2021","Cuti yg Diminta","Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des","Tgl Kerja Kembali","TOTAL Cuti yg telah diambil","Sisa Cuti 2021","Jenis Cuti / Keterangan"];
+    $summarySheet->getStyle('A2:Y2')->applyFromArray($headerStyle);
+    $summarySheet->getStyle('E2')->getFont()->getColor()->setARGB("FF0B24FB");
+    $summarySheet->getStyle('F2')->getFont()->getColor()->setARGB("FF0B24FB");
+    $summarySheet->getStyle('V2')->getFont()->getColor()->setARGB("FF0B24FB");
+    $summarySheet->getStyle('X2')->getFont()->getColor()->setARGB("FF0B24FB");
+    $summarySheet->getStyle('Y2')->getFont()->getColor()->setARGB("FF0B24FB");
+
+    $summarySheet->getStyle('G2')->getFont()->getColor()->setARGB("FFF32229");
+    $summarySheet->getStyle('W2')->getFont()->getColor()->setARGB("FFF32229");
+    $summarySheet->fromArray($headerContent,NULL,'A2');
+
+    // $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
+    // $endDate = Carbon::now()->format("Y-m-16");
+
+    // $presenceController = new PresenceController();
+
+    // $workDays = $presenceController->getWorkDays($startDate,$endDate)["workdays"]->values();
+
+    // $parameterUser = PresenceHistory::groupBy('nik')
+    //   ->whereRaw('`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+    //   ->pluck('nik');
+
+    // // return $parameterUser;
+
+    // $presenceHistoryAll = collect();
+    // foreach ($parameterUser as $value) {
+    //   $presenceHistoryTemp = PresenceHistory::select(
+    //     DB::raw("*"),
+    //     DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`")
+    //   )->whereRaw('`nik` = ' . $value)
+    //   ->whereRaw('`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+
+    //   $presenceHistory = DB::table(DB::raw("(" . $presenceHistoryTemp->toSql() . ") AS `presence__history_temp`"))
+    //     ->join('users','users.nik','=','presence__history_temp.nik')
+    //     ->select('presence__history_temp.nik','users.name')
+    //     ->selectRaw("CAST(MIN(`presence__history_temp`.`presence_actual`) AS DATE) AS `date`")
+    //     ->selectRaw("MIN(`presence__history_temp`.`presence_schedule`) AS `schedule`")
+    //     ->selectRaw("RIGHT(MIN(`presence__history_temp`.`presence_actual`),8) AS `checkin`")
+    //     ->selectRaw("IF(MAX(`presence__history_temp`.`presence_actual`) = MIN(`presence__history_temp`.`presence_actual`), '-', RIGHT(MAX(`presence__history_temp`.`presence_actual`),8)) AS `checkout`")
+    //     ->selectRaw("MAX(`presence__history_temp`.`presence_condition`) AS `condition`")
+    //     ->groupBy('presence__history_temp.presence_actual_date');
+
+    //   $presenceHistoryAll = $presenceHistoryAll->merge($presenceHistory->get());
+
+    //   $presenceHistoryAbsent = $workDays->diff($presenceHistory->get()->pluck('date')->values())->values();
+    //   $presenceHistoryAbsentTemp = collect();
+    //   foreach ($presenceHistoryAbsent as $key => $absentDate) {
+    //     $presenceHistoryAll->push((object) [
+    //       "nik" => $value,
+    //       "name" => $presenceHistory->first()->name,
+    //       "date" => $absentDate,
+    //       "schedule" => "08:00:00",
+    //       "checkin" =>  "00:00:00",
+    //       "checkout" =>  "00:00:00",
+    //       "condition" => "Absent"
+    //     ]);
+    //   }
+    // }
+
+    // $presenceHistoryAllLate = $presenceHistoryAll->where('condition','Late');
+    // $presenceHistoryAllAbsent = $presenceHistoryAll->where('condition','Absent');
+    // $presenceHistoryAllUnCheckout = $presenceHistoryAll->where('checkout','=','-');
+    // $presenceHistoryAllUnCheckout->each(function ($item, $key) {
+    //   if($item->condition != "Late" && $item->condition != "Absent"){
+    //     $item->condition = "Uncheckout";
+    //   }
+    // });
+
+    // if($typeData == "all"){
+    //   return collect([
+    //     "data" => $presenceHistoryAll->merge($presenceHistoryAllUnCheckout)->unique(),
+    //   ]);
+    // } else {
+    //   return collect([
+    //     "data" => $presenceHistoryAllLate->merge($presenceHistoryAllUnCheckout)->merge($presenceHistoryAllAbsent)->unique(),
+    //   ]);
+    // }
+
+    $jumlah_cuti = "7";
+    $total_cuti = "12";
+    $cuti_bersama = "2";
+    $jumlah_cuti_now = "10";
+    // $request_cuti = "5";
+
+    $dataFiltered = DB::table('tb_cuti')
+      ->select(
+        "tb_cuti.id_cuti",
+        "tb_cuti.nik"
+      )->where('status','=','v');
+
+    $dataLeavingPermitCount = DB::table('tb_cuti_detail')
+      ->select(
+        "tb_cuti_filtered.nik", 
+        DB::raw("COUNT(`tb_cuti_detail`.`date_off`) AS `counted`")
+      )->joinSub($dataFiltered,'tb_cuti_filtered',function($join){
+        $join->on('tb_cuti_filtered.id_cuti','=','tb_cuti_detail.id_cuti');
+      })->whereRaw("`tb_cuti_detail`.`date_off` BETWEEN '2021-01-01' AND '2021-12-31'")
+      ->groupBy('nik');
+
+    $dataLeavingPermit = User::select(
+        'users.nik',
+        DB::raw('`roles`.`name` AS `role`'),
+        'users.name',
+        'users.date_of_entry',
+        DB::raw($jumlah_cuti . ' AS `bersih_cuti_' . date('Y', strtotime("-1 year")) . '`'),
+        DB::raw('`users`.`cuti2` AS `sisah_cuti_' . date('Y', strtotime("-1 year")) . '`'),
+        DB::raw($total_cuti . ' AS `total_cuti_' . date('Y') . '`'),
+        DB::raw($cuti_bersama . ' AS `cuti_bersama_' . date('Y') . '`'),
+        DB::raw($jumlah_cuti_now . ' AS `bersih_cuti_' . date('Y') . '`'),
+        DB::raw("IFNULL(`cuti_requested`.`counted`, 0) AS `request_cuti_" . date('Y') . "`"),
+        // DB::raw($request_cuti . ' AS `request_cuti_' . date('Y') . '`')
+      )->join('role_user','role_user.user_id','=','users.nik')
+      ->join('roles','role_user.role_id','=','roles.id')
+      ->leftJoinSub($dataLeavingPermitCount,'cuti_requested',function($join){
+        $join->on('cuti_requested.nik','=','users.nik');
+      })->orderBy('roles.index','DESC')
+      ->orderBy('users.name','DESC')
+      ->where('status_karyawan','<>','dummy')
+      // ->where('nik','=',1170498100)
+      // ->limit(1)
+      ->get();
+
+    $cuti_processed = DB::table(function($query){
+        $query->from('tb_cuti')
+          ->select(
+            DB::raw("RIGHT(`tb_cuti_detail`.`date_off`,2) AS `date_off`"),
+            "tb_cuti.nik",
+            DB::raw("MONTH(`tb_cuti_detail`.`date_off`) AS `month`")
+          )
+          ->join("tb_cuti_detail","tb_cuti_detail.id_cuti","=","tb_cuti.id_cuti")
+          ->where("tb_cuti.status","=","v")
+          // ->where("tb_cuti.nik","=",1170498100)
+          ->whereRaw("`tb_cuti_detail`.`date_off` BETWEEN '2021-01-01' AND '2021-12-31'");
+      }, 'tb_cuti_counted')
+      ->select('tb_cuti_counted.nik','tb_cuti_counted.month')
+      ->selectRaw("GROUP_CONCAT(`tb_cuti_counted`.`date_off`) AS `summarize`")
+      ->selectRaw("COUNT(*) AS `counted`")
+      ->groupBy("tb_cuti_counted.nik","tb_cuti_counted.month");
+
+    $cuti_summary = DB::table(function($query){
+        $query->from('month')
+        ->select(
+          'users.nik',
+          'month.id',
+        )->leftJoin('users','month.id','<>','users.nik')
+        // ->where("users.nik","=",1170498100)
+        ->where('users.status_karyawan','<>','dummy');
+      },'users_filtered')
+      ->leftJoinSub($cuti_processed, 'cuti_processed', function ($join) {
+        $join->on('cuti_processed.nik', '=', 'users_filtered.nik')
+          ->on('cuti_processed.month', '=', 'users_filtered.id');
+      })
+      ->select(
+        "users_filtered.nik",
+        DB::raw("`users_filtered`.`id` AS `month`"),
+        "cuti_processed.summarize",
+        "cuti_processed.counted",
+      )->get()->sortBy('month')->groupBy('nik');
+      // return $cuti_summary;
+
+
+    // return $dataLeavingPermit;
+
+    $itemStyle = $normalStyle;
+    // $itemStyle['font']['bold'] = true;
+    $itemStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFFFE9F"]];
+    $itemStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
+    // echo "<pre>";
+    $dataLeavingPermit->map(function($item,$key) use ($summarySheet,$itemStyle,$cuti_summary){
+      $item_filtered = array_values($item->toArray());
+      unset($item_filtered[0]);
+      unset($item_filtered[1]);
+      // print_r($item_filtered);
+      // print_r(array_merge(array_merge([$key + 1],array_values($item_filtered)),$cuti_summary[$item->nik]->pluck('summarize')->toArray()));
+      $summarySheet->fromArray(array_merge(array_merge([$key + 1],array_values($item_filtered)),$cuti_summary[$item->nik]->pluck('summarize')->toArray()),NULL,'A' . ($key + 3));
+      $item->cuti_summary = $cuti_summary[$item->nik]->pluck('summarize');
+      $summarySheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->applyFromArray($itemStyle);
+      $summarySheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+      $summarySheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+      $summarySheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setWrapText(true);
+      $summarySheet->getStyle('C' . ($key + 3) . ':Y' . ($key + 3))->getFont()->setBold(true);
+      $summarySheet->getStyle('J' . ($key + 3) . ':U' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
+
+      $summarySheet->getStyle('G' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
+
+    });
+    // echo "</pre>";
+
+    // return ;
+    // return $dataLeavingPermit;
+
+    $summarySheet->getColumnDimension('A')->setAutoSize(true);
+    $summarySheet->getColumnDimension('B')->setAutoSize(true);
+    $summarySheet->getColumnDimension('C')->setWidth(8);
+    $summarySheet->getColumnDimension('D')->setWidth(8);
+    $summarySheet->getColumnDimension('E')->setWidth(8);
+    $summarySheet->getColumnDimension('F')->setWidth(8);
+    $summarySheet->getColumnDimension('G')->setWidth(8);
+    $summarySheet->getColumnDimension('H')->setWidth(8);
+    $summarySheet->getColumnDimension('I')->setWidth(8);
+    $summarySheet->getColumnDimension('J')->setWidth(8);
+    $summarySheet->getColumnDimension('K')->setWidth(8);
+    $summarySheet->getColumnDimension('L')->setWidth(8);
+    $summarySheet->getColumnDimension('M')->setWidth(8);
+    $summarySheet->getColumnDimension('N')->setWidth(8);
+    $summarySheet->getColumnDimension('O')->setWidth(8);
+    $summarySheet->getColumnDimension('P')->setWidth(8);
+    $summarySheet->getColumnDimension('Q')->setWidth(8);
+    $summarySheet->getColumnDimension('R')->setWidth(8);
+    $summarySheet->getColumnDimension('S')->setWidth(8);
+    $summarySheet->getColumnDimension('T')->setWidth(8);
+    $summarySheet->getColumnDimension('U')->setWidth(8);
+    $summarySheet->getColumnDimension('V')->setWidth(8);
+    $summarySheet->getColumnDimension('W')->setWidth(8);
+    $summarySheet->getColumnDimension('X')->setWidth(8);
+    $summarySheet->getColumnDimension('Y')->setWidth(8);
+
+    // $dataPresenceIndividual = $dataPresence->groupBy('name');
+
+    // $indexSheet = 0;
+    // foreach ($dataPresenceIndividual as $key => $item) {
+    //   $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
+    //   $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
+
+    //   $detailSheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+    //   $detailSheet->setCellValue('A1','Presence Report ' . $key);
+    //   $detailSheet->mergeCells('A1:J1');
+
+    //   $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
+    //   $detailSheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+    //   $detailSheet->fromArray($headerContent,NULL,'A2');
+
+    //   foreach ($item as $key => $eachPresence) {
+    //     $detailSheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($eachPresence))),NULL,'A' . ($key + 3));
+    //   }
+    //   $detailSheet->getColumnDimension('A')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('B')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('C')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('D')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('E')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('F')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('G')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('H')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('I')->setAutoSize(true);
+    //   $detailSheet->getColumnDimension('J')->setAutoSize(true);
+    //   $indexSheet = $indexSheet + 1;
+    // }
+
+    $spreadsheet->setActiveSheetIndex(0);
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="asdfadfasd.xlsx"');
+    header('Cache-Control: max-age=0');
+    
+    $writer = new Xlsx($spreadsheet);
+    return $writer->save("php://output");
+    // return "adfasdass";
+  }
+
+  public function testRole() {
+    return $this->RoleDynamic('bookmark');
+  }
+
+  public function testBladeNew() {
+    return view('testBladeNew')->with(['initView' => $this->initMenuBase()]);
   }
 
 }
