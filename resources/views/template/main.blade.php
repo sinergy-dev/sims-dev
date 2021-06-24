@@ -249,6 +249,14 @@
 	<!-- Theme style -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/AdminLTE.min.css">
 	@yield('head_css_and')
+  <style type="text/css">
+    .navbar-nav>.messages-menu>.dropdown-menu>li .menu>li>a>h4 {
+      margin-left: 50px;
+    }
+    .navbar-nav>.messages-menu>.dropdown-menu>li .menu>li>a>p {
+      margin-left: 50px;
+    }
+  </style>
 	<!-- AdminLTE Skins -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/skins/skin-blue.min.css">
 	<!-- Google Font -->
