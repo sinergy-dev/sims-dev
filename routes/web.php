@@ -32,6 +32,11 @@ Route::get('/testEmailTrap',function(){
 	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
 });
 
+Route::get('testCutiEmail','TestController@mailCuti');
+
+
+Route::get('testRolesShow','TestController@testRole');
+
 Route::get('getNotifBadge','SalesController@getNotifBadgeUpdate');
 
 Route::get('testPermission','TestController@testPermission');

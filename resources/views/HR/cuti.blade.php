@@ -1980,7 +1980,7 @@
     var hari_libur_nasional_tooltip = []
     $.ajax({
       type:"GET",
-      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_YEY')}}",
+      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
       success: function(result){
         $.each(result.items,function(key,value){
           hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))

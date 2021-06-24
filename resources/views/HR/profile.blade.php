@@ -158,7 +158,7 @@
                         {{-- <input type="text" class="form-control" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask> --}}
                         <!-- <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask> -->
                         @if($user_profile->phone != null)
-                          <input type="text" class="form-control" id="phone" data-inputmask='"mask": "9999.9999.9999"' data-mask name="phone" placeholder="Type Phone" required>
+                          <input type="text" class="form-control" id="phone" data-inputmask='"mask": "9999.9999.99999"' data-mask name="phone" placeholder="Type Phone" required>
                         @else
                           <input type="text" class="form-control" id="phone" name="phone" placeholder="Type Phone" value="-" required>
                         @endif
