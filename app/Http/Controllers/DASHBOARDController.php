@@ -1521,4 +1521,9 @@ class DASHBOARDController extends Controller
     	return view('maintenance');
     }
 
+    public function notif_view_all(){
+
+        return view('notif/view_all')->with(['initView'=> $this->initMenuBase()]);
+    }
+
 }
