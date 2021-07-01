@@ -26,6 +26,10 @@ Route::post('/update_result4', 'SalesController@update_result');
 Route::post('/update_result5', 'SalesController@update_result');
 Route::get('testBladeNew','TestController@testBladeNew');
 
+// tes sales
+Route::get('salestest/get_count_lead','SalesTestController@get_count_lead');
+Route::get('testSalesIndex','SalesTestController@index');
+
 //ghghgjhgjhgjhgjhgjhgjgj
 
 Route::get('/testEmailTrap',function(){
@@ -131,23 +135,6 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/notif_view_all','DASHBOARDController@notif_view_all');
 
 	/*Route::get('/','DASHBOARDController@index')->middleware('Maintenance');*/
-
-	Route::get('/presence', 'PresenceController@index');
-	Route::get('/presence/getPresenceParameter','PresenceController@getPresenceParameter');
-	Route::post('/presence/checkIn', 'PresenceController@checkIn');
-	Route::post('/presence/checkOut', 'PresenceController@checkOut');
-	Route::get('/presence/history/personal', 'PresenceController@personalHistory');
-	Route::get('/presence/history/team', 'PresenceController@teamHistory');
-	Route::get('/presence/report', 'PresenceController@presenceReport');
-	Route::get('/presence/report/getData', 'PresenceController@getPresenceReportData');
-	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportReport');
-	Route::get('/presence/report/getData2', 'PresenceController@getDataReportPresence');
-	Route::get('/presence/report/getFilterReport', 'PresenceController@getDataReportPresence2');
-	
-	Route::get('/presence/setting', 'PresenceController@presenceSetting');
-	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
-
-	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
 
 	Route::get('/project','SalesController@index')->middleware('ManagerStaffMiddleware');
 	/*Route::get('/project','SalesController@index')->middleware('Maintenance');*/
@@ -874,5 +861,23 @@ Route::group(['middleware' => ['SIP']], function () {
 	//getLeadByCustpmer
 	Route::get('/getLeadByCompany','SalesController@getLeadByCompany');
 	Route::get('/authentication/{id}','TestController@authentication');
+
+	//presence
+	Route::get('/presence', 'PresenceController@index');
+	Route::get('/presence/getPresenceParameter','PresenceController@getPresenceParameter');
+	Route::post('/presence/checkIn', 'PresenceController@checkIn');
+	Route::post('/presence/checkOut', 'PresenceController@checkOut');
+	Route::get('/presence/history/personal', 'PresenceController@personalHistory');
+	Route::get('/presence/history/team', 'PresenceController@teamHistory');
+	Route::get('/presence/report', 'PresenceController@presenceReport');
+	Route::get('/presence/report/getData', 'PresenceController@getPresenceReportData');
+	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportReport');
+	Route::get('/presence/report/getData2', 'PresenceController@getDataReportPresence');
+	Route::get('/presence/report/getFilterReport', 'PresenceController@getDataReportPresence2');
+	
+	Route::get('/presence/setting', 'PresenceController@presenceSetting');
+	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
+
+	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
 
 });
