@@ -163,6 +163,24 @@
               <form method="POST" action="{{url('/store_pr')}}" id="modal_pr" name="modal_pr">
                 @csrf
               <div class="form-group">
+                <label for="">Project ID</label>                
+                <select type="text" class="form-control select2" placeholder="Select Division" name="project_id" id="project_id" style="width: 100%">
+                  <option value="">Select project id</option>
+                  @foreach($pid as $data)
+                  <option value="{{$data->id_project}}">{{$data->id_project}}</option>
+                  @endforeach
+                </select>
+                <span id="makeId" style="cursor: pointer;">other?</span>
+              </div>
+              
+              <div class="form-group">
+                <div class="input-group" style="display: none;" id="project_idNew">
+                  <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                  <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
+                </div>
+              </div> 
+
+              <div class="form-group">
                 <label for="">Position</label>
                 <select type="text" class="form-control" placeholder="Select Position" name="position" id="position" required>
                     <option>PMO</option>
@@ -233,21 +251,8 @@
               <div class="form-group">
                 <label for="">Amount</label>
                 <input type="text" class="form-control money" placeholder="Enter Amount" name="amount" id="amount">
-              </div>
-              <div class="form-group">
-                <label for="">Project ID</label>                
-                <select type="text" class="form-control" placeholder="Select Division" name="project_id" id="project_id" style="width: 100%">
-                  <option value="">Select project id</option>
-                  @foreach($pid as $data)
-                  <option value="{{$data->id_project}}">{{$data->id_project}}</option>
-                  @endforeach
-                </select>
-                <span id="makeId" style="cursor: pointer;">other?</span>
-              </div>
-              <div class="input-group" style="display: none;" id="project_idNew">
-                <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
-                <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
-              </div>
+              </div>            
+                           
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
                 <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
@@ -323,7 +328,7 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script> -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
@@ -342,7 +347,9 @@
       $('#project_idNew').hide('slow')
       $('#projectIdInputNew').val('')
     })
-    $('#project_id').select2()
+    $('#project_id').select2({
+      dropdownParent:$("#modal_pr")
+    })
     $('#date_pr').datepicker({
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
