@@ -31,6 +31,10 @@ class DONumberController extends Controller
 
         $pops = DONumber::select('no_do')->orderBy('created_at','desc')->first();
 
+        $notif = '';
+        $notifClaim = '';
+        $notifOpen = '';
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -185,7 +189,11 @@ class DONumberController extends Controller
 
         $no_po = PONumber::select('no_po')->orderBy('created_at', 'desc')->get();
 
-        return view('admin/do', compact('lead', 'total_ter','notif','notifOpen','notifsd','notiftp','id_pro', 'notifClaim', 'notifc', 'id_project', 'pops', 'no_po'));
+        $tahun = date('Y');
+
+        $year_before = DONumber::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
+
+        return view('admin/do', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim', 'notifc', 'id_project', 'pops', 'no_po', 'tahun', 'year_before'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function getfilteryear(Request $request)
