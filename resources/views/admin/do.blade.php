@@ -1,4 +1,34 @@
-@extends('template.template_admin-lte')
+@extends('template.main')
+@section('head_css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+
+  <style type="text/css">
+    .transparant{
+      background-color: Transparent;
+      background-repeat:no-repeat;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      width: 25px;
+    }
+
+    .btnPR{
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+      width: 170px;
+      padding-top: 4px;
+      padding-left: 10px;
+    }
+
+    .select2{
+      width: 100%!important;
+    }
+</style>
+@endsection
 @section('content')
 
 <section class="content-header">
@@ -33,9 +63,18 @@
   <div class="box">
     <div class="box-header with-border">
       <div class="pull-left">
-        <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
+        <!-- <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
         <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
             <option value="2021">&#xf073 &nbsp2021</option>
+        </select> -->
+
+        <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
+            <option value="{{$tahun}}">&#xf073 &nbsp{{$tahun}}</option>
+            @foreach($year_before as $years)
+              @if($years->year != $tahun)
+                <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+              @endif
+            @endforeach
         </select>
       </div>
       <div class="pull-right">
@@ -207,37 +246,19 @@
 
 </section>
 
-<style type="text/css">
-    .transparant{
-      background-color: Transparent;
-      background-repeat:no-repeat;
-      border: none;
-      cursor:pointer;
-      overflow: hidden;
-      outline:none;
-      width: 25px;
-    }
-
-    .btnPR{
-      color: #fff;
-      background-color: #007bff;
-      border-color: #007bff;
-      width: 170px;
-      padding-top: 4px;
-      padding-left: 10px;
-    }
-
-    .select2{
-      width: 100%!important;
-    }
-</style>
-
 @endsection
 
-@section('script')
+@section('scriptImport')
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+  <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@endsection
+
+@section('script')
   <script type="text/javascript">
     $('#project_id').select2({
       dropdownParent: $('#modal_add')
@@ -355,7 +376,7 @@
           },
         ],
         "searching": true,
-        "lengthChange": false,
+        // "lengthChange": false,
         "info":false,
         "scrollX": true,
         "order": [[ 0, "desc" ]],
@@ -363,6 +384,8 @@
             leftColumns: 1
         },
         "pageLength": 20,
+        "responsive":true,
+        "orderCellsTop": true,
       })
     }
 
