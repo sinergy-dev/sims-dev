@@ -59,7 +59,7 @@
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	@if($hari['cuti_accept']->status == 'v')
 		<div style="line-height: 1.5em">
-			<center><img src="{{ asset('image/annual_leave_approve_s.png')}}" style="width: 50%; height: 50%;"></center>
+			<center><img src="{{ asset('image/annual_leave_appoved_new_psd.png')}}" style="width: 50%; height: 50%;"></center>
 		</div>
 		<div style="line-height: 1.5em;padding-left: 13px;">
 			<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -182,7 +182,7 @@
 
 	@elseif($hari['cuti_accept']->status == 'd')
 		<div style="line-height: 1.5em">
-			<center><img src="{{ asset('image/annual_leave_reject_s.png')}}" style="width: 50%; height: 50%"></center>
+			<center><img src="{{ asset('image/annual_leave_not_appoved_new_psd.png')}}" style="width: 50%; height: 50%"></center>
 		</div>
 		<div style="line-height: 1.5em;padding-left: 13px;">
 			<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -274,7 +274,7 @@
 
 	@elseif($hari['cuti_accept']->status == 'R')
 		<div style="line-height: 1.5em">
-			<center><img src="{{ asset('image/annual_leave_edit_s.png')}}" style="width: 50%; height: 50%"></center>
+			<center><img src="{{ asset('image/annual_leave_edit_new_psd.png')}}" style="width: 50%; height: 50%"></center>
 		</div>
 		<div style="line-height: 1.5em;padding-left: 13px;">
 			<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -372,7 +372,7 @@
 
 	@else
 		<div style="line-height: 1.5em">
-			<center><img src="{{ asset('image/annual_leave_s.png')}}" style="width: 50%; height: 50%"></center>
+			<center><img src="{{ asset('image/annual_leave_new_psd.png')}}" style="width: 50%; height: 50%"></center>
 		</div>
 		<div style="line-height: 1.5em;padding-left: 13px;">
 			<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
