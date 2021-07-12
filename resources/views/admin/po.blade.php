@@ -73,11 +73,6 @@
       <div class="box">
         <div class="box-header with-border">
           <div class="pull-left">
-            <!-- <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
-            <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
-                <option value="2020">&#xf073 &nbsp2020</option>
-                <option value="2019">&#xf073 &nbsp2019</option>
-            </select> -->
             <select style="margin-right: 5px;width: 100px" class="form-control btn-primary fa" id="year_filter">
               <option value="{{$tahun}}">&#xf073 &nbsp{{$tahun}}</option>
               @foreach($year_before as $years)
@@ -88,7 +83,7 @@
             </select>
           </div>
           <div class="pull-right">
-            <button type="button" class="btn btn-success margin-bottom pull-right add-po" id="" style="width: 200px;color: white"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
+            <button type="button" class="btn btn-success margin-bottom pull-right add-po" id="btn_add_po" style="width: 200px;color: white; display: none;"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
             <a href="{{url('/downloadExcelPO')}}"><button class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel </button></a>
           </div>
        </div>
@@ -315,6 +310,13 @@
 
 @section('script')
   <script type="text/javascript">
+
+    $(document).ready(function(){
+      var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
+    })
 
     initTablePo();
 
