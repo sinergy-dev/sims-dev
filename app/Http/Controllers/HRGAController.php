@@ -2709,6 +2709,8 @@ class HRGAController extends Controller
                 DB::raw($cuti_bersama . ' AS `cuti_bersama_' . date('Y') . '`'),
                 DB::raw($jumlah_cuti_now . ' AS `bersih_cuti_' . date('Y') . '`'),
                 DB::raw("IFNULL(`cuti_requested`.`counted`, 0) AS `request_cuti_" . date('Y') . "`"),
+                DB::raw("`cuti` AS `cuti_now`"),
+                DB::raw("`cuti2` AS `cuti_sisah`")
                 // DB::raw($request_cuti . ' AS `request_cuti_' . date('Y') . '`')
             )->join('role_user','role_user.user_id','=','users.nik')
             ->join('roles','role_user.role_id','=','roles.id')
@@ -2717,7 +2719,7 @@ class HRGAController extends Controller
             })->orderBy('roles.index','DESC')
             ->orderBy('users.name','DESC')
             ->where('status_karyawan','<>','dummy')
-            // ->where('nik','=',1170498100)
+            // ->where("users.nik","=",1170498100)
             // ->limit(1)
             ->get();
 
@@ -2769,11 +2771,34 @@ class HRGAController extends Controller
         // echo "<pre>";
         $dataLeavingPermit->map(function($item,$key) use ($rekapSheet,$itemStyle,$cuti_summary){
             $item_filtered = array_values($item->toArray());
+            $total_sisah = array("-","-",$item_filtered[10] + $item_filtered[11]);
             unset($item_filtered[0]);
             unset($item_filtered[1]);
+            unset($item_filtered[10]);
+            unset($item_filtered[11]);
             // print_r($item_filtered);
-            // print_r(array_merge(array_merge([$key + 1],array_values($item_filtered)),$cuti_summary[$item->nik]->pluck('summarize')->toArray()));
-            $rekapSheet->fromArray(array_merge(array_merge([$key + 1],array_values($item_filtered)),$cuti_summary[$item->nik]->pluck('summarize')->toArray()),NULL,'A' . ($key + 3));
+            $cuti_summary_individual = array_merge($cuti_summary[$item->nik]->pluck('summarize')->toArray(),$total_sisah);
+            // array_push($cuti_summary_individual,$total_sisah);
+            // print_r(
+            //     array_merge(
+            //         array_merge(
+            //             [$key + 1],
+            //             array_values($item_filtered)
+            //             ),
+            //         $cuti_summary_individual
+            //     )
+            // );
+            $rekapSheet->fromArray(
+                array_merge(
+                    array_merge(
+                        [$key + 1],
+                        array_values($item_filtered)
+                    ),
+                    $cuti_summary_individual
+                ),
+                NULL,
+                'A' . ($key + 3)
+            );
             $item->cuti_summary = $cuti_summary[$item->nik]->pluck('summarize');
             $rekapSheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->applyFromArray($itemStyle);
             $rekapSheet->getStyle('A' . ($key + 3) . ':Y' . ($key + 3))->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -2783,7 +2808,9 @@ class HRGAController extends Controller
             $rekapSheet->getStyle('J' . ($key + 3) . ':U' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
 
             $rekapSheet->getStyle('G' . ($key + 3))->getFont()->getColor()->setARGB("FFF32229");
-            $rekapSheet->setCellValue('X' . ($key + 3),'=H'. ($key + 3) . '-I' . ($key + 3));
+
+            // $rekapSheet->setCellValue('X' . ($key + 3),'=H'. ($key + 3) . '-I' . ($key + 3));
+            // $rekapSheet->setCellValue('X' . ($key + 3),'=H'. ($key + 3) . '-I' . ($key + 3));
 
         });
         // echo "</pre>";
