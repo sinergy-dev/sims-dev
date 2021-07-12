@@ -8,9 +8,10 @@
 
 @section('content')
 <section class="content-header">
-  <h1>
+  <!-- <h1>
     SIP Detail ATK
-  </h1>
+  </h1> -->
+  <a href="{{url('/asset_atk')}}"><button button class="btn btn-s btn-danger"><i class="fa fa-arrow-left"></i>&nbsp Back</button></a>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
     <li class="active">HR/GA - Detail ATK</li>
