@@ -138,19 +138,19 @@
             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="kategori" aria-selected="false">List Asset</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
+            <a class="nav-link active home-tab" id="home-tab" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" id="home-tab-2" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk_2" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
+            <a class="nav-link active home-tab-2" id="home-tab-2" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk_2" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
           </li>
           <!-- @if(Auth::User()->id_division == 'HR')
           <li class="nav-item">
             <a class="nav-link" id="home-tab" data-toggle="tab" href="#request_pr" role="tab" aria-controls="home" aria-selected="true">Request PR</a>
           </li>
           @endif -->
-          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="tambah_asset_atk" data-target="#add_asset" style="display: none"><i class="fa fa-plus"> </i>&nbsp Asset</button>
+          <button class="btn btn-sm btn-success pull-right tambah_asset_atk" data-toggle="modal" id="tambah_asset_atk" data-target="#add_asset" style="display: none"><i class="fa fa-plus"> </i>&nbsp Asset</button>
           <div class="pull-right dropdown" style="margin-left: 5px">
-            <button class="dropbtn" id="request_atk" style="display: none;"><i class="fa fa-plus"> </i>&nbspRequest ATK</button>
+            <button class="dropbtn request_atk" id="request_atk" style="display: none;"><i class="fa fa-plus"> </i>&nbspRequest ATK</button>
             <div class="dropdown-content">
               <a data-toggle="modal" data-target="#peminjaman_modal">Available</a>
               <a data-toggle="modal" data-target="#request_modal">Unavailable</a>
@@ -158,7 +158,7 @@
           </div>
         </ul>
         <div class="tab-content" id="myTabContent">
-          <div class="tab-pane active" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
+          <div class="tab-pane active home-tab" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
             <br>
             <div class="table-responsive" >
               <table class="table table-bordered nowrap " id="data_table" width="100%" cellspacing="0">
@@ -170,7 +170,7 @@
                     <th>Unit</th>
                     <th>Brand Name</th>
                     <th>Description</th>
-                    <th id="col_action" style="display: none;">Action</th>
+                    <th id="col_action" class="col_action" style="display: none;">Action</th>
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
@@ -183,7 +183,7 @@
                     <td>{{$data->unit}}</td>
                     <td>{{$data->merk}}</td>
                     <td>{{$data->description}}</td>
-                    <td id="col_action_2" style="display: none;">
+                    <td id="col_action_2" class="col_action" style="display: none;">
                       <a href="{{url('/asset_atk/detail_asset_atk', $data->id_barang) }}"><button class="btn btn-xs btn-primary" style="width:35px;height:30px;border-radius: 25px!important;outline: none;"><i class="fa fa-history" aria-hidden="true" data-toggle="tooltip" title="History" data-placement="bottom"></i></button></a>
                       <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="modal" data-target="#modaledit" onclick="edit_asset('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->description}}')"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
                       <button class="btn btn-xs btn-default btn-peminjaman" data-toggle="modal" data-target="#modalrestock" onclick="update_stok('{{$data->id_barang}}', '{{$data->nama_barang}}', '{{$data->qty}}', '{{$data->description}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Restock" data-placement="bottom"><i class="fa fa-hourglass-start"></i></button>
@@ -933,11 +933,9 @@
 @section('script')
   <script type="text/javascript">
 
-    $(document).ready(function(){
-      var accesable = @json($feature_item);
-      accesable.forEach(function(item,index){
-        $("#" + item).show()
-      })
+    var accesable = @json($feature_item);
+    accesable.forEach(function(item,index){
+      $("." + item).show()
     })
 
     $(document).ready(function(){
@@ -1195,6 +1193,19 @@
 
     $('#data_table').DataTable({
       pageLength: 25,
+
+      initComplete: function () {
+        accesable.forEach(function(item,index){
+          $("." + item).show()
+        })
+      },
+      "order": []
+    });
+
+    $(document).on('click','.paginate_button', function() {
+      accesable.forEach(function(item,index){
+        $("." + item).show()
+      })
     });
 
     $('#datatables').DataTable({
