@@ -21,6 +21,7 @@ class DONumberController extends Controller
      */
     public function index()
     {
+        // return "hahahaha";
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -233,151 +234,62 @@ class DONumberController extends Controller
      */
     public function store(Request $request)
     {
+        $tambah = new DONumber();
 
-        $tahun = date("Y");
-        $cek = DB::table('tb_do')
-                ->where('date','like',$tahun."%")
-                ->count('no');
+        $type = 'SJ';
+        $month_pr = substr($request['date'],5,2);
+        $year_pr = substr($request['date'],0,4);
 
-        if ($cek > 0) {
-            $type = 'SJ';
-            $month_pr = substr($request['date'],5,2);
-            $year_pr = substr($request['date'],0,4);
+        $array_bln = array('01' => "I",
+                            '02' => "II",
+                            '03' => "III",
+                            '04' => "IV",
+                            '05' => "V",
+                            '06' => "VI",
+                            '07' => "VII",
+                            '08' => "VIII",
+                            '09' => "IX",
+                            '10' => "X",
+                            '11' => "XI",
+                            '12' => "XII");
+        $bln = $array_bln[$month_pr];
 
-            $array_bln = array('01' => "I",
-                                '02' => "II",
-                                '03' => "III",
-                                '04' => "IV",
-                                '05' => "V",
-                                '06' => "VI",
-                                '07' => "VII",
-                                '08' => "VIII",
-                                '09' => "IX",
-                                '10' => "X",
-                                '11' => "XI",
-                                '12' => "XII");
-            $bln = $array_bln[$month_pr];
+        $getnumber = DONumber::orderBy('no', 'desc')->where('date','like',$year_pr."%")->first();
 
-            $getnumber = DONumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
-
-            $getnumbers = DONumber::orderBy('no', 'desc')->first();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }// } else {
-            //    if($getnumber->no > 7){
-            //        $query = PR::where('no', 'like', '%8')->get();
-            //        foreach ($query as $compare) {
-            //             if($getnumber->no == $compare->no){
-            //                $lastnumber = $getnumber->no+2;
-            //             } else {
-            //                $lastnumber = $getnumber->no+1;
-            //             }            
-            //         }
-            //     }
-            // }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor .'/'. $type .'/' . $bln .'/'. $year_pr;
-            $nom = DONumber::select('no')->orderBy('created_at','desc')->first();
-
-            $tambah = new DONumber();
-            $tambah->no = $nom->no+1;
-            $tambah->no_do = $no;
-            $tambah->type_of_letter = $type;
-            $tambah->month = $bln;
-            $tambah->date = $request['date'];
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->address = $request['address'];
-            $tambah->subject = $request['subject'];
-            $tambah->from = $request['from'];
-            $tambah->no_telp = $request['no_telp'];
-            $tambah->project_id = $request['project_id'];
-            $tambah->no_po = $request['no_po'];
-            $tambah->save();
-
-            return redirect('do')->with('success', 'Created Delivery Order Successfully!');
-        } else {
-            $type = 'SJ';
-            $month_pr = substr($request['date'],5,2);
-            $year_pr = substr($request['date'],0,4);
-
-            $array_bln = array('01' => "I",
-                                '02' => "II",
-                                '03' => "III",
-                                '04' => "IV",
-                                '05' => "V",
-                                '06' => "VI",
-                                '07' => "VII",
-                                '08' => "VIII",
-                                '09' => "IX",
-                                '10' => "X",
-                                '11' => "XI",
-                                '12' => "XII");
-            $bln = $array_bln[$month_pr];
-
-            $getnumber = DONumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
-
-            $getnumbers = DONumber::orderBy('no', 'desc')->first();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }// } else {
-            //    if($getnumber->no > 7){
-            //        $query = PR::where('no', 'like', '%8')->get();
-            //        foreach ($query as $compare) {
-            //             if($getnumber->no == $compare->no){
-            //                $lastnumber = $getnumber->no+2;
-            //             } else {
-            //                $lastnumber = $getnumber->no+1;
-            //             }            
-            //         }
-            //     }
-            // }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor .'/'. $type .'/' . $bln .'/'. $year_pr;
-            $nom = DONumber::select('no')->orderBy('created_at','desc')->first();
-
-            $tambah = new DONumber();
-            $tambah->no = $getnumbers->no+1;
-            $tambah->no_do = $no;
-            $tambah->type_of_letter = $type;
-            $tambah->month = $bln;
-            $tambah->date = $request['date'];
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->address = $request['address'];
-            $tambah->subject = $request['subject'];
-            $tambah->from = $request['from'];
-            $tambah->no_telp = $request['no_telp'];
-            $tambah->project_id = $request['project_id'];
-            $tambah->no_po = $request['no_po'];
-            $tambah->save();
-
-            return redirect('do')->with('success', 'Created Delivery Order Successfully!');
+        if($getnumber == NULL){
+            $getlastnumber = 1;
+            $lastnumber = $getlastnumber;
+        } else{
+            $lastnumber = (int)explode("/",$getnumber->no_do)[0]+1;
         }
+
+        if($lastnumber < 10){
+           $akhirnomor = '000' . $lastnumber;
+        } else if ($lastnumber > 9 && $lastnumber < 100){
+           $akhirnomor = '00' . $lastnumber;
+        } else if ($lastnumber >= 100){
+           $akhirnomor = '0' . $lastnumber;
+        }
+
+        $no = $akhirnomor .'/'. $type .'/' . $bln .'/'. $year_pr;
+
+        $tambah->no_do = $no;
+        $tambah->type_of_letter = $type;
+        $tambah->month = $bln;
+        $tambah->date = $request['date'];
+        $tambah->to = $request['to'];
+        $tambah->attention = $request['attention'];
+        $tambah->address = $request['address'];
+        $tambah->subject = $request['subject'];
+        $tambah->from = $request['from'];
+        $tambah->no_telp = $request['no_telp'];
+        $tambah->project_id = $request['project_id'];
+        $tambah->no_po = $request['no_po'];
+        $tambah->save();
+
+        return $tambah->no_do;
+
+        return redirect('do')->with('success', 'Created Delivery Order Successfully!');
     }
 
     /**
