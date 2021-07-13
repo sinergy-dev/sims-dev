@@ -29,7 +29,7 @@
 			</tr>
 		</table>
 		<br>
-	@elseif($req_atk->status == 'REJECT')
+	@elseif($req_atk->status == 'REJECT' || $req_atk->status == 'REJECTED')
 		<p>
 			Hello {{$req_atk->name}},
 			<br><b>Maaf request ATK ditolak</b>, berikut rinciannya:
@@ -38,12 +38,20 @@
 			<tr>
 				<th>Nama Barang</th>
 				<th> : </th>
+				@if($req_atk->status == 'REJECT')
 				<td>{{$req_atk->nama_barang}}</td>
+				@else
+				<td>{{$req_atk->nama}}</td>
+				@endif
 			</tr>
 			<tr>
 				<th>Quantity</th>
 				<th> : </th>
+				@if($req_atk->status == 'REJECT')
 				<td>{{$req_atk->qty_akhir}}</td>
+				@else
+				<td>{{$req_atk->qty}}</td>
+				@endif
 			</tr>
 			<tr>
 				<th>Tanggal Request ATK</th>
@@ -53,40 +61,11 @@
 			<tr>
 				<th>Note</th>
 				<th> : </th>
+				@if($req_atk->status == 'REJECT')
 				<td>{{$req_atk->note}}</td>
-			</tr>
-		</table>
-		<br>
-	@elseif($req_atk->status == 'PROSES')
-		<p>
-		Hello Sinergy,
-		<br>{{$sebuah_variable}}
-		</p>
-		<table style="text-align: left;margin: 5px;">
-			<tr>
-				<th>Nama</th>
-				<th> : </th>
-				<td>{{$req_atk->name}}</td>
-			</tr>
-			<tr>
-				<th>Nama Barang</th>
-				<th> : </th>
-				<td>{{$req_atk->nama_barang}}</td>
-			</tr>
-			<tr>
-				<th>Quantity</th>
-				<th> : </th>
-				<td>{{$req_atk->qty_request}}</td>
-			</tr>
-			<tr>
-				<th>Tanggal Request ATK</th>
-				<th> : </th>
-				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
-			</tr>
-			<tr>
-				<th>Note</th>
-				<th> : </th>
-				<td>{{$req_atk->keterangan}}</td>
+				@else
+				<td>{{$req_atk->note_reject}}</td>
+				@endif
 			</tr>
 		</table>
 		<br>
@@ -115,34 +94,6 @@
 				<th>Note</th>
 				<th> : </th>
 				<td>{{$req_atk->keterangan}}</td>
-			</tr>
-		</table>
-		<br>
-	@elseif($req_atk->status == 'REJECTED')
-		<p>
-			Hello {{$req_atk->name}},
-			<br><b>Maaf request ATK ditolak</b>, berikut rinciannya:
-		</p>
-		<table style="text-align: left;margin: 5px;">
-			<tr>
-				<th>Nama Barang</th>
-				<th> : </th>
-				<td>{{$req_atk->nama}}</td>
-			</tr>
-			<tr>
-				<th>Quantity</th>
-				<th> : </th>
-				<td>{{$req_atk->qty}}</td>
-			</tr>
-			<tr>
-				<th>Tanggal Request ATK</th>
-				<th> : </th>
-				<td>{{date('d-M-Y', strtotime($req_atk->created_at))}}</td>
-			</tr>
-			<tr>
-				<th>Note</th>
-				<th> : </th>
-				<td>{{$req_atk->note_reject}}</td>
 			</tr>
 		</table>
 		<br>
@@ -215,7 +166,7 @@
 				<table cellspacing="0" cellpadding="0">
 					<tr>
 						<td style="border-radius: 2px;" bgcolor="#ED2939">
-							<a href="{{url('/asset_atk')}}" target="_blank" style="padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
+							<a href="{{url('/asset_atk')}}#peminjaman_asset_atk" target="_blank" style="padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
 								Request ATK
 							</a>
 						</td>
