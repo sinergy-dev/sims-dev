@@ -64,7 +64,7 @@
 				<table cellspacing="0" cellpadding="0">
 					<tr>
 						<td style="border-radius: 2px;" bgcolor="#ED2939">
-							<a href="{{url('/asset_atk')}}#peminjaman_asset" target="_blank" style="padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
+							<a href="{{url('/asset_atk')}}#peminjaman_asset_atk" target="_blank" style="padding: 8px 12px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
 								Request ATK
 							</a>
 						</td>
