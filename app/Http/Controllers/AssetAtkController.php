@@ -503,7 +503,8 @@ class AssetAtkController extends Controller
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
-        $receiver_final = $receiver->all();
+        // $receiver_final = $receiver->all();
+        $receiver_final = $get_email_user;
 
         $req_atk = AssetAtkRequest::join('users', 'tb_asset_atk_request.nik', '=', 'users.nik')
                     ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'tb_asset_atk_request.created_at')
@@ -584,7 +585,9 @@ class AssetAtkController extends Controller
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
-        $receiver_final = $receiver->all();
+        // $receiver_final = $receiver->all();
+
+        $receiver_final = $get_email_user;
 
         $req_atk = AssetAtkRequest::join('users', 'tb_asset_atk_request.nik', '=', 'users.nik')
                     ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'note_reject', 'tb_asset_atk_request.created_at')
@@ -624,17 +627,6 @@ class AssetAtkController extends Controller
 
         $no_peminjaman = date('ymd').$nomor;
 
-        /*$store                   = new AssetAtkTransaction();
-        $store->no_transac	 	 = $no_peminjaman;
-        $store->id_barang		 = $request['atk'];
-		$store->nik_peminjam	 = Auth::User()->nik;
-		$store->qty_akhir 		 = $qty_akhir;
-        $store->qty_awal         = $count_qty->qty;
-        $store->keterangan       = $request['keterangan'];
-        $store->status           = 'PENDING';
-		$store->save();*/
-
-
         if ($count_qty->qty == 0 ) {
             $store                   = new AssetAtkTransaction();
             $store->no_transac       = $no_peminjaman;
@@ -666,6 +658,8 @@ class AssetAtkController extends Controller
 
             $get_divisi_hr = User::select('email','id_position', 'name')->where('email', 'yudhi@sinergy.co.id')->first();
 
+            $get_email_manager = collect([$get_divisi_hr]);
+
             $get_divisi_hr2 = User::select('email','id_position')->where('id_position', 'STAFF GA')->first();
 
             $receiver = $collect_email->concat([$get_divisi_hr])->concat([$get_divisi_hr2]);
@@ -673,7 +667,7 @@ class AssetAtkController extends Controller
             $receiver_final = $get_divisi_hr;
 
             // $receiver_final = $receiver->all();
-            return $receiver_final;
+            $receiver_final = $get_email_manager;
 
             $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
                         ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
@@ -685,16 +679,6 @@ class AssetAtkController extends Controller
                 Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position,$get_divisi_hr ));
             }
         } else {
-            // $store                   = new AssetAtkTransaction();
-            // $store->no_transac       = $no_peminjaman;
-            // $store->id_barang        = $request['atk'];
-            // $store->nik_peminjam     = Auth::User()->nik;
-            // $store->qty_akhir        = $qty_akhir;
-            // $store->qty_awal         = $count_qty->qty;
-            // $store->keterangan       = $request['keterangan'];
-            // $store->status           = 'PENDING';
-            // $store->save();
-
             $id_barang = $request->atk;
             $ket = $request->keterangan;
             $qty_awal = $request->stock;
@@ -721,11 +705,6 @@ class AssetAtkController extends Controller
             AssetAtkTransaction::insert($insertData);
 
             $variable = collect($insertData);
-            // $variable = collect(["insert_data" => $insertData, "nama_barang" => $nama_barang]);
-
-            // foreach ($variable["list_insert_data"] as $key => $value) {
-            //     $value["nama_barang"]
-            // }
 
             $variable = $variable->map(function($item,$key) use ($nama_barang) {
                 $item["nama_barang"] = $nama_barang[$key];
@@ -753,26 +732,7 @@ class AssetAtkController extends Controller
             foreach ($receiver_final as $final) {
                 Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position,$get_divisi_hr,'PENDING'));
             }
-        }
-
-        // if ($count_qty->status == 'NEW') {
-        //     $update         = AssetAtk::where('id_barang', $request->atk)->first();
-        //     $update->qty    = $count_qty->qty - $qty_akhir;
-        //     $update->status = 'NN';
-        //     $update->update();
-        // } elseif ($count_qty->qty < $qty_akhir) {
-        //     $update         = AssetAtk::where('id_barang', $request->atk)->first();
-        //     $update->qty    = $count_qty->qty;
-        //     $update->update();
-        // } else {
-        //     $update         = AssetAtk::where('id_barang', $request->atk)->first();
-        //     $update->qty    = $count_qty->qty - $qty_akhir;
-        //     // $update->status = 'NN';
-        //     $update->update();
-        // }
-
-        
-        
+        }    
 
 		return redirect()->back()->with('update', 'Request ATK akan diproses!');
     }
@@ -829,53 +789,25 @@ class AssetAtkController extends Controller
 
     public function accept_request(Request $request)
     {
-    	// $id_barang = $request['id_barang_update'];
-    	// $id_transaction = $request['id_transaction_update'];
-    	// $qty = $request['qty_awal_accept'];
-    	// $qty_akhir = $request['qty_akhir_accept'];
-
         $cek_status = AssetAtkTransaction::select('id_barang', 'id_transaction')->where('id_barang', $request->id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $request->id_transaction)->first();
         $count_status = AssetAtkTransaction::select('id_barang', 'id_transaction')->where('id_barang', $request->id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $request->id_transaction)->count();
 
         $cek_qty = AssetAtkTransaction::select('qty_awal', 'qty_akhir')->where('id_transaction', $request->id_transaction)->where('id_barang', $request->id_barang)->first();
-        // $cek_qty2 = AssetAtkTransaction::select('qty_awal', 'qty_akhir')->where('id_transaction', '!=' , $id_transaction)->where('id_barang', $id_barang)->first();
+        $update             = AssetAtkTransaction::where('id_transaction',$request->id_transaction)->first();
+        $update->status     = 'ACCEPT';
+        $update->update();
 
-        /*if ($count_status > 0) {
-            $update_qty_transaction = AssetAtkTransaction::where('id_transaction',$cek_status->id_transaction)->first();
-            $update_qty_transaction->qty_awal = $qty - $qty_akhir;;
-            $update_qty_transaction->update();
-        }*/
-        
+        $update_qty = AssetAtk::where('id_barang', $request->id_barang)->first();
+        $update_qty->qty = $request->qty - $request->qty_akhir;
+        $update_qty->update();
 
-        /*if ($cek_qty->qty_akhir > $cek_qty->qty_awal) {
-            $update_status = AssetAtkTransaction::where('id_transaction', $id_transaction)->first();
-            $update_status->status = 'PROSES';
-            $update_status->qty_request = $cek_qty->qty_akhir - $cek_qty->qty_awal;
-            $update_status->update();
+        $tambah_changelog   = new AssetAtkChangelog();
+        $tambah_changelog->nik = $request->nik_peminjam;
+        $tambah_changelog->id_barang = $request->id_barang;
+        $tambah_changelog->qty = $request->qty_akhir;
+        $tambah_changelog->status = 'Out';
+        $tambah_changelog->save();
 
-            $update_qty_asset = AssetAtk::where('id_barang', $id_barang)->first();
-            $update_qty_asset->qty = '0';
-            $update_qty_asset->update();
-        } else {*/
-            $update             = AssetAtkTransaction::where('id_transaction',$request->id_transaction)->first();
-            $update->status     = 'ACCEPT';
-            $update->update();
-
-            $update_qty = AssetAtk::where('id_barang', $request->id_barang)->first();
-            $update_qty->qty = $request->qty - $request->qty_akhir;
-            $update_qty->update();
-
-            $tambah_changelog   = new AssetAtkChangelog();
-            $tambah_changelog->nik = $request->nik_peminjam;
-            $tambah_changelog->id_barang = $request->id_barang;
-            $tambah_changelog->qty = $request->qty_akhir;
-            $tambah_changelog->status = 'Out';
-            $tambah_changelog->save();
-
-            /*$update_qty = AssetAtk::where('id_barang', $id_barang)->first();
-            $update_qty->qty = $qty - $qty_akhir;
-            $update_qty->update();
-        }*/
 
         $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$request->id_transaction)->first();
 
@@ -885,7 +817,9 @@ class AssetAtkController extends Controller
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
-        $receiver_final = $receiver->all();
+        // $receiver_final = $receiver->all();
+
+        $receiver_final = $get_email_user;
 
         $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
                     ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
@@ -915,36 +849,29 @@ class AssetAtkController extends Controller
 
     public function reject_request(Request $request)
     {
-        // $id_barang = $request['id_barang_reject'];
-        // $id_transaction = $request['id_transaction_reject'];
-        // $qty = $request['qty_awal_reject'];
-        // $qty_akhir = $request['qty_akhir_reject'];
 
         $update             = AssetAtkTransaction::where('id_transaction',$request->id_transaction)->first();
         $update->status     = 'REJECT';
         $update->note       = $request->reason;
         $update->update();
 
-        /*$update_qty         = AssetAtk::where('id_barang', $id_barang)->first();
-        $update_qty->qty    = $qty_akhir + $qty;
-        $update_qty->update();*/
-
         $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$request->id_transaction)->first();
 
         $get_email_user = collect([$kirim]);
 
-        $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
+        $get_divisi_hr = User::select('email','id_position')->where('email', 'yudhi@sinergy.co.id')->first();
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
-        $receiver_final = $receiver->all();
+        // $receiver_final = $receiver->all();
+
+        $receiver_final = $get_email_user;
 
         $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
                     ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
                     ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'keterangan', 'tb_asset_atk_transaction.created_at','note')
                     ->where('tb_asset_atk_transaction.id_transaction', $request->id_transaction)
                     ->first();
-        // return $req_atk;
 
         foreach ($receiver_final as $final) {
             Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Ditolak', $req_atk,$final->id_position,$get_email_user, 'REJECT'));
@@ -1000,6 +927,8 @@ class AssetAtkController extends Controller
                     ->where('tb_asset_atk_request.id_barang', $request->id_barang)
                     ->first();
         // return $req_atk;
+
+        $receiver_final = $get_email_user;
 
         foreach ($receiver_final as $final) {
             Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK ditolak', $req_atk,$final->id_position,$get_email_user,'REJECTED'));
