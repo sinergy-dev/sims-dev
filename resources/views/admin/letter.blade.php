@@ -203,6 +203,8 @@
                 <option value="BST">BST (Berita Acara Serah Terima)</option>
                 <option value="ADM">ADM (Surat Administrasi & Backdate)</option>
                 <option value="SGB">SBG (Surat Garansi Bank)</option>
+                <option value="ADD">ADD (Addendum Perjanjian Kerja Sama)</option>
+                <option value="AMD">AMD (Amandemen Perjanjian Kerja Sama)</option>
             </select>
           </div>
           <!-- <div class="form-group">
