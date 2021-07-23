@@ -213,11 +213,14 @@ class QuoteController extends Controller
 	public function get_backdate_num(Request $request)
     {
         if (isset($request->tanggal)) {
-            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->whereYear('created_at',substr($request->tanggal, 6,4))->orderBy('created_at','asc')->get();
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->whereYear('created_at',substr($request->tanggal, 6,4))->orderBy('id_quote','desc')->get();
             return array('results'=>$backdate_num);
+            // return substr($request->tanggal, 6,4);
         } else {
-            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->orderBy('created_at','asc')->get();
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->orderBy('id_quote','desc')->get();
             return array('results'=>$backdate_num);
+            // return substr($request->tanggal, 6,4);
+
         }
         
     }

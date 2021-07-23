@@ -4,6 +4,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+
   <style type="text/css">
     .DTFC_LeftBodyLiner {
       overflow: hidden;
@@ -402,12 +404,24 @@
     $('#date_backdate').change(function (argument) {
       console.log($('#date_backdate').val())
       $("#backdate_num").prop("disabled",false);
-      $("#backdate_num").select2({
-        ajax: {
-          url: '{{url("/get_backdate_num")}}' + '?tanggal=' + $('#date_backdate').val(),
-          dataType: 'json'
-        }
-      });
+      $.ajax({
+          url: "/get_backdate_num",
+          type: "GET",
+          data:{
+            tanggal:$('#date_backdate').val()
+          },
+          success: function(result) {
+              $("#backdate_num").select2({
+                data:result.results
+              })
+          }
+      })
+      // $("#backdate_num").select2({
+      //   ajax: {
+      //     url: '{{url("/get_backdate_num")}}' + '?tanggal=' + $('#date_backdate').val(),
+      //     dataType: 'json'
+      //   }
+      // });
     })
 
     function edit_quote(quote_number,customer_legal_name,attention,title,project,description, project_id,note) {
