@@ -479,6 +479,12 @@ class AssetAtkController extends Controller
                 ->first());
     }
 
+    public function getMostRequest(Request $request)
+    {
+        $getData = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select(DB::raw('SUM(qty_akhir) as qty'), 'name')->where('tb_asset_atk_transaction.id_barang', $request->id_barang)->where('tb_asset_atk_transaction.status', 'ACCEPT')->groupBy('nik_peminjam')->orderBy('qty', 'desc')->get();
+
+        return array("data"=>$getData);
+    }
 
     public function update_stok(Request $request)
     {
