@@ -467,7 +467,7 @@
           </div>
           <div class="form-group">
             <label>Unit</label>
-            <select class="form-control unit_atk" name="unit" id="unit"style="width: 100%">
+            <select class="form-control unit_atk" name="unit" id="unit"style="width: 100%" required>
               <option value="">Select Unit</option>
               @foreach($unit_assets as $unit_asset)
               <option value="{{$unit_asset->unit}}">{{$unit_asset->unit}}</option>
