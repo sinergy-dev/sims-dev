@@ -845,6 +845,9 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::post('asset_atk/done_request_atk', 'AssetAtkController@request_done');
 	Route::get('asset_atk/reject_request_atk', 'AssetAtkController@reject_request_atk');
 	Route::get('asset_atk/detail_produk_request', 'AssetAtkController@detail_produk_request');
+	Route::get('asset_atk/getSummaryAtk', 'AssetAtkController@getSummaryAtk');
+	Route::get('asset_atk/getSaldoAtk', 'AssetAtkController@getSaldoAtk');
+	Route::get('asset_atk/getMostRequest', 'AssetAtkController@getMostRequest');
 
 	//PMO
 	Route::get('PMO/detail/{lead_id}','PMOController@detail');
