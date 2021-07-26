@@ -92,15 +92,28 @@
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
-                  <?php $no = 1; ?>
-                  @foreach($summary as $data)
+                </tbody>
+              </table>
+          </div>  
+        </div>
+      </div>
+
+      <div class="box box-success">
+        <div class="box-header with-border">
+        <h3 class="box-title">Most Requested</h3>
+        </div>
+
+        <div class="box-body">
+          <div class="table-responsive">
+              <table class="table table-bordered display no-wrap" id="request_table" width="100%" cellspacing="0">
+                <thead>
                   <tr>
-                    <td>{{$no++}}</td>
-                    <td>{{date("F",strtotime($data->month))}}</td>
-                    <td>{{$data->sum_in}}</td>
-                    <td>{{$data->sum_out}}</td>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Quantity</th>
                   </tr>
-                  @endforeach
+                </thead>
+                <tbody id="products-list" name="products-list">
                 </tbody>
               </table>
           </div>  
@@ -126,19 +139,6 @@
                   </tr>
                 </thead>
                 <tbody id="products-list" name="products-list">
-                  <?php $no = 1; ?>
-                  @foreach($detail as $data)
-                  <tr>
-                    <td>{{$no++}}</td>
-                    <td>{{$data->created_at}}</td>
-                    @if($data->status == 'In')
-                    <td>+ {{$data->qty}} {{$data->unit}}</td>
-                    @else
-                    <td>- {{$data->qty}} {{$data->unit}}</td>
-                    @endif
-                    <td>{{$data->name}}</td>
-                  </tr>
-                  @endforeach
                 </tbody>
               </table>
           </div>  
@@ -156,15 +156,87 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="http://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
 @endsection
 
 @section('script')
 <script type="text/javascript">
     $('#data_Table').DataTable({
-      pageLength: 25,
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('/asset_atk/getSaldoAtk')}}",
+          "data":{
+            "id_barang":window.location.href.split("/")[5]
+          }
+        },
+        "columns": [
+          { 
+            render: function (data, type, row, meta){
+              return ++meta.row             
+            }
+          },
+          { "data": "created_at"},
+          {
+            render: function (data, type, row) {
+              if(row.status == 'In'){
+               return '+ ' + row.qty + ' ' + row.unit
+              }else {
+               return '- ' + row.qty + ' ' + row.unit
+              }
+            }  
+          },
+          { "data": "name"},
+        ],
+        columnDefs:[{targets:1, render:function(data){
+          return moment(data).format('MMMM');
+        }}],
+        "order":[],
+        "pageLength": 25
     })
 
-    $('#summary_table').DataTable({
+    $("#summary_table").dataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('/asset_atk/getSummaryAtk')}}",
+          "data":{
+            "id_barang":window.location.href.split("/")[5]
+          }
+        },
+        "columns": [
+          { 
+            render: function (data, type, row, meta){
+              return ++meta.row             
+            }
+          },
+          { "data": "month"},
+          { "data": "sum_in"},
+          { "data": "sum_out"},
+        ],
+        columnDefs:[{targets:1, render:function(data){
+          return moment(data).format('MMMM');
+        }}],
+        "order":[]
+    })
+
+    $('#request_table').DataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('/asset_atk/getMostRequest')}}",
+          "data":{
+            "id_barang":window.location.href.split("/")[5]
+          }
+        },
+        "columns": [
+          { 
+            render: function (data, type, row, meta){
+              return ++meta.row             
+            }
+          },
+          { "data": "name"},
+          { "data": "qty"},
+        ],
+        "order":[],
       pageLength: 25,
     })
 </script>
