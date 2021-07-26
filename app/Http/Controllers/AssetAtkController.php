@@ -254,6 +254,8 @@ class AssetAtkController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $notifClaim = '';
+
         if ($ter != null) {
             $notif = DB::table('sales_lead_register')
             ->select('opp_name','nik')
@@ -412,27 +414,23 @@ class AssetAtkController extends Controller
                     ->orderBy('tb_asset_atk_transaction.created_at', 'desc')
                     ->get();
 
-        $detail = AssetAtkChangelog::join('users', 'users.nik', '=', 'tb_asset_atk_changelog.nik')
-                    ->join('tb_asset_atk', 'tb_asset_atk.id_barang', '=', 'tb_asset_atk_changelog.id_barang')
-                    ->select('users.name', 'tb_asset_atk_changelog.created_at', 'tb_asset_atk_changelog.status', 'tb_asset_atk_changelog.qty', 'nama_barang', 'unit')
-                    ->where('tb_asset_atk.id_barang', $id_barang)
-                    ->orderBy('tb_asset_atk_changelog.id', 'desc')
-                    ->get();
-
         $last_update = AssetAtkChangelog::join('users', 'users.nik', '=', 'tb_asset_atk_changelog.nik')->select('status','tb_asset_atk_changelog.created_at', 'name')->where('id_barang',$id_barang)->orderBy('tb_asset_atk_changelog.id','desc')->first();
 
         $data = AssetAtk::select('qty','unit','nama_barang')->where('id_barang',$id_barang)->first();
 
-        $summary = AssetAtkChangelog::selectRaw('SUM(CASE WHEN `status` = "In" THEN 1 ELSE 0 END) AS `sum_in`')
-            ->selectRaw('SUM(CASE WHEN `status` = "Out" THEN 1 ELSE 0 END) AS `sum_out`')
-            ->selectRaw('LEFT(`created_at`, 7) AS `month`')
-            ->where('id_barang', $id_barang)
-            ->groupBy('month')
-            ->get();
+        return view('HR/detail_asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'data', 'last_update'))->with(['initView'=> $this->initMenuBase()]);
+    }
 
-         // return $summary;   
+    public function getSaldoAtk(Request $request)
+    {
+        $detail = AssetAtkChangelog::join('users', 'users.nik', '=', 'tb_asset_atk_changelog.nik')
+                    ->join('tb_asset_atk', 'tb_asset_atk.id_barang', '=', 'tb_asset_atk_changelog.id_barang')
+                    ->select('users.name', 'tb_asset_atk_changelog.created_at', 'tb_asset_atk_changelog.status', 'tb_asset_atk_changelog.qty', 'nama_barang', 'unit')
+                    ->where('tb_asset_atk.id_barang', $request->id_barang)
+                    ->orderBy('tb_asset_atk_changelog.id', 'desc')
+                    ->get();
 
-        return view('HR/detail_asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'detail', 'data', 'last_update', 'summary'))->with(['initView'=> $this->initMenuBase()]);
+        return array("data"=>$detail);
     }
 
     public function store(Request $request)
@@ -459,6 +457,18 @@ class AssetAtkController extends Controller
         return redirect()->back()->with('update', 'Successfully!');
     }
 
+    public function getSummaryAtk(Request $request)
+    {
+        $summary = AssetAtkChangelog::selectRaw('SUM(CASE WHEN `status` = "In" THEN 1 ELSE 0 END) AS `sum_in`')
+            ->selectRaw('SUM(CASE WHEN `status` = "Out" THEN 1 ELSE 0 END) AS `sum_out`')
+            ->selectRaw('LEFT(`created_at`, 7) AS `month`')
+            ->where('id_barang', $request->id_barang)
+            ->groupBy('month')
+            ->get();        
+
+        return array("data"=>$summary);
+    }
+
     public function detail_produk_request(Request $request)
     {
         $id_barang = $request->id_barang;
@@ -469,6 +479,12 @@ class AssetAtkController extends Controller
                 ->first());
     }
 
+    public function getMostRequest(Request $request)
+    {
+        $getData = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select(DB::raw('SUM(qty_akhir) as qty'), 'name')->where('tb_asset_atk_transaction.id_barang', $request->id_barang)->where('tb_asset_atk_transaction.status', 'ACCEPT')->groupBy('nik_peminjam')->orderBy('qty', 'desc')->get();
+
+        return array("data"=>$getData);
+    }
 
     public function update_stok(Request $request)
     {
