@@ -457,6 +457,18 @@ class AssetAtkController extends Controller
         return redirect()->back()->with('update', 'Successfully!');
     }
 
+    public function getSummaryAtk(Request $request)
+    {
+        $summary = AssetAtkChangelog::selectRaw('SUM(CASE WHEN `status` = "In" THEN 1 ELSE 0 END) AS `sum_in`')
+            ->selectRaw('SUM(CASE WHEN `status` = "Out" THEN 1 ELSE 0 END) AS `sum_out`')
+            ->selectRaw('LEFT(`created_at`, 7) AS `month`')
+            ->where('id_barang', $request->id_barang)
+            ->groupBy('month')
+            ->get();        
+
+        return array("data"=>$summary);
+    }
+
     public function detail_produk_request(Request $request)
     {
         $id_barang = $request->id_barang;
