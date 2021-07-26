@@ -2679,8 +2679,8 @@ class HRGAController extends Controller
 
         $jumlah_cuti = "7";
         $total_cuti = "12";
-        $cuti_bersama = "2";
-        $jumlah_cuti_now = "10";
+        $cuti_bersama = "1";
+        $jumlah_cuti_now = "11";
         // $request_cuti = "5";
 
         $dataFiltered = DB::table('tb_cuti')
@@ -2704,7 +2704,7 @@ class HRGAController extends Controller
                 'users.name',
                 'users.date_of_entry',
                 DB::raw($jumlah_cuti . ' AS `bersih_cuti_' . date('Y', strtotime("-1 year")) . '`'),
-                DB::raw('`users`.`cuti2` AS `sisah_cuti_' . date('Y', strtotime("-1 year")) . '`'),
+                DB::raw('`users`.`cuti` AS `sisah_cuti_' . date('Y', strtotime("-1 year")) . '`'),
                 DB::raw($total_cuti . ' AS `total_cuti_' . date('Y') . '`'),
                 DB::raw($cuti_bersama . ' AS `cuti_bersama_' . date('Y') . '`'),
                 DB::raw($jumlah_cuti_now . ' AS `bersih_cuti_' . date('Y') . '`'),
