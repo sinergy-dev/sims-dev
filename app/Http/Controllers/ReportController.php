@@ -3309,8 +3309,13 @@ class ReportController extends Controller
 
         // return $top_win_presales;
 
-        $users = User::select('name','nik')->where('id_territory', 'PRESALES')->where('name', '!=', 'PRESALES')->get();
+        $users = User::join('role_user','users.nik','=','role_user.user_id')
+                ->join('roles','role_user.role_id','=','roles.id')
+                ->select('users.name', 'users.nik')
+                ->where('roles.group', 'presales')
+                ->get();
 
+        // return $users;
 
         foreach ($users as $user) {
 	        $user->lead_register = Sales2::join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
