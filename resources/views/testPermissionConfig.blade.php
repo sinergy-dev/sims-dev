@@ -16,6 +16,7 @@
 		#permissionRoleToUser_wrapper .row:first-child, 
 		#featureRoleTableCustom_wrapper .row:first-child, 
 		#rolesTable_wrapper .row:first-child,
+		#featureItemTable_wrapper .row:first-child, 
 		#featureTable_wrapper .row:first-child {
 			display: none
 		}
@@ -128,7 +129,7 @@
 								<a href="#config_fature" data-toggle="tab" onclick="changeTab('feature')">Configure Feature</a>
 							</li>
 							<li>
-								<a href="#config_fature_item" data-toggle="tab" onclick="changeTab('feature')">Configure Feature</a>
+								<a href="#config_fature_item" data-toggle="tab" onclick="changeTab('feature')">Configure Feature Item</a>
 							</li>
 							{{-- <li class="pull-right"> --}}
 								{{-- <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-add-role">Change User Role</button> --}}
@@ -287,13 +288,13 @@
 								<div class="row">
 									<dir class="col-md-8" style=" margin-top: 0px;">
 										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-feature">
-											Add Feature
+											Add Feature Item
 										</button>
 										<select class="form-control select2" id="selectGroupFeatureItem" style="width: 100px"></select>
 									</dir>
 									<dir class="col-md-4 text-right" style=" margin-top: 0px;">
 										<div class="input-group pull-right">
-											<input id="searchBarFeature" type="text" class="form-control" onkeyup="searchCustom('featureTable','searchBarFeature')" placeholder="Search Anything">
+											<input id="searchBarFeatureItem" type="text" class="form-control" onkeyup="searchCustom('featureItemTable','searchBarFeatureItem')" placeholder="Search Anything">
 											
 											<div class="input-group-btn">
 												<button type="button" id="btnShowEntryFeatureItem" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -307,7 +308,7 @@
 												</ul>
 											</div>
 											<span class="input-group-btn">
-												<button onclick="searchCustom('featureTable','searchBarFeature')" type="button" class="btn btn-default btn-flat">
+												<button onclick="searchCustom('featureItemTable','searchBarFeatureItem')" type="button" class="btn btn-default btn-flat">
 													<i class="fa fa-fw fa-search"></i>
 												</button>
 											</span>
