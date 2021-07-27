@@ -1069,18 +1069,14 @@
           id:this.value,
         },
         success:function(result){
+          console.log(result)
           $('#tunggu').modal('hide');
           $("#code_name").val(result.code)
           $("#inputCustomer").val(result.lead_id)
           $("#inputPO").val(result.no_po)
           $("#inputProject").val(result.opp_name)
           $("#inputSales").val(result.name)
-          if (result.quote_number_final == null) {
-            $("#inputQuo").val(result.quote_number)
-          }else{
-            $("#inputQuo").val(result.quote_number_final)
-          }
-
+          $("#inputQuo").val(result.quote_number_final)
           if (result.date_po == null) {
             $("#inputDate").val(result.date)
           }else{
