@@ -4,8 +4,11 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SIP - SIMSApp</title>
-	<link rel="icon" type="image/png" href="../img/siplogooke.png">
+	<title>
+		SIP - SIMSApp
+		@yield('hahaha')
+	</title>
+	<link rel="icon" type="image/png" href="{{url('img/siplogooke.png')}}">
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">	
 	<!-- Bootstrap 3.3.7 -->
@@ -290,11 +293,14 @@
 			@show
 		</div>
 
+		@section('scriptImport2')
 		<!-- jQuery 3.1.1 -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<!-- Bootstrap 3.3.7 -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		@show
 		@yield('scriptImport')
+
 		<!-- SlimScroll -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
 		<!-- FastClick -->
@@ -322,10 +328,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script> --}}
 <script>
 	$(document).ready(function () {
-		// $(".activeable_group").has("[href='" + location.hash + "']").addClass('active')
-		// $(".activeable_menu").has("[href='" + location.hash + "']").addClass('active')
 		$(".activeable_group").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
-        $(".activeable_menu").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
+    $(".activeable_menu").has('a[href="' + location.protocol + '//' + location.host + location.pathname + '"]').addClass('active')
 	})
 </script>
 @yield('script')
