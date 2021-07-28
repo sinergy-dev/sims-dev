@@ -22,34 +22,39 @@
         display: none;
       }
 
+      th, td { white-space: nowrap; }
+      div.dataTables_wrapper {
+          margin: 0 auto;
+      }
+
       .inputWithIcon input[type=text]{
           padding-left:40px;
       }
 
-       .inputWithIcon.inputIconBg input[type=text]:focus + i{
-          color:#fff;
-          background-color:dodgerBlue;
-        }
+     .inputWithIcon.inputIconBg input[type=text]:focus + i{
+        color:#fff;
+        background-color:dodgerBlue;
+      }
 
-       .inputWithIcon.inputIconBg i{
-          background-color:#aaa;
-          color:#fff;
-          padding:7px 4px;
-          /*border-radius:4px 0 0 4px;*/
-        }
+     .inputWithIcon.inputIconBg i{
+        background-color:#aaa;
+        color:#fff;
+        padding:7px 4px;
+        /*border-radius:4px 0 0 4px;*/
+      }
 
-       .inputWithIcon{
-          position:relative;
-        }
+     .inputWithIcon{
+        position:relative;
+      }
 
-       .inputWithIcon i{
-          position:absolute;
-          left:0;
-          top:25px;
-          padding:9px 8px;
-          color:#aaa;
-          transition:.3s;
-        }
+     .inputWithIcon i{
+        position:absolute;
+        left:0;
+        top:25px;
+        padding:9px 8px;
+        color:#aaa;
+        transition:.3s;
+      }
 
       .nav-tabs .badge{
           position: absolute;
@@ -118,20 +123,19 @@
                   <div class="col-md-4" id="search-table">
                     <div class="input-group pull-right" style="margin-left: 10px">
                       <div class="input-group-btn">
-      	                <button type="button" id="btnShowEntryTicket" style="width: 110px" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-      	                  Show 10 entries
-      	                  <span class="fa fa-caret-down"></span>
-      	                </button>
-      	                <ul class="dropdown-menu" id="selectShowEntryTicket">
-      	                  <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-      	                  <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-      	                  <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-      	                  <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-      	                </ul>
-      	              </div>
-      	              <input id="searchBarTicket" type="text" class="form-control" style="height: 30px" placeholder="Search Anything">
+                        <button type="button" id="btnShowPID" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                          Show 10 entries
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a href="#" onclick="$('#table-pid').DataTable().page.len(10).draw();$('#btnShowPID').html('Show 10 entries')">10</a></li>
+                          <li><a href="#" onclick="$('#table-pid').DataTable().page.len(25).draw();$('#btnShowPID').html('Show 25 entries')">25</a></li>
+                          <li><a href="#" onclick="$('#table-pid').DataTable().page.len(50).draw();$('#btnShowPID').html('Show 50 entries')">50</a></li>
+                          <li><a href="#" onclick="$('#table-pid').DataTable().page.len(100).draw();$('#btnShowPID').html('Show 100 entries')">100</a></li>
+                        </ul>
+                      </div>
+      	              <input id="searchBarTicket" type="text" class="form-control" placeholder="Search Anything">
       	              <span class="input-group-btn">
-      	                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-sm" style="width: 40px">
+      	                <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-md" style="width: 40px">
       	                  <i class="fa fa-fw fa-search"></i>
       	                </button>
       	              </span>
@@ -549,8 +553,6 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
-  <!-- <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script> -->
-  <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
 @endsection
 @section('script')
@@ -660,11 +662,6 @@
     window.location = url + "?year=" + $("#year_filter").val();
   }
 
-  function changeNumberEntries(number){
-    $("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
-    $("#table-pid").DataTable().page.len( number ).draw();
-  }
-
   var table = $("#table-pid").DataTable({
   	"footerCallback": function( row, data, start, end, display ) {
           var numFormat = $.fn.dataTable.render.number('\,', '.',2).display;
@@ -705,7 +702,6 @@
         "type":"GET",
         "url":"{{url('getPIDIndex')}}",
     },
-    "paging":   false,
     "columns": [
       { "data": "date" },
       { "data": "id_project" },
@@ -811,18 +807,15 @@
         "data": "amount_idr_before_tax"
       },
     ],
-    // "info":false,
     "scrollX": true,
     "pageLength": 25,
     "order": [[ 1, "desc" ]],
-    // "orderFixed": [[1, 'desc']],
     "processing": true,
     "language": {
       'loadingRecords': '&nbsp;',
       'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
     }, 
     "scrollCollapse":true,
-    // "paging": false,
     fixedColumns:   {
       leftColumns: 2,
       rightColumns: 1
@@ -903,13 +896,13 @@
           	if (row.status == 'requested') {
           		return '<button class="btn btn-xs btn-primary btn-show" data-toggle="modal" value="'+row.id_pid+'">Show</button>'
           	}else if(row.status == 'done'){
-          		return '<small class="label label-success"><i class="fa fa-clock-o"></i>Done</small>'
+          		return '<small class="label label-success"><i class="fa fa-clock-o"></i> Done</small>'
           	}
           	
           }
         },
       ],
-      "info":false,
+      // "info":false,
       "scrollX": true,
       "pageLength": 25,
       "order": [[ 1, "desc" ]],
@@ -919,7 +912,7 @@
           'loadingRecords': '&nbsp;',
           'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
         },
-      "paging": true,
+      lengthChange:false,
       initComplete: function() {
         if("{{Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'FINANCE'}}"){
           if (this.api().data().length) {
@@ -934,7 +927,10 @@
           $('#tabs_sip').addClass('active')
           changeTabs('SIP')
         }
-      }
+      },
+      fixedColumns:   {
+        leftColumns: 2,
+      },
 	  });	
 
 
@@ -1069,27 +1065,23 @@
           id:this.value,
         },
         success:function(result){
+          console.log(result)
           $('#tunggu').modal('hide');
           $("#code_name").val(result.code)
           $("#inputCustomer").val(result.lead_id)
           $("#inputPO").val(result.no_po)
           $("#inputProject").val(result.opp_name)
           $("#inputSales").val(result.name)
-          if (result.quote_number_final == null) {
-            $("#inputQuo").val(result.quote_number)
-          }else{
-            $("#inputQuo").val(result.quote_number_final)
-          }
-
+          $("#inputQuo").val(result.quote_number_final)
           if (result.date_po == null) {
             $("#inputDate").val(result.date)
           }else{
             $("#inputDate").val(result.date_po)
           }
           if (result.amount_pid == null) {
-            $("#inputAmount").val(result.amount)
+            $("#inputAmount").val(result.amount).mask('000,000,000,000', {reverse: true})
           }else{
-            $("#inputAmount").val(result.amount_pid)
+            $("#inputAmount").val(result.amount_pid).mask('000,000,000,000', {reverse: true})
           }
           $("#inputNote").val(result.note)
         }

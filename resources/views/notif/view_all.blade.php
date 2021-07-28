@@ -104,7 +104,7 @@
 
 	function addListRead(data,index){
         var append = ""
-        append = append + '<tr class="MyClass" data-value="'+ data.status +'" data-value2="'+ data.company+'" data-value3="'+ data.lead_id+'" data-href="'+ "{{url('detail_project')}}/" + data.lead_id +'" value-id="'+index+'">'
+        append = append + '<tr class="MyClass" data-value="'+ data.status +'" data-value2="'+ data.company+'" data-value3="'+ data.lead_id+'" data-href="'+ "{{url('project/detailSales')}}/" + data.lead_id +'" value-id="'+index+'">'
 		append = append + '<td class="cursor-pointer" style="color:grey">'
 		append = append +  '<i class="fa fa-envelope" aria-hidden="true"></i> '+ ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + data.lead_id + ' - ' +data.opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+moment(data.date_time,"X").fromNow()+'</span>'
 		append = append + '</td>'
@@ -141,7 +141,7 @@
 
     function addListUnRead(data,index){
         var append = ""
-        append = append + '<tr class="MyClass" data-value3="'+ data.id_pid+'" data-value2="'+data.lead_id+'" data-value="'+ data.result +'" data-id="'+ index +'" data-href="'+ "{{url('detail_project')}}/" + data.lead_id +'">'
+        append = append + '<tr class="MyClass" data-value3="'+ data.id_pid+'" data-value2="'+data.lead_id+'" data-value="'+ data.result +'" data-id="'+ index +'" data-href="'+ "{{url('project/detailSales')}}/" + data.lead_id +'">'
 		append = append + '<th class="list-item cursor-pointer" style="background-color: #7dc6e3;color:white">'
         append = append + '<i class="fa fa-envelope" aria-hidden="true"></i> ' + ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + data.lead_id + ' - ' + data.opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+moment(data.date_time,"X").fromNow()+'</span>'
         append = append + '</th>'

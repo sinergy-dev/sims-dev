@@ -26,10 +26,6 @@ Route::post('/update_result4', 'SalesController@update_result');
 Route::post('/update_result5', 'SalesController@update_result');
 Route::get('testBladeNew','TestController@testBladeNew');
 
-// tes sales
-Route::get('salestest/get_count_lead','SalesTestController@get_count_lead');
-Route::get('testSalesIndex','SalesTestController@index');
-
 //ghghgjhgjhgjhgjhgjhgjgj
 
 Route::get('/testEmailTrap',function(){
@@ -37,6 +33,7 @@ Route::get('/testEmailTrap',function(){
 });
 
 Route::get('testCutiEmail','TestController@mailCuti');
+Route::get('testFilter','TestController@testFilter');
 
 
 Route::get('testRolesShow','TestController@testRole');
@@ -70,21 +67,49 @@ Route::get('testRolesShow','TestController@testRole');
 
 Route::get('testGetCutiReportNew','TestController@getReportCuti');
 
-
-
-
-
-//dinar cantik3
-//dinar cantik
-//dinar cantik2
-//dinar cantik4
-//dinar cantik5555
-//dinar syantik
-//dinar tambah syantik
-
-
-//coba git lagi
-Route::group(['middleware' => ['SIP']], function () {
+Route::group(['middleware' => ['auth']], function () {
+	// tes sales
+	Route::get('project/getCountLead','SalesLeadController@getCountLead');
+	Route::get('project/index','SalesLeadController@index');
+	Route::get('project/getDataLead','SalesLeadController@getDataLead');
+	Route::get('project/detailSales/{lead_id}','SalesLeadController@detailSales');
+	Route::get('project/getPresales', 'SalesLeadController@getPresales');
+	Route::get('project/getSales', 'SalesLeadController@getSales');
+	Route::get('project/getCustomer', 'SalesLeadController@getCustomer');
+	Route::get('project/showEditLead', 'SalesLeadController@showEditLead');
+	Route::get('project/getPresalesAssign', 'SalesLeadController@getPresalesAssign');
+	Route::get('project/getFilterLead', 'SalesLeadController@getFilterLead');
+	Route::post('project/update_lead_register', 'SalesLeadController@update_lead_register');
+	Route::get('project/getDetailLead', 'SalesLeadController@getDetailLead');
+	Route::get('project/getChangeLog', 'SalesLeadController@getChangeLog');
+	Route::get('project/getLeadTp','SalesLeadController@getLeadTp');
+	Route::get('project/getLeadSd','SalesLeadController@getLeadSd');
+	Route::get('project/getSearchLead', 'SalesLeadController@getSearchDataLead');
+	Route::post('project/add_changelog_progress','SalesLeadController@add_changelog_progress');
+	Route::post('project/update_tp', 'SalesLeadController@update_tp');
+	Route::post('project/update_sd', 'SalesLeadController@update_sd');
+	Route::post('project/add_contribute', 'SalesLeadController@add_contribute');
+	Route::post('project/changelog_sd', 'SalesLeadController@changelog_sd');
+	Route::post('project/changelogTp', 'SalesLeadController@changelogTp');
+	Route::get('project/getDetailLeadResult', 'SalesLeadController@getDetailLeadResult');
+	Route::get('project/getQuote', 'SalesLeadController@getQuoteNumber');
+	Route::post('project/addContribute', 'SalesLeadController@addContribute');
+	Route::post('project/updateResult', 'SalesLeadController@updateResult');
+	Route::post('project/updateResultRequestPid', 'SalesLeadController@updateResultRequestPid');
+	Route::get('project/getPid', 'SalesLeadController@getPid');
+	Route::post('project/storeLead', 'SalesLeadController@storeLead');
+	Route::post('project/assignPresales', 'SalesLeadController@assignPresales');
+	Route::post('project/reassignPresales', 'SalesLeadController@reassignPresales');
+	Route::post('project/raiseTender', 'SalesLeadController@raise_to_tender');
+	Route::get('project/getTerritory', 'SalesLeadController@getTerritory');
+	Route::get('project/getUserByTerritory', 'SalesLeadController@getUserByTerritory');
+	Route::get('project/getSalesByTerritory', 'SalesLeadController@getSalesByTerritory');
+	Route::get('project/getCompany', 'SalesLeadController@getCompany');
+	Route::get('project/getResult', 'SalesLeadController@getResult');	
+	Route::get('project/getProductTag','SalesLeadController@getProductTag');
+	Route::get('project/getProductTechTag','SalesLeadController@getProductTechTag');
+	Route::get('project/getTechTag','SalesLeadController@getTechTag');
+	Route::get('project/deleteLead', 'SalesLeadController@destroy');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
 
@@ -212,7 +237,7 @@ Route::group(['middleware' => ['SIP']], function () {
 
 
 	/*Route::get('/presales','SalesController@index')->middleware('TechnicalPresalesMiddleware', 'ManagerStaffMiddleware')*/;
-	Route::post('/update_sd/{lead_id}', 'SalesController@update_sd');
+	Route::post('/update_sd', 'SalesController@update_sd');
 	Route::post('/assign_to_presales','SalesController@assign_to_presales');
 	Route::post('/reassign_to_presales','SalesController@reassign_to_presales');
 
@@ -230,6 +255,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('downloadExcelPrAdmin','PrController@downloadExcelPr');
 	Route::get('/getfilteryearpr', 'PrController@getfilteryear');
 	Route::get('/getdatapr', 'PrController@getdatapr');
+	Route::get('/getCountPr', 'PrController@getCountPr');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
@@ -462,7 +488,7 @@ Route::group(['middleware' => ['SIP']], function () {
 	Route::get('/delete_contribute_engineer/{id_engineer}','EngineerController@delete_contribute_engineer');
 	Route::get('/delete_contribute_sd','SalesController@delete_contribute_sd');
 
-	Route::get('/delete_sales/{lead_id}', 'SalesController@destroy');
+	Route::get('/delete_sales', 'SalesController@destroy');
 	Route::get('/delete_update_status/{lead_id}', 'SalesController@delete_update_status');
 
 	Route::post('/reassign_to_engineer','EngineerController@reassign_engineer');
@@ -863,8 +889,6 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	//getLeadByCustpmer
 	Route::get('/getLeadByCompany','SalesController@getLeadByCompany');
-	Route::get('/authentication/{id}','TestController@authentication');
-
 	//presence
 	Route::get('/presence', 'PresenceController@index');
 	Route::get('/presence/getPresenceParameter','PresenceController@getPresenceParameter');
@@ -883,4 +907,9 @@ Route::group(['middleware' => ['SIP']], function () {
 
 	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
 
+
 });
+Route::get('/authentication/{id}','TestController@authentication');
+
+// Ticketing
+Route::get('/ticketing','TicketingController@index');

@@ -150,22 +150,6 @@
 				<p style="font-size: 16px">
 					Silahkan klik link berikut ini untuk melihat Detail Cuti.<br>	
 				</p>
-				<!-- <table width="150%" cellspacing="0" cellpadding="0">
-					<tr>
-						<td>
-							<table cellspacing="0" cellpadding="0">
-								<tr>
-									<td style="border-radius: 2px;" bgcolor="#ED2939">
-										<a href="{{url('/show_cuti')}}" target="_blank" style="padding: 4px; border: 1px solid #ED2939;border-radius: 2px;font-family: Helvetica, Arial, sans-serif;font-size: 14px; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block;">
-											Leaving Permit
-										</a>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table> -->
-
 				<center><a href="{{url('/show_cuti')}}" target="_blank"><button class="button"> Leaving permit </button></a></center>
 				<p style="font-size: 16px">
 					Mohon di periksa kembali, jika ada kesalahan atau pertanyaan silahkan hubungi Team Developer (Ext: 384) atau email ke development@sinergy.co.id.<br>

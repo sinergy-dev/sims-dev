@@ -95,9 +95,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript">
-	// $( window ).load(function() {
- //       localStorage.clear()
- //    });
 	var firebaseConfig = {
 	    apiKey: "{{env('FIREBASE_APIKEY')}}",
 	    authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
@@ -122,7 +119,6 @@
   	 	for (var i = 0; i < keys.length; i++) {
   	 		if (snapshot_dump[keys[i]].status == "unread") {
   	 			if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
-  	 				// console.log("a")
 
 		  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
 		  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('salesproject')}}#submitIdProject/"+snapshot_dump[keys[i]].id_pid)
@@ -130,24 +126,17 @@
 		  	 		}else if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
 		  	 			if (snapshot_dump[keys[i]].result == 'INITIAL') {
 			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",snapshot_dump[keys[i]].lead_id)
-
 		  	 			}else{
 						    localStorage.setItem("status","read")
-
-			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('detail_project')}}/"+snapshot_dump[keys[i]].lead_id)
-
+			  	 			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('project/detailSales')}}/"+snapshot_dump[keys[i]].lead_id)
 		  	 			}
-			  	 		// console.log(snapshot_dump[keys[i]].lead_id)
 
 		  	 		}else{
-			  	 		append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('detail_project')}}/"+snapshot_dump[keys[i]].lead_id)
-
+			  	 		append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('project/detailSales')}}/"+snapshot_dump[keys[i]].lead_id)
 		  	 		}
 		  	 	}
 	  	 	}
-
   	 		count++
-
   	 	}
 
   	 	$("#notificationContent").append(append)
@@ -162,7 +151,6 @@
         var keys = Object.keys(snapshot_dump)
   	 	keys = keys.reverse()
 
-  	 	// console.log(keys)
   	 	for (var i = 0; i < keys.length; i++) {
 
   	 		if (snapshot_dump[keys[i]].status == "unread") {
@@ -181,33 +169,15 @@
 			$("#notificationCount").text(count)
 
         } else {   
-        	// count = "0"
         	$("#bell-id").removeClass('fa fa-bell').addClass('fa fa-bell-o')
         }		
-
-        // console.log(count)
-
     });
 
     var start = true;
 
     firebase.database().ref('notif/web-notif').limitToLast(1).on('child_added', function(snapshot) {
         if(!start){
-
-            // $("#notificationContent").children().last().remove()
-            // $("#notificationContent").children().last().remove()
-            // Show latests notification to Browser Notification
-            // if(snapshot.val().showed == "false"){
-            //     showNotificationBrowser(snapshot.val(),snapshot.key)
-            // }
-
-            // Add latests notification
-
-            // $("#notificationContent").prepend(makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",snapshot_dump[keys[i]].lead_id)) 
-
             if (snapshot.val().to == "{{Auth::User()->email}}") {
-  	 				// console.log("a")
-
 	  	 		if ("{{Auth::User()->id_division}}" == 'FINANCE') {
 	  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('salesproject')}}#submitIdProject/"+snapshot.val().id_pid))
 
@@ -217,11 +187,11 @@
 	  	 			}else{
 					   localStorage.setItem("status","read")
 				
-		  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('detail_project')}}/"+snapshot.val().lead_id))
+		  	 			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('project/detailSales')}}/"+snapshot.val().lead_id))
 
 	  	 			}
 	  	 		}else{
-		  	 		$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('detail_project')}}/"+snapshot.val().lead_id))
+		  	 		$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('project/detailSales')}}/"+snapshot.val().lead_id))
 
 	  	 		}
 	  	 	}
@@ -250,35 +220,11 @@
         }
 
         if(status == "unread"){
-    			// append = append + '<a href="#">'
-       //            append = append + '<div class="pull-left"><img src="https://thumbs.dreamstime.com/b/yellow-orange-starburst-flower-nature-jpg-192959431.jpg" class="img-circle" alt="User Image" width="20px" height="50px">'
-       //            append = append + '</div>'
-       //            append = append + '<h4>'
-       //              append = append + 'Support Team'
-       //              append = append + '<small><i class="fa fa-clock-o"></i> 5 mins</small>'
-       //            append = append + '</h4>'
-       //            append = append + '<p>Why not buy a new awesometheme?</p>'
-       //          append = append + '</a>'
-       // onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"
-        append = append + '<li>'
-				append = append + '<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"><div class="pull-left"> <small class="label pull-right" style="background-color:'+ data.heximal +'">'+ data.result + '</small> </div>'
-				append = append + ' <h4>' + opty_name + '</h4>' + '<p><small><i class="fa fa-clock-o"></i> '+ date_time +'</small></p>'
-				append = append + '</a>'
-				append = append + '</li>'
-    			
-    // 			append = append +  '<li>'
-				// append = append + '<a href="#" class="pointer">'
-				// append = append + '<div style="display:flex">'
-			 //        append = append + '<div class="pull-left" style="display:inline-block"><span class="label" style="background-color:#f2562b">OPEN</span></div>'
-			 //        append = append + '<div>'
-			 //            append = append + '<span style="display:inline-block">(Youve been assigned) ghghghgh</span>'
-			 //            append = append + '<p><small><i class="fa fa-clock-o"></i>17 hours ago</small></p>'
-			 //        append = append + '</div>'
-			 //    append = append + '</div>'
-			 //    append = append + '<a href="#">'
-			 //    append = append +  '</li>'
-
-        	
+			append = append + '<li>'
+			append = append + '<a class="pointer" onclick="readNotification('+ "'" + index +  "'" + ',' + "'" + url + "'" + ')"><div class="pull-left"> <small class="label pull-right" style="background-color:'+ data.heximal +'">'+ data.result + '</small> </div>'
+			append = append + ' <h4>' + opty_name + '</h4>' + '<p><small><i class="fa fa-clock-o"></i> '+ date_time +'</small></p>'
+			append = append + '</a>'
+			append = append + '</li>'
         } 
 
         return append
@@ -287,7 +233,6 @@
     function readNotification(index,url){
  
         firebase.database().ref('notif/web-notif/' + index).once('value').then(function(snapshot) {
-            // console.log(snapshot.val())
             var data = snapshot.val()
             if (data.id_pid == null || data.company == null || data.date_time == null) {
             	id_pid = ""
@@ -315,7 +260,7 @@
             if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
             	if (snapshot.val().result == 'INITIAL') {
             		location.reload(true);  
-            		window.location.href = "{{url('project')}}/"
+            		window.location.href = "{{url('project/index')}}/"
 
 	            	localStorage.setItem("lead_id",url)
 	            	localStorage.setItem("status","unread")
@@ -334,10 +279,8 @@
 	            	location.reload(true);
 	            }else{
 	            	window.location.href = url
-
 	            }
             }
-
         })
     }
 
