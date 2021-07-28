@@ -287,7 +287,7 @@ class DONumberController extends Controller
         $tambah->no_po = $request['no_po'];
         $tambah->save();
 
-        return $tambah->no_do;
+        // return $tambah->no_do;
 
         return redirect('do')->with('success', 'Created Delivery Order Successfully!');
     }
