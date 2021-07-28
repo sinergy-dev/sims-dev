@@ -255,6 +255,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('downloadExcelPrAdmin','PrController@downloadExcelPr');
 	Route::get('/getfilteryearpr', 'PrController@getfilteryear');
 	Route::get('/getdatapr', 'PrController@getdatapr');
+	Route::get('/getCountPr', 'PrController@getCountPr');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
