@@ -481,7 +481,7 @@ class PresenceController extends Controller
 
     public function getWorkDays($startDate,$endDate){
         $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_YEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
 
