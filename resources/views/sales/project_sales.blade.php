@@ -185,7 +185,7 @@
 	  				<div class="box-body" id="filter-body">
 	  					<div class="form-group">
 								<label>Tahun</label>
-								<select class="select2 form-control" style="width:100%" id="year_dif" onchange="filterSelect(this.value)">
+								<select class="select2 form-control" style="width:100%" id="year_dif" onchange="filterLead()">
 									@foreach($year as $years)
 			              @if($years->year < $year_now)
 			                <option value="{{$years->year}}">{{$years->year}}</option>
@@ -200,24 +200,28 @@
 							</div>
 							<div class="form-group" id="filter-sales" style="display:none;">
 								<label>Sales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_sales"  name="filter_sales" onchange="filterSelect(this.value)">
+							  <select class="form-control select2" style="width: 100%;" id="filter_sales"  name="filter_sales" onchange="filterLead()">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-sales-manager" style="display:none;">
 								<label>Sales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_sales_manager"  name="filter_sales_manager" onchange="filterSelect(this.value)">
+							  <select class="form-control select2" style="width: 100%;" id="filter_sales_manager"  name="filter_sales_manager" onchange="filterLead()">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-presales" style="display:none;">
 								<label>Presales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_presales"  name="filter_presales" onchange="filterSelect(this.value)">
+							  <select class="form-control select2" style="width: 100%;" id="filter_presales"  name="filter_presales" onchange="filterLead()">
 	              </select>
+							</div>
+							<div class="form-group" id="filter-customer">
+								<label>Customer</label>
+								<select class="form-control select2" style="width: 100%" id="filter_customer" name="filter_customer" onchange="filterLead()"></select>
 							</div>
 							<div class="form-group" id="filter-result">
 							</div>
 							<div class="form-group">
 								<label>Tag Product & Technology</label>
-							  <select class="form-control select2" style="width: 100%;" id="searchTags"  name="searchTags" onchange="filterSelect(this.value)">
+							  <select class="form-control select2" style="width: 100%;" id="searchTags"  name="searchTags" onchange="filterLead()">
 	              </select>
 							</div>
 						</div>  				
@@ -504,7 +508,8 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-<script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.1/select2.min.js"></script> -->
+<!-- <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
@@ -681,15 +686,27 @@
 	    }
 	})
 
+	// $.ajax({
+	//     url: "{{url('/project/getSales')}}",
+	//     type: "GET",
+	//     success: function(result) {
+ //        $("#owner_sales").select2({
+ //        	data:result.data
+ //        })	  
+
+ //        $("#filter_sales").select2({
+	//       	placeholder: "Select sales",
+	// 		  	multiple:true,
+	// 		  	data:result.data
+	// 		  })       
+	//     }
+	// })
+
 	$.ajax({
-	    url: "{{url('/project/getSales')}}",
+	    url: "{{url('/project/getCustomerByLead')}}",
 	    type: "GET",
 	    success: function(result) {
-        $("#owner_sales").select2({
-        	data:result.data
-        })	  
-
-        $("#filter_sales").select2({
+        $("#filter_customer").select2({
 	      	placeholder: "Select sales",
 			  	multiple:true,
 			  	data:result.data
@@ -721,7 +738,96 @@
 	        })
 	    }
 	})
-	
+
+	function add_lead(){
+		initMoney()
+		$("#modal_lead").modal('show')
+	}
+
+	function submitLead(){
+		if ("{{Auth::User()->id_division}}" == "PRESALES") {
+			var owner_sales = $("#owner_sales").val()
+		}else{
+			var owner_sales = 'bukan presales'
+		}
+		if (owner_sales == '') {
+			$("#owner_sales").closest('.form-group').addClass('has-error .select2-selection')
+			$("#owner_sales").nextAll("span").eq(1).show()
+
+		}else if ($("#contact").val() == '') {
+			$("#contact").closest('.form-group').addClass('has-error .select2-selection')
+			$("#contact").nextAll("span").eq(1).show()
+
+		}else if ($("#opp_name").val() == '') {
+			$("#opp_name").closest('.form-group').addClass('has-error')
+			$("#opp_name").next('span').show()
+
+
+		}else if ($("#amount").val() == '') {
+			$("#amount").closest('.form-group').addClass('has-error')
+			$("#amount").closest('div div').next('span').show();
+
+
+		}else if ($("#closing_date").val() == '') {
+			$("#closing_date").closest('.form-group').addClass('has-error')
+			$("#closing_date").closest('div div').next('span').show();
+
+		}else{
+			Swal.fire({
+			    title: 'Are you sure?',  
+			    text: "Submit Lead Register",
+			    icon: 'warning',
+			    showCancelButton: true,
+			    confirmButtonColor: '#3085d6',
+			    cancelButtonColor: '#d33',
+			    confirmButtonText: 'Yes',
+			    cancelButtonText: 'No',
+			}).then((result) => {
+				if (result.value) {
+		        Swal.fire({
+		            title: 'Please Wait..!',
+		            text: "It's sending..",
+		            allowOutsideClick: false,
+		            allowEscapeKey: false,
+		            allowEnterKey: false,
+		            customClass: {
+		                popup: 'border-radius-0',
+		            },
+		            onOpen: () => {
+		                Swal.showLoading()
+		            }
+		        })
+		        $.ajax({
+		            type: "POST",
+		            url: "{{url('/project/storeLead')}}",
+		            data: {
+		              _token: "{{ csrf_token() }}",
+									owner_sales:$("#owner_sales").val(),
+									contact:$("#contact").val(),
+									opp_name:$("#opp_name").val(),
+									closing_date:$("#closing_date").val(),
+									amount:$("#amount").val(),
+									note:$("#note").val(),
+		            },
+		            success: function(result) {
+		                Swal.showLoading()
+		                Swal.fire(
+		                    'Successfully!',
+		                   	'Lead Register Created.',
+		                    'success'
+		                ).then((result) => {
+		                    if (result.value) {
+		                    	location.reload()
+		                    	$("#modal_lead").modal('hide')
+		                    }
+		                })
+		            }
+		        })		      
+			  }
+			})
+		}
+	}
+
 	table.on('click','#btnAssign',function(){
 		lead_id = this.value.split(",")[0]
 		status = this.value.split(",")[1]
@@ -1085,12 +1191,25 @@
     }
   })
 
+  $.ajax({
+		url: "{{url('/project/getSalesByTerritory')}}",
+		type: "GET",
+		success:function(result){
+			console.log(result)
+			$("#filter_sales").select2({
+      	placeholder: "Select sales",
+		  	multiple:true,
+		  	data:result.results
+		  })
+		}
+	})
+
   $("#year_dif").select2({
   	multiple:true
   })
 
 	var countLead = []
-
+	
 	$(document).ready(function(){  	
 		var year = $('#year_dif').val();
     var i = 0
@@ -1206,7 +1325,9 @@
 
 				$("#filter-com").append(prependFilterCom)
 				$(".cb-company").click(function(){
-					checkboxFilter()
+					
+					filterLead()
+
 				})
 			}
 		})
@@ -1226,8 +1347,39 @@
 
 				$("#filter-territory").append(prependFilterTer)
 				$(".cb-territory").click(function(){
-					checkboxFilter()
+					var tempTer = []
+					$.each($(".cb-territory:checked"),function(key,value){
+						tempTer = tempTer + '&territory[]=' + value.value
+					})
+
+					if (tempTer.length !== 0) {
+						var salesFilterTer = "{{url('/project/getSalesByTerritory')}}?"+tempTer
+							
+					}else{
+						var salesFilterTer = "{{url('/project/getSalesByTerritory')}}"
+					}
+
+					// $("filter_sales").select2("destroy").select2()
+
+					$.ajax({
+						url: salesFilterTer,
+						type: "GET",
+						beforeSend:function(){
+							$("#filter_sales").empty('')
+						},
+						success:function(result){
+							console.log(result)
+							$("#filter_sales").select2({
+				      	placeholder: "Select sales",
+						  	multiple:true,
+						  	data:result.results
+						  })
+						}
+					})					
+					filterLead()
 				})
+
+
 			}
 		})
 
@@ -1247,75 +1399,22 @@
 
 				$("#filter-result").append(prependFilterStatus)
 				$(".cb-result").click(function(){
-					checkboxFilter()
+					filterLead()
 				})
 			}
 		})
 	  
+  })	
+	
+	//filter search and left bar
+	function filterLead(){
+		var temp = [], tempCom = [], tempSales = [], tempPresales = [], tempTer = [], tempResult = [], tempCustomer = [], tempTech = [], tempProduct = []
 
-		$("input[name='cb-filter']").click(function(){
-			
-	  });
-  })
-
-	function checkboxFilter(){
-			var tempTer = [], tempCom = [], tempResult = [];
-
-			$.each($(".cb-territory:checked"),function(key,value){
-				tempTer = tempTer + '&territory[]=' + value.value
-				console.log(value.value)
-			})
-
-			if (tempTer.length !== 0) {
-				var salesFilterTer = "{{url('/project/getSalesByTerritory')}}?"+tempTer
-					
-			}else{
-				var salesFilterTer = "{{url('/project/getSalesByTerritory')}}"
-			}
-
-			$.ajax({
-				url: salesFilterTer,
-				type: "GET",
-				beforeSend:function(){
-					$("#filter_sales").empty()
-				},
-				success:function(result){
-					console.log(result)
-					$("#filter_sales").select2({
-		      	placeholder: "Select sales",
-				  	multiple:true,
-				  	data:result.results
-				  })
-				}
-			})
-
-			$.each($(".cb-company:checked"),function(key,value){
-				tempCom = tempCom + '&company[]=' + value.value
-			})
-
-			$.each($(".cb-result:checked"),function(key,value){
-				tempResult = tempResult + '&result[]=' + value.value
-			})
-
-			$("#tableLead").DataTable().ajax.url("{{url('project/getFilterLead')}}?year[]=" + $("#year_dif").val() + tempTer + tempCom +  tempResult).load();
-	}
-
-	function filterSelect(val){
-		var temp = [],tempSales = [], tempTer = [], tempPresales = [], tempCom = [], tempResult = [], tempTech = [], tempProduct = []
-    
-    $.each($(".cb-territory:checked"),function(key,value){
+		$.each($(".cb-territory:checked"),function(key,value){
 			tempTer = tempTer + '&territory[]=' + value.value
 		})
 
-		$.each($(".cb-company:checked"),function(key,value){
-			tempCom = tempCom + '&company[]=' + value.value
-		})
-
-		$.each($(".cb-result:checked"),function(key,value){
-			tempResult = tempResult + '&result[]=' + value.value
-		})
-
-		$.each($("#filter_sales").val(),function(key,value){
+	  $.each($("#filter_sales").val(),function(key,value){
 			tempSales = tempSales + '&sales_name[]='+ value
 		})
 
@@ -1327,26 +1426,49 @@
 			temp = temp + '&year[]='+ value
 		})
 
-		$.each($("#filter_presales").val(),function(key,value){
-			tempPresales = tempPresales + '&presales_name[]='+ value
-		})
-
-    $.each($('#searchTags').val(),function(key, value) {
-      if (value.substr(0,1) == 'p') {
-				tempProduct = tempProduct + '&product_tag[]='+ value.substr(1,1)
-      }
-      if (value.substr(0,1) == 't') {
-				tempTech = tempTech + '&tech_tag[]='+ value.substr(1,1)
-      }
-    });
-
 		if ($("#year_dif").val() == '') {
 			temp = temp + '&year[]='+ new Date().getFullYear()
 		}
 
-		$("#tableLead").DataTable().ajax.url("{{url('project/getFilterLead')}}?"+ temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech).load();				
+		$.each($("#filter_presales").val(),function(key,value){
+			tempPresales = tempPresales + '&presales_name[]='+ value
+		})
+
+	  $.each($('#searchTags').val(),function(key, value) {
+	    if (value.substr(0,1) == 'p') {
+				tempProduct = tempProduct + '&product_tag[]='+ value.substr(1,1)
+	    }
+	    if (value.substr(0,1) == 't') {
+				tempTech = tempTech + '&tech_tag[]='+ value.substr(1,1)
+	    }
+	  });
+
+	  $.each($('#filter_customer').val(),function(key,value){
+	  	tempCustomer = tempCustomer + '&customer[]=' + value
+	  })
+		
+		$.each($(".cb-company:checked"),function(key,value){
+			tempCom = tempCom + '&company[]=' + value.value
+		})
+
+		$.each($(".cb-result:checked"),function(key,value){
+			tempResult = tempResult + '&result[]=' + value.value
+		})
+
+		$("#tableLead").DataTable().ajax.url("{{url('project/getFilterLead')}}?" + temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
 	}
 
+	var timer
+	function searchCustom(id_table,id_seach_bar){
+		clearTimeout(timer);
+	  timer = setTimeout(function() {
+	  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  filterLead()).load();
+	  }, 800);
+
+		console.log($('#' + id_seach_bar).val())
+	}
+
+	//dashboard count
 	function dashboardCount(year){	
 		Pace.restart();
 		Pace.track(function() {
@@ -1382,149 +1504,7 @@
 		})
 	}
 
-	function add_lead(){
-		initMoney()
-		$("#modal_lead").modal('show')
-	}
-
-	function submitLead(){
-		if ("{{Auth::User()->id_division}}" == "PRESALES") {
-			var owner_sales = $("#owner_sales").val()
-		}else{
-			var owner_sales = 'bukan presales'
-		}
-		if (owner_sales == '') {
-			$("#owner_sales").closest('.form-group').addClass('has-error .select2-selection')
-			$("#owner_sales").nextAll("span").eq(1).show()
-
-		}else if ($("#contact").val() == '') {
-			$("#contact").closest('.form-group').addClass('has-error .select2-selection')
-			$("#contact").nextAll("span").eq(1).show()
-
-		}else if ($("#opp_name").val() == '') {
-			$("#opp_name").closest('.form-group').addClass('has-error')
-			$("#opp_name").next('span').show()
-
-
-		}else if ($("#amount").val() == '') {
-			$("#amount").closest('.form-group').addClass('has-error')
-			$("#amount").closest('div div').next('span').show();
-
-
-		}else if ($("#closing_date").val() == '') {
-			$("#closing_date").closest('.form-group').addClass('has-error')
-			$("#closing_date").closest('div div').next('span').show();
-
-		}else{
-			Swal.fire({
-			    title: 'Are you sure?',  
-			    text: "Submit Lead Register",
-			    icon: 'warning',
-			    showCancelButton: true,
-			    confirmButtonColor: '#3085d6',
-			    cancelButtonColor: '#d33',
-			    confirmButtonText: 'Yes',
-			    cancelButtonText: 'No',
-			}).then((result) => {
-				if (result.value) {
-		        Swal.fire({
-		            title: 'Please Wait..!',
-		            text: "It's sending..",
-		            allowOutsideClick: false,
-		            allowEscapeKey: false,
-		            allowEnterKey: false,
-		            customClass: {
-		                popup: 'border-radius-0',
-		            },
-		            onOpen: () => {
-		                Swal.showLoading()
-		            }
-		        })
-		        $.ajax({
-		            type: "POST",
-		            url: "{{url('/project/storeLead')}}",
-		            data: {
-		              _token: "{{ csrf_token() }}",
-									owner_sales:$("#owner_sales").val(),
-									contact:$("#contact").val(),
-									opp_name:$("#opp_name").val(),
-									closing_date:$("#closing_date").val(),
-									amount:$("#amount").val(),
-									note:$("#note").val(),
-		            },
-		            success: function(result) {
-		                Swal.showLoading()
-		                Swal.fire(
-		                    'Successfully!',
-		                   	'Lead Register Created.',
-		                    'success'
-		                ).then((result) => {
-		                    if (result.value) {
-		                    	location.reload()
-		                    	$("#modal_lead").modal('hide')
-		                    }
-		                })
-		            }
-		        })		      
-			  }
-			})
-		}
-	}
-
 	$(".select2").select2()
-
-	var timer
-	function searchCustom(id_table,id_seach_bar){
-		var temp = [],tempSales = [], tempTer = [], tempPresales = [], tempCom = [], tempResult = [], tempTech = [], tempProduct = []
-    
-	  $.each($(".cb-territory:checked"),function(key,value){
-			tempTer = tempTer + '&territory[]=' + value.value
-		})
-
-		$.each($(".cb-company:checked"),function(key,value){
-			tempCom = tempCom + '&company[]=' + value.value
-		})
-
-		$.each($(".cb-result:checked"),function(key,value){
-			tempResult = tempResult + '&result[]=' + value.value
-		})
-
-		$.each($("#filter_sales").val(),function(key,value){
-			tempSales = tempSales + '&sales_name[]='+ value
-		})
-
-		$.each($("#filter_sales_manager").val(),function(key,value){
-			tempSales = tempSales + '&sales_name[]='+ value
-		})
-
-		$.each($("#year_dif").val(),function(key,value){
-			temp = temp + '&year[]='+ value
-		})
-
-		$.each($("#filter_presales").val(),function(key,value){
-			tempPresales = tempPresales + '&presales_name[]='+ value
-		})
-
-	  $.each($('#searchTags').val(),function(key, value) {
-	    if (value.substr(0,1) == 'p') {
-				tempProduct = tempProduct + '&product_tag[]='+ value.substr(1,1)
-	    }
-	    if (value.substr(0,1) == 't') {
-				tempTech = tempTech + '&tech_tag[]='+ value.substr(1,1)
-	    }
-	  });
-
-		if ($("#year_dif").val() == '') {
-			temp = temp + '&year[]='+ new Date().getFullYear()
-		}
-
-		clearTimeout(timer);
-	  timer = setTimeout(function() {
-	  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech).load();
-	  }, 800);
-
-		console.log($('#' + id_seach_bar).val())
-	}
 
 	if (localStorage.getItem('status') == "unread") {
     table.search(localStorage.getItem('lead_id')).draw()
