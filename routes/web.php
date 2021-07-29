@@ -110,6 +110,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getProductTechTag','SalesLeadController@getProductTechTag');
 	Route::get('project/getTechTag','SalesLeadController@getTechTag');
 	Route::get('project/deleteLead', 'SalesLeadController@destroy');
+	Route::get('project/getCustomerByLead', 'SalesLeadController@getCustomerbyLead');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
 
