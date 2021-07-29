@@ -600,14 +600,16 @@
       				onclickAssign = "onclick=btnAssign('reassign',"+row.lead_id+")"
       				status = 'reassign'
       				if (row.result_modif == 'WIN' || row.result_modif == 'LOSE' || row.result_modif == 'CANCEL') {
+      					console.log(row.status == 'pending')
       					if (row.status == 'pending') {
   								return btnIdProject      								
+  							}else{
+  								return ''
   							}
-  							return ''
       					btnAssign = ''          					
       				}else{
       					btnAssign = 'btnAssign'
-  							return '<button class="btn btn-xs btn-primary '+btnAssign+'" id="btnAssign" value="'+ row.lead_id+','+status+'" style="display:none">'+ title_assign +'</button>'+ btnEdit      								
+  							return '<button class="btn btn-xs btn-primary '+btnAssign+'" id="btnAssign" value="'+ row.lead_id+','+status+'" style="display:none">'+ title_assign +'</button>'+ btnEdit     								
       				}
       			}       			
       			
