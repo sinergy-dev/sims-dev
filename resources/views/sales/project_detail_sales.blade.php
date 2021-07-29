@@ -906,10 +906,6 @@
 						$("#box-title-detail").html('Detail - '+ lead_id)
 						var append = ""
 
-						var amounts = result.data[0].amount
-
-						$("#amount_coba").mask('000.000.000.000.000,00', {reverse: true})
-
 						append = append + '<tr>'
 	  		  		append = append + '<th>Owner</th>'
 	  		  		append = append + '<td>'+ result.data[0].name +'</td>'
