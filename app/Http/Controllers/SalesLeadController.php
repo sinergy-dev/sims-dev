@@ -268,6 +268,13 @@ class SalesLeadController extends Controller
         return array("data" => $getCustomer);
     }
 
+    public function getCustomerByLead(Request $request)
+    {
+        $getCustomer = TB_Contact::join('sales_lead_register', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')->select(DB::raw('`tb_contact`.`id_customer` AS `id`,`brand_name` AS `text`'))->groupby('tb_contact.id_customer');
+
+        return array("data" => collect($getCustomer->get()));
+    }
+
     public function getPresalesAssign(Request $request)
     {
         $getPresalesAssign = collect(User::join('sales_solution_design', 'sales_solution_design.nik', '=', 'users.nik')->select(DB::raw('`users`.`nik` AS `id`,`name` AS `text`'))->where('lead_id', $request->lead_id)->get());
@@ -429,16 +436,9 @@ class SalesLeadController extends Controller
             $leads->whereIn('id_tech',$request->tech_tag);
         }
         
-
-        // $searchFields = ['sales_lead_register.lead_id', 'opp_name', 'brand_name', 'name', 'id_territory', 'deal_price', 'amount', 'name_presales'];
-
-        // $leads->where(function($leads) use($request, $searchFields){
-        //     $searchWildCard = '%'. $request->search . '%';
-        //     foreach ($searchFields as $data) {
-        //         $leads->orWhere($data, 'LIKE', $searchWildCard);
-                
-        //     }
-        // });
+        if (isset($request->customer)) {
+            $leads->whereIn('tb_contact.id_customer',$request->customer);
+        }
 
         return array("data"=>$leads->get());
 
@@ -711,6 +711,10 @@ class SalesLeadController extends Controller
 
         if (isset($request->tech_tag)) {
             $leads->whereIn('id_tech',$request->tech_tag);
+        }
+
+        if (isset($request->customer)) {
+            $leads->whereIn('tb_contact.id_customer',$request->customer);
         }
 
         return array("data" => $leads->get());
