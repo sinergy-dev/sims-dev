@@ -1952,6 +1952,13 @@
       $("#formResult").modal("hide"); 
     }
 
+    $(document).on('click', '.btn-trash', function() {
+      $(this).closest("tr").remove();
+      if($(this).closest("tr.new-service").length > 0){
+        $("#addService").show()
+      }
+    });
+
     function submitChangeLog(){
     	Swal.fire({
 			    title: 'Are you sure?',
