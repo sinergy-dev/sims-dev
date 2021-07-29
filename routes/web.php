@@ -78,7 +78,6 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getCustomer', 'SalesLeadController@getCustomer');
 	Route::get('project/showEditLead', 'SalesLeadController@showEditLead');
 	Route::get('project/getPresalesAssign', 'SalesLeadController@getPresalesAssign');
-	Route::get('project/getFilterLead', 'SalesLeadController@getFilterLead');
 	Route::post('project/update_lead_register', 'SalesLeadController@update_lead_register');
 	Route::get('project/getDetailLead', 'SalesLeadController@getDetailLead');
 	Route::get('project/getChangeLog', 'SalesLeadController@getChangeLog');

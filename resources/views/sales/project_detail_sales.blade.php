@@ -665,6 +665,7 @@
 		  element.style.height = "1px";
 		  element.style.height = (25+element.scrollHeight)+"px";
 		  if(accesable.includes('formSD')){
+		  	console.log('sd')
 				var heightSD = parseInt($("#box-SD").innerHeight())
 				$("#box-TP").height(heightSD)		      	
 			}	
@@ -905,6 +906,10 @@
 						$("#box-title-detail").html('Detail - '+ lead_id)
 						var append = ""
 
+						var amounts = result.data[0].amount
+
+						$("#amount_coba").mask('000.000.000.000.000,00', {reverse: true})
+
 						append = append + '<tr>'
 	  		  		append = append + '<th>Owner</th>'
 	  		  		append = append + '<td>'+ result.data[0].name +'</td>'
@@ -1003,7 +1008,9 @@
 						$("#amount_check").val(result.data.pb)
 						$("#priority").val(result.data.priority)
 						$("#proyek_size").val(result.data.project_size)
-						$("#project_budget").val(result.data.pb).mask('000.000.000.000', {reverse: true})						
+						$("#project_budget").val(result.data.pb).mask('000.000.000.000', {reverse: true})			
+
+						$("textarea").height( $("textarea")[0].scrollHeight)
 
 						var fd = new FormData()												
 
@@ -1115,16 +1122,15 @@
 							var heightSD = parseInt($("#box-SD").innerHeight())
 							var heightTP = parseInt($("#box-TP").innerHeight())
 
-							if (result.data.status == 'closed') {
-								if (heightSD > heightTP) {
-									$("#box-SD").height(heightSD)
-									$("#box-TP").height(heightSD)
-								}else{
-									$("#box-SD").height(heightTP)
-								}
-							}else{
+							if (heightSD > heightTP) {
+								console.log('SD')
+								$("#box-SD").height(heightSD)
 								$("#box-TP").height(heightSD)
-							}			      	
+							}else if(heightTP > heightSD){
+								$("#box-SD").height(heightTP)
+								$("#box-TP").height(heightTP)
+							}
+									      	
 						}	
 					}
 				})
@@ -1303,9 +1309,17 @@
 						
 	
 						if(accesable.includes('formTP')){
-							var height = parseInt($("#box-TP").innerHeight())
+							var heightSD = parseInt($("#box-SD").innerHeight())
+							var heightTP = parseInt($("#box-TP").innerHeight())
 
-			      	$("#box-SD").height(height)
+							if (heightSD > heightTP) {								
+								$("#box-SD").height(heightSD)
+								$("#box-TP").height(heightSD)
+							}else if(heightTP > heightSD){
+								$("#box-SD").height(heightTP)
+								$("#box-TP").height(heightTP)
+							}
+
 						}					
 
 					}

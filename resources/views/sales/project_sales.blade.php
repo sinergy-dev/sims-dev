@@ -185,7 +185,7 @@
 	  				<div class="box-body" id="filter-body">
 	  					<div class="form-group">
 								<label>Tahun</label>
-								<select class="select2 form-control" style="width:100%" id="year_dif" onchange="filterLead()">
+								<select class="select2 form-control" style="width:100%" id="year_dif" onchange="searchCustom()">
 									@foreach($year as $years)
 			              @if($years->year < $year_now)
 			                <option value="{{$years->year}}">{{$years->year}}</option>
@@ -200,28 +200,28 @@
 							</div>
 							<div class="form-group" id="filter-sales" style="display:none;">
 								<label>Sales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_sales"  name="filter_sales" onchange="filterLead()">
+							  <select class="form-control select2" style="width: 100%;" id="filter_sales"  name="filter_sales" onchange="searchCustom()">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-sales-manager" style="display:none;">
 								<label>Sales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_sales_manager"  name="filter_sales_manager" onchange="filterLead()">
+							  <select class="form-control select2" style="width: 100%;" id="filter_sales_manager"  name="filter_sales_manager" onchange="searchCustom()">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-presales" style="display:none;">
 								<label>Presales</label>
-							  <select class="form-control select2" style="width: 100%;" id="filter_presales"  name="filter_presales" onchange="filterLead()">
+							  <select class="form-control select2" style="width: 100%;" id="filter_presales"  name="filter_presales" onchange="searchCustom()">
 	              </select>
 							</div>
 							<div class="form-group" id="filter-customer">
 								<label>Customer</label>
-								<select class="form-control select2" style="width: 100%" id="filter_customer" name="filter_customer" onchange="filterLead()"></select>
+								<select class="form-control select2" style="width: 100%" id="filter_customer" name="filter_customer" onchange="searchCustom()"></select>
 							</div>
 							<div class="form-group" id="filter-result">
 							</div>
 							<div class="form-group">
 								<label>Tag Product & Technology</label>
-							  <select class="form-control select2" style="width: 100%;" id="searchTags"  name="searchTags" onchange="filterLead()">
+							  <select class="form-control select2" style="width: 100%;" id="searchTags"  name="searchTags" onchange="searchCustom()">
 	              </select>
 							</div>
 						</div>  				
@@ -686,28 +686,12 @@
 	    }
 	})
 
-	// $.ajax({
-	//     url: "{{url('/project/getSales')}}",
-	//     type: "GET",
-	//     success: function(result) {
- //        $("#owner_sales").select2({
- //        	data:result.data
- //        })	  
-
- //        $("#filter_sales").select2({
-	//       	placeholder: "Select sales",
-	// 		  	multiple:true,
-	// 		  	data:result.data
-	// 		  })       
-	//     }
-	// })
-
 	$.ajax({
 	    url: "{{url('/project/getCustomerByLead')}}",
 	    type: "GET",
 	    success: function(result) {
         $("#filter_customer").select2({
-	      	placeholder: "Select sales",
+	      	placeholder: "Select Customer",
 			  	multiple:true,
 			  	data:result.data
 			  })       
@@ -1326,7 +1310,7 @@
 				$("#filter-com").append(prependFilterCom)
 				$(".cb-company").click(function(){
 					
-					filterLead()
+					searchCustom()
 
 				})
 			}
@@ -1376,7 +1360,7 @@
 						  })
 						}
 					})					
-					filterLead()
+					searchCustom()
 				})
 
 
@@ -1399,68 +1383,16 @@
 
 				$("#filter-result").append(prependFilterStatus)
 				$(".cb-result").click(function(){
-					filterLead()
+					searchCustom()
 				})
 			}
 		})
 	  
   })	
 	
-	//filter search and left bar
-	function filterLead(){
-		var temp = [], tempCom = [], tempSales = [], tempPresales = [], tempTer = [], tempResult = [], tempCustomer = [], tempTech = [], tempProduct = []
-
-		$.each($(".cb-territory:checked"),function(key,value){
-			tempTer = tempTer + '&territory[]=' + value.value
-		})
-
-	  $.each($("#filter_sales").val(),function(key,value){
-			tempSales = tempSales + '&sales_name[]='+ value
-		})
-
-		$.each($("#filter_sales_manager").val(),function(key,value){
-			tempSales = tempSales + '&sales_name[]='+ value
-		})
-
-		$.each($("#year_dif").val(),function(key,value){
-			temp = temp + '&year[]='+ value
-		})
-
-		if ($("#year_dif").val() == '') {
-			temp = temp + '&year[]='+ new Date().getFullYear()
-		}
-
-		$.each($("#filter_presales").val(),function(key,value){
-			tempPresales = tempPresales + '&presales_name[]='+ value
-		})
-
-	  $.each($('#searchTags').val(),function(key, value) {
-	    if (value.substr(0,1) == 'p') {
-				tempProduct = tempProduct + '&product_tag[]='+ value.substr(1,1)
-	    }
-	    if (value.substr(0,1) == 't') {
-				tempTech = tempTech + '&tech_tag[]='+ value.substr(1,1)
-	    }
-	  });
-
-	  $.each($('#filter_customer').val(),function(key,value){
-	  	tempCustomer = tempCustomer + '&customer[]=' + value
-	  })
-		
-		$.each($(".cb-company:checked"),function(key,value){
-			tempCom = tempCom + '&company[]=' + value.value
-		})
-
-		$.each($(".cb-result:checked"),function(key,value){
-			tempResult = tempResult + '&result[]=' + value.value
-		})
-
-		$("#tableLead").DataTable().ajax.url("{{url('project/getFilterLead')}}?" + temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
-	}
-
 	var timer
 	function searchCustom(id_table,id_seach_bar){
-		var temp = [], tempCom = [], tempSales = [], tempPresales = [], tempTer = [], tempResult = [], tempCustomer = [], tempTech = [], tempProduct = []
+		var temp = [], tempCom = [], tempSales = [], tempPresales = [], tempTer = [], tempResult = [], tempCustomer = [], tempTech = [], tempProduct = [], tempSearch = ''
 
 		$.each($(".cb-territory:checked"),function(key,value){
 			tempTer = tempTer + '&territory[]=' + value.value
@@ -1506,13 +1438,18 @@
 		$.each($(".cb-result:checked"),function(key,value){
 			tempResult = tempResult + '&result[]=' + value.value
 		})
-		
-		clearTimeout(timer);
-	  timer = setTimeout(function() {
-	  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
-	  }, 800);
 
-		console.log($('#' + id_seach_bar).val())
+		tempSearch = tempSearch + '&search=' + $('#searchLead').val()
+
+		if (id_table != undefined) {
+			clearTimeout(timer);
+		  timer = setTimeout(function() {
+		  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
+		  }, 800);
+		}else{
+			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
+		}
+		
 	}
 
 	//dashboard count
