@@ -1460,9 +1460,56 @@
 
 	var timer
 	function searchCustom(id_table,id_seach_bar){
+		var temp = [], tempCom = [], tempSales = [], tempPresales = [], tempTer = [], tempResult = [], tempCustomer = [], tempTech = [], tempProduct = []
+
+		$.each($(".cb-territory:checked"),function(key,value){
+			tempTer = tempTer + '&territory[]=' + value.value
+		})
+
+	  $.each($("#filter_sales").val(),function(key,value){
+			tempSales = tempSales + '&sales_name[]='+ value
+		})
+
+		$.each($("#filter_sales_manager").val(),function(key,value){
+			tempSales = tempSales + '&sales_name[]='+ value
+		})
+
+		$.each($("#year_dif").val(),function(key,value){
+			temp = temp + '&year[]='+ value
+		})
+
+		if ($("#year_dif").val() == '') {
+			temp = temp + '&year[]='+ new Date().getFullYear()
+		}
+
+		$.each($("#filter_presales").val(),function(key,value){
+			tempPresales = tempPresales + '&presales_name[]='+ value
+		})
+
+	  $.each($('#searchTags').val(),function(key, value) {
+	    if (value.substr(0,1) == 'p') {
+				tempProduct = tempProduct + '&product_tag[]='+ value.substr(1,1)
+	    }
+	    if (value.substr(0,1) == 't') {
+				tempTech = tempTech + '&tech_tag[]='+ value.substr(1,1)
+	    }
+	  });
+
+	  $.each($('#filter_customer').val(),function(key,value){
+	  	tempCustomer = tempCustomer + '&customer[]=' + value
+	  })
+		
+		$.each($(".cb-company:checked"),function(key,value){
+			tempCom = tempCom + '&company[]=' + value.value
+		})
+
+		$.each($(".cb-result:checked"),function(key,value){
+			tempResult = tempResult + '&result[]=' + value.value
+		})
+		
 		clearTimeout(timer);
 	  timer = setTimeout(function() {
-	  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  filterLead()).load();
+	  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
 	  }, 800);
 
 		console.log($('#' + id_seach_bar).val())
