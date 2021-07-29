@@ -382,7 +382,7 @@ class SalesLeadController extends Controller
                     $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
                 ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'name_presales', 'nik_presales', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"), 'id_product_tag', 'id_tech')
+                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'name_presales', 'nik_presales', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"), 'id_product_tag', 'id_tech', 'tb_pid.status')
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->orderBy('created_at', 'desc');
 
@@ -872,13 +872,13 @@ class SalesLeadController extends Controller
 
     public function addContribute(Request $request)
     {      
-        $tambah = new solution_design();
-        $tambah->lead_id = $request['lead_cont'];
         foreach ($request->nik_cont as $value) {
+            $tambah = new solution_design();
+            $tambah->lead_id = $request['lead_cont'];
             $tambah->nik     = $value;
+            $tambah->status  = 'cont';
+            $tambah->save();
         }
-        $tambah->status  = 'cont';
-        $tambah->save();
 
         $tambah_log = new SalesChangeLog();
         $tambah_log->lead_id = $request['lead_cont'];
@@ -904,14 +904,20 @@ class SalesLeadController extends Controller
         return redirect()->back();
     }
 
+    public function getProductTechTagDetail(Request $request){
+        $getListProductLead = DB::table('tb_product_tag')->whereNotIn('id',function($query) use ($request) {
+            $query->select('id_product_tag')->where('lead_id',$request->lead_id)->from('tb_product_tag_relation');
+        })->selectRaw('CONCAT("p",`id`) AS `id`,`name_product` AS `text`')->get(); 
+
+        $getListTechTag = DB::table('tb_technology_tag')->whereNotIn('id',function($query) use ($request) {
+            $query->select('id_tech_tag')->where('lead_id',$request->lead_id)->from('tb_technology_tag_relation');
+        })->selectRaw('CONCAT("t",`id`) AS `id`,`name_tech` AS `text`')->get(); 
+
+        return array("product_tag"=>$getListProductLead,"technology_tag"=>$getListTechTag);
+    }
+
     public function updateResult(Request $request)
     {
-        if ($request['quote_number_final'] != NULL) {
-            $id_quotes = Quote::where('id_quote', $request['quote_number_final'])->first()->id_quote;
-
-            $amount_quo = Quote::where('id_quote', $request['quote_number_final'])->first()->amount;
-
-        }
 
         $update = Sales::where('lead_id', $request->lead_id_result)->first();
         $update->result = $request['result'];
@@ -960,6 +966,10 @@ class SalesLeadController extends Controller
 
             $tambah->status = 'Update WIN';
 
+            if ($request['quote_number_final'] != 'Choose Quote') {
+                $amount_quo = Quote::where('quote_number', $request['quote_number_final'])->first()->amount;
+            }
+
             $tambahpid = new PID();
             $tambahpid->lead_id     = $request['lead_id_result'];
             $tambahpid->no_po       = $request['no_po'];
@@ -987,7 +997,7 @@ class SalesLeadController extends Controller
             $update_quo->quote_number_final = $request['quote_number_final'];
             $update_quo->update();
 
-            if ($request['quote_number_final'] != null) {
+            if ($request['quote_number_final'] != 'Choose Quote') {
                 $update_status_quo = Quote::where('id_quote', $request['quote_number_final'])->first();
                 $update_status_quo->status = 'choosed';
                 $update_status_quo->update();
@@ -999,7 +1009,7 @@ class SalesLeadController extends Controller
             if ($cekstatus->status == 'requested') {
                 $pid_info = DB::table('sales_lead_register')
                     ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                    ->join('tb_quote', 'tb_quote.id_quote', '=', 'sales_tender_process.quote_number_final')
+                    ->join('tb_quote', 'tb_quote.id_quote', '=', 'sales_tender_process.quote_number_final','left')
                     ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
                     ->where('sales_lead_register.lead_id',$tambahpid->lead_id)
@@ -1141,7 +1151,7 @@ class SalesLeadController extends Controller
 
         $pid_info = DB::table('sales_lead_register')
             ->join('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-            ->join('tb_quote', 'tb_quote.id_quote', '=', 'sales_tender_process.quote_number_final')
+            ->join('tb_quote', 'tb_quote.id_quote', '=', 'sales_tender_process.quote_number_final', 'left')
             ->join('tb_pid','tb_pid.lead_id','=','sales_lead_register.lead_id')
             ->join('users','users.nik','=','sales_lead_register.nik')
             ->where('sales_lead_register.lead_id',$request->lead_id)
@@ -1159,11 +1169,8 @@ class SalesLeadController extends Controller
                 'tb_quote.quote_number'
             )->first();
 
-        // if($pid_info->lead_id == "MSPQUO"){
-        //     $pid_info->url_create = "/salesproject";
-        // }else {
-            $pid_info->url_create = "/salesproject#acceptProjectID?" . $pid_info->id_pid;
-        // }
+        $pid_info->url_create = "/salesproject#acceptProjectID?" . $pid_info->id_pid;
+
 
         $users = User::select('name','email')->where('id_division','FINANCE')->where('id_position','MANAGER')->first();
         
