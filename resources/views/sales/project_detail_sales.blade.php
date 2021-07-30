@@ -1122,15 +1122,19 @@
 							var heightSD = parseInt($("#box-SD").innerHeight())
 							var heightTP = parseInt($("#box-TP").innerHeight())
 
-							if (heightSD > heightTP) {
-								console.log('SD')
+							if (result.data.status == 'closed') {
+								if (heightSD > heightTP) {
+									console.log('SD')
+									$("#box-SD").height(heightSD)
+									$("#box-TP").height(heightSD)
+								}else if(heightTP > heightSD){
+									$("#box-SD").height(heightTP)
+									$("#box-TP").height(heightTP)
+								}
+							}else{
 								$("#box-SD").height(heightSD)
 								$("#box-TP").height(heightSD)
-							}else if(heightTP > heightSD){
-								$("#box-SD").height(heightTP)
-								$("#box-TP").height(heightTP)
-							}
-									      	
+							}	      	
 						}	
 					}
 				})
