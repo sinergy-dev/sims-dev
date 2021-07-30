@@ -1,5 +1,5 @@
-@extends('template.template_admin-lte')
-@section('content')
+@extends('template.main')
+@section('head_css')
   <style type="text/css">
     #tes {
     width: 200px;
@@ -21,7 +21,141 @@
         -webkit-transform: scale(1.5); /* Safari 3-8 */
         transform: scale(1.5); 
     }
-  </style>
+     .alert-box {
+      color:#555;
+      border-radius:10px;
+      font-family:Tahoma,Geneva,Arial,sans-serif;font-size:14px;
+      padding:10px 36px;
+      margin:10px;
+  }
+
+  .success {
+      background:#e9ffd9 ;
+      border:1px solid #a6ca8a;
+  }
+
+  .notice {
+      background:#e3f7fc;
+      border:1px solid #8ed9f6;
+  }
+
+  .photos {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: left;
+    font-family: arial; 
+    border-radius: 0%;
+  }
+
+  .photos-profile{
+    position: relative;
+    width: 250px;
+    height: 250px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: solid white 9px;
+  }
+
+  .photos-profile img{
+    width: 50%;
+    height: auto;
+
+  }
+
+
+  .margin-top-profile{
+    margin-top: 5%;
+  }
+
+  .fa-twitter.icon {
+  /*  background: #55ACEE;*/
+    color: #55ACEE;
+  }
+  .fa-linkedin.icon {
+    /*background: #007bb5;*/
+    color: #007bb5;
+  }
+  .fa-instagram.icon {
+    /*background: #e6005c;*/
+    color: #e6005c;
+  }
+  .fa-facebook.icon {
+ /*   background: #3333ff;*/
+    color: #3333ff;
+  }
+  .icon {
+    padding: 20px;
+    font-size: 25px;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    text-decoration: none;
+    margin: 5px 2px;
+    border-radius: 50%;
+  }
+  .profile h6{
+      position: relative;
+      padding: 6px 12px 6px 0px;
+      font-size: 16px;
+      
+  }
+  .profile h6:nth-child(odd){
+   
+  }
+  div div ol li a{
+    font-size: 14px;
+  }
+
+  div div i{
+    font-size: 14px;
+  }
+
+  .profileInput input[type=number]{
+    padding-left:45px;
+  }
+
+  input[type=number]:focus{
+    border-color:dodgerBlue;
+    box-shadow:0 0 8px 0 dodgerBlue;
+  }
+
+ .profileInput.inputIconBg input[type=number]:focus + i{
+    color:#fff;
+    background-color:dodgerBlue;
+  }
+
+ .profileInput.inputIconBg i{
+    background-color:#aaa;
+    color:#fff;
+    padding:8px 7px;
+    border-radius:4px 0 0 4px;
+  }
+
+ .profileInput{
+    position:relative;
+  }
+
+ .profileInput i{
+    position:absolute;
+    left:0;
+    top:12px;
+    padding:8px 12px;
+    color:#aaa;
+    transition:.3s;
+  }
+  .shape {
+  stroke-dasharray: 30 30;
+  stroke-dashoffset: -100;
+  stroke-width: 8px;
+  fill: transparent;
+  stroke: #444 !important;
+  border-bottom: 5px solid black;
+  transition: stroke-width 1s, stroke-dashoffset 1s, stroke-dasharray 1s;
+  }
+</style>
+@endsection
+@section('content')
 <section class="content-header">
   <h1>
     Profile
@@ -319,148 +453,13 @@
 </section>
 
 @endsection
-@section('script')
-
-
-<style type="text/css">
-  .alert-box {
-      color:#555;
-      border-radius:10px;
-      font-family:Tahoma,Geneva,Arial,sans-serif;font-size:14px;
-      padding:10px 36px;
-      margin:10px;
-  }
-
-  .success {
-      background:#e9ffd9 ;
-      border:1px solid #a6ca8a;
-  }
-
-  .notice {
-      background:#e3f7fc;
-      border:1px solid #8ed9f6;
-  }
-
-  .photos {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 300px;
-    margin: auto;
-    text-align: left;
-    font-family: arial; 
-    border-radius: 0%;
-  }
-
-  .photos-profile{
-    position: relative;
-    width: 250px;
-    height: 250px;
-    overflow: hidden;
-    border-radius: 50%;
-    border: solid white 9px;
-  }
-
-  .photos-profile img{
-    width: 50%;
-    height: auto;
-
-  }
-
-
-  .margin-top-profile{
-    margin-top: 5%;
-  }
-
-  .fa-twitter.icon {
-  /*  background: #55ACEE;*/
-    color: #55ACEE;
-  }
-  .fa-linkedin.icon {
-    /*background: #007bb5;*/
-    color: #007bb5;
-  }
-  .fa-instagram.icon {
-    /*background: #e6005c;*/
-    color: #e6005c;
-  }
-  .fa-facebook.icon {
- /*   background: #3333ff;*/
-    color: #3333ff;
-  }
-  .icon {
-    padding: 20px;
-    font-size: 25px;
-    width: 60px;
-    height: 60px;
-    text-align: center;
-    text-decoration: none;
-    margin: 5px 2px;
-    border-radius: 50%;
-  }
-  .profile h6{
-      position: relative;
-      padding: 6px 12px 6px 0px;
-      font-size: 16px;
-      
-  }
-  .profile h6:nth-child(odd){
-   
-  }
-  div div ol li a{
-    font-size: 14px;
-  }
-
-  div div i{
-    font-size: 14px;
-  }
-
-  .profileInput input[type=number]{
-    padding-left:45px;
-  }
-
-  input[type=number]:focus{
-    border-color:dodgerBlue;
-    box-shadow:0 0 8px 0 dodgerBlue;
-  }
-
- .profileInput.inputIconBg input[type=number]:focus + i{
-    color:#fff;
-    background-color:dodgerBlue;
-  }
-
- .profileInput.inputIconBg i{
-    background-color:#aaa;
-    color:#fff;
-    padding:8px 7px;
-    border-radius:4px 0 0 4px;
-  }
-
- .profileInput{
-    position:relative;
-  }
-
- .profileInput i{
-    position:absolute;
-    left:0;
-    top:12px;
-    padding:8px 12px;
-    color:#aaa;
-    transition:.3s;
-  }
-  .shape {
-  stroke-dasharray: 30 30;
-  stroke-dashoffset: -100;
-  stroke-width: 8px;
-  fill: transparent;
-  stroke: #444 !important;
-  border-bottom: 5px solid black;
-  transition: stroke-width 1s, stroke-dashoffset 1s, stroke-dasharray 1s;
-}
-
-</style>
+@section('scriptImport')
 {{-- <script src="../../plugins/input-mask/jquery.inputmask.js"></script> --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
+@endsection
+@section('script')
 <script type="text/javascript">
   $(document).ready(function(){
     $("[data-mask]").inputmask();
