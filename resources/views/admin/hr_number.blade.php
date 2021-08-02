@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+HR Number
+@endsection
 @section('head_css')
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -64,11 +67,6 @@
       <div class="box-header with-border">
 
         <div class="pull-left">
-         <!--  <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
-          <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
-              <option value="2020">&#xf073 &nbsp2020</option>
-              <option value="2019">&#xf073 &nbsp2019</option>
-          </select> -->
           <select style="margin-right: 5px;width: 100px" class="form-control btn-primary fa" id="year_filter">
             <option value="{{$year}}">&#xf073 &nbsp{{$year}}</option>
             @foreach($year_before as $years)
@@ -81,7 +79,7 @@
 
         <div class="pull-right">
           <button type="button" class="btn btn-success margin-bottom pull-right" id="" data-target="#modal_pr" data-toggle="modal" style="width: 120px;color: white"><i class="fa fa-plus"> </i>&nbsp Number HR</button>
-          <a href="{{url('/downloadExcelAdminHR')}}"><button class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel </button></a>
+          <button class="btn btn-warning" onclick="exportHrNumber('{{action('HRNumberController@downloadExcelAdminHR')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i>Excel</button>
         </div>
       </div>
 
@@ -103,8 +101,6 @@
                   <th>Description</th>
                   <th>From</th>
                   <th>Division</th>
-                  <!-- <th>Project ID</th> -->
-                  <!-- <th>Note</th> -->
                   <th>Action</th>
                 </tr>
               </thead>
@@ -324,9 +320,9 @@
           { "data": "attention" },
           { "data": "title" },
           { "data": "project" },
-          { "data": "name" },
           { "data": "description" },
           { "data": "name" },
+          { "data": "division" },
           {
             "className": 'btn_edit',
             "orderable": false,
@@ -351,6 +347,10 @@
     $("#year_filter").change(function(){
       $('#data_Table').DataTable().ajax.url("{{url('getfilteryearhrnumber')}}?data=" + this.value).load();
     });
+
+    function exportHrNumber(url){
+      window.location = url + "?year=" + $("#year_filter").val();
+    }
 
     $(".dismisbar").click(function(){
      $(".notification-bar").slideUp(300);

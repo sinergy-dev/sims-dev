@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Bank Garansi
+@endsection
 @section('head_css')
 <!-- Select2 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -381,8 +384,8 @@
     {
       window.print();
     }
-    let today = new Date().toISOString().substr(0, 10);
-    document.querySelector(".today").value = today;
+    // let today = new Date().toISOString().substr(0, 10);
+    // document.querySelector(".today").value = today;
         
 </script>
 @endsection

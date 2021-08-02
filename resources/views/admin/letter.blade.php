@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Letter Number
+@endsection
 @section('head_css')
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -118,7 +121,8 @@
           @else
           <button type="button" class="btn btn-success margin-bottom pull-right disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px; color: white; margin-right: 10px;" disabled><i class="fa fa-plus"> </i>&nbsp Back Date</button>
           @endif
-          <a href="{{url('/downloadExcelLetter')}}"><button class="btn btn-warning" style=" margin-right: 10px;"><i class="fa fa-print"></i> EXCEL </button></a>
+          <!-- <a href="{{url('/downloadExcelLetter')}}"><button class="btn btn-warning" style=" margin-right: 10px;"><i class="fa fa-print"></i> EXCEL </button></a> -->
+          <button class="btn btn-warning" onclick="exportLetter('{{action('LetterController@downloadExcel')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i>Excel</button>
         </div>
     </div>
     <div class="box-body">
@@ -678,6 +682,10 @@
     // on load of the page: switch to the currently selected tab
     var hash = window.location.hash;
     $('#myTab a[href="' + hash + '"]').tab('show');
+
+    function exportLetter(url){
+      window.location = url + "?year=" + $("#year_filter").val();
+    }
 
 
   </script>

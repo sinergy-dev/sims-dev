@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+PMO
+@endsection
 @section('head_css')
     <style type="text/css">
         .select2{
