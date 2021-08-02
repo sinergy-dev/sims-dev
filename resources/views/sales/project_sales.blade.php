@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Lead Register
+@endsection
 @section('head_css')
 <!--datepicker-->
 <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
