@@ -1181,7 +1181,7 @@ class HRController extends Controller
                             ->get();
         }
          
-        return view('HR/profile', compact('notif','notifOpen','notifsd','notiftp','ter','user_profile', 'notifClaim'));
+        return view('HR/profile', compact('notif','notifOpen','notifsd','notiftp','ter','user_profile', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function update_profile(Request $req){

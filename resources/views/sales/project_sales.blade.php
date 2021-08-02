@@ -699,12 +699,25 @@
 	})
 
 	$.ajax({
+		url: "{{url('/project/getSales')}}",
+		type: "GET",
+		success:function(result){
+
+			$("#owner_sales").select2({
+      	placeholder: "Select sales",
+		  	data:result.data
+		  })
+		}
+	})	
+
+	$.ajax({
 		url: "{{url('/project/getUserByTerritory')}}",
 		type: "GET",
 		data:{
 			territory:"{{Auth::User()->id_territory}}"
 		},
 		success:function(result){
+
 			$("#filter_sales_manager").select2({
       	placeholder: "Select sales",
 		  	multiple:true,
