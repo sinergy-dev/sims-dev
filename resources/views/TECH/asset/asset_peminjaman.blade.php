@@ -1,5 +1,6 @@
 @extends('template.main')
 @section('head_css')
+  <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -247,8 +248,8 @@
 
         	<button class="btn btn-xs btn-warning pull-right display-none" style="display: none;" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
         	<button class="btn btn-xs btn-primary pull-right" id="kategori-asset" style="display: none; margin-right: 5px" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
-          <a href="{{action('AssetController@exportExcelTech')}}" id="export-excel" style="display: none; margin-right: 5px" class="btn btn-xs btn-success pull-right display-none"><i class="fa fa-cloud-download"></i> Excel</a>
-          <button class="btn btn-xs btn-success pull-right btn-add-peminjaman" style="display: none; width: 120px;" id="btn_add_peminjaman"><i class="fa fa-plus" > </i>&nbsp Peminjaman</button>
+          <a href="{{action('AssetController@exportExcelTech')}}"><button id="export-excel" style="display: none; margin-right: 5px" class="btn btn-xs btn-success pull-right display-none"><i class="fa fa-cloud-download"></i> Excel</button></a>
+          <button class="btn btn-xs btn-success pull-right btn-add-peminjaman" style="display: none;width: 100px;margin-right: 5px;" id="btn_add_peminjaman"><i class="fa fa-plus" > </i>&nbsp Peminjaman</button>
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane" id="list_asset" role="tabpanel" aria-labelledby="home-tab">
@@ -636,7 +637,7 @@
 </div>
 
 <div class="modal fade" id="peminjaman_modal" role="dialog">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Peminjaman</h4>
@@ -645,41 +646,36 @@
           <form id="modalPeminjaman" name="modalPeminjaman">
             @csrf
           <input type="text" name="id_barang" id="id_barang" hidden>
-          <div class="form-group">
-            <label for="sow">Tgl Peminjaman</label>
-            <input type="text" name="tgl_peminjaman" id="tgl_peminjaman" class="form-control"></input>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="sow">Tgl Peminjaman</label>
+              <input type="text" name="tgl_peminjaman" id="tgl_peminjaman" class="form-control"></input>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="sow">Tgl Pengembalian</label>
+              <input type="text" name="tgl_kembali" id="tgl_kembali" class="form-control"></input>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="sow">Tgl Pengembalian</label>
-            <input type="text" name="tgl_kembali" id="tgl_kembali" class="form-control"></input>
-          </div>
-          <div class="form-group">
-            <label for="">Kategori</label><br>
-            <select type="text" class="form-control kategori3" style="width: 270px;" placeholder="Select Kategori" name="kategori3" id="kategori3" required>
-         <!--      <option>Select Kategori</option>
-              @foreach($kategori2 as $data)
-              <option value="{{$data->id_kat}}">{{$data->kategori}} <i> - {{$data->qty}}</i></option>
-              @endforeach -->
-            </select>
-          </div>
-          <!-- <div class="form-group">
-            <label for="">Nama Barang</label><br>
-            <select type="text" class="form-control barangs" style="width: 570px;" placeholder="Select Barang" name="barang" id="barang" required>
-              <option>Select Barang</option>
-            </select>
-          </div> -->
-          <div class="form-group margin-left-right">
-              @if ($message = Session::get('warning'))
-              <div class="alert alert-warning alert-block">
-                <button type="button" class="close" data-dismiss="alert">×</button> 
-                <strong>{{ $message }}</strong>
-              </div>
-              @endif
-          </div>
-          <div class="form-group">
-            <label>Masukkan kebutuhan</label><br>
-            <input type="text" name="qtys" id="qtys" class="qtys" hidden>
-            <input type='number' name='quantity' id="quantity" placeholder="0" class="form-control" style="width: 270px;" />
+          
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="">Kategori</label><br>
+              <select type="text" class="form-control kategori3 select2" style="width: 100%;" placeholder="Select Kategori" name="kategori3" id="kategori3" required>
+              </select>
+            </div>
+     <!--        <div class="form-group">
+                @if ($message = Session::get('warning'))
+                <div class="alert alert-warning alert-block">
+                  <button type="button" class="close" data-dismiss="alert">×</button> 
+                  <strong>{{ $message }}</strong>
+                </div>
+                @endif
+            </div> -->
+            <div class="form-group col-md-6">
+              <label>Masukkan kebutuhan</label><br>
+              <input type="text" name="qtys" id="qtys" class="qtys" hidden>
+              <input type='number' name='quantity' id="quantity" placeholder="0" class="form-control" style="width: 270px;" />
+            </div>
           </div>
           <div class="form-group"> 
             <label>Keperluan</label>
@@ -690,8 +686,8 @@
             <textarea name="keterangan" id="keterangan_peminjaman" class="form-control"></textarea>
           </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-xs btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
-              <button type="button" class="btn btn-xs btn-success btn-submit-peminjaman"><i class="fa fa-check"></i>&nbsp Submit</button>
+              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+              <button type="button" class="btn btn-sm btn-success btn-submit-peminjaman"><i class="fa fa-check"></i>&nbsp Submit</button>
             </div>
         </form>
         </div>
@@ -923,13 +919,14 @@
 @endsection
 
 @section('scriptImport')
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script> -->
+
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-  <!-- <script src="{{asset("template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script> -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <!-- <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.min.js"></script> -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
@@ -1816,12 +1813,14 @@
         onSelect: function(dateText, inst){
             $('#tgl_kembali').datepicker('option', 'minDate', new Date(dateText));
         },
+        autoclose:true
     });
 
     $('#tgl_kembali').datepicker({
         onSelect: function(dateText, inst){
             $('#tgl_peminjaman').datepicker('option', 'maxDate', new Date(dateText));
-        }
+        },
+        autoclose:true
     });
 
 
