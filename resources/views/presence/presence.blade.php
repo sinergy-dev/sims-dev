@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Presence
+@endsection
 @section('head_css')
 	<style>
 		#analog-clock {

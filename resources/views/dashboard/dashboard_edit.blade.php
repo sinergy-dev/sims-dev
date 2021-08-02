@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Dashboard
+@endsection
 @section('head_css')
 <style type="text/css">
 /*  .row:before, .row:after{
@@ -586,57 +589,54 @@
 	var prepend = ""	
 
 	$.ajax({
-        type:"GET",
-        url:"{{url('/getDashboardBox')}}",
-        success: function(result){
-        	if ("{{Auth::User()->name == 'TECH HEAD'}}") {
-		    	var ArrColors = [
-		    		{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
-		    		{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
-		    		{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
-		    		{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}
-		    	]
-		    	colors.push(ArrColors)
-			}else{
-				var ArrColors = [
-					{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
-					{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
-					{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
-					{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}]
-		    	colors.push(ArrColors)
-			}
+      type:"GET",
+      url:"{{url('/getDashboardBox')}}",
+      success: function(result){
+      	if ("{{Auth::User()->name == 'TECH HEAD'}}") {
+	    	var ArrColors = [
+	    		{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
+	    		{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
+	    		{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
+	    		{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}
+	    	]
+	    	colors.push(ArrColors)
+		}else{
+			var ArrColors = [
+				{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
+				{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
+				{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
+				{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}]
+	    	colors.push(ArrColors)
+		}
 
-			$.each(colors[0], function(key, value){
-		    	prepend = prepend + '<div class="col-lg-3 col-xs-6">'
-				prepend = prepend + '<div class="small-box '+value.color+'">'
-		       	prepend = prepend + '<div class="inner">'
-		         	prepend = prepend + '<h3 class="counter">'+value.count+'</h3>'
-		         	prepend = prepend + '<p>'+value.name+'</p>'
-		       	prepend = prepend + '</div>'
-		       	prepend = prepend + '<div class="icon">'
-		         	prepend = prepend + '<i class="'+value.icon+'"></i>'
-		       	prepend = prepend + '</div>'
-		       	// prepend = prepend + '<a href="' + '{{action("ReportController@view_open")}}' + '" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
-		       	prepend = prepend + '<a href="/' + value.url +'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
-		     	prepend = prepend + '</div>'
-		   		prepend = prepend + '</div>'
-		    })
+		$.each(colors[0], function(key, value){
+	    	prepend = prepend + '<div class="col-lg-3 col-xs-6">'
+			prepend = prepend + '<div class="small-box '+value.color+'">'
+	       	prepend = prepend + '<div class="inner">'
+	         	prepend = prepend + '<h3 class="counter" id="money">'+value.count+'</h3>'
+	         	prepend = prepend + '<p>'+value.name+'</p>'
+	       	prepend = prepend + '</div>'
+	       	prepend = prepend + '<div class="icon">'
+	         	prepend = prepend + '<i class="'+value.icon+'"></i>'
+	       	prepend = prepend + '</div>'
+	       	// prepend = prepend + '<a href="' + '{{action("ReportController@view_open")}}' + '" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
+	       	prepend = prepend + '<a href="/' + value.url +'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
+	     	prepend = prepend + '</div>'
+	   		prepend = prepend + '</div>'
+	    })
 
-		    $("#BoxId").prepend(prepend)
-
-		    $('.counter').each(function () {
-			    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
-			    $(this).prop('Counter', 0).animate({
-			      Counter: $(this).text()
-			    }, {
-			      duration: 5000,
-			      step: function (func) {
-			         $(this).text(parseFloat(func).toFixed(size));
-			      }
-			    });
+	    $("#BoxId").prepend(prepend)
+	    $('.counter').each(function () {
+		    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
+		    $(this).prop('Counter', 0).animate({
+		      Counter: $(this).text()
+		    }, {
+		      duration: 5000,
+		      step: function (func) {
+		        $(this).text(parseFloat(func).toFixed(size));
+		      }
+		    });
 			});
-        }
-    })
 
    	var ctx = document.getElementById("AreaChart");
     var ctx2 = document.getElementById("myBarChart");

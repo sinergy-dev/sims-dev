@@ -5,7 +5,7 @@
 				@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
 					<img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="img-circle">
 				@else
-					<img src="{{asset('image/'.Auth::User()->gambar)}}" class="img-circle" alt="User Image">
+					<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="img-circle" alt="User Image">
 				@endif
 			</div>
 			<div class="pull-left info" >
@@ -46,33 +46,17 @@
 		</ul>
 	</section>
 </aside>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+
+@section('scriptNotificationSidebar')
+@parent
+<!-- From Sidebar Blade for notification -->
 <script type="text/javascript">
-	var firebaseConfig = {
-	    apiKey: "{{env('FIREBASE_APIKEY')}}",
-	    authDomain: "{{env('FIREBASE_AUTHDOMAIN')}}",
-	    projectId: "{{env('FIREBASE_PROJECTID')}}",
-	    storageBucket: "{{env('FIREBASE_STORAGEBUCKET')}}",
-	    messagingSenderId: "{{env('FIREBASE_MESSAGINGSENDERID')}}",
-	    appId: "{{env('FIREBASE_APPID')}}",
-	    measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
-	};
-  	// Initialize Firebase
-  	firebase.initializeApp(firebaseConfig);
-
-  	// var db = firebase.database();
-  	// var notifRef = db.ref('notif');
-
-  	// notifRef.on('value', showData, callbackError);
-
-   var firebaseRootRef = firebase.database().ref();
+	var firebaseRootRef = firebase.database().ref();
 
    	if ("{{Auth::User()->id_division}}" == 'SALES' || "{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
-	 		var personale_Ref = firebaseRootRef.child('notif/Lead_Register');
-   	}else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
-	 		var personale_Ref = firebaseRootRef.child('notif/ID_Project');
+ 		var personale_Ref = firebaseRootRef.child('notif/Lead_Register');
+   	} else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
+ 		var personale_Ref = firebaseRootRef.child('notif/ID_Project');
    	}
 
    	if (personale_Ref != null) {
@@ -105,24 +89,6 @@
 	    	}
 	    });	
    	}
-	
-    
-    
-  // $("#Lead_Register").text("haha")
-
-  // function showData(items){
-  // 	$("#Lead_Register").text(items.val()["ID Project"].total)
-  // 	console.log(items.val()["ID Project"].total)
-  // 	console.log("upss")
-
-  // }
-
-  // firebase.database().ref('notif/Lead_Register/territory_3').set({
-  // 		to:"andre@sinergy.co.id",
-  //     total:77
-  // });
-
-  // function callbackError(err){
-  // 	console.log(err)
-  // }
 </script>
+
+@endsection

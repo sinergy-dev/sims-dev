@@ -1,7 +1,11 @@
 <header class="main-header">
 	<a href="{{url('/')}}" class="logo">
-		<span class="logo-mini"><img src="{{asset('/img/siplogooke.png')}}" alt="cobaaa" width="30px" height="40px"></img></span>
-		<span class="logo-lg"><b>SIMS</b>APP</span>
+		<span class="logo-mini">
+			<img src="{{asset('/img/siplogooke.png')}}" alt="cobaaa" width="30px" height="40px">
+		</span>
+		<span class="logo-lg">
+			<b>SIMS</b>APP
+		</span>
 	</a>
 
 	<nav class="navbar navbar-static-top">
@@ -31,35 +35,21 @@
 				<li class="dropdown user user-menu">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-							<img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="user-image" alt="Yuki">
+							<img src="{{asset('image/default-user.png')}}" class="user-image" alt="small-user-img">
 						@else
-							<img src="{{asset('image/'.Auth::User()->gambar)}}" class="user-image" alt="User Image">
+							<img src="{{asset('image/') . '/' . Auth::User()->gambar}}" class="user-image" alt="small-user-img">
 						@endif
 						<span class="hidden-xs">{{ Auth::User()->name }}</span>
 					</a>
 					<ul class="dropdown-menu">
 						<li class="user-header">
 							@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-								<img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="img-circle" alt="Yuki">
+								<img src="{{asset('image/default-user.png')}}" class="img-circle" alt="big-user-img">
 							@else
-								<img src="{{asset('image/'.Auth::User()->gambar)}}" class="img-circle" alt="User Image">
+								<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="img-circle" alt="big-user-img">
 							@endif
-
 							<p>
-								{{ Auth::User()->name }} - 
-								@if(Auth::user()->id_division == 'HR' && Auth::user()->id_position == 'HR MANAGER')
-									{{ Auth::user()->id_position }}
-								@elseif(Auth::user()->id_position == 'EXPERT SALES')
-									{{ Auth::user()->id_position}}
-								@else
-									@if(Auth::user()->nik == 100000000003)
-									SALES OPERATIONAL
-									@elseif(Auth::user()->id_division == 'TECHNICAL' && Auth::user()->id_position == 'MANAGER')
-									OPERATIONAL DIRECTOR
-									@else
-									{{ Auth::user()->id_division }} {{ Auth::user()->id_position }}
-									@endif
-								@endif
+								{{ Auth::User()->name }} - {{$initView['userRole']->name}}
 								<small>
 									@if(Auth::User()->id_company == '1') 
 										Sinergy Informasi Pratama
@@ -75,9 +65,7 @@
 								<a href="{{url('profile_user')}}" class="btn btn-default btn-flat">Profile</a>
 							</div>
 							<div class="pull-right">
-								<a class="btn btn-default btn-flat" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-										{{ __('Logout') }}
-								</a>
+								<a class="btn btn-default btn-flat" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
 								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
 									@csrf
 									<input type="hidden" name="nik" value="{{Auth::User()->nik}}">
@@ -90,10 +78,18 @@
 		</div>
 	</nav>
 </header>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+@section('scriptNotificationHeader')
+@parent
+<!-- From Header Blade for notification -->
+
+<!-- Firebase-app 8.6.3-->
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<!-- Firebase-database 8.6.3-->
 <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-database.js"></script>
+<!-- MomentJS -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
 <script type="text/javascript">
 	var firebaseConfig = {
 	    apiKey: "{{env('FIREBASE_APIKEY')}}",
@@ -104,6 +100,7 @@
 	    appId: "{{env('FIREBASE_APPID')}}",
 	    measurementId: "{{env('FIREBASE_MEASUREMENTID')}}"
 	};
+	
   	// Initialize Firebase
   	firebase.initializeApp(firebaseConfig);
 
@@ -287,5 +284,5 @@
     function view_all(){
         window.location = "{{url('notif_view_all')}}"
     }
-
 </script>
+@endsection
