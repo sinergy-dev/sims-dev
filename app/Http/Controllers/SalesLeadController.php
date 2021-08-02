@@ -330,7 +330,7 @@ class SalesLeadController extends Controller
 
         $year = date('Y');
 
-        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`')->selectRaw('lead_id')->groupBy('lead_id');
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
         $leadsnow = DB::table('sales_lead_register')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -349,7 +349,7 @@ class SalesLeadController extends Controller
         if($ter != null){
             $leadsnow->where('u_sales.id_company', '1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-                $leadsnow->where('u_presales.nik', $nik);
+                $leadsnow->where('nik_presales', $nik);
             } else if ($div == 'SALES') {
                 $leadsnow->where('u_sales.id_territory', $ter);
             }        
@@ -396,7 +396,7 @@ class SalesLeadController extends Controller
         $leads = $leadsnow->where('result','!=', 'hmm');
 
         if ($div == 'SALES') {
-            $leadsnow->where('id_territory', $ter);
+            $leads->where('id_territory', $ter);
         } 
 
         if(isset($request->year)){
@@ -641,7 +641,7 @@ class SalesLeadController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`')->selectRaw('lead_id')->groupBy('lead_id');
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
@@ -676,14 +676,14 @@ class SalesLeadController extends Controller
         if($ter != null){
             $leads->where('u_sales.id_company','1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-                $leads = $leads->where('u_presales.nik', $nik);
+                $leads = $leads->where('nik_presales', $nik);
             } else if ($div == 'SALES') {
                 $leads = $leads->where('u_sales.id_territory', $ter);
             }       
         } 
 
         if ($div == 'SALES') {
-            $leadsnow->where('u_sales.id_territory', $ter);
+            $leads->where('u_sales.id_territory', $ter);
         }
 
         $leads->where(function($leads) use($request, $searchFields){
