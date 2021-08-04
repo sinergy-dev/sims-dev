@@ -1,7 +1,7 @@
 <header class="main-header">
 	<a href="{{url('/')}}" class="logo">
 		<span class="logo-mini">
-			<img src="{{asset('/img/siplogooke.png')}}" alt="cobaaa" width="30px" height="40px">
+			<img src="{{asset('/img/siplogooke.png')}}" alt="icon-mini" width="30px" height="40px">
 		</span>
 		<span class="logo-lg">
 			<b>SIMS</b>APP
