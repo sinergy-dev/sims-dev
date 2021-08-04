@@ -20,6 +20,11 @@ Dashboard
       background-color: #ffd324;
   }
 
+  .table-sip-ter tbody tr:first-child td{
+  	background-color: dodgerblue;
+  	color: white;
+  }
+
   .outer-reset {
     position: relative;
     width: 100%;
@@ -44,7 +49,7 @@ Dashboard
     <small><b id="waktu"></b></small>
   </h1>
   <ol class="breadcrumb">
-    <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
     <li class="active" >Dashboard</li>
   </ol>
 </section>
@@ -281,41 +286,78 @@ Dashboard
 		@if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
         @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
         <div class="col-lg-6 col-xs-12">
-          	<div class="box box-primary">
-            <div class="box-header with-border">
-              <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
-              <h3 class="box-title pull-right"><b>SIP</b></h3>
-            </div>
-            <div class="box-body">
-              <?php $no_sip = 1; ?>
-              <table class="table table-bordered table-striped table-sip" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th width="5%"><center>No.</center></th>
-                    <th><center>Sales Name</center></th>
-                    <th width="20%"><center>Total Amount</center></th>
-                    <th width="10%"><center>Total</center></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($top_win_sip as $tops)
-                    <tr>
-                      <td>{{ $no_sip++ }}</td>
-                      <td>{{ $tops->name }}</td>
-                      <td align="right">
-                      <i class="money">{{ $tops->deal_prices }}</i>
-                      </td>
-                      <td><center>( {{ $tops->leads }} )</center></td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-          </div>
-      	</div>
-        @elseif(Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'TECHNICAL PRESALES')
-        <div class="col-lg-12 col-xs-12">
-        	<div class="box box-primary">
+	          <div class="box box-warning">
+	            <div class="box-header with-border">
+	              <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
+	              <h3 class="box-title pull-right"><b>SIP</b></h3>
+	            </div>
+	            <div class="box-body">
+	              <?php $no_sip = 1; ?>
+	              <table class="table table-bordered table-striped table-sip" width="100%" cellspacing="0">
+	                <thead>
+	                  <tr>
+	                    <th width="5%"><center>No.</center></th>
+	                    <th><center>Sales Name</center></th>
+	                    <th width="20%"><center>Total Amount</center></th>
+	                    <th width="10%"><center>Total</center></th>
+	                  </tr>
+	                </thead>
+	                <tbody>
+	                  @foreach($top_win_sip as $tops)
+	                    <tr>
+	                      <td>{{ $no_sip++ }}</td>
+	                      <td>{{ $tops->name }}</td>
+	                      <td align="right">
+	                      <i class="money">{{ $tops->deal_prices }}</i>
+	                      </td>
+	                      <td><center>( {{ $tops->leads }} )</center></td>
+	                    </tr>
+	                  @endforeach
+	                </tbody>
+	              </table>
+	            </div>
+	          </div>
+	      	</div>
+        	
+        	@elseif(Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')
+
+        	<div class="col-lg-12 col-xs-12">
+	          <div class="box box-warning">
+	            <div class="box-header with-border">
+	              <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
+	              <h3 class="box-title pull-right"><b>SIP</b></h3>
+	            </div>
+	            <div class="box-body">
+	              <?php $no_sip = 1; ?>
+	              <table class="table table-bordered table-striped table-sip" width="100%" cellspacing="0">
+	                <thead>
+	                  <tr>
+	                    <th width="5%"><center>No.</center></th>
+	                    <th><center>Sales Name</center></th>
+	                    <th width="20%"><center>Total Amount</center></th>
+	                    <th width="10%"><center>Total</center></th>
+	                  </tr>
+	                </thead>
+	                <tbody>
+	                  @foreach($top_win_sip as $tops)
+	                    <tr>
+	                      <td>{{ $no_sip++ }}</td>
+	                      <td>{{ $tops->name }}</td>
+	                      <td align="right">
+	                      <i class="money">{{ $tops->deal_prices }}</i>
+	                      </td>
+	                      <td><center>( {{ $tops->leads }} )</center></td>
+	                    </tr>
+	                  @endforeach
+	                </tbody>
+	              </table>
+	            </div>
+	          </div>
+	      	</div>
+
+        @elseif(Auth::User()->id_division == 'SALES')
+        <div class="col-lg-6 col-xs-12">
+        	<div class="box box-warning">
             <div class="box-header with-border">
               <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
               <h3 class="box-title pull-right"><b>SIP</b></h3>
@@ -347,12 +389,46 @@ Dashboard
             </div>
           </div>
         </div>
+
+        <div class="col-lg-6 col-xs-12">
+        	<div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title"><i>WIN Projects {{Auth::User()->id_territory}}</i></h3>
+              <h3 class="box-title pull-right"><b>SIP</b></h3>
+            </div>
+            <div class="box-body">
+              <?php $no_sip = 1; ?>
+              <table class="table table-bordered table-striped table-sip-ter" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th width="5%"><center>No.</center></th>
+                    <th><center>Sales Name</center></th>
+                    <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach($top_win_sip_ter as $tops)
+                    <tr>
+                      <td>{{ $no_sip++ }}</td>
+                      <td>{{ $tops->name }}</td>
+                      <td align="right">
+                      <i class="money">{{ $tops->deal_prices }}</i>
+                      </td>
+                      <td><center>( {{ $tops->leads }} )</center></td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
         @endif
       @endif
 
       @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER')
         <div class="col-lg-6 col-xs-12">
-          <div class="box box-primary">
+          <div class="box box-warning">
             <div class="box-header with-border">
               <h3 class="box-title"><i>TOP 5 (WIN Projects)</i></h3>
               <h3 class="box-title pull-right"><b>MSP</b></h3>
@@ -384,8 +460,64 @@ Dashboard
             </div>
           </div>
         </div>
-      @endif    	      
+      @endif
     </div>
+
+    @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')
+    <div class="row">
+    	<div class="col-lg-12 col-xs-12">
+      	<div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title"><i>WIN Projects Per Territory</i></h3>
+            <h3 class="box-title pull-right"><b>SIP</b></h3>
+          </div>
+          <div class="box-body">
+            <?php $no_sip = 1; $territory= ""?>
+            <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th width="5%"><center>No.</center></th>
+                  <th><center>Sales Name</center></th>
+                  <th width="20%"><center>Total Amount</center></th>
+                  <th width="10%"><center>Total</center></th>
+                </tr>
+              </thead>
+              <tbody>
+    					@foreach($top_win_sip_ter as $key => $name)
+                @foreach($name as $tops)
+                	@if($tops->id_territory == $territory)
+                  <tr>
+                    <td>{{ $no_sip++ }}</td>
+                    <td>{{ $tops->name }}</td>
+                    <td align="right">
+                    <i class="money">{{ $tops->deal_prices }}</i>
+                    </td>
+                    <td><center>( {{ $tops->leads }} )</center></td>
+                  </tr>
+                  @else
+                  <?php $territory = $tops->id_territory?>
+                  <tr>
+                  	<td colspan="4" style="background-color:dodgerblue;color: white;">{{$tops->id_territory}}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ $no_sip++ }}</td>
+                    <td>{{ $tops->name }}</td>
+                    <td align="right">
+                    <i class="money">{{ $tops->deal_prices }}</i>
+                    </td>
+                    <td><center>( {{ $tops->leads }} )</center></td>
+                  </tr>
+                  @endif
+                @endforeach
+    					@endforeach
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>    	
+    @endif
+    	
     <div class="row">
       	<div class="col-lg-6 col-xs-12">
 	        <div class="box box-primary">
@@ -413,6 +545,7 @@ Dashboard
 	        </div>
 	    </div>
     </div>
+
     <div class="row">
     	<div class="col-lg-6 col-xs-12">
 	        <div class="box box-warning">
@@ -589,54 +722,57 @@ Dashboard
 	var prepend = ""	
 
 	$.ajax({
-      type:"GET",
-      url:"{{url('/getDashboardBox')}}",
-      success: function(result){
-      	if ("{{Auth::User()->name == 'TECH HEAD'}}") {
-	    	var ArrColors = [
-	    		{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
-	    		{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
-	    		{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
-	    		{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}
-	    	]
-	    	colors.push(ArrColors)
-		}else{
-			var ArrColors = [
-				{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
-				{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
-				{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
-				{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}]
-	    	colors.push(ArrColors)
-		}
+        type:"GET",
+        url:"{{url('/getDashboardBox')}}",
+        success: function(result){
+        	if ("{{Auth::User()->name == 'TECH HEAD'}}") {
+		    	var ArrColors = [
+		    		{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
+		    		{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
+		    		{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
+		    		{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}
+		    	]
+		    	colors.push(ArrColors)
+			}else{
+				var ArrColors = [
+					{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
+					{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
+					{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
+					{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}]
+		    	colors.push(ArrColors)
+			}
 
-		$.each(colors[0], function(key, value){
-	    	prepend = prepend + '<div class="col-lg-3 col-xs-6">'
-			prepend = prepend + '<div class="small-box '+value.color+'">'
-	       	prepend = prepend + '<div class="inner">'
-	         	prepend = prepend + '<h3 class="counter" id="money">'+value.count+'</h3>'
-	         	prepend = prepend + '<p>'+value.name+'</p>'
-	       	prepend = prepend + '</div>'
-	       	prepend = prepend + '<div class="icon">'
-	         	prepend = prepend + '<i class="'+value.icon+'"></i>'
-	       	prepend = prepend + '</div>'
-	       	// prepend = prepend + '<a href="' + '{{action("ReportController@view_open")}}' + '" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
-	       	prepend = prepend + '<a href="/' + value.url +'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
-	     	prepend = prepend + '</div>'
-	   		prepend = prepend + '</div>'
-	    })
+			$.each(colors[0], function(key, value){
+		    	prepend = prepend + '<div class="col-lg-3 col-xs-6">'
+				prepend = prepend + '<div class="small-box '+value.color+'">'
+		       	prepend = prepend + '<div class="inner">'
+		         	prepend = prepend + '<h3 class="counter">'+value.count+'</h3>'
+		         	prepend = prepend + '<p>'+value.name+'</p>'
+		       	prepend = prepend + '</div>'
+		       	prepend = prepend + '<div class="icon">'
+		         	prepend = prepend + '<i class="'+value.icon+'"></i>'
+		       	prepend = prepend + '</div>'
+		       	// prepend = prepend + '<a href="' + '{{action("ReportController@view_open")}}' + '" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
+		       	prepend = prepend + '<a href="/' + value.url +'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>'
+		     	prepend = prepend + '</div>'
+		   		prepend = prepend + '</div>'
+		    })
 
-	    $("#BoxId").prepend(prepend)
-	    $('.counter').each(function () {
-		    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
-		    $(this).prop('Counter', 0).animate({
-		      Counter: $(this).text()
-		    }, {
-		      duration: 5000,
-		      step: function (func) {
-		        $(this).text(parseFloat(func).toFixed(size));
-		      }
-		    });
+		    $("#BoxId").prepend(prepend)
+
+		    $('.counter').each(function () {
+			    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
+			    $(this).prop('Counter', 0).animate({
+			      Counter: $(this).text()
+			    }, {
+			      duration: 5000,
+			      step: function (func) {
+			         $(this).text(parseFloat(func).toFixed(size));
+			      }
+			    });
 			});
+        }
+    })
 
    	var ctx = document.getElementById("AreaChart");
     var ctx2 = document.getElementById("myBarChart");
