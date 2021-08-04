@@ -14,6 +14,7 @@ Bookmark
   <h1>Bookmark</h1>
     <ol class="breadcrumb">
       <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+      <li class="active"> Bookmark </li>
     </ol>
 </section>
 

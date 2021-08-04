@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('tittle')
-HR/GA ATK
+GA ATK
 @endsection
 @section('head_css')
   <!-- Select2 -->
@@ -103,12 +103,11 @@ HR/GA ATK
 
 <section class="content-header">
   <h1>
-    Asset ATK
+    General Affair - ATK
   </h1>
   <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active">General Affair</li>
-    <li class="active">Asset ATK</li>
+    <li><a href="{{url('/')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+    <li class="active">GA - ATK</li>
   </ol>
 </section>
 

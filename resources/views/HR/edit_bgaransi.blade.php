@@ -217,11 +217,12 @@
 @section('content')
 
 <section class="content-header">
-  <h1 style="opacity: 0.01;">
-    Add PR Asset MSP
+  <h1>
+    Bank Garansi
   </h1>
   <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="{{url('/bank_garansi')}}"><i class="fa fa-dashboard"></i> Bank garansi</a></li>
+    <li class="active"> Edit Bank garansi </li>
     <!-- <li class="active">PR Asset</li>
     <li class="active">MSP</li>
     <li class="active">Add</li> -->

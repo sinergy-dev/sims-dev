@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Detail Asset Transaction
+@endsection
 @section('head_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
@@ -6,13 +9,11 @@
 @section('content')
 <section class="content-header">
   <h1>
-    Detail Asset Management
+    Detail Asset Transaction
   </h1>
   <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li class="active"><a href="{{url('/asset_hr')}}">HR/GA - Asset Management</a></li>
-    <li class="active">SIP</li>
-    <li class="active">Detail</li>
+    <li><a href="{{url('/asset_hr')}}"><i class="fa fa-dashboard"></i>GA - Asset</a></li>
+    <li class="active">Detail Asset Transaction</li>
   </ol>
 </section>
 
