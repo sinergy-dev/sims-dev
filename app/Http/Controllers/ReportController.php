@@ -2292,7 +2292,48 @@ class ReportController extends Controller
                 ->orderBy('year','desc')
                 ->get();
 
-        $presales = '';        
+        $presales = '';    
+
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`,GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->groupBy('lead_id','name_presales');
+
+        $leadsnow = DB::table('sales_lead_register')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                })
+                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_territory','tb_territory.id_territory','=','u_sales.id_territory')
+                ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
+                ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                ->select('sales_tender_process.win_prob','sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales','tb_presales.priority','sales_lead_register.year','tb_territory.name_territory',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
+                ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
+                ->where('result','!=','hmm')
+                ->orderBy('created_at', 'desc');  
+
+        $total_deal_price = DB::table('sales_lead_register')
+                                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                                ->select(DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'))
+                                ->where('result','!=','hmm'); 
+
+        if($ter != null){
+            $leads = $leadsnow->where('u_sales.id_company', '1')->get();
+
+            $total_deal_price->where('u_sales.id_company', '1')->first();
+            if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+                $leads = $leadsnow->where('nik_presales', $nik)->get();
+
+                $total_deal_price->where('nik_presales', $nik)->first();
+
+            } else if ($div == 'SALES') {
+                $leads = $leadsnow->where('u_sales.id_territory', $ter)->get();
+                
+                $total_deal_price->where('u_sales.id_territory', $ter)->first();
+            }        
+        }else{
+            $leads = $leadsnow->get();
+            
+            $total_deal_price->first();
+        }  
 
         // count semua lead
         if($ter != null){
@@ -2498,19 +2539,37 @@ class ReportController extends Controller
             ->get();
         }
 
-        $total_deal_price = DB::table('sales_lead_register')
-                                ->select(DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'))
-                                ->where('result','!=','hmm')
-                                ->first();
-
-        return view('report/report_range', compact('lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years'))->with(['initView'=> $this->initMenuBase()]);
+        return view('report/report_range', compact('leads','lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function total_deal_price(Request $request){
-    	return array(DB::table('sales_lead_register')
-                ->select('deal_price')
-                ->where('year', $request->year)
-                ->sum('deal_price'),$request->year);
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        $data = DB::table('sales_lead_register')
+                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                ->where('year', $request->year);
+
+        if($ter != null){
+            $data->where('u_sales.id_company', '1');
+            if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+                $data->where('nik_presales', $nik);
+
+            } else if ($div == 'SALES') {                
+                $data->where('u_sales.id_territory', $ter);
+            }        
+        }else{
+            $data;
+        }
+
+        return array($data->sum('deal_price'));
+
+    	
     }
 
     public function report_deal_price()

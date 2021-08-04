@@ -21,6 +21,11 @@ Report Range
       /*margin-bottom: 10px;*/
     }
 
+    .dataTable thead tr:first-child th,
+    .dataTable thead tr#status td{
+      border: none;
+    }
+
 </style>
 @endsection
 @section('content')
@@ -29,7 +34,7 @@ Report Range
       Report Range
     </h1>
     <ol class="breadcrumb">
-      <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+      <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
       <li class="active">Report Range</li>
     </ol>
   </section>
@@ -121,9 +126,11 @@ Report Range
               <input type="text" class="form-control pull-right" id="datepicker">
             </div> --}}
 
-            <div class="row">              
-              <legend><b>Filter Data Between Range Date Below</b></legend>
-              <div class="col-md-3">
+            <div class="row">
+              <div class="col-md-12 col-xs-12">
+                <legend><b>Filter Data Between Range Date Below</b></legend>
+              </div>              
+              <div class="col-md-3 col-xs-12">
                 <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
                 <select style="margin-right: 5px" class="form-control fa" id="year_dif">
                   @foreach($years as $data)
@@ -131,11 +138,11 @@ Report Range
                   @endforeach
                 </select>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-3 col-xs-12">
                 <label style="margin-top: 5px;">Start Date</label>
                 <input type="text" id="startdate" class="form-control pull-right" placeholder="DD/MM/YYYY">
               </div>
-              <div class="col-md-3">
+              <div class="col-md-3 col-xs-12">
                 <label style="margin-top: 5px;margin-right: 5px;margin-left: 5px">End Date</label>
                 <input type="text" id="enddate" class="form-control pull-right" placeholder="DD/MM/YYYY">  
               </div>
@@ -145,41 +152,56 @@ Report Range
               </div>  
             </div>
 
-            <h3><b>Total Deal Price : Rp <span id="total_deal_prices" class="money"> </span>,-</b></h3>
+            <h3><b>Total Deal Price by Year : Rp <span id="total_deal_prices" class="money"> </span>,-</b></h3>
             
           </div>
       </div>
 
       <div class="box-body">
         <div class="table-responsive">
-          <table class="table table-bordered table-striped dataTable" style="border-collapse: noseparate !important;" id="data_all" width="100%" cellspacing="0">
+          <table class="table table-bordered table-striped dataTable" style="border-collapse:collapse; !important;" id="data_all" width="100%" cellspacing="0">
               <thead>
-              	<tr>
-              	  <th hidden></th>
-                  <th colspan="2">Filter by Territory</th>
-                  <th>Filter by Sales</th>
-                  <th colspan="2">Filter by Presales</th>
-                  <th width="10%">Filter by Priority</th>
-                  <th>Filter by Win Probability</th>
-                  <th>Filter by Status</th>
+              	<tr class="no-border">
+                  <th class="first">Territory</th>
+                  <th>Sales</th>  
+                  <th>Presales</th>
+                  <th>Priority</th>
+                  <th>Win Probability</th>
+                  <th width="10%">Status</th>
+                  <th colspan="2"></th>
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>                  
+                  <th hidden></th>                                    
               	</tr>
-              	<tr id="status" style="border-bottom: solid;">
+              	<tr class="no-border" id="status">
+                  <td class="first"></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td colspan="2"></td>
                   <td hidden></td>
-                  <td colspan="2"></td>
-                  <td></td>
-                  <td colspan="2"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td hidden></td>
+                  <td hidden></td>
+                  <td hidden></td>
+                  <td hidden></td>
+                  <td hidden></td>                  
+                  <td hidden></td>                
                 </tr>
                 <tr>
+                  <th class="first" hidden></th>  
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
+                  <th hidden></th>
                   <th>Lead ID</th>
-                  <th hidden=""></th>
-                  <th hidden=""></th>  
-                  <th hidden=""></th>
-                  <th hidden=""></th>
-                  <th hidden></th>
-                  <th hidden></th>
                   <th>Owner</th>  
                   <th width="20%">Opty Name</th>
                   <th>Customer</th>
@@ -187,167 +209,68 @@ Report Range
                   <th>Closing Date</th>
                   <th>Amount IDR</th>
                   <th>Status</th>
-                  <th hidden></th>
                 </tr>
               </thead>
               <tbody id="report" name="report">
-                @foreach($lead as $data)
-                  @if($data->result != 'hmm')
-                    <tr>
-                      <td class="lead_id">{{ $data->lead_id }}</td>
-                      <td hidden>{{ $data->name_territory }}</td>
-                      <td hidden>{{ $data->name }}</td> 
-                      <td hidden="">
-                        @if($data->nik_presales == $st->nik)
-                          Satria Teguh Sentosa Mulyono
-                        @elseif($data->nik_presales == $rk->nik)
-                          Muhammad Rizki Kurniawan
-                        @elseif($data->nik_presales == $gp->nik)
-                          Ganjar Pramudya Wijaya
-                        @elseif($data->nik_presales == $rz->nik)
-                          Rizaldo Frendy Kurniawan
-                        @endif
-                      </td> 
-                      <td hidden="">{{ $data->priority}}</td>
-                      <td hidden="">{{ $data->win_prob}}</td>
-                      <td hidden>
-                        @if($data->result == 'OPEN')
-                          <label class="status-initial">INITIAL</label>
-                        @elseif($data->result == '')
-                          <label class="status-open">OPEN</label>
-                        @elseif($data->result == 'SD')
-                          <label class="status-sd">SD</label>
-                        @elseif($data->result == 'TP')
-                          <label class="status-tp">TP</label>
-                        @elseif($data->result == 'WIN')
-                          <label class="status-win">WIN</label>
-                        @elseif($data->result == 'LOSE')
-                          <label class="status-lose">LOSE</label>
-                        @elseif($data->result == 'CANCEL')
-                        <label class="status-lose" style="background-color: #071108">CANCEL</label>
-                        @elseif($data->result == 'HOLD')
-                          <label class="status-initial" style="background-color: #919e92">HOLD</label>
-                        @elseif($data->result == 'SPECIAL')
-                          <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
-                        @endif
-                      </td>
-                      <td>{{ $data->name }}</td>
-                      <td>{{ $data->opp_name }}</td>
-                      <td >{{ $data->brand_name }}</td> 
-                      <td>{!!substr($data->created_at,0,10)!!}</td>
-                      <td>{{ $data->closing_date }}</td>
-                      <td align="right">
-                        <i class="money">{{ $data->deal_price }}</i>
-                      </td>
-                      <td>
-                        @if($data->result == 'OPEN')
-                          <label class="status-initial">INITIAL</label>
-                        @elseif($data->result == '')
-                          <label class="status-open">OPEN</label>
-                        @elseif($data->result == 'SD')
-                          <label class="status-sd">SD</label>
-                        @elseif($data->result == 'TP')
-                          <label class="status-tp">TP</label>
-                        @elseif($data->result == 'WIN')
-                          <label class="status-win">WIN</label>
-                        @elseif($data->result == 'LOSE')
-                          <label class="status-lose">LOSE</label>
-                        @elseif($data->result == 'CANCEL')
-                        <label class="status-lose" style="background-color: #071108">CANCEL</label>
-                        @elseif($data->result == 'HOLD')
-                          <label class="status-initial" style="background-color: #919e92">HOLD</label>
-                        @elseif($data->result == 'SPECIAL')
-                          <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
-                        @endif
-                      </td>
+                @foreach($leads as $data)
+                  <tr>
+                      <td class="first" hidden>{{$data->name_territory}}</td>
+                      <td hidden>{{$data->name}}</td>
+                      <td hidden>{{$data->name_presales}}</td>
+                      <td hidden>{{$data->priority}}</td>
+                      <td hidden>{{$data->win_prob}}</td>
+                      <td hidden>{{$data->result_modif}}</td>
                       <td hidden>{{$data->year}}</td>
-                    </tr>
-                  @else<!-- 
-                    <tr>
                       <td class="lead_id">{{ $data->lead_id }}</td>
-                      <td hidden>{{ $data->name_territory }}</td>
-                      <td hidden>{{ $data->name }}</td> 
-                      <td hidden="">
-                        @if($data->nik_presales == $st->nik)
-                          Satria Teguh Sentosa Mulyono
-                        @elseif($data->nik_presales == $rk->nik)
-                          Muhammad Rizki Kurniawan
-                        @elseif($data->nik_presales == $gp->nik)
-                          Ganjar Pramudya Wijaya
-                        @elseif($data->nik_presales == $rz->nik)
-                          Rizaldo Frendy Kurniawan
-                        @elseif($data->nik_presales == $nt->nik)
-                          Aura Anugrah Pranata
-                        @endif
-                      </td> 
-                      <td hidden="">{{ $data->priority}}</td>
-                      <td hidden="">{{ $data->win_prob}}</td>
-                      <td hidden>
-                        @if($data->result == 'OPEN')
-                          <label class="status-initial">INITIAL</label>
-                        @elseif($data->result == '')
-                          <label class="status-open">OPEN</label>
-                        @elseif($data->result == 'SD')
-                          <label class="status-sd">SD</label>
-                        @elseif($data->result == 'TP')
-                          <label class="status-tp">TP</label>
-                        @elseif($data->result == 'WIN')
-                          <label class="status-win">WIN</label>
-                        @elseif($data->result == 'LOSE')
-                          <label class="status-lose">LOSE</label>
-                        @elseif($data->result == 'CANCEL')
-                        <label class="status-lose" style="background-color: #071108">CANCEL</label>
-                        @elseif($data->result == 'HOLD')
-                          <label class="status-initial" style="background-color: #919e92">HOLD</label>
-                        @elseif($data->result == 'SPECIAL')
-                          <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
-                        @endif
-                      </td>
                       <td>{{ $data->name }}</td>
                       <td>{{ $data->opp_name }}</td>
-                      <td >{{ $data->brand_name }}</td> 
+                      <td>{{ $data->brand_name }}</td> 
                       <td>{!!substr($data->created_at,0,10)!!}</td>
                       <td>{{ $data->closing_date }}</td>
                       <td align="right">
                         <i class="money">{{ $data->deal_price }}</i>
                       </td>
-                      <td>
-                        @if($data->result == 'OPEN')
-                          <label class="status-initial">INITIAL</label>
-                        @elseif($data->result == '')
-                          <label class="status-open">OPEN</label>
-                        @elseif($data->result == 'SD')
-                          <label class="status-sd">SD</label>
-                        @elseif($data->result == 'TP')
-                          <label class="status-tp">TP</label>
-                        @elseif($data->result == 'WIN')
-                          <label class="status-win">WIN</label>
-                        @elseif($data->result == 'LOSE')
-                          <label class="status-lose">LOSE</label>
-                        @elseif($data->result == 'CANCEL')
-                        <label class="status-lose" style="background-color: #071108">CANCEL</label>
-                        @elseif($data->result == 'HOLD')
-                          <label class="status-initial" style="background-color: #919e92">HOLD</label>
-                        @elseif($data->result == 'SPECIAL')
-                          <label class="btn-xs status-initial" style="background-color: #ddc23b">SPECIAL</label>
+                      <td style="align-content: center;">
+                        @if($data->result_modif == 'INITIAL')
+                          <label class="bg-purple" style="padding:5px">INITIAL</label>
+                        @elseif($data->result_modif == 'OPEN')
+                          <label class="bg-orange" style="padding:5px">OPEN</label>
+                        @elseif($data->result_modif == 'SD')
+                          <label class="bg-aqua" style="padding:5px">SD</label>
+                        @elseif($data->result_modif == 'TP')
+                          <label class="bg-yellow" style="padding:5px">TP</label>
+                        @elseif($data->result_modif == 'WIN')
+                          <label class="bg-green" style="padding:5px">WIN</label>
+                        @elseif($data->result_modif == 'LOSE')
+                          <label class="bg-red" style="padding:5px">LOSE</label>
+                        @elseif($data->result_modif == 'CANCEL')
+                        <label class="bg-dark" style="padding:5px">CANCEL</label>
+                        @elseif($data->result_modif == 'HOLD')
+                          <label class="bg-dark" style="padding:5px">HOLD</label>
+                        @elseif($data->result_modif == 'SPECIAL')
+                          <label class="bg-dark" style="padding:5px">SPECIAL</label>
                         @endif
                       </td>
-                    </tr> -->
-                  @endif
+                  </tr>
                 @endforeach
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="5"></td>
-                  <td hidden=""></td>
-                  <td hidden=""></td>
-                  <td hidden=""></td>
-                  <td hidden=""></td>
-                  <td hidden=""></td>
-                  <td hidden=""></td>
-                  <th></th>
-                  <th></th>
-                  <th></th>
+                  <th class="first" hidden></th>                  
+                  <th hidden></th>                  
+                  <th hidden></th>                  
+                  <th hidden></th>                  
+                  <th hidden></th>                  
+                  <th hidden></th>                  
+                  <th hidden></th>
+                  <th></th>                  
+                  <th></th>                  
+                  <th></th>                  
+                  <th></th>                  
+                  <th></th>                  
+                  <th></th>                  
+                  <th></th>                  
+                  <th></th>                  
                 </tr>
               </tfoot>
           </table>
@@ -435,7 +358,7 @@ Report Range
     $.fn.dataTable.ext.search.push(
       function(settings, data, dataIndex) {
           var years = parseInt($('#year_dif').val());
-          var tahunbanding = parseInt(data[14]);
+          var tahunbanding = parseInt(data[6]);
       if ( ( isNaN( years ) ) ||
            ( years  ==  tahunbanding ))
       {
@@ -452,7 +375,7 @@ Report Range
       function(settings, data, dataIndex) {
           var min = $('#startdate').datepicker("getDate");
           var max = $('#enddate').datepicker("getDate");
-          var startDate = new Date(data[10]);
+          var startDate = new Date(data[[11],[12]]);
           if (min == null && max == null) {
               return true;
           }
@@ -491,29 +414,23 @@ Report Range
     table.draw();
   });
 
+  if ('{{Auth::User()->id_division}}' == 'SALES') {
+    $('.first').hide()
+    // column1.visible(!column1.visible() );
+    arr = [[1],[2],[3],[4],[5]] 
+  }else{
+    arr = [[0],[1],[2],[3],[4],[5]]
+  }
 
   var table = $('#data_all').DataTable({
-    "retrive": true,
-    "order": [
-        [10, "desc"]
-    ],
-    // "orderCellsTop": true,
     fixedHeader: true,
     pageLength: 50,
     "bLengthChange": false,
     initComplete: function() {
-        this.api().columns([
-            [1],
-            [2],
-            [3],
-            [4],
-            [5],
-            [6],
-            [7]
-        ]).every(function() {
+        this.api().columns(arr).every(function() {
             var column = this;
             var title = $(this).text();
-            var select = $('<select class="form-control kat_drop" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Filter</option></select>')
+            var select = $('<select class="form-control select2 kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Filter</option></select>')
                 .appendTo($("#status").find("td").eq(column.index()))
                 .on('change', function() {
                     var val = $.fn.dataTable.util.escapeRegex(
@@ -528,10 +445,9 @@ Report Range
             column.data().unique().sort().each(function(d, j) {
                 select.append('<option>' + d + '</option>')
             });
-
-            initkat();
-
         });
+
+        $('.kat_drop').select2();
     },
     "footerCallback": function( row, data, start, end, display ) {
         
@@ -546,13 +462,15 @@ Report Range
             i : 0;
           };
 
-          var filtered = api.column( 12, {"filter": "applied"} ).data().sum();
+          var filtered = api.column( 13, {"filter": "applied"} ).data().sum();
 
-          $( api.column( 11 ).footer() ).html("Total Amount");
+          $( api.column(12).footer() ).html("Total Amount");
          
-          $( api.column( 12 ).footer() ).html(numFormat(filtered));
+          $( api.column(13).footer() ).html(numFormat(filtered));
 
     },
+    drawCallback: function() {
+    }
   });
 
   var buttons = new $.fn.dataTable.Buttons(table, {
@@ -577,10 +495,10 @@ Report Range
         extend: 'pdfHtml5',
         footer:true,
         className: 'btn btn-warning',
-        title: 'Report PDF',
+        title: 'Report Lead Register' + ' ' + '(' + moment(new Date()).format('YYYY-MM-DD h:mm:ss a') + ')',
         customize: function(doc) {
           //pageMargins [left, top, right, bottom] 
-          doc.pageMargins = [ 30, 20, 30, 20 ];
+          doc.pageMargins = [ 30, 30, 30, 30 ];
           doc.styles['td:nth-child(5)'] = { 
              width: '100px',
              'max-width': '100px'
@@ -597,7 +515,7 @@ Report Range
                 fontSize: 14,
                 bold: true,
                 alignment: 'right',
-                margin: [0, 0, 0, 0]
+                margin: [10, 10, 10, 10]
             }
         },
 
@@ -607,6 +525,7 @@ Report Range
             modifier: {
                 pageMargins: [0, 0, 0, 0], // try #3 setting margins
                 margin: [0, 0, 0, 0], // try #4 setting margins
+                padding: [5,5,5,5],
                 alignment: 'center'
             },
             body: {
@@ -614,7 +533,7 @@ Report Range
                 pageMargins: [0, 0, 0, 0]
             } // try #5 setting margins         
             ,
-            columns: [0, 8, 9, 10, 11, 12, 13] //column id visible in PDF    
+            columns: [7, 8, 9, 10, 11, 12, 13,14] //column id visible in PDF    
             ,
             format: {
                 body: function ( data, row, column, node ) {
@@ -633,10 +552,6 @@ Report Range
   $('.buttons.pdfHtml5').each(function() {
       $(this).removeClass('btn-default').addClass('btn btn-md btn-warning')
   })
-
-  function initkat() {
-      $('.kat_drop').select2();
-  }
 
   $('.money').mask('000,000,000,000,000', {reverse: true});
 </script>
