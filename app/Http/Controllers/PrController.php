@@ -446,8 +446,9 @@ class PrController extends Controller
     public function getfilteryear(Request $request)
     {
         $filter_pr = DB::table('tb_pr')
-                        ->join('users', 'users.nik', '=', 'tb_pr.from')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
+                        ->join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+                        ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category')
                         ->where('result', '!=', 'R')
                         ->whereYear('tb_pr.created_at', $request->data)
                         ->get();
