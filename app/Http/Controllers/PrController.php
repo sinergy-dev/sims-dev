@@ -637,167 +637,6 @@ class PrController extends Controller
         return view('report/pr', compact('notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
     }
 
-    public function PoAdmin()
-    {
-        $nik = Auth::User()->nik;
-        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
-        $ter = $territory->id_territory;
-        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
-        $div = $division->id_division;
-        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
-        $pos = $position->id_position; 
-
-        if ($ter != null) {
-            $notif = DB::table('sales_lead_register')
-            ->select('opp_name','nik')
-            ->where('result','OPEN')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notif = DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik')
-            ->where('result','OPEN')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }else{
-             $notif = DB::table('sales_lead_register')
-            ->select('opp_name','nik')
-            ->where('result','OPEN')
-            ->orderBy('created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notifsd= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','SD')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notifsd= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','SD')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notiftp= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','TP')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notiftp= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','TP')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        $datas = DB::table('tb_po')
-                        ->select('no','no_po', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id')
-                        ->get();
-
-        if (Auth::User()->id_position == 'ADMIN') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'ADMIN')
-                            ->get();
-        } elseif (Auth::User()->id_position == 'HR MANAGER') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'HRD')
-                            ->get();
-        } elseif (Auth::User()->id_division == 'FINANCE') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'FINANCE')
-                            ->get();
-        }
-
-
-        return view('report/po', compact('notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
-    }
-
     public function downloadExcelPr(Request $request) {
 
         $spreadsheet = new Spreadsheet();
@@ -807,7 +646,7 @@ class PrController extends Controller
         $spreadsheet->removeSheetByIndex(0);
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->mergeCells('A1:P1');
+        $sheet->mergeCells('A1:O1');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
@@ -821,18 +660,19 @@ class PrController extends Controller
         $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
         $titleStyle['font']['bold'] = true;
 
-        $sheet->getStyle('A1:P1')->applyFromArray($titleStyle);
+        $sheet->getStyle('A1:O1')->applyFromArray($titleStyle);
         $sheet->setCellValue('A1','Purchase Request');
 
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
-        $sheet->getStyle('A2:P2')->applyFromArray($headerStyle);;
+        $sheet->getStyle('A2:O2')->applyFromArray($headerStyle);;
 
-        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "DIVISION", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
+        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
         $sheet->fromArray($headerContent,NULL,'A2');
 
         $dataPR = PR::join('users', 'users.nik', '=', 'tb_pr.from')
-            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','name','division','issuance','project_id','amount')
+            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','name','issuance','project_id','amount')
+            ->whereYear('tb_pr.created_at', $request->year)
             ->get();
 
         foreach ($dataPR as $key => $data) {
@@ -852,10 +692,9 @@ class PrController extends Controller
         $sheet->getColumnDimension('J')->setWidth(25);
         $sheet->getColumnDimension('K')->setWidth(25);
         $sheet->getColumnDimension('L')->setAutoSize(true);
-        $sheet->getColumnDimension('M')->setAutoSize(true);
-        $sheet->getColumnDimension('N')->setWidth(25);
-        $sheet->getColumnDimension('O')->setWidth(45);
-        $sheet->getColumnDimension('P')->setWidth(25);
+        $sheet->getColumnDimension('M')->setWidth(25);
+        $sheet->getColumnDimension('N')->setWidth(45);
+        $sheet->getColumnDimension('O')->setWidth(25);
 
 
         $fileName = 'Daftar Buku Admin (PR) ' . date('Y') . '.xlsx';
