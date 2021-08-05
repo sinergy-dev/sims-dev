@@ -7,6 +7,7 @@ use Auth;
 use DB;
 use App\PR;
 use App\SalesProject;
+use App\User;
 use Illuminate\Support\Facades\Route;
 // use Excel;
 use Validator;
@@ -170,15 +171,6 @@ class PrController extends Controller
 
         $tahun = date("Y");
 
-        $datas = DB::table('tb_pr')
-                        ->join('users', 'users.nik', '=', 'tb_pr.from')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'users.nik')
-                        ->where('result', '!=', 'R')
-                        ->where('date','like',$tahun."%")
-                        ->get();
-
-        // $year_pr = PR::select(substr('date', 1, 4))->groupBy('date');
-
         if (Auth::User()->id_position == 'ADMIN') {
             $notifClaim = DB::table('dvg_esm')
                             ->select('nik_admin', 'personnel', 'type')
@@ -207,25 +199,38 @@ class PrController extends Controller
 
         $pid = SalesProject::select('id_project')->get();
 
-        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp', 'datas','pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
+        $user = User::select('name', 'nik')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->orderBy('name','asc')->get();
+
+        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp' ,'pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim', 'user'))->with(['initView'=> $this->initMenuBase()]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function getCountPr(Request $request)
+    {
+        $total_pr = PR::select('no_pr', 'amount')->whereYear('date', $request->year);
+
+        $count_all = $total_pr->count('no_pr');
+        $count_ipr = $total_pr->where('type_of_letter', 'IPR')->count('no_pr');
+        $count_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->count('no_pr');
+        $amount_all = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->sum('amount');
+        $amount_ipr = $total_pr->where('type_of_letter', 'IPR')->sum('amount');
+        $amount_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->sum('amount');
+
+        return collect([
+            'all'=>[$count_all,strpos((string)$amount_all,".",0) ? (string)$amount_all : (string)$amount_all . ".00"],
+            'ipr'=>[$count_ipr,strpos((string)$amount_ipr,".",0) ? (string)$amount_ipr : (string)$amount_ipr . ".00"],
+            'epr'=>[$count_epr,strpos((string)$amount_epr,".",0) ? (string)$amount_epr : (string)$amount_epr . ".00"],
+            // 'amount'=>strpos((string)$amount_all,".",0) ? (string)$amount_all : (string)$amount_all . ".00",
+            // 'amount_ipr'=>strpos((string)$amount_ipr,".",0) ? (string)$amount_ipr : (string)$amount_ipr . ".00",
+            // 'amount_epr'=>strpos((string)$amount_epr,".",0) ? (string)$amount_epr : (string)$amount_epr . ".00",
+        ]);
+    }
+
+    
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store_pr(Request $request)
     {
         $tahun = date("Y");
