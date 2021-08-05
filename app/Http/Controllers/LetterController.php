@@ -620,6 +620,7 @@ class LetterController extends Controller
         $sheet->fromArray($headerContent,NULL,'A2');
 
         $dataLetter = Letter::select('no_letter','position','type_of_letter','month','date','to','attention','title','project','description','from','division','project_id')
+            ->whereYear('tb_letter.date', $request->year)
             ->get();
 
         $dataLetter->map(function($item,$key) use ($sheet){
