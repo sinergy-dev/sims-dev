@@ -3,7 +3,7 @@
 		<div class="user-panel">
 			<div class="pull-left image">
 				@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-					<img src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" class="img-circle">
+					<img src="{{asset('image/default-user.png')}}" class="img-circle">
 				@else
 					<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="img-circle" alt="User Image">
 				@endif
