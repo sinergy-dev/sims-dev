@@ -117,15 +117,17 @@
               <th>Type</th>
               <th>Month</th>
               <th>Date</th>
+              <th>Category</th>
               <th>To</th>
               <th><div class="truncate">Attention</div></th>
               <th><div class="truncate">Title/Subject</div></th>
-              <th><div class="truncate">Project</div></th>
+              <!-- <th><div class="truncate">Project</div></th> -->
               <th><div class="truncate">Description</div></th>
               <th>From</th>
               <!-- <th>Division</th> -->
               <th>Issuance</th>
               <th>Project ID</th>
+              <th>Amount</th>
               <th>Note</th>
               <th>Action</th>
             </tr>
@@ -147,14 +149,42 @@
           <div class="modal-body">
             <form method="POST" action="{{url('/store_pr')}}" id="modal_pr" name="modal_pr">
             @csrf
-            <div class="form-group">
-              <label for="">Type of Letter</label>
-              <select type="text" class="form-control" name="type" id="type" required onchange="selectType(this.value)">
-                  <option value="">Select Type of Letter</option>
-                  <option value="IPR">IPR (Internal Purchase Request)</option>
-                  <option value="EPR">EPR (Eksternal Purchase Request)</option>
-              </select>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="">Type of Letter</label>
+                  <select type="text" class="form-control" name="type" id="type" required onchange="selectType(this.value)">
+                      <option value="">Select Type of Letter</option>
+                      <option value="IPR">IPR (Internal Purchase Request)</option>
+                      <option value="EPR">EPR (Eksternal Purchase Request)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="">Category</label>
+                  <select type="text" class="form-control select2" name="category" id="category_pr" required style="width: 100%">
+                      <option value="">Select Category</option>
+                      <option value="Barang dan Jasa">Barang dan Jasa</option>
+                      <option value="Barang">Barang</option>
+                      <option value="Jasa">Jasa</option>
+                      <option value="Bank Garansi">Bank Garansi</option>
+                      <option value="Service">Service</option>
+                      <option value="Pajak Kendaraan">Pajak Kendaraan</option>
+                      <option value="ATK">ATK</option>
+                      <option value="Aset">Aset</option>
+                      <option value="Tinta">Tinta</option>
+                      <option value="Training">Training</option>
+                      <option value="Ujian">Ujian</option>
+                      <option value="Tiket">Tiket</option>
+                      <option value="Akomodasi">Akomodasi</option>
+                      <option value="Swab Test">Swab Test</option>
+                      <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
             </div>
+
             <div class="form-group" id="pid" style="display: none;">
               <label for="">Project ID</label>                
               <select type="text" class="form-control select2" name="project_id" id="project_id" style="width: 100%">
@@ -166,70 +196,69 @@
               <span id="makeId" style="cursor: pointer;">other?</span>
             </div>
 
-            <div class="form-group">
-              <div class="input-group" style="display: none;" id="project_idNew">
+            <div class="form-group" id="project_idNew" style="display: none;">
+              <div class="input-group">
                 <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                 <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
               </div>
             </div> 
 
-            <div class="form-group" id="category" style="display:none;">
-              <label for="">Category</label>
-              <select type="text" class="form-control select2" name="category" id="category_pr" required style="width: 100%">
-                  <option value="">Select Category</option>
-                  <option value="Barang">Barang</option>
-                  <option value="Jasa">Jasa</option>
-                  <option value="Service">Service</option>
-                  <option value="Pajak Kendaraan">Pajak Kendaraan</option>
-                  <option value="ATK">ATK</option>
-                  <option value="Aset">Aset</option>
-                  <option value="Tinta">Tinta</option>
-                  <option value="Training">Training</option>
-                  <option value="Ujian">Ujian</option>
-                  <option value="Tiket">Tiket</option>
-                  <option value="Akomodasi">Akomodasi</option>
-                  <option value="Swab Test">Swab Test</option>
-                  <option value="Other">Other</option>
-              </select>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>From</label>
+                  <select type="text" class="form-control" name="from_user" required id="from_user" style="width: 100%">
+                    <option value="">Select From</option>
+                    @foreach($user as $data)
+                    <option value="{{$data->nik}}">{{$data->name}}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="">Position</label>
+                  <select type="text" class="form-control" placeholder="Select Position" name="position" id="position" required>
+                      <option>PMO</option>
+                      <option>PRE</option>
+                      <option>MSM</option>
+                      <option>SAL</option>
+                      <option>FIN</option>
+                      <option>HRD</option>
+                      <option>WHO</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="">Position</label>
-              <select type="text" class="form-control" placeholder="Select Position" name="position" id="position" required>
-                  <option>PMO</option>
-                  <option>PRE</option>
-                  <option>MSM</option>
-                  <option>SAL</option>
-                  <option>FIN</option>
-                  <option>HRD</option>
-                  <option>WHO</option>
-              </select>
-            </div>
             <div class="form-group">
               <label for="">Date</label>
               <div class="input-group date">
                 <div class="input-group-addon">
                   <i class="fa fa-calendar"></i>
                 </div>
-                <input type="text" class="form-control pull-right date" name="date" id="date_pr">
+                <input type="text" class="form-control pull-right date" name="date" id="date_pr" required>
               </div>
             </div>
+
             <div class="form-group">
               <label for="">To (Customer, Distributor, Pihak External)</label>
               <input type="text" class="form-control" placeholder="ex. PT. Sinergy Informasi Pratama" name="to" id="to" required>
             </div> 
+
             <div class="form-group">
               <label for="">Attention/PIC (Customer, DIstributor, Pihak External)</label>
               <input type="text" class="form-control" placeholder="ex. Rama Agastya" name="attention" id="attention" >
             </div> 
+
             <div class="form-group">
               <label for="">Title/Subject</label>
               <input type="text" class="form-control" placeholder="Enter Title" name="title" id="title" >
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="">Project</label>
               <input type="text" class="form-control" placeholder="Enter Project" name="project" id="project" >
-            </div>
+            </div> -->
             <div class="form-group">
               <label for="">Description</label>
               <textarea class="form-control" id="description" name="description" placeholder="Enter Description"></textarea>
@@ -246,10 +275,6 @@
                   <option>WHO</option>
               </select>
             </div> -->
-            <div class="form-group">
-              <label for="">Issuance</label>
-              <input type="text" class="form-control" placeholder="Enter Issuance" name="issuance" id="issuance">
-            </div>
             <div class="form-group">
               <label for="">Amount</label>
               <input type="text" class="form-control" value="0.00" name="amount" id="amount" required>
@@ -289,16 +314,8 @@
               <input type="text" class="form-control" placeholder="Enter Title" name="edit_title" id="edit_title" >
             </div> 
             <div class="form-group">
-              <label for="">Project</label>
-              <input type="text" class="form-control" placeholder="Enter Project" name="edit_project" id="edit_project" >
-            </div>
-            <div class="form-group">
               <label for="">Description</label>
               <textarea type="text" class="form-control" placeholder="Enter Description" name="edit_description" id="edit_description" > </textarea>
-            </div>
-            <div class="form-group">
-              <label for="">Issuance</label>
-              <input type="text" class="form-control" placeholder="Enter Issuance" name="edit_issuance" id="edit_issuance">
             </div>
             <div class="form-group">
               <label for="">Amount</label>
@@ -306,7 +323,7 @@
             </div>
             <div class="form-group">
               <label for="">Project ID</label>
-              <input type="text" class="form-control" placeholder="Enter Project ID" name="edit_project_id" id="edit_project_id">
+              <input type="text" class="form-control" placeholder="Enter Project Id" name="edit_project_id" id="edit_project_id">
             </div>
             <div class="form-group">
               <label for="">Note</label>
