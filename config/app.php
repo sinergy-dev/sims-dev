@@ -37,6 +37,11 @@ return [
             'PUSHER_APP_CLUSTER',
             'MIX_PUSHER_APP_KEY',
             'MIX_PUSHER_APP_KEY_CLUSTER',
+            'GOOGLE_API_KEY',
+            'GOOGLE_API_YEY',
+            'GOOGLE_API_KEY_NEW',
+            'GOOGLE_API_KEY_PRIVATE',
+            'GOOGLE_API_KEY_APP',
         ],
         '_SERVER' => [
             'APP_KEY',
@@ -71,6 +76,11 @@ return [
             'PUSHER_APP_CLUSTER',
             'MIX_PUSHER_APP_KEY',
             'MIX_PUSHER_APP_KEY_CLUSTER',
+            'GOOGLE_API_KEY',
+            'GOOGLE_API_YEY',
+            'GOOGLE_API_KEY_NEW',
+            'GOOGLE_API_KEY_PRIVATE',
+            'GOOGLE_API_KEY_APP',
         ],
         '_POST' => [
             'password',
