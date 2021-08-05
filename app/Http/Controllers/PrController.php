@@ -460,19 +460,14 @@ class PrController extends Controller
     {
         $tahun = date("Y"); 
 
-        return array("data" => PR::join('users', 'users.nik', '=', 'tb_pr.from')
-                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
+        return array("data" => PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+                                ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount')
                                 ->where('result', '!=', 'R')
                                 ->where('date','like',$tahun."%")
                                 ->get());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy_pr($no)
     {
         $hapus = PR::find($no);
