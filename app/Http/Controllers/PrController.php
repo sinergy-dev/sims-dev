@@ -247,7 +247,6 @@ class PrController extends Controller
         $month_pr = substr($edate,5,2);
         $year_pr = substr($edate,0,4);
 
-
         $array_bln = array('01' => "I",
                     '02' => "II",
                     '03' => "III",
@@ -260,148 +259,170 @@ class PrController extends Controller
                     '10' => "X",
                     '11' => "XI",
                     '12' => "XII");
+        $bln = $array_bln[$month_pr];
 
-        if ($cek > 0) {
-            $bln = $array_bln[$month_pr];
+        $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
 
-            $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
-
-            $getnumbers = PR::orderBy('no', 'desc')->first();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }// } else {
-            //    if($getnumber->no > 7){
-            //        $query = PR::where('no', 'like', '%8')->get();
-            //        foreach ($query as $compare) {
-            //             if($getnumber->no == $compare->no){
-            //                $lastnumber = $getnumber->no+2;
-            //             } else {
-            //                $lastnumber = $getnumber->no+1;
-            //             }            
-            //         }
-            //     }
-            // }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-            $nom = PR::select('no')->orderBy('created_at','desc')->first();
-
-            $tambah = new PR();
-            $tambah->no = $nom->no+1;
-            $tambah->no_pr = $no;
-            $tambah->position = $posti;
-            $tambah->type_of_letter = $type;
-            $tambah->month = $bln;
-            $tambah->date = $edate;
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->title = $request['title'];
-            $tambah->project = $request['project'];
-            $tambah->description = $request['description'];
-            $tambah->from = Auth::User()->nik;
-            $tambah->division = $request['division'];
-            $tambah->issuance = $request['issuance'];
-            if ($request['amount'] == NULL) {
-                $amount = $request['amount'];
-            }else{
-                $amount = str_replace(',', '', $request['amount']);
-            }
-            $tambah->amount = $amount;
-            if ($request['project_id'] == null) {
-                $tambah->project_id = $request['project_idInputNew'];
-            }else{
-                $tambah->project_id = $request['project_id'];
-                
-            }
-            $tambah->result = 'T';
-            $tambah->save();
-
-            return redirect('pr')->with('success', 'Created Purchase Request Successfully!');
+        if($getnumber == NULL){
+            $getlastnumber = 1;
+            $lastnumber = $getlastnumber;
         } else{
-            $type = $request['type'];
-            $posti = $request['position'];
+            $lastnumber = $getnumber+1;
+        }
 
-            $bln = $array_bln[$month_pr];
+        if($lastnumber < 10){
+           $akhirnomor = '000' . $lastnumber;
+        }elseif($lastnumber > 9 && $lastnumber < 100){
+           $akhirnomor = '00' . $lastnumber;
+        }elseif($lastnumber >= 100){
+           $akhirnomor = '0' . $lastnumber;
+        }
 
-            $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+        $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+        $nom = PR::select('no')->orderBy('created_at','desc')->first();
 
-            $getnumbers = PR::orderBy('no', 'desc')->first();
+        $tambah = new PR();
+        $tambah->no = $nom->no+1;
+        $tambah->no_pr = $no;
+        $tambah->position = $posti;
+        $tambah->type_of_letter = $type;
+        $tambah->month = $bln;
+        $tambah->date = $edate;
+        $tambah->to = $request['to'];
+        $tambah->attention = $request['attention'];
+        $tambah->title = $request['title'];
+        $tambah->project = $request['project'];
+        $tambah->description = $request['description'];
+        $tambah->from = $request['from_user'];
+        // $tambah->division = $request['division'];
+        $tambah->division == 'PMO';
+        $tambah->issuance = Auth::User()->nik;
+        $tambah->amount = str_replace(',', '', $request['amount']);
+        if ($request['project_id'] == null) {
+            $tambah->project_id = $request['project_idInputNew'];
+        }else{
+            $tambah->project_id = $request['project_id'];
+        }
+        $tambah->category = $request['category'];
+        $tambah->result = 'T';
+        $tambah->save();
 
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }// } else {
-            //    if($getnumber->no > 7){
-            //        $query = PR::where('no', 'like', '%8')->get();
-            //        foreach ($query as $compare) {
-            //             if($getnumber->no == $compare->no){
-            //                $lastnumber = $getnumber->no+2;
-            //             } else {
-            //                $lastnumber = $getnumber->no+1;
-            //             }            
-            //         }
-            //     }
-            // }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-
-            $tambah = new PR();
-            $tambah->no = $getnumbers->no+1;
-            $tambah->no_pr = $no;
-            $tambah->position = $posti;
-            $tambah->type_of_letter = $type;
-            $tambah->month = $bln;
-            $tambah->date = $edate;
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->title = $request['title'];
-            $tambah->project = $request['project'];
-            $tambah->description = $request['description'];
-            $tambah->from = Auth::User()->nik;
-            $tambah->division = $request['division'];
-            $tambah->issuance = $request['issuance'];
-            $tambah->amount = $request['amount'];  
-            if ($request['project_id'] == null) {
-                $tambah->project_id = $request['project_id'];
-            }else{
-                $tambah->project_id = $request['project_idInputNew'];
-                
-            }
-            $tambah->result = 'T';
-            $tambah->save();
-
-            return redirect('pr')->with('success', 'Created Purchase Request Successfully!');
-        }        
+        return redirect('pr')->with('success', 'Created Purchase Request Successfully!');       
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function reportPr()
+    {
+        $year = date("Y");
+        $sidebar_collapse = true;
+
+        return view('admin/report_pr', compact('year', 'sidebar_collapse'))->with(['initView'=> $this->initMenuBase()]);
+    }
+
+    public function getTotalPr()
+    {
+        $year = date('Y');
+        $pie = 0;
+        $total = PR::orderby('type_of_letter')->whereYear('date',$year)->get();
+
+        $first = $total[0]->type_of_letter;
+        $hasil = [0,0];
+        $type_pr = ['IPR', 'EPR'];
+
+        foreach ($type_pr as $key => $value2) {
+            foreach ($total as $value) {
+                    if ($value->type_of_letter == $value2) {
+                        $hasil[$key]++;
+                        $pie++;
+                    }
+                }
+        }
+
+        $hasil2 = [0,0];
+        foreach ($hasil as $key => $value) {
+            $hasil2[$key] = ($value/$pie)*100;
+        }
+
+        return $hasil2;
+    }
+
+    public function getAmountByCategory()
+    {
+        $year = date('Y');
+
+        $total = PR::select(
+                DB::raw('SUM(IF(`category` = "Barang dan Jasa",amount,""))/ SUM(`amount`)*100 AS "Barang dan Jasa"'), 
+                DB::raw('SUM(IF(`category` = "Barang",amount,""))/ SUM(`amount`)*100 AS "Barang"'),
+                DB::raw('SUM(IF(`category` = "Jasa",amount,""))/ SUM(`amount`)*100 AS "Jasa"'), 
+                DB::raw('SUM(IF(`category` = "Bank Garansi",amount,""))/ SUM(`amount`)*100 AS "Bank Garansi"'),
+                DB::raw('SUM(IF(`category` = "Service",amount,""))/ SUM(`amount`) *100  AS "Service"'),
+                DB::raw('SUM(IF(`category` = "Pajak Kendaraan",amount,""))/ SUM(`amount`) *100 AS "Pajak"'),
+                DB::raw('SUM(IF(`category` = "ATK",amount,""))/ SUM(`amount`) *100 AS "ATK"'),
+                DB::raw('SUM(IF(`category` = "Aset",amount,""))/ SUM(`amount`)*100 AS "Aset"'),
+                DB::raw('SUM(IF(`category` = "Tinta",amount,""))/ SUM(`amount`)*100 AS "Tinta"'),
+                DB::raw('SUM(IF(`category` = "Training",amount,""))/ SUM(`amount`)*100 AS "Training"'),
+                DB::raw('SUM(IF(`category` = "Ujian",amount,""))/ SUM(`amount`)*100 AS "Ujian"'),
+                DB::raw('SUM(IF(`category` = "Tiket",amount,""))/ SUM(`amount`)*100 AS "Tiket"'),
+                DB::raw('SUM(IF(`category` = "Akomodasi",amount,""))/ SUM(`amount`)*100 AS "Akomodasi"'),
+                DB::raw('SUM(IF(`category` = "Swab Test",amount,""))/ SUM(`amount`)*100 AS "Swab Test"'),
+                DB::raw('SUM(IF(`category` = "Other",amount,""))/ SUM(`amount`)*100 AS "Other"'),
+            )
+            ->whereYear('date', date('Y'))->get();
+
+        return array("data"=>$total);
+    }
+
+    public function getTotalPrByMonth()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "IPR",1,NULL)) AS "IPR"'),
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "EPR",1,NULL)) AS "EPR"'), 'month'
+            )
+            ->whereYear('date', date('Y'))
+            ->groupBy('month');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalAmountByType()
+    {
+        $data = PR::select(
+                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "IPR",amount,"")) AS "amount_IPR"'),
+                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"'), 'month'
+            )
+            ->whereYear('date', date('Y'))
+            ->groupBy('month');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByCat()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'category'
+            )
+            ->whereYear('date', date('Y'))
+            ->orderBy('nominal', 'desc')
+            ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByPid()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'project_id'
+            )
+            ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+            ->whereYear('date', date('Y'))
+            ->groupBy('project_id');
+
+        return array("data" => $data->get());
+    }
+    
     public function update_pr(Request $request)
     {
         $no = $request['edit_no_pr'];
@@ -410,16 +431,10 @@ class PrController extends Controller
         $update->to = $request['edit_to'];
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
-        $update->project = $request['edit_project'];
         $update->description = $request['edit_description'];
-        $update->issuance = $request['edit_issuance'];
         $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
-        if ($request['edit_amount'] == NULL) {
-            $amount = $request['edit_amount'];
-        }else{
-            $amount = str_replace(',', '', $request['edit_amount']);
-        }
+        $amount = str_replace(',', '', $request['edit_amount']);
         $update->amount = $amount;
 
 
