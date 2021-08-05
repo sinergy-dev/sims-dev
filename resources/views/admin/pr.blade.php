@@ -553,6 +553,7 @@
     }); 
 
     var countPr = []
+    var nominalPr = []
 
     $(document).ready(function(){   
       var year = $('#year_filter').val();
@@ -568,16 +569,16 @@
         //     name: 'IPR', color: 'bg-orange', icon: 'fa fa-list-ul',index: 1
         // },
         {
-            name: 'EPR', color: 'bg-aqua', icon: 'fa fa-list-ul',index: 2
+            name: 'PR', color: 'bg-aqua', icon: 'fa fa-list-ul',index: 2
         },
         {
-            name: 'PR', color: 'bg-yellow', icon: 'fa fa-gear',index: 3
+            name: 'IPR', color: 'bg-yellow', icon: 'fa fa-signal',index: 3
         },
         {
-            name: 'IPR', color: 'bg-green', icon: 'fa fa-cross',index: 4
+            name: 'EPR', color: 'bg-green', icon: 'fa fa-files-o',index: 4
         },
         {
-            name: 'EPR', color: 'bg-red', icon: "fa fa-plus",index: 5
+            name: '-', color: 'bg-red', icon: "fa fa-plus",index: 5
         }
       ]
 
@@ -610,21 +611,23 @@
             prepend = prepend + '<div class="small-box ' + value.color + '">'
                 prepend = prepend + '<div class="inner">'
                     prepend = prepend + '<div class="txt_serif stats_item_number">'
-                    prepend = prepend + '<h3>'+ value.name +'</h3>'
-                        prepend = prepend + '<p class="counter" id="count_pr_'+value.index+'"></p>'
+                    prepend = prepend + '<h3>'+ value.name +' <small style="color:white" id="count_pr_'+value.index+'">-</small></h3>'
+                        prepend = prepend + '<p class="counter" id="nominal_pr_'+value.index+'">-</p>'
                     prepend = prepend + '</div>'
                 prepend = prepend + '</div>'
                 prepend = prepend + '<div class="icon">'
                     prepend = prepend + '<i class="'+ value.icon +'"></i>'
                     prepend = prepend + '</div>'
-                prepend = prepend + '<div class="small-box-footer">More Info</div>' 
+                prepend = prepend + '<div class="small-box-footer"> - </div>' 
                 prepend = prepend + '</div>'
             prepend = prepend + '</div>'
         prepend = prepend + '</div>'  
 
         id = "count_pr_"+value.index
+        nominal = "nominal_pr_"+value.index
         $("#count_pr_"+value.index).mask("000.000.000.000,00", {reverse: true});
         countPr.push(id)
+        nominalPr.push(nominal)
       })
 
       $("#BoxId").prepend(prepend)
@@ -648,15 +651,15 @@
             year:year,
           },
           success:function(result){
-              $("#"+countPr[0]).text(result.all)
-              $("#"+countPr[1]).text(result.ipr)
-              $("#"+countPr[2]).text(result.epr)
-              $("#"+countPr[3]).text(result.amount);
-              $("#"+countPr[3]).mask("000.000.000.000.000,00", {reverse: true})
-              $("#"+countPr[4]).text(result.amount_ipr);
-              $("#"+countPr[4]).mask("000.000.000.000.000,00", {reverse: true})
-              $("#"+countPr[5]).text(result.amount_epr);
-              $("#"+countPr[5]).mask("000.000.000.000.000,00", {reverse: true})
+              $("#"+countPr[0]).text(result.all[0])
+              $("#"+countPr[1]).text(result.ipr[0])
+              $("#"+countPr[2]).text(result.epr[0])
+              $("#"+nominalPr[0]).text(result.all[1]);
+              $("#"+nominalPr[0]).mask("000.000.000.000.000,00", {reverse: true})
+              $("#"+nominalPr[1]).text(result.ipr[1]);
+              $("#"+nominalPr[1]).mask("000.000.000.000.000,00", {reverse: true})
+              $("#"+nominalPr[2]).text(result.epr[1]);
+              $("#"+nominalPr[2]).mask("000.000.000.000.000,00", {reverse: true})
           }
         })
       })
