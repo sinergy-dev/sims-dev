@@ -32,11 +32,6 @@
 							<li class="activeable_menu">
 								<a href="{{url($chid->url)}}">
 									<i class="fa fa-circle-o"></i>{{$chid->name}}									
-									@if($chid->notif_status == "on")
-									<span class="pull-right-container">
-							    		<!-- <small class="label pull-right bg-red" id="{!! str_replace(' ', '_', $chid->name) !!}"></small> -->
-							    	</span>
-									@endif
 								</a>
 							</li>
 						@endforeach
