@@ -389,13 +389,10 @@
     function selectType(val){
       console.log(val)
       if (val == 'IPR') {
-        $("#category").css("display", "block");
         $("#pid").css("display", "none");
       }else if(val == 'EPR'){
         $("#pid").css("display", "block");
-        $("#category").css("display", "block");
       } else {
-        $("#category").css("display", "none");
         $("#pid").css("display", "none");
       }
     }
@@ -414,15 +411,20 @@
       dropdownParent:$("#modal_pr")
     })
 
-    // $('#category').select2({
-    //   dropdownParent:$("#modal_pr")
-    // });
+    $('#category_pr').select2({
+      dropdownParent:$("#modal_pr")
+    });
+
+    $('#from_user').select2({
+      dropdownParent:$("#modal_pr")
+    });
 
     $('#date_pr').datepicker({
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
 
-    function edit_pr(no,to,attention,title,project,description,issuance,project_id,note) {
+    function edit_pr(no,to,attention,title,description,amount,project_id,note) {
+      console.log(amount)
       $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
       $('#edit_to').val(to);
@@ -438,22 +440,17 @@
         $('#edit_title').val(title);
       }
 
-      if (project == "null") {
-        '';
-      } else {
-        $('#edit_project').val(project);
-      }
-
       if (description == "null") {
         '';
       } else {
         $('#edit_description').val(description);
       }
 
-      if (issuance == "null") {
+      if (amount == "null") {
         '';
       } else {
-        $('#edit_issuance').val(issuance);
+        $("#edit_amount").mask('000,000,000,000.00', {reverse: true})
+        $('#edit_amount').val(amount.toString()).trigger("input")
       }
 
       if (project_id == "null") {
@@ -483,8 +480,9 @@
           "dataSrc": function (json){
 
             json.data.forEach(function(data,index){
-              if("{{Auth::User()->nik}}" == data.from) {
-                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.issuance+ '","' +data.project_id+ '","' +data.note+ '"'
+              // console.log(data.amount)
+              if("{{Auth::User()->nik}}" == data.issuance_nik) {
+                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.note+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
@@ -501,6 +499,7 @@
           { "data": "type_of_letter" },
           { "data": "month" },
           { "data": "date" },
+          { "data": "category"},
           { "data": "to" },
           {
              "render": function ( data, type, row, meta ) {
@@ -520,15 +519,15 @@
                 }
               }
           },
-          {
-             "render": function ( data, type, row, meta ) {
-                if (row.project == null) {
-                  return '<div class="truncate"> - </div>'
-                } else {
-                  return '<div class="truncate">' + row.project + '</div>'                  
-                }
-              }
-          },
+          // {
+          //    "render": function ( data, type, row, meta ) {
+          //       if (row.project == null) {
+          //         return '<div class="truncate"> - </div>'
+          //       } else {
+          //         return '<div class="truncate">' + row.project + '</div>'                  
+          //       }
+          //     }
+          // },
           {
              "render": function ( data, type, row, meta ) {
                 if (row.description == null) {
@@ -538,10 +537,15 @@
                 }
               }
           },
-          { "data": "name" },
+          { "data": "user_from" },
           // { "data": "division" },
           { "data": "issuance" },
           { "data": "project_id" },
+          { 
+            render: function ( data, type, row ) {
+              return new Intl.NumberFormat('id').format(row.amount)
+            }
+          },
           { "data": "note" },
           {
             "className": 'btn_edit',
