@@ -248,7 +248,6 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/delete_po_customer/{id_tb_po_cus}','SalesController@delete_po');
 
 	Route::get('/pr', 'PrController@index');
-	Route::get('/PoAdmin', 'PrController@PoAdmin');
 	Route::post('/store_pr', 'PrController@store_pr');
 	Route::post('/update_pr','PrController@update_pr');
 	Route::get('/delete_pr/{id_pr}','PrController@destroy_pr');
@@ -257,6 +256,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getfilteryearpr', 'PrController@getfilteryear');
 	Route::get('/getdatapr', 'PrController@getdatapr');
 	Route::get('/getCountPr', 'PrController@getCountPr');
+	Route::get('/reportPr', 'PrController@reportPr');
+	Route::get('/getTotalPrbyType', 'PrController@getTotalPr');
+	Route::get('/getTotalPrByMonth', 'PrController@getTotalPrByMonth');
+	Route::get('/getTotalAmountByType', 'PrController@getTotalAmountByType');
+	Route::get('/getAmountByCategory', 'PrController@getAmountByCategory');
+	Route::get('/getTotalNominalByCat', 'PrController@getTotalNominalByCat');
+	Route::get('/getTotalNominalByPid', 'PrController@getTotalNominalByPid');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
