@@ -1019,7 +1019,7 @@ class SalesLeadController extends Controller
             $update_quo->update();
 
             if ($request['quote_number_final'] != 'Choose Quote') {
-                $update_status_quo = Quote::where('id_quote', $request['quote_number_final'])->first();
+                $update_status_quo = Quote::where('quote_number', $request['quote_number_final'])->first();
                 $update_status_quo->status = 'choosed';
                 $update_status_quo->update();
             }
