@@ -673,7 +673,7 @@ Detail Lead Register
 	}
 
 		function initmoney(){
-			$(".money").mask('000.000.000', {reverse: true})
+			$(".money").mask('000.000.000.000', {reverse: true})
 		}
 
 		function textAreaAdjust(element) {
