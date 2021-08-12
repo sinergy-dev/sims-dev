@@ -3129,12 +3129,24 @@ Ticketing
 	}
 
 	function getPerformanceByClient(client){
-		if(client == "BTNI"){
-			$("#tablePerformance").DataTable().column(1).visible(false)
-			$("#tablePerformance").DataTable().column(2).visible(false)
+		console.log($.fn.dataTable.isDataTable("#tablePerformance"))
+
+		if($.fn.dataTable.isDataTable("#tablePerformance")){
+			if(client == "BTNI"){
+				$("#tablePerformance").DataTable().column(1).visible(false)
+				$("#tablePerformance").DataTable().column(2).visible(false)
+			} else {
+				$("#tablePerformance").DataTable().column(1).visible(true)
+				$("#tablePerformance").DataTable().column(2).visible(true)
+			}
 		} else {
-			$("#tablePerformance").DataTable().column(1).visible(true)
-			$("#tablePerformance").DataTable().column(2).visible(true)
+			if(client == "BTNI"){
+				$(".columnIdAtm").hide()
+				$(".columnTicketNum").hide()
+			} else {
+				$(".columnIdAtm").show()
+				$(".columnTicketNum").show()
+			}
 		}
 		
 		$('#clientList').find(".buttonFilter" + client).removeClass('btn-default').addClass('btn-primary')
