@@ -955,6 +955,10 @@ Route::get('/ticketing/mail/sendEmailPending','TicketingController@sendEmailPend
 Route::get('/ticketing/mail/getCloseMailTemplate','TicketingController@getCloseMailTemplate');
 Route::get('/ticketing/mail/sendEmailClose','TicketingController@sendEmailClose');
 
+Route::get('/ticketing/mail/getEscalateMailTemplate', 'TicketingController@getEscalateMailTemplate');
+Route::get('/ticketing/mail/sendEmailEscalate', 'TicketingController@sendEmailEscalate');
+Route::get('/ticketing/saveEscalate', 'TicketingController@saveEscalate');
+
 Route::get('/ticketing/setting/getSettingClient','TicketingController@getSettingClient');
 Route::post('/ticketing/setting/setSettingClient' , 'TicketingController@setSettingClient');
 
