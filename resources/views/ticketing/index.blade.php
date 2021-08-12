@@ -607,8 +607,8 @@ Ticketing
 								<table class="table table-bordered table-striped dataTable" id="tablePerformance">
 									<thead>
 										<th style="width: 120px;text-align:center;vertical-align: middle;">ID Ticket</th>
-										<th style="width: 100px;text-align:center;vertical-align: middle;">ID ATM*</th>
-										<th style="width: 100px;text-align:center;vertical-align: middle;">Ticket Number</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnIdAtm">ID ATM*</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnTicketNum">Ticket Number</th>
 										<th style="width: 100px;text-align:center;vertical-align: middle;">Open</th>
 										<th style="vertical-align: middle;">Problem</th>
 										<th style="text-align: center;vertical-align: middle;">PIC</th>
@@ -619,8 +619,8 @@ Ticketing
 									</thead>
 									<tfoot>
 										<th style="width: 120px;text-align:center;vertical-align: middle;">ID Ticket</th>
-										<th style="width: 100px;text-align:center;vertical-align: middle;">ID ATM*</th>
-										<th style="width: 100px;text-align:center;vertical-align: middle;">Ticket Number</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnIdAtm">ID ATM*</th>
+										<th style="width: 100px;text-align:center;vertical-align: middle;" class="columnTicketNum">Ticket Number</th>
 										<th style="width: 100px;text-align:center;vertical-align: middle;">Open</th>
 										<th style="vertical-align: middle;">Problem</th>
 										<th style="text-align: center;vertical-align: middle;">PIC</th>
