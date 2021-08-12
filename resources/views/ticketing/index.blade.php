@@ -2917,7 +2917,7 @@ Ticketing
 				textSwal = "Make sure there is nothing wrong to send this " + typeActivity + " ticket!"
 			}
 			swalPopUp(typeAlert,typeActivity,typeAjax,urlAjax,dataAjax,textSwal,function(){
-				$("#performance").click();
+				$("#performanceTab").click();
 				// $("#modal-cancel").modal('toggle');
 				// $("#modal-next-cancel").modal('toggle');
 				// $("#modal-ticket").modal('toggle');
