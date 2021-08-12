@@ -219,7 +219,7 @@ Ticketing
 							<div class="row">
 								<div class="col-md-6 col-sm-6">
 									<div class="info-box bg-red">
-										<span class="info-box-icon" onclick="getSeverity(1)"><i class="fa fa-caret-square-o-up"></i></span>
+										<span class="info-box-icon severityCounter" title="Show all Critical Ticket" onclick="getSeverity(1)"><i class="fa fa-caret-square-o-up"></i></span>
 										<div class="info-box-content">
 											<span class="info-box-text">Critical</span>
 											<span class="info-box-number" id="countCritical"></span>
@@ -234,7 +234,7 @@ Ticketing
 								
 								<div class="col-md-6 col-sm-6">
 									<div class="info-box bg-orange">
-										<span class="info-box-icon" onclick="getSeverity(2)"><i class="fa fa-caret-square-o-right"></i></span>
+										<span class="info-box-icon severityCounter" title="Show all Major Ticket" onclick="getSeverity(2)"><i class="fa fa-caret-square-o-right"></i></span>
 										<div class="info-box-content">
 											<span class="info-box-text">Major</span>
 											<span class="info-box-number" id="countMajor"></span>
@@ -248,7 +248,7 @@ Ticketing
 
 								<div class="col-md-6 col-sm-6">
 									<div class="info-box"style="background-color: #f1c40f;color: #fff !important;">
-										<span class="info-box-icon"  onclick="getSeverity(3)"><i class="fa fa-caret-square-o-down"></i></span>
+										<span class="info-box-icon severityCounter" title="Show all Moderate Ticket" onclick="getSeverity(3)"><i class="fa fa-caret-square-o-down"></i></span>
 										<div class="info-box-content">
 											<span class="info-box-text">Moderate</span>
 											<span class="info-box-number" id="countModerate"></span>
@@ -261,7 +261,7 @@ Ticketing
 								</div>
 								<div class="col-md-6 col-sm-6">
 									<div class="info-box bg-green" >
-										<span class="info-box-icon" onclick="getSeverity(4)"><i class="fa fa-caret-square-o-down"></i></span>
+										<span class="info-box-icon severityCounter" title="Show all Minor Ticket" onclick="getSeverity(4)"><i class="fa fa-caret-square-o-down"></i></span>
 										<div class="info-box-content">
 											<span class="info-box-text">Minor</span>
 											<span class="info-box-number" id="countMinor"></span>
