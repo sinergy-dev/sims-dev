@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Http\Models\TicketingPendingReminder;
-use App\Http\Models\TicketingActivity;
+use App\TicketingPendingReminder;
+use App\TicketingActivity;
 
 class PendingReminder extends Command
 {
