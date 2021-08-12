@@ -464,6 +464,56 @@ class TicketingController extends Controller
 
 	}
 
+	public function getPerformanceBySeverity(Request $req){
+		$occurring_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(id) AS activity"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			->where('ticketing__activity.activity','<>','CANCEL')
+			->where('ticketing__activity.activity','<>','CLOSE')
+			->get();
+
+		$occurring_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->whereIn('id_ticket',$occurring_ticket->pluck('id_ticket'))
+			->where('severity',$req->severity)
+			->orderBy('id','DESC')
+			->get();
+
+		$finish_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(`id`) AS `activity`"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
+			->orderBy('ticketing__activity.id','DESC')
+			->get()
+			->pluck('id_ticket');
+
+		$finish_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+			])
+			->whereIn('id_ticket',$finish_ticket)
+			->where('severity',$req->severity)
+			->take(100 - $occurring_ticket_result->count())
+			->orderBy('id','DESC')
+			->get();
+
+		$result = $occurring_ticket_result->merge($finish_ticket_result);
+
+		return array('data' => $result);
+	}	
+
 	public function setUpdateTicket(Request $req){
 
 		if(isset($req->email)){
