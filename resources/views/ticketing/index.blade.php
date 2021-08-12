@@ -65,6 +65,9 @@ Ticketing
 		cursor: pointer;
 		display: block;
 	}
+	.severityCounter:hover {
+		cursor: pointer;
+	} 
 </style>
 @endsection
 @section('content')
