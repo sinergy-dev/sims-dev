@@ -667,7 +667,6 @@ class SalesLeadController extends Controller
                 ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name','tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales', 
                     DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif", 'id_product_tag', 'id_tech'))
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
-                ->where('year', date('Y'))
                 ->where('result', '!=', 'hmm')
                 ->orderBy('created_at', 'desc');
 
@@ -1020,7 +1019,7 @@ class SalesLeadController extends Controller
             $update_quo->update();
 
             if ($request['quote_number_final'] != 'Choose Quote') {
-                $update_status_quo = Quote::where('id_quote', $request['quote_number_final'])->first();
+                $update_status_quo = Quote::where('quote_number', $request['quote_number_final'])->first();
                 $update_status_quo->status = 'choosed';
                 $update_status_quo->update();
             }
