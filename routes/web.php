@@ -977,3 +977,10 @@ Route::get('/ticketing/setting/newAbsen','TicketingController@newAbsen');
 Route::get('/ticketing/setting/setAbsen','TicketingController@setAbsen');
 Route::get('/ticketing/setting/deleteAbsen','TicketingController@deleteAbsen');
 Route::get('/ticketing/setting/getDetailAtm','TicketingController@getDetailAtm');
+
+Route::get('/ticketing/report/getParameter','TicketingController@getReportParameter');
+Route::get('/ticketing/report/make','TicketingController@makeReportTicket');
+Route::get('/ticketing/report/download','TicketingController@downloadReportTicket');
+Route::get('/ticketing/report/new','TicketingController@getReportNew');
+Route::get('/ticketing/report/newDeny','TicketingController@getReportNewDeny');
+
