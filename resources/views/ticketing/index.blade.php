@@ -2123,6 +2123,11 @@ Ticketing
 		});
 	}
 
+	function getSeverity(severity){
+		$("#performanceTab").click()
+		$("#tablePerformance").DataTable().ajax.url('/ticketing/getPerformanceBySeverity?severity=' + severity).load();
+	}
+
 	function reserveIdTicket() {
 		if("{Auth::check()}"){
 			$.ajax({
