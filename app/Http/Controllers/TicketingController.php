@@ -709,6 +709,43 @@ class TicketingController extends Controller
 		return $activityTicketUpdate;
 	}
 
+	public function getEscalateMailTemplate(){
+		return view('ticketing.mail.EscalateTicket');
+	}
+
+	public function saveEscalate(Request $req){
+		
+		$escalateTicket = new TicketingEscalateEngineer();
+		$escalateTicket->id_ticket = $req->id_ticket;
+		$escalateTicket->engineer_name = $req->nameEngineer;
+		$escalateTicket->engineer_contact = $req->contactEngineer;
+		$escalateTicket->rca = $req->rca;
+		$escalateTicket->date_add = Carbon::now()->toDateTimeString();
+		$escalateTicket->status = "ON PROGRESS";
+		$escalateTicket->save();
+
+		$ticket = TicketingDetail::where('id_ticket','=',$req->id_ticket)->first();
+
+		$this->checkPendingReminder($req->id_ticket);
+
+		$activityTicketUpdate = new TicketingActivity();
+		$activityTicketUpdate->id_ticket = $req->id_ticket;
+		$activityTicketUpdate->date = Carbon::now()->toDateTimeString();
+		$activityTicketUpdate->activity = "ON PROGRESS";
+		$activityTicketUpdate->operator = Auth::user()->name;
+		$activityTicketUpdate->note = "Engineer Escalation from " . $ticket->engineer . " to " . $req->nameEngineer . " (" . $req->contactEngineer . ")";
+
+
+		$activityTicketUpdate->save();
+		$ticket->engineer = $req->nameEngineer . " (" . $req->contactEngineer . ")";
+		$ticket->save();
+	}
+
+	public function sendEmailEscalate(Request $req){
+		$mail = $this->sendEmail($req->to,$req->cc,$req->subject,$req->body);
+		$this->saveEscalate($req);
+	}
+
 	public function getSettingClient(Request $req){
 		$result = DB::table('ticketing__client')
 			->where('id','=',$req->id)
