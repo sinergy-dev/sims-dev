@@ -209,6 +209,14 @@ class TicketingController extends Controller
 			->get()->all();
 	}
 
+	public function getAbsenId(Request $req){
+		return TicketingAbsen::select(
+				'id',
+				DB::raw('CONCAT(`nama_cabang`," - ", `nama_kantor`) AS `text`')
+			)
+			->get()->all();
+	}
+
 	public function getAtmDetail(Request $request){
 		return TicketingATM::where('id',$request->id_atm)->first();
 	}
