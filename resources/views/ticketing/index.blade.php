@@ -1955,10 +1955,45 @@ Ticketing
 			minuteStep: 15,
 			maxHours: 24,
 			showMeridian: false,
-			// showSeconds:true,
 		});
 
 		$("#atmAddActivation, #atmEditActivation").inputmask("date");
+
+		$('#searchBarTicket').keypress(function(e){
+			if(e.keyCode == 13){
+				$("#tablePerformance").DataTable().search($('#searchBarTicket').val()).draw();
+			}
+		});
+
+		$('#searchBarATM').keypress(function(e){
+			if(e.keyCode == 13){
+				$("#tableAtm").DataTable().search($('#searchBarATM').val()).draw();
+			}
+		});
+
+		$('#searchBarAbsen').keypress(function(e){
+			if(e.keyCode == 13){
+				$("#tableAbsen").DataTable().search($('#searchBarAbsen').val()).draw();
+			}
+		});
+
+		$('#applyFilterTablePerformance').click(function(){
+			$("#tablePerformance").DataTable().search($('#searchBarTicket').val()).draw();
+		})
+
+		$('#applyFilterTableATM').click(function(){
+			$("#tableAtm").DataTable().search($('#searchBarATM').val()).draw();
+		})
+
+		$('#applyFilterTableAbsen').click(function(){
+			$("#tableAbsen").DataTable().search($('#searchBarAbsen').val()).draw();
+		})
+
+		$('#clearFilterTable').click(function(){
+			$('#searchBarTicket').val('')
+			$('#tablePerformance').DataTable().search('').draw();
+		});
+
 	})
 
 	function getDashboard(){
