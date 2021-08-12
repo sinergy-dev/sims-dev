@@ -4054,6 +4054,185 @@ Ticketing
 		}
 	}
 
+	function escalateTicket(id){
+		$("#modal-escalate").modal('toggle');
+	}
+
+	function prepareEscalateEmail() {
+		if($("#escalateRCA").val() == "" && $("#escalateNameEngineer").val() == "" && $("#escalateContactEngineer").val() == ""){
+			swalWithCustomClass.fire(
+				'Error',
+				'You must fill RCA, Name and Contact Engineer!',
+				'error'
+			)
+		} else if($("#escalateRCA").val() == ""){
+			swalWithCustomClass.fire(
+				'Error',
+				'You must fill RCA!',
+				'error'
+			)
+		} else if($("#escalateNameEngineer").val() == ""){
+			swalWithCustomClass.fire(
+				'Error',
+				'You must fill Name Next Engineer!',
+				'error'
+			)
+		} else if($("#escalateContactEngineer").val() == ""){
+			swalWithCustomClass.fire(
+				'Error',
+				'You must fill Contact Next  Engineer!',
+				'error'
+			)
+		} else {
+			swalWithCustomClass.fire({
+				title: 'Would you like?',
+				text: "do you want to send this ecalate email?",
+				icon: 'warning',
+				showDenyButton: true,
+				denyButton: 'btn btn-flat btn-danger swal2-margin',
+				confirmButton: 'btn btn-flat btn-success swal2-margin',
+				confirmButtonText: 'Yes',
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$(".help-block").hide()
+					$.ajax({
+						url:"{{url('/ticketing/mail/getEscalateMailTemplate')}}",
+						type:"GET",
+						success: function (result){
+							$("#bodyEscalateMail").html(result);
+						}
+					})
+
+					$.ajax({
+						url:"{{url('/ticketing/mail/getEmailData')}}",
+						type:"GET",
+						data:{
+							id_ticket:$('#ticketID').val()
+						},
+						success: function (result){
+							// Holder Escalate
+
+							$(".holderEscalateID").text(result.ticket_data.id_ticket);
+							$(".holderEscalateRefrence").text(result.ticket_data.refrence);
+							$(".holderEscalatePIC").text(result.ticket_data.pic);
+							$(".holderEscalateContact").text(result.ticket_data.contact_pic);
+							$(".holderEscalateLocation").text(result.ticket_data.location);
+							$(".holderEscalateLocationHeader").text(result.ticket_data.location);
+							$(".holderEscalateProblem").text(result.ticket_data.problem);
+							$(".holderEscalateProblemHeader").text(result.ticket_data.problem);
+							$(".holderEscalateSerial").text(result.ticket_data.serial_device);
+							$(".holderEscalateSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+							
+							$(".holderEscalateIDATM").text(result.ticket_data.id_atm);
+
+							$(".holderEscalateNote").text("");
+							$(".holderEscalateEngineer").text(result.ticket_data.engineer);
+
+							var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
+
+							$(".holderEscalateDate").text(waktu);
+
+							$(".holderEscalateStatus").html("<b>ESCALATE</b>");
+							$(".holderNumberTicket").text($("#ticketNumber").val());
+
+							// Email Reciver
+							$('.emailMultiSelector ').remove()
+							// $("#emailEscalateTo").val(result.ticket_reciver.close_to)
+							$("#emailEscalateTo").emailinput({ onlyValidValue: true, delim: ';' });
+							// $("#emailEscalateCc").val(result.ticket_reciver.close_cc)
+							$("#emailEscalateCc").emailinput({ onlyValidValue: true, delim: ';' });
+
+							$("#emailEscalateSubject").val("Escalate Tiket " + $(".holderEscalateProblem").text() + " [" + $(".holderEscalateLocation").text() +"]");
+							
+							$(".emailEscalateHeader").html($("#escalateNameEngineer").val());
+							$(".holderEscalateNote").html("-");
+							$(".holderEscalateRCA").html($("#escalateRCA").val());
+
+							$(".holderEscalateCustomer").text(result.ticket_reciver.client_name);
+
+							if(result.ticket_reciver.client_acronym  == "BJBR" || 
+								result.ticket_reciver.client_acronym  == "BSBB" || 
+								result.ticket_reciver.client_acronym  == "BRKR" || 
+								result.ticket_reciver.client_acronym  == "BPRKS"
+								){
+								$(".holderEscalateIDATM2").show();
+								$(".holderNumberTicket2").show();
+							} else {
+								$(".holderEscalateIDATM2").hide();
+								$(".holderNumberTicket2").hide();
+							}
+
+							$(".holderEscalateWaktu").html("<b>" + moment().format("DD MMMM YYYY (HH:mm)") + "</b>");
+						},
+						complete: function(){
+							$("#modal-next-escalate").modal('toggle');
+						}
+					})
+				} else if (result.isDenied) {
+					 var dataAjax = {
+						id_ticket:$("#ticketID").val(),
+						contactEngineer:$("#escalateContactEngineer").val(),
+						nameEngineer:$("#escalateNameEngineer").val(),
+						rca:$("#escalateRCA").val(),
+					}
+
+					swalPopUp(
+						"warning",
+						"Escalate",
+						"GET",
+						"{{url('/ticketing/saveEscalate')}}",
+						dataAjax,
+						"Make sure the RCA, Name and Contact for the next engineer are correct and appropriate.",
+						function(){
+							$("#modal-escalate").modal('toggle')
+							$("#modal-ticket").modal('toggle');
+
+						}
+					)
+				}
+			})
+		}
+	}
+
+	function sendEscalateEmail(){
+		if($("#emailEscalateTo").val() == ""){
+			$("#emailEscalateTo").parent().parent().addClass("has-error")
+			$("#emailEscalateTo").parent().siblings().last().show()
+			swalWithCustomClass.fire('Error',"You have to fill in the 'email to' for escalating a ticket!",'error');
+		} else {
+			$("#emailEscalateTo").parent().parent().removeClass("has-error")
+			$("#emailEscalateTo").parent().siblings().last().hide()
+
+			var typeAlert = 'warning'
+			var typeActivity = 'Escalate'
+			var typeAjax = "GET"
+			var urlAjax = "{{url('/ticketing/mail/sendEmailEscalate')}}"
+			var dataAjax = {
+				id_ticket:$("#ticketID").val(),
+				contactEngineer:$("#escalateContactEngineer").val(),
+				nameEngineer:$("#escalateNameEngineer").val(),
+				rca:$("#escalateRCA").val(),
+				body:$("#bodyEscalateMail").html(),
+				subject: $("#emailEscalateSubject").val(),
+				to: $("#emailEscalateTo").val(),
+				cc: $("#emailEscalateCc").val(),
+			}
+
+			var textSwal = ""
+			if($("#emailEscalateCc").val() == ""){
+				textSwal = "This ticket does not have a CC on the email recipient for this " + typeActivity + " ticket!"
+			} else {
+				textSwal = "Make sure the name and contact for the next engineer are correct and appropriate."
+			}
+
+			swalPopUp(typeAlert,typeActivity,typeAjax,urlAjax,dataAjax,textSwal,function(){
+				$("#modal-next-escalate").modal('toggle');
+				$("#modal-escalate").modal('toggle');
+				$("#modal-ticket").modal('toggle');
+			})
+		}
+	}
+
 	function emailSetting(){
 		$(".settingComponent").hide()
 		$("#emailSetting").show()
