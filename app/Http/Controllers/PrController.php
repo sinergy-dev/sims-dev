@@ -670,9 +670,10 @@ class PrController extends Controller
         $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
         $sheet->fromArray($headerContent,NULL,'A2');
 
-        $dataPR = PR::join('users', 'users.nik', '=', 'tb_pr.from')
-            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','name','issuance','project_id','amount')
-            ->whereYear('tb_pr.created_at', $request->year)
+        $dataPR = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+            ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount')
+            ->whereYear('tb_pr.date', $request->year)
             ->get();
 
         foreach ($dataPR as $key => $data) {
