@@ -3233,14 +3233,28 @@ Ticketing
 				$("#ticketNumber").val(result.ticket_number_3party);
 
 				$("#ticketActivity").empty();
+				var textColor = "";
 				$.each(result.all_activity_ticket,function(key,value){
-					$("#ticketActivity").append('<li>' + moment(value.date).format("DD MMMM - HH:mm") + ' [' + value.operator + '] - ' + value.note + '</li>');
+					if(value.activity == "PENDING"){
+						textColor = 'text-yellow'
+					} else if(value.activity == "CLOSE"){
+						textColor = 'text-green'
+					} else if(value.activity == "OPEN"){
+						textColor = 'text-red'
+					} else if(value.activity == "CANCEL"){
+						textColor = 'text-purple'
+					} else if(value.activity == "ON PROGRESS"){
+						textColor = 'text-primary'
+					} else {
+						textColor = ''
+					}
+					$("#ticketActivity").append('<li><b class="' + textColor + '">' + moment(value.date).format("DD MMMM - HH:mm") + ' [' + value.operator + ']</b><br>' + value.note + '</li>');
 				});
 
 				if(result.reporting_time != "Invalid date"){
-					$("#ticketActivity").append('<li>Reporting time : ' + moment(result.reporting_time).format("DD MMMM - HH:mm") + ' </li>');
+					$("#ticketActivity").append('<li><b class="text-muted">' + moment(result.reporting_time).format("DD MMMM - HH:mm") + ' - Reporting time</b></li>');
 				} else {
-					$("#ticketActivity").append('<li>Reporting time : ' + result.reporting_time + '</li>');
+					$("#ticketActivity").append('<li><b class="text-muted">' + result.reporting_time + ' - Reporting time</b></li>');
 				}
 
 				$(".holderCloseSeverity").text(result.severity + " (" + severityType + ")");
