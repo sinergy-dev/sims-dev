@@ -968,6 +968,8 @@ Route::get('/ticketing/setting/newAtm','TicketingController@newAtm');
 Route::get('/ticketing/setting/newAtmPeripheral','TicketingController@newAtmPeripheral');
 Route::get('/ticketing/setting/setAtm','TicketingController@setAtm');
 Route::get('/ticketing/setting/deleteAtm','TicketingController@deleteAtm');
+Route::get('/ticketing/setting/editAtmPeripheral','TicketingController@editAtmPeripheral');
+Route::get('/ticketing/setting/deleteAtmPeripheral','TicketingController@deleteAtmPeripheral');
 
 Route::get('/ticketing/setting/getAllAbsen', 'TicketingController@getAllAbsenSetting');
 Route::get('/ticketing/setting/getDetailAbsen','TicketingController@getDetailAbsen');
