@@ -289,7 +289,7 @@
               <div class="input-group-addon">
                 <i class="fa fa-calendar"></i>
               </div>
-              <input type="text" class="form-control pull-right date" name="date" id="date_backdate">
+              <input type="text" class="form-control pull-right date" name="date" id="date_backdate" readonly>
             </div>
           </div>
           <div class="form-group">
