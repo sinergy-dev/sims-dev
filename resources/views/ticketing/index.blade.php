@@ -2584,6 +2584,27 @@ Ticketing
 		}
 	});
 
+	$("#inputAbsenLocation").change(function(){
+		if(this.value === "Select One"){
+			$("#inputType").val("");
+			$("#inputIpMechine").val("");
+			$("#inputIpServer").val("");
+		} else {
+			$.ajax({
+				type:"GET",
+				url:"{{url('/ticketing/create/getAbsenDetail')}}",
+				data:{
+					id_absen:this.value
+				},
+				success: function(result){
+					$("#inputType").val(result.type_machine);
+					$("#inputIpMechine").val(result.ip_machine);
+					$("#inputIpServer").val(result.ip_server);
+				}
+			});
+		}
+	})
+
 	function createTicket(clientBanking){
 		$(".help-block").hide()
 		if($("#inputPIC").val() == "" ){
