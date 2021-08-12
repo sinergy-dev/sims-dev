@@ -1947,7 +1947,6 @@ Ticketing
 			minuteStep: 1,
 			maxHours: 24,
 			showMeridian: false,
-			// showSeconds:true,
 		});
 
 		$("#timePending").timepicker({
