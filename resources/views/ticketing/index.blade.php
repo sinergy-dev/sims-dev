@@ -2353,6 +2353,81 @@ Ticketing
 		}
 	}
 
+	function clearFormNewTicket(){
+		$("#inputRefrence").val('');
+		$("#inputPIC").val('');
+		$("#inputContact").val('');
+		$("#inputCategory").val('');
+		$("#inputProblem").val('');
+		if ($('#inputATM').hasClass("select2-hidden-accessible")) {
+			$("#inputATM").select2('destroy');
+		}
+		$("#inputATM").empty()
+		$("#inputLocation").val('');
+		$("#inputSerial").val('');
+		// $("#inputReportingTime").val('');
+		$("#inputReportingTime").val(moment().format('HH:mm:ss'))
+		$("#inputReportingDate").val('');
+		$("#inputDate").val('');
+		$("#inputNote").val('');
+
+		$("#hrLine").show();
+		$("#hrLine2").show();
+
+		$("#nomorDiv").hide()
+		$("#clientDiv").hide()
+		$("#refrenceDiv").hide()
+		$("#picDiv").hide()
+		$("#contactDiv").hide()
+		$("#categoryDiv").hide()
+		$("#problemDiv").hide()
+		$("#inputATMid").hide()
+		$("#locationDiv").hide()
+		$("#serialDiv").hide()
+		$("#typeDiv").hide()
+		$("#reportDiv").hide()
+		$("#dateDiv").hide()
+		$("#noteDiv").hide()
+		$("#createTicket").hide()
+
+		$("#holderID").text('');
+		$("#holderRefrence").text('');
+		$("#holderCustomer").text('');
+		$("#holderPIC").text('');
+		$("#holderContact").text('');
+		$("#holderProblem").text('');
+		$("#holderLocation").text('');
+		$("#holderEngineer").text('');
+		$("#holderDate").text('');
+		$("#holderSerial").html('');
+		$("#holderType").html('');
+		$("#holderIPServer2").html('');
+		$("#holderIPMechine2").html('');
+		$("#holderType").html('');
+		$("#holderSeverity").text('');
+		// $("#holderRoot").text($("#inputticket").val();
+		$("#holderNote").text('');
+		$("#holderStatus").html('');
+		$("#holderWaktu").html('');
+		$("#holderIDATM2").hide();
+		$("#holderIDATM3").hide();
+		$("#holderIPMechine").hide();
+		$("#holderIPServer").hide();
+		$("#holderIDATM").text('');
+		
+		$("#tableTicket").hide();
+
+		$('.emailMultiSelector').remove()
+		$("#emailOpenTo").val('')
+		$("#emailOpenCc").val('')
+		$("#emailOpenSubject").val('')
+		$("#bodyOpenMail").empty()
+		$("#sendTicket").hide()
+
+		$("#formNewTicket").hide();
+		$("#createIdTicket").show();
+	}
+
 	function makeNewTicket(){
 		if(firstTimeTicket !== 0){
 			swalWithCustomClass.fire({
