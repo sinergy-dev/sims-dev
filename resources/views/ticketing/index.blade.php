@@ -101,7 +101,7 @@ Ticketing
 					<a href="#create" data-toggle="tab" onclick="makeNewTicket()">Create</a>
 				</li>
 				<li>
-					<a href="#performance" data-toggle="tab" onclick="getPerformanceAll()">Performance</a>
+					<a href="#performance" data-toggle="tab" id="performanceTab" onclick="getPerformanceAll()">Performance</a>
 				</li>
 				<li>
 					<a href="#setting" data-toggle="tab">Setting</a>
