@@ -4671,6 +4671,139 @@ Ticketing
 		);
 	}
 
+	function editAtmPeriperal(id,type){
+		// console.log('this is from atm periperal')
+		var selector = ".itemPeriperalEach" + id + "-" + type
+		
+		var cancleHolderPeriperal = "$(selector).html()"
+
+		var append = ""
+		append = append + '<li class="itemPeriperalEachEdit' + id + '-' + type + '">'
+		append = append + '<span class="pull-right button-edit-periperal">'
+		selectorHolder = "'" + selector + "'" 
+		holder = "'.itemPeriperalEachEdit" + id + "-" + type + "'"
+		append = append + '	<button onclick="saveAtmPeriperal(' + selectorHolder +  ',' + holder + ',' + id + ',' + type +')" class="btn btn-success btn-flat btn-xs" type="button">Save</button>'
+		append = append + '	<button onclick="deleteAtmPeriperal(' + selectorHolder +  ',' + holder + ',' + id + ',' + type +')" class="btn btn-danger btn-flat btn-xs" type="button">Delete</button>'
+		append = append + '	<button onclick="cancelAtmPeriperal(' + selectorHolder +  ',' + holder + ',' + id + ',' + type +')" class="btn btn-default btn-flat btn-xs" type="button">Cancel</button>'
+		append = append + '</span>'
+		append = append + '<span>'
+		type = (type == 1 ? "CCTV DVR" : (type == 2 ? "CCTV Internal" : (type == 3 ? "CCTV Eksternal" : "UPS")))
+		append = append + '	<b>[' + type + ']</b> <input type="text" class="from-control editPeripheralType" value="' + $(selector + "-type").text() + '"><br>'
+		append = append + '	Serial Number : <input type="text" class="from-control editPeripheralSerial" value="' + $(selector + "-sn").text() + '">'
+		append = append + '</span>'
+		append = append + '</li>'
+		$(selector).hide()
+		$(append).insertAfter(selector)
+	}
+
+	function cancelAtmPeriperal(selector, holder){
+		$(selector).show()
+		$(holder).remove()
+	}
+
+	function saveAtmPeriperal(selector,holder,id,type){
+		console.log($(holder + " input.editPeripheralType").val())
+		console.log($(holder + " input.editPeripheralSerial").val())
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "Make sure there is nothing wrong from editing this preriperal!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No'
+		}).then((result) => {
+			if (result.value){
+				Swal.fire({
+					title: 'Please Wait..!',
+					text: "It's editing..",
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					customClass: {
+						popup: 'border-radius-0',
+					},
+					onOpen: () => {
+						Swal.showLoading()
+					}
+				})
+				$.ajax({
+					type: "GET",
+					url: "{{url('/ticketing/setting/editAtmPeripheral')}}",
+					data: {
+						id:id,
+						type:type,
+						typeEdit:$(holder + " input.editPeripheralType").val(),
+						serialEdit:$(holder + " input.editPeripheralSerial").val(),
+					},
+					success: function(resultAjax){
+						Swal.hideLoading()
+						swalWithCustomClass.fire({
+							title: 'Success!',
+							text: "Periperal save.",
+							icon: 'success',
+							confirmButtonText: 'Reload',
+						}).then((result) => {
+							$(selector).show()
+							$(selector + "-type").text($(holder + " input.editPeripheralType").val())
+							$(selector + "-sn").text($(holder + " input.editPeripheralSerial").val())
+							$(holder).remove()
+						})
+					}
+				});
+			}
+		})
+	}
+
+	function deleteAtmPeriperal(selector,holder,id,type){
+		console.log($(holder + " input.editPeripheralType").val())
+		console.log($(holder + " input.editPeripheralSerial").val())
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "Make sure there is nothing wrong to delete this preriperal!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No'
+		}).then((result) => {
+			if (result.value){
+				Swal.fire({
+					title: 'Please Wait..!',
+					text: "It's deleting..",
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					customClass: {
+						popup: 'border-radius-0',
+					},
+					onOpen: () => {
+						Swal.showLoading()
+					}
+				})
+				$.ajax({
+					type: "GET",
+					url: "{{url('/ticketing/setting/deleteAtmPeripheral')}}",
+					data: {
+						id:id,
+						type:type
+					},
+					success: function(resultAjax){
+						Swal.hideLoading()
+						swalWithCustomClass.fire({
+							title: 'Success!',
+							text: "Periperal deleted.",
+							icon: 'success',
+							confirmButtonText: 'Reload',
+						}).then((result) => {
+							$(selector).remove()
+							$(holder).remove()
+						})
+					}
+				});
+			}
+			
+		})
+	}
+
 	function absenSetting(){
 		$(".settingComponent").hide()
 		$("#absenSetting").show()
