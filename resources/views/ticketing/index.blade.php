@@ -5007,6 +5007,285 @@ Ticketing
 		);
 	}
 
+	$('#daterange-btn').daterangepicker(
+		{
+			ranges: {
+				'Today': [moment(), moment()],
+				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+				'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+			},
+			startDate: moment().subtract(29, 'days'),
+			endDate: moment()
+		},
+		function (start, end) {
+			$('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+			$("#ReportingButtonGoNew").show()
+		}
+	);
+
+	$('#daterange-btn2').daterangepicker(
+		{
+			ranges: {
+				'Today': [moment(), moment()],
+				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+				'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+			},
+			startDate: moment().subtract(29, 'days'),
+			endDate: moment()
+		},
+		function (start, end) {
+			$('#daterange-btn2 span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+			$("#ReportingButtonGoNew2").show()
+		}
+	);
+
+	$.ajax({
+		type:"GET",
+		url:"{{url('/ticketing/report/getParameter')}}",
+		success:function(result){
+			$("#selectReportingClient").append("<option>Select Client</option>")
+			$("#selectReportingMonth").append("<option>Select Month</option>")
+			$("#selectReportingYear").append("<option>Select Year</option>")
+
+			result.client_data.forEach(function(data,index){
+				$("#selectReportingClient").append("<option value='" + data.id + "'>[" + data.client_acronym + "] " + data.client_name + "</option>")
+			})
+			result.ticket_year.forEach(function(data,index){
+				$("#selectReportingYear").append("<option value='" + data.year + "'>" + data.year + "</option>")
+			})
+			moment.months().forEach(function(data,index){
+				if(index < moment().format('M')){
+					$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+				}
+			})
+		}
+	})
+
+	$("#selectReportingType").change(function(){
+		$("#ReportingButtonGo, #ReportingButtonGoNew, #ReportingButtonGoNew2").hide()
+		if($(this).val() == 1){
+			$(".finish-report").show()
+			$(".bayu-report").hide()
+			$(".denny-report").hide()
+		} else if($(this).val() == 2) {
+			$(".finish-report").hide()
+			$(".bayu-report").show()
+			$(".denny-report").hide()
+		} else if($(this).val() == 3){
+			$(".finish-report").hide()
+			$(".bayu-report").hide()
+			$(".denny-report").show()
+		}
+	})
+
+	$("#selectReportingClient, #selectReportingYear, #selectReportingMonth").change(function(){
+		if($("#selectReportingClient").val() !== "Select Client" && $("#selectReportingYear").val() !== "Select Year"  && $("#selectReportingMonth").val() !== "Select Month"){
+			console.log($("#selectReportingClient").val())
+			console.log($("#selectReportingYear").val())
+			console.log($("#selectReportingMonth").val())
+			
+			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+			$("#ReportingButtonGo").show()
+		}
+		if ($("#selectReportingYear").val() !== moment().format('YYYY') && $("#selectReportingYear").val() !== "Select Year"){
+			console.log('true')
+			$("#selectReportingMonth").empty()
+			$("#selectReportingMonth").append("<option>Select Month</option>")
+			moment.months().forEach(function(data,index){
+				$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+			})
+		} else if ($("#selectReportingYear").val() === moment().format('YYYY')){
+			console.log('false')
+			$("#selectReportingMonth").empty()
+			$("#selectReportingMonth").append("<option>Select Month</option>")
+			moment.months().forEach(function(data,index){
+				if(index < moment().format('M')){
+					$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+				}
+			})
+		}
+	})
+
+	function getReport(urlAjax){
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "Make sure there is nothing wrong to get this report ticket!",
+			icon: "warning",
+			showCancelButton: true,
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No',
+			}).then((result) => {
+				if (result.value){
+					Swal.fire({
+						title: 'Please Wait..!',
+						text: "Prossesing Data Report",
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						allowEnterKey: false,
+						customClass: {
+							popup: 'border-radius-0',
+						},
+						onOpen: () => {
+							Swal.showLoading()
+						}
+					})
+
+					$.ajax({
+						type: "GET",
+						url: urlAjax,
+						success: function(result){
+							Swal.hideLoading()
+							if(result == 0){
+								swalWithCustomClass.fire({
+									//icon: 'error',
+									title: 'Success!',
+									text: "The file is unavailable",
+									type: 'error',
+									//confirmButtonText: '<a style="color:#fff;" href="report/' + result.slice(1) + '">Get Report</a>',
+								})
+							}else{
+								swalWithCustomClass.fire({
+									title: 'Success!',
+									text: "You can get your file now",
+									type: 'success',
+									confirmButtonText: '<a style="color:#fff;" href="report/' + result + '">Get Report</a>',
+								})
+							}
+						}
+					});
+				}
+			}
+		);
+	}
+
+	$("#ReportingButtonGoNew").on('click',function(){
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "Make sure there is nothing wrong to get this report bayu!",
+			icon: "warning",
+			showCancelButton: true,
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No',
+			}).then((result) => {
+				if (result.value){
+					Swal.fire({
+						title: 'Please Wait..!',
+						text: "Prossesing Data Report",
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						allowEnterKey: false,
+						customClass: {
+							popup: 'border-radius-0',
+						},
+						onOpen: () => {
+							Swal.showLoading()
+						}
+					})
+
+					$.ajax({
+						type:"GET",
+						url:"{{url('/ticketing/report/new')}}",
+						data:{
+							start:$('#daterange-btn').data('daterangepicker').startDate.format('YYYY-MM-DD'),
+							end:$('#daterange-btn').data('daterangepicker').endDate.format('YYYY-MM-DD')
+						},
+						success: function(result){
+							Swal.hideLoading()
+							if(result == 0){
+								swalWithCustomClass.fire({
+									//icon: 'error',
+									title: 'Success!',
+									text: "The file is unavailable",
+									type: 'error',
+									//confirmButtonText: '<a style="color:#fff;" href="report/' + result.slice(1) + '">Get Report</a>',
+								})
+							}else{
+								swalWithCustomClass.fire({
+									title: 'Success!',
+									text: "You can get your file now",
+									type: 'success',
+									confirmButtonText: '<a style="color:#fff;" href="report/bayu/' + result + '">Get Report</a>',
+								})
+							}
+						}
+					})
+				}
+			}
+		);
+	})
+
+	$("#ReportingButtonGoNew2").on('click',function(){
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "Make sure there is nothing wrong to get this report denny!",
+			icon: "warning",
+			showCancelButton: true,
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No',
+			}).then((result) => {
+				if (result.value){
+					Swal.fire({
+						title: 'Please Wait..!',
+						text: "Prossesing Data Report",
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						allowEnterKey: false,
+						customClass: {
+							popup: 'border-radius-0',
+						},
+						onOpen: () => {
+							Swal.showLoading()
+						}
+					})
+
+					$.ajax({
+						type:"GET",
+						url:"{{url('/ticketing/report/newDeny')}}",
+						data:{
+							start:$('#daterange-btn').data('daterangepicker').startDate.format('YYYY-MM-DD 00:00:00'),
+							end:$('#daterange-btn').data('daterangepicker').endDate.format('YYYY-MM-DD 23:59:59')
+						},
+						success: function(result){
+							Swal.hideLoading()
+							if(result == 0){
+								swalWithCustomClass.fire({
+									//icon: 'error',
+									title: 'Success!',
+									text: "The file is unavailable",
+									type: 'error',
+									//confirmButtonText: '<a style="color:#fff;" href="report/' + result.slice(1) + '">Get Report</a>',
+								})
+							}else{
+								swalWithCustomClass.fire({
+									title: 'Success!',
+									text: "You can get your file now",
+									type: 'success',
+									confirmButtonText: '<a style="color:#fff;" href="report/denny/' + result + '">Get Report</a>',
+								})
+							}
+						}
+					})
+				}
+			}
+		);
+	})
+
 
 </script>
 
