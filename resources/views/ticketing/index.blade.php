@@ -944,7 +944,7 @@ Ticketing
 						</div>
 						<div class="form-group">
 							<label>Activity</label>
-							<ul id="ticketActivity">
+							<ul id="ticketActivity" style="padding-left: 25px;">
 							</ul>
 						</div>
 						<div class="form-group" id="ticketNoteUpdate">
