@@ -1356,6 +1356,111 @@ Ticketing
 		</div>
 	</div>
 
+	<div class="modal fade" id="modal-escalate">
+		<div class="vertical-alignment-helper">
+			<div class="modal-dialog vertical-align-center">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span></button>
+						
+						<h4 class="modal-title" id="modal-ticket-title">Escalate Ticket </h4>
+					</div>
+					<div class="modal-body">
+						<form role="form">
+							<div class="form-group" >
+								<label>Root Cause Analysis (RCA)</label>
+								<textarea type="text" class="form-control" id="escalateRCA"></textarea>
+							</div>
+							<div class="row">
+								<div class="col-sm-12">
+									<label>Next Engineer</label>
+									<p>For escalation, you must determine the next engineer who will work on this ticket.</p>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Name</label>
+										<input type="text" class="form-control" id="escalateNameEngineer">
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Contact (Phone)</label>
+										<input type="text" class="form-control pull-right" id="escalateContactEngineer">
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-flat btn-danger" onclick="prepareEscalateEmail()">Escalate</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-next-escalate">
+		<div class="vertical-alignment-helper">
+			<div class="modal-dialog vertical-align-center">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span></button>
+						
+						<h4 class="modal-title" id="modal-ticket-title">Mail Escalate Ticket</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-horizontal">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">
+									Email To : 
+								</label>
+								<div class="col-sm-10">
+									<input class="form-control" id="emailEscalateTo">
+								</div>
+								<div class="col-sm-10 col-sm-offset-2 help-block" style="margin-bottom: 0px;">
+									Enter the recipient of this escalate email!
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">
+									Email Cc :
+								</label>
+								<div class="col-sm-10">
+									<input class="form-control" id="emailEscalateCc">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">
+									Subject :
+								</label>
+								<div class="col-sm-10">
+									<input class="form-control" id="emailEscalateSubject">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div contenteditable="true" class="form-control" style="height: 600px;overflow: auto;" id="bodyEscalateMail">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="pull-right">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<i class="btn btn-flat btn-primary" onclick="sendEscalateEmail()"><i class="fa fa-envelope-o"></i> Send</i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="modal fade" id="modal-setting-email">
 		<div class="modal-dialog">
 			<div class="modal-content">
