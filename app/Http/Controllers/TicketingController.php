@@ -324,7 +324,7 @@ class TicketingController extends Controller
 			->client_ticket
 			->client_acronym;
 		$activityTicketOpen->client_acronym_filter = $clientAcronymFilter;
-		// return $activityTicketOpen;
+		return $activityTicketOpen;
 	}
 
 	public function sendEmail($to, $cc, $subject, $body){
