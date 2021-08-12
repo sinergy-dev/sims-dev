@@ -927,6 +927,7 @@ Route::get('/ticketing/create/getReserveIdTicket','TicketingController@getReserv
 Route::get('/ticketing/create/setReserveIdTicket','TicketingController@setReserveIdTicket');
 Route::get('/ticketing/create/putReserveIdTicket','TicketingController@putReserveIdTicket');
 Route::get('/ticketing/create/getAtmId','TicketingController@getAtmId');
+Route::get('/ticketing/create/getAbsenId','TicketingController@getAbsenId');
 Route::get('/ticketing/create/getAtmDetail','TicketingController@getAtmDetail');
 Route::get('/ticketing/create/getAbsenDetail','TicketingController@getAbsenDetail');
 Route::get('/ticketing/create/getAtmPeripheralDetail','TicketingController@getAtmPeripheralDetail');
