@@ -248,7 +248,6 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/delete_po_customer/{id_tb_po_cus}','SalesController@delete_po');
 
 	Route::get('/pr', 'PrController@index');
-	Route::get('/PoAdmin', 'PrController@PoAdmin');
 	Route::post('/store_pr', 'PrController@store_pr');
 	Route::post('/update_pr','PrController@update_pr');
 	Route::get('/delete_pr/{id_pr}','PrController@destroy_pr');
@@ -257,6 +256,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getfilteryearpr', 'PrController@getfilteryear');
 	Route::get('/getdatapr', 'PrController@getdatapr');
 	Route::get('/getCountPr', 'PrController@getCountPr');
+	Route::get('/reportPr', 'PrController@reportPr');
+	Route::get('/getTotalPrbyType', 'PrController@getTotalPr');
+	Route::get('/getTotalPrByMonth', 'PrController@getTotalPrByMonth');
+	Route::get('/getTotalAmountByType', 'PrController@getTotalAmountByType');
+	Route::get('/getAmountByCategory', 'PrController@getAmountByCategory');
+	Route::get('/getTotalNominalByCat', 'PrController@getTotalNominalByCat');
+	Route::get('/getTotalNominalByPid', 'PrController@getTotalNominalByPid');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
@@ -914,3 +920,67 @@ Route::get('/authentication/{id}','TestController@authentication');
 
 // Ticketing
 Route::get('/ticketing','TicketingController@index');
+Route::get('/ticketing/getDashboard','TicketingController@getDashboard');
+
+Route::get('/ticketing/create/getParameter','TicketingController@getCreateParameter');
+Route::get('/ticketing/create/getReserveIdTicket','TicketingController@getReserveIdTicket');
+Route::get('/ticketing/create/setReserveIdTicket','TicketingController@setReserveIdTicket');
+Route::get('/ticketing/create/putReserveIdTicket','TicketingController@putReserveIdTicket');
+Route::get('/ticketing/create/getAtmId','TicketingController@getAtmId');
+Route::get('/ticketing/create/getAbsenId','TicketingController@getAbsenId');
+Route::get('/ticketing/create/getAtmDetail','TicketingController@getAtmDetail');
+Route::get('/ticketing/create/getAbsenDetail','TicketingController@getAbsenDetail');
+Route::get('/ticketing/create/getAtmPeripheralDetail','TicketingController@getAtmPeripheralDetail');
+
+Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
+Route::get('/ticketing/mail/getOpenMailTemplate','TicketingController@getOpenMailTemplate');
+Route::get('/ticketing/mail/sendEmailOpen','TicketingController@sendEmailOpen');
+
+Route::get('/ticketing/getPerformanceAll','TicketingController@getPerformanceAll');
+Route::get('/ticketing/getPerformanceByClient','TicketingController@getPerformanceByClient');
+Route::get('/ticketing/getPerformanceByTicket','TicketingController@getPerformanceByTicket');
+Route::get('/ticketing/getPerformanceBySeverity','TicketingController@getPerformanceBySeverity');
+
+Route::get('/ticketing/setUpdateTicket','TicketingController@setUpdateTicket');
+Route::get('/ticketing/mail/getOnProgressMailTemplate','TicketingController@getOnProgressMailTemplate');
+
+Route::get('/ticketing/mail/getCancelMailTemplate','TicketingController@getCancelMailTemplate');
+Route::get('/ticketing/mail/sendEmailCancel','TicketingController@sendEmailCancel');
+
+Route::get('/ticketing/getPendingTicketData','TicketingController@getPendingTicketData');
+Route::get('/ticketing/mail/getPendingMailTemplate','TicketingController@getPendingMailTemplate');
+Route::get('/ticketing/setUpdateTicketPending','TicketingController@setUpdateTicketPending');
+Route::get('/ticketing/mail/sendEmailPending','TicketingController@sendEmailPending');
+
+Route::get('/ticketing/mail/getCloseMailTemplate','TicketingController@getCloseMailTemplate');
+Route::get('/ticketing/mail/sendEmailClose','TicketingController@sendEmailClose');
+
+Route::get('/ticketing/mail/getEscalateMailTemplate', 'TicketingController@getEscalateMailTemplate');
+Route::get('/ticketing/mail/sendEmailEscalate', 'TicketingController@sendEmailEscalate');
+Route::get('/ticketing/saveEscalate', 'TicketingController@saveEscalate');
+
+Route::get('/ticketing/setting/getSettingClient','TicketingController@getSettingClient');
+Route::post('/ticketing/setting/setSettingClient' , 'TicketingController@setSettingClient');
+
+Route::get('/ticketing/setting/getAllAtm', 'TicketingController@getAllAtmSetting');
+Route::get('/ticketing/setting/getParameterAddAtm','TicketingController@getParameterAddAtm');
+Route::get('/ticketing/setting/newAtm','TicketingController@newAtm');
+Route::get('/ticketing/setting/newAtmPeripheral','TicketingController@newAtmPeripheral');
+Route::get('/ticketing/setting/setAtm','TicketingController@setAtm');
+Route::get('/ticketing/setting/deleteAtm','TicketingController@deleteAtm');
+Route::get('/ticketing/setting/editAtmPeripheral','TicketingController@editAtmPeripheral');
+Route::get('/ticketing/setting/deleteAtmPeripheral','TicketingController@deleteAtmPeripheral');
+
+Route::get('/ticketing/setting/getAllAbsen', 'TicketingController@getAllAbsenSetting');
+Route::get('/ticketing/setting/getDetailAbsen','TicketingController@getDetailAbsen');
+Route::get('/ticketing/setting/newAbsen','TicketingController@newAbsen');
+Route::get('/ticketing/setting/setAbsen','TicketingController@setAbsen');
+Route::get('/ticketing/setting/deleteAbsen','TicketingController@deleteAbsen');
+Route::get('/ticketing/setting/getDetailAtm','TicketingController@getDetailAtm');
+
+Route::get('/ticketing/report/getParameter','TicketingController@getReportParameter');
+Route::get('/ticketing/report/make','TicketingController@makeReportTicket');
+Route::get('/ticketing/report/download','TicketingController@downloadReportTicket');
+Route::get('/ticketing/report/new','TicketingController@getReportNew');
+Route::get('/ticketing/report/newDeny','TicketingController@getReportNewDeny');
+

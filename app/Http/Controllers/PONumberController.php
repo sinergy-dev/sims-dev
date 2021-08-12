@@ -482,8 +482,9 @@ class PONumberController extends Controller
         $sheet->fromArray($headerContent,NULL,'A2');
 
         $dataPO = PONumber::join('users', 'users.nik', '=', 'tb_po.from')
-            ->select('no_po','position','type_of_letter','month','date','to','attention','title','project','description','name','division','issuance','project_id',)
-            ->get();;
+            ->select('no_po','position','type_of_letter','month','date','to','attention','title','project','description','name','division','issuance','project_id')
+            ->whereYear('tb_po.created_at', $request->year)
+            ->get();
 
         $dataPO->map(function($item,$key) use ($sheet){
             $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));

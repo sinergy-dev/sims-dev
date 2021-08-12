@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Technical Asset
+@endsection
 @section('head_css')
   <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">

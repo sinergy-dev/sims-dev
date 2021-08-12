@@ -22,7 +22,7 @@ class DASHBOARDController extends Controller
 
     public function index()
     {
-        $pos = '';$div = '';$results = '';$idps = '';$counts = '';$opens = '';$sds = '';$tps = '';$notiftp = '';$notifsd = '';$notifOpen = '';$wins = '';$loses = '';$notif = '';$notifClaim = '';$win1 = '';$win2 = '';$lose1 = '';$lose2 = '';$ba = '';$co = '';$lead_win = '';$top_win_sip = '';$top_win_msp = '';$loop_year = '';$year_now = '';$countmsp = '';$losemsp = '';
+        $pos = '';$div = '';$results = '';$idps = '';$counts = '';$opens = '';$sds = '';$tps = '';$notiftp = '';$notifsd = '';$notifOpen = '';$wins = '';$loses = '';$notif = '';$notifClaim = '';$win1 = '';$win2 = '';$lose1 = '';$lose2 = '';$ba = '';$co = '';$lead_win = '';$top_win_sip = '';$top_win_msp = '';$loop_year = '';$year_now = '';$countmsp = '';$losemsp = '';$top_win_sip_ter;
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -62,6 +62,41 @@ class DASHBOARDController extends Controller
                         ->orderBy('deal_prices', 'desc')
                         ->take(5)
                         ->get();
+
+        if ($div == 'SALES') {
+            $top_win_sip_ter = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company')
+                        ->where('result', 'WIN')
+                        ->whereYear('closing_date', $year_now)
+                        ->where('users.id_company', '1')
+                        ->where('users.id_territory', $ter)
+                        ->groupBy('users.id_territory','sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get();
+        }else{
+            $top_win_sip_ter_ter = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.id_territory')
+                        ->where('result', 'WIN')
+                        ->where('users.id_territory','!=','OPERATION')
+                        ->whereYear('closing_date', $year_now)
+                        ->where('users.id_company', '1')
+                        ->groupBy('users.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->get();
+
+            $groups = collect($top_win_sip_ter_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('id_territory');
+
+            $top_win_sip_ter = $groups->toArray();
+        }
+
+        // return $top_win_sip_ter;
 
         // count id project
         if($div == 'FINANCE' && $pos == 'MANAGER'){
@@ -918,7 +953,7 @@ class DASHBOARDController extends Controller
                             ->get();
         }
 
-        return view('dashboard/dashboard_edit', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip', 'top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'))->with(['initView'=> $this->initMenuBase()]);
+        return view('dashboard/dashboard_edit', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip','top_win_sip_ter','top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'))->with(['initView'=> $this->initMenuBase()]);
 
     }
 

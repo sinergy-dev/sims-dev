@@ -418,6 +418,7 @@ class HRNumberController extends Controller
 
         $dataHR = HRNumber::join('users', 'users.nik', '=', 'tb_hr_number.from')
             ->select('no_letter','type_of_letter','divsion','pt','month','date','to','attention','title','project','description','name','division','project_id')
+            ->whereYear('tb_hr_number.created_at', $request->year)
             ->get();;
 
         $dataHR = $dataHR->map(function($item,$key) use ($sheet){

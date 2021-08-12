@@ -1,8 +1,7 @@
 @extends('template.main')
-
 @section('head_css')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <style type="text/css">
-
   .transparant{
         background-color: Transparent;
         background-repeat:no-repeat;
@@ -218,11 +217,12 @@
 @section('content')
 
 <section class="content-header">
-  <h1 style="opacity: 0.01;">
-    Add PR Asset MSP
+  <h1>
+    Bank Garansi
   </h1>
   <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="{{url('/bank_garansi')}}"><i class="fa fa-dashboard"></i> Bank garansi</a></li>
+    <li class="active"> Edit Bank garansi </li>
     <!-- <li class="active">PR Asset</li>
     <li class="active">MSP</li>
     <li class="active">Add</li> -->
@@ -580,9 +580,10 @@
 @endsection
 
 @section('scriptImport')
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-  <script src="{{asset("template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js")}}"></script>
+  <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
 @endsection()
 
 @section('script')

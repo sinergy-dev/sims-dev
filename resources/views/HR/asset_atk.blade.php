@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+GA ATK
+@endsection
 @section('head_css')
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -97,6 +100,17 @@
   </style>
 @endsection
 @section('content')
+
+<section class="content-header">
+  <h1>
+    General Affair - ATK
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="{{url('/')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+    <li class="active">GA - ATK</li>
+  </ol>
+</section>
+
 <section class="content">
 
   @if (session('update'))

@@ -47,6 +47,12 @@ class BGaransiController extends Controller
    				->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'status', 'tb_bank_garansi.updated_at','tb_bank_garansi.nik')
                 ->orderBy('tb_bank_garansi.created_at', 'desc')
    				->get();
+        }else{
+            $datas = DB::table('tb_bank_garansi')
+                ->join('users', 'users.nik', '=', 'tb_bank_garansi.nik')
+                ->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'status', 'tb_bank_garansi.updated_at','tb_bank_garansi.nik')
+                ->orderBy('tb_bank_garansi.created_at', 'desc')
+                ->get();
         }
 
    		
@@ -379,6 +385,12 @@ class BGaransiController extends Controller
    				->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'jangka_waktu', 'telp', 'fax')
    				->where('id_bank_garansi', $id_bank_garansi)
    				->first();
+        }else{
+            $datas = DB::table('tb_bank_garansi')
+                ->join('users', 'users.nik', '=', 'tb_bank_garansi.nik')
+                ->select('kode_proyek', 'nama_proyek', 'no_proyek', 'perusahaan', 'division', 'alamat', 'kota', 'kode_pos', 'jenis', 'name', 'penerbit', 'tgl_mulai', 'tgl_selesai', 'dok_ref', 'valuta', 'nominal', 'note', 'no_dok', 'id_bank_garansi', 'jangka_waktu', 'telp', 'fax')
+                ->where('id_bank_garansi', $id_bank_garansi)
+                ->first();
         }
 
    		
@@ -519,6 +531,11 @@ class BGaransiController extends Controller
                             ->where('status', 'HRD')
                             ->get();
         } elseif (Auth::User()->id_division == 'FINANCE') {
+            $notifClaim = DB::table('dvg_esm')
+                            ->select('nik_admin', 'personnel', 'type')
+                            ->where('status', 'FINANCE')
+                            ->get();
+        } else{
             $notifClaim = DB::table('dvg_esm')
                             ->select('nik_admin', 'personnel', 'type')
                             ->where('status', 'FINANCE')

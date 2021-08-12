@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Report Tag Product & Technology
+@endsection
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
@@ -140,6 +143,7 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.min.js"></script>
   <script src="{{asset('template2/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 @section('script')  
   <script type="text/javascript">
@@ -405,19 +409,33 @@
     cb(start,end);
 
     $("#apply-btn").click(function(){
-      var TagsProduct;
-      var TagsTechno;
-      var TagsPersona;
+      var TagsProduct = [];
+      var TagsTechno = [];
+      var TagsPersona = [];
 
-      TagsProduct = $("#searchTagsProduct").val();
-      TagsTechno  = $("#searchTagsTechnology").val();
-      TagsPersona = $("#searchTagsPerson").val();
+      console.log(TagsPersona)
 
-      if (TagsProduct == "" || TagsTechno == "" || TagsPersona == "") {
+      if ($("#searchTagsProduct").val() != '-1') {
+        TagsProduct = TagsProduct + "&TagsProduct[]=" + $("#searchTagsProduct").val();
+      }
+
+      if ($("#searchTagsTechnology").val() != '-1') {
+        TagsTechno  = TagsTechno + "&Tagstechno[]=" + $("#searchTagsTechnology").val();
+      }
+
+      if ($("#searchTagsPerson").val() != '2') {
+        TagsPersona = TagsPersona + "&TagsPersona[]=" + $("#searchTagsPerson").val();
+      }
+
+      // start_date = start_date + "&start_date=" + start_date
+
+      // end_date = end_date + "&end_date=" + end_date
+
+      if ($("#searchTagsProduct").val() == "" || $("#searchTagsTechnology").val() == "" || $("#searchTagsPerson").val() == "") {
         Swal.fire({
           title: 'Can`t Process',
           text: "Please Select All Tags to filter!",
-          icon: 'danger',
+          icon: 'error',
           showCancelButton: true,
           confirmButtonColor: '#d33',
           cancelButtonColor: '#3085d6',
@@ -430,15 +448,15 @@
           var table = $("#data_lead").DataTable({
               "ajax":{
                 "type":"GET",
-                // "url":"{{url('/getFilterTags')}}?TagsProduct="+ TagsProduct,
-                "url":"{{url('/getFilterTags')}}",
-                "data":{
-                  "TagsProduct":TagsProduct,
-                  "Tagstechno":TagsTechno,
-                  "TagsPersona":TagsPersona,
-                  "start_date":start_date,
-                  "end_date":end_date
-                }
+                "url":"{{url('/getFilterTags')}}?="+ TagsProduct + TagsTechno + TagsPersona + "&start_date=" + start_date + "&end_date=" + end_date,
+                // "url":"{{url('/getFilterTags')}}",
+                // "data":{
+                //   "TagsProduct":TagsProduct,
+                //   "Tagstechno":TagsTechno,
+                //   "TagsPersona":TagsPersona,
+                //   "start_date":start_date,
+                //   "end_date":end_date
+                // }
               },
               "columns": [
                 // { "data": "lead_id" },  

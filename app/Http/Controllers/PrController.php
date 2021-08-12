@@ -7,6 +7,7 @@ use Auth;
 use DB;
 use App\PR;
 use App\SalesProject;
+use App\User;
 use Illuminate\Support\Facades\Route;
 // use Excel;
 use Validator;
@@ -170,15 +171,6 @@ class PrController extends Controller
 
         $tahun = date("Y");
 
-        $datas = DB::table('tb_pr')
-                        ->join('users', 'users.nik', '=', 'tb_pr.from')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'users.nik')
-                        ->where('result', '!=', 'R')
-                        ->where('date','like',$tahun."%")
-                        ->get();
-
-        // $year_pr = PR::select(substr('date', 1, 4))->groupBy('date');
-
         if (Auth::User()->id_position == 'ADMIN') {
             $notifClaim = DB::table('dvg_esm')
                             ->select('nik_admin', 'personnel', 'type')
@@ -207,25 +199,38 @@ class PrController extends Controller
 
         $pid = SalesProject::select('id_project')->get();
 
-        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp', 'datas','pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
+        $user = User::select('name', 'nik')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->orderBy('name','asc')->get();
+
+        return view('admin/pr', compact('notif','notifOpen','notifsd','notiftp' ,'pops', 'sidebar_collapse','year_before','tahun','pid', 'notifClaim', 'user'))->with(['initView'=> $this->initMenuBase()]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function getCountPr(Request $request)
+    {
+        $total_pr = PR::select('no_pr', 'amount')->whereYear('date', $request->year);
+
+        $count_all = $total_pr->count('no_pr');
+        $count_ipr = $total_pr->where('type_of_letter', 'IPR')->count('no_pr');
+        $count_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->count('no_pr');
+        $amount_all = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->sum('amount');
+        $amount_ipr = $total_pr->where('type_of_letter', 'IPR')->sum('amount');
+        $amount_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->sum('amount');
+
+        return collect([
+            'all'=>[$count_all,strpos((string)$amount_all,".",0) ? (string)$amount_all : (string)$amount_all . ".00"],
+            'ipr'=>[$count_ipr,strpos((string)$amount_ipr,".",0) ? (string)$amount_ipr : (string)$amount_ipr . ".00"],
+            'epr'=>[$count_epr,strpos((string)$amount_epr,".",0) ? (string)$amount_epr : (string)$amount_epr . ".00"],
+            // 'amount'=>strpos((string)$amount_all,".",0) ? (string)$amount_all : (string)$amount_all . ".00",
+            // 'amount_ipr'=>strpos((string)$amount_ipr,".",0) ? (string)$amount_ipr : (string)$amount_ipr . ".00",
+            // 'amount_epr'=>strpos((string)$amount_epr,".",0) ? (string)$amount_epr : (string)$amount_epr . ".00",
+        ]);
+    }
+
+    
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store_pr(Request $request)
     {
         $tahun = date("Y");
@@ -242,7 +247,6 @@ class PrController extends Controller
         $month_pr = substr($edate,5,2);
         $year_pr = substr($edate,0,4);
 
-
         $array_bln = array('01' => "I",
                     '02' => "II",
                     '03' => "III",
@@ -255,148 +259,170 @@ class PrController extends Controller
                     '10' => "X",
                     '11' => "XI",
                     '12' => "XII");
+        $bln = $array_bln[$month_pr];
 
-        if ($cek > 0) {
-            $bln = $array_bln[$month_pr];
+        $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
 
-            $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
-
-            $getnumbers = PR::orderBy('no', 'desc')->first();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }// } else {
-            //    if($getnumber->no > 7){
-            //        $query = PR::where('no', 'like', '%8')->get();
-            //        foreach ($query as $compare) {
-            //             if($getnumber->no == $compare->no){
-            //                $lastnumber = $getnumber->no+2;
-            //             } else {
-            //                $lastnumber = $getnumber->no+1;
-            //             }            
-            //         }
-            //     }
-            // }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-            $nom = PR::select('no')->orderBy('created_at','desc')->first();
-
-            $tambah = new PR();
-            $tambah->no = $nom->no+1;
-            $tambah->no_pr = $no;
-            $tambah->position = $posti;
-            $tambah->type_of_letter = $type;
-            $tambah->month = $bln;
-            $tambah->date = $edate;
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->title = $request['title'];
-            $tambah->project = $request['project'];
-            $tambah->description = $request['description'];
-            $tambah->from = Auth::User()->nik;
-            $tambah->division = $request['division'];
-            $tambah->issuance = $request['issuance'];
-            if ($request['amount'] == NULL) {
-                $amount = $request['amount'];
-            }else{
-                $amount = str_replace(',', '', $request['amount']);
-            }
-            $tambah->amount = $amount;
-            if ($request['project_id'] == null) {
-                $tambah->project_id = $request['project_idInputNew'];
-            }else{
-                $tambah->project_id = $request['project_id'];
-                
-            }
-            $tambah->result = 'T';
-            $tambah->save();
-
-            return redirect('pr')->with('success', 'Created Purchase Request Successfully!');
+        if($getnumber == NULL){
+            $getlastnumber = 1;
+            $lastnumber = $getlastnumber;
         } else{
-            $type = $request['type'];
-            $posti = $request['position'];
+            $lastnumber = $getnumber+1;
+        }
 
-            $bln = $array_bln[$month_pr];
+        if($lastnumber < 10){
+           $akhirnomor = '000' . $lastnumber;
+        }elseif($lastnumber > 9 && $lastnumber < 100){
+           $akhirnomor = '00' . $lastnumber;
+        }elseif($lastnumber >= 100){
+           $akhirnomor = '0' . $lastnumber;
+        }
 
-            $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+        $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+        $nom = PR::select('no')->orderBy('created_at','desc')->first();
 
-            $getnumbers = PR::orderBy('no', 'desc')->first();
+        $tambah = new PR();
+        $tambah->no = $nom->no+1;
+        $tambah->no_pr = $no;
+        $tambah->position = $posti;
+        $tambah->type_of_letter = $type;
+        $tambah->month = $bln;
+        $tambah->date = $edate;
+        $tambah->to = $request['to'];
+        $tambah->attention = $request['attention'];
+        $tambah->title = $request['title'];
+        $tambah->project = $request['project'];
+        $tambah->description = $request['description'];
+        $tambah->from = $request['from_user'];
+        // $tambah->division = $request['division'];
+        $tambah->division == 'PMO';
+        $tambah->issuance = Auth::User()->nik;
+        $tambah->amount = str_replace(',', '', $request['amount']);
+        if ($request['project_id'] == null) {
+            $tambah->project_id = $request['project_idInputNew'];
+        }else{
+            $tambah->project_id = $request['project_id'];
+        }
+        $tambah->category = $request['category'];
+        $tambah->result = 'T';
+        $tambah->save();
 
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }// } else {
-            //    if($getnumber->no > 7){
-            //        $query = PR::where('no', 'like', '%8')->get();
-            //        foreach ($query as $compare) {
-            //             if($getnumber->no == $compare->no){
-            //                $lastnumber = $getnumber->no+2;
-            //             } else {
-            //                $lastnumber = $getnumber->no+1;
-            //             }            
-            //         }
-            //     }
-            // }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-
-            $tambah = new PR();
-            $tambah->no = $getnumbers->no+1;
-            $tambah->no_pr = $no;
-            $tambah->position = $posti;
-            $tambah->type_of_letter = $type;
-            $tambah->month = $bln;
-            $tambah->date = $edate;
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->title = $request['title'];
-            $tambah->project = $request['project'];
-            $tambah->description = $request['description'];
-            $tambah->from = Auth::User()->nik;
-            $tambah->division = $request['division'];
-            $tambah->issuance = $request['issuance'];
-            $tambah->amount = $request['amount'];  
-            if ($request['project_id'] == null) {
-                $tambah->project_id = $request['project_id'];
-            }else{
-                $tambah->project_id = $request['project_idInputNew'];
-                
-            }
-            $tambah->result = 'T';
-            $tambah->save();
-
-            return redirect('pr')->with('success', 'Created Purchase Request Successfully!');
-        }        
+        return redirect('pr')->with('success', 'Created Purchase Request Successfully!');       
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function reportPr()
+    {
+        $year = date("Y");
+        $sidebar_collapse = true;
+
+        return view('admin/report_pr', compact('year', 'sidebar_collapse'))->with(['initView'=> $this->initMenuBase()]);
+    }
+
+    public function getTotalPr()
+    {
+        $year = date('Y');
+        $pie = 0;
+        $total = PR::orderby('type_of_letter')->whereYear('date',$year)->get();
+
+        $first = $total[0]->type_of_letter;
+        $hasil = [0,0];
+        $type_pr = ['IPR', 'EPR'];
+
+        foreach ($type_pr as $key => $value2) {
+            foreach ($total as $value) {
+                    if ($value->type_of_letter == $value2) {
+                        $hasil[$key]++;
+                        $pie++;
+                    }
+                }
+        }
+
+        $hasil2 = [0,0];
+        foreach ($hasil as $key => $value) {
+            $hasil2[$key] = ($value/$pie)*100;
+        }
+
+        return $hasil2;
+    }
+
+    public function getAmountByCategory()
+    {
+        $year = date('Y');
+
+        $total = PR::select(
+                DB::raw('SUM(IF(`category` = "Barang dan Jasa",amount,""))/ SUM(`amount`)*100 AS "Barang dan Jasa"'), 
+                DB::raw('SUM(IF(`category` = "Barang",amount,""))/ SUM(`amount`)*100 AS "Barang"'),
+                DB::raw('SUM(IF(`category` = "Jasa",amount,""))/ SUM(`amount`)*100 AS "Jasa"'), 
+                DB::raw('SUM(IF(`category` = "Bank Garansi",amount,""))/ SUM(`amount`)*100 AS "Bank Garansi"'),
+                DB::raw('SUM(IF(`category` = "Service",amount,""))/ SUM(`amount`) *100  AS "Service"'),
+                DB::raw('SUM(IF(`category` = "Pajak Kendaraan",amount,""))/ SUM(`amount`) *100 AS "Pajak"'),
+                DB::raw('SUM(IF(`category` = "ATK",amount,""))/ SUM(`amount`) *100 AS "ATK"'),
+                DB::raw('SUM(IF(`category` = "Aset",amount,""))/ SUM(`amount`)*100 AS "Aset"'),
+                DB::raw('SUM(IF(`category` = "Tinta",amount,""))/ SUM(`amount`)*100 AS "Tinta"'),
+                DB::raw('SUM(IF(`category` = "Training",amount,""))/ SUM(`amount`)*100 AS "Training"'),
+                DB::raw('SUM(IF(`category` = "Ujian",amount,""))/ SUM(`amount`)*100 AS "Ujian"'),
+                DB::raw('SUM(IF(`category` = "Tiket",amount,""))/ SUM(`amount`)*100 AS "Tiket"'),
+                DB::raw('SUM(IF(`category` = "Akomodasi",amount,""))/ SUM(`amount`)*100 AS "Akomodasi"'),
+                DB::raw('SUM(IF(`category` = "Swab Test",amount,""))/ SUM(`amount`)*100 AS "Swab Test"'),
+                DB::raw('SUM(IF(`category` = "Other",amount,""))/ SUM(`amount`)*100 AS "Other"'),
+            )
+            ->whereYear('date', date('Y'))->get();
+
+        return array("data"=>$total);
+    }
+
+    public function getTotalPrByMonth()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "IPR",1,NULL)) AS "IPR"'),
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "EPR",1,NULL)) AS "EPR"'), 'month'
+            )
+            ->whereYear('date', date('Y'))
+            ->groupBy('month');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalAmountByType()
+    {
+        $data = PR::select(
+                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "IPR",amount,"")) AS "amount_IPR"'),
+                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"'), 'month'
+            )
+            ->whereYear('date', date('Y'))
+            ->groupBy('month');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByCat()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'category'
+            )
+            ->whereYear('date', date('Y'))
+            ->orderBy('nominal', 'desc')
+            ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByPid()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'project_id'
+            )
+            ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+            ->whereYear('date', date('Y'))
+            ->groupBy('project_id');
+
+        return array("data" => $data->get());
+    }
+    
     public function update_pr(Request $request)
     {
         $no = $request['edit_no_pr'];
@@ -405,16 +431,10 @@ class PrController extends Controller
         $update->to = $request['edit_to'];
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
-        $update->project = $request['edit_project'];
         $update->description = $request['edit_description'];
-        $update->issuance = $request['edit_issuance'];
         $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
-        if ($request['edit_amount'] == NULL) {
-            $amount = $request['edit_amount'];
-        }else{
-            $amount = str_replace(',', '', $request['edit_amount']);
-        }
+        $amount = str_replace(',', '', $request['edit_amount']);
         $update->amount = $amount;
 
 
@@ -426,8 +446,9 @@ class PrController extends Controller
     public function getfilteryear(Request $request)
     {
         $filter_pr = DB::table('tb_pr')
-                        ->join('users', 'users.nik', '=', 'tb_pr.from')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
+                        ->join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+                        ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category')
                         ->where('result', '!=', 'R')
                         ->whereYear('tb_pr.created_at', $request->data)
                         ->get();
@@ -439,19 +460,14 @@ class PrController extends Controller
     {
         $tahun = date("Y"); 
 
-        return array("data" => PR::join('users', 'users.nik', '=', 'tb_pr.from')
-                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id', 'name', 'note', 'from')
+        return array("data" => PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+                                ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount')
                                 ->where('result', '!=', 'R')
                                 ->where('date','like',$tahun."%")
                                 ->get());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy_pr($no)
     {
         $hapus = PR::find($no);
@@ -621,167 +637,6 @@ class PrController extends Controller
         return view('report/pr', compact('notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
     }
 
-    public function PoAdmin()
-    {
-        $nik = Auth::User()->nik;
-        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
-        $ter = $territory->id_territory;
-        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
-        $div = $division->id_division;
-        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
-        $pos = $position->id_position; 
-
-        if ($ter != null) {
-            $notif = DB::table('sales_lead_register')
-            ->select('opp_name','nik')
-            ->where('result','OPEN')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notif = DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik')
-            ->where('result','OPEN')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }else{
-             $notif = DB::table('sales_lead_register')
-            ->select('opp_name','nik')
-            ->where('result','OPEN')
-            ->orderBy('created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notifOpen= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notifOpen= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notifsd= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','SD')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notifsd= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','SD')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notifsd= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','SD')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'MANAGER') {
-            $notiftp= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','TP')
-            ->orderBy('created_at','desc')
-            ->get();
-        }elseif ($div == 'SALES' && $pos == 'STAFF') {
-            $notiftp= DB::table('sales_lead_register')
-            ->select('opp_name','nik','lead_id')
-            ->where('result','TP')
-            ->orderBy('created_at','desc')
-            ->get();
-        }else{
-            $notiftp= DB::table('sales_lead_register')
-            ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
-            ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_solution_design.lead_id')
-            ->where('result','TP')
-            ->orderBy('sales_lead_register.created_at','desc')
-            ->get();
-        }
-
-        $datas = DB::table('tb_po')
-                        ->select('no','no_po', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'from', 'division', 'issuance', 'project_id')
-                        ->get();
-
-        if (Auth::User()->id_position == 'ADMIN') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'ADMIN')
-                            ->get();
-        } elseif (Auth::User()->id_position == 'HR MANAGER') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'HRD')
-                            ->get();
-        } elseif (Auth::User()->id_division == 'FINANCE') {
-            $notifClaim = DB::table('dvg_esm')
-                            ->select('nik_admin', 'personnel', 'type')
-                            ->where('status', 'FINANCE')
-                            ->get();
-        }
-
-
-        return view('report/po', compact('notif','notifOpen','notifsd','notiftp','id_pro', 'datas', 'notifClaim'));
-    }
-
     public function downloadExcelPr(Request $request) {
 
         $spreadsheet = new Spreadsheet();
@@ -791,7 +646,7 @@ class PrController extends Controller
         $spreadsheet->removeSheetByIndex(0);
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->mergeCells('A1:P1');
+        $sheet->mergeCells('A1:O1');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
@@ -805,18 +660,20 @@ class PrController extends Controller
         $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
         $titleStyle['font']['bold'] = true;
 
-        $sheet->getStyle('A1:P1')->applyFromArray($titleStyle);
+        $sheet->getStyle('A1:O1')->applyFromArray($titleStyle);
         $sheet->setCellValue('A1','Purchase Request');
 
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
-        $sheet->getStyle('A2:P2')->applyFromArray($headerStyle);;
+        $sheet->getStyle('A2:O2')->applyFromArray($headerStyle);;
 
-        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "DIVISION", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
+        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
         $sheet->fromArray($headerContent,NULL,'A2');
 
-        $dataPR = PR::join('users', 'users.nik', '=', 'tb_pr.from')
-            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','name','division','issuance','project_id','amount')
+        $dataPR = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+            ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount')
+            ->whereYear('tb_pr.date', $request->year)
             ->get();
 
         foreach ($dataPR as $key => $data) {
@@ -836,10 +693,9 @@ class PrController extends Controller
         $sheet->getColumnDimension('J')->setWidth(25);
         $sheet->getColumnDimension('K')->setWidth(25);
         $sheet->getColumnDimension('L')->setAutoSize(true);
-        $sheet->getColumnDimension('M')->setAutoSize(true);
-        $sheet->getColumnDimension('N')->setWidth(25);
-        $sheet->getColumnDimension('O')->setWidth(45);
-        $sheet->getColumnDimension('P')->setWidth(25);
+        $sheet->getColumnDimension('M')->setWidth(25);
+        $sheet->getColumnDimension('N')->setWidth(45);
+        $sheet->getColumnDimension('O')->setWidth(25);
 
 
         $fileName = 'Daftar Buku Admin (PR) ' . date('Y') . '.xlsx';

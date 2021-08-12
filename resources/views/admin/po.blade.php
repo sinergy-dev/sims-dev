@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Purchase Order Number
+@endsection
 @section('head_css')
 <!-- Select2 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -84,7 +87,7 @@
           </div>
           <div class="pull-right">
             <button type="button" class="btn btn-success margin-bottom pull-right add-po" id="btn_add_po" style="width: 200px;color: white; display: none;"><i class="fa fa-plus"> </i>&nbsp Number Purchase Order</button>
-            <a href="{{url('/downloadExcelPO')}}"><button class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel </button></a>
+            <button class="btn btn-warning" style="margin-right: 10px;" onclick="exportPo('{{action('PONumberController@downloadExcelPO')}}')"><i class="fa fa-print"></i> Excel</button>
           </div>
        </div>
 
@@ -113,35 +116,6 @@
                 </tr>
               </thead>
               <tbody id="products-list" name="products-list">
-                <!-- @foreach($datas as $data)
-                <tr>
-                  <td>{{$data->no_po}}</td>
-                  <td>{{$data->no_pr}}</td>
-                  <td>{{$data->position}}</td>
-                  <td>{{$data->type_of_letter}}</td>
-                  <td>{{$data->month}}</td>
-                  <td>{{$data->date}}</td>
-                  <td>{{$data->to}}</td>
-                  <td>{{$data->attention}}</td>
-                  <td>{{$data->title}}</td>
-                  <td>{{$data->project}}</td>
-                  <td>{{$data->description}}</td>
-                  <td>{{$data->name}}</td>
-                  <td>{{$data->division}}</td>
-                  <td>{{$data->issuance}}</td>
-                  <td>{{$data->project_id}}</td>
-                  <td>{{$data->note}}</td>
-                  <td>
-                    @if(Auth::User()->nik == $data->from)
-                    <button class="btn btn-xs btn-primary" data-target="#modaledit" data-toggle="modal" style="vertical-align: top; width: 60px" onclick="edit_po('{{$data->no}}','{{$data->to}}','{{$data->attention}}','{{$data->title}}','{{$data->project}}','{{$data->description}}', '{{$data->from}}', '{{$data->issuance}}', '{{$data->project_id}}', '{{$data->division}}')">&nbsp Edit
-                    </button>
-                    @else
-                    <button class="btn btn-xs btn-primary disabled" style="vertical-align: top; width: 60px">&nbsp Edit
-                    </button>
-                    @endif
-                  </td>
-                </tr>
-                @endforeach -->
               </tbody>
               <tfoot>
               </tfoot>
@@ -482,6 +456,10 @@
     $("#year_filter").change(function(){
       $('#data_po').DataTable().ajax.url("{{url('getfilteryearpo')}}?data=" + this.value).load();
     });
+
+    function exportPo(url){
+      window.location = url + "?year=" + $("#year_filter").val();
+    }
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
          $("#alert").slideUp(300);

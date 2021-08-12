@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Lead Setting
+@endsection
 @section('content')
 @section('head_css')
 <!-- bootstrap datepicker -->

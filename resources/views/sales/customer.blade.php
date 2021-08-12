@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Customer
+@endsection
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <!-- DataTables -->

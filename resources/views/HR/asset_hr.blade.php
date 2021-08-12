@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+GA Asset
+@endsection
 @section('head_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
@@ -49,6 +52,13 @@
 </style>
 @endsection
 @section('content')
+<section class="content-header">
+  <h1>GA Asset</h1>
+    <ol class="breadcrumb">
+      <li><a href="{{url('/')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+      <li class="active">GA - Asset</li>
+    </ol>
+</section>
   <section class="content">
     @if (session('update'))
       <div class="alert alert-warning" id="alert">

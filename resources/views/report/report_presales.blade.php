@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+Report Presales
+@endsection
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
@@ -453,12 +456,6 @@
     function changeLeadPresales(nik) {
       $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
     }
-
-    /*$('#data_lead_1110492070').dataTable({});
-    $('#data_lead_1170290090').dataTable({});
-    $('#data_lead_1170586020').dataTable({});
-    $('#data_lead_1190500060').dataTable({});
-    $('#data_lead_1190501052').dataTable({});*/
 
     $('#enddate').datepicker({
         autoclose: true

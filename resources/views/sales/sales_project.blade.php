@@ -1,4 +1,7 @@
 @extends('template.main')
+@section('tittle')
+ID Project
+@endsection
 @section('head_css')
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
