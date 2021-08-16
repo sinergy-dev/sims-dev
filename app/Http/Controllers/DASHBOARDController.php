@@ -78,11 +78,27 @@ class DASHBOARDController extends Controller
                         ->take(5)
                         ->get();
         }else{
+            $sum_amounts_ter = DB::table('sales_lead_register')
+                            ->join('users','users.nik','=','sales_lead_register.nik')
+                            ->select(DB::raw('SUM(sales_lead_register.amount) as sum_amounts'),DB::raw('COUNT(sales_lead_register.lead_id) as leads_total'),'id_territory')
+                            ->where('users.id_territory','!=','OPERATION')
+                            ->whereYear('closing_date', $year_now)
+                            ->where('result', 'WIN')
+                            ->where('users.id_company', '1')
+                            ->groupBy('id_territory');
+
+            // return $sum_amounts_ter;
+
             $top_win_sip_ter_ter = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                         ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->joinSub($sum_amounts_ter,'sum_amounts_ter',function($join){
+                            $join->on('sum_amounts_ter.id_territory','=','users.id_territory');
+                        })
                         ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.id_territory')
+                        ->selectRaw('`sum_amounts_ter`.`sum_amounts` AS `sum_total`')
+                        ->selectRaw('`sum_amounts_ter`.`leads_total` AS `leads_total`')
                         ->where('result', 'WIN')
                         ->where('users.id_territory','!=','OPERATION')
                         ->whereYear('closing_date', $year_now)
@@ -93,7 +109,13 @@ class DASHBOARDController extends Controller
 
             $groups = collect($top_win_sip_ter_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('id_territory');
 
+            $groups2 = collect($sum_amounts_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('sum_amounts');
+
+            // $top_win_sip_ter = array_merge($groups2->toArray(),$groups->toArray());
             $top_win_sip_ter = $groups->toArray();
+
+            // return $top_win_sip_ter; 
+            // return $groups->toArray();
         }
 
         // return $top_win_sip_ter;

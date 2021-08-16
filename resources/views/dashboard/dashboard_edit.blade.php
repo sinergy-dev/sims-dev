@@ -463,9 +463,9 @@ Dashboard
       @endif
     </div>
 
-    @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER')
+<!--     @if(Auth::User()->id_position == 'DIRECTOR' || Auth::User()->id_division == 'TECHNICAL' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'PMO' && Auth::User()->id_position == 'MANAGER' || Auth::User()->id_division == 'TECHNICAL PRESALES' && Auth::User()->id_position == 'MANAGER') -->
     <div class="row">
-    	<div class="col-lg-12 col-xs-12">
+    	<div class="col-lg-6 col-xs-12">
       	<div class="box box-primary">
           <div class="box-header with-border">
             <h3 class="box-title"><i>WIN Projects Per Territory</i></h3>
@@ -484,30 +484,32 @@ Dashboard
               </thead>
               <tbody>
     					@foreach($top_win_sip_ter as $key => $name)
-                @foreach($name as $tops)
-                	@if($tops->id_territory == $territory)
-                  <tr>
-                    <td>{{ $no_sip++ }}</td>
-                    <td>{{ $tops->name }}</td>
-                    <td align="right">
-                    <i class="money">{{ $tops->deal_prices }}</i>
-                    </td>
-                    <td><center>( {{ $tops->leads }} )</center></td>
-                  </tr>
-                  @else
-                  <?php $territory = $tops->id_territory?>
-                  <tr>
-                  	<td colspan="4" style="background-color:dodgerblue;color: white;">{{$tops->id_territory}}</td>
-                  </tr>
-                  <tr>
-                    <td>{{ $no_sip++ }}</td>
-                    <td>{{ $tops->name }}</td>
-                    <td align="right">
-                    <i class="money">{{ $tops->deal_prices }}</i>
-                    </td>
-                    <td><center>( {{ $tops->leads }} )</center></td>
-                  </tr>
-                  @endif
+                @foreach($name as $key => $tops)
+                		@if($tops->id_territory == $territory)
+										  <tr>
+										    <td>{{ $no_sip++ }}</td>
+										    <td>{{ $tops->name }}</td>
+										    <td align="right">
+										    <i class="money">{{ $tops->deal_prices }}</i>
+										    </td>
+										    <td><center>( {{ $tops->leads }} )</center></td>
+										  </tr>
+									  @else
+									  <?php $territory = $tops->id_territory?>
+									  <tr style="background-color:dodgerblue;color: white;">
+									  	<td colspan="2">{{$tops->id_territory}}</td>
+									  	<td>Rp.<i class="money">{{$tops->sum_total}}</i></td>
+									  	<td style="text-align:center;">{{$tops->leads_total}}</td>
+									  </tr>
+									  <tr>
+									    <td>{{ $no_sip++ }}</td>
+									    <td>{{ $tops->name }}</td>
+									    <td align="right">
+									    <i class="money">{{ $tops->deal_prices }}</i>
+									    </td>
+									    <td><center>( {{ $tops->leads }} )</center></td>
+									  </tr>
+									  @endif                	
                 @endforeach
     					@endforeach
               </tbody>
@@ -515,8 +517,40 @@ Dashboard
           </div>
         </div>
       </div>
+
+      <div class="col-lg-3 col-xs-12">
+      	<div class="box box-danger">
+        		<div class="box-header with-border">
+          		<h3 class="box-title">Win/Lose</h3>
+        		</div>
+          	<div class="box-body">
+            @if(Auth::User()->id_company == '1')
+              @if($wins + $loses == 0)
+                <canvas id="Chartempty" height="100%"></canvas>
+              @elseif($win2 + $lose2 == 0)
+                <canvas id="Chartempty" height="100%"></canvas>
+              @else
+                <canvas id="myDoughnutChart" width="100%" height="100%"></canvas>
+              @endif
+            @else
+              <canvas id="myDoughnutChart" width="100%" height="100%"></canvas>
+            @endif
+          </div>
+      	</div>
+    	</div>
+
+	    <div class="col-lg-3 col-xs-12">
+	        <div class="box box-primary">
+	          <div class="box-header with-border">
+	            <h3 class="box-title">Status Lead Register</h3>
+	          </div>
+	          <div class="box-body">
+	            <canvas id="myPieChart" width="100%" height="100%"></canvas>
+	          </div>
+	        </div>
+	    </div>
     </div>    	
-    @endif
+    <!-- @endif -->
     	
     <div class="row">
       	<div class="col-lg-6 col-xs-12">
@@ -547,48 +581,16 @@ Dashboard
     </div>
 
     <div class="row">
-    	<div class="col-lg-6 col-xs-12">
+    	<div class="col-lg-12 col-xs-12">
 	        <div class="box box-warning">
 	          <div class="box-header with-border">
 	            <h3 class="box-title">Total Amount Lead Register (By Status)</h3>
 	          </div>
 	          <div class="box-body">
 	            	<canvas id="barChartByStatus"></canvas>
-			  </div>
+			  		</div>
           </div>
-        </div>
-
-      	<div class="col-lg-3 col-xs-12">
-        	<div class="box box-danger">
-          		<div class="box-header with-border">
-            		<h3 class="box-title">Win/Lose</h3>
-          		</div>
-	          	<div class="box-body">
-	            @if(Auth::User()->id_company == '1')
-	              @if($wins + $loses == 0)
-	                <canvas id="Chartempty" height="100%"></canvas>
-	              @elseif($win2 + $lose2 == 0)
-	                <canvas id="Chartempty" height="100%"></canvas>
-	              @else
-	                <canvas id="myDoughnutChart" width="100%" height="100%"></canvas>
-	              @endif
-	            @else
-	              <canvas id="myDoughnutChart" width="100%" height="100%"></canvas>
-	            @endif
-	          </div>
-        	</div>
-      	</div>
-
-	    <div class="col-lg-3 col-xs-12">
-	        <div class="box box-primary">
-	          <div class="box-header with-border">
-	            <h3 class="box-title">Status Lead Register</h3>
-	          </div>
-	          <div class="box-body">
-	            <canvas id="myPieChart" width="100%" height="100%"></canvas>
-	          </div>
-	        </div>
-	    </div>
+      </div>      	
     </div>
   @endif
 	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -897,8 +899,11 @@ Dashboard
 				          console.log(data)
 				          // return data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']];
 				          // return data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].label;
-				          return data.datasets[tooltipItem.datasetIndex].label + ' : Rp.' + data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' ; Total : ' + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']]
+				          return data.datasets[tooltipItem.datasetIndex].label + [': Rp.' + data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),'new line','Total : ' + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']]]
 				        },
+				        footer: function(tooltipItems, data) {
+						      return ['new line', 'another line'];
+						    },
 				        afterLabel: function(tooltipItem, data) {
 				          // var dataset = data['datasets'][0];
 				          // var percent = Math.round((dataset['data'][tooltipItem['index']] / dataset["_meta"][0]['total']) * 100)
@@ -909,7 +914,7 @@ Dashboard
 				    scales: {
 				          	xAxes: [{
 				          		barPercentage: 0.10,
-				             	barThickness: 7,
+				             	barThickness: 20,
 				             	gridLines: {
 									display:false
 								}
@@ -1277,34 +1282,37 @@ Dashboard
     })
 
     $.ajax({
-          type:"GET",
-          url:"getDoughnutChart",
-          success:function(result){
-              var myDoughnutChart = new Chart(ctx7, {
-          type: 'doughnut',
-          data: {
-            labels: ["WIN", "LOSE"],
-            indexLabel: "#percent%",
-            percentFormatString: "#0.##",
-            datasets: [{
-              data: result,
-              backgroundColor: ['#246d18', '#e5140d'],
-            }],
+      type:"GET",
+      url:"getDoughnutChart",
+      success:function(result){
+      var myDoughnutChart = new Chart(ctx7, {
+        type: 'doughnut',
+        data: {
+          labels: ["WIN", "LOSE"],
+          indexLabel: "#percent%",
+          percentFormatString: "#0.##",
+          datasets: [{
+            data: result,
+            backgroundColor: ['#246d18', '#e5140d'],
+          }],
+        },
+        options: {
+        showTooltips: true,
+        legend: {
+          display: true
           },
-          options: {
-          legend: {
-            display: true
-            },
-          tooltips: {
-           mode: 'label',
-           label: 'mylabel',
-           callbacks: {
-            label: function(tooltipItem, data) {
-                    return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + '%';},},
+        tooltips: {
+         mode: 'label',
+         label: 'mylabel',
+         callbacks: {
+          	label: function(tooltipItem, data) {
+            	return data['datasets'][0]['data'][tooltipItem['index']].toFixed(2) + '%';
             },
           },
-        });
-      }
+        },
+      },
+      });
+    }
     });
     @endif
 
