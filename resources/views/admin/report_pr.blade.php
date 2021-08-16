@@ -187,6 +187,7 @@ Report Purchase Request
     var chart2 = document.getElementById("myPieChartAmount");
     var chart3 = document.getElementById("myBarChart");
     var chart4 = document.getElementById("barChartByType");
+    var theHelp = Chart.helpers;
 
     $.ajax({
       type:"GET",
@@ -207,6 +208,33 @@ Report Purchase Request
           options: {
             legend: {
               display: true,
+              labels: {
+                generateLabels: function(chart) {
+                  var data = chart.data;
+                  if (data.labels.length && data.datasets.length) {
+                    return data.labels.map(function(label, i) {
+                      var meta = chart.getDatasetMeta(0);
+                      var ds = data.datasets[0];
+                      var arc = meta.data[i];
+                      var custom = arc && arc.custom || {};
+                      var getValueAtIndexOrDefault = theHelp.getValueAtIndexOrDefault;
+                      var arcOpts = chart.options.elements.arc;
+                      var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                      var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                      var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+                      return {
+                        text: label + ": " + parseFloat(ds.data[i]).toFixed(2) + "% ",
+                        fillStyle: fill,
+                        strokeStyle: stroke,
+                        lineWidth: bw,
+                        hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                        index: i
+                      };
+                    });
+                  }
+                  return [];
+                }
+              }
             },
             tooltips: {
               mode: 'label',
@@ -226,22 +254,20 @@ Report Purchase Request
       type:"GET",
       url:"/getAmountByCategory",
       success:function(result){
-        var labelCategoryPR = Object.keys(result.data[0])
-        var valueCategoryPR = Object.values(result.data[0])
+        var labelCategoryPR = result.label
+        var valueCategoryPR = result.precentage
         // console.log(Object.keys(result.data[0]))
         // console.log(Object.values(result.data[0]))
 
         var myPieChart = new Chart(chart2, {
           type: 'pie',
           data: {
-            // labels: ['Barang dan Jasa','Barang', 'Jasa', 'Bank Garansi','Service', 'Pajak Kendaraan', 'ATK', 'Aset', 'Tinta', 'Training', 'Ujian', 'Tiket', 'Akomodasi', 'Swab Test', 'Other'],
             labels: labelCategoryPR,
             indexLabel: "#percent%",
             percentFormatString: "#0.##",
             toolTipContent: "{y} (#percent%)",
             datasets: [{
               data: valueCategoryPR,
-              // data: [amount_bnj,amount_barang, amount_jasa,amount_bg,amount_servis,amount_pajak,amount_atk,amount_aset,amount_tinta,amount_training,amount_ujian,amount_tiket,amount_akomodasi, amount_swab, amount_other],
               backgroundColor: [
               "#EA2027",
               "#EE5A24",
@@ -262,9 +288,36 @@ Report Purchase Request
           },
           options: {
             legend: {
-                display: true,
-                position:'right'
-              },
+              display: true,
+              position:'right',
+              labels: {
+                generateLabels: function(chart) {
+                  var data = chart.data;
+                  if (data.labels.length && data.datasets.length) {
+                    return data.labels.map(function(label, i) {
+                      var meta = chart.getDatasetMeta(0);
+                      var ds = data.datasets[0];
+                      var arc = meta.data[i];
+                      var custom = arc && arc.custom || {};
+                      var getValueAtIndexOrDefault = theHelp.getValueAtIndexOrDefault;
+                      var arcOpts = chart.options.elements.arc;
+                      var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                      var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                      var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+                      return {
+                        text:  parseFloat(ds.data[i]).toFixed(2) + "% " + label ,
+                        fillStyle: fill,
+                        strokeStyle: stroke,
+                        lineWidth: bw,
+                        hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                        index: i
+                      };
+                    });
+                  }
+                  return [];
+                }
+              }
+            },
             tooltips: {
               mode: 'label',
               label: 'mylabel',
