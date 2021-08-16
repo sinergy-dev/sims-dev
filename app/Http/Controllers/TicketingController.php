@@ -329,8 +329,8 @@ class TicketingController extends Controller
 
 	public function sendEmail($to, $cc, $subject, $body){
 		Mail::html($body, function ($message) use ($to, $cc, $subject) {
-			->from('helpdesk@sinergy.co.id','Helpdesk Sinergy')
 			$message
+				->from('helpdesk@sinergy.co.id','Helpdesk Sinergy')
 				->to(explode(";", $to))
 				->subject($subject);
 
