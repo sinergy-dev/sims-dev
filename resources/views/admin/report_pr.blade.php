@@ -115,6 +115,58 @@ Report Purchase Request
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+          <h3 class="box-title">Total Amount Internal PR (By Category)</h3>
+          </div>
+
+          <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered display no-wrap" id="dataTableAmountIpr" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Category</th>
+                      <th>Total</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-list" name="products-list">
+                  </tbody>
+                </table>
+            </div>  
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+          <h3 class="box-title">Total Amount External PR (By Category)</h3>
+          </div>
+
+          <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered display no-wrap" id="dataTableAmountEpr" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Category</th>
+                      <th>Total</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-list" name="products-list">
+                  </tbody>
+                </table>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </div>
       
   </section>
 
@@ -373,6 +425,52 @@ Report Purchase Request
             }
           },
           { "data": "project_id"},
+          { "data": "total"},
+          { 
+            render: function ( data, type, row ) {
+              return new Intl.NumberFormat('id').format(row.nominal)
+            }
+          }
+        ],
+        "order":[],
+      pageLength: 10,
+    })
+
+    $('#dataTableAmountIpr').DataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('getTotalNominalByCatIpr')}}"
+        },
+        "columns": [
+          { 
+            render: function (data, type, row, meta){
+              return ++meta.row             
+            }
+          },
+          { "data": "category"},
+          { "data": "total"},
+          { 
+            render: function ( data, type, row ) {
+              return new Intl.NumberFormat('id').format(row.nominal)
+            }
+          }
+        ],
+        "order":[],
+      pageLength: 10,
+    })
+
+    $('#dataTableAmountEpr').DataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('getTotalNominalByCatEpr')}}"
+        },
+        "columns": [
+          { 
+            render: function (data, type, row, meta){
+              return ++meta.row             
+            }
+          },
+          { "data": "category"},
           { "data": "total"},
           { 
             render: function ( data, type, row ) {
