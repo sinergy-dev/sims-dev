@@ -433,6 +433,7 @@ class PrController extends Controller
         $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
         $amount = str_replace(',', '', $request['edit_amount']);
+        $update->status = $request['edit_status'];
         $update->amount = $amount;
 
 
