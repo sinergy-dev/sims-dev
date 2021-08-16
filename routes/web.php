@@ -263,6 +263,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getAmountByCategory', 'PrController@getAmountByCategory');
 	Route::get('/getTotalNominalByCat', 'PrController@getTotalNominalByCat');
 	Route::get('/getTotalNominalByPid', 'PrController@getTotalNominalByPid');
+	Route::get('/getTotalNominalByCatIpr', 'PrController@getTotalNominalByCatIpr');
+	Route::get('/getTotalNominalByCatEpr', 'PrController@getTotalNominalByCatEpr');
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
