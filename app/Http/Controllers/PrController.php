@@ -218,10 +218,7 @@ class PrController extends Controller
         return collect([
             'all'=>[$count_all,strpos((string)$amount_all,".",0) ? (string)$amount_all : (string)$amount_all . ".00"],
             'ipr'=>[$count_ipr,strpos((string)$amount_ipr,".",0) ? (string)$amount_ipr : (string)$amount_ipr . ".00"],
-            'epr'=>[$count_epr,strpos((string)$amount_epr,".",0) ? (string)$amount_epr : (string)$amount_epr . ".00"],
-            // 'amount'=>strpos((string)$amount_all,".",0) ? (string)$amount_all : (string)$amount_all . ".00",
-            // 'amount_ipr'=>strpos((string)$amount_ipr,".",0) ? (string)$amount_ipr : (string)$amount_ipr . ".00",
-            // 'amount_epr'=>strpos((string)$amount_epr,".",0) ? (string)$amount_epr : (string)$amount_epr . ".00",
+            'epr'=>[$count_epr,strpos((string)$amount_epr,".",0) ? (string)$amount_epr : (string)$amount_epr . ".00"]
         ]);
     }
 
@@ -295,7 +292,7 @@ class PrController extends Controller
         $tambah->description = $request['description'];
         $tambah->from = $request['from_user'];
         // $tambah->division = $request['division'];
-        $tambah->division == 'PMO';
+        $tambah->division = 'PMO';
         $tambah->issuance = Auth::User()->nik;
         $tambah->amount = str_replace(',', '', $request['amount']);
         if ($request['project_id'] == null) {
@@ -305,6 +302,7 @@ class PrController extends Controller
         }
         $tambah->category = $request['category'];
         $tambah->result = 'T';
+        $tambah->status = 'On Progress';
         $tambah->save();
 
         return redirect('pr')->with('success', 'Created Purchase Request Successfully!');       
