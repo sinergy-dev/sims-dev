@@ -347,26 +347,18 @@ class PrController extends Controller
     {
         $year = date('Y');
 
-        $total = PR::select(
-                DB::raw('SUM(IF(`category` = "Barang dan Jasa",amount,""))/ SUM(`amount`)*100 AS "Barang dan Jasa"'), 
-                DB::raw('SUM(IF(`category` = "Barang",amount,""))/ SUM(`amount`)*100 AS "Barang"'),
-                DB::raw('SUM(IF(`category` = "Jasa",amount,""))/ SUM(`amount`)*100 AS "Jasa"'), 
-                DB::raw('SUM(IF(`category` = "Bank Garansi",amount,""))/ SUM(`amount`)*100 AS "Bank Garansi"'),
-                DB::raw('SUM(IF(`category` = "Service",amount,""))/ SUM(`amount`) *100  AS "Service"'),
-                DB::raw('SUM(IF(`category` = "Pajak Kendaraan",amount,""))/ SUM(`amount`) *100 AS "Pajak"'),
-                DB::raw('SUM(IF(`category` = "ATK",amount,""))/ SUM(`amount`) *100 AS "ATK"'),
-                DB::raw('SUM(IF(`category` = "Aset",amount,""))/ SUM(`amount`)*100 AS "Aset"'),
-                DB::raw('SUM(IF(`category` = "Tinta",amount,""))/ SUM(`amount`)*100 AS "Tinta"'),
-                DB::raw('SUM(IF(`category` = "Training",amount,""))/ SUM(`amount`)*100 AS "Training"'),
-                DB::raw('SUM(IF(`category` = "Ujian",amount,""))/ SUM(`amount`)*100 AS "Ujian"'),
-                DB::raw('SUM(IF(`category` = "Tiket",amount,""))/ SUM(`amount`)*100 AS "Tiket"'),
-                DB::raw('SUM(IF(`category` = "Akomodasi",amount,""))/ SUM(`amount`)*100 AS "Akomodasi"'),
-                DB::raw('SUM(IF(`category` = "Swab Test",amount,""))/ SUM(`amount`)*100 AS "Swab Test"'),
-                DB::raw('SUM(IF(`category` = "Other",amount,""))/ SUM(`amount`)*100 AS "Other"'),
-            )
-            ->whereYear('date', date('Y'))->get();
+        $sum_all = PR::selectRaw('SUM(`amount`) as `sum_all`')
+            ->whereYear('date', date('Y'))
+            ->first();
 
-        return array("data"=>$total);
+        $sum_cat = PR::select('category')
+            // ->selectRaw('SUM(`amount`) as `sum`')
+            ->selectRaw('SUM(`amount`)/' . $sum_all->sum_all . '*100 as `precentage`')
+            ->orderBy('precentage','DESC')
+            ->whereYear('date', date('Y'))
+            ->groupBy('category')->get();
+
+        return array("label"=>$sum_cat->pluck('category'), "precentage"=>$sum_cat->pluck('precentage'));
     }
 
     public function getTotalPrByMonth()
