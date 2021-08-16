@@ -1965,6 +1965,11 @@ Ticketing
 			}
 		});
 
+		function changeNumberEntries(number){
+			$("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
+			$("#tablePerformance").DataTable().page.len( number ).draw();
+		}
+
 		$('#searchBarATM').keypress(function(e){
 			if(e.keyCode == 13){
 				$("#tableAtm").DataTable().search($('#searchBarATM').val()).draw();
