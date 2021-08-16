@@ -8,6 +8,8 @@
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
   <style type="text/css">
     th {
       text-align: center;
@@ -113,9 +115,9 @@
           <thead>
             <tr  style="text-align: center;">
               <th>No</th>
-              <th>Position</th>
+              <!-- <th>Position</th>
               <th>Type</th>
-              <th>Month</th>
+              <th>Month</th> -->
               <th>Date</th>
               <th>Category</th>
               <th>To</th>
@@ -128,7 +130,8 @@
               <th>Issuance</th>
               <th>Project ID</th>
               <th>Amount</th>
-              <th>Note</th>
+              <!-- <th>Note</th> -->
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -353,6 +356,7 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
 @endsection
 @section('script')
   <script type="text/javascript">
@@ -495,9 +499,9 @@
         },
         "columns": [
           { "data": "no_pr" },
-          { "data": "position" },
-          { "data": "type_of_letter" },
-          { "data": "month" },
+          // { "data": "position" },
+          // { "data": "type_of_letter" },
+          // { "data": "month" },
           { "data": "date" },
           { "data": "category"},
           { "data": "to" },
@@ -546,7 +550,8 @@
               return new Intl.NumberFormat('id').format(row.amount)
             }
           },
-          { "data": "note" },
+          // { "data": "note" },
+          { "data": "status" },
           {
             "className": 'btn_edit',
             "orderable": false,
@@ -558,9 +563,10 @@
         "lengthChange": false,
         "info":false,
         "scrollX": true,
+        "scrollCollapse": true,
         "order": [[ 0, "desc" ]],
-        "fixedColumns":   {
-            leftColumns: 1
+        fixedColumns:   {
+          leftColumns: 1
         },
         "pageLength": 20,
       })
