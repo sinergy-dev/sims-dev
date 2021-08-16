@@ -412,6 +412,36 @@ class PrController extends Controller
 
         return array("data" => $data->get());
     }
+
+    public function getTotalNominalByCatIpr()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'category'
+            )
+            ->whereYear('date', date('Y'))
+            ->where('type_of_letter', 'IPR')
+            ->orderBy('nominal', 'desc')
+            ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByCatEpr()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'category'
+            )
+            ->whereYear('date', date('Y'))
+            ->where('type_of_letter', 'EPR')
+            ->orderBy('nominal', 'desc')
+            ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
     
     public function update_pr(Request $request)
     {
