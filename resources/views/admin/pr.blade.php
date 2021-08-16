@@ -329,8 +329,13 @@
               <input type="text" class="form-control" placeholder="Enter Project Id" name="edit_project_id" id="edit_project_id">
             </div>
             <div class="form-group">
-              <label for="">Note</label>
-              <input type="text" class="form-control" placeholder="Enter Note" name="edit_note" id="edit_note">
+              <label>Status</label>
+              <select type="text" class="form-control" name="edit_status" id="edit_status" required>
+                  <option value="On Progress">On Progress</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Done">Done</option>
+                  <option value="Cancel">Cancel</option>
+              </select>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
@@ -427,7 +432,7 @@
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
 
-    function edit_pr(no,to,attention,title,description,amount,project_id,note) {
+    function edit_pr(no,to,attention,title,description,amount,project_id,status) {
       console.log(amount)
       $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
@@ -463,11 +468,7 @@
         $('#edit_project_id').val(project_id);
       }
 
-      if (note == "null") {
-        '';
-      } else {
-        $('#edit_note').val(note);
-      }
+      $('#edit_status').val(status);
     }
 
     $("#alert").fadeTo(2000, 500).slideUp(500, function(){
@@ -485,8 +486,8 @@
 
             json.data.forEach(function(data,index){
               // console.log(data.amount)
-              if("{{Auth::User()->nik}}" == data.issuance_nik) {
-                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.note+ '"'
+              if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done') {
+                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
