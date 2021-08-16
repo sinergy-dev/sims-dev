@@ -3972,7 +3972,7 @@ Ticketing
 							$(".holderCloseContact").text(result.ticket_data.contact_pic);
 							$(".holderCloseLocation").text(result.ticket_data.location);
 							$(".holderCloseProblem").text(result.ticket_data.problem);
-							$(".holderCloseSerial").text(result.ticket_data.serial_device);
+							$(".holderCloseSerial").html(result.ticket_data.serial_device);
 							$(".holderCloseSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
 							
 							$(".holderCloseIDATM").text(result.ticket_data.id_atm);
