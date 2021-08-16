@@ -469,7 +469,7 @@ class PrController extends Controller
         $filter_pr = DB::table('tb_pr')
                         ->join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                         ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'status')
                         ->where('result', '!=', 'R')
                         ->whereYear('tb_pr.created_at', $request->data)
                         ->get();
@@ -483,7 +483,7 @@ class PrController extends Controller
 
         return array("data" => PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                                 ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount', 'status')
                                 ->where('result', '!=', 'R')
                                 ->where('date','like',$tahun."%")
                                 ->get());
@@ -692,8 +692,8 @@ class PrController extends Controller
         $sheet->fromArray($headerContent,NULL,'A2');
 
         $dataPR = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
-            ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount')
+            ->Leftjoin('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
+            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount', 'status')
             ->whereYear('tb_pr.date', $request->year)
             ->get();
 
