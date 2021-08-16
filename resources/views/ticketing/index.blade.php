@@ -1965,11 +1965,6 @@ Ticketing
 			}
 		});
 
-		function changeNumberEntries(number){
-			$("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
-			$("#tablePerformance").DataTable().page.len( number ).draw();
-		}
-
 		$('#searchBarATM').keypress(function(e){
 			if(e.keyCode == 13){
 				$("#tableAtm").DataTable().search($('#searchBarATM').val()).draw();
@@ -3158,6 +3153,11 @@ Ticketing
 		$('#clientList').find(":not(.buttonFilter" + client + ")").removeClass('btn-primary').addClass('btn-default')
 		$("#tablePerformance").DataTable().clear().draw();
 		$("#tablePerformance").DataTable().ajax.url("{{url('/ticketing/getPerformanceByClient?client=')}}" + client).load();
+	}
+
+	function changeNumberEntries(number){
+		$("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
+		$("#tablePerformance").DataTable().page.len( number ).draw();
 	}
 
 	function showTicket(id){
