@@ -3217,10 +3217,23 @@ Ticketing
 					// $("#ticketSerialArea").show()
 					$("#rowAbsen").show()
 					$("#rowGeneral").hide()
-					$("#ticketIPMachine").val(result.machine_absen.ip_machine)
-					$("#ticketIPServer").val(result.machine_absen.ip_server)
-					$("#ticketMachineType").val(result.machine_absen.type_machine)
-					$("#ticketLocation").val(result.machine_absen.nama_cabang + " - " + result.machine_absen.nama_kantor)
+					// console.log(result.machine_absen == null)
+					if(result.machine_absen == null){
+						swalWithCustomClass.fire(
+							'Absen Machine is not found!',
+							'This can happen because the absent machine has been deleted or has been edited.',
+							'error'
+						)
+						$("#ticketIPMachine").val("Not Found")
+						$("#ticketIPServer").val("Not Found")
+						$("#ticketMachineType").val("Not Found")
+						$("#ticketLocation").val("Not Found")
+					} else {
+						$("#ticketIPMachine").val(result.machine_absen.ip_machine)
+						$("#ticketIPServer").val(result.machine_absen.ip_server)
+						$("#ticketMachineType").val(result.machine_absen.type_machine)
+						$("#ticketLocation").val(result.machine_absen.nama_cabang + " - " + result.machine_absen.nama_kantor)
+					}
 
 
 					// $("#ticketSerialArea").val(result.serial_device.substring(0, result.serial_device.length - 4).replace(regex, "\n"));
