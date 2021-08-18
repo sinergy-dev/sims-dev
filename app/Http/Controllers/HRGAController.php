@@ -2534,7 +2534,7 @@ class HRGAController extends Controller
                 ->where('tb_cuti.status','=','v')
                 // ->where('date_req','>','2021-03-16')
                 // ->where('date_req','<','2021-04-15')
-                // ->whereRaw('`date_req` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+                // ->whereRaw('`date_off` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
                 // ->whereYear('date_req',date('Y'))
                 ->groupBy('nik')
                 ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
@@ -2579,7 +2579,7 @@ class HRGAController extends Controller
                 // ->where('date_req','>','2021-03-16')
                 // ->where('date_req','<','2021-04-15')
                 // ->whereYear('date_req',date('Y'))
-                // ->whereRaw('`date_req` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+                // ->whereRaw('`date_off` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
                 ->groupBy('nik')
                 ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
             ->where('users.status_karyawan','!=','dummy')
@@ -2624,7 +2624,7 @@ class HRGAController extends Controller
             // ->whereBetween('date_off',array($request->date_start,$request->date_end))
             // ->where('date_off','>','2021-03-16')
             // ->where('date_off','<','2021-04-15')
-            ->whereRaw('`date_req` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+            ->whereRaw('`date_off` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
             ->groupby('tb_cuti.id_cuti')
             ->get();
 
