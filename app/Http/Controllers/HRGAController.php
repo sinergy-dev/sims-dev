@@ -2466,6 +2466,8 @@ class HRGAController extends Controller
     }
 
     public function CutiExcel(Request $request) {
+        $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
+        $endDate = Carbon::now()->format("Y-m-16");
         $spreadsheet = new Spreadsheet();
 
         $spreadsheet->removeSheetByIndex(0);
@@ -2530,8 +2532,9 @@ class HRGAController extends Controller
                 ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
                 ->join('tb_cuti_detail','tb_cuti.id_cuti', '=', 'tb_cuti_detail.id_cuti')
                 ->where('tb_cuti.status','=','v')
-                ->where('date_req','>','2021-03-16')
-                ->where('date_req','<','2021-04-15')
+                // ->where('date_req','>','2021-03-16')
+                // ->where('date_req','<','2021-04-15')
+                // ->whereRaw('`date_req` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
                 // ->whereYear('date_req',date('Y'))
                 ->groupBy('nik')
                 ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
@@ -2573,9 +2576,10 @@ class HRGAController extends Controller
                 ->select('nik',DB::raw('COUNT(*) as `cuti_diambil`'))
                 ->join('tb_cuti_detail','tb_cuti.id_cuti', '=', 'tb_cuti_detail.id_cuti')
                 ->where('tb_cuti.status','=','v')
-                ->where('date_req','>','2021-03-16')
-                ->where('date_req','<','2021-04-15')
+                // ->where('date_req','>','2021-03-16')
+                // ->where('date_req','<','2021-04-15')
                 // ->whereYear('date_req',date('Y'))
+                // ->whereRaw('`date_req` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
                 ->groupBy('nik')
                 ,'tb_cuti_counted','users.nik','=','tb_cuti_counted.nik')
             ->where('users.status_karyawan','!=','dummy')
@@ -2618,8 +2622,9 @@ class HRGAController extends Controller
             )
             ->where('tb_cuti.status','v')
             // ->whereBetween('date_off',array($request->date_start,$request->date_end))
-            ->where('date_off','>','2021-03-16')
-            ->where('date_off','<','2021-04-15')
+            // ->where('date_off','>','2021-03-16')
+            // ->where('date_off','<','2021-04-15')
+            ->whereRaw('`date_req` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
             ->groupby('tb_cuti.id_cuti')
             ->get();
 
