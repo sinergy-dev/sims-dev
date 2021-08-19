@@ -76,7 +76,7 @@ class DASHBOARDController extends Controller
                         ->groupBy('users.id_territory','sales_lead_register.nik')
                         ->orderBy('deal_prices', 'desc')
                         ->take(5)
-                        ->get();
+                        ->get()->toArray();
         }else{
             $sum_amounts_ter = DB::table('sales_lead_register')
                             ->join('users','users.nik','=','sales_lead_register.nik')
@@ -86,8 +86,6 @@ class DASHBOARDController extends Controller
                             ->where('result', 'WIN')
                             ->where('users.id_company', '1')
                             ->groupBy('id_territory');
-
-            // return $sum_amounts_ter;
 
             $top_win_sip_ter_ter = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -111,14 +109,8 @@ class DASHBOARDController extends Controller
 
             $groups2 = collect($sum_amounts_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('sum_amounts');
 
-            // $top_win_sip_ter = array_merge($groups2->toArray(),$groups->toArray());
             $top_win_sip_ter = $groups->toArray();
-
-            // return $top_win_sip_ter; 
-            // return $groups->toArray();
         }
-
-        // return $top_win_sip_ter;
 
         // count id project
         if($div == 'FINANCE' && $pos == 'MANAGER'){
@@ -975,7 +967,10 @@ class DASHBOARDController extends Controller
                             ->get();
         }
 
-        return view('dashboard/dashboard_edit', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip','top_win_sip_ter','top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'))->with(['initView'=> $this->initMenuBase()]);
+        // return $this->RoleDynamic('asset_atk');
+        // return $top_win_sip_ter;
+
+        return view('dashboard/dashboard_edit', compact('pos','div','results','idps', 'counts','opens', 'sds', 'tps', 'notiftp', 'notifsd', 'notifOpen', 'wins', 'loses', 'notif', 'notifClaim','win1','win2','lose1','lose2','ba','co', 'lead_win', 'top_win_sip','top_win_sip_ter','top_win_msp','loop_year','year_now', 'countmsp', 'losemsp'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('Dashboard')]);
 
     }
 
