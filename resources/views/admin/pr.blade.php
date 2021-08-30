@@ -562,9 +562,9 @@
         ],
         "searching": true,
         "lengthChange": false,
-        "info":false,
+        "info":true,
         "scrollX": true,
-        "scrollCollapse": true,
+        // "scrollCollapse": true,
         "order": [[ 0, "desc" ]],
         fixedColumns:   {
           leftColumns: 1
