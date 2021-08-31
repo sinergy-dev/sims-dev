@@ -335,7 +335,7 @@ class PresenceController extends Controller
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
 
-        return view('presence.setting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+        return view('presence.setting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     }
 
     public function presenceShifting() {
