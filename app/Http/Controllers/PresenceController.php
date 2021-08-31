@@ -15,6 +15,9 @@ use Excel;
 
 use App\PresenceHistory;
 use App\PresenceLocationUser;
+use App\PresenceShifting;
+use App\PresenceShiftingProject;
+use App\PresenceShiftingOption;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
