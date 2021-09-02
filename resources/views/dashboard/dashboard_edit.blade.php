@@ -500,7 +500,7 @@ Dashboard
 		    }else{
 		    	  territory = value.id_territory
             append = append + '<tr style="background-color:dodgerblue;color: white;">'
-                append = append + '<td colspan="2"></td>'
+                append = append + '<td colspan="2">'+ value.id_territory +'</td>'
                 append = append + '<td>Rp.<i class="money">'+ new Intl.NumberFormat('id').format(value.sum_total)+'</i></td>'
                 append = append + '<td style="text-align:center;">'+value.leads_total+'</td>'
             append = append + '</tr>'
