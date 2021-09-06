@@ -517,18 +517,28 @@ class PresenceController extends Controller
         $history->presence_condition = $this->checkPresenceCondition($req->presence_actual,$setting_schedule);
         $history->presence_type = "Check-In";
 
+        // return $history;
+        // return $setting_schedule;
+
         $history->save();
     }
 
     public function checkOut(Request $req) {
         $history = new PresenceHistory();
         if (isset(Auth::User()->nik)) {
-            $setting_schedule = Auth::User()->presence_setting;
-            $history->nik = Auth::User()->nik;
-        }else{
-            $history->nik = $req->nik;
-            $setting_schedule = User::with('presence_setting')->where('nik',$history->nik)->first()->presence_setting;
+            $req->nik = Auth::User()->nik;
         }
+
+        $setting_schedule = User::with('presence_setting')
+            ->where('nik',$req->nik)
+            ->first()
+            ->presence_setting;
+
+        if (PresenceShiftingUser::where('nik',$req->nik)->exists()){
+            $setting_schedule = $this->makeShiftingSchedule($req->nik,"15");
+        }
+
+        $history->nik = $req->nik;
         $history->presence_setting = $setting_schedule->id;
         $history->presence_schedule = $setting_schedule->setting_check_out;
         $history->presence_actual = $req->presence_actual;
