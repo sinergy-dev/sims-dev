@@ -10,6 +10,9 @@ Presence Shifting
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.print.css" media="print">
 	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
 	<style>
+		.swal2-margin {
+			margin: .3125em;
+		}
 		.loader {
 			border: 16px solid #f3f3f3;
 			border-radius: 50%;
@@ -98,6 +101,69 @@ Presence Shifting
 
 		.padding-10{
 			padding: 10px;
+		}
+
+		/* The switch - the box around the slider */
+		.switch {
+			position: relative;
+			display: inline-block;
+			width: 40px;
+			height: 22px;
+		}
+
+		/* Hide default HTML checkbox */
+		.switch input {
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+
+		/* The slider */
+		.slider {
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #ccc;
+			-webkit-transition: .4s;
+			transition: .4s;
+		}
+
+		.slider:before {
+			position: absolute;
+			content: "";
+			height: 16px;
+			width: 16px;
+			left: 4px;
+			bottom: 3px;
+			background-color: white;
+			-webkit-transition: .4s;
+			transition: .4s;
+		}
+
+		input:checked + .slider {
+			background-color: #2196F3;
+		}
+
+		input:focus + .slider {
+			box-shadow: 0 0 1px #2196F3;
+		}
+
+		input:checked + .slider:before {
+			-webkit-transform: translateX(16px);
+			-ms-transform: translateX(16px);
+			transform: translateX(16px);
+		}
+
+		/* Rounded sliders */
+		.slider.round {
+			border-radius: 34px;
+		}
+
+		.slider.round:before {
+			border-radius: 50%;
 		}
 	</style>
 @endsection
@@ -259,21 +325,28 @@ Presence Shifting
 										<div class="box-body">
 											@foreach($shiftingOptionValues as $shiftingOptionValue)
 											<div class="form-group">
-												<label class="col-sm-2 control-label">
-													<small class="label pull-right bg-{{$shiftingOptionValue['class_shifting']}}" style="font-size: 100%;">{{$shiftingOptionValue["name_option"]}}</small>
+												<label class="col-sm-3 control-label" style="text-align:center">
+													<small class="label bg-{{$shiftingOptionValue['class_shifting']}}" style="font-size: 100%;">{{$shiftingOptionValue["name_option"]}}</small>
 												</label>
 
-												<div class="col-sm-5">
-													<input type="text" class="form-control" value="{{$shiftingOptionValue['start_shifting']}}" placeholder="Start">
+												<div class="col-sm-3">
+													<input type="text" class="form-control checkin-input-{{$shiftingOptionValue['id_project']}} option-{{$shiftingOptionValue['id']}}" value="{{$shiftingOptionValue['start_shifting']}}" placeholder="Start">
 												</div>
-												<div class="col-sm-5">
-													<input type="text" class="form-control" value="{{$shiftingOptionValue['end_shifting']}}" placeholder="End">
+												<div class="col-sm-3">
+													<input type="text" class="form-control checkout-input-{{$shiftingOptionValue['id_project']}} option-{{$shiftingOptionValue['id']}}" value="{{$shiftingOptionValue['end_shifting']}}" placeholder="End">
+												</div>
+
+												<div class="col-sm-3 text-center">
+													<label class="switch">
+														<input class="featureItemCheck checkbox-{{$shiftingOptionValue['id_project']}} option-{{$shiftingOptionValue['id']}}" type="checkbox" {{ $shiftingOptionValue['status'] == 'ACTIVE' ? 'checked' : '' }}>
+														<span class="slider round"></span>
+													</label>
 												</div>
 											</div>
 											@endforeach
 										</div>
 										<div class="box-footer">
-											<button type="button" class="btn btn-info pull-right">Save Change</button>
+											<button type="button" class="btn btn-info pull-right" onclick="saveChangeShiftingOption({{$shiftingOptionValue['id_project']}})">Save Change</button>
 										</div>
 									</form>
 								</div>
@@ -299,6 +372,8 @@ Presence Shifting
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
 @endsection
 
 @section('script')
@@ -309,6 +384,16 @@ Presence Shifting
 
 	var globalIdUser = 0;
 	var globalProject = 0;
+
+	swalWithCustomClass = Swal.mixin({
+		customClass: {
+			confirmButton: 'btn btn-flat btn-primary swal2-margin',
+			cancelButton: 'btn btn-flat btn-danger swal2-margin',
+			denyButton: 'btn btn-flat btn-danger swal2-margin',
+			popup: 'border-radius-0',
+		},
+		buttonsStyling: false,
+	})
 	
 	$.ajax({
 		url:"{{url('presence/shifting/getProject')}}",
@@ -638,6 +723,75 @@ Presence Shifting
 	function refresh_calendar(){
 		$("#calendar").fullCalendar('removeEventSources');
 		$("#calendar").fullCalendar('addEventSource', '{{url("presence/shifting/getThisUser")}}?idUser=' + globalIdUser +'&idProject=' + globalProject + "&month=" + moment($("#indicatorMonth").text().split(" ")[3],"MMMM").format('MM'));
+	}
+
+	function saveChangeShiftingOption(id_project){
+
+		var optionId = []
+		var checkInValue = []
+		var checkOutValue = []
+		var optionStatus = []
+
+		$(".checkin-input-" + id_project).each(function(index){
+			optionId.push($(this).attr('class').split(" option-")[1])
+			checkInValue.push($(this).val())
+		})
+		$(".checkout-input-" + id_project).each(function(index){
+			checkOutValue.push($(this).val())
+		})
+
+		$(".checkbox-" + id_project).each(function(index){
+			console.log($(this).is(":checked"))
+			if($(this).is(":checked")){
+				optionStatus.push("ACTIVE")
+			} else {
+				optionStatus.push("NON-ACTIVE")
+			}
+		})
+
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "To Save this shifting option change?",
+			icon: 'warning',
+			showCancelButton: true,
+		}).then((result) => {
+			$.ajax({
+				type:"GET",
+				url:"{{url('/presence/shifting/modifyOptionShifting')}}",
+				data:{
+					option_id:optionId,
+					checkin_value:checkInValue,
+					checkout_value:checkOutValue,
+					status_value:optionStatus,
+				},
+				beforeSend: function(){
+					Swal.fire({
+						title: 'Please Wait..!',
+						text: "It's sending..",
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						allowEnterKey: false,
+						customClass: {
+							popup: 'border-radius-0',
+						},
+						didOpen: () => {
+							Swal.showLoading()
+						}
+					})
+				},
+				success: function(result){
+					Swal.hideLoading()
+					swalWithCustomClass.fire({
+						title: 'Success!',
+						text: "Shifting option changed",
+						icon: 'success',
+						confirmButtonText: 'Reload',
+					}).then((result) => {
+						location.reload()
+					})	
+				}
+			})
+		})
 	}
 </script>
 @endsection
