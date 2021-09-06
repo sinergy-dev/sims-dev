@@ -332,6 +332,7 @@ class PONumberController extends Controller
 	        $tambah->issuance = $request['issuance'];
 	        $tambah->project_id = $request['project_id'];
             $tambah->no_pr = $request['no_pr'];
+            $tambah->status = 'N';
 	        $tambah->save();
 
             $update_no_pr = PR::where('no', $request->no_pr)->first();
@@ -399,6 +400,7 @@ class PONumberController extends Controller
 	        $tambah->issuance = $request['issuance'];
 	        $tambah->project_id = $request['project_id'];
             $tambah->no_pr = $request['no_pr'];
+            $tambah->status = 'N';
 	        $tambah->save();
 
             $update_no_pr = PR::where('no', $request->no_pr)->first();

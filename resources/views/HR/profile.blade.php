@@ -392,6 +392,53 @@
                     </div>
                   </div>
                   </center>
+
+                  <div class="form-group row">
+                    <div class="col-md-8">
+                      @if($user_profile->bpjs_kes == "-" || $user_profile->bpjs_kes == null || $user_profile->bpjs_kes == "")
+                        <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_kes" style="max-width: 300px;max-height: 300px;float: left;"/>
+                      @else
+                        <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_kes}}" id="showgambarbpjs_kes" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @endif
+                    </div>
+                  </div>
+
+                  <center>
+                  <div class="form-group row">
+                    <div class="col-md-2">
+                      <label style="margin: 12px">BPJS Kesehatan</label>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="col-md-4">
+                        <input type="file" id="inputgambarbpjs_kes" name="bpjs_kes" value="{{$user_profile->bpjs_kes}}">
+                      </div>
+                    </div>
+                  </div>
+                  </center>
+
+                  <div class="form-group row">
+                    <div class="col-md-8">
+                      @if($user_profile->bpjs_ket == "-" || $user_profile->bpjs_ket == null || $user_profile->bpjs_ket == "")
+                        <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 300px;max-height: 300px;float: left;"/>
+                      @else
+                        <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_ket}}" id="showgambarbpjs_ket" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @endif
+                    </div>
+                  </div>
+
+                  <center>
+                  <div class="form-group row">
+                    <div class="col-md-2">
+                      <label style="margin: 12px">BPJS Ketenagakerjaan</label>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="col-md-4">
+                        <input type="file" id="inputgambarbpjs_ket" name="bpjs_ket" value="{{$user_profile->bpjs_ket}}">
+                      </div>
+                    </div>
+                  </div>
+                  </center>
+
                           <!-- <div class="form-group row">
                             <div class="col-md-6">
                               <button class="btn btn-primary pull-right" type="submit"><i class="fa fa-edit"></i>&nbspUpdate</button>
@@ -547,6 +594,10 @@
           $('#showgambarnpwp').attr('src', e.target.result);
           
           $('#showgambarktp').attr('src', e.target.result);
+
+          $('#showgambarbpjs_kes').attr('src', e.target.result);
+
+          $('#showgambarbpjs_ket').attr('src', e.target.result);
           
         }
 
@@ -566,6 +617,14 @@
     });
 
   $("#inputgambarktp").change(function () {
+      readURL(this);
+    });
+
+  $("#inputgambarbpjs_kes").change(function () {
+      readURL(this);
+    });
+
+  $("#inputgambarbpjs_ket").change(function () {
       readURL(this);
     });
 

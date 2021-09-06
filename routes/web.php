@@ -912,9 +912,43 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/report/getFilterReport', 'PresenceController@getDataReportPresence2');
 	
 	Route::get('/presence/setting', 'PresenceController@presenceSetting');
+	Route::get('/presence/setting/getListUser', 'PresenceController@presenceSettingGetListUser');
+	Route::get('/presence/setting/showSchedule', 'PresenceController@presenceSettingShowSchedule');
+	Route::get('/presence/setting/showLocation', 'PresenceController@presenceSettingShowLocationExisting');
+	Route::get('/presence/setting/showAllLocation', 'PresenceController@presenceSettingShowLocationUser');
+	Route::post('/presence/setting/setSchedule', 'PresenceController@presenceSettingSetSchedule');
+	Route::post('/presence/setting/setLocation', 'PresenceController@presenceSettingSetLocation');
+	Route::post('/presence/setting/addLocation', 'PresenceController@presenceSettingAddLocation');
+	Route::get('/presence/setting/showLocationAll', 'PresenceController@presenceSettingShowAllLocation');
+
+
 	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
+	Route::get('/presence/shifting/getProject', 'PresenceController@shiftingGetProject');
+	Route::get('/presence/shifting/getOption', 'PresenceController@shiftingGetOption');
+	Route::get('/presence/shifting/getUsers', 'PresenceController@shiftingGetUsers');
+	Route::get('/presence/shifting/getThisMonth', 'PresenceController@getScheduleThisMonth');
+	Route::get('/presence/shifting/getSummaryThisMonth', 'PresenceController@getSummaryThisMonth');
+	Route::get('/presence/shifting/getThisProject', 'PresenceController@getScheduleThisProject');
+	Route::get('/presence/shifting/getThisUser', 'PresenceController@getScheduleThisUser');
+	Route::get('/presence/shifting/createSchedule', 'PresenceController@createSchedule');
+	Route::get('/presence/shifting/deleteSchedule', 'PresenceController@deleteSchedule');
+
+	Route::post('/presence/shifting/modifyUserShifting', 'PresenceController@modifyUserShifting');
+	Route::get('/presence/shifting/modifyOptionShifting', 'PresenceController@modifyOptionShifting');
+	Route::get('/presence/shifting/getOptionGrouped', 'PresenceController@getOptionGrouped');
+
 
 	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
+
+	// Invoice
+	Route::get('/invoice', 'InvoiceController@index');
+	Route::get('/invoice/getNoPo', 'InvoiceController@getNoPo');
+	Route::post('/invoice/store', 'InvoiceController@store');
+	Route::get('/invoice/getData', 'InvoiceController@getData');
+	Route::post('/invoice/update_invoice', 'InvoiceController@update_invoice');
+	Route::get('/invoice/getInvoiceEdit', 'InvoiceController@getInvoiceEdit');
+	Route::get('/invoice/getFilterYear', 'InvoiceController@getFilterYear');
+	Route::get('downloadExcelInvoice','InvoiceController@downloadExcel');
 
 	// Ticketing
 	Route::get('/ticketing','TicketingController@index');
@@ -985,4 +1019,13 @@ Route::group(['middleware' => ['auth']], function () {
 });
 Route::get('/authentication/{id}','TestController@authentication');
 
+Route::get('/testFullCalendar',function(){
+	$controller = new App\Http\Controllers\Controller();
+	return view('blankPage')->with(['initView'=>$controller->initMenuBase()]);
+});
+
+Route::get('testCheckIn','TestController@checkIn');
+Route::post('testCheckIn','TestController@checkIn');
+Route::post('testCheckOut','TestController@checkOut');
+Route::post('testaddUserShifting','TestController@modifyUserShifting');
 
