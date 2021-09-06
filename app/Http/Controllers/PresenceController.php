@@ -406,7 +406,9 @@ class PresenceController extends Controller
 
     public function presenceSettingShowAllLocation()
     {
-        $getLocation = PresenceLocation::select(DB::raw('`presence__location`.`id` AS `id`,`location_name` AS `text`'))->get();
+        $getLocation = PresenceLocation::select(DB::raw('`presence__location`.`id` AS `id`,`location_name` AS `text`'))
+            ->where('location_status','ACTIVE')
+            ->get();
 
         return array("data" => $getLocation);
     }
@@ -1180,7 +1182,7 @@ class PresenceController extends Controller
             $detailSheet->getStyle('A2:J2')->applyFromArray($headerStyle);
             $detailSheet->fromArray($headerContent,NULL,'A2');
 
-            foreach ($item as $key => $eachPresence) {
+            foreach ($item->sortBy('date')->values() as $key => $eachPresence) {
                 $detailSheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($eachPresence))),NULL,'A' . ($key + 3));
             }
             $detailSheet->getColumnDimension('A')->setAutoSize(true);

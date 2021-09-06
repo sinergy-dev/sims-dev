@@ -1736,7 +1736,7 @@ Human Resources
 		                    <label for="status_karyawan" class="col-md-4 col-form-label text-md-right">{{ __('Employee Status') }}</label>
 
 		                    <div class="col-md-4" id="div_status_karyawan_update">
-		                    	<input id="status_karyawan_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
+		                    	<input id="status_karyawan_update" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" value="{{ old('email') }}" required readonly>
 		                	</div>
 
 		                    <div class="col-md-4">
