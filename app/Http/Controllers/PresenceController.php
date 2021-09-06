@@ -560,6 +560,249 @@ class PresenceController extends Controller
         }
     }
 
+    public function makeShiftingSchedule($nik,$span){
+        $shiftingSchedule = PresenceShifting::where('nik',$nik)
+            ->where('tanggal_shift',date('Y-m-d'))
+            ->first();
+
+        $start = substr($shiftingSchedule->start, 11,8);
+        $shiftingSchedule->setting_on_time = $start;
+        $shiftingSchedule->setting_injury_time = date("H:i:s",strtotime('+' . $span . ' minutes',strtotime($start)));
+        $shiftingSchedule->setting_late = date("H:i:s",strtotime('+' . $span . ' minutes +1 seconds',strtotime($start)));
+        $shiftingSchedule->setting_check_out = substr($shiftingSchedule->end, 11,8);
+
+        return $shiftingSchedule;
+    }
+
+    public function presenceShifting() {
+        $notifAll = $this->notification_legacy();
+        
+        $notif = $notifAll["notif"];
+        $notifOpen = $notifAll["notifOpen"];
+        $notifsd = $notifAll["notifsd"];
+        $notiftp = $notifAll["notiftp"];
+        $notifClaim = $notifAll["notifClaim"];
+        
+        return view('presence.shifting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'))
+            ->with([
+                'initView'=>$this->initMenuBase(),
+                'sidebar_collapse' => 'True',
+                'shiftingOptions' => $this->getOptionGrouped()
+            ]);
+    }
+
+    public function shiftingGetProject(){
+        return PresenceShiftingProject::orderBy('id','DESC')->get();
+    }
+
+    public function shiftingGetOption(){
+        return PresenceShiftingOption::orderBy('id','DESC')
+            ->where('status','ACTIVE')
+            ->get();
+    }
+
+    public function shiftingGetUsers(){
+        return User::where('status_karyawan','<>','dummy')
+            ->select('nik','name')
+            ->where('id_company','=','1')
+            ->orderBy('nik')
+            ->get();
+    }
+
+    public function getSchedule(Request $req){
+        $PresenceShifting = PresenceShifting::orderBy('start','DESC');
+
+        if(isset($req->idUser)){
+            $PresenceShifting->where('nik','=',$req->idUser);
+        }
+
+        if(isset($req->project)){
+            $PresenceShifting->where('presence__shifting_user.shifting_project','=',$req->project);
+        }
+
+
+        if(isset($req->start)){
+            $PresenceShifting->whereBetween('tanggal_shift',[$req->start,$req->end]);
+        } else {
+            $PresenceShifting->whereBetween('tanggal_shift',[date('Y-m') . "-01",date_format(date_add(date_create(date('Y-m') . "-12"),date_interval_create_from_date_string("1 month")),"Y-m-d")]);
+        }
+        return $PresenceShifting->orderBy('start','DESC');
+    }
+
+    public function getScheduleThisMonth(Request $req){
+        return $this->getSchedule($req)
+            ->get()
+            ->toArray();
+    }
+
+    public function getSummaryThisMonth(Request $req){
+        $count_shift = DB::table('presence__shifting')
+                ->select('nik')
+                ->selectRaw("count(if(`className` = 'Pagi',1,NULL)) AS `shift_pagi`")
+                ->selectRaw("count(if(`className` = 'Sore',1,NULL)) AS `shift_sore`")
+                ->selectRaw("count(if(`className` = 'Malam',1,NULL)) AS `shift_malam`")
+                ->selectRaw("count(if(`className` = 'Libur',1,NULL)) AS `shift_libur`")
+                ->where('start','LIKE',$req->start . '%')
+                ->groupBy('nik');
+
+        return DB::table('presence__shifting_user')
+            ->select(
+                DB::raw('`users`.`nik` AS `id`'),
+                'users.name',
+                DB::raw('substring_index(`users`.`name`, " ", 1) AS `nickname`'),
+                'presence__shifting_project.project_name',
+                'presence__shifting_project.project_name',
+                DB::raw('`presence__shifting_user`.`shifting_project` AS `on_project`'),
+                DB::raw('ifnull(`shift_pagi`,0) AS `shift_pagi`'),
+                DB::raw('ifnull(`shift_sore`,0) AS `shift_sore`'),
+                DB::raw('ifnull(`shift_malam`,0) AS `shift_malam`'),
+                DB::raw('ifnull(`shift_libur`,0) AS `shift_libur`'),
+            )
+            ->leftJoinSub($count_shift,'count_shift',function($join){
+                $join->on('count_shift.nik','=','presence__shifting_user.nik');
+            })
+            ->join('users','users.nik','=','presence__shifting_user.nik')
+            ->join('presence__shifting_project','presence__shifting_project.id','=','presence__shifting_user.shifting_project')
+            ->get();
+    }
+
+    public function getScheduleThisProject(Request $req){
+        return $this->getSchedule($req)
+            ->join('presence__shifting_user','presence__shifting_user.nik','=','presence__shifting.nik')
+            ->get()
+            ->toArray();
+    }
+
+    public function getScheduleThisUser(Request $req){
+        return $this->getSchedule($req)
+            ->get()
+            ->toArray();
+    }
+
+    public function createSchedule(Request $req){
+        $user = DB::table('users')->where("nik",$req->nik)->first();
+
+        DB::table('presence__shifting')
+            ->insert(
+                [
+                    'id' => NULL,
+                    'nik' => $user->nik,
+                    'title' => $req->title,
+                    'start' => $req->start,
+                    'end' => $req->end,
+                    'className' => $req->shift,
+                    'hadir' => "00:00:00",
+                    'tanggal_shift' => substr($req->start,0,10),
+                    'id_project' => $req->id_project,
+                    'created_at' => date('Y-m-d h:i:s'),
+                    
+                ]
+            );
+
+        DB::table('presence__shifting_log')
+            ->insert(
+                    [
+                        'nik_user' => Auth::user()->nik,
+                        'title' => $req->title,
+                        'start_before' => $req->start_before,
+                        'end_before' => $req->end_before,
+                        'className_before' => $req->shift,  
+                        'created_at' => date('Y-m-d h:i:s'),
+                        'status' => 'create',                   
+                    ]
+                );
+
+        return DB::table('presence__shifting')->orderBy('id','DESC')->first()->id;
+    }
+
+    public function deleteSchedule (Request $req) {
+        $shifting = DB::table('presence__shifting')->select('start','end','title','className')->where('id','=',$req->id)->first();
+
+        DB::table('presence__shifting_log')
+            ->insert(
+                    [
+                        'nik_user' => Auth::user()->nik,
+                        'title' => $shifting->title,
+                        'start_before' => date('Y-m-d h:i:s', strtotime($shifting->start)),
+                        'end_before' => date('Y-m-d h:i:s', strtotime($shifting->end)),
+                        'className_before' => $shifting->className, 
+                        'created_at' => date('Y-m-d h:i:s'),
+                        'status' => 'delete',                   
+                    ]
+                );
+
+        DB::table('presence__shifting')
+            ->where('id','=',$req->id)
+            ->delete();
+
+        return "success";
+    }
+
+    public function modifyUserShifting(Request $request){
+        $date = date('Y-m-d h:i:s', time());
+
+        if($request->on_project == "0"){
+            DB::table('presence__shifting_user')
+                ->where('nik','=',$request->id_user)
+                ->delete();
+            return redirect('presence/shifting')->with('message', "Delete User " . " success.");
+        } else {
+            if (DB::table('presence__shifting_user')->where('nik',$request->id_user)->where('shifting_project',$request->on_project)->get() == NULL){
+                DB::table('presence__shifting_user')
+                ->insert([
+                        'nik' => $request->id_user,
+                        'shifting_project' => $request->on_project,
+                    ]);
+            } else {
+                DB::table('presence__shifting_user')
+                    ->where('nik','=',$request->id_user)
+                    ->delete();
+
+                DB::table('presence__shifting_user')
+                    ->insert([
+                        'nik' => $request->id_user,
+                        'shifting_project' => $request->on_project,
+                    ]);
+            }
+            return redirect('presence/shifting')->with('message', "Add User " . " success.");
+        }
+    }
+
+    public function modifyOptionShifting(Request $req){
+        foreach($req->option_id as $option_key => $option_id){
+            $option = PresenceShiftingOption::find($option_id);
+            $option->start_shifting = $req->checkin_value[$option_key];
+            $option->end_shifting = $req->checkout_value[$option_key];
+            $option->status = $req->status_value[$option_key];
+            $option->save();
+        }
+    }
+
+    public function getOptionGrouped(){
+        return PresenceShiftingOption::orderBy('presence__shifting_project.id','DESC')
+            ->select(
+                'presence__shifting_option.id',
+                'presence__shifting_option.name_option',
+                'presence__shifting_option.start_shifting',
+                'presence__shifting_option.end_shifting',
+                'presence__shifting_option.class_shifting',
+                'presence__shifting_option.id_project',
+                'presence__shifting_option.status',
+                'presence__shifting_project.project_name'
+
+            )
+            ->orderBy('presence__shifting_option.id','ASC')
+            ->join('presence__shifting_project','presence__shifting_option.id_project','=','presence__shifting_project.id')
+            ->get()
+            ->groupBy('project_name')
+            ->sort()
+            ->toArray();
+    }
+
+    public function getPresenceParameter(Request $req){
+        return PresenceLocationUser::with('location')->where('user_id',$req->nik)->get();
+    }
+
     public function getPresenceReportData($typeData = "notAll", $typeCompany = "all"){
         $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
         $endDate = Carbon::now()->format("Y-m-16");
