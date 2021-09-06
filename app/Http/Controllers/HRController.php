@@ -956,7 +956,7 @@ class HRController extends Controller
                         ->join('tb_division','tb_division.id_division','=','users.id_division')
                         ->join('tb_position','tb_position.id_position','=','users.id_position')
                         ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
-                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','ktp_file',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
+                        ->select('users.name','tb_division.name_division','tb_position.name_position','users.email','users.date_of_birth','users.nik','users.phone','users.gambar','tb_territory.name_territory','users.date_of_entry','address','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','ktp_file','users.bpjs_kes','users.bpjs_ket',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                         ->where('users.nik',$nik)
                         ->first();
         }else if($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF'){
@@ -1360,6 +1360,42 @@ class HRController extends Controller
             if ($check) {
                 $req->file('ktp_file')->move("image/", $fileName);
                 $update->ktp_file = $fileName;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png');
+            }
+            
+        }
+
+        if($req->file('bpjs_kes') === null) {
+            $update->bpjs_kes = $update->bpjs_kes;
+        } else {
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $file                   = $req->file('bpjs_kes');
+            $fileName               = $nik."_bpjs_kes_ver1".".jpg";
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                $req->file('bpjs_kes')->move("image/", $fileName);
+                $update->bpjs_kes = $fileName;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png');
+            }
+            
+        }
+
+        if($req->file('bpjs_ket') === null) {
+            $update->bpjs_ket = $update->bpjs_ket;
+        } else {
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $file                   = $req->file('bpjs_ket');
+            $fileName               = $nik."_bpjs_ket_ver1".".jpg";
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                $req->file('bpjs_ket')->move("image/", $fileName);
+                $update->bpjs_ket = $fileName;
             } else {
                 return redirect()->back()->with('alert','Oops! Only jpg, png');
             }
