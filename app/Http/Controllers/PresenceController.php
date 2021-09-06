@@ -18,6 +18,9 @@ use App\PresenceLocationUser;
 use App\PresenceShifting;
 use App\PresenceShiftingProject;
 use App\PresenceShiftingOption;
+use App\PresenceShiftingUser;
+use App\PresenceLocation;
+use App\PresenceSetting;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
