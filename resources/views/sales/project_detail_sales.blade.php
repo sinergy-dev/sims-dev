@@ -209,174 +209,173 @@ Detail Lead Register
     <div class="row">
     	<div class="col-md-6">
     		<div class="box box-solid box-info" id="box-SD">
-              <div class="box-header with-border">
-                <h3 class="box-title" style="color: white;">Solution Design</h3>
-                <button class="btn btn-primary btn-xs pull-right" id="btnAddContPre" style="display:none;" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
+          <div class="box-header with-border">
+            <h3 class="box-title" style="color: white;">Solution Design</h3>
+            <button class="btn btn-primary btn-xs pull-right" id="btnAddContPre" style="display:none;" data-target="#contributeModal" data-toggle="modal"><i class="fa fa-plus"> </i>&nbsp Contribute</button>
+          </div>
+          <div class="box-body">
+          	<fieldset id="formSD" disabled>
+          		<input type="" name="lead_id" id="lead_id" value="" hidden>
+              <div class="form-group">
+                <label for="assesment">Assessment</label>
+                <textarea class="form-control" type="text" placeholder="Enter assesment" onkeyup="textAreaAdjust(this)" name="assesment" id="assesment" style="overflow: hidden;resize: none;"></textarea>
+                <span id="assessment_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
               </div>
-              <div class="box-body">
-              	<fieldset id="formSD" disabled>
-              		<input type="" name="lead_id" id="lead_id" value="" hidden>
-	                <div class="form-group">
-	                  <label for="assesment">Assessment</label>
-	                  <textarea class="form-control" type="text" placeholder="Enter assesment" onkeyup="textAreaAdjust(this)" name="assesment" id="assesment" style="overflow: hidden;resize: none;"></textarea>
-	                  <span id="assessment_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
-	                </div>
-	                <div class="form-group">
-	                 	<label for="proof of value">Proposed Design</label>
-                   	 <textarea class="form-control" type="email" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Propossed Design" name="propossed_design" id="propossed_design"></textarea>
-	                  <span id="pDesign_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
-	            	</div>
-	            	<div class="form-group">
-		                <label for="propossed_design">Proof Of Value</label>
-		                <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Proof Of Value" name="pov"  id="pov" ></textarea>
-	                  	<span id="pov_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
-	            	</div>
-	                <div class="form-group">
-	                  <label for="project_budget"> Project Budget </label>
-	                  <div class="input-group">
-				              <div class="input-group-addon" style="background-color:#aaa;color:white">
-				                <b><i>Rp</i></b>
-				              </div>
-				              <input type="text" class="form-control money" placeholder="Enter Amount" name="project_budget" id="project_budget" pattern= "[0-9]">
-				            </div>
-	            			<span class="help-block" style="display:none">Project Budget Melebihi Amount!</span>
-	                </div>
-	                <div class="row">
-	                	<div class="form-group col-md-6">
-	                  		<label for="priority">Priority</label>                  
-			                <select class="form-control float-left" id="priority"  name="priority">
-			                  	<option value="">Choose Priority</option>
-			                    <option value="Contribute" selected>Contribute</option>
-			                    <option value="Fight" >Fight</option>
-			                    <option value="Foot Print" >Foot Print</option>
-			                    <option value="Guided" >Guided</option>
-			                </select>
-	                	</div>
-
-		                <div class="form-group col-md-6">
-		                  <label for="proyek_size" class="margin-top-form">Project size</label>
-		                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size">
-			                    <option value="">-- Choose Project Size --</option>
-			                    <option value="Small" selected>Small</option>
-			                    <option value="Medium" >Medium</option>
-			                    <option value="Advance" >Advance</option>
-		                    </select>
-		                </div>
-	                </div>                
-
-	                <div class="form-group">
-                  	<button class="btn btn-md btn-sd btn-primary" id="btnSubmitSD" style="float: left;display: none;" type="button">Submit</button>
-	                	<button class="btn btn-md btn-sd btn-success" id="btnRaiseTP" onclick="btnRaiseTP()" style="float: right;display: none;" type="button" onclick="" data-toggle="modal">Raise To Tender</button>
-	                </div>
-              	</fieldset>
+              <div class="form-group">
+               	<label for="proof of value">Proposed Design</label>
+               	 <textarea class="form-control" type="email" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Propossed Design" name="propossed_design" id="propossed_design"></textarea>
+                <span id="pDesign_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
+          		</div>
+          		<div class="form-group">
+                <label for="propossed_design">Proof Of Value</label>
+                <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Proof Of Value" name="pov"  id="pov" ></textarea>
+                	<span id="pov_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
+          		</div>
+              <div class="form-group">
+                <label for="project_budget"> Project Budget </label>
+                <div class="input-group">
+		              <div class="input-group-addon" style="background-color:#aaa;color:white">
+		                <b><i>Rp</i></b>
+		              </div>
+		              <input type="text" class="form-control money" placeholder="Enter Amount" name="project_budget" id="project_budget" pattern= "[0-9]">
+		            </div>
+          			<span class="help-block" style="display:none">Project Budget Melebihi Amount!</span>
               </div>
-          	</div>
+              <div class="row">
+              	<div class="form-group col-md-6">
+                		<label for="priority">Priority</label>                  
+	                <select class="form-control float-left" id="priority"  name="priority">
+	                  	<option value="">Choose Priority</option>
+	                    <option value="Contribute" selected>Contribute</option>
+	                    <option value="Fight" >Fight</option>
+	                    <option value="Foot Print" >Foot Print</option>
+	                    <option value="Guided" >Guided</option>
+	                </select>
+              	</div>
+
+                <div class="form-group col-md-6">
+                  <label for="proyek_size" class="margin-top-form">Project size</label>
+                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size">
+	                    <option value="">-- Choose Project Size --</option>
+	                    <option value="Small" selected>Small</option>
+	                    <option value="Medium" >Medium</option>
+	                    <option value="Advance" >Advance</option>
+                    </select>
+                </div>
+              </div>                
+              <div class="form-group">
+              	<button class="btn btn-md btn-sd btn-primary" id="btnSubmitSD" style="float: left;" type="button">Submit</button>
+              	<button class="btn btn-md btn-sd btn-success" id="btnRaiseTP" onclick="btnRaiseTP()" style="float: right;" type="button" onclick="" data-toggle="modal">Raise To Tender</button>
+              </div>
+          	</fieldset>
+          </div>
+      	</div>
     	</div>
 
     	<div class="col-md-6">
     		<div class="box box-solid box-warning" id="box-TP">
-              <div class="box-header with-border">
-                <h3 class="box-title" style="color: white;">Tender Process</h3>
+          <div class="box-header with-border">
+            <h3 class="box-title" style="color: white;">Tender Process</h3>
+          </div>
+          <div class="box-body">
+          	<fieldset id="formTP" disabled>
+          		<input type="" name="lead_id" id="lead_id" value="" hidden>
+              <div class="form-group margin-left-right">
+                <label for="assesment">No Doc. Lelang</label>
+                <input class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter No Doc. Lelang" name="lelang" id="lelang" onkeypress="" value="" />
               </div>
-              <div class="box-body">
-              	<fieldset id="formTP" disabled>
-              		<input type="" name="lead_id" id="lead_id" value="" hidden>
-	                <div class="form-group margin-left-right">
-	                  <label for="assesment">No Doc. Lelang</label>
-	                  <input class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter No Doc. Lelang" name="lelang" id="lelang" onkeypress="" value="" />
-	                </div>
 
-	                <div class="form-group">
-	                  <label for="project_name">Project Name</label>
-	                  <input class="form-control float-left" type="text" aria-describedby="emailHelp" placeholder="Enter Project Name" name="project_name" id="project_name" value=""/>
-	                </div>
-
-	                <div class="form-group">
-	                  <label for="submitted price" class="margin-top-form">Submitted Price</label>
-	                  <div class="input-group">
-					              <div class="input-group-addon" style="background-color:#aaa;color:white">
-					                <b><i>Rp</i></b>
-					              </div>
-					              <input type="text" class="form-control money" placeholder="Enter Amount" name="submit_price" id="submit_price" pattern= "[0-9]">
-					          </div>
-	                </div>
-
-	                <div class="form-group">
-	                  <label for="proyek_class">Project Class</label>
-	                    <select class="form-control" id="project_class" name="project_class" onchange="selectProjectClass(this.value)">
-	                      <option value="" selected>-- Choose Project Class --</option>
-	                      <option value="multiyears">Multiyears</option>
-	                      <option value="blanket">Blanket</option>
-	                      <option value="normal">Normal</option>
-	                    </select>
-	                </div>
-                	<div class="form-group" id="tahun_jumlah" style="display: none">
-                  	<label class="margin-top-form">Jumlah Tahun</label>
-                      <select class="form-control jumlah_tahun" name="jumlah_tahun" id="jumlah_tahun">
-                        <option value="">-- Choose Year --</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                      </select>
-                	</div>
-              		<div class="form-group" id="total_price_deal" style="display: none;">
-                    	<label class="margin-top-form">Deal Price Total</label>
-	                  	<div class="input-group">
-					              <div class="input-group-addon" style="background-color:#aaa;color:white">
-					                <b><i>Rp</i></b>
-					              </div>
-					              <input type="text" class="form-control money" placeholder="Enter Amount" name="deal_price_total" id="deal_price_total" pattern= "[0-9]">
-					          	</div>
-                		<input type="text" name="amount_cek_tp" value="" hidden>
-                	</div>
-                	
-                	<div class="row">
-                		<div class="form-group col-md-6">
-		                  <label for="win probability">Win Probability</label>
-		                  <select class="form-control" id="win_prob"  name="win_prob" >
-		                    <option value="">-- Choose Win Probability --</option>
-		                    <option value="HIGH" selected>HIGH</option>
-		                    <option value="MEDIUM" >MEDIUM</option>
-		                    <option value="LOW" >LOW</option>
-		                  </select>
-		                </div>
-
-		                <div class="form-group col-md-6">
-		                  <label for="date">Submit Date</label>
-		                  <div class="input-group date">
-		                    <div class="input-group-addon" style="background-color:#aaa;color:white">
-		                      <i class="fa fa-calendar"></i>
-		                    </div>
-		                    <input class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter Submit Date" name="submit_date"  id="submit_date" value=""/>
-		                  </div>
-		                </div>
-                	</div> 
-
-	                <div class="form-group">
-	                  <label>Deal Price</label>
-	                  <div class="input-group">
-					              <div class="input-group-addon" style="background-color:#aaa;color:white">
-					                <b><i>Rp</i></b>
-					              </div>
-					              <input type="text" class="form-control money" placeholder="Enter Amount" name="deal_price" id="deal_price" pattern= "[0-9]">
-					          </div>
-	            			<span class="help-block" style="display:none">Please Fill and Submit Deal Price Before Result!</span>
-	                </div>
-
-	                <div class="form-group">
-	                  <label for="quote number">Quote Number</label>
-	                  <input class="form-control" type="text" placeholder="Enter Quote Number" name="quote_number" id="quote_number" value=""/>
-	                </div>
-
-	                <div class="form-group">
-                  	<button type="submit" class="btn btn-md btn-primary" id="btnSubmitTP" style="float: left;display: none;">Submit</button>
-                 	 	<button type="button" class="btn btn-md btn-success" id="btnResult" style="float:right;display: none;" onclick="" >Result</button>
-	                </div>
-              	</fieldset>
+              <div class="form-group">
+                <label for="project_name">Project Name</label>
+                <input class="form-control float-left" type="text" aria-describedby="emailHelp" placeholder="Enter Project Name" name="project_name" id="project_name" value=""/>
               </div>
-          	</div>
+
+              <div class="form-group">
+                <label for="submitted price" class="margin-top-form">Submitted Price</label>
+                <div class="input-group">
+			              <div class="input-group-addon" style="background-color:#aaa;color:white">
+			                <b><i>Rp</i></b>
+			              </div>
+			              <input type="text" class="form-control money" placeholder="Enter Amount" name="submit_price" id="submit_price" pattern= "[0-9]">
+			          </div>
+              </div>
+
+              <div class="form-group">
+                <label for="proyek_class">Project Class</label>
+                  <select class="form-control" id="project_class" name="project_class" onchange="selectProjectClass(this.value)">
+                    <option value="" selected>-- Choose Project Class --</option>
+                    <option value="multiyears">Multiyears</option>
+                    <option value="blanket">Blanket</option>
+                    <option value="normal">Normal</option>
+                  </select>
+              </div>
+            	<div class="form-group" id="tahun_jumlah" style="display: none">
+              	<label class="margin-top-form">Jumlah Tahun</label>
+                  <select class="form-control jumlah_tahun" name="jumlah_tahun" id="jumlah_tahun">
+                    <option value="">-- Choose Year --</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+            	</div>
+          		<div class="form-group" id="total_price_deal" style="display: none;">
+                	<label class="margin-top-form">Deal Price Total</label>
+                	<div class="input-group">
+			              <div class="input-group-addon" style="background-color:#aaa;color:white">
+			                <b><i>Rp</i></b>
+			              </div>
+			              <input type="text" class="form-control money" placeholder="Enter Amount" name="deal_price_total" id="deal_price_total" pattern= "[0-9]">
+			          	</div>
+            		<input type="text" name="amount_cek_tp" value="" hidden>
+            	</div>
+            	
+            	<div class="row">
+            		<div class="form-group col-md-6">
+                  <label for="win probability">Win Probability</label>
+                  <select class="form-control" id="win_prob"  name="win_prob" >
+                    <option value="">-- Choose Win Probability --</option>
+                    <option value="HIGH" selected>HIGH</option>
+                    <option value="MEDIUM" >MEDIUM</option>
+                    <option value="LOW" >LOW</option>
+                  </select>
+                </div>
+
+                <div class="form-group col-md-6">
+                  <label for="date">Submit Date</label>
+                  <div class="input-group date">
+                    <div class="input-group-addon" style="background-color:#aaa;color:white">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+                    <input class="form-control" type="text" aria-describedby="emailHelp" placeholder="Enter Submit Date" name="submit_date"  id="submit_date" value=""/>
+                  </div>
+                </div>
+            	</div> 
+
+              <div class="form-group">
+                <label>Deal Price</label>
+                <div class="input-group">
+			              <div class="input-group-addon" style="background-color:#aaa;color:white">
+			                <b><i>Rp</i></b>
+			              </div>
+			              <input type="text" class="form-control money" placeholder="Enter Amount" name="deal_price" id="deal_price" pattern= "[0-9]">
+			          </div>
+          			<span class="help-block" style="display:none">Please Fill and Submit Deal Price Before Result!</span>
+              </div>
+
+              <div class="form-group">
+                <label for="quote number">Quote Number</label>
+                <input class="form-control" type="text" placeholder="Enter Quote Number" name="quote_number" id="quote_number" value=""/>
+              </div>
+
+              <div class="form-group">
+              	<button type="submit" class="btn btn-md btn-primary" id="btnSubmitTP" style="float: left;">Submit</button>
+             	 	<button type="button" class="btn btn-md btn-success" id="btnResult" style="float:right;" onclick="" >Result</button>
+              </div>
+          	</fieldset>
+          </div>
+      	</div>
     	</div>
     </div>
 
@@ -679,10 +678,10 @@ Detail Lead Register
 		function textAreaAdjust(element) {
 		  element.style.height = "1px";
 		  element.style.height = (25+element.scrollHeight)+"px";
-		  if(accesable.includes('formSD')){
+		  if(accesable.includes('formSD') || accesable.includes('formTP')){
 		  	console.log('sd')
 				var heightSD = parseInt($("#box-SD").innerHeight())
-				$("#box-TP").height(heightSD)		      	
+				// $("#box-TP").height(heightSD)		      	
 			}	
 		}
 
@@ -692,6 +691,21 @@ Detail Lead Register
   	})
 
   	$(document).ready(function(){
+  	// 	var heightSD = parseInt($("#box-SD").innerHeight())
+			// var heightTP = parseInt($("#box-TP").innerHeight())
+			// console.log(heightSD)
+			// console.log(heightTP)
+			// if(accesable.includes('formSD') || accesable.includes('formTP')){					
+			// 	if (heightSD > heightTP) {
+			// 		console.log('besar SD')
+			// 		$("#box-SD").height(heightSD)
+			// 		$("#box-TP").height(heightSD)
+			// 	}else if(heightTP > heightSD){
+			// 		console.log('besar TP')
+			// 		$("#box-TP").height(heightTP)
+			// 		$("#box-SD").height(heightTP)
+			// 	}	      	
+			// }
   		Pace.restart();
 			Pace.track(function() {
 	  		$.ajax({
@@ -1025,6 +1039,32 @@ Detail Lead Register
 
 						var fd = new FormData()												
 
+						// var heightSD = parseInt($("#box-SD").innerHeight())
+						// var heightTP = parseInt($("#box-TP").innerHeight())
+						// console.log(heightSD)
+						// console.log(heightTP)
+						// if(accesable.includes('formSD')){					
+						// 	if (heightSD > heightTP) {
+						// 		console.log('besar SD')
+						// 		$("#box-SD").height(heightSD)
+						// 		// $("#box-TP").height(heightSD)
+						// 	}else if(heightTP > heightSD){
+						// 		console.log('besar TP')
+						// 		// $("#box-TP").height(heightTP)
+						// 		$("#box-SD").height(heightTP)
+						// 	}	      	
+						// }else if (accesable.includes('formTP')){
+						// 	if (heightSD > heightTP) {
+						// 		console.log('besar SD')
+						// 		$("#box-SD").height(heightSD)
+						// 		// $("#box-TP").height(heightSD)
+						// 	}else if(heightTP > heightSD){
+						// 		console.log('besar TP')
+						// 		// $("#box-TP").height(heightTP)
+						// 		$("#box-SD").height(heightTP)
+						// 	}	 
+						// }
+
 						$("#btnSubmitSD").click(function(){
 							if (parseInt($("#project_budget").val().replaceAll(".", "")) > result.data.amount) {
 			  				$("#project_budget").closest('.form-group').addClass('has-error')
@@ -1125,28 +1165,8 @@ Detail Lead Register
 	              fd.append('lead_id',window.location.href.split("/")[5])
 
 								$("btnSubmitSD").attr("onclick",btnSubmit(fd,'SD'))
-
 			  			}							
-						})
-
-						if(accesable.includes('formSD')){
-							var heightSD = parseInt($("#box-SD").innerHeight())
-							var heightTP = parseInt($("#box-TP").innerHeight())
-
-							if (result.data.status == 'closed') {
-								if (heightSD > heightTP) {
-									console.log('SD')
-									$("#box-SD").height(heightSD)
-									$("#box-TP").height(heightSD)
-								}else if(heightTP > heightSD){
-									$("#box-SD").height(heightTP)
-									$("#box-TP").height(heightTP)
-								}
-							}else{
-								$("#box-SD").height(heightSD)
-								$("#box-TP").height(heightSD)
-							}	      	
-						}	
+						})	
 					}
 				})
 
@@ -1311,6 +1331,23 @@ Detail Lead Register
 						
 						})
 
+						// var heightSD = parseInt($("#box-SD").innerHeight())
+						// var heightTP = parseInt($("#box-TP").innerHeight())
+						// console.log(heightSD)
+						// console.log(heightTP)
+						// if(accesable.includes('formSD') || accesable.includes('formTP')){					
+						// 	if (heightSD > heightTP) {
+						// 		console.log('besar SD')
+						// 		$("#box-SD").height(heightSD)
+						// 		$("#box-TP").height(heightSD)
+						// 	}else if(heightTP > heightSD){
+						// 		console.log('besar TP')
+						// 		$("#box-TP").height(parseInt($("#box-SD").innerHeight()))
+			  	// 			var heightSD = parseInt($("#box-SD").innerHeight())
+						// 		$("#box-SD").height(heightSD)
+						// 	}	      	
+						// }
+
 						
 						$("#btnResult").click(function(){
 							if (result.data.deal_price == "") {
@@ -1320,25 +1357,11 @@ Detail Lead Register
 							}else{
 								$("#btnResult").attr("onclick",btnResult(result.data.lead_id,result.data.id_customer,result.data.opp_name))
 							}
-						})
-						
-	
-						if(accesable.includes('formTP')){
-							var heightSD = parseInt($("#box-SD").innerHeight())
-							var heightTP = parseInt($("#box-TP").innerHeight())
-
-							if (heightSD > heightTP) {								
-								$("#box-SD").height(heightSD)
-								$("#box-TP").height(heightSD)
-							}else if(heightTP > heightSD){
-								$("#box-SD").height(heightTP)
-								$("#box-TP").height(heightTP)
-							}
-
-						}					
+						})			
 
 					}
   			})
+				
 			})
 		})
 
@@ -1384,30 +1407,35 @@ Detail Lead Register
 		}
 
   	function selectProjectClass(val){
+			$("#box-TP").height()
+			
   		if (val == 'blanket') {
   			$("#tahun_jumlah").css("display", "block");
         $("#total_price_deal").css("display", "block");
         $("#price_deal").css("display", "block");
         $("#purchase-order").css("display", "block");
+  			$("#box-SD").height($("#box-TP").innerHeight())
+
   		}else if (val == 'multiyears') {
   			$("#tahun_jumlah").css("display", "block");
        	$("#total_price_deal").css("display", "block");
         $("#price_deal").css("display", "block");
+  			$("#box-SD").height($("#box-TP").innerHeight())
+
   		}else if (val == 'normal') {
   			$("#tahun_jumlah").css("display", "none");
         $("#total_price_deal").css("display", "none");
+        $("#box-SD").height("")
   		}else{
   			$("#tahun_jumlah").css("display", "none");
         $("#total_price_deal").css("display", "none");
         $("#price_deal").css("display", "none");
         $("#purchase-order").css("display", "none");
+        $("#box-SD").height("")
+
   		}
 
-  		if(accesable.includes('formTP')){
-				var height = parseInt($("#box-TP").innerHeight())
-
-      	$("#box-SD").height(height)
-			}	
+  		
   	}
 
   	function btnRaiseTP(){
