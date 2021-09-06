@@ -170,13 +170,27 @@ Presence
 			<br>
 				
 			<center>
+			<div class="row">
+				
+				<div class="col-md-4 col-md-offset-4 text-center">
 				@if($presenceStatus == "not-yet")
 					<button type="button" class="btn btn-success" onclick="checkIn()">Check In</button>
 				@elseif($presenceStatus == "done-checkin")
+					@if($presenceStatusDetail == "On-Time")
+						<div class="alert alert-success" role="alert">Check-In Complete (On-Time)</div>
+					@elseif($presenceStatusDetail == "Injury-Time")
+						<div class="alert alert-warning" role="alert">Check-In Complete (Injury-Time)</div>
+					@elseif($presenceStatusDetail == "Late")
+						<div class="alert alert-danger" role="alert">Check-In Complete (Late)</div>
+					@endif
 					<button type="button" class="btn btn-danger" onclick="checkOut()">Check Out</button>
+				@elseif($presenceStatus == "libur")
+					<div class="alert alert-info" role="alert">Shifting - Libur</div>
 				@else
 					<h3>Thank you for your hard work today</h3>
 				@endif
+				</div>
+			</div>
 			</center>
 			<br>
 			<p style="margin-left: 10px;padding-bottom: 10px;">Accessed : {{date("l, d M Y H:i:s")}}</p>
