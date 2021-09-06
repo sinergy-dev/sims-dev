@@ -210,16 +210,27 @@ class PresenceController extends Controller
         $presenceStatus = PresenceHistory::where('nik',Auth::User()->nik)
             ->whereRaw('DATE(`presence_actual`) = "' . now()->toDateString() . '"');
 
+        $presenceStatusDetail = "";
+        $usersShifting = PresenceShiftingUser::where('nik',Auth::User()->nik)->exists();
+        $shiftingScheduleLibur = PresenceShifting::where('nik',Auth::User()->nik)
+            ->where('tanggal_shift',date('Y-m-d'))
+            ->where('className',"Libur")
+            ->exists();
 
-        if($presenceStatus->count() == 0){
-            $presenceStatus = "not-yet";
-        } else if ($presenceStatus->count() == 1) {
-            $presenceStatus = "done-checkin";
+        if($usersShifting && $shiftingScheduleLibur){
+            $presenceStatus = "libur";
         } else {
-            $presenceStatus = "done-checkout";
+            if($presenceStatus->count() == 0){
+                $presenceStatus = "not-yet";
+            } else if ($presenceStatus->count() == 1) {
+                $presenceStatusDetail = $presenceStatus->first()->presence_condition;
+                $presenceStatus = "done-checkin";
+            } else {
+                $presenceStatus = "done-checkout";
+            }
         }
 
-        return view('presence.presence', compact('presenceStatus','notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
+        return view('presence.presence', compact('presenceStatus','presenceStatusDetail','notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     }
 
     public function personalHistory() {
