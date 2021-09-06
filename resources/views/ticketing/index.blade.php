@@ -2748,7 +2748,8 @@ Ticketing
 								var subject = "Open Tiket " + $("#inputLocation").val() + " [" + $("#inputProblem").val() +"]"
 							}
 						} else {
-							var subject = "#ATC - Permohonan Open Ticket " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " " + result.client_name + " " + $("#inputLocation").val()
+							// var subject = "#ATC - Permohonan Open Ticket " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " " + result.client_name + " " + $("#inputLocation").val()
+							var subject = "#ATC - Permohonan Open Ticket"
 						}
 
 						$('.emailMultiSelector').remove()
