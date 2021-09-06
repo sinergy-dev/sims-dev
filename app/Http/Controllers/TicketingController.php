@@ -1157,9 +1157,11 @@ class TicketingController extends Controller
 				$spreadsheet->getActiveSheet()->setCellValue('A' . (5 + $key),$key + 1);
 				$spreadsheet->getActiveSheet()->setCellValue('B' . (5 + $key),$value->id_ticket);
 				$spreadsheet->getActiveSheet()->setCellValue('C' . (5 + $key),$value->location);
-				$spreadsheet->getActiveSheet()->setCellValue('D' . (5 + $key),$value->absen_machine->type_machine);
-				$spreadsheet->getActiveSheet()->setCellValue('E' . (5 + $key),$value->absen_machine->ip_machine);
-				$spreadsheet->getActiveSheet()->setCellValue('F' . (5 + $key),$value->absen_machine->ip_server);
+				if(isset($value->absen_machine)){
+					$spreadsheet->getActiveSheet()->setCellValue('D' . (5 + $key),$value->absen_machine->type_machine);
+					$spreadsheet->getActiveSheet()->setCellValue('E' . (5 + $key),$value->absen_machine->ip_machine);
+					$spreadsheet->getActiveSheet()->setCellValue('F' . (5 + $key),$value->absen_machine->ip_server);
+				}
 				$spreadsheet->getActiveSheet()->setCellValue('G' . (5 + $key),$value->problem);
 				$spreadsheet->getActiveSheet()->setCellValue('H' . (5 + $key),$value->ticket_number_3party);
 				if($value->open == NULL){
