@@ -934,6 +934,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/shifting/deleteSchedule', 'PresenceController@deleteSchedule');
 
 	Route::post('/presence/shifting/modifyUserShifting', 'PresenceController@modifyUserShifting');
+	Route::get('/presence/shifting/modifyOptionShifting', 'PresenceController@modifyOptionShifting');
 	Route::get('/presence/shifting/getOptionGrouped', 'PresenceController@getOptionGrouped');
 
 
