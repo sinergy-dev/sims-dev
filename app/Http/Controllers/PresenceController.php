@@ -352,31 +352,164 @@ class PresenceController extends Controller
         return view('presence.setting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
     }
 
-    public function presenceShifting() {
-        $notifAll = $this->notification_legacy();
-        
-        $notif = $notifAll["notif"];
-        $notifOpen = $notifAll["notifOpen"];
-        $notifsd = $notifAll["notifsd"];
-        $notiftp = $notifAll["notiftp"];
-        $notifClaim = $notifAll["notifClaim"];
-        
-        return view('presence.shifting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'));
+    public function presenceSettingGetListUser(){
+
+        $getLocationUser = PresenceLocationUser::join('presence__location', 'presence__location.id', '=', 'presence__location_user.location_id')
+                            ->select('user_id', )
+                            ->selectRaw('GROUP_CONCAT(`location_name` ORDER BY `location_name` ASC SEPARATOR ", ") as `location_name`')
+                            ->groupBy('user_id');
+
+        return User::where('id_company','=',1)
+            ->join('role_user', 'role_user.user_id', '=', 'users.nik')
+            ->join('roles', 'roles.id', '=', 'role_user.role_id')
+            ->leftJoinSub($getLocationUser, 'location', function($join){
+                $join->on('users.nik', '=', 'location.user_id');
+            })
+            ->leftJoin('presence__setting', 'presence__setting.id', '=', 'users.id_presence_setting')
+            ->select('users.nik','users.name', 'roles.name as role', DB::raw('IFNULL(`location_name`,"-") AS `location_name`'), 'setting_on_time', 'setting_check_out')
+            ->where('status_karyawan','<>','dummy')
+            ->get(); 
     }
 
-    public function getPresenceParameter(Request $req){
-        return PresenceLocationUser::with('location')->where('user_id',$req->nik)->get();
+    public function presenceSettingShowSchedule(Request $request)
+    {
+        $getSchedule = User::where('id_company','=',1)
+            ->leftJoin('presence__setting', 'presence__setting.id', '=', 'users.id_presence_setting')
+            ->select('users.nik','users.name', 'setting_on_time', 'setting_check_out')
+            ->where('nik', $request->nik)
+            ->first(); 
+
+        return array("data"=>$getSchedule);
+    }
+
+    public function presenceSettingShowLocationExisting(Request $request)
+    {
+        $getLocation = User::where('id_company','=',1)
+            ->leftJoin('presence__location_user', 'presence__location_user.user_id', '=', 'users.nik')
+            ->leftJoin('presence__location', 'presence__location.id', '=', 'presence__location_user.location_id')
+            ->select('nik',  DB::raw('GROUP_CONCAT(`location_name`) as `location_name`'), 'users.name', DB::raw('GROUP_CONCAT(`location_id`) as `location_id`'))
+            ->where('nik', $request->nik)
+            ->groupBy('nik')
+            ->get(); 
+
+        return array("data"=>$getLocation);
+    }
+
+    public function presenceSettingShowLocationUser(Request $request)
+    {
+        $location = PresenceLocationUser::where('user_id', $request->nik)->pluck('location_id');
+
+        $getLocation = PresenceLocation::select(DB::raw('`presence__location`.`id` AS `id`,`location_name` AS `text`'))->whereNotIn('id', $location)->get();
+
+        return array("data" => $getLocation);
+    }
+
+    public function presenceSettingShowAllLocation()
+    {
+        $getLocation = PresenceLocation::select(DB::raw('`presence__location`.`id` AS `id`,`location_name` AS `text`'))->get();
+
+        return array("data" => $getLocation);
+    }
+
+    public function presenceSettingSetSchedule(Request $request)
+    {
+        $data = DB::table('presence__setting')
+            ->where('setting_on_time', $request->work_in)
+            ->Where('setting_check_out', $request->work_out);
+
+        if ($data->exists()) {
+
+            $update_setting = User::where('nik', $request->nik)->first();
+            $update_setting->id_presence_setting = $update_setting->id_presence_setting;
+            $update_setting->update();            
+
+        } else {
+
+            $tambah_setting = new PresenceSetting();
+            $tambah_setting->setting_on_time = $request->work_in;
+            $tambah_setting->setting_injury_time = date('H:i:s',strtotime('+30 minutes +00 seconds',strtotime($request->work_in)));
+            $tambah_setting->setting_late = date('H:i:s',strtotime('+30 minutes +01 seconds',strtotime($request->work_in)));
+            $tambah_setting->setting_check_out = $request->work_out;
+            $tambah_setting->date_add = date('Y-m-d h:i:s');
+            $tambah_setting->date_update = date('Y-m-d h:i:s');
+            $tambah_setting->save();
+
+            $update_setting = User::where('nik', $request->nik)->first();
+            $update_setting->id_presence_setting = $tambah_setting->id;
+            $update_setting->update();
+
+        }
+
+        return redirect()->back();
+    }
+
+    public function presenceSettingSetLocation(Request $request)
+    {
+        // $array  = explode(',', $request->location_before_id);
+
+        // $array2 = $request->location_after_id;
+
+        // if (isset($request->location_before_id)) {
+        //     foreach ($array as $before) {
+        //         $delete       = PresenceLocationUser::where('user_id',$request->nik)->where('location_id',$before)->first();
+        //         $delete->delete();
+        //     }
+        // }
+
+        // foreach ($array2 as $after) {
+        //     $add                = new PresenceLocationUser();
+        //     $add->user_id       = $request->nik;
+        //     $add->location_id   = $after;
+        //     $add->date_add      = date("Y-m-d h:i:s");
+        //     $add->save();  
+        // }
+
+        $location = $request->location_update;
+
+        $delete = PresenceLocationUser::where('user_id',$request->nik)->delete();
+
+        foreach ($location as $location) {
+            $add                = new PresenceLocationUser();
+            $add->user_id       = $request->nik;
+            $add->location_id   = $location;
+            $add->date_add      = date("Y-m-d h:i:s");
+            $add->save();  
+        }
+
+        return redirect()->back();
+    }
+
+    public function presenceSettingAddLocation(Request $request)
+    {
+        $add = new PresenceLocation();
+        $add->location_name = $request->location_name;
+        $add->location_lat = $request->location_lat;
+        $add->location_lng = $request->location_lng;
+        $add->location_radius = '100';
+        $add->date_add = date("Y-m-d h:i:s");
+        $add->date_update = date("Y-m-d h:i:s");
+        $add->save();
+
+        return redirect()->back();
     }
 
     public function checkIn(Request $req) {
         $history = new PresenceHistory();
+
         if (isset(Auth::User()->nik)) {
-            $setting_schedule = Auth::User()->presence_setting;
-            $history->nik = Auth::User()->nik;
-        }else{
-            $history->nik = $req->nik;
-            $setting_schedule = User::with('presence_setting')->where('nik',$history->nik)->first()->presence_setting;
-        }     
+            $req->nik = Auth::User()->nik;
+        }
+
+        $setting_schedule = User::with('presence_setting')
+            ->where('nik',$req->nik)
+            ->first()
+            ->presence_setting;
+
+        if (PresenceShiftingUser::where('nik',$req->nik)->exists()){
+            $setting_schedule = $this->makeShiftingSchedule($req->nik,"15");
+        }
+
+        $history->nik = $req->nik;
         $history->presence_setting = $setting_schedule->id;
         $history->presence_schedule = $setting_schedule->setting_on_time;
         $history->presence_actual = $req->presence_actual;
