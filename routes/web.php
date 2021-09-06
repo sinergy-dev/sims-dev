@@ -1019,4 +1019,13 @@ Route::group(['middleware' => ['auth']], function () {
 });
 Route::get('/authentication/{id}','TestController@authentication');
 
+Route::get('/testFullCalendar',function(){
+	$controller = new App\Http\Controllers\Controller();
+	return view('blankPage')->with(['initView'=>$controller->initMenuBase()]);
+});
+
+Route::get('testCheckIn','TestController@checkIn');
+Route::post('testCheckIn','TestController@checkIn');
+Route::post('testCheckOut','TestController@checkOut');
+Route::post('testaddUserShifting','TestController@modifyUserShifting');
 
