@@ -39,6 +39,7 @@ use App\Mail\mailPID;
 use App\Mail\CreateLeadRegister;
 use App\Mail\AssignPresales;
 use App\Mail\RaiseTender;
+use App\Mail\RequestCustomer;
 
 use Mail;
 use App\Notifications\NewLead;
@@ -3968,7 +3969,7 @@ class SALESController extends Controller{
             ->get();
         }
 
-              if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+        if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
             $notifsd= DB::table('sales_lead_register')
             ->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
             ->select('sales_lead_register.opp_name','sales_solution_design.nik','sales_lead_register.lead_id')
@@ -4055,19 +4056,51 @@ class SALESController extends Controller{
                             ->get();
         }
 
-        $data = TB_Contact::all();  
+        $data = TB_Contact::select('code')->get()->pluck('code');  
 
-        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
+        if(Auth::User()->id_division == 'SALES'){
+            $count_request = TB_Contact::where('status', 'New')->where('nik_request', Auth::User()->nik)->count('id_customer');
+        } else {
+            $count_request = TB_Contact::where('status', 'New')->count('id_customer');            
+        }
+
+        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim', 'count_request'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
+    }
+
+    public function getCustomerData()
+    {
+        $getCustomer = TB_Contact::select('code', 'customer_legal_name', 'brand_name', 'id_customer')->where('status', 'Accept')->get();
+
+        return array("data"=>$getCustomer);
+    }
+
+    public function getCustomerDataRequest()
+    {
+        if (Auth::User()->id_division == 'SALES') {
+            $getCustomer = TB_Contact::select('code', 'customer_legal_name', 'brand_name', 'status', 'id_customer')->where('status', 'New')->where('nik_request', Auth::User()->nik)->get();
+        } else {
+            $getCustomer = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')->select('code', 'customer_legal_name', 'brand_name', 'status', 'id_customer', 'users.name')->where('status', 'New')->get();
+        }
+
+        return array("data"=>$getCustomer);
+    }
+
+    public function showCustomerRequest(Request $request)
+    {
+        $getCustomer = TB_Contact::select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'phone', 'city')
+                        ->where('id_customer', $request->id_customer)
+                        ->get();
+
+        return array("data"=>$getCustomer);
     }
 
     public function customer_store(Request $request)
     {
-        $request->validate([
-            'code_name' => 'required|unique:tb_contact,code',
-        ]);
+        // $request->validate([
+        //     'code_name' => 'required|unique:tb_contact,code',
+        // ]);
 
         $tambah = new TB_Contact();
-        $tambah->code = $request['code_name'];
         $tambah->customer_legal_name = $request['name_contact'];
         $tambah->brand_name = $request['brand_name'];
         $tambah->office_building = nl2br($request['office_building']);
@@ -4076,16 +4109,62 @@ class SALESController extends Controller{
         $tambah->province = $request['province'];
         $tambah->postal = $request['postal'];
         $tambah->phone = $request['phone'];
+        $tambah->status = 'New';
+        $tambah->nik_request = Auth::User()->nik;
         $tambah->save();
 
-        return redirect('customer');
+        $kirim = User::select('email')->where('email', 'nugroho@sinergy.co.id')->first();
+
+        $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
+                    ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status')
+                    ->where('id_customer',$tambah->id_customer)
+                    ->first();
+
+        Mail::to($kirim)->send(new RequestCustomer('[SIMS-App] Request Customer Data',$data));
+
+        return redirect('customer')->with('success', 'Please Waiting for Rizki Nugroho Accept this Request!');
+    }
+
+    public function acceptRequest(Request $request)
+    {
+        $update = TB_Contact::where('id_customer', $request->id_customer)->first();
+        $update->code = $request->code_name;
+        $update->status = 'Accept';
+        $update->update();
+
+        $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
+                    ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status', 'nik_request')
+                    ->where('id_customer',$request->id_customer)
+                    ->first();
+
+        $kirim = User::select('email')->where('nik', $data->nik_request)->first();
+
+        Mail::to($kirim)->send(new RequestCustomer('[SIMS-App] Request Customer Data Diterima',$data));
+
+        return redirect('customer')->with('success', 'Successfully!');
+    }
+
+    public function rejectRequest(Request $request)
+    {
+        $update = TB_Contact::where('id_customer', $request->id_customer)->first();
+        $update->status = 'Reject';
+        $update->update();
+
+        $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
+                    ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status', 'nik_request')
+                    ->where('id_customer',$request->id_customer)
+                    ->first();
+
+        $kirim = User::select('email')->where('nik', $data->nik_request)->first();
+
+        Mail::to($kirim)->send(new RequestCustomer('[SIMS-App] Request Customer Data Ditolak',$data));
+
+        return redirect('customer')->with('success', 'Successfully!');
     }
 
     public function update_customer(Request $request)
-    {   
-        $id_contact = $request['id_contact'];
-
-        $update = TB_Contact::where('id_customer', $id_contact)->first();
+    {
+        $update = TB_Contact::where('id_customer', $request->id_customer)->first();
         $update->code = $request['code_name'];
         $update->customer_legal_name = $request['name_contact'];
         $update->brand_name = $request['brand_name'];
@@ -4095,7 +4174,7 @@ class SALESController extends Controller{
         $update->province = $request['province'];
         $update->postal = $request['postal'];
         $update->phone = $request['phone'];
-        $update->update();//
+        $update->update();
 
         return redirect('customer')->with('update', 'Update Contact Successfully!');;
     }
