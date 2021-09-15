@@ -175,9 +175,14 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/item','WarehouseController@index');
 
 	Route::get('/customer', 'SalesController@customer_index')->middleware('ManagerStaffMiddleware');
-	Route::post('customer/store', 'SalesController@customer_store');
+	Route::post('/customer/storeRequest', 'SalesController@customer_store');
 	Route::get('/customer/getcus','SalesController@getdatacustomer');
-	Route::post('update_customer', 'SalesController@update_customer');
+	Route::post('/customer/update', 'SalesController@update_customer');
+	Route::get('/customer/getCustomerData', 'SalesController@getCustomerData');
+	Route::get('/customer/showCustomerRequest', 'SalesController@showCustomerRequest');
+	Route::get('/customer/getCustomerDataRequest', 'SalesController@getCustomerDataRequest');
+	Route::post('/customer/acceptRequest', 'SalesController@acceptRequest');
+	Route::post('/customer/rejectRequest', 'SalesController@rejectRequest');
 
 	Route::get('/show/{lead_id}','SalesController@show');
 	Route::get('/getBtnFilter','salescontroller@getBtnFilter');
