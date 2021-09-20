@@ -41,7 +41,7 @@ Route::get('testRolesShow','TestController@testRole');
 Route::get('getNotifBadge','SalesController@getNotifBadgeUpdate');
 
 Route::get('testPermission','TestController@testPermission');
-Route::get('permissionConfig','TestController@testPermissionConfig');
+Route::get('permissionConfig','PermissionConfigController@testPermissionConfig');
 Route::get('permission/getUserList','TestController@getUserList');
 Route::get('permission/getParameter','TestController@getParameter');
 Route::get('permission/getParameterFeature','TestController@getParameterFeature');
