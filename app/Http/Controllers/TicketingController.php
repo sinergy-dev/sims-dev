@@ -1636,6 +1636,7 @@ class TicketingController extends Controller
 		    ->selectRaw("`latest_activity_detail`.`latest_activity`")
 		    ->selectRaw("IF(IFNULL(`ticketing__resolve`.`root_couse`, '-') = '-',IF(`latest_activity_detail`.`latest_activity` = 'CANCEL','Completed','Occurring'),'Completed') AS `actual_status`")
 		    ->selectRaw("`open_activity_detail`.`open_by`")
+		    ->selectRaw("IFNULL(`ticketing__detail`.`engineer`,'-') AS `engineer`")
 		    ->selectRaw("`latest_activity_detail`.`latest_by`")
 		    // ->selectRaw("IF(`latest_activity_detail`.`latest_activity` = 'CLOSE',`latest_activity_detail`.`latest_by`,'-') AS `close_by`")
 		    ->selectRaw("`ticket_handle`.`hendle_by`")
@@ -1656,6 +1657,8 @@ class TicketingController extends Controller
 			->leftJoin('ticketing__severity','ticketing__severity.id','=','ticketing__detail.severity')
 			->orderBy('open_activity_detail.id_ticket','ASC')
 			->get();
+
+		// return $data;
 
 		
 		$spreadsheet = new Spreadsheet();
@@ -1681,11 +1684,11 @@ class TicketingController extends Controller
 	    $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFC9C9C9"]];
 	    $headerStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
 
-	    $summarySheet->getStyle('A1:Q1')->applyFromArray($titleStyle);
-	    $summarySheet->getStyle('A2:Q2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-	    $summarySheet->getStyle('A2:Q2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-	    $summarySheet->getStyle('C2:Q2')->getAlignment()->setWrapText(true);
-	    $summarySheet->getStyle('C2:Q2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+	    $summarySheet->getStyle('A1:R1')->applyFromArray($titleStyle);
+	    $summarySheet->getStyle('A2:R2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+	    $summarySheet->getStyle('A2:R2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+	    $summarySheet->getStyle('C2:R2')->getAlignment()->setWrapText(true);
+	    $summarySheet->getStyle('C2:R2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 	    $summarySheet->setCellValue('B1','Report Bayu');
 	    $summarySheet->setCellValue('D1','Grab per ' . Carbon::now()->format("d M Y"));
 
@@ -1702,6 +1705,7 @@ class TicketingController extends Controller
 			"latest_activity",
 			"actual_status",
 			"open_by",
+			"engineer",
 			"last_update_by",
 			// "close_by",
 			"hendle_by",
@@ -1709,7 +1713,7 @@ class TicketingController extends Controller
 			"responds_time",
 			"resolution_time"
 		];
-	    $summarySheet->getStyle('A2:Q2')->applyFromArray($headerStyle);
+	    $summarySheet->getStyle('A2:R2')->applyFromArray($headerStyle);
 	    
 	    $summarySheet->fromArray($headerContent,NULL,'A2');
 
@@ -1741,7 +1745,7 @@ class TicketingController extends Controller
 	    $summarySheet->getColumnDimension('O')->setAutoSize(true);
 	    $summarySheet->getColumnDimension('P')->setAutoSize(true);
 	    $summarySheet->getColumnDimension('Q')->setAutoSize(true);
-	    // $summarySheet->getColumnDimension('R')->setAutoSize(true);
+	    $summarySheet->getColumnDimension('R')->setAutoSize(true);
 
 	    $spreadsheet->setActiveSheetIndex(0);
 
@@ -1763,7 +1767,7 @@ class TicketingController extends Controller
 			->joinSub($ticketing_activity_max,'ticketing_activity_max',function($join){
 				$join->on('ticketing_activity_max.id','=','ticketing__activity.id');
 			})
-			->select('id_ticketa')
+			->select('id_ticket','activity')
 			->where('activity','=',"OPEN")
 			->orWhere('activity','=',"ON PROGRESS")
 			->orWhere('activity','=',"PENDING");
@@ -1773,14 +1777,29 @@ class TicketingController extends Controller
 				$join->on('ticketing_activity_occurring.id_ticket','=','ticketing__activity.id_ticket');
 			});
 
-        $ticketing_max_min = DB::table('ticketing__activity')
-        	->selectRaw("MAX(`id`) AS `latest_id`")
-        	->selectRaw("MIN(`id`) AS `open_id`")
+        $ticketing_id_filtered = DB::table('ticketing__activity')
+        	// ->selectRaw("MAX(`id`) AS `latest_id`")
+        	// ->selectRaw("MIN(`id`) AS `open_id`")
+        	->selectRaw('ticketing__activity.id_ticket')
+        	// ->selectRaw('COUNT(*)')
         	->whereRaw('`date` BETWEEN "' . $request->start . '" AND "' . $request->end  . '"')
         	// ->orWhereIn('id_ticket',$ticketing_activity_occurring->pluck('id_ticket'))
         	->groupBy('id_ticket');
 
-		// return $ticketing_activity_occurring->pluck('id_ticket');
+        // return $ticketing_max_min->get();
+
+		$ticketing_max_min = DB::table('ticketing__activity')
+			->joinSub($ticketing_id_filtered,'ticketing__activity_filterd',function($join){
+				$join->on('ticketing__activity_filterd.id_ticket','=','ticketing__activity.id_ticket');
+			})
+			->selectRaw("MAX(`id`) AS `latest_id`")
+        	->selectRaw("MIN(`id`) AS `open_id`")
+			->groupBy('ticketing__activity.id_ticket');
+
+
+		// return $ticketing_max_min->pluck('id_ticket');
+		// return $ticketing_max_min->get();
+		// return $ticketing_activity_occurring->pluck('activity');
 		// return $ticketing_activity_occurring_all->get();
 
         $open_activity_table = DB::table('ticketing__activity')
@@ -1791,36 +1810,98 @@ class TicketingController extends Controller
 	        ->joinSub($ticketing_max_min,'open_activity',function($join){
 				$join->on('ticketing__activity.id','=','open_activity.open_id');
 			});
-		
-    	$latest_activity_table = DB::table(function ($query) use ($ticketing_max_min){
+
+		$latest_activity_table = DB::table('ticketing__activity')
+        	->select("ticketing__activity.id_ticket")
+			->selectRaw("`ticketing__activity`.`activity` AS `latest_activity`")
+	        ->selectRaw("`ticketing__activity`.`date` AS `latest_activity_date`")
+	        ->selectRaw("`ticketing__activity`.`operator` AS `latest_operator`")
+	        ->joinSub($ticketing_max_min,'latest_activity',function($join){
+				$join->on('ticketing__activity.id','=','latest_activity.latest_id');
+			})
+			->orderBy('latest_activity','ASC');
+
+		$ticketing_activity = DB::table('ticketing__activity');
+
+		$joined_activity_table = DB::table(function ($query) use ($ticketing_id_filtered){
 			$query->from('ticketing__activity')
-				->select("ticketing__activity.id_ticket")
-				->selectRaw("`ticketing__activity`.`activity` AS `latest_activity`")
-		        ->selectRaw("`ticketing__activity`.`date` AS `latest_activity_date`")
-		        ->selectRaw("`ticketing__activity`.`operator` AS `latest_operator`")
-		        ->joinSub($ticketing_max_min,'latest_activity',function($join){
-					$join->on('ticketing__activity.id','=','latest_activity.latest_id');
-				});
-		},'latest_activity_table')
+				->joinSub($ticketing_id_filtered,'ticketing__activity_filterd',function($join){
+					$join->on('ticketing__activity_filterd.id_ticket','=','ticketing__activity.id_ticket');
+				})
+				->selectRaw('ticketing__activity.id_ticket')
+				->selectRaw("MAX(`ticketing__activity`.`id`) AS `latest_id`")
+	        	->selectRaw("MIN(`ticketing__activity`.`id`) AS `open_id`")
+
+				->groupBy('ticketing__activity.id_ticket');
+		},'ticketing__activity_limited')
+		->joinSub($ticketing_activity,'open_activity_table',function($join){
+			$join->on('open_activity_table.id','=','ticketing__activity_limited.open_id');
+		})
+		->joinSub($ticketing_activity,'latest_activity_table',function($join){
+			$join->on('latest_activity_table.id','=','ticketing__activity_limited.latest_id');
+		})
+		->leftJoin('ticketing__resolve','ticketing__activity_limited.id_ticket','=','ticketing__resolve.id_ticket')
+		->join('ticketing__detail','ticketing__activity_limited.id_ticket','=','ticketing__detail.id_ticket')
+		
 		->selectRaw("`open_activity_table`.`id_ticket`")
-		->selectRaw("`open_activity_table`.`open_activity`")
-		->selectRaw("`open_activity_table`.`open_activity_date`")
+		->selectRaw("`open_activity_table`.`activity` AS `open_activity`")
+		->selectRaw("`open_activity_table`.`date` AS `open_activity_date`")
 		->selectRaw("`ticketing__detail`.`reporting_time` AS `open_reporting_date`")
-		->selectRaw("`open_activity_table`.`open_operator`")
-		->selectRaw("`latest_activity_table`.`latest_activity`")
-		->selectRaw("`latest_activity_table`.`latest_activity_date`")
-		->selectRaw("`latest_activity_table`.`latest_operator`")
-		->selectRaw("TIMEDIFF(`latest_activity_table`.`latest_activity_date`,`open_activity_table`.`open_activity_date`) AS `resolution_time`")
+		->selectRaw("`open_activity_table`.`operator` AS `open_operator`")
+		->selectRaw("`latest_activity_table`.`activity` AS `latest_activity`")
+		->selectRaw("`latest_activity_table`.`date` AS `latest_activity_date`")
+		->selectRaw("`latest_activity_table`.`operator` AS `latest_operator`")
+		->selectRaw("TIMEDIFF(`latest_activity_table`.`date`,`open_activity_table`.`date`) AS `resolution_time`")
 		->selectRaw("`ticketing__detail`.`engineer`")
 		->selectRaw("`ticketing__resolve`.`root_couse`")
 		->selectRaw("`ticketing__detail`.`engineer`")
-		->selectRaw("`ticketing__resolve`.`counter_measure`")
-		->joinSub($open_activity_table,'open_activity_table',function($join){
-			$join->on('latest_activity_table.id_ticket','=','open_activity_table.id_ticket');
-		})
-		->join('ticketing__resolve','open_activity_table.id_ticket','=','ticketing__resolve.id_ticket')
-		->join('ticketing__detail','open_activity_table.id_ticket','=','ticketing__detail.id_ticket')
-		->get();
+		->selectRaw("`ticketing__resolve`.`counter_measure`");
+
+
+
+		// ->selectRaw("`ticketing__resolve`.`root_couse`")
+		// ->selectRaw("`ticketing__detail`.`engineer`")
+		// ->selectRaw("`open_activity_table`.`activity` AS `open_activity`")
+		// ->selectRaw("`latest_activity_table`.`activity` AS `latest_activity`");
+
+		// ->selectRaw('ticketing__activity_limited.id_ticket');
+
+		// return $joined_activity_table->pluck('latest_activity');
+		// return $latest_activity_table->get();
+		// return $latest_activity_table->pluck('latest_activity');
+		
+    	// $latest_activity_table = DB::table('ticketing__activitya')
+  //   	$latest_activity_table = DB::table(function ($query) use ($request){
+		// 	$query->from('ticketing__activity')
+		// 		->selectRaw('ticketing__activity.id_ticket')
+		// 		->whereRaw('`date` BETWEEN "' . $request->start . '" AND "' . $request->end  . '"')
+		//         ->groupBy('id_ticket');
+		// },'ticketing__activity_limited')
+		// ->selectRaw("`open_activity_table`.`id_ticket`")
+		// ->selectRaw("`open_activity_table`.`open_activity`")
+		// ->selectRaw("`open_activity_table`.`open_activity_date`")
+		// ->selectRaw("`ticketing__detail`.`reporting_time` AS `open_reporting_date`")
+		// ->selectRaw("`open_activity_table`.`open_operator`")
+		// ->selectRaw("`latest_activity_table`.`latest_activity`")
+		// ->selectRaw("`latest_activity_table`.`latest_activity_date`")
+		// ->selectRaw("`latest_activity_table`.`latest_operator`")
+		// ->selectRaw("TIMEDIFF(`latest_activity_table`.`latest_activity_date`,`open_activity_table`.`open_activity_date`) AS `resolution_time`")
+		// ->selectRaw("`ticketing__detail`.`engineer`")
+		// ->selectRaw("`ticketing__resolve`.`root_couse`")
+		// ->selectRaw("`ticketing__detail`.`engineer`")
+		// ->selectRaw("`ticketing__resolve`.`counter_measure`")
+		// ->joinSub($open_activity_table,'open_activity_table',function($join){
+		// 	$join->on('ticketing__activity_limited.id_ticket','=','open_activity_table.id_ticket');
+		// })
+		// ->joinSub($latest_activity_table,'latest_activity_table',function($join){
+		// 	$join->on('ticketing__activity_limited.id_ticket','=','latest_activity_table.id_ticket');
+		// })
+		
+		// ->orderBy('ticketing__activity_limited1.id_ticket','ASC')
+		// ->get();
+
+		// return $latest_activity_table->pluck('latest_activity');
+		$latest_activity_table = $joined_activity_table->get();
 
 		$spreadsheet = new Spreadsheet();
 
