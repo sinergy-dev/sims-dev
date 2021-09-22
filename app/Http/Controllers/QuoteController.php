@@ -35,7 +35,7 @@ class QuoteController extends Controller
 		$datas = DB::table('tb_quote')
                         ->join('users', 'users.nik', '=', 'tb_quote.nik')
                         ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
-                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','tb_quote.status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         ->orderBy('tb_quote.created_at', 'desc')
                         ->get();
 
@@ -47,7 +47,7 @@ class QuoteController extends Controller
 
         $counts = count($count);
 
-        $customer = TB_Contact::select('customer_legal_name', 'id_customer')->get();
+        $customer = TB_Contact::select('customer_legal_name', 'id_customer')->where('tb_contact.status', 'Accept')->get();
 
         $status_quote = Quote::select('status_backdate')->where('status_backdate', '!=', 'T')->groupBy('status_backdate')->get();
 
@@ -231,7 +231,7 @@ class QuoteController extends Controller
 
         return array("data" => Quote::join('users', 'users.nik', '=', 'tb_quote.nik')
                         ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
-                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','tb_quote.status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         ->where('status_backdate', 'A')
                         ->where('date','like',$tahun."%")
                         ->get());
@@ -256,7 +256,7 @@ class QuoteController extends Controller
 
         return array("data" => Quote::join('users', 'users.nik', '=', 'tb_quote.nik')
                         ->join('tb_contact', 'tb_contact.id_customer', '=', 'tb_quote.id_customer', 'left')
-                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
+                        ->select('id_quote','quote_number','position','type_of_letter','date','to','attention','title','project','tb_quote.status', 'description', 'from', 'division', 'project_id','note', 'status_backdate', 'tb_quote.nik', 'name', 'month', 'project_type', 'tb_contact.id_customer', 'customer_legal_name')
                         ->where('status_backdate', $request->status)
                         ->where('date','like',$request->year."%")
                         ->get());
