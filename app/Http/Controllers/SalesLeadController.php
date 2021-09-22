@@ -599,7 +599,7 @@ class SalesLeadController extends Controller
                         DB::raw("(CASE WHEN (quote_number is null) THEN '' ELSE quote_number END) as quote_number"),  
                         DB::raw("(CASE WHEN (assigned_by is null) THEN '' ELSE assigned_by END) as assigned_by"), 
                         DB::raw("(CASE WHEN (quote_number2 is null) THEN '' ELSE quote_number2 END) as quote_number2"), 
-                        'sales_lead_register.amount', 'sales_lead_register.id_customer', 'status', 'result', 'sales_lead_register.nik',
+                        'sales_lead_register.amount', 'sales_lead_register.id_customer', 'sales_tender_process.status', 'result', 'sales_lead_register.nik',
                         DB::raw("(CASE WHEN (deal_price is null) THEN '' ELSE deal_price END) as deal_price"), 
                         DB::raw("(CASE WHEN (deal_price_total is null) THEN '' ELSE deal_price_total END) as deal_price_total"), 
                         DB::raw("(CASE WHEN (jumlah_tahun is null) THEN '' ELSE jumlah_tahun END) as jumlah_tahun"), 
@@ -883,7 +883,7 @@ class SalesLeadController extends Controller
                         DB::raw("CONCAT(`quote_number`, ' - ', `customer_legal_name`) AS `text`"), 
                         DB::raw('`id_quote` AS `id`')
                     )
-                    ->where('status', null)
+                    ->where('tb_quote.status', null)
                     ->where('tb_quote.id_customer', $request->id_customer)
                     ->orderBy('tb_quote.created_at', 'desc')
                     ->get();
