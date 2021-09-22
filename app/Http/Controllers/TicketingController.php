@@ -1845,10 +1845,10 @@ class TicketingController extends Controller
 		
 		->selectRaw("`open_activity_table`.`id_ticket`")
 		->selectRaw("`open_activity_table`.`activity` AS `open_activity`")
-		->selectRaw("`open_activity_table`.`date` AS `open_activity_date`")
-		->selectRaw("`ticketing__detail`.`reporting_time` AS `open_reporting_date`")
+		->selectRaw("SUBSTR(`open_activity_table`.`date`,1,19) AS `open_activity_date`")
+		->selectRaw("SUBSTR(`ticketing__detail`.`reporting_time`,1,19) AS `open_reporting_date`")
 		->selectRaw("`open_activity_table`.`operator` AS `open_operator`")
-		->selectRaw("`latest_activity_table`.`activity` AS `latest_activity`")
+		->selectRaw("SUBSTR(`latest_activity_table`.`activity`,1,19) AS `latest_activity`")
 		->selectRaw("`latest_activity_table`.`date` AS `latest_activity_date`")
 		->selectRaw("`latest_activity_table`.`operator` AS `latest_operator`")
 		->selectRaw("TIMEDIFF(`latest_activity_table`.`date`,`open_activity_table`.`date`) AS `resolution_time`")
@@ -1866,7 +1866,7 @@ class TicketingController extends Controller
 
 		// ->selectRaw('ticketing__activity_limited.id_ticket');
 
-		// return $joined_activity_table->pluck('latest_activity');
+		// return $joined_activity_table->pluck('open_reporting_date');
 		// return $latest_activity_table->get();
 		// return $latest_activity_table->pluck('latest_activity');
 		
