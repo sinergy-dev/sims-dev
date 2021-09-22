@@ -584,10 +584,13 @@ class HRController extends Controller
         
         $tambah->save();
 
-        $tambah_roles = new RoleUser(); 
-        $tambah_roles->role_id = $request['roles_user'];
-        $tambah_roles->user_id = $nik;
-        $tambah_roles->save(); 
+        if ($id_company == '1') {
+            $tambah_roles = new RoleUser(); 
+            $tambah_roles->role_id = $request['roles_user'];
+            $tambah_roles->user_id = $nik;
+            $tambah_roles->save(); 
+        }
+        
 
         $userCompany = DB::table('tb_company')
                             ->select('code_company')

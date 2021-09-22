@@ -487,7 +487,8 @@ class PresenceController extends Controller
         $add->location_name = $request->location_name;
         $add->location_lat = $request->location_lat;
         $add->location_lng = $request->location_lng;
-        $add->location_radius = '100';
+        $add->location_radius = '500';
+        $add->location_status = 'ACTIVE';
         $add->date_add = date("Y-m-d h:i:s");
         $add->date_update = date("Y-m-d h:i:s");
         $add->save();

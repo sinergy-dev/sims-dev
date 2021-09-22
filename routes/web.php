@@ -38,8 +38,6 @@ Route::get('testFilter','TestController@testFilter');
 
 Route::get('testRolesShow','TestController@testRole');
 
-Route::get('getNotifBadge','SalesController@getNotifBadgeUpdate');
-
 Route::get('testPermission','TestController@testPermission');
 Route::get('permissionConfig','PermissionConfigController@testPermissionConfig');
 Route::get('permission/getUserList','TestController@getUserList');
@@ -143,17 +141,17 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/dashboardqoe','DASHBOARDController@indexqoe')->middleware('HRDash');
 
 	//salescontroller
-	Route::post('/store', 'SalesController@store');
-	Route::post('/update_lead_register', 'SalesController@update_lead_register');
-	Route::post('/salesAddLead', 'SalesController@store');
-	// Route::get('/sales','SalesController@index');
-	Route::get('/detail_sales/{lead_id}','SalesController@detail_sales')->name('sales.detail_sales');
-	Route::post('/update_tp/{lead_id}', 'SalesController@update_tp');
-
-	Route::get('/test_update_result',function () {
-	    return view('mail.MailResult', ['name' => 'James']);
-	});
-	Route::post('/update_next_status', 'SalesController@update_next_status');
+	//customer route
+	Route::get('/customer', 'SalesController@customer_index')->middleware('ManagerStaffMiddleware');
+	Route::post('/customer/storeRequest', 'SalesController@customer_store');
+	Route::get('/customer/getcus','SalesController@getdatacustomer');
+	Route::post('/customer/update', 'SalesController@update_customer');
+	Route::get('/customer/getCustomerData', 'SalesController@getCustomerData');
+	Route::get('/customer/showCustomerRequest', 'SalesController@showCustomerRequest');
+	Route::get('/customer/getCustomerDataRequest', 'SalesController@getCustomerDataRequest');
+	Route::post('/customer/acceptRequest', 'SalesController@acceptRequest');
+	Route::post('/customer/rejectRequest', 'SalesController@rejectRequest');
+	Route::get('/delete_customer/{id_customer}', 'SalesController@destroy_customer');
 
 	Route::get('/','DASHBOARDController@index')->middleware('HRDash');
 	Route::get('/getDashboardBox','DASHBOARDController@getDashboardBox');
@@ -164,25 +162,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/project','SalesController@index')->middleware('ManagerStaffMiddleware');
 	/*Route::get('/project','SalesController@index')->middleware('Maintenance');*/
-	Route::get('/year_initial', 'SalesController@year_initial');
-	Route::get('/year_open', 'SalesController@year_open');
-	Route::get('/year_sd', 'SalesController@year_sd');
-	Route::get('/year_tp', 'SalesController@year_tp');
-	Route::get('/year_win', 'SalesController@year_win');
-	Route::get('/year_lose', 'SalesController@year_lose');
-
-	Route::get('/detail_project/{lead_id}','SalesController@detail_sales');
 	Route::get('/item','WarehouseController@index');
-
-	Route::get('/customer', 'SalesController@customer_index')->middleware('ManagerStaffMiddleware');
-	Route::post('/customer/storeRequest', 'SalesController@customer_store');
-	Route::get('/customer/getcus','SalesController@getdatacustomer');
-	Route::post('/customer/update', 'SalesController@update_customer');
-	Route::get('/customer/getCustomerData', 'SalesController@getCustomerData');
-	Route::get('/customer/showCustomerRequest', 'SalesController@showCustomerRequest');
-	Route::get('/customer/getCustomerDataRequest', 'SalesController@getCustomerDataRequest');
-	Route::post('/customer/acceptRequest', 'SalesController@acceptRequest');
-	Route::post('/customer/rejectRequest', 'SalesController@rejectRequest');
 
 	Route::get('/show/{lead_id}','SalesController@show');
 	Route::get('/getBtnFilter','salescontroller@getBtnFilter');
@@ -241,12 +221,6 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getCustomerbyDate2', 'ReportController@getCustomerbyDate2');
 	Route::get('/total_deal_price','ReportController@total_deal_price');
 
-
-	/*Route::get('/presales','SalesController@index')->middleware('TechnicalPresalesMiddleware', 'ManagerStaffMiddleware')*/;
-	Route::post('/update_sd', 'SalesController@update_sd');
-	Route::post('/assign_to_presales','SalesController@assign_to_presales');
-	Route::post('/reassign_to_presales','SalesController@reassign_to_presales');
-
 	//PO Customer
 	Route::post('/add_po_customer','SalesController@add_po');
 	Route::post('/update_po_customer','SalesController@update_po');
@@ -283,15 +257,6 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/add_contribute','SalesController@add_contribute');
 	Route::post('/add_contribute_pmo','PMOController@add_contribute');
 	Route::post('/add_contribute_engineer','EngineerController@add_contribute');
-
-	// Add Changelog progress
-	Route::post('/add_changelog_progress','SalesController@add_changelog_progress');
-
-	Route::get('/raise_to_tender', 'SalesController@raise_to_tender');
-	/*Route::get('/detail_presales/{lead_id}','PRESALESController@detail_presales');*/
-	/*
-	Route::get('/edit/{id_sd}', 'PRESALESController@edit');
-	Route::post('/update/{id_sd}', 'PRESALESController@update');*/
 
 	Route::get('/view_lead', 'ReportController@view_lead');
 	Route::get('/view_open', 'ReportController@view_open');
@@ -461,8 +426,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/delete_detail_sho/{id_transaction}', 'SHOController@destroy_detail');
 
-	Route::get('/delete_customer/{id_customer}', 'SalesController@destroy_customer');
-
 	Route::get('/profile','HRController@edit_password');
 	Route::post('/changePassword','HRController@changePassword');
 	Route::get('/salesproject', 'SalesController@sales_project_index');
@@ -501,10 +464,6 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/delete_contribute_pmo/{id_pmo}', 'PMOController@destroy');
 	Route::get('/delete_contribute_engineer/{id_engineer}','EngineerController@delete_contribute_engineer');
 	Route::get('/delete_contribute_sd','SalesController@delete_contribute_sd');
-
-	Route::get('/delete_sales', 'SalesController@destroy');
-	Route::get('/delete_update_status/{lead_id}', 'SalesController@delete_update_status');
-
 	Route::post('/reassign_to_engineer','EngineerController@reassign_engineer');
 
 	Route::post('/pmo_progress','PMOController@progress_store');
