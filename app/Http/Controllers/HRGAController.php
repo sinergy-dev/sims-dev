@@ -908,8 +908,8 @@ class HRGAController extends Controller
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
-                    ->where('users.id_division','TECHNICAL')
-                    ->where('users.id_territory','DVG')
+                    ->where('users.id_division','WAREHOUSE')
+                    ->orWhere('users.id_territory','DVG')
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->groupby('id_cuti')
                     ->orderBy('id_cuti','desc')
@@ -3324,10 +3324,8 @@ class HRGAController extends Controller
                     } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_division','TECHNICAL')
-                            ->where('users.id_territory','DVG')
                             ->where('tb_cuti_detail.status','=','NEW')
-                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
+                            ->whereRaw("(`users`.`id_division` = 'WAREHOUSE' OR `users`.`id_territory` = 'DVG')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")   
                             ->get();
                     } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
                         $cuti = $cuti
@@ -3460,8 +3458,7 @@ class HRGAController extends Controller
                     } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
-                            ->where('users.id_division','TECHNICAL')
-                            ->where('users.id_territory','DVG')
+                            ->whereRaw("(`users`.`id_division` = 'WAREHOUSE' OR `users`.`id_territory` = 'DVG')")
                             ->get();
                     } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
                         $cuti = $cuti
@@ -3570,8 +3567,8 @@ class HRGAController extends Controller
                         ->get();
                 } elseif ($div == 'TECHNICAL' && $ter == 'DVG' && $pos == 'MANAGER') {
                     $cuti = $cuti
-                        ->where('users.id_division','TECHNICAL')
-                        ->where('users.id_territory','DVG')
+                        ->whereRaw("(`users`.`id_division` = 'WAREHOUSE' OR `users`.`id_territory` = 'DVG')")
+                        ->where('id_company', '1')
                         ->get();
                 } elseif ($div == 'MSM' && $ter == 'OPERATION' && $pos == 'MANAGER') {
                     $cuti = $cuti
@@ -3900,9 +3897,9 @@ class HRGAController extends Controller
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
-                    ->where('users.id_territory','DVG')
+                    ->where('users.id_company', '1')
                     ->whereYear('date_req',date('Y'))
-                    ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
+                    ->whereRaw("(`users`.`id_division` = 'WAREHOUSE' OR `users`.`id_territory` = 'DVG')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")     
                     ->where('tb_cuti_detail.status','NEW')                  
                     ->groupby('nik')
                     ->get());
@@ -4111,8 +4108,8 @@ class HRGAController extends Controller
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
-                    ->where('users.id_division','TECHNICAL')
-                    ->where('users.id_territory','DVG')
+                    ->where('users.id_division','WAREHOUSE')
+                    ->orWhere('users.id_territory','DVG')
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->where('date_off', '>=', $request->start)
                     ->where('date_off', '<=', $request->end)
