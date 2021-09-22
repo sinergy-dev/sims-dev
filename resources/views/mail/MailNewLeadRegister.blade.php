@@ -97,11 +97,7 @@
 			<p style="font-size: 16px">
 				To access the Application please click the following button.<br>
 			</p>
-			<!-- <center>
-				<a href="{{url('/detail_project',$data->lead_id)}}" target="_blank" class="btn btn-danger btn-block" type="button"><b>Lead ID</b></a>
-				<a href="{{url('/project')}}" class="btn btn-info" role="button">New lead</a>
-			</center> -->
-
+			
 			<center><a href="{{url('/project/detailSales',$data->lead_id)}}" target="_blank"><button class="button"> Lead ID </button></a></center>
 			<p style="font-size: 16px">
 				Please check again, if there are errors or questions please contact the Developer Team (Ext: 384) or email to development@sinergy.co.id.<br>
