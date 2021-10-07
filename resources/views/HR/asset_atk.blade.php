@@ -579,8 +579,6 @@ GA ATK
           <h4 class="modal-title">Request ATK</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/request_atk')}}" name="modalProgress">
-            @csrf
           <div style="overflow: auto">
             <table id="product-add" class="table product-add">
               <tr class="tr-header">
@@ -606,7 +604,7 @@ GA ATK
                 </td>
                 <td style="margin-bottom: 50px;">
                   <br>
-                 <input type="number" class="form-control" placeholder="qty" name="qty[]" id="qty_butuh" style="width: 70px;font-size: 14px" required>
+                 <input type="number" class="form-control" placeholder="qty" name="qty[]" id="qty_butuh" style="width: 70px;font-size: 14px" >
                 </td>
                 <td style="margin-bottom: 50px">
                   <br><input type="text" class="form-control units" data-rowid="0" name="unit[]" style="width: 100px" id="unit_produk" readonly >
@@ -625,9 +623,7 @@ GA ATK
               <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"> </i>&nbspClose</button>
               <button type="submit" id="btn_request" class="btn btn-sm btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
             </div>
-            </div>
-
-        </form>
+          </div>
         </div>
       </div>
     </div>
@@ -640,8 +636,8 @@ GA ATK
           <h4 class="modal-title">Request ATK</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" action="{{url('asset_atk/store_request_atk')}}" name="modalProgress">
-            @csrf
+          <!-- <form method="POST" action="{{url('asset_atk/store_request_atk')}}" name="modalProgress"> -->
+            <!-- @csrf -->
           <div style="overflow: auto">
             <table id="product-request" class="table product-add">
               <tr class="tr-header">
@@ -653,15 +649,15 @@ GA ATK
               </tr>
               <tr>
                 <td style="margin-bottom: 50px;">
-                  <br><input class="form-control" name="atk[]" placeholder="Enter Product Name" id="atk_request" data-rowid="0" style="font-size: 14px; width: 200px" required>
+                  <br><input class="form-control" name="atk_request[]" placeholder="Enter Product Name" id="atk_request" data-rowid="0" style="font-size: 14px; width: 200px" required>
                 </td>
                 <td style="margin-bottom: 50px;">
                   <br>
-                 <input type="number" class="form-control" placeholder="Qty" name="qty[]" id="quantity_request" style="width: 70px;font-size: 14px" required>
+                 <input type="number" class="form-control" placeholder="Qty" name="qty_request[]" id="quantity_request" style="width: 70px;font-size: 14px" required>
                 </td>
                 <td style="margin-bottom: 50px;">
                   <br>
-                 <textarea type="text" class="form-control" placeholder="Enter Description" name="keterangan[]" id="keterangan_request" style="width: 250px;font-size: 14px" required></textarea>
+                 <textarea type="text" class="form-control" placeholder="Enter Description" name="keterangan_request[]" id="keterangan_request" style="width: 250px;font-size: 14px" required></textarea>
                 </td>
                 <td style="margin-bottom: 50px;">
                   <br>
@@ -677,9 +673,8 @@ GA ATK
               <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"> </i>&nbspClose</button>
               <button type="submit" id="btn_request_asset" class="btn btn-sm btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
             </div>
-            </div>
-
-        </form>
+          </div>
+          <!-- </form> -->
         </div>
       </div>
     </div>
@@ -920,18 +915,6 @@ GA ATK
   </div>
 </div>
 
-<div class="modal fade" id="tunggu" role="dialog">
-  <div class="modal-dialog modal-sm">
-  <!-- Modal content-->
-  <div class="modal-content">
-      <div class="modal-body">
-        <div class="form-group">
-          <div class="">Sedang diproses. . .</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 @endsection
 
 @section('scriptImport')
@@ -981,7 +964,6 @@ GA ATK
       })
     }
 
-
     var i = 1;
     $('#addMore').click(function(){  
          i++;  
@@ -993,10 +975,9 @@ GA ATK
 
     $('#addMore2').click(function(){  
          i++;  
-         $('#product-request').append('<tr id="row'+i+'"><td style="margin-bottom: 50px;"><br><input class="form-control" name="atk[]" id="atk_request" data-rowid="'+i+'" style="font-size: 14px; width: 200px" placeholder="Enter Product Name" required></td><td style="margin-bottom: 50px;"><br><input type="number" class="form-control" placeholder="Qty" name="qty[]" id="quantity_request" style="width: 70px;font-size: 14px" required></td><td style="margin-bottom: 50px;"><br><textarea type="text" class="form-control" name="keterangan[]" id="keterangan_request" placeholder="Enter Description" style="width: 250px;font-size: 14px" required></textarea></td><td style="margin-bottom: 50px;"><br><textarea type="tetx" placeholder="Enter Link Product" class="form-control" name="link[]" id="link" style="width: 250px;font-size: 14px" required></textarea></td><td><a href="javascript:void(0);" class="remove"><span class="fa fa-times" style="font-size: 18px;margin-top: 20px;color: red;"></span></a></td></tr>');
+         $('#product-request').append('<tr id="row'+i+'"><td style="margin-bottom: 50px;"><br><input class="form-control" name="atk_request[]" id="atk_request" data-rowid="'+i+'" style="font-size: 14px; width: 200px" placeholder="Enter Product Name" required></td><td style="margin-bottom: 50px;"><br><input type="number" class="form-control" placeholder="Qty" name="qty_request[]" id="quantity_request" style="width: 70px;font-size: 14px" required></td><td style="margin-bottom: 50px;"><br><textarea type="text" class="form-control" name="keterangan_request[]" id="keterangan_request" placeholder="Enter Description" style="width: 250px;font-size: 14px" required></textarea></td><td style="margin-bottom: 50px;"><br><textarea type="tetx" placeholder="Enter Link Product" class="form-control" name="link[]" id="link" style="width: 250px;font-size: 14px" required></textarea></td><td><a href="javascript:void(0);" class="remove"><span class="fa fa-times" style="font-size: 18px;margin-top: 20px;color: red;"></span></a></td></tr>');
 
     });
-    
 
     $(document).on('click', '.remove', function() {
      var trIndex = $(this).closest("tr").index();
@@ -1013,19 +994,6 @@ GA ATK
   		$('#id_transaction_reject2').val(id_transaction);
   		$('#note_reject2').val(note);
   	}
-
-    // function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan,nik_peminjam,created_at){
-    //   $('#id_transaction_update').val(id_transaction);
-    //   $('#id_barang_update').val(id_barang);
-    //   $('#qty_awal_accept').val(qty);
-    //   $('#qty_akhir_accept').val(qty_akhir);
-    //   $('#nama_barang_accept').val(nama_barang);
-    //   $('#qty_accept').val(qty_akhir);
-    //   $('#description_accept').val(keterangan);
-    //   $('#nik_request').val(nik_peminjam);
-    //   $('#tgl_request_accept').val(created_at.substring(0, 10));
-    // }
-
 
     function id_accept_update(id_transaction,id_barang,qty,qty_akhir,nama_barang,keterangan,nik_peminjam,created_at){
       var swalAccept;
@@ -1166,6 +1134,272 @@ GA ATK
       })
     });
 
+    $('#btn_request').click(function() {
+      var produk = []
+      var id_barang = []
+      var qty = []
+      var ket = []
+      var unit = []
+      var stock = []
+      var data = []
+      var error = false;
+
+      var swalAccept;
+      var titleStatus = 'Request ATK'
+
+      var val_produk = $("input[name='id_barangs[]']").map(function(){
+        return produk.push($(this).val())
+      }).get();
+      var produk_push = produk.filter(function(v){return v!==''});
+
+      var val_ket = $("textarea[name='keterangan[]']").map(function(){
+        if ($(this).val() === "") {
+          Swal.fire({
+            title: 'Description is not filled',
+            text: "Please fill Description first!",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+          })
+          error = true;
+        } else {
+          return ket.push($(this).val())          
+        }
+      }).get();
+      var ket_push = ket.filter(function(v){return v!==''});
+
+      var val_qty = $("input[name='qty[]']").map(function(){
+        if ($(this).val() === "") {
+          Swal.fire({
+            title: 'Qty is not filled',
+            text: "Please fill Qty first!",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+          })
+          error = true;
+        } else {
+          return qty.push($(this).val())          
+        }
+      }).get();
+      var qty_push = qty.filter(function(v){return v!==''});
+
+      var val_id = $("select[name='atk[]']").map(function(){
+          return id_barang.push($(this).val())          
+      }).get();
+      var id_push = id_barang.filter(function(v){return v!==''});
+
+      var val_stock = $("input[name='stock[]']").map(function(){
+        return stock.push($(this).val())
+      }).get();
+      var stock_push = stock.filter(function(v){return v!==''});
+
+      $.each(id_barang,function(key,value){
+        data.push({
+          id_barang: value,
+          ket:ket_push[key],
+          qty_awal:stock_push[key],
+          qty_request:qty_push[key],
+          nama_barang:produk_push[key]
+        })
+      })
+
+      if (!error) {
+          swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "Are you sure?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.value) {
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's updating..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"POST",
+              url:"{{url('asset_atk/request_atk')}}",
+              data:{
+                _token: "{{ csrf_token() }}",
+                data: data,
+              },
+              success: function(result){
+                Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                  }
+                })
+              },
+            }) 
+          }        
+        })
+      }
+    })
+
+    $('#btn_request_asset').click(function() {
+      var produk = []
+      var qty = []
+      var ket = []
+      var link = []
+      var data = []
+      var error = false;
+
+      var swalAccept;
+      var titleStatus = 'Request ATK';
+
+      var val_link = $("textarea[name='link[]']").map(function(){
+        if ($(this).val() === "") {
+          Swal.fire({
+            title: 'Description is not filled',
+            text: "Please fill Description first!",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+          })
+          error = true;
+        } else {
+          return link.push($(this).val())          
+        }
+      }).get();
+      var link_push = link.filter(function(v){return v!==''});
+
+      var val_ket = $("textarea[name='keterangan_request[]']").map(function(){
+        if ($(this).val() === "") {
+          Swal.fire({
+            title: 'Description is not filled',
+            text: "Please fill Description first!",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+          })
+          error = true;
+        } else {
+          return ket.push($(this).val())          
+        }
+      }).get();
+      var ket_push = ket.filter(function(v){return v!==''});
+
+      var val_qty = $("input[name='qty_request[]']").map(function(){
+        if ($(this).val() === "") {
+          Swal.fire({
+            title: 'Qty is not filled',
+            text: "Please fill Qty first!",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+          })
+          error = true;
+        } else {
+          return qty.push($(this).val())          
+        }
+      }).get();
+      var qty_push = qty.filter(function(v){return v!==''});
+
+      var val_name = $("input[name='atk_request[]']").map(function(){
+        if ($(this).val() === "") {
+          Swal.fire({
+            title: 'Product Name is not filled',
+            text: "Please fill Product Name first!",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+          })
+          error = true;
+        } else {
+          return produk.push($(this).val())          
+        }
+      }).get();
+      var name_push = produk.filter(function(v){return v!==''});
+
+      $.each(produk,function(key,value){
+        data.push({
+          name: value,
+          ket:ket_push[key],
+          qty:qty_push[key],
+          link:link_push[key]
+        })
+      })
+
+      console.log(data)
+
+      if (!error) {
+        swalAccept = Swal.fire({
+          title: titleStatus,
+          text: "Are you sure?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.value) {
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's updating..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                Swal.showLoading()
+              }
+            })
+            $.ajax({
+              type:"POST",
+              url:"{{url('asset_atk/store_request_atk')}}",
+              data:{
+                _token: "{{ csrf_token() }}",
+                data: data,
+              },
+              success: function(result){
+                Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                  }
+                })
+              },
+            }) 
+          }        
+        })
+      }
+    })
+
     function update_done_pr(id_transaction,id_barang,qty,qty_request,nama_barang) {
       $('#id_transaction_done').val(id_transaction);
       $('#id_barang_done').val(id_barang);
@@ -1185,14 +1419,14 @@ GA ATK
     }
 
     $(document).on('keyup keydown', "input[id^='qty_butuh']", function(e){
-      var qty_before = $("#stock").val();
-      if ($(this).val() > parseFloat(qty_before)
-          && e.keyCode != 46
-          && e.keyCode != 8
-         ) {
-         e.preventDefault();     
-         $(this).val(qty_before);
-      }
+      var qty_before = $(".stock").val();
+        if ($(this).val() > parseFloat(qty_before)
+            && e.keyCode != 46
+            && e.keyCode != 8
+           ) {
+           e.preventDefault();     
+           $(this).val(qty_before);
+        }
     });
 
     $('.hover-biru').click(function(){
@@ -1234,17 +1468,11 @@ GA ATK
          $("#alert").slideUp(300);
     });
 
-    $('#btn_request').click(function(){
-      $('#tunggu').modal('show')
-      $('#peminjaman_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
-    });
-
-    $('#btn_request_asset').click(function(){
-      $('#tunggu').modal('show')
-      $('#request_modal').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
-    });
+    // $('#btn_request_asset').click(function(){
+    //   $('#tunggu').modal('show')
+    //   $('#request_modal').modal('hide')
+    //   setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
+    // });
 
     $('#btn_done_request').click(function(){
       $('#tunggu').modal('show')
