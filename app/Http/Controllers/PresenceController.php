@@ -1127,6 +1127,19 @@ class PresenceController extends Controller
 
     public function getExportReport(Request $req){
 
+        if(isset($req->startDate) && isset($req->endDate)){
+            // return "Start " . $req->startDate . " End " . $req->endDate
+            $date = [
+                "startDate" => $req->startDate,
+                "endDate" => $req->endDate
+            ];
+        } else {
+            $date = [
+                "startDate" => Carbon::now()->subMonths(1)->format("Y-m-16"),
+                "endDate" => Carbon::now()->format("Y-m-16")
+            ];
+        }
+
         $spreadsheet = new Spreadsheet();
 
         $spreadsheet->removeSheetByIndex(0);
