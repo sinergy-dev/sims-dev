@@ -150,7 +150,9 @@
 
 		$('#daterange-btn').daterangepicker({
 			ranges: {
-				'This Period': [moment("16 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("15 " + moment().format("MM YYYY"),"DD MM YYYY")],
+				'This Period HRD': [moment("16 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("15 " + moment().format("MM YYYY"),"DD MM YYYY")],
+				'This Period MSM': [moment("26 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("25 " + moment().format("MM YYYY"),"DD MM YYYY")],
+
 			},
 			startDate: moment().subtract(29, 'days'),
 			endDate: moment()
