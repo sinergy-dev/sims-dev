@@ -545,7 +545,15 @@
           { "data": "user_from" },
           // { "data": "division" },
           { "data": "issuance" },
-          { "data": "project_id" },
+          {
+             "render": function ( data, type, row, meta ) {
+                if (row.project_id == null) {
+                  return '<div class="truncate"> - </div>'
+                } else {
+                  return '<div class="truncate">' + row.project_id + '</div>'                  
+                }
+              }
+          },
           { 
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.amount)
