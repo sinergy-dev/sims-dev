@@ -806,19 +806,32 @@ class PresenceController extends Controller
         return PresenceLocationUser::with('location')->where('user_id',$req->nik)->get();
     }
 
-    public function getPresenceReportData($typeData = "notAll", $typeCompany = "all"){
-        $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
-        $endDate = Carbon::now()->format("Y-m-16");
+    public function getPresenceReportData($typeData = "notAll", $typeCompany = "all",$date){
+        // $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
+        // $endDate = Carbon::now()->format("Y-m-16");
+        $startDate = $date["startDate"];
+        $endDate = $date["endDate"];
 
         $workDays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
 
         $parameterUser = PresenceHistory::select(DB::raw('presence__history.*'))
-            ->whereRaw('`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"')
+            ->whereRaw('`presence_actual` BETWEEN "' . $startDate . ' 00:00:00" AND "' . $endDate . ' 23:59:59"')
             ->join('users','users.nik','=','presence__history.nik');
 
         if($typeCompany != "all"){
-            $parameterUser = $parameterUser->where('users.id_company','=',$typeCompany);
+            if($typeCompany == "2"){
+                $listUser = DB::table('role_user')
+                    ->join('roles','roles.id','=','role_user.role_id')
+                    ->where('roles.group','=','MSM')
+                    ->pluck('user_id');
+
+                $parameterUser = $parameterUser->whereIn('users.nik',$listUser);
+            } else {
+                $parameterUser = $parameterUser->where('users.id_company','=',$typeCompany);
+            }
         }
+
+        // return $parameterUser->toSql();
 
         $parameterUser = $parameterUser->pluck('nik')->unique()->values();
 
