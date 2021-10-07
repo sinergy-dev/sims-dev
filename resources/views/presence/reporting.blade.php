@@ -48,9 +48,12 @@
 						<div class="pull-right">
 							<select class="btn bg-blue" style="width: 80px; margin-left: 10px;" id="filter_com">
 					            <option value="">All</option>
-					            <option value="SIP">SIP</option>
+					            <option value="SIP">SIP (ALL)</option>
+					            <option value="SIP-MSM">SIP (MSM)</option>
 					            <option value="MSP">MSP</option>
 				          	</select>
+				          	<input type="hidden" id="startDate">
+				          	<input type="hidden" id="endDate">
 							<button type="button" class="btn btn-success" style="margin-left: 10px;" onclick="exportExcel('{{action('PresenceController@getExportReport')}}')"><i class='fa fa-download'></i>Export</button>
 							<button type="button" class="btn btn-default pull-left" id="daterange-btn">
 									<i class="fa fa-calendar"></i> Date range picker
