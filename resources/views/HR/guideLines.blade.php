@@ -340,101 +340,155 @@ Bookmark
 	})
 
 	function submitGuide(id,status){
-	    type = $('#type').val()
+	  type = $('#type').val()
 
-		if (status == 'submit') {
-			swalAccept = Swal.fire({
-	          title: title,
-	          text: "Yakin?",
-	          icon: 'warning',
-	          showCancelButton: true,
-	          confirmButtonColor: '#3085d6',
-	          cancelButtonColor: '#d33',
-	          confirmButtonText: 'Yes',
-	          cancelButtonText: 'No',
-	        })
-
-	        url = "{{url('storeGuide')}}"
-	        console.log(url)
-		}else{
-			swalAccept = Swal.fire({
-	          title: title,
-	          text: "Yakin?",
-	          icon: 'warning',
-	          showCancelButton: true,
-	          confirmButtonColor: '#3085d6',
-	          cancelButtonColor: '#d33',
-	          confirmButtonText: 'Yes',
-	          cancelButtonText: 'No',
-	        })
-
-	        url = "{{url('updateGuide')}}"
-		}		
-
-        swalAccept.then((result) => {
-  		    if (result.value) {
-  		    console.log(result.value)
-  		        Swal.fire({
-	              title: 'Please Wait..!',
-	              text: "It's updating..",
-	              allowOutsideClick: false,
-	              allowEscapeKey: false,
-	              allowEnterKey: false,
-	              customClass: {
-	                popup: 'border-radius-0',
-	              },
-	              onOpen: () => {
-	                Swal.showLoading()
-	              }
-	            })
-
-	            $.ajax({
-	              type:"GET",
-	              url:url,
-	              data:{
-	              	id:id,
-	                description:$('#description').val(),
-	                link:$('#link').val(),
-	                title:$('#title').val(),	                
-	                type:$('#type').val(),
-	                efective_date:moment($('#efective_date').val()).format('YYYY-MM-DD')
-	              },
-	              success: function(result){
-	                Swal.showLoading()
-	                Swal.fire(
-	                  'Successfully!',
-	                  'success'
-	                ).then((result) => {
-	                  if (result.value) {
-	                    $("#AddGuideModal").modal('toggle')
-	                    datatable.columns.adjust().draw();
-      					datatable.ajax.url("{{url('getGuideIndex')}}?type="+type).load();
-      					if (type == 'kebijakan') {
-      						$('#tab_1').addClass('active')
-      						$('#tab_2').removeClass('active')
-      						$('#tab_3').removeClass('active')
-      						$('#tab_4').removeClass('active')
-      					}else if (type == 'peraturan') {
-      						$('#tab_1').removeClass('active')
-      						$('#tab_2').addClass('active')
-      						$('#tab_3').removeClass('active')
-      					}else if(type == 'panduan'){
-      						$('#tab_1').removeClass('active')
-      						$('#tab_2').removeClass('active')
-      						$('#tab_3').addClass('active')
-      						$('#tab_4').removeClass('active')
-      					}else{
-      						$('#tab_1').removeClass('active')
-      						$('#tab_2').removeClass('active')
-      						$('#tab_3').removeClass('active')
-      						$('#tab_4').addClass('active')
-      					}
-	                  }
-	                })
-	              },
-	            });
-          	}	        
+	  if ($('#type').val() == '') {
+	  	 Swal.fire({
+          title: 'Type is not selected',
+	        text: "Please select type first!",
+	        icon: 'warning',
+	        showCancelButton: false,
+	        confirmButtonColor: '#3085d6',
+	        cancelButtonColor: '#d33',
+	        confirmButtonText: 'Yes',
         })
+	  }else if ($('#title').val() == '') {
+	  	Swal.fire({
+        title: 'Title is not filled',
+        text: "Please fill Title first!",
+        icon: 'warning',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+      })
+
+	  }else if ($('#description').val() == '') {
+	  	Swal.fire({
+        title: 'Description is not filled',
+        text: "Please fill Description first!",
+        icon: 'warning',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+      })
+
+	  }else if ($('#link').val() == '') {
+	  	Swal.fire({
+        title: 'Link Source is not filled',
+        text: "Please fill source first!",
+        icon: 'warning',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+      })
+
+	  }else if($('#efective_date').val() == ''){
+	  	Swal.fire({
+        title: 'Date is not selected',
+        text: "Please select Date first!",
+        icon: 'warning',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+      })
+
+	  }else{
+	  	if (status == 'submit') {
+				swalAccept = Swal.fire({
+	        title: title,
+	        text: "Yakin?",
+	        icon: 'warning',
+	        showCancelButton: true,
+	        confirmButtonColor: '#3085d6',
+	        cancelButtonColor: '#d33',
+	        confirmButtonText: 'Yes',
+	        cancelButtonText: 'No',
+	      })
+
+	      url = "{{url('storeGuide')}}"
+			}else{
+				swalAccept = Swal.fire({
+		          title: title,
+		          text: "Yakin?",
+		          icon: 'warning',
+		          showCancelButton: true,
+		          confirmButtonColor: '#3085d6',
+		          cancelButtonColor: '#d33',
+		          confirmButtonText: 'Yes',
+		          cancelButtonText: 'No',
+		        })
+
+		        url = "{{url('updateGuide')}}"
+			}		
+
+	    swalAccept.then((result) => {
+		    if (result.value) {
+		        Swal.fire({
+	            title: 'Please Wait..!',
+	            text: "It's updating..",
+	            allowOutsideClick: false,
+	            allowEscapeKey: false,
+	            allowEnterKey: false,
+	            customClass: {
+	              popup: 'border-radius-0',
+	            },
+	            onOpen: () => {
+	              Swal.showLoading()
+	            }
+	          })
+
+	          $.ajax({
+	            type:"GET",
+	            url:url,
+	            data:{
+	            	id:id,
+	              description:$('#description').val(),
+	              link:$('#link').val(),
+	              title:$('#title').val(),	                
+	              type:$('#type').val(),
+	              efective_date:moment($('#efective_date').val()).format('YYYY-MM-DD')
+	            },
+	            success: function(result){
+	              Swal.showLoading()
+		              Swal.fire(
+		                'Successfully!',
+		                'success'
+		              ).then((result) => {
+		                if (result.value) {
+		                  $("#AddGuideModal").modal('toggle')
+		                  datatable.columns.adjust().draw();
+		  					datatable.ajax.url("{{url('getGuideIndex')}}?type="+type).load();
+		  					if (type == 'kebijakan') {
+		  						$('#tab_1').addClass('active')
+		  						$('#tab_2').removeClass('active')
+		  						$('#tab_3').removeClass('active')
+		  						$('#tab_4').removeClass('active')
+		  					}else if (type == 'peraturan') {
+		  						$('#tab_1').removeClass('active')
+		  						$('#tab_2').addClass('active')
+		  						$('#tab_3').removeClass('active')
+		  					}else if(type == 'panduan'){
+		  						$('#tab_1').removeClass('active')
+		  						$('#tab_2').removeClass('active')
+		  						$('#tab_3').addClass('active')
+		  						$('#tab_4').removeClass('active')
+		  					}else{
+		  						$('#tab_1').removeClass('active')
+		  						$('#tab_2').removeClass('active')
+		  						$('#tab_3').removeClass('active')
+		  						$('#tab_4').addClass('active')
+		  					}
+		                }
+		              })
+		            },
+				      });
+				    }	        
+				  })
+		  	}		
 	}
 
 	function changeTab(id){
