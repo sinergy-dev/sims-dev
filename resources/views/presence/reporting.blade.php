@@ -48,9 +48,12 @@
 						<div class="pull-right">
 							<select class="btn bg-blue" style="width: 80px; margin-left: 10px;" id="filter_com">
 					            <option value="">All</option>
-					            <option value="SIP">SIP</option>
+					            <option value="SIP">SIP (ALL)</option>
+					            <option value="SIP-MSM">SIP (MSM)</option>
 					            <option value="MSP">MSP</option>
 				          	</select>
+				          	<input type="hidden" id="startDate">
+				          	<input type="hidden" id="endDate">
 							<button type="button" class="btn btn-success" style="margin-left: 10px;" onclick="exportExcel('{{action('PresenceController@getExportReport')}}')"><i class='fa fa-download'></i>Export</button>
 							<button type="button" class="btn btn-default pull-left" id="daterange-btn">
 									<i class="fa fa-calendar"></i> Date range picker
@@ -147,7 +150,9 @@
 
 		$('#daterange-btn').daterangepicker({
 			ranges: {
-				'This Period': [moment("16 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("15 " + moment().format("MM YYYY"),"DD MM YYYY")],
+				'This Period HRD': [moment("16 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("15 " + moment().format("MM YYYY"),"DD MM YYYY")],
+				'This Period MSM': [moment("26 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("25 " + moment().format("MM YYYY"),"DD MM YYYY")],
+
 			},
 			startDate: moment().subtract(29, 'days'),
 			endDate: moment()
@@ -157,6 +162,9 @@
 
 			var startDay = start.format('YYYY-MM-DD');
 			var endDay = end.format('YYYY-MM-DD');
+
+			$("#startDate").val(startDay)
+			$("#endDate").val(endDay)
 
 			startDate = start.format('D MMMM YYYY');
 			endDate = end.format('D MMMM YYYY');
@@ -206,7 +214,12 @@
 		});
 
 		function exportExcel(url){
-	    	window.location = url + "?type=" + $("#filter_com").val();
+			url = url + "?type=" + $("#filter_com").val()
+			if($("#startDate").val() != "" && $("#endDate") != ""){
+				url = url + "&startDate=" + $("#startDate").val() + "&endDate=" + $("#endDate").val() 
+			}
+
+	    	window.location = url;
 	  	}
 
 		// $("#filter_com").change(function(){

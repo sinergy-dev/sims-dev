@@ -698,7 +698,7 @@ class PrController extends Controller
             ->get();
 
         foreach ($dataPR as $key => $data) {
-            $data->amount = number_format($data->amount,2,",",".");
+            $data->amount = number_format((int)$data->amount,2,",",".");
             $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 3));
         }
 
