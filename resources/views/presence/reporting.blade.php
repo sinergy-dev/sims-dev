@@ -214,7 +214,12 @@
 		});
 
 		function exportExcel(url){
-	    	window.location = url + "?type=" + $("#filter_com").val();
+			url = url + "?type=" + $("#filter_com").val()
+			if($("#startDate").val() != "" && $("#endDate") != ""){
+				url = url + "&startDate=" + $("#startDate").val() + "&endDate=" + $("#endDate").val() 
+			}
+
+	    	window.location = url;
 	  	}
 
 		// $("#filter_com").change(function(){
