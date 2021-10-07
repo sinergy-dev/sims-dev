@@ -163,6 +163,9 @@
 			var startDay = start.format('YYYY-MM-DD');
 			var endDay = end.format('YYYY-MM-DD');
 
+			$("#startDate").val(startDay)
+			$("#endDate").val(endDay)
+
 			startDate = start.format('D MMMM YYYY');
 			endDate = end.format('D MMMM YYYY');
 
