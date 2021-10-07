@@ -879,7 +879,7 @@ class PresenceController extends Controller
         $presenceHistoryAllUnCheckout = $presenceHistoryAll->where('checkout','=','-');
         $presenceHistoryAllUnCheckout->each(function ($item, $key) {
             if($item->condition != "Late" && $item->condition != "Absent"){
-                $item->condition = "Uncheckout";
+                // $item->condition = "Uncheckout";
             }
         });
 
@@ -1166,18 +1166,30 @@ class PresenceController extends Controller
         $summarySheet->getStyle('A1:J1')->applyFromArray($titleStyle);
         $summarySheet->setCellValue('A1','All Presence');
 
+
+
         $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
         $summarySheet->getStyle('A2:J2')->applyFromArray($headerStyle);
         $summarySheet->fromArray($headerContent,NULL,'A2');
-
         if(isset($req->type)){
-            $typeCompany = ($req->type == "SIP") ? "1" : "2";
-            $dataPresence = $this->getPresenceReportData("all",$typeCompany)["data"]->sortBy('name');
+            if($req->type == "SIP"){
+                $typeCompany = "1";
+            } elseif ($req->type == "SIP-MSM") {
+                $typeCompany = "2";
+            } else {
+                $typeCompany = "3";
+            }
+        // return $this->getPresenceReportData("all",$typeCompany,$date);
+            
+            // return $typeCompany;
+            // $typeCompany = ($req->type == "SIP") ? "1" : (($req->type == "SIP-MSM") ? "2" : "3");
+            $dataPresence = $this->getPresenceReportData("all",$typeCompany,$date)["data"]->sortBy('name');
             $exportName = 'Report Presence ' . $req->type . ' (reported at ' . date("Y-m-d") . ')';
         } else {
-            $dataPresence = $this->getPresenceReportData("all")["data"]->sortBy('name');
+            $dataPresence = $this->getPresenceReportData("all","all",$date)["data"]->sortBy('name');
             $exportName = 'Report Presence (reported at' . date("Y-m-d") . ')';
         }
+
 
         $dataPresence->map(function($item,$key) use ($summarySheet){
             $summarySheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($item))),NULL,'A' . ($key + 3));
