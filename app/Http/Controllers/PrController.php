@@ -208,12 +208,12 @@ class PrController extends Controller
     {
         $total_pr = PR::select('no_pr', 'amount')->whereYear('date', $request->year);
 
-        $count_all = $total_pr->count('no_pr');
-        $count_ipr = $total_pr->where('type_of_letter', 'IPR')->count('no_pr');
-        $count_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->count('no_pr');
-        $amount_all = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->sum('amount');
-        $amount_ipr = $total_pr->where('type_of_letter', 'IPR')->sum('amount');
-        $amount_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->sum('amount');
+        $count_all = $total_pr->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->count('no_pr');
+        $count_ipr = $total_pr->where('type_of_letter', 'IPR')->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->count('no_pr');
+        $count_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->count('no_pr');
+        $amount_all = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->sum('amount');
+        $amount_ipr = $total_pr->where('type_of_letter', 'IPR')->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->sum('amount');
+        $amount_epr = PR::select('no_pr', 'amount')->whereYear('date', $request->year)->where('type_of_letter', 'EPR')->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->sum('amount');
 
         return collect([
             'all'=>[$count_all,strpos((string)$amount_all,".",0) ? (string)$amount_all : (string)$amount_all . ".00"],
@@ -320,7 +320,7 @@ class PrController extends Controller
     {
         $year = date('Y');
         $pie = 0;
-        $total = PR::orderby('type_of_letter')->whereYear('date',$year)->get();
+        $total = PR::orderby('type_of_letter')->whereYear('date',$year)->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->get();
 
         $first = $total[0]->type_of_letter;
         $hasil = [0,0];
@@ -367,6 +367,7 @@ class PrController extends Controller
                 DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "IPR",1,NULL)) AS "IPR"'),
                 DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "EPR",1,NULL)) AS "EPR"'), 'month'
             )
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->whereYear('date', date('Y'))
             ->groupBy('month');
 
@@ -379,6 +380,7 @@ class PrController extends Controller
                 DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "IPR",amount,"")) AS "amount_IPR"'),
                 DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"'), 'month'
             )
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->whereYear('date', date('Y'))
             ->groupBy('month');
 
@@ -393,6 +395,7 @@ class PrController extends Controller
                 'category'
             )
             ->whereYear('date', date('Y'))
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->orderBy('nominal', 'desc')
             ->groupBy('category');
 
@@ -408,6 +411,7 @@ class PrController extends Controller
             )
             ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
             ->whereYear('date', date('Y'))
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->groupBy('project_id');
 
         return array("data" => $data->get());
@@ -422,6 +426,7 @@ class PrController extends Controller
             )
             ->whereYear('date', date('Y'))
             ->where('type_of_letter', 'IPR')
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->orderBy('nominal', 'desc')
             ->groupBy('category');
 
@@ -437,6 +442,7 @@ class PrController extends Controller
             )
             ->whereYear('date', date('Y'))
             ->where('type_of_letter', 'EPR')
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->orderBy('nominal', 'desc')
             ->groupBy('category');
 
