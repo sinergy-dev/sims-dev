@@ -590,7 +590,8 @@ class PresenceController extends Controller
             ->with([
                 'initView'=>$this->initMenuBase(),
                 'sidebar_collapse' => 'True',
-                'shiftingOptions' => $this->getOptionGrouped()
+                'shiftingOptions' => $this->getOptionGrouped(),
+                'feature_item'=>$this->RoleDynamic('presence_shifting')
             ]);
     }
 
@@ -813,40 +814,64 @@ class PresenceController extends Controller
         $endDate = $date["endDate"];
 
         $workDays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
+        $shiftingUserList = PresenceShiftingUser::pluck('nik')->toArray();
+        // return gettype($shiftingUserList);
+        // return in_array(1210402030, $shiftingUserList) ? "yes" : "no";
+        // return $shiftingUserList;
 
         $parameterUser = PresenceHistory::select(DB::raw('presence__history.*'))
             ->whereRaw('`presence_actual` BETWEEN "' . $startDate . ' 00:00:00" AND "' . $endDate . ' 23:59:59"')
             ->join('users','users.nik','=','presence__history.nik');
+            // ->orderBy('nik','DESC');
 
-        if($typeCompany != "all"){
-            if($typeCompany == "2"){
-                $listUser = DB::table('role_user')
-                    ->join('roles','roles.id','=','role_user.role_id')
-                    ->where('roles.group','=','MSM')
-                    ->pluck('user_id');
+        $listUserMSM = DB::table('role_user')
+                ->join('roles','roles.id','=','role_user.role_id')
+                ->where('roles.group','=','MSM')
+                ->pluck('user_id');
 
-                $parameterUser = $parameterUser->whereIn('users.nik',$listUser);
-            } else {
-                $parameterUser = $parameterUser->where('users.id_company','=',$typeCompany);
-            }
+        if($typeCompany == "1"){
+            $parameterUser = $parameterUser->where('users.id_company','=','1')
+                ->whereNotIn('users.nik',$listUserMSM);
+        } else if($typeCompany == "2"){
+            $parameterUser = $parameterUser->whereIn('users.nik',$listUserMSM);
+        } else if($typeCompany == "3"){
+            $parameterUser = $parameterUser->where('users.id_company','=','2');
         }
+
+        // if($typeCompany != "all"){
+        //     if($typeCompany == "2"){
+        //         $listUser = DB::table('role_user')
+        //             ->join('roles','roles.id','=','role_user.role_id')
+        //             ->where('roles.group','=','MSM')
+        //             ->pluck('user_id');
+
+        //         $parameterUser = $parameterUser->whereIn('users.nik',$listUser);
+        //     } else {
+        //         $parameterUser = $parameterUser->where('users.id_company','=','2');
+        //     }
+        // }
 
         // return $parameterUser->toSql();
 
+        // $parameterUser = $parameterUser->limit(1)->pluck('nik')->unique()->values();
         $parameterUser = $parameterUser->pluck('nik')->unique()->values();
+        // return $parameterUser;
 
         $presenceHistoryAll = collect();
         foreach ($parameterUser as $value) {
             $presenceHistoryTemp = PresenceHistory::select(
-                DB::raw("*"),
-                DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`")
+                DB::raw("presence__history.*"),
+                DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),
+                DB::raw('`presence__location`.`location_name`')
             )->whereRaw('`nik` = ' . $value)
-            ->whereRaw('`presence_actual` BETWEEN "' . $startDate . '" AND "' . $endDate . '"');
+            ->whereRaw('`presence_actual` BETWEEN "' . $startDate . ' 00:00:00" AND "' . $endDate . ' 23:59:59"')
+            ->leftJoin('presence__location','presence__location.id','=','presence__history.presence_location');
 
             $presenceHistory = DB::table(DB::raw("(" . $presenceHistoryTemp->toSql() . ") AS `presence__history_temp`"))
                 ->join('users','users.nik','=','presence__history_temp.nik')
                 ->select('presence__history_temp.nik','users.name')
                 ->selectRaw("CAST(MIN(`presence__history_temp`.`presence_actual`) AS DATE) AS `date`")
+                ->selectRaw("MIN(`presence__history_temp`.`location_name`) AS `location`")
                 ->selectRaw("MIN(`presence__history_temp`.`presence_schedule`) AS `schedule`")
                 ->selectRaw("RIGHT(MIN(`presence__history_temp`.`presence_actual`),8) AS `checkin`")
                 ->selectRaw("IF(MAX(`presence__history_temp`.`presence_actual`) = MIN(`presence__history_temp`.`presence_actual`), '-', RIGHT(MAX(`presence__history_temp`.`presence_actual`),8)) AS `checkout`")
@@ -854,9 +879,27 @@ class PresenceController extends Controller
                 // ->where('users.id_company','<>',2)
                 ->groupBy('presence__history_temp.presence_actual_date');
 
+            // dd($presenceHistory->get());
+
+
             $presenceHistoryAll = $presenceHistoryAll->merge($presenceHistory->get());
 
-            $presenceHistoryAbsent = $workDays->diff($presenceHistory->get()->pluck('date')->values())->values();
+            if(in_array($value, $shiftingUserList)){
+                $workDays = PresenceShifting::where('nik','=',$value)
+                    ->where('className','<>','Libur')
+                    ->whereBetween('tanggal_shift',[$startDate . ' 00:00:00',$endDate . ' 23:59:59'])
+                    // ->select('tanggal_shift','className');
+                    ->pluck('tanggal_shift');
+
+                $presenceHistoryAbsent = $workDays->diff($presenceHistory->get()->pluck('date')->values())->values();
+            } else {
+                $presenceHistoryAbsent = $workDays->diff($presenceHistory->get()->pluck('date')->values())->values();
+            }
+
+            // return $workDays;
+            // return $presenceHistory->get()->pluck('date')->values();
+            // return $presenceHistoryAbsent;
+
             $presenceHistoryAbsentTemp = collect();
             foreach ($presenceHistoryAbsent as $key => $absentDate) {
                 // echo $value . "<br>";
@@ -865,33 +908,35 @@ class PresenceController extends Controller
                     "nik" => $value,
                     "name" => $presenceHistory->first()->name,
                     "date" => $absentDate,
+                    "location" => "",
                     "schedule" => "08:00:00",
                     "checkin" =>  "00:00:00",
                     "checkout" =>  "00:00:00",
                     "condition" => "Absent"
                 ]);
             }
-
         }
+
+        // return $presenceHistoryAll;
 
         $presenceHistoryAllLate = $presenceHistoryAll->where('condition','Late');
         $presenceHistoryAllAbsent = $presenceHistoryAll->where('condition','Absent');
         $presenceHistoryAllUnCheckout = $presenceHistoryAll->where('checkout','=','-');
         $presenceHistoryAllUnCheckout->each(function ($item, $key) {
             if($item->condition != "Late" && $item->condition != "Absent"){
-                // $item->condition = "Uncheckout";
+                $item->condition = "Uncheckout";
             }
         });
 
         if($typeData == "all"){
             return collect([
-                "range" => $startDate . " to " . $endDate,
+                "range" => $startDate . " 00:00:00 to " . $endDate . " 23:59:59",
                 "data" => $presenceHistoryAll->merge($presenceHistoryAllUnCheckout)->unique(),
                 "holiday" => $this->getWorkDays($startDate,$endDate)["workdays"]
             ]);
         } else {
             return collect([
-                "range" => $startDate . " to " . $endDate,
+                "range" => $startDate . " 00:00:00 to " . $endDate . " 23:59:59",
                 "data" => $presenceHistoryAllLate->merge($presenceHistoryAllUnCheckout)->merge($presenceHistoryAllAbsent)->unique(),
                 "holiday" => $this->getWorkDays($startDate,$endDate)["workdays"]
             ]);
@@ -1139,6 +1184,7 @@ class PresenceController extends Controller
                 "endDate" => Carbon::now()->format("Y-m-16")
             ];
         }
+        // return $this->getPresenceReportData("all","1",$date);
 
         $spreadsheet = new Spreadsheet();
 
@@ -1166,9 +1212,7 @@ class PresenceController extends Controller
         $summarySheet->getStyle('A1:J1')->applyFromArray($titleStyle);
         $summarySheet->setCellValue('A1','All Presence');
 
-
-
-        $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
+        $headerContent = ["No", "Nik", "Name", "Date","Location","Schedule","Check-In","Check-Out","Condition","Valid"];
         $summarySheet->getStyle('A2:J2')->applyFromArray($headerStyle);
         $summarySheet->fromArray($headerContent,NULL,'A2');
         if(isset($req->type)){
@@ -1182,16 +1226,16 @@ class PresenceController extends Controller
         // return $this->getPresenceReportData("all",$typeCompany,$date);
             
             // return $typeCompany;
-            // $typeCompany = ($req->type == "SIP") ? "1" : (($req->type == "SIP-MSM") ? "2" : "3");
-            $dataPresence = $this->getPresenceReportData("all",$typeCompany,$date)["data"]->sortBy('name');
+            $typeCompany = ($req->type == "SIP") ? "1" : (($req->type == "SIP-MSM") ? "2" : "3");
+            $dataPresence = $this->getPresenceReportData("all",$typeCompany,$date);
             $exportName = 'Report Presence ' . $req->type . ' (reported at ' . date("Y-m-d") . ')';
         } else {
-            $dataPresence = $this->getPresenceReportData("all","all",$date)["data"]->sortBy('name');
+            $dataPresence = $this->getPresenceReportData("all","all",$date);
             $exportName = 'Report Presence (reported at' . date("Y-m-d") . ')';
         }
 
-
-        $dataPresence->map(function($item,$key) use ($summarySheet){
+        // return $dataPresence;
+        $dataPresence["data"]->sortBy('name')->sortBy('date')->map(function($item,$key) use ($summarySheet){
             $summarySheet->fromArray(array_merge([$key + 1],array_values(get_object_vars($item))),NULL,'A' . ($key + 3));
         });
 
@@ -1206,7 +1250,7 @@ class PresenceController extends Controller
         $summarySheet->getColumnDimension('I')->setAutoSize(true);
         $summarySheet->getColumnDimension('J')->setAutoSize(true);
 
-        $dataPresenceIndividual = $dataPresence->groupBy('name');
+        $dataPresenceIndividual = $dataPresence["data"]->sortBy('name')->groupBy('name');
 
         $indexSheet = 0;
         foreach ($dataPresenceIndividual as $key => $item) {
@@ -1217,7 +1261,7 @@ class PresenceController extends Controller
             $detailSheet->setCellValue('A1','Presence Report ' . $key);
             $detailSheet->mergeCells('A1:J1');
 
-            $headerContent = ["No", "Nik", "Name", "Date","Schedule","Check-In","Check-Out","Condition","Valid","Reason"];
+            $headerContent = ["No", "Nik", "Name", "Date","Location","Schedule","Check-In","Check-Out","Condition","Valid"];
             $detailSheet->getStyle('A2:J2')->applyFromArray($headerStyle);
             $detailSheet->fromArray($headerContent,NULL,'A2');
 
