@@ -516,7 +516,7 @@ class PresenceController extends Controller
         $history->presence_setting = $setting_schedule->id;
         $history->presence_schedule = $setting_schedule->setting_on_time;
         $history->presence_actual = $req->presence_actual;
-        $history->presence_location = 1;
+        $history->presence_location = $req->id_location;
         $history->presence_condition = $this->checkPresenceCondition($req->presence_actual,$setting_schedule);
         $history->presence_type = "Check-In";
 
