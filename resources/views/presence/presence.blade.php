@@ -249,12 +249,13 @@ Presence
 			if(isLocationSet(presenceLocation)){
 				isOnLocation(presenceLocation).then((result) => {
 					console.log(result)
-					if(result){
+					if(result != 0){
 						$.ajax({
 							type:"POST",
 							url:"{{url('/presence/checkIn')}}",
 							data:{
 								presence_actual:moment().format("YYYY-MM-DD HH:mm:ss"),
+								id_location:result,
 								_token: "{{ csrf_token() }}"
 							},
 							success: function(){
@@ -365,26 +366,32 @@ Presence
 					// var actuals_position = new google.maps.LatLng(-6.185084, 106.752010)
 
 					var onLocation = false
+					var locationNow = 0
 					presenceLocation.forEach(function(data){
+						console.log(data)
+
 						var compare_position = new google.maps.LatLng(
 							data.location.location_lat,
 							data.location.location_lng
 						)
+
 
 						console.log("Distance now to " + data.location.location_name+ " : "+ google.maps.geometry.spherical.computeDistanceBetween(actuals_position, compare_position))
 						if(google.maps.geometry.spherical.computeDistanceBetween(actuals_position, compare_position) < (data.location.location_radius) ){
 							console.log('Raidus : ' + data.location.location_radius + ' Im in location now')	
 							console.log(onLocation)
 							onLocation = true
+							locationNow = data.location_id
+
 						} else {
 							console.log('Raidus : ' + data.location.location_radius + ' Im not in location now')
 							console.log(onLocation)
 						}
 					})
 					if (onLocation) {
-						resolve(true);
+						resolve(locationNow);
 					} else {
-						resolve(false);
+						resolve(locationNow);
 					}
 				} , function(error){
 					reject(Error("Location Permission Denied"))
