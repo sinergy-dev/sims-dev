@@ -76,7 +76,7 @@ Dashboard
               @foreach($top_win_sip as $tops)
                 <tr>
                   <td>{{ $no_sip++ }}</td>
-                  <td>{{ $tops->name }}</td>
+                  <td>{{ $tops->name }}<a href='{{url("/report_range")}}/{{$tops->nik}}' target="_blank" style="color: black;float: right;"><i class="fa fa-external-link-square" style="text-align:right"></i></a></td>
                   <td align="right">
                   <i class="money">{{ $tops->deal_prices }}</i>
                   </td>
@@ -110,7 +110,7 @@ Dashboard
               @foreach($top_win_msp as $topm)
                 <tr>
                     <td>{{ $no_msp++ }}</td>
-                    <td>{{ $topm->name }}</td>
+                    <td>{{ $topm->name }} <a href='{{url("/report_range")}}/{{$topm->nik}}' target="_blank" style="color: black;float: right;"><i class="fa fa-external-link-square" style="text-align:right"></i></a></td>
                     <td align="right">
                     <i class="money">{{ $topm->deal_prices }}</i>
                     </td>
@@ -471,7 +471,7 @@ Dashboard
 		$.each(top_win_sip_ter, function(key, value){
 			append = append + '<tr>'
 		    append = append + '<td>'+ no++ +'</td>'
-		    append = append + '<td>'+value.name+'</td>'
+		    append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
 		    append = append + '<td align="right">'
 		    append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
 		    append = append + '</td>'
@@ -488,10 +488,11 @@ Dashboard
 		var append = ""	
 		$.each(top_win_sip_ter, function(key, value){
 		  $.each(value, function(key, value){
+        console.log(value)
 		    if(value.id_territory == territory){
 		    	append = append + '<tr>'
 				    append = append + '<td>'+ no++ +'</td>'
-				    append = append + '<td>'+value.name+'</td>'
+				    append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
 				    append = append + '<td align="right">'
 				    append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices)+'</i>'
 				    append = append + '</td>'
@@ -506,7 +507,7 @@ Dashboard
             append = append + '</tr>'
             append = append + '<tr>'
 					    append = append + '<td>'+ no++ +'</td>'
-					    append = append + '<td>'+value.name+'</td>'
+					    append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
 					    append = append + '<td align="right">'
 					    append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
 					    append = append + '</td>'
