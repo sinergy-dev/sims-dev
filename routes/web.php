@@ -265,6 +265,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/report', 'ReportController@report');
 	Route::get('/report_range', 'ReportController@report_range');
+	Route::get('/report_range/{nik}', 'ReportController@report_range');
+	Route::get('/filter_sales_report','ReportController@filter_sales_report');
 	Route::get('/report_deal_price', 'ReportController@report_deal_price');
 	Route::get('/report_sales', 'ReportController@report_sales');
 	Route::get('/getfiltertop', 'ReportController@getfiltertop');
