@@ -2294,7 +2294,7 @@ class ReportController extends Controller
 
         $presales = '';    
 
-        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`,GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->groupBy('lead_id','name_presales');
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`,GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->where('status','closed')->groupBy('lead_id','name_presales');
 
         $leadsnow = DB::table('sales_lead_register')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -2540,6 +2540,10 @@ class ReportController extends Controller
         }
 
         return view('report/report_range', compact('leads','lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years'))->with(['initView'=> $this->initMenuBase()]);
+    }
+
+    public function filter_sales_report(Request $req){
+        return user::where('nik',$req->nik)->first()->name;
     }
 
     public function total_deal_price(Request $request){
