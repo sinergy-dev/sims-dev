@@ -1625,7 +1625,7 @@ class TicketingController extends Controller
 						$join->on('ticketing__activity.id','=','open_activity_filtered.open_activity');
 					})
 					->orderBy('ticketing__activity.id_ticket','ASC')
-					->limit(100);
+					->limit($limitQuery);
 			},'open_activity_detail')
 			->selectRaw("`open_activity_detail`.`id_ticket`")
 		    ->selectRaw("IFNULL(`ticketing__detail`.`ticket_number_3party`,'-') AS `ticket_number_3party`")
