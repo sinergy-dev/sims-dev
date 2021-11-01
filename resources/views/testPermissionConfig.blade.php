@@ -517,6 +517,37 @@ Permission Config
 		</div>
 	</div>
 
+	<div class="modal fade" id="modal-config-feature-item">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Add New Feature Item</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Item ID</label>
+						<input type="" name="" class="form-control" id="id-feature-item" placeholder="ex: 'btn_presnce_personal'">
+					</div>
+					<div class="form-group">
+						<label>Group</label>
+						<input type="" name="" class="form-control" id="group-feature-item" placeholder="ex: 'presence_personal'">
+					</div>
+					<div class="form-group">
+						<label>Description</label>
+						<textarea class="form-control" id="description-feature-item" placeholder="ex: Button presence personal"></textarea>
+					</div>					
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="addConfigFeatureItem()">Create</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="modal fade" id="modal-add-feature">
 		<div class="modal-dialog">
 			<div class="modal-content">
