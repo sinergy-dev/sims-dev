@@ -494,19 +494,19 @@ Permission Config
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Name</label>
-						<input type="" name="" class="form-control text-capitalize" id="name-feature">
+						<input type="" name="" class="form-control text-capitalize" id="name-feature" placeholder="ex: 'Presence Personal'">
 					</div>
 					<div class="form-group">
 						<label>Group</label>
-						<input type="" name="" class="form-control text-lowercase" id="group-feature">
+						<input type="" name="" class="form-control" id="group-feature" placeholder="ex: 'Presence'">
 					</div>
 					<div class="form-group">
 						<label>Url</label>
-						<input type="" name="" class="form-control text-lowercase" id="url-feature">
+						<input type="" name="" class="form-control text-lowercase" id="url-feature" placeholder="ex: 'presence/personal'">
 					</div>
 					<div class="form-group">
 						<label>Description</label>
-						<textarea class="form-control" id="description-feature"></textarea>
+						<textarea class="form-control" id="description-feature" placeholder="ex: Digunakan untuk absen personal"></textarea>
 					</div>					
 				</div>
 				<div class="modal-footer">
