@@ -736,6 +736,12 @@ Permission Config
 				data:{
 					group:group
 				},
+				beforeSend: function(){
+					if($.fn.dataTable.isDataTable("#featureItemTable")){
+						dataTableFeatureItem.destroy();
+						$("#featureItemTable").empty();
+					}
+				},
 				success:function(result){
 					dataTableFeatureItem = $("#featureItemTable").DataTable({
 						data: result.data,
