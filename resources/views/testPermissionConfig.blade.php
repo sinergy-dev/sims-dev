@@ -132,7 +132,7 @@ Permission Config
 								<a href="#config_fature" data-toggle="tab" onclick="changeTab('feature')">Configure Feature</a>
 							</li>
 							<li>
-								<a href="#config_fature_item" data-toggle="tab" onclick="changeTab('feature')">Configure Feature Item</a>
+								<a href="#config_fature_item" data-toggle="tab" onclick="changeTab('feature_item')">Configure Feature Item</a>
 							</li>
 							{{-- <li class="pull-right"> --}}
 								{{-- <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-add-role">Change User Role</button> --}}
