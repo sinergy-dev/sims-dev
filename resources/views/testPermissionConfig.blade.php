@@ -777,17 +777,26 @@ Permission Config
 				},
 				complete:function(){
 					$('.featureItemCheck').click(function() {
+						console.log("heyyyyy")
 						var data = this.id
 						changeFeatureItem(data.split("-")[0],data.split("-")[1])
 					});
 				}
-			})
-			
+			})	
 		}
 
-		getFeatureItem("all")
+		getFeatureItemByRoleGroup("All")
+
+		function getFeatureItemByFeatureItem(group){
+			if(group == "All"){
+				$("#featureItemTable").DataTable().search("").draw();
+			} else {
+				$("#featureItemTable").DataTable().search(group).draw();
+			}
+		}
 
 		function changeFeatureItem(role,feature){
+			console.log(feature)
 			$.ajax({
 				type:"GET",
 				url:"permission/changeFeatureItem",
