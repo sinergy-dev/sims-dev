@@ -128,9 +128,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('permission/getFeature','TestController@getFeature');
 	Route::get('permission/addConfigRoles','TestController@addConfigRoles');
 	Route::get('permission/addConfigFeature','TestController@addConfigFeature');
+	Route::get('permission/addConfigFeatureItem','TestController@addConfigFeatureItem');
 	Route::get('permission/getRoleDetail','TestController@getRoleDetail');
 	Route::get('permission/getFeatureItem','TestController@getFeatureItem');
-	Route::get('permission/getFeatureItemParameter','TestController@getFeatureItemParameter');
+	Route::get('permission/getFeatureItemParameterByRoleGroup','TestController@getFeatureItemParameterByRoleGroup');
+	Route::get('permission/getFeatureItemParameterByFeatureItem','TestController@getFeatureItemParameterByFeatureItem');
 
 	Route::get('/data/{id}', 'ImplementationController@get');
 	Route::get('/data_pmo/{id_pmo}', 'PMOController@getGantt');
