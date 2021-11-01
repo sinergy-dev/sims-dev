@@ -1073,6 +1073,22 @@ Permission Config
 			})
 		}
 
+		function addConfigFeatureItem(){
+			$.ajax({
+				type:"GET",
+				url:"{{url('permission/addConfigFeatureItem')}}",
+				data:{
+					item_id:$("#id-feature-item").val(),
+					group:$("#group-feature-item").val(),
+					description:$("#description-feature-item").val(),
+				},
+				success: function(result) {
+					// console.log(result)
+					$("#modal-config-feature-item").modal('hide')
+				}
+			})
+		}
+
 		function editRoles(id){
 			$.ajax({
 				type:"GET",
