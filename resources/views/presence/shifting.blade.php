@@ -213,7 +213,7 @@ Presence Shifting
 					</div>
 					<div class="box-body" id="listName" style="display: none;">
 						<p id="name"></p>
-						<ul class="nav nav-stacked" id="ulUser"></ul>
+						<ul class="nav nav-stacked" id="ulUser" style="display:none"></ul>
 						<br>
 						<button class="btn btn-default" id="buttonBack">Back</button>
 					</div>
