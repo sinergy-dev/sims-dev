@@ -290,10 +290,11 @@ Permission Config
 							<div class="tab-pane" id="config_fature_item">
 								<div class="row">
 									<dir class="col-md-8" style=" margin-top: 0px;">
-										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-feature">
+										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-feature-item">
 											Add Feature Item
 										</button>
-										<select class="form-control select2" id="selectGroupFeatureItem" style="width: 100px"></select>
+										<select class="form-control select2" id="filterByRoleGroup" style="width: 140px"></select>
+										<select class="form-control select2" id="filterByFeature" style="width: 180px"></select>
 									</dir>
 									<dir class="col-md-4 text-right" style=" margin-top: 0px;">
 										<div class="input-group pull-right">
