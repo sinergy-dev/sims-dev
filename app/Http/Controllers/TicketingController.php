@@ -1616,7 +1616,7 @@ class TicketingController extends Controller
         	->whereRaw("`date_add` BETWEEN '" . $request->start . "' AND '" . $request->end . "'")
         	->groupBy('id_ticket');
 
-		$data = DB::table(function($query) use ($open_activity_filtered){
+		$data = DB::table(function($query) use ($open_activity_filtered,$limitQuery){
 				$query->from('ticketing__activity')
 					->select('ticketing__activity.id_ticket')
 					->selectRaw("`ticketing__activity`.`date` AS `open_date`")
