@@ -193,7 +193,7 @@ Presence Shifting
 				<a href="{{url('presence/shifting')}}">Shifting</a>
 			</li>
 		</ol>
-		<br>
+		<br id="newLineModify" style="display:none">
 	</section>
 
 	<section class="content">
