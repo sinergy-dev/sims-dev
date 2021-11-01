@@ -1594,7 +1594,9 @@ class TicketingController extends Controller
         		$join->on('ticketing__activity.id','=','latest_activity_filtered.latest_activity');
         	})
         	->orderBy('ticketing__activity.id_ticket','ASC')
-        	->limit(100);
+        	->limit($limitQuery);
+
+        // return $latest_activity_detail->get();
 
         $ticket_filtered = $ticketing_activity_filtered;
 
