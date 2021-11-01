@@ -810,17 +810,35 @@ Permission Config
 			})
 		}
 
-		$("#selectGroupFeatureItem").change(function(){
-			console.log($("#selectGroupFeatureItem").val())
-			getFeatureItem($("#selectGroupFeatureItem").val())
+		$("#filterByRoleGroup").change(function(){
+			console.log($("#filterByRoleGroup").val())
+			getFeatureItemByRoleGroup($("#filterByRoleGroup").val())
 		})
 		
 
 		$.ajax({
 			type:"GET",
-			url:"{{url('permission/getFeatureItemParameter')}}",
+			url:"{{url('permission/getFeatureItemParameterByRoleGroup')}}",
 			success:function(result){
-				$("#selectGroupFeatureItem").select2({
+				$("#filterByRoleGroup").select2({
+					placeholder: "Filter by Position",
+					data:result
+				})
+			}
+		})
+
+		$("#filterByFeature").change(function(){
+			console.log($("#filterByFeature").val())
+			getFeatureItemByFeatureItem($("#filterByFeature").val())
+		})
+		
+
+		$.ajax({
+			type:"GET",
+			url:"{{url('permission/getFeatureItemParameterByFeatureItem')}}",
+			success:function(result){
+				$("#filterByFeature").select2({
+					placeholder: "Filter by Feature Item",
 					data:result
 				})
 			}
