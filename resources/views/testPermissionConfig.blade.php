@@ -725,8 +725,8 @@ Permission Config
 			]
 		});
 		var dataTableFeatureItem;
-		function getFeatureItem(group){
-			if(group != "all"){
+		function getFeatureItemByRoleGroup(group){
+			if(group != "All"){
 				dataTableFeatureItem.destroy();
 				$("#featureItemTable").empty();
 			}
