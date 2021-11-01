@@ -174,10 +174,10 @@ Presence Shifting
 		<h1>
 			Precense Shifting
 		</h1>
-		<a href="#" class="pull-right btn-box-tool text-red pull-left" data-toggle="modal" data-target="#modal-addusershifting">
+		<a href="#" class="pull-right btn-box-tool text-red pull-left" data-toggle="modal" data-target="#modal-addusershifting" id="buttonAddUserShifting" style="display:none">
 			<i class="fa fa-plus"></i> Modify User Shifting
 		</a>
-		<a href="#" class="pull-right btn-box-tool text-green pull-left" data-toggle="modal" data-target="#modal-settingOption">
+		<a href="#" class="pull-right btn-box-tool text-green pull-left" data-toggle="modal" data-target="#modal-settingOption" id="buttonEditShiftingOption" style="display:none">
 			<i class="fa fa-plus"></i> Modify Shifting Option
 		</a>					
 		<ol class="breadcrumb">
