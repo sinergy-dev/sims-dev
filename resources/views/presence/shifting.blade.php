@@ -381,6 +381,15 @@ Presence Shifting
 
 @section('script')
 <script type="text/javascript">
+	$(document).ready(function(){
+		var accesable = @json($feature_item);
+		console.log(accesable)
+	    accesable.forEach(function(item,index){
+	      $("#" + item).show()
+	      $("." + item).show()
+	    })
+	})
+
 	// Script yang import dari CDN ato Local ada di sini
 	var globalIdUser = 0;
 	var globalProject = 0;
