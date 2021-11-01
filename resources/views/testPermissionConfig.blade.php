@@ -467,7 +467,7 @@ Permission Config
 					</div>
 					<div class="form-group">
 						<label>Group</label>
-						<input type="" name="" class="form-control text-lowercase" id="group-config">
+						<input type="" name="" class="form-control" id="group-config">
 					</div>
 					<div class="form-group">
 						<label>Description</label>
