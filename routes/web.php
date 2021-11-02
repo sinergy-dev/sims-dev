@@ -13,11 +13,6 @@
 
 Auth::routes();
 
-// hahahahahahaha
-// hahahahahahaha2
-// hahahahahahaha3
-// hahahahahahaha4
-
 Route::post('/update_result', 'SalesController@update_result');
 Route::post('/update_result2', 'SalesController@update_result');
 Route::post('/update_result2a', 'SalesController@update_result');
@@ -25,8 +20,6 @@ Route::post('/update_result3', 'SalesController@update_result');
 Route::post('/update_result4', 'SalesController@update_result');
 Route::post('/update_result5', 'SalesController@update_result');
 Route::get('testBladeNew','TestController@testBladeNew');
-
-//ghghgjhgjhgjhgjhgjhgjgj
 
 Route::get('/testEmailTrap',function(){
 	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
@@ -94,6 +87,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/deleteLead', 'SalesLeadController@destroy');
 	Route::get('project/getProductTechTagDetail', 'SalesLeadController@getProductTechTagDetail');
 	Route::get('project/getCustomerByLead', 'SalesLeadController@getCustomerbyLead');
+	Route::get('project/filterCountLead','SalesLeadController@filterCountLead');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
 
