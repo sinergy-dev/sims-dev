@@ -76,118 +76,137 @@ class SalesLeadController extends Controller
 
         if($ter != null){
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-                $total_lead = $total_lead->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                $count_lead = $total_lead->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
 
-                $total_open = $total_open->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                $count_open = $total_open->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
 
-                $total_sd = $total_sd->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                $count_sd = $total_sd->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
 
-                $total_tp = $total_tp->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                $count_tp = $total_tp->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
 
-                $total_win = $total_win->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                $count_win = $total_win->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
 
-                $total_lose = $total_lose->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                $count_lose = $total_lose->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
             } else if ($div == 'SALES') {
-                $total_lead = $total_lead->where('users.id_territory',$ter)
+                $count_lead = $total_lead->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
 
-                $total_open = $total_open->where('users.id_territory',$ter)
+                $count_open = $total_open->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
 
-                $total_sd = $total_sd->where('users.id_territory',$ter)
+                $count_sd = $total_sd->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
 
-                $total_tp = $total_tp->where('users.id_territory',$ter)
+                $count_tp = $total_tp->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
 
-                $total_win = $total_win->where('users.id_territory',$ter)
+                $count_win = $total_win->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
 
-                $total_lose = $total_lose->where('users.id_territory',$ter)
+                $count_lose = $total_lose->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
             } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-                $total_lead = $total_lead->where('users.id_company','1')
+                $count_lead = $total_lead->where('users.id_company','1')
                             ->where('result','OPEN')
                             ->count('lead_id');
 
-                $total_open = $total_open->where('users.id_company','1')
+                $count_open = $total_open->where('users.id_company','1')
                             ->count('lead_id');
 
-                $total_sd = $total_sd->where('users.id_company','1')
+                $count_sd = $total_sd->where('users.id_company','1')
                             ->count('lead_id');
 
-                $total_tp = $total_tp->where('users.id_company','1')
+                $count_tp = $total_tp->where('users.id_company','1')
                             ->count('lead_id');
 
-                $total_win = $total_win->where('users.id_company','1')
+                $count_win = $total_win->where('users.id_company','1')
                             ->count('lead_id');
 
-                $total_lose = $total_lose->where('users.id_company','1')
+                $count_lose = $total_lose->where('users.id_company','1')
                             ->count('lead_id');
             } else {
-                $total_lead = $total_lead->where('users.id_territory',$ter)
+                $count_lead = $total_lead->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
 
-                $total_open = $total_open->where('users.id_territory',$ter)
+                $count_open = $total_open->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
 
-                $total_sd = $total_sd->where('users.id_territory',$ter)
+                $count_sd = $total_sd->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
 
-                $total_tp = $total_tp->where('users.id_territory',$ter)
+                $count_tp = $total_tp->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
 
-                $total_win = $total_win->where('users.id_territory',$ter)
+                $count_win = $total_win->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
 
-                $total_lose = $total_lose->where('users.id_territory',$ter)
+                $count_lose = $total_lose->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
             }             
         } else {
-            $total_lead = $total_lead->count('lead_id');
+            $count_lead = $total_lead->count('lead_id');
 
-            $total_open = $total_open->count('lead_id');
+            $count_open = $total_open->count('lead_id');
 
-            $total_sd = $total_sd->count('lead_id');
+            $count_sd = $total_sd->count('lead_id');
 
-            $total_tp = $total_tp->count('lead_id');
+            $count_tp = $total_tp->count('lead_id');
 
-            $total_win = $total_win->count('lead_id');
+            $count_win = $total_win->count('lead_id');
 
-            $total_lose = $total_lose->count('lead_id');
+            $count_lose = $total_lose->count('lead_id');
+
+            $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+
+            $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+            $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+            $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+            $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+            $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
+
         }
 
         return collect([
-            'lead'=>$total_lead,
-            'open'=>$total_open,
-            'sd'=>$total_sd,
-            'tp'=>$total_tp,
-            'win'=>$total_win,
-            'lose'=>$total_lose
+            'lead'=>$count_lead,
+            'open'=>$count_open,
+            'sd'=>$count_sd,
+            'tp'=>$count_tp,
+            'win'=>$count_win,
+            'lose'=>$count_lose,
+            'amount_lead'=>$sum_amount_lead->amount_lead,
+            'amount_open'=>$sum_amount_open->amount_open,
+            'amount_sd'=>$sum_amount_sd->amount_sd,
+            'amount_tp'=>$sum_amount_tp->amount_tp,
+            'amount_win'=>$sum_amount_win->amount_win,
+            'amount_lose'=>$sum_amount_lose->amount_lose
         ]);
     }
 
@@ -442,6 +461,264 @@ class SalesLeadController extends Controller
 
         return array("data"=>$leads->get());
 
+    }
+
+     public function filterCountLead(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
+
+        $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
+                        ->groupBy('lead_id');
+
+        $getListTechTag = DB::table('tb_technology_tag')->join('tb_technology_tag_relation', 'tb_technology_tag_relation.id_tech_tag', '=', 'tb_technology_tag.id')
+                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech`'))
+                        ->groupBy('lead_id');
+
+        $total_lead = DB::table('sales_lead_register')
+                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                })
+                ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                    $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                })
+                ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                    $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                })
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                ->where('sales_lead_register.result','!=','hmm');
+
+        $total_open = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->where('sales_lead_register.result','');
+
+        $total_sd = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->where('sales_lead_register.result','SD');
+
+        $total_tp = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->where('sales_lead_register.result','TP');
+
+        $total_win = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->where('sales_lead_register.result','WIN');
+
+        $total_lose = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->where('sales_lead_register.result','LOSE');
+
+        if(isset($request->year)){
+            $total_lead->whereIn('year',$request->year);
+            $total_open->whereIn('year',$request->year);
+            $total_sd->whereIn('year',$request->year);
+            $total_tp->whereIn('year',$request->year);
+            $total_win->whereIn('year',$request->year);
+            $total_lose->whereIn('year',$request->year);
+        }
+
+        if(isset($request->territory)){
+            $total_lead->whereIn('id_territory',$request->territory);
+            $total_open->whereIn('id_territory',$request->territory);
+            $total_sd->whereIn('id_territory',$request->territory);
+            $total_tp->whereIn('id_territory',$request->territory);
+            $total_win->whereIn('id_territory',$request->territory);
+            $total_lose->whereIn('id_territory',$request->territory);
+        }
+
+        if(isset($request->company)){
+            $total_lead->whereIn('id_company',$request->company);
+            $total_open->whereIn('id_company',$request->company);
+            $total_sd->whereIn('id_company',$request->company);
+            $total_tp->whereIn('id_company',$request->company);
+            $total_win->whereIn('id_company',$request->company);
+            $total_lose->whereIn('id_company',$request->company);
+        }
+
+        // if(isset($request->result)){
+        //     if(in_array("null", $request->result)){
+        //         $total_lead->whereIn('sales_lead_register.result',array_merge($request->result,['']));
+        //         $total_open->whereIn('sales_lead_register.result',array_merge($request->result,['']));
+        //         $total_sd->whereIn('sales_lead_register.result',array_merge($request->result,['']));
+        //         $total_tp->whereIn('sales_lead_register.result',array_merge($request->result,['']));
+        //         $total_win->whereIn('sales_lead_register.result',array_merge($request->result,['']));
+        //         $total_lose->whereIn('sales_lead_register.result',array_merge($request->result,['']));
+        //     } else {
+        //         if ($request->result == 'OPEN') {
+        //             $total_lead->whereIn('sales_lead_register.result',$request->result);
+        //         }else if ($request->result == '') {
+        //             $total_open->whereIn('sales_lead_register.result',$request->result);
+                    
+        //         }else if ($request->result == 'SD') {
+        //             $total_sd->whereIn('sales_lead_register.result',$request->result);
+        //             # code...
+        //         }else if ($request->result == 'TP') {
+        //             $total_tp->whereIn('sales_lead_register.result',$request->result);
+        //             # code...
+        //         }else if ($request->result == 'WIN') {
+        //             $total_win->whereIn('sales_lead_register.result',$request->result);
+        //             # code...
+        //         }else if ($request->result == 'LOSE') {
+        //             $total_lose->whereIn('sales_lead_register.result',$request->result);
+        //             # code...
+        //         }
+        //     }
+        // }
+
+        if (isset($request->sales_name)) {
+            $total_lead->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_open->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_sd->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_tp->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_win->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_lose->whereIn('sales_lead_register.nik',$request->sales_name);
+            
+        }
+
+        if (isset($request->presales_name)) {
+            $total_lead->whereIn('nik_presales',$request->presales_name);
+            $total_open->whereIn('nik_presales',$request->presales_name);
+            $total_sd->whereIn('nik_presales',$request->presales_name);
+            $total_tp->whereIn('nik_presales',$request->presales_name);
+            $total_win->whereIn('nik_presales',$request->presales_name);
+            $total_lose->whereIn('nik_presales',$request->presales_name);  
+        }
+
+        if (isset($request->product_tag)) {
+            $total_lead->whereIn('id_product_tag',$request->product_tag);
+            $total_open->whereIn('id_product_tag',$request->product_tag);
+            $total_sd->whereIn('id_product_tag',$request->product_tag);
+            $total_tp->whereIn('id_product_tag',$request->product_tag);
+            $total_win->whereIn('id_product_tag',$request->product_tag);
+            $total_lose->whereIn('id_product_tag',$request->product_tag); 
+        }
+
+        if (isset($request->tech_tag)) {
+            $total_lead->whereIn('id_tech',$request->tech_tag);
+            $total_open->whereIn('id_tech',$request->tech_tag);
+            $total_sd->whereIn('id_tech',$request->tech_tag);
+            $total_tp->whereIn('id_tech',$request->tech_tag);
+            $total_win->whereIn('id_tech',$request->tech_tag);
+            $total_lose->whereIn('id_tech',$request->tech_tag);
+        }
+        
+        if (isset($request->customer)) {
+            $total_lead->whereIn('tb_contact.id_customer',$request->customer);
+            $total_open->whereIn('tb_contact.id_customer',$request->customer);
+            $total_sd->whereIn('tb_contact.id_customer',$request->customer);
+            $total_tp->whereIn('tb_contact.id_customer',$request->customer);
+            $total_win->whereIn('tb_contact.id_customer',$request->customer);
+            $total_lose->whereIn('tb_contact.id_customer',$request->customer);
+        }
+
+        if($ter != null){
+            if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            } else if ($div == 'SALES') {
+            } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+               
+            } else {
+
+            }             
+        } else {
+            $count_lead = $total_lead->count('sales_lead_register.lead_id');
+
+            $count_open = $total_open->where('result','')->count('sales_lead_register.lead_id');
+
+            $count_sd = $total_sd->count('sales_lead_register.lead_id');
+
+            $count_tp = $total_tp->where('result','TP')->count('sales_lead_register.lead_id');
+
+            $count_win = $total_win->where('result','WIN')->count('sales_lead_register.lead_id');
+
+            $count_lose = $total_lose->where('result','LOSE')->count('sales_lead_register.lead_id');
+
+            $sum_amount_lead = $total_lead->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) AS amount_lead'))->first();
+
+            $sum_amount_open = $total_open->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_open'))->first();
+
+            $sum_amount_sd = $total_sd->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_sd'))->first();
+
+            $sum_amount_tp = $total_tp->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_tp'))->first();
+
+            $sum_amount_win = $total_win->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_win'))->first();
+
+            $sum_amount_lose = $total_lose->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_lose'))->first();
+
+        }
+
+        return collect([
+            'lead'=>$count_lead,
+            'open'=>$count_open,
+            'sd'=>$count_sd,
+            'tp'=>$count_tp,
+            'win'=>$count_win,
+            'lose'=>$count_lose,
+            'amount_lead'=>$sum_amount_lead->amount_lead,
+            'amount_open'=>$sum_amount_open->amount_open,
+            'amount_sd'=>$sum_amount_sd->amount_sd,
+            'amount_tp'=>$sum_amount_tp->amount_tp,
+            'amount_win'=>$sum_amount_win->amount_win,
+            'amount_lose'=>$sum_amount_lose->amount_lose
+        ]);
     }
 
     public function update_lead_register(Request $request)
