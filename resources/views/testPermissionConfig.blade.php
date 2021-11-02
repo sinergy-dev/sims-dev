@@ -132,7 +132,7 @@ Permission Config
 								<a href="#config_fature" data-toggle="tab" onclick="changeTab('feature')">Configure Feature</a>
 							</li>
 							<li>
-								<a href="#config_fature_item" data-toggle="tab" onclick="changeTab('feature')">Configure Feature Item</a>
+								<a href="#config_fature_item" data-toggle="tab" onclick="changeTab('feature_item')">Configure Feature Item</a>
 							</li>
 							{{-- <li class="pull-right"> --}}
 								{{-- <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal-add-role">Change User Role</button> --}}
@@ -290,10 +290,11 @@ Permission Config
 							<div class="tab-pane" id="config_fature_item">
 								<div class="row">
 									<dir class="col-md-8" style=" margin-top: 0px;">
-										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-feature">
+										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-feature-item">
 											Add Feature Item
 										</button>
-										<select class="form-control select2" id="selectGroupFeatureItem" style="width: 100px"></select>
+										<select class="form-control select2" id="filterByRoleGroup" style="width: 140px"></select>
+										<select class="form-control select2" id="filterByFeature" style="width: 180px"></select>
 									</dir>
 									<dir class="col-md-4 text-right" style=" margin-top: 0px;">
 										<div class="input-group pull-right">
@@ -466,7 +467,7 @@ Permission Config
 					</div>
 					<div class="form-group">
 						<label>Group</label>
-						<input type="" name="" class="form-control text-lowercase" id="group-config">
+						<input type="" name="" class="form-control" id="group-config">
 					</div>
 					<div class="form-group">
 						<label>Description</label>
@@ -493,24 +494,55 @@ Permission Config
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Name</label>
-						<input type="" name="" class="form-control text-capitalize" id="name-feature">
+						<input type="" name="" class="form-control text-capitalize" id="name-feature" placeholder="ex: 'Presence Personal'">
 					</div>
 					<div class="form-group">
 						<label>Group</label>
-						<input type="" name="" class="form-control text-lowercase" id="group-feature">
+						<input type="" name="" class="form-control" id="group-feature" placeholder="ex: 'Presence'">
 					</div>
 					<div class="form-group">
 						<label>Url</label>
-						<input type="" name="" class="form-control text-lowercase" id="url-feature">
+						<input type="" name="" class="form-control text-lowercase" id="url-feature" placeholder="ex: 'presence/personal'">
 					</div>
 					<div class="form-group">
 						<label>Description</label>
-						<textarea class="form-control" id="description-feature"></textarea>
+						<textarea class="form-control" id="description-feature" placeholder="ex: Digunakan untuk absen personal"></textarea>
 					</div>					
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-primary" onclick="addConfigFeature()">Create</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-config-feature-item">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Add New Feature Item</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label>Item ID</label>
+						<input type="" name="" class="form-control" id="id-feature-item" placeholder="ex: 'btn_presnce_personal'">
+					</div>
+					<div class="form-group">
+						<label>Group</label>
+						<input type="" name="" class="form-control" id="group-feature-item" placeholder="ex: 'presence_personal'">
+					</div>
+					<div class="form-group">
+						<label>Description</label>
+						<textarea class="form-control" id="description-feature-item" placeholder="ex: Button presence personal"></textarea>
+					</div>					
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="addConfigFeatureItem()">Create</button>
 				</div>
 			</div>
 		</div>
@@ -693,8 +725,8 @@ Permission Config
 			]
 		});
 		var dataTableFeatureItem;
-		function getFeatureItem(group){
-			if(group != "all"){
+		function getFeatureItemByRoleGroup(group){
+			if(group != "All"){
 				dataTableFeatureItem.destroy();
 				$("#featureItemTable").empty();
 			}
@@ -703,6 +735,12 @@ Permission Config
 				url:"{{url('permission/getFeatureItem')}}",
 				data:{
 					group:group
+				},
+				beforeSend: function(){
+					if($.fn.dataTable.isDataTable("#featureItemTable")){
+						dataTableFeatureItem.destroy();
+						$("#featureItemTable").empty();
+					}
 				},
 				success:function(result){
 					dataTableFeatureItem = $("#featureItemTable").DataTable({
@@ -739,17 +777,26 @@ Permission Config
 				},
 				complete:function(){
 					$('.featureItemCheck').click(function() {
+						console.log("heyyyyy")
 						var data = this.id
 						changeFeatureItem(data.split("-")[0],data.split("-")[1])
 					});
 				}
-			})
-			
+			})	
 		}
 
-		getFeatureItem("all")
+		getFeatureItemByRoleGroup("All")
+
+		function getFeatureItemByFeatureItem(group){
+			if(group == "All"){
+				$("#featureItemTable").DataTable().search("").draw();
+			} else {
+				$("#featureItemTable").DataTable().search(group).draw();
+			}
+		}
 
 		function changeFeatureItem(role,feature){
+			console.log(feature)
 			$.ajax({
 				type:"GET",
 				url:"permission/changeFeatureItem",
@@ -763,17 +810,35 @@ Permission Config
 			})
 		}
 
-		$("#selectGroupFeatureItem").change(function(){
-			console.log($("#selectGroupFeatureItem").val())
-			getFeatureItem($("#selectGroupFeatureItem").val())
+		$("#filterByRoleGroup").change(function(){
+			console.log($("#filterByRoleGroup").val())
+			getFeatureItemByRoleGroup($("#filterByRoleGroup").val())
 		})
 		
 
 		$.ajax({
 			type:"GET",
-			url:"{{url('permission/getFeatureItemParameter')}}",
+			url:"{{url('permission/getFeatureItemParameterByRoleGroup')}}",
 			success:function(result){
-				$("#selectGroupFeatureItem").select2({
+				$("#filterByRoleGroup").select2({
+					placeholder: "Filter by Position",
+					data:result
+				})
+			}
+		})
+
+		$("#filterByFeature").change(function(){
+			console.log($("#filterByFeature").val())
+			getFeatureItemByFeatureItem($("#filterByFeature").val())
+		})
+		
+
+		$.ajax({
+			type:"GET",
+			url:"{{url('permission/getFeatureItemParameterByFeatureItem')}}",
+			success:function(result){
+				$("#filterByFeature").select2({
+					placeholder: "Filter by Feature Item",
 					data:result
 				})
 			}
@@ -1004,6 +1069,22 @@ Permission Config
 				success: function(result) {
 					// console.log(result)
 					$("#modal-config-feature").modal('hide')
+				}
+			})
+		}
+
+		function addConfigFeatureItem(){
+			$.ajax({
+				type:"GET",
+				url:"{{url('permission/addConfigFeatureItem')}}",
+				data:{
+					item_id:$("#id-feature-item").val(),
+					group:$("#group-feature-item").val(),
+					description:$("#description-feature-item").val(),
+				},
+				success: function(result) {
+					// console.log(result)
+					$("#modal-config-feature-item").modal('hide')
 				}
 			})
 		}

@@ -174,10 +174,10 @@ Presence Shifting
 		<h1>
 			Precense Shifting
 		</h1>
-		<a href="#" class="pull-right btn-box-tool text-red pull-left" data-toggle="modal" data-target="#modal-addusershifting">
+		<a href="#" class="pull-right btn-box-tool text-red pull-left" data-toggle="modal" data-target="#modal-addusershifting" id="buttonAddUserShifting" style="display:none">
 			<i class="fa fa-plus"></i> Modify User Shifting
 		</a>
-		<a href="#" class="pull-right btn-box-tool text-green pull-left" data-toggle="modal" data-target="#modal-settingOption">
+		<a href="#" class="pull-right btn-box-tool text-green pull-left" data-toggle="modal" data-target="#modal-settingOption" id="buttonEditShiftingOption" style="display:none">
 			<i class="fa fa-plus"></i> Modify Shifting Option
 		</a>					
 		<ol class="breadcrumb">
@@ -193,7 +193,7 @@ Presence Shifting
 				<a href="{{url('presence/shifting')}}">Shifting</a>
 			</li>
 		</ol>
-		<br>
+		<br id="newLineModify" style="display:none">
 	</section>
 
 	<section class="content">
@@ -213,7 +213,7 @@ Presence Shifting
 					</div>
 					<div class="box-body" id="listName" style="display: none;">
 						<p id="name"></p>
-						<ul class="nav nav-stacked" id="ulUser"></ul>
+						<ul class="nav nav-stacked" id="ulUser" style="display:none"></ul>
 						<br>
 						<button class="btn btn-default" id="buttonBack">Back</button>
 					</div>
@@ -381,6 +381,15 @@ Presence Shifting
 
 @section('script')
 <script type="text/javascript">
+	$(document).ready(function(){
+		var accesable = @json($feature_item);
+		console.log(accesable)
+	    accesable.forEach(function(item,index){
+	      $("#" + item).show()
+	      $("." + item).show()
+	    })
+	})
+
 	// Script yang import dari CDN ato Local ada di sini
 	var globalIdUser = 0;
 	var globalProject = 0;

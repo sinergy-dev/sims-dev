@@ -1528,8 +1528,9 @@ class TicketingController extends Controller
 
 	public function getReportNew(Request $request){
 
-		$request->start = Carbon::parse($request->start)->toDateTimeString();
+		$request->start = Carbon::parse($request->start . " 00:00:00")->toDateTimeString();
 		$request->end = Carbon::parse($request->end . " 23:59:59")->toDateTimeString();
+		$limitQuery = 500;
 
 		$ticketing_activity_max = DB::table('ticketing__activity')
 			->selectRaw("MAX(`id`) AS `id`")
@@ -1593,7 +1594,9 @@ class TicketingController extends Controller
         		$join->on('ticketing__activity.id','=','latest_activity_filtered.latest_activity');
         	})
         	->orderBy('ticketing__activity.id_ticket','ASC')
-        	->limit(100);
+        	->limit($limitQuery);
+
+        // return $latest_activity_detail->get();
 
         $ticket_filtered = $ticketing_activity_filtered;
 
@@ -1613,7 +1616,7 @@ class TicketingController extends Controller
         	->whereRaw("`date_add` BETWEEN '" . $request->start . "' AND '" . $request->end . "'")
         	->groupBy('id_ticket');
 
-		$data = DB::table(function($query) use ($open_activity_filtered){
+		$data = DB::table(function($query) use ($open_activity_filtered,$limitQuery){
 				$query->from('ticketing__activity')
 					->select('ticketing__activity.id_ticket')
 					->selectRaw("`ticketing__activity`.`date` AS `open_date`")
@@ -1622,7 +1625,7 @@ class TicketingController extends Controller
 						$join->on('ticketing__activity.id','=','open_activity_filtered.open_activity');
 					})
 					->orderBy('ticketing__activity.id_ticket','ASC')
-					->limit(100);
+					->limit($limitQuery);
 			},'open_activity_detail')
 			->selectRaw("`open_activity_detail`.`id_ticket`")
 		    ->selectRaw("IFNULL(`ticketing__detail`.`ticket_number_3party`,'-') AS `ticket_number_3party`")
