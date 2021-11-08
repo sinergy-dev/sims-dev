@@ -8,6 +8,7 @@ use DB;
 use App\Mail\CutiKaryawan;
 use Mail;
 use App\Cuti;
+use App\CutiDetil;
 
 class rejectCuti extends Command
 {
@@ -59,23 +60,32 @@ class rejectCuti extends Command
             $update->decline_reason = 'Di Reject oleh sistem karena hari cuti telah kadaluwarsa';
             $update->update();
 
+            $decline_id = CutiDetil::where('id_cuti',$data->id_cuti)->get();
+
+            foreach ($decline_id as $decline_id) {
+                $udpate_detil = CutiDetil::where('idtb_cuti_detail',$decline_id->idtb_cuti_detail)->update(array('status' => 'REJECT'));            
+            }
+
             $name_cuti = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
                     ->select('users.name')
                     ->where('id_cuti', $data->id_cuti)->first();
 
-            $hari = DB::table('tb_cuti')
+            $hari_rejected = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','decline_reason','tb_cuti.status',DB::raw('group_concat(date_off) as dates'),DB::raw("(CASE WHEN (status = 'd') THEN 'c' ELSE status END) as status"))
+                ->select(db::raw('count(tb_cuti_detail.id_cuti) as days'),'tb_cuti.date_req','tb_cuti.reason_leave','decline_reason',DB::raw('group_concat(date_off) as dates'),DB::raw("(CASE WHEN (tb_cuti.status = 'd') THEN 'c' ELSE tb_cuti.status END) as status"))
                 ->groupby('tb_cuti_detail.id_cuti')
                 ->where('tb_cuti.id_cuti', $data->id_cuti)
                 ->first();
 
-            $ardetil = explode(',',$hari->dates);
+            $hari = collect(['cuti_accept'=>$hari_rejected]);
+
+            $ardetil = explode(',', $hari_rejected->dates); 
 
             $ardetil_after = "";
 
-            Mail::to($data->email)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti (Rejected by Sistem)'));
+            Mail::to("ladinar@sinergy.co.id")->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti (Rejected by Sistem)'));
+
         }
     }
 }

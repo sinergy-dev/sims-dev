@@ -1209,6 +1209,7 @@ Lead Register
   })
 
 	var countLead = []
+	var sumAmount = []
 	
 	$(document).ready(function(){  	
 		var year = $('#year_dif').val();
@@ -1243,11 +1244,12 @@ Lead Register
 			        prepend = prepend + '<div class="inner">'
 			            prepend = prepend + '<div class="txt_serif stats_item_number">'
 			                prepend = prepend + '<center>'
+			                prepend = prepend + '<h4><b>'+ value.name +'</b></h4>'
 			                    prepend = prepend + '<h3 class="counter" id="count_lead_'+value.index+'"></h3>'
 			                prepend = prepend + '</center>'
 			            prepend = prepend + '</div>'
 			            prepend = prepend + '<center>'
-			                prepend = prepend + '<p>'+ value.name +'</p>'
+			                prepend = prepend + '<h4>Rp.<span id="sum_amount_'+value.index+'"></span></h4>'
 			            prepend = prepend + '</center>'
 			        prepend = prepend + '</div>'
 			        prepend = prepend + '<div class="icon">'
@@ -1259,12 +1261,16 @@ Lead Register
 			prepend = prepend + '</div>'	
 
 			id = "count_lead_"+value.index
+			sumAm = "sum_amount_"+value.index
 			countLead.push(id)
+			sumAmount.push(sumAm)
+			initMoney()
+
 		})
 
 		$("#BoxId").prepend(prepend)
 
-    dashboardCount(year)
+    	dashboardCount(year)
 
 		if (accesable.includes('searchTags')) {
 			$.ajax({
@@ -1400,6 +1406,7 @@ Lead Register
 				$("#filter-result").append(prependFilterStatus)
 				$(".cb-result").click(function(){
 					searchCustom()
+
 				})
 			}
 		})
@@ -1451,9 +1458,14 @@ Lead Register
 			tempCom = tempCom + '&company[]=' + value.value
 		})
 
+		var checklist = false
 		$.each($(".cb-result:checked"),function(key,value){
 			tempResult = tempResult + '&result[]=' + value.value
+			checklist = true
 		})
+
+		console.log(checklist)
+
 
 		tempSearch = tempSearch + '&search=' + $('#searchLead').val()
 
@@ -1461,14 +1473,39 @@ Lead Register
 			clearTimeout(timer);
 		  timer = setTimeout(function() {
 		  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
+
+		  	dashboardCount(temp)
 		  }, 800);
 		}else{
 			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
+			if (checklist == false) {
+				dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer)
+			}
 		}
+
+
 		
 	}
 
 	//dashboard count
+	function initMoneyHeader(){
+		$("#sum_amount_0").mask('000.000.000.000', {reverse: true})
+		$("#sum_amount_1").mask('000.000.000.000', {reverse: true})
+		$("#sum_amount_2").mask('000.000.000.000', {reverse: true})
+		$("#sum_amount_3").mask('000.000.000.000', {reverse: true})
+		$("#sum_amount_4").mask('000.000.000.000', {reverse: true})
+		$("#sum_amount_5").mask('000.000.000.000', {reverse: true})
+	}
+
+	function initRemoveMask(){
+		$("#sum_amount_0").unmask('000.000.000.000', {reverse: true})
+		$("#sum_amount_1").unmask('000.000.000.000', {reverse: true})
+		$("#sum_amount_2").unmask('000.000.000.000', {reverse: true})
+		$("#sum_amount_3").unmask('000.000.000.000', {reverse: true})
+		$("#sum_amount_4").unmask('000.000.000.000', {reverse: true})
+		$("#sum_amount_5").unmask('000.000.000.000', {reverse: true})
+	}
+
 	function dashboardCount(year){	
 		Pace.restart();
 		Pace.track(function() {
@@ -1479,14 +1516,65 @@ Lead Register
 					year:year,
 				},
 				success:function(result){
-					$.each(result,function(){
+					$.each(result,function(){						
 						$("#"+countLead[0]).text(result.lead)
 						$("#"+countLead[1]).text(result.open)
 						$("#"+countLead[2]).text(result.sd)
 						$("#"+countLead[3]).text(result.tp)
 						$("#"+countLead[4]).text(result.win)
 						$("#"+countLead[5]).text(result.lose)
+						$("#"+sumAmount[0]).text(result.amount_lead)
+						$("#"+sumAmount[1]).text(result.amount_open)
+						$("#"+sumAmount[2]).text(result.amount_sd)
+						$("#"+sumAmount[3]).text(result.amount_tp)
+						$("#"+sumAmount[4]).text(result.amount_win)
+						$("#"+sumAmount[5]).text(result.amount_lose)
+
 					})
+
+					initMoneyHeader()
+
+					$('.counter').each(function () {
+					    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
+					    $(this).prop('Counter', 0).animate({
+					      Counter: $(this).text()
+					    }, {
+					      duration: 5000,
+					      step: function (func) {
+					         $(this).text(parseFloat(func).toFixed(size));
+					      }
+					    });
+					});
+				}
+			})
+		})
+	}
+
+	function dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer){	
+		initRemoveMask()
+		Pace.restart();
+		Pace.track(function() {
+			$.ajax({
+				type:"GET",
+				url:"{{url('/project/filterCountLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom  + tempProduct + tempTech + tempCustomer,
+				success:function(result){
+					$.each(result,function(){						
+						$("#"+countLead[0]).text(result.lead)
+						$("#"+countLead[1]).text(result.open)
+						$("#"+countLead[2]).text(result.sd)
+						$("#"+countLead[3]).text(result.tp)
+						$("#"+countLead[4]).text(result.win)
+						$("#"+countLead[5]).text(result.lose)
+						$("#"+sumAmount[0]).text(result.amount_lead)
+						$("#"+sumAmount[1]).text(result.amount_open)
+						$("#"+sumAmount[2]).text(result.amount_sd)
+						$("#"+sumAmount[3]).text(result.amount_tp)
+						$("#"+sumAmount[4]).text(result.amount_win)
+						$("#"+sumAmount[5]).text(result.amount_lose)
+
+					})
+
+					initMoneyHeader()
 
 					$('.counter').each(function () {
 					    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
