@@ -145,13 +145,49 @@
     transition:.3s;
   }
   .shape {
-  stroke-dasharray: 30 30;
-  stroke-dashoffset: -100;
-  stroke-width: 8px;
-  fill: transparent;
-  stroke: #444 !important;
-  border-bottom: 5px solid black;
-  transition: stroke-width 1s, stroke-dashoffset 1s, stroke-dasharray 1s;
+    stroke-dasharray: 30 30;
+    stroke-dashoffset: -100;
+    stroke-width: 8px;
+    fill: transparent;
+    stroke: #444 !important;
+    border-bottom: 5px solid black;
+    transition: stroke-width 1s, stroke-dashoffset 1s, stroke-dasharray 1s;
+  }
+
+  /* The message box is shown when the user clicks on the password field */
+  #message {
+    display:none;
+    background: #f1f1f1;
+    color: #000;
+    position: relative;
+    padding: 20px;
+    margin-top: 10px;
+  }
+
+  #message h5 {
+    padding: 35px;
+  }
+
+  /* Add a green text color and a checkmark when the requirements are right */
+  .valid {
+    color: green;
+  }
+
+  .valid:before {
+    position: relative;
+    left: -2px;
+    content: "✔";
+  }
+
+  /* Add a red text color and an "x" when the requirements are wrong */
+  .invalid {
+    color: red;
+  }
+
+  .invalid:before {
+    position: relative;
+    left: -2px;
+    content: "✖";
   }
 </style>
 @endsection
@@ -456,7 +492,7 @@
       </div>
     </div>
 
-    <div class="modal fade" id="modalEdit" role="dialog">
+  <div class="modal fade" id="modalEdit" role="dialog">
     <div class="modal-dialog modal-md">
       <!-- Modal content-->
       <div class="modal-content">
@@ -464,34 +500,43 @@
           <h4 class="modal-title">Edit Profile</h4>
         </div>
         <div class="modal-body">
-          <form method="POST" enctype="multipart/form-data" action="{{url('changePassword')}}" id="modalEditProfile" name="modalEditProfile">
-            @csrf
-            <input type="text" name="nik_profile" id="nik_profile" value="{{$user_profile->nik}}" hidden> 
+          <!-- <form method="POST" enctype="multipart/form-data" action="{{url('changePassword')}}" id="modalEditProfile" name="modalEditProfile">
+            @csrf -->
+            <input type="text" name="nik_profile" id="nik_change_password" value="{{$user_profile->nik}}" hidden> 
 
             <div class="form-group">
               <label class="margin-top">Current Password</label>
-              <input class="form-control pull-right password" id="current-password" name="current-password" type="Password" required  placeholder="Enter Your Current Password">
+              <input class="form-control" id="current-password" name="current-password" type="Password" required  placeholder="Enter Your Current Password">
                 <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon" id="toggle1"></i> -->
             </div>
 
             <div class="form-group">
               <label class="margin-top">New Password</label>
-              <input class="form-control" id="new-password" name="password" type="Password" required placeholder="Enter New Password">
+              <input class="form-control" id="new-password" name="password" type="Password" placeholder="Enter New Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!$#%]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required onkeypress="psw()">
+
               <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" id="toggle2"></i> -->
             </div>
 
             <div class="form-group">
               <label class="margin-top">Confirm Password</label>
               <input class="form-control" id="new-password-confirm" name="password_confirmation" required type="Password" placeholder="Enter Confirm Password">
-              <h6 style="color: red">*Input must contain at least one digit/lowercase/uppercase/special character letter and be at least eight characters long</h6>
               <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" id="toggle3"></i> -->
             </div> 
-             
-            <div class="modal-footer">
-              <button class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-              <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+
+            <div id="message">
+              <h4>Password must contain the following:</h4>
+              <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+              <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+              <p id="number" class="invalid">A <b>number</b></p>
+              <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+              <p id="char" class="invalid">Minimum <b>1 special character</b></p>
             </div>
-        </form>
+
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
+              <button type="submit" class="btn btn-primary" id="change_password"><i class="fa fa-check"> </i>&nbspSubmit</button>
+            </div>
+        <!-- </form> -->
         </div>
       </div>
     </div>
@@ -505,6 +550,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -571,8 +617,162 @@
 
   $(".btn-edit").click(function(){
   	$("#modalEdit").modal("show");
-  	console.log('coba');
   });
+
+  function psw() {
+    var letter = document.getElementById("letter");
+    var capital = document.getElementById("capital");
+    var number = document.getElementById("number");
+    var length = document.getElementById("length");
+    var myInput = document.getElementById("new-password");
+    var char = document.getElementById("char");
+
+    // myInput.onfocus = function() {
+      document.getElementById("message").style.display = "block";
+    // }
+
+    // When the user starts to type something inside the password field
+    myInput.onkeyup = function() {
+      // Validate lowercase letters
+      var lowerCaseLetters = /[a-z]/g;
+      if(myInput.value.match(lowerCaseLetters)) {  
+        letter.classList.remove("invalid");
+        letter.classList.add("valid");
+      } else {
+        letter.classList.remove("valid");
+        letter.classList.add("invalid");
+      }
+
+      var charLetters = /[!$#%]/g;
+      if(myInput.value.match(charLetters)) {  
+        char.classList.remove("invalid");
+        char.classList.add("valid");
+      } else {
+        char.classList.remove("valid");
+        char.classList.add("invalid");
+      }
+      
+      // Validate capital letters
+      var upperCaseLetters = /[A-Z]/g;
+      if(myInput.value.match(upperCaseLetters)) {  
+        capital.classList.remove("invalid");
+        capital.classList.add("valid");
+      } else {
+        capital.classList.remove("valid");
+        capital.classList.add("invalid");
+      }
+
+      // Validate numbers
+      var numbers = /[0-9]/g;
+      if(myInput.value.match(numbers)) {  
+        number.classList.remove("invalid");
+        number.classList.add("valid");
+      } else {
+        number.classList.remove("valid");
+        number.classList.add("invalid");
+      }
+      
+      // Validate length
+      if(myInput.value.length >= 8) {
+        length.classList.remove("invalid");
+        length.classList.add("valid");
+      } else {
+        length.classList.remove("valid");
+        length.classList.add("invalid");
+      }  
+    }
+  }
+
+  $("#change_password").click(function(){
+    var swalAccept = Swal.fire({
+      title: 'Change Password',
+      text: "Are you sure?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Please Wait..!',
+          text: "It's updating..",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          customClass: {
+            popup: 'border-radius-0',
+          },
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+        $.ajax({
+          type:"POST",
+          url:"{{url('changePassword')}}",
+          data:{
+            "_token": "{{ csrf_token() }}",
+            nik_profile: $("#nik_change_password").val(),
+            current_password: $("#current-password").val(),
+            password: $("#new-password").val(),
+          },
+          beforeSend:function() {
+            $("#new-password").parent().removeClass('has-error')
+            $("#new-password-confirm").parent().removeClass('has-error')
+            $("#current-password").parent().removeClass('has-error')
+          },
+          success: function(result){
+            Swal.showLoading()
+            Swal.fire(
+              'Successfully!',
+              'success'
+            ).then((result) => {
+              if (result.value) {
+                // location.reload()
+                event.preventDefault();
+                document.getElementById('logout-form').submit();
+              }
+            })
+          },
+          error: function(result) {
+            // console.log(result.responseText)
+            Swal.showLoading()
+            Swal.fire(
+              'Oops',
+              result.responseText,
+              'error'
+            ).then((result2) => {
+              if (result2.value) {
+                // location.reload()
+                $("#new-password").val('');
+                $("#current-password").val('');
+                $("#new-password-confirm").val('');
+                var letter = document.getElementById("letter");
+                var capital = document.getElementById("capital");
+                var number = document.getElementById("number");
+                var length = document.getElementById("length");
+                var char = document.getElementById("char");
+
+                letter.classList.add("invalid");
+                capital.classList.add("invalid");
+                number.classList.add("invalid");
+                length.classList.add("invalid");
+                char.classList.add("invalid");
+
+                if(result.responseText == 'Your current password does not matches with the password you provided. Please try again.'){
+                  $("#current-password").parent().addClass('has-error')
+                } else {
+                  $("#new-password").parent().addClass('has-error')
+                  $("#new-password-confirm").parent().addClass('has-error')
+                }
+              }
+            })
+          }
+        }) 
+      }        
+    })
+  })
 
   function readURL(input) {
       if (input.files && input.files[0]) {
