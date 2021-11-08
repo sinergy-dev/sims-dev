@@ -276,7 +276,7 @@ class PrController extends Controller
         }
 
         $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
-        $nom = PR::select('no')->orderBy('created_at','desc')->first();
+        $nom = PR::select('no')->orderBy('no','desc')->first();
 
         $tambah = new PR();
         $tambah->no = $nom->no+1;
@@ -349,6 +349,7 @@ class PrController extends Controller
 
         $sum_all = PR::selectRaw('SUM(`amount`) as `sum_all`')
             ->whereYear('date', date('Y'))
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->first();
 
         $sum_cat = PR::select('category')
@@ -356,6 +357,7 @@ class PrController extends Controller
             ->selectRaw('SUM(`amount`)/' . $sum_all->sum_all . '*100 as `precentage`')
             ->orderBy('precentage','DESC')
             ->whereYear('date', date('Y'))
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->groupBy('category')->get();
 
         return array("label"=>$sum_cat->pluck('category'), "precentage"=>$sum_cat->pluck('precentage'));
@@ -673,7 +675,7 @@ class PrController extends Controller
         $spreadsheet->removeSheetByIndex(0);
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->mergeCells('A1:O1');
+        $sheet->mergeCells('A1:P1');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
@@ -687,19 +689,19 @@ class PrController extends Controller
         $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
         $titleStyle['font']['bold'] = true;
 
-        $sheet->getStyle('A1:O1')->applyFromArray($titleStyle);
+        $sheet->getStyle('A1:P1')->applyFromArray($titleStyle);
         $sheet->setCellValue('A1','Purchase Request');
 
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
-        $sheet->getStyle('A2:O2')->applyFromArray($headerStyle);;
+        $sheet->getStyle('A2:P2')->applyFromArray($headerStyle);;
 
-        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
+        $headerContent = ["No", "NO PR", "POSITION", "TYPE OF LETTER", "MONTH",  "DATE", "KATEGORI", "TO" , "ATTENTION", "TITLE", "PROJECT", "DESCRIPTION", "FROM", "ISSUANCE" ,"ID PROJECT", "AMOUNT"];
         $sheet->fromArray($headerContent,NULL,'A2');
 
         $dataPR = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
             ->Leftjoin('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-            ->select('no_pr','position','type_of_letter', 'month', 'date', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount', 'status')
+            ->select('no_pr','position','type_of_letter', 'month', 'date', 'category', 'to', 'attention', 'title','project','description','user_from.name as user_from','issuance.name as issuance','project_id','amount', 'status')
             ->whereYear('tb_pr.date', $request->year)
             ->get();
 
@@ -708,21 +710,23 @@ class PrController extends Controller
             $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 3));
         }
 
+
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getColumnDimension('E')->setAutoSize(true);
         $sheet->getColumnDimension('F')->setAutoSize(true);
-        $sheet->getColumnDimension('G')->setWidth(35);
-        $sheet->getColumnDimension('H')->setWidth(25);
-        $sheet->getColumnDimension('I')->setWidth(50);
-        $sheet->getColumnDimension('J')->setWidth(25);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(35);
+        $sheet->getColumnDimension('I')->setWidth(25);
+        $sheet->getColumnDimension('J')->setWidth(50);
         $sheet->getColumnDimension('K')->setWidth(25);
-        $sheet->getColumnDimension('L')->setAutoSize(true);
-        $sheet->getColumnDimension('M')->setWidth(25);
-        $sheet->getColumnDimension('N')->setWidth(45);
-        $sheet->getColumnDimension('O')->setWidth(25);
+        $sheet->getColumnDimension('L')->setWidth(25);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setWidth(25);
+        $sheet->getColumnDimension('O')->setWidth(45);
+        $sheet->getColumnDimension('P')->setWidth(25);
 
 
         $fileName = 'Daftar Buku Admin (PR) ' . date('Y') . '.xlsx';
