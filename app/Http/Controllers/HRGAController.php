@@ -3574,13 +3574,6 @@ class HRGAController extends Controller
                     $cuti = $cuti
                         ->where('users.id_division','MSM')
                         ->get();
-                } elseif ($pos == 'OPERATION DIRECTOR') {
-                    $cuti = $cuti
-                        ->where('users.id_position','MANAGER')
-                        ->where('users.id_territory','OPERATION')
-                        ->orwhere('users.id_position','OPERATION DIRECTOR')
-                        ->orwhere('users.id_division','WAREHOUSE')
-                        ->get();
                 } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER'){
                     $cuti = $cuti
                         ->where('users.id_territory','PRESALES')
@@ -3594,21 +3587,14 @@ class HRGAController extends Controller
                         ->where('users.nik',$nik)
                         ->get();
                 }
-            } elseif ($div == 'HR' && $pos == 'HR MANAGER' ) {
+            } elseif ($div == 'HR' && $pos == 'HR MANAGER' || $pos == 'DIRECTOR' || $div == 'TECHNICAL' && $pos == 'MANAGER') {
                 $cuti = $cuti
                     ->where('date_off', '>=', $request->start_date)
                     ->where('date_off', '<=', $request->end_date)
                     ->get();
-            } elseif ($pos == 'DIRECTOR') {
-                $cuti = $cuti
-                    ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null)")
-                    ->get();
             } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'STAFF HR'){
                     $cuti = $cuti
                         ->where('users.nik',$nik)
-                        ->get();
-            } elseif ($div == 'TECHNICAL' && $pos == 'MANAGER') {  
-                $cuti = $cuti->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION')")
                         ->get();
             } else {
                 $cuti = $cuti
