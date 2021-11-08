@@ -1421,24 +1421,16 @@ class HRController extends Controller
 
         $update = User::where('nik',$nik)->first();
 
-        if (!(Hash::check($req->get('current-password'), Auth::user()->password))) {
+        if (!(Hash::check($req->get('current_password'), Auth::user()->password))) {
             // The passwords matches
-            return redirect()->back()->with("alert","Your current password does not matches with the password you provided. Please try again.");
+            // return redirect()->back()->with("alert","Your current password does not matches with the password you provided. Please try again.");
+            return response("Your current password does not matches with the password you provided. Please try again.", 401);
         }
  
-        if(strcmp($req->get('current-password'), $req->get('password')) == 0){
+        if(strcmp($req->get('current_password'), $req->get('password')) == 0){
             //Current password and new password are same
-            return redirect()->back()->with("alert","New Password cannot be same as your current password. Please choose a different password.");
+            return response("New Password cannot be same as your current password. Please choose a different password.", 401);
         }
-
-        $validatedData = $req->validate([
-            'current-password'  => ['required'],
-            'password'      => ['required', 
-               'min:8', 
-               'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/',
-               'confirmed']
-        ]);
-
 
         $update->password = Hash::make($req->get('password'));
 
