@@ -54,6 +54,9 @@
       height: 2px;
     }
 
+    .select2-selection__choice {
+      color: white;
+    }
   </style>
 @endsection
 @section('content')
@@ -115,24 +118,41 @@
           <thead>
             <tr  style="text-align: center;">
               <th>No</th>
-              <!-- <th>Position</th>
-              <th>Type</th>
-              <th>Month</th> -->
+              <th></th>
+              <th></th>
+              <th></th>
               <th>Date</th>
               <th>Category</th>
               <th>To</th>
               <th><div class="truncate">Attention</div></th>
               <th><div class="truncate">Title/Subject</div></th>
-              <!-- <th><div class="truncate">Project</div></th> -->
               <th><div class="truncate">Description</div></th>
               <th>From</th>
-              <!-- <th>Division</th> -->
+              <th></th>
               <th>Issuance</th>
               <th>Project ID</th>
               <th>Amount</th>
-              <!-- <th>Note</th> -->
               <th>Status</th>
               <th>Action</th>
+            </tr>
+            <tr id="status">
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="products-list" name="products-list">
@@ -182,6 +202,9 @@
                       <option value="Tiket">Tiket</option>
                       <option value="Akomodasi">Akomodasi</option>
                       <option value="Swab Test">Swab Test</option>
+                      <option value="Iklan">Iklan</option>
+                      <option value="Ekspedisi">Ekspedisi</option>
+                      <option value="Legal">Legal</option>
                       <option value="Other">Other</option>
                   </select>
                 </div>
@@ -352,13 +375,13 @@
 @endsection
 
 @section('scriptImport')
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <!-- <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script> -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
@@ -475,111 +498,124 @@
          $("#alert").slideUp(300);
     });
 
-    initPrTable();
 
-    function initPrTable() {
-      $("#data_pr").DataTable({
-        "ajax":{
-          "type":"GET",
-          "url":"{{url('getdatapr')}}",
-          "dataSrc": function (json){
+    function initfilter(){
+      $('.search_filter').select2();
+    }
 
-            json.data.forEach(function(data,index){
-              // console.log(data.amount)
-              if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done') {
-                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '"'
-                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
+
+    $("#data_pr").DataTable({
+      "ajax":{
+        "type":"GET",
+        "url":"{{url('getdatapr')}}",
+        "dataSrc": function (json){
+
+          json.data.forEach(function(data,index){
+            if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done') {
+              var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '"'
+              data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
+            } else {
+              data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+            }
+              
+          });
+          return json.data;
+          
+        }
+      },
+      "columns": [
+        { "data": "no_pr" },
+        { "data": "type_of_letter"},
+        { "data": "category"},
+        { "data": "to"},
+        { "data": "date" },
+        { "data": "category"},
+        { "data": "to" },
+        {
+           "render": function ( data, type, row, meta ) {
+              if(row.attention == null){
+                return '<div class="truncate"> - </div>'
               } else {
-                data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+                return '<div class="truncate">' + row.attention + '</div>'
               }
-                
-            });
-            return json.data;
-            
+            }
+        },
+        {
+           "render": function ( data, type, row, meta ) {
+              if (row.title == null) {
+                return '<div class="truncate"> - </div>'
+              } else {
+                return '<div class="truncate">' + row.title + '</div>'                  
+              }
+            }
+        },
+        {
+           "render": function ( data, type, row, meta ) {
+              if (row.description == null) {
+                return '<div class="truncate"> - </div>'
+              } else {
+                return '<div class="truncate">' + row.description + '</div>'                  
+              }
+            }
+        },
+        { "data": "user_from" },
+        { "data": "status" },
+        { "data": "issuance" },
+        {
+           "render": function ( data, type, row, meta ) {
+              if (row.project_id == null) {
+                return '<div class="truncate"> - </div>'
+              } else {
+                return '<div class="truncate">' + row.project_id + '</div>'                  
+              }
+            }
+        },
+        { 
+          render: function ( data, type, row ) {
+            return new Intl.NumberFormat('id').format(row.amount)
           }
         },
-        "columns": [
-          { "data": "no_pr" },
-          // { "data": "position" },
-          // { "data": "type_of_letter" },
-          // { "data": "month" },
-          { "data": "date" },
-          { "data": "category"},
-          { "data": "to" },
-          {
-             "render": function ( data, type, row, meta ) {
-                if(row.attention == null){
-                  return '<div class="truncate"> - </div>'
-                } else {
-                  return '<div class="truncate">' + row.attention + '</div>'
-                }
-              }
-          },
-          {
-             "render": function ( data, type, row, meta ) {
-                if (row.title == null) {
-                  return '<div class="truncate"> - </div>'
-                } else {
-                  return '<div class="truncate">' + row.title + '</div>'                  
-                }
-              }
-          },
-          // {
-          //    "render": function ( data, type, row, meta ) {
-          //       if (row.project == null) {
-          //         return '<div class="truncate"> - </div>'
-          //       } else {
-          //         return '<div class="truncate">' + row.project + '</div>'                  
-          //       }
-          //     }
-          // },
-          {
-             "render": function ( data, type, row, meta ) {
-                if (row.description == null) {
-                  return '<div class="truncate"> - </div>'
-                } else {
-                  return '<div class="truncate">' + row.description + '</div>'                  
-                }
-              }
-          },
-          { "data": "user_from" },
-          // { "data": "division" },
-          { "data": "issuance" },
-          {
-             "render": function ( data, type, row, meta ) {
-                if (row.project_id == null) {
-                  return '<div class="truncate"> - </div>'
-                } else {
-                  return '<div class="truncate">' + row.project_id + '</div>'                  
-                }
-              }
-          },
-          { 
-            render: function ( data, type, row ) {
-              return new Intl.NumberFormat('id').format(row.amount)
-            }
-          },
-          // { "data": "note" },
-          { "data": "status" },
-          {
-            "className": 'btn_edit',
-            "orderable": false,
-            "data": "btn_edit",
-            "defaultContent": ''
-          },
-        ],
-        "searching": true,
-        "lengthChange": false,
-        "info":true,
-        "scrollX": true,
-        // "scrollCollapse": true,
-        "order": [[ 0, "desc" ]],
-        fixedColumns:   {
-          leftColumns: 1
+        
+        { "data": "status" },
+        {
+          "className": 'btn_edit',
+          "orderable": false,
+          "data": "btn_edit",
+          "defaultContent": ''
         },
-        "pageLength": 20,
-      })
-    }
+      ],
+      'columnDefs' : [
+          { 'visible': false, 'targets': [1,2,3,11] }
+      ],
+      "order": [[ 0, "desc" ]],
+      "responsive":true,
+      "orderCellsTop": true,
+      "pageLength": 20,
+      initComplete: function () {
+        this.api().columns([[1],[2],[3],[11]]).every( function () {
+          var column = this;
+          var title = $(this).text();
+          var select = $('<select class="form-control search_filter" id="kat_drop" style="width:100%" name="kat_drop" ><option value="" selected>Show All '+ title +'</option></select>')
+              .appendTo($("#status").find("th").eq(column.index()))
+              .on('change', function () {
+              var val = $.fn.dataTable.util.escapeRegex(
+              $(this).val());                                     
+              column.search(val ? '^' + val + '$' : '', true, false).draw();
+          });
+
+          console.log(select);
+          column.data().unique().sort().each(function (d, j) {
+              select.append('<option>' + d + '</option>')
+          });
+
+        });
+        initfilter();
+      },
+      "scrollX": true,
+      fixedColumns:   {
+        leftColumns: 1
+      },
+    })
 
     $($.fn.dataTable.tables( true ) ).css('width', '100%');
     $($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
