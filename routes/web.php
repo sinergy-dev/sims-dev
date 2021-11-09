@@ -429,6 +429,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/profile','HRController@edit_password');
 	Route::post('/changePassword','HRController@changePassword');
+	Route::post('/resetPassword', 'HRController@resetPassword');
 	Route::get('/salesproject', 'SalesController@sales_project_index');
 	
 	Route::get('/getPIDIndex','SalesController@getPIDIndex');
