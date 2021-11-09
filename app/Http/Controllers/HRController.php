@@ -950,6 +950,15 @@ class HRController extends Controller
         return redirect()->back()->with('alert', 'Deleted Employee!');
     }
 
+    public function resetPassword(Request $request)
+    {
+        $update = User::where('nik', $request->nik)->first();
+        $update->password = Hash::make('sinergy');
+        $update->update();
+
+        return redirect()->back(); 
+    }
+
     public function user_profile()
     {
         $notif = '';$notifOpen = '';$notifsd = '';$notiftp = '';$ter = '';$user_profile = '';$notifClaim = '';
@@ -1423,7 +1432,6 @@ class HRController extends Controller
 
         if (!(Hash::check($req->get('current_password'), Auth::user()->password))) {
             // The passwords matches
-            // return redirect()->back()->with("alert","Your current password does not matches with the password you provided. Please try again.");
             return response("Your current password does not matches with the password you provided. Please try again.", 401);
         }
  
