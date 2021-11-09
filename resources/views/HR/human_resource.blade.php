@@ -591,7 +591,7 @@ Human Resources
 		        </li>
 		      </ul>
 
-		      <div class="tab-content" id="myTabContentSIP">
+		    <div class="tab-content" id="myTabContentSIP">
 		        <div class="tab-pane active" id="all" role="tabpanel" aria-labelledby="all-tab">
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_all" width="100%" cellspacing="0">
@@ -649,6 +649,7 @@ Human Resources
 
 			                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 			                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+			                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
 			                      </td>
 			                    </tr>
 			                    @endif
@@ -686,6 +687,7 @@ Human Resources
 
 		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
 		                      </td>
 		                    </tr>
 		                    @endif
@@ -721,6 +723,7 @@ Human Resources
 
 		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
 		                      </td>
 		                    </tr>
 		                    @endif
@@ -758,6 +761,7 @@ Human Resources
 
 			                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 			                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+			                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
 			                      </td>
 			                    </tr>
 			                    @endif
@@ -797,6 +801,7 @@ Human Resources
 
 		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
 		                      </td>
 		                    </tr>
 		                    @endif
@@ -829,12 +834,7 @@ Human Resources
 		                      <td>&#8212</td>
 		                      @endif
 		                      <td>
-		                        <!-- <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button> -->
-
 		                        <button class="btn btn-xs btn-primary btn-editan2" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspShow</button>
-
-		                        <!-- <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-		                        <i class="fa fa-trash"></i>&nbspDelete</button></a> -->
 		                      </td>
 		                    </tr>
 		                    @endforeach
@@ -842,7 +842,7 @@ Human Resources
 		                </table>
 		            </div>
 		        </div>
-		      </div>
+		    </div>
 
 		    </div>
 		  </div>
@@ -851,12 +851,6 @@ Human Resources
 		<div class="box">
 		  <div class="box-header with-border">
 		    <h3 class="box-title"><i class="fa fa-table"></i>&nbsp<b>MSP Employees</b></h3>
-
-		    <!-- <div class="box-tools pull-right">
-		      <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-		      </button>
-		      <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-		    </div> -->
 		  </div>
 
 		  <div class="box-body">
@@ -930,8 +924,246 @@ Human Resources
 			  		</div>
 			  	</div>
 		  	@endif
-		    <ul class="nav" id="myTab" role="tablist"></ul>
-		    <div class="table-responsive">
+
+		  	<div class="row">
+		  		<div class="col-md-12">
+		  			<div class="nav-tabs-custom">
+		  				<ul class="nav nav-tabs" id="myTabs" role="tablist">
+					        <li class="nav-item active">
+					          <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all-msp" role="tab" aria-controls="all" aria-selected="true">ALL</a>
+					        </li>
+					        <li class="nav-item">
+					          <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales-msp" role="tab" aria-controls="sales" aria-selected="false">SALES</a>
+					        </li>
+					        <li class="nav-item">
+					          <a class="nav-link" id="operation-tab" data-toggle="tab" href="#operation-msp" role="tab" aria-controls="operation" aria-selected="false">OPERATION</a>
+					        </li>
+					        <li class="nav-item">
+					          <a class="nav-link" id="hr-tab" data-toggle="tab" href="#warehouse-msp" role="tab" aria-controls="hr" aria-selected="false">WAREHOUSE</a>
+					        </li>
+					        <li class="nav-item">
+					          <a class="nav-link" id="resign-tab" data-toggle="tab" href="#resign-msp" role="tab" aria-controls="resign" aria-selected="false">RESIGN</a>
+					        </li>
+					    </ul>
+
+					    <div class="tab-content" id="myTabContentMSP">
+					    	<div class="tab-pane active" id="all-msp" role="tabpanel" aria-labelledby="all-tab">
+					            <div class="table-responsive">
+					                <table class="table table-bordered table-striped dataTable" id="data_all_msp" width="100%" cellspacing="0">
+					                  <thead>
+					                    <tr>
+					                      <th>NIK</th>
+					                      <th>Employees Name</th>
+					                      <th>Position</th>
+					                      <th>Mulai Bekerja</th>
+					                      <th>Status Karyawan</th>
+					                      <th>KTP</th>
+					                      <th>KK</th>
+					                      <th>NPWP</th>
+					                      <th>Attach File</th>
+					                      <!-- <th>NPWP File</th> -->
+					                      <th>Action</th>
+					                    </tr>
+					                  </thead>
+					                  <tbody>
+					                    @foreach($hr_msp as $data)
+						                    <tr>
+						                      <td><?=str_replace('/', '', $data->nik)?></td>
+						                      <td>{{ucwords(strtolower($data->name))}}</td>
+						                      @if($data->id_position != '')
+						                      <td>{{$data->id_division}} {{$data->id_position}}</td>
+						                      @else
+						                      <td>&#8212</td>
+						                      @endif
+						                      <td>{{date('d-m-Y', strtotime($data->date_of_entry))}}</td>
+						                      <td>
+						                      	@if($data->status_kerja == 'Tetap')
+						                      	Karyawan Tetap 
+						                      	@elseif($data->status_kerja == 'Kontrak')
+						                      	Karyawan Kontrak 
+						                      	@else
+						                      	-
+						                      	@endif
+						                      </td>
+						                      <td>
+						                      	{{ $data->no_ktp }}
+						                      </td>
+						                      <td>
+						                      	{{ $data->no_kk }}
+						                      </td>
+						                      <td>{{ $data->no_npwp }}</td>
+						                      <td>
+						                      	<button class="btn btn-xs btn-primary btn-attach" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-upload"></i>&nbspUpload</button>
+						                      </td>
+
+						                      <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
+						                      <td>
+						                        <button class="btn btn-xs btn-primary btn-editan" id="btnEdit" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
+
+						                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+						                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+						                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+						                      </td>
+						                    </tr>
+					                    @endforeach
+					                  </tbody>
+					                </table>
+					            </div> 
+					        </div>
+					        <div class="tab-pane" id="sales-msp" role="tabpanel" aria-labelledby="sales-tab">
+					            <div class="table-responsive">
+					                <table class="table table-bordered table-striped dataTable" id="data_sales_msp" width="100%" cellspacing="0">
+					                  <thead>
+					                    <tr>
+					                      <th>NIK</th>
+					                      <th>Employees Name</th>
+					                      <th>Position</th>
+					                      <th>Action</th>
+					                    </tr>
+					                  </thead>
+					                  <tbody>
+					                    @foreach($hr_msp as $data)
+					                    @if($data->id_territory == 'SALES MSP')
+					                    <tr>
+					                      <td><?=str_replace('/', '', $data->nik)?></td>
+					                      <td>{{ucwords(strtolower($data->name))}}</td>
+					                      @if($data->id_position != '')
+					                      <td>
+					                        {{$data->id_position}}
+					                      </td>
+					                      @else
+					                      <td>&#8212</td>
+					                      @endif
+					                      <td>
+					                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+					                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+					                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+					                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+					                      </td>
+					                    </tr>
+					                    @endif
+					                    @endforeach
+					                  </tbody>
+					                </table>
+					            </div>
+					        </div>
+					        <div class="tab-pane" id="operation-msp" role="tabpanel" aria-labelledby="operation-tab">
+					            <div class="table-responsive">
+					                <table class="table table-bordered table-striped dataTable" id="data_op_msp" width="100%" cellspacing="0">
+					                  <thead>
+					                    <tr>
+					                      <th>NIK</th>
+					                      <th>Employees Name</th>
+					                      <th>Position</th>
+					                      <th>Action</th>
+					                    </tr>
+					                  </thead>
+					                  <tbody>
+					                    @foreach($hr_msp as $data)
+						                    @if($data->id_division == 'PMO' || $data->id_division == 'TECHNICAL')
+						                    <tr>
+						                      <td><?=str_replace('/', '', $data->nik)?></td>
+						                      <td>{{ucwords(strtolower($data->name))}}</td>
+						                      @if($data->id_position != '')
+						                      <td>
+						                       {{$data->id_position}}
+						                      </td>
+						                      @else
+						                      <td>&#8212</td>
+						                      @endif
+						                      <td>
+						                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+						                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+						                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+						                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+						                      </td>
+						                    </tr>
+						                    @endif
+					                    @endforeach
+					                  </tbody>
+					                </table>
+					            </div>
+					        </div>
+					        <div class="tab-pane" id="warehouse-msp" role="tabpanel" aria-labelledby="warehouse-tab">
+					            <div class="table-responsive">
+					                <table class="table table-bordered table-striped dataTable" id="data_warehouse_msp" width="100%" cellspacing="0">
+					                  <thead>
+					                    <tr>
+					                      <th>NIK</th>
+					                      <th>Employees Name</th>
+					                      <th>Position</th>
+					                      <th>Action</th>
+					                    </tr>
+					                  </thead>
+					                  <tbody>
+					                    @foreach($hr_msp as $data)
+					                    @if($data->id_division == '-')
+					                    <tr>
+					                      <td><?=str_replace('/', '', $data->nik)?></td>
+					                      <td>{{ucwords(strtolower($data->name))}}</td>
+					                      @if($data->id_position != '')
+					                      <td>
+					                         {{$data->id_position}}
+					                      </td>
+					                      @else
+					                      <td>&#8212</td>
+					                      @endif
+					                      <td>
+					                        <!-- <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button> -->
+
+					                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+
+					                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
+					                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
+					                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
+					                      </td>
+					                    </tr>
+					                    @endif
+					                    @endforeach
+					                  </tbody>
+					                </table>
+					            </div>
+					        </div>
+					        <div class="tab-pane" id="resign-msp" role="tabpanel" aria-labelledby="resign-tab">
+					            <div class="table-responsive">
+					                <table class="table table-bordered table-striped dataTable" id="data_resign_msp" width="100%" cellspacing="0">
+					                  <thead>
+					                    <tr>
+					                      <th>NIK</th>
+					                      <th>Employees Name</th>
+					                      <th>Position</th>
+					                      <th>Action</th>
+					                    </tr>
+					                  </thead>
+					                  <tbody>
+					                    @foreach($data_resign_msp as $data)
+					                    <tr>
+					                      <td><?=str_replace('/', '', $data->nik)?></td>
+					                      <td>{{ucwords(strtolower($data->name))}}</td>
+					                      @if($data->id_position != '')
+					                      <td>
+					                         {{$data->id_position}}
+					                      </td>
+					                      @else
+					                      <td>&#8212</td>
+					                      @endif
+					                      <td>
+					                        <button class="btn btn-xs btn-primary btn-editan2" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspShow</button>
+					                      </td>
+					                    </tr>
+					                    @endforeach
+					                  </tbody>
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+		  			</div>
+		  		</div>
+		  	</div>
+		    
+		    <!-- <div class="table-responsive">
 		        <table class="table table-bordered table-striped dataTable" id="data_all_msp" width="100%" cellspacing="0">
 		          <thead>
 		            <tr>
@@ -1068,9 +1300,10 @@ Human Resources
 		            @endforeach
 		          </tbody>
 		        </table>
-		    </div>
+		    </div> -->
+			</div>
 		  </div>
-		</div>
+		<!-- </div> -->
 
 		<div class="modal fade" id="modalAdd" role="dialog">
 		    <div class="modal-dialog modal-md">
@@ -2385,6 +2618,7 @@ Human Resources
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 @section('script')
 <script type="">
@@ -2426,7 +2660,7 @@ Human Resources
 		$("[data-mask]").inputmask();
 	})
 
-   $(".btn-submit-update").click(function(){
+    $(".btn-submit-update").click(function(){
    	 $('#modal_update_file').delay(1000).fadeOut(450);
 
 	 setTimeout(function(){
@@ -2434,11 +2668,11 @@ Human Resources
 	 }, 1500);
    	  // $("#modal_update_file").modal("hide");
    	  // $("#modal_update").modal("hide");
-   })
+    })
 
-   $(".modal_edit_status").click(function(){
-   	$("#modal_edit_status").modal("show");
-   })
+    $(".modal_edit_status").click(function(){
+   		$("#modal_edit_status").modal("show");
+   	})
 
 
     $('.btn-attach').click(function(){
@@ -2665,6 +2899,54 @@ Human Resources
         $('#div_posisi_view_update').addClass('col-md-8');
         $("#modal_update").modal("show");
     });
+
+	$('.btnReset').click(function(){
+		var swalAccept = Swal.fire({
+	      title: 'Reset Password',
+	      text: "Are you sure?",
+	      icon: 'warning',
+	      showCancelButton: true,
+	      confirmButtonColor: '#3085d6',
+	      cancelButtonColor: '#d33',
+	      confirmButtonText: 'Yes',
+	      cancelButtonText: 'No',
+	    }).then((result) => {
+	      if (result.value) {
+	        Swal.fire({
+	          title: 'Please Wait..!',
+	          text: "It's updating..",
+	          allowOutsideClick: false,
+	          allowEscapeKey: false,
+	          allowEnterKey: false,
+	          customClass: {
+	            popup: 'border-radius-0',
+	          },
+	          onOpen: () => {
+	            Swal.showLoading()
+	          }
+	        })
+	        $.ajax({
+	          type:"POST",
+	          url:"{{url('resetPassword')}}",
+	          data:{
+	            "_token": "{{ csrf_token() }}",
+	            nik:this.value,
+	          },
+	          success: function(result){
+	            Swal.showLoading()
+	            Swal.fire(
+	              'Successfully!',
+	              'success'
+	            ).then((result) => {
+	              if (result.value) {
+	                location.reload()
+	              }
+	            })
+	          },
+	        }) 
+	      }        
+	    })
+	})
 
     $(".toggle-password").click(function() {
         $(this).toggleClass("fa-eye fa-eye-slash");
@@ -3229,23 +3511,34 @@ Human Resources
     });
 
   	var table2 = $('#data_all_msp').DataTable( {
-    } );
+    });
 
   	var table3 = $('#data_tech').DataTable( {
-    } );
+    });
 
   	var table4 = $('#data_finance').DataTable( {
-    } );
+    });
 
   	var table5 = $('#data_sales').DataTable( {
-    } );
+    });
 
   	var table6 = $('#data_operation').DataTable( {
-    } );
+    });
 
     var table7 = $('#data_resign').DataTable( {
-    } );
+    });
 
+  	var table9 = $('#data_sales_msp').DataTable( {
+    });
+
+  	var table10 = $('#data_op_msp').DataTable( {
+    });
+
+  	var table11 = $('#data_warehouse_msp').DataTable( {
+    });
+
+    var table12 = $('#data_resign_msp').DataTable( {
+    });
 
   	$(".Search").keyup(function(){
       	var dInput = this.value;
