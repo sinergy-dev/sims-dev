@@ -515,7 +515,7 @@ Report Sales
   // $('#data_sd').DataTable();
   var data_sd = $('#data_sd').DataTable({
      "responsive":true,
-     "orderCellsTop": true,
+     // "orderCellsTop": true,
     "ajax":{
         "type":"GET",
         "url":"{{url('get_data_sd_report_sales')}}",
@@ -550,11 +550,12 @@ Report Sales
       {
         "targets":[5],
         "visible":false
-      }
+      },
+      { targets: 'no-sort', orderable: false }
     ],
+    "aaSorting": [],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 1, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -628,11 +629,14 @@ Report Sales
       {
         "targets":[5],
         "visible":false
+      },
+      {
+        targets:"no-sort",orderable:false
       }
     ],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 1, "desc" ]],
+    "aaSorting": [],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -706,11 +710,14 @@ Report Sales
       {
         "targets":[5],
         "visible":false
+      },
+      {
+        targets:'no-sort',orderable:false
       }
     ],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 1, "desc" ]],
+    "aaSorting": [],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -784,11 +791,14 @@ Report Sales
       {
         "targets":[5],
         "visible":false
+      },
+      {
+        targets:"no-sort",orderable:false
       }
     ],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 1, "desc" ]],
+    "aaSorting": [],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
