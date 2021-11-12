@@ -1434,6 +1434,10 @@ class HRGAController extends Controller
         
     }
 
+    public function getCutiException(){
+        return DB::table('tb_cuti_exception')->pluck('date');
+    }
+
     //store cuti lama
     // public function store_cuti(Request $request)
     // {
