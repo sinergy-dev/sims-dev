@@ -60,7 +60,7 @@
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
-		<img src="{{ asset('image/sims_sangar_2.png')}}" style="width: 30%; height: 30%">
+		<center><img src="{{ asset('image/tender_new.png')}}" style="width: 50%; height: 50%"></center>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">

@@ -59,16 +59,16 @@
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
-		<img src="{{ asset('image/sims_sangar_2.png')}}" href="https://app.sinergy.co.id/login" style="width: 30%; height: 30%" readonly>
+		<center><img src="{{ asset('image/assign.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 			<p style="font-size: 20px">
 				<b>Dear {{$data->presales_name}},</b>
 				@if($status == 'assign')
-				<br><p>you are assigned by presales manager</p>		
+				<br><p>You are assigned by presales manager</p>		
 				@else
-				<br><p>you are re-assigned by presales manager</p>
+				<br><p>You are re-assigned by presales manager</p>
 				@endif
 			</p>
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
