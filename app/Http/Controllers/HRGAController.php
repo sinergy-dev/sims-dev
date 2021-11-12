@@ -1397,7 +1397,7 @@ class HRGAController extends Controller
                             ->get();
         }
 
-        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','total_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu','cuti2','cek'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('cuti')]);
+        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','total_cuti','year','bulan','tahun_ini','tahun_lalu','cuti2','cek'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('cuti')]);
     }
 
     public function detil_cuti(Request $request)
