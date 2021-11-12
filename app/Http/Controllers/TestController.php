@@ -767,6 +767,15 @@ class TestController extends Controller
 		return "Success";
 	}
 
+	public function addConfigFeatureItem(Request $req){
+		DB::table('feature_item')->insert([
+			'item_id' => $req->item_id,
+			'group' => $req->group,
+		]);
+
+		return "Success";
+	}
+
 	public function getRoles(Request $req){
 		return DB::table('roles')->get();
 	}
