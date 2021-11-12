@@ -6,6 +6,7 @@ Report Range
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <link rel="stylesheet" href="{{asset('template2/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.0/css/fixedColumns.dataTables.min.css">
 <style type="text/css">
     .btn-warning-export{
       background-color: #ffc107;
@@ -155,7 +156,7 @@ Report Range
                   @endforeach
                 </select>
               </div>
-              <div class="col-md-4 col-xs-12">
+              <div class="col-md-3 col-xs-12">
                 <label style="margin-top: 5px;">Date</label>
                 <div class="input-group" style="float: left">
                   <div class="input-group-addon">
@@ -170,7 +171,7 @@ Report Range
                 <label style="margin-top: 5px;">End Date</label>
                 <input type="text" id="enddate" class="form-control pull-right" placeholder="DD/MM/YYYY">  
               </div> -->
-              <div class="col-md-4 col-xs-12">
+              <div class="col-md-5 col-xs-12">
                 <label style="margin-top: 5px">Search Anything</label>
                 <div class="input-group pull-right">
                   <input id="searchBar" type="text" class="form-control" onkeyup="searchCustom('data_all','searchBar')" placeholder="Search Anything...">
@@ -215,7 +216,7 @@ Report Range
                       <th hidden></th>                  
                       <th hidden></th>
                       <th hidden></th>
-                      <th hidden></th>                                                                                                                                 
+                      <th hidden></th>                                                                                                                   
                     </tr>
                     <tr class="no-border" id="status">
                       <td class="first"></td>
@@ -233,7 +234,7 @@ Report Range
                       <td hidden></td>                  
                       <td hidden></td> 
                       <th hidden></th>
-                      <th hidden></th>                                                                                                      
+                      <th hidden></th>                                                                                                    
                     </tr>
                     <tr>
                       <th class="first" hidden></th>  
@@ -318,7 +319,7 @@ Report Range
                       <th></th>                  
                       <th></th>                  
                       <th></th>                  
-                      <th></th>                  
+                      <th></th>                    
                     </tr>
                   </tfoot>
               </table>
@@ -346,6 +347,7 @@ Report Range
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.0.0/js/dataTables.fixedColumns.min.js"></script>
 @endsection
 @section('script')
 <script type = "text/javascript" >
@@ -667,7 +669,12 @@ Report Range
 
     },
     drawCallback: function() {
-    }
+    },
+    // scrollX:true,
+    // fixedColumns: true,
+    // fixedColumns:   {
+    //   left: 1,
+    // },
   });
 
   // var table = initTable()  
