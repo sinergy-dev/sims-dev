@@ -797,7 +797,7 @@ class TestController extends Controller
 
 	public function getFeatureItem(Request $req){
 		$column = DB::table('roles')->selectRaw('`id`,`name` AS `title`, REPLACE(`slug`,".","_") AS `name`,CONCAT("condition_",REPLACE(`slug`,".","_")) AS `data`');
-		if($req->group == "all") {
+		if($req->group == "All") {
 			$column2 = $column->get();
 		} else {
 			$column2 = $column->where('group','=',$req->group)
