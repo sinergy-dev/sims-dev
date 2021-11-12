@@ -645,7 +645,13 @@ Permission Config
 		$('#permissionRoleToUser').DataTable( {
 			ajax: {
 				url:"{{url('permission/getUserList')}}",
-				"dataSrc":""
+				dataSrc:function (json){
+					json.forEach(function(data,idex){
+						data.user_id = "<a href='" + '{{url("authentication")}}'+ "/" + data.user_id + "'>" + data.user_id + "</a>"
+						// data.user_id = "a"
+					})
+					return json
+				}
 			},
 			columns: [
 				{ 
