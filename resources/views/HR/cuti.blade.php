@@ -643,6 +643,8 @@ Leaving Permitte
 @section('script')
 <script type="text/javascript">
 
+    var liburNasionalException = []
+
     $(document).ready(function(){
       var accesable = @json($feature_item);
       accesable.forEach(function(item,index){
