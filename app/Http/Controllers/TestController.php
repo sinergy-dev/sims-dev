@@ -850,8 +850,20 @@ class TestController extends Controller
 		//   ->get();
 	}
 
-	public function getFeatureItemParameter(){
-		return DB::table('roles')->select('group')->groupBy('group')->pluck('group');
+	public function getFeatureItemParameterByRoleGroup(){
+		// return DB::table('roles')->select('group')->groupBy('group')->pluck('group')->toArray();
+		// return gettype(DB::table('roles')->select('group')->groupBy('group')->pluck('group')->toArray());
+		$data = DB::table('roles')->where('group','<>','default')->select('group')->groupBy('group')->pluck('group')->toArray();
+		array_unshift($data, "", "All");
+		return $data;
+	}
+
+	public function getFeatureItemParameterByFeatureItem(){
+		// return DB::table('roles')->select('group')->groupBy('group')->pluck('group')->toArray();
+		// return gettype(DB::table('roles')->select('group')->groupBy('group')->pluck('group')->toArray());
+		$data = DB::table('feature_item')->select('group')->groupBy('group')->pluck('group')->toArray();
+		array_unshift($data, "", "All");
+		return $data;
 	}
 
 	public function changeFeatureItem(Request $req){
