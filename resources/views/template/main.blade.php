@@ -6,9 +6,9 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>
 		@hasSection('tittle')
-			SIMSApp - @yield('tittle')
+			SIMS - @yield('tittle')
 		@else
-			SIP - SIMSApp
+			SIP - SIMS
 		@endif
 	</title>
 	<link rel="icon" type="image/png" href="{{url('img/siplogooke.png')}}">

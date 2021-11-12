@@ -938,6 +938,9 @@ Technical Asset
 @endsection
 @section('script')
   <script type="text/javascript">
+    var text1 = 'avocado'
+
+    console.log(`i want to buy ${text1}`)
 
     $(document).ready(function(){
       var accesable = @json($feature_item);

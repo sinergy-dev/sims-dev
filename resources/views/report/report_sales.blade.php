@@ -556,6 +556,7 @@ Report Sales
     "aaSorting": [],
     "scrollX": true,
     "pageLength": 25,
+    "order": [[ 4, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -636,7 +637,7 @@ Report Sales
     ],
     "scrollX": true,
     "pageLength": 25,
-    "aaSorting": [],
+    "order": [[ 4, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -717,7 +718,7 @@ Report Sales
     ],
     "scrollX": true,
     "pageLength": 25,
-    "aaSorting": [],
+    "order": [[ 4, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -798,7 +799,7 @@ Report Sales
     ],
     "scrollX": true,
     "pageLength": 25,
-    "aaSorting": [],
+    "order": [[ 4, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 

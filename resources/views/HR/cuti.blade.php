@@ -643,6 +643,8 @@ Leaving Permitte
 @section('script')
 <script type="text/javascript">
 
+    var liburNasionalException = []
+
     $(document).ready(function(){
       var accesable = @json($feature_item);
       accesable.forEach(function(item,index){
@@ -662,18 +664,63 @@ Leaving Permitte
       }
     })
 
-    $(".show-sisa-cuti").click(function(){
-      $.ajax({
-        type:"GET",
-        url:"getCutiAuth",
-        success: function(result){
-          var d = new Date().getFullYear() - 1;
-          var dd = new Date().getFullYear();
-          var swal_html = '<div class="panel" style="background:aliceblue;font-weight:bold"><div class="panel-heading panel-info text-center btn-info"> <b>Berikut Info total cuti : </b> </div> <div class="panel-body"><table class="text-center"><b><p style="font-weight:bold">Total cuti '+ d +' (*digunakan s/d 31 Maret) : '+result[0].cuti+'</p><p style="font-weight:bold">Total cuti '+ dd +' : '+result[0].cuti2+'</p></b></div></div></div>';
-          swal.fire({title: "Hai "+result[0].name+" !!", html: swal_html})
-        },
-      });
-    });
+    $.ajax({
+      type:"GET",
+      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
+      success: function(resultGoogle){
+        $(".show-sisa-cuti").click(function(){
+          $.ajax({
+            type:"GET",
+            url:"getCutiAuth",
+            success: function(result){
+              var year_before = new Date().getFullYear() - 1;
+              var year_now = new Date().getFullYear();
+              var swal_html = ''
+              
+              swal_html = swal_html + '<div class="panel" style="background:aliceblue;font-weight:bold">'
+              swal_html = swal_html + '  <div class="panel-heading panel-info text-center btn-info">'
+              swal_html = swal_html + '    <b>Berikut Info total cuti : </b>'
+              swal_html = swal_html + '  </div>'
+              swal_html = swal_html + '  <div class="panel-body">'
+              swal_html = swal_html + '    <table class="text-center">'
+              swal_html = swal_html + '      <b>'
+              swal_html = swal_html + '        <p style="font-weight:bold">Total cuti ' + year_before + ' (*digunakan s/d 31 Maret) : ' + result[0].cuti + '</p>'
+              swal_html = swal_html + '        <p style="font-weight:bold">Total cuti ' + year_now + ' : ' + result[0].cuti2 + '</p>'
+              swal_html = swal_html + '      </b>'
+              swal_html = swal_html + '    </table>'
+              swal_html = swal_html + '  </div>'
+              swal_html = swal_html + '  </div>'
+              swal_html = swal_html + '</div>'
+
+              swal_html = swal_html + '<div class="panel" style="background:LavenderBlush;font-weight:bold">'
+              swal_html = swal_html + '  <div class="panel-heading panel-danger text-center btn-danger">'
+              swal_html = swal_html + '    <b>Informasi Libur Nasional </b>'
+              swal_html = swal_html + '  </div>'
+              swal_html = swal_html + '  <div class="panel-body">'
+              swal_html = swal_html + '    <table>'
+              swal_html = swal_html + '      <b>'
+
+              $.each(resultGoogle.items,function(key,value){
+                if(value.description == "Public holiday" && value.start.date.includes(year_now) && !(value.summary.includes("Joint Holiday"))){
+                  if(!liburNasionalException.includes(value.start.date)){
+                    swal_html = swal_html + '        <p style="font-weight:bold">' + value.summary + ' <br>(' + moment( value.start.date).format("MM/DD/YYYY") + ')</p>'
+                  }
+                }
+              })
+
+              swal_html = swal_html + '      </b>'
+              swal_html = swal_html + '    </table>'
+              swal_html = swal_html + '  </div>'
+              swal_html = swal_html + '  </div>'
+              swal_html = swal_html + '</div>'
+              swal.fire({title: "Hai, " + result[0].name, html: swal_html})
+            },
+          });
+        });
+        
+      }
+    })
+    
 
     // var tables = $('#datatables').DataTable();
     // var tablew = $("#datatablew").DataTable({
@@ -1981,13 +2028,25 @@ Leaving Permitte
 
     var hari_libur_nasional = []
     var hari_libur_nasional_tooltip = []
+
     $.ajax({
       type:"GET",
-      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
-      success: function(result){
-        $.each(result.items,function(key,value){
-          hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
-          hari_libur_nasional_tooltip.push(value.summary)
+      url:"{{url('getCutiException')}}",
+      success:function(resultException){
+        liburNasionalException = resultException
+        $.ajax({
+          type:"GET",
+          url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
+          success: function(result){
+            $.each(result.items,function(key,value){
+              if(value.description == "Public holiday"){
+                if(!liburNasionalException.includes(value.start.date)){
+                  hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
+                  hari_libur_nasional_tooltip.push(value.summary)
+                }
+              }
+            })
+          }
         })
       }
     })

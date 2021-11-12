@@ -1256,14 +1256,7 @@ class HRGAController extends Controller
                     
                     ->groupby('nik')
                     ->get();
-        }
-
-        $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY_APP'));
-        $json = (string)$api_response->getBody();
-        $datas_nasional = json_decode($json, true);  
-        // return $datas_nasional;
-        // $datas_nasional = [];   
+        } 
 
         $bulan = date('F');
         $tahun_ini = date('Y');
@@ -1404,7 +1397,7 @@ class HRGAController extends Controller
                             ->get();
         }
 
-        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','total_cuti','year','datas_nasional','bulan','tahun_ini','tahun_lalu','cuti2','cek'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('cuti')]);
+        return view('HR/cuti', compact('notif','notifOpen','notifsd','notiftp','cuti','cuti_index','cuti_list','detail_cuti','notifClaim','cek_cuti','total_cuti','year','bulan','tahun_ini','tahun_lalu','cuti2','cek'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('cuti')]);
     }
 
     public function detil_cuti(Request $request)
@@ -1439,6 +1432,10 @@ class HRGAController extends Controller
             
         }
         
+    }
+
+    public function getCutiException(){
+        return DB::table('tb_cuti_exception')->pluck('date');
     }
 
     //store cuti lama
