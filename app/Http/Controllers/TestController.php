@@ -252,7 +252,7 @@ class TestController extends Controller
 	public function authentication($id)
 	{
 		Auth::loginUsingId($id);
-		return redirect('salesproject');
+		return redirect()->back();
 	}
 
 	public function view_mail_to_sales(){
