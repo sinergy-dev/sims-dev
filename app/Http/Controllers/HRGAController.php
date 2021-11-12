@@ -1256,14 +1256,7 @@ class HRGAController extends Controller
                     
                     ->groupby('nik')
                     ->get();
-        }
-
-        $client = new Client();
-        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY_APP'));
-        $json = (string)$api_response->getBody();
-        $datas_nasional = json_decode($json, true);  
-        // return $datas_nasional;
-        // $datas_nasional = [];   
+        } 
 
         $bulan = date('F');
         $tahun_ini = date('Y');
