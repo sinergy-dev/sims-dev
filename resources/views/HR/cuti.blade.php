@@ -2028,13 +2028,25 @@ Leaving Permitte
 
     var hari_libur_nasional = []
     var hari_libur_nasional_tooltip = []
+
     $.ajax({
       type:"GET",
-      url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
-      success: function(result){
-        $.each(result.items,function(key,value){
-          hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
-          hari_libur_nasional_tooltip.push(value.summary)
+      url:"{{url('getCutiException')}}",
+      success:function(resultException){
+        liburNasionalException = resultException
+        $.ajax({
+          type:"GET",
+          url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
+          success: function(result){
+            $.each(result.items,function(key,value){
+              if(value.description == "Public holiday"){
+                if(!liburNasionalException.includes(value.start.date)){
+                  hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
+                  hari_libur_nasional_tooltip.push(value.summary)
+                }
+              }
+            })
+          }
         })
       }
     })
