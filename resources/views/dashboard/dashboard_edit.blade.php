@@ -21,6 +21,10 @@ Dashboard
   	color: white;
   }
 
+  .table-sip-ter tbody tr:first-child td a i{
+    color: white;
+  }
+
   .outer-reset {
     position: relative;
     width: 100%;
