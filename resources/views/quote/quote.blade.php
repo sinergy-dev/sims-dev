@@ -514,7 +514,7 @@ Quote Number
           { "data": "date","width": "20%" },
           {
              "render": function ( data, type, row, meta ) {
-                if(row.attention == null){
+                if(row.id_customer == null){
                   return '<div class="truncate"> - </div>'
                 } else {
                   return '<div class="truncate">' + row.customer_legal_name + '</div>'
