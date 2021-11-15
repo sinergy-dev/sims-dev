@@ -188,9 +188,9 @@ class TestController extends Controller
 		$status = 'reAssign';
 
 
-		return new AssignPresales($data,$status);
+		// return new AssignPresales($data,$status);
 
-		// return Mail::to('hisyam@sinergy.co.id')->send(new AssignPresales($data,$status));
+		return Mail::to('tito@sinergy.co.id')->send(new AssignPresales($data,$status));
 
 	}
 
