@@ -684,94 +684,129 @@
   }
 
   $("#change_password").click(function(){
-    var swalAccept = Swal.fire({
-      title: 'Change Password',
-      text: "Are you sure?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No',
-    }).then((result) => {
-      if (result.value) {
-        Swal.fire({
-          title: 'Please Wait..!',
-          text: "It's updating..",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          allowEnterKey: false,
-          customClass: {
-            popup: 'border-radius-0',
-          },
-          onOpen: () => {
-            Swal.showLoading()
-          }
-        })
-        $.ajax({
-          type:"POST",
-          url:"{{url('changePassword')}}",
-          data:{
-            "_token": "{{ csrf_token() }}",
-            nik_profile: $("#nik_change_password").val(),
-            current_password: $("#current-password").val(),
-            password: $("#new-password").val(),
-          },
-          beforeSend:function() {
-            $("#new-password").parent().removeClass('has-error')
-            $("#new-password-confirm").parent().removeClass('has-error')
-            $("#current-password").parent().removeClass('has-error')
-          },
-          success: function(result){
-            Swal.showLoading()
-            Swal.fire(
-              'Successfully!',
-              'success'
-            ).then((result) => {
-              if (result.value) {
-                // location.reload()
-                event.preventDefault();
-                document.getElementById('logout-form').submit();
-              }
-            })
-          },
-          error: function(result) {
-            // console.log(result.responseText)
-            Swal.showLoading()
-            Swal.fire(
-              'Oops',
-              result.responseText,
-              'error'
-            ).then((result2) => {
-              if (result2.value) {
-                // location.reload()
-                $("#new-password").val('');
-                $("#current-password").val('');
-                $("#new-password-confirm").val('');
-                var letter = document.getElementById("letter");
-                var capital = document.getElementById("capital");
-                var number = document.getElementById("number");
-                var length = document.getElementById("length");
-                var char = document.getElementById("char");
+    if($("#letter").hasClass("invalid") ||
+      $("#capital").hasClass("invalid") ||
+      $("#number").hasClass("invalid") ||
+      $("#length").hasClass("invalid") ||
+      $("#char").hasClass("invalid")){
+      
+      Swal.fire(
+        'Oops',
+        "Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters",
+        'error'
+      ).then((result2) => {
+        if (result2.value) {
+          // location.reload()
+          $("#new-password").val('');
+          $("#current-password").val('');
+          $("#new-password-confirm").val('');
+          var letter = document.getElementById("letter");
+          var capital = document.getElementById("capital");
+          var number = document.getElementById("number");
+          var length = document.getElementById("length");
+          var char = document.getElementById("char");
 
-                letter.classList.add("invalid");
-                capital.classList.add("invalid");
-                number.classList.add("invalid");
-                length.classList.add("invalid");
-                char.classList.add("invalid");
-
-                if(result.responseText == 'Your current password does not matches with the password you provided. Please try again.'){
-                  $("#current-password").parent().addClass('has-error')
-                } else {
-                  $("#new-password").parent().addClass('has-error')
-                  $("#new-password-confirm").parent().addClass('has-error')
+          letter.classList.add("invalid");
+          capital.classList.add("invalid");
+          number.classList.add("invalid");
+          length.classList.add("invalid");
+          char.classList.add("invalid");
+          
+          $("#new-password").parent().addClass('has-error')
+          $("#new-password-confirm").parent().addClass('has-error')
+        }
+      })
+    } else {
+      var swalAccept = Swal.fire({
+        title: 'Change Password',
+        text: "Are you sure?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's updating..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+              popup: 'border-radius-0',
+            },
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+            type:"POST",
+            url:"{{url('changePassword')}}",
+            data:{
+              "_token": "{{ csrf_token() }}",
+              nik_profile: $("#nik_change_password").val(),
+              current_password: $("#current-password").val(),
+              password: $("#new-password").val(),
+            },
+            beforeSend:function() {
+              $("#new-password").parent().removeClass('has-error')
+              $("#new-password-confirm").parent().removeClass('has-error')
+              $("#current-password").parent().removeClass('has-error')
+            },
+            success: function(result){
+              Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                  // location.reload()
+                  event.preventDefault();
+                  document.getElementById('logout-form').submit();
                 }
-              }
-            })
-          }
-        }) 
-      }        
-    })
+              })
+            },
+            error: function(result) {
+              // console.log(result.responseText)
+              Swal.showLoading()
+              Swal.fire(
+                'Oops',
+                result.responseText,
+                'error'
+              ).then((result2) => {
+                if (result2.value) {
+                  // location.reload()
+                  $("#new-password").val('');
+                  $("#current-password").val('');
+                  $("#new-password-confirm").val('');
+                  var letter = document.getElementById("letter");
+                  var capital = document.getElementById("capital");
+                  var number = document.getElementById("number");
+                  var length = document.getElementById("length");
+                  var char = document.getElementById("char");
+
+                  letter.classList.add("invalid");
+                  capital.classList.add("invalid");
+                  number.classList.add("invalid");
+                  length.classList.add("invalid");
+                  char.classList.add("invalid");
+
+                  if(result.responseText == 'Your current password does not matches with the password you provided. Please try again.'){
+                    $("#current-password").parent().addClass('has-error')
+                  } else {
+                    $("#new-password").parent().addClass('has-error')
+                    $("#new-password-confirm").parent().addClass('has-error')
+                  }
+                }
+              })
+            }
+          }) 
+        }        
+      })
+
+    }
   })
 
   function readURL(input) {
