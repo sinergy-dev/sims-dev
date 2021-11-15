@@ -288,7 +288,6 @@ class TicketingController extends Controller
 	}
 
 	public function sendEmailOpen(Request $request){
-		$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
 
 		$detailTicketOpen = new TicketingDetail();
 		$detailTicketOpen->id_ticket = $request->id_ticket;
@@ -308,6 +307,8 @@ class TicketingController extends Controller
 		$detailTicketOpen->severity = substr($request->severity,0,1);
 
 		$detailTicketOpen->save();
+
+		$this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
 
 		$activityTicketOpen = new TicketingActivity();
 		$activityTicketOpen->id_ticket = $request->id_ticket;
