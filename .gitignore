@@ -53,3 +53,6 @@ public/image
 # Ignore file pathnership
 public/public/*
 app/Http/Controllers/sims-notif.json
+
+# Backup Template
+resources/views/template/backup
