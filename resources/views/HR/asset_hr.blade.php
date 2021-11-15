@@ -3,6 +3,7 @@
 GA Asset
 @endsection
 @section('head_css')
+<link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
@@ -114,6 +115,7 @@ GA Asset
               <br>            
               <div class="table-responsive" >
                 <table class="table table-bordered table-striped" id="data_table" width="100%" cellspacing="0">
+                  <h4><i class="fa fa-table"></i> Table Asset</h4>
                   <thead>
                     <tr>
                       <th>Code</th>
@@ -191,43 +193,51 @@ GA Asset
               </div>
             </div>
             <div class="tab-pane fade" id="kategori_asset" role="tabpanel" aria-labelledby="current">
-              <div class="table-responsive" style="margin-top: 15px">
-                <table class="table table-bordered nowrap DataTable" id="kategori_table" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th width="5">No</th>
-                      <th>Code</th>
-                      <th>Category</th>
-                      <th width="5">Qty</th>
-                      <th width="5">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="products-list" name="products-list">
-                    <?php $no = 1?>
-                    @foreach($kategori_asset as $data)
-                      <tr>
-                        <td>{{$no++}}</td>
-                        <td>{{$data->code_kat}}</td>
-                        <td>{{$data->kategori}}</td>
-                        <td>{{$data->qty_kat}}</td>
-                        <td>
-                          <button class="btn btn-xs btn-warning" onclick="editKategori('{{$data->code_kat}}','{{$data->kategori}}','{{$data->id}}','edit')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Update" data-placement="bottom"><i class="fa fa-edit"></i></button>
-                        </td>
-                      </tr>
-                    @endforeach
-                  </tbody>
-                  <tfoot>
-                  </tfoot>
-                </table>
+              <div class="row">
+                <div class="col-md-8 col-xs-12">
+                  <div class="table-responsive" style="margin-top: 15px">
+                    <h4><i class="fa fa-table"></i> Table Kategori</h4>
+                    <table class="table table-bordered nowrap DataTable" id="kategori_table" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th width="5">No</th>
+                          <th>Code</th>
+                          <th>Category</th>
+                          <th width="5">Qty</th>
+                          <th width="5">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="products-list" name="products-list">
+                        <?php $no = 1?>
+                        @foreach($kategori_asset as $data)
+                          <tr>
+                            <td>{{$no++}}</td>
+                            <td>{{$data->code_kat}}</td>
+                            <td>{{$data->kategori}}</td>
+                            <td>{{$data->qty_kat}}</td>
+                            <td>
+                              <button class="btn btn-xs btn-warning" onclick="editKategori('{{$data->code_kat}}','{{$data->kategori}}','{{$data->id}}','edit')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Update" data-placement="bottom"><i class="fa fa-edit"></i></button>
+                            </td>
+                          </tr>
+                        @endforeach
+                      </tbody>
+                      <tfoot>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
               </div>
+              
             </div>
             <div class="tab-pane" id="request_asset">
               <div class="table-responsive" style="margin-top: 15px">
                 <table class="table table-bordered requestTable" id="request_table" width="100%" cellspacing="0">
+                  <h4><i class="fa fa-table"></i> Table Request</h4>
                   <thead>
                     <tr>
                       <th>No Transaction</th>
                       <th>Request By</th>
+                      <th>Request Date</th>
                       <th>Name/Category</th>
                       <th>Specification</th>
                       <th>Status</th>
@@ -240,6 +250,7 @@ GA Asset
                       <tr>
                         <td>{{$data->no_transac}}</td>
                         <td>{{$data->name}}</td>
+                        <td>{{$data->created_at}}</td>
                         <td>{{$data->note}}</td>
                         <td>{!!$data->keterangan!!}</td>
                         <td>
@@ -283,6 +294,7 @@ GA Asset
             <div class="tab-pane fade" id="current_asset" role="tabpanel" aria-labelledby="current">
               <div class="table-responsive" style="margin-top: 15px">
                 <table class="table table-bordered collapsed DataTable" id="datatable" width="100%" cellspacing="0">
+                  <h4><i class="fa fa-table"></i> Table My Asset</h4>
                   <thead>
                     <tr>
                       <th>No</th>
@@ -350,6 +362,7 @@ GA Asset
             <div class="tab-pane fade" id="history" role="tabpanel">
             	<div class="table-responsive" style="margin-top: 15px">
                 <table class="table table-bordered collapsed DataTable" id="history_table" width="100%" cellspacing="0">
+                  <h4><i class="fa fa-table"></i> Table History</h4>
                   <thead>
                     <tr>
                       <th>No</th>
@@ -836,7 +849,7 @@ GA Asset
           <div class="modal-body">
             <form method="POST" action="{{url('penghapusan_hr')}}" name="modalProgress">
               @csrf
-              <input type="text" name="id_barang" id="id_barang_hapus" hidden>
+              <input type="text" name="id_barang" id="id_barang_hapus">
               <div class="form-group">
               <label>Are you sure to delete asset?</label>
               <input name="nama_barang" id="nama_barang_hapus" class="form-control" readonly></input>
@@ -1980,16 +1993,26 @@ GA Asset
     
 
     $('#datatable').DataTable({
-      pageLength: 20,    
+      pageLength: 20, 
+      columnDefs: [
+         { "width": "10%", "targets": 0 }
+      ],   
       "order": [[ 5, "desc" ]]
     });
 
     $('#kategori_table').DataTable({
       pageLength: 20,
+      columnDefs: [
+         { "width": "5%", "targets": 0 }
+      ], 
     })
 
     var requestTable = $('#request_table').DataTable({
       pageLength: 20,
+      "ColumnDefs":[
+        { targets: 'no-sort', orderable: false }
+      ],
+      "aaSorting": [],
     });
 
     $('#history_table').DataTable({
