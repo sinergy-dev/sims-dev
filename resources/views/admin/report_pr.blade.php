@@ -283,7 +283,10 @@ Report Purchase Request
               "#12CBC4",
               "#FDA7DF",
               "#D980FA",
-              "#9980FA",],
+              "#9980FA",
+              '#4287F5',
+              '#F542F5',
+              '#CB42F5',],
             }],
           },
           options: {
