@@ -248,6 +248,7 @@ class TestController extends Controller
 
 		$return =  new EmailRemainderWeekly($parameterEmail);
 		Mail::to('agastya@sinergy.co.id')->send($return);
+		Mail::to('tito@sinergy.co.id')->send($return);
 
 		// return Mail::to('tito@sinergy.co.id')->send(new EmailRemainderWeekly($parameterEmail));
 
