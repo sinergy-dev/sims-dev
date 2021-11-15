@@ -59,7 +59,7 @@
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
-		<img src="{{ asset('image/sims_sangar_2.png')}}" href="https://app.sinergy.co.id/login" style="width: 30%; height: 30%" readonly>
+		<center><img src="{{ asset('image/contribute.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
