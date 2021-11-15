@@ -29,6 +29,7 @@ private.key
 public/AdminLTE/
 public/.well-known/
 public/report/
+public/pdfpart
 
 # Ignore Other
 sftp-config.json.backup
