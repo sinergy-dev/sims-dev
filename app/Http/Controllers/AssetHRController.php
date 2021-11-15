@@ -224,6 +224,7 @@ class AssetHRController extends Controller
                             COUNT(`kategori`) AS `count_kategori`, `kategori`
                         FROM
                             `tb_asset_hr`
+                        WHERE 'availability' = 1
                         GROUP BY
                             `kategori`
                       	) as tb_asset_hr"),function($join){
@@ -296,7 +297,7 @@ class AssetHRController extends Controller
 
         $request_asset = DB::table('tb_asset_hr_transaction')
                         ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                        ->select('tb_asset_hr_transaction.keterangan','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','no_transac','note','tgl_peminjaman')
+                        ->select('tb_asset_hr_transaction.keterangan','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','no_transac','note','tgl_peminjaman','tb_asset_hr_transaction.created_at')
                         ->where('tb_asset_hr_transaction.status','PENDING')
                         ->orderBy('tb_asset_hr_transaction.created_at','asc')
                         ->get();
@@ -1070,11 +1071,13 @@ class AssetHRController extends Controller
     {
         $id_barang = $request['id_barang'];
 
-        $update = AssetHR::where('id_barang',$id_barang)->first();
-        $update->availability = 0;
-        $update->update();  
+        $hapus = AssetHR::where('id_barang',$id_barang)->delete();
 
-        return redirect()->back()->with('alert', 'Penghapusan Barang Berhasil!');
+        // $update = AssetHR::where('id_barang',$id_barang)->first();
+        // $update->availability = 0;
+        // $update->update();  
+
+        return redirect()->back()->with('alert', 'Hapus Asset Berhasil!');
     }
 
     public function accept_pinjam(Request $request)
