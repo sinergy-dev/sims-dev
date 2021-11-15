@@ -13,6 +13,7 @@ use App\Mail\mailPID;
 use App\Mail\CreateLeadRegister;
 use App\Mail\AssignPresales;
 use App\Mail\RaiseTender;
+use App\Mail\AddContribute;
 
 use App\Mail\RequestNewAssetHr;
 use App\Notifications\Testing;
