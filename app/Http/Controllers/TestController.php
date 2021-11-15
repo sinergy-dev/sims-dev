@@ -204,9 +204,13 @@ class TestController extends Controller
 										->where('sales_lead_register.lead_id','AEON200201')
 										->first();
 
-		// return Mail::to('tito@sinergy.co.id')->send(new RaiseTender($data));
+		return Mail::to('tito@sinergy.co.id')->send(new RaiseTender($data));
 
-		return new RaiseTender($data);      
+		// $return =  new RaiseTender($parameterEmail);
+		// Mail::to('agastya@sinergy.co.id')->send($return);
+		// Mail::to('tito@sinergy.co.id')->send($return);
+
+		// return new RaiseTender($data);      
 
 	}
 
