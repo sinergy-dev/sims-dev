@@ -630,11 +630,13 @@ class PresenceController extends Controller
         } else {
             $PresenceShifting->whereBetween('tanggal_shift',[date('Y-m') . "-01",date_format(date_add(date_create(date('Y-m') . "-12"),date_interval_create_from_date_string("1 month")),"Y-m-d")]);
         }
-        return $PresenceShifting->orderBy('start','DESC');
+
+        return $PresenceShifting;
     }
 
     public function getScheduleThisMonth(Request $req){
         return $this->getSchedule($req)
+            ->orderBy('start','DESC')
             ->get()
             ->toArray();
     }
