@@ -509,12 +509,52 @@ class AssetController extends Controller
 
         $count_qty = Kategori_Asset::select('qty')->where('id_kat', $request->kategori)->first();
 
+        $acronym = Kategori_Asset::select('acronym')
+                    ->where('id_kat', $request->kategori)
+                    ->first();
+
+        $getnumber = Tech_asset::orderBy('id_barang', 'desc')->where('created_at','like',date('Y')."%")->count();
+
+        if($getnumber == NULL){
+            $getlastnumber = 1;
+            $lastnumber = $getlastnumber;
+        } else{
+            $lastnumber = $getnumber+1;
+        }
+
+        if($lastnumber < 10){
+           $akhirnomor = '00' . $lastnumber;
+        }elseif($lastnumber > 9 && $lastnumber < 100){
+           $akhirnomor = '0' . $lastnumber;
+        }elseif($lastnumber >= 100){
+           $akhirnomor = $lastnumber;
+        }
+
+        $month = date('m');
+
+        $array_bln = array('01' => "I",
+                    '02' => "II",
+                    '03' => "III",
+                    '04' => "IV",
+                    '05' => "V",
+                    '06' => "VI",
+                    '07' => "VII",
+                    '08' => "VIII",
+                    '09' => "IX",
+                    '10' => "X",
+                    '11' => "XI",
+                    '12' => "XII");
+        $bln = $array_bln[$month];
+
+        $code = $akhirnomor . '/' . $acronym->acronym . '/' . $bln . '/' . date('Y');
+
 		$tambah                   = new Tech_asset();
 		$tambah->nik 		      = Auth::User()->nik;
+        $tambah->code_asset       = $code;
 		$tambah->nama_barang      = $request['nama_barang'];
 		$tambah->serial_number    = $request['sn'];
         $tambah->id_kat           = $request['kategori'];
-        $tambah->status           = 'UNAVAILABLE';
+        $tambah->status           = 'AVAILABLE';
         $tambah->description      = $request['keterangan'];
         $tambah->total_pinjam 	  = '0';
         $tambah->status_pinjam 	  = 'TIDAK PERNAH';
@@ -523,7 +563,7 @@ class AssetController extends Controller
 
         $id_kat         = $request->kategori;
         $update         = Kategori_Asset::where('id_kat', $id_kat)->first();
-        // $update->qty    = $count_qty->qty + 1;
+        $update->qty    = $count_qty->qty + 1;
         $update->update();
 
         $tambah_log = new LogAssetTech();
@@ -574,9 +614,18 @@ class AssetController extends Controller
             
         }  
 
+        if ($request['lokasi_edit'] != "") {
+            $tambah_log = new LogAssetTech();
+            $tambah_log->nik = Auth::User()->nik;
+            $tambah_log->keterangan     = "Mengubah Lokasi Aset ". $update->nama_barang . " menjadi ". $request['lokasi_edit'];
+            $tambah_log->save();  
+        } 
+
         $update->nama_barang   = $request['edit_nama'];
         $update->serial_number = $request['serial_number_edit']; 
         $update->description   = $request['keterangan_edit'];
+        $update->location      = $request['lokasi_edit'];
+
         if ($request['status_asset'] != "") {
             $update->status        = $request['status_asset']; 
         }
@@ -595,6 +644,21 @@ class AssetController extends Controller
 
 
         return redirect()->back()->with('update','Update Barang Berhasil!');;
+    }
+
+    public function updateKategori(Request $request)
+    {
+        $update = Kategori_Asset::where('id_kat',$request->id_kat)->first();
+        $update->acronym = $request['acronym'];
+        $update->description = $request['description'];
+        $update->update();
+    }
+
+    public function getKategoriById(Request $request)
+    {
+        $getKategori = Kategori_Asset::select('kategori', 'id_kat', 'qty', 'description', 'acronym')->where('id_kat', $request->id_kat)->first();
+
+        return array("data" => $getKategori);
     }
 
 	public function update(Request $request){
@@ -633,7 +697,7 @@ class AssetController extends Controller
 		$store->save();
 
         $update_kat      = Kategori_Asset::where('id_kat', $request->kategori3)->first();
-        $update_kat->qty = $count_qty->qty - $qty_pinjam;
+        // $update_kat->qty = $count_qty->qty - $qty_pinjam;
         $update_kat->update();        
 
         // $kirim = User::select('email')->where('id_position', 'INTERNAL IT')
@@ -645,7 +709,7 @@ class AssetController extends Controller
 
         // $user = DB::table('users')->select('email')->where('id_position','ADMIN')->where('id_division','MSM')->get();
 
-        $admin = DB::table('users')->select('email','name')->where('id_position','ADMIN')->where('id_division','MSM')->first();
+        $admin = User::select('email','name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
 
         $peminjaman = DB::table('tb_asset_transaction')
                         ->join('users', 'users.nik', '=', 'tb_asset_transaction.nik_peminjam')
@@ -660,7 +724,9 @@ class AssetController extends Controller
         $tambah_log->save();
 
         // $users = User::select('email')->where('email', 'faiqoh@sinergy.co.id')->get();
-        Mail::to($admin)->cc($kirim)->send(new PeminjamanAssetMSM($peminjaman,$admin,'[SIMS-App] Asking Approvement - Peminjaman Barang'));     
+        foreach ($admin as $admin) {
+            Mail::to($admin)->cc($kirim)->send(new PeminjamanAssetMSM($peminjaman,$admin,'[SIMS-App] Asking Approvement - Peminjaman Barang'));     
+        }
         // Notification::send($kirim, new PinjamanBaru());
 
 	    return redirect()->back()->with('update', 'Peminjaman Akan di Proses!');	
@@ -692,14 +758,20 @@ class AssetController extends Controller
         $update->status     = 'ACCEPT';
         $update->update();
 
-    	/*$count_total_pinjam = Tech_asset::select('id_barang', 'total_pinjam')->where('id_barang', $id_barang)->get();
+        $count_qty = Kategori_Asset::select('qty')->where('id_kat', $request->id_kat_accept)->first();
 
-    	foreach ($count_total_pinjam as $qty_pinjam) {
-    		$update_qty = Tech_asset::where('id_barang', $qty_pinjam->id_barang)->first();
+        $update_kat      = Kategori_Asset::where('id_kat', $request->id_kat_accept)->first();
+        $update_kat->qty = $count_qty->qty - $qty_akhir;
+        $update_kat->update(); 
+
+    	$count_total_pinjam = Tech_asset::select('id_barang', 'total_pinjam')->where('id_barang', $id_barang)->get();
+
+    	foreach ($count_total_pinjam as $total_pinjam) {
+    		$update_qty = Tech_asset::where('id_barang', $total_pinjam->id_barang)->first();
     		$update_qty->status = 'UNAVAILABLE';
-    		$update_qty->total_pinjam = $qty_pinjam->total_pinjam +1;
+    		$update_qty->total_pinjam = $total_pinjam->total_pinjam +1;
     		$update_qty->update();
-    	}*/
+    	}
         $nik_peminjam = $request['nik_peminjam_accept'];
 
         $users = User::select('email','name')->where('nik',$nik_peminjam)->first();
@@ -933,10 +1005,11 @@ class AssetController extends Controller
 
     public function store_kategori(Request $request)
     {
-        $tambah             = new Kategori_Asset();
-        $tambah->kategori   = $request['kategori'];
-        $tambah->qty        = '0';
-        $tambah->description       = $request['keterangan'];
+        $tambah                 = new Kategori_Asset();
+        $tambah->kategori       = $request['kategori'];
+        $tambah->acronym        = $request['code_kat'];
+        $tambah->qty            = '0';
+        $tambah->description    = $request['keterangan'];
         $tambah->save();
 
         return redirect()->back()->with('success', 'Successfully');
@@ -945,7 +1018,7 @@ class AssetController extends Controller
     public function getKategori(Request $request)
     {
         return array("data" => DB::table('tb_kategori_asset')
-                    ->select('qty', 'kategori', 'description', 'id_kat')
+                    ->select('qty', 'kategori', 'description', 'id_kat','acronym')
                     ->get());
     }
 
@@ -965,14 +1038,14 @@ class AssetController extends Controller
         $asset2 = DB::table('tb_asset')
                     ->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
                     ->join('tb_detail_asset_transaction', 'tb_detail_asset_transaction.id_barang', '=', 'tb_asset.id_barang')
-                    ->select(DB::raw('count(tb_detail_asset_transaction.id_barang) as qty_pinjam'), 'nama_barang', 'tb_asset.description', 'serial_number', 'tb_asset.status', 'kategori', 'tb_asset.id_barang', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location')
+                    ->select(DB::raw('count(tb_detail_asset_transaction.id_barang) as qty_pinjam'), 'nama_barang', 'tb_asset.description', 'serial_number', 'tb_asset.status', 'kategori', 'tb_asset.id_barang', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location', 'acronym', 'code_asset')
                     ->groupBy('tb_detail_asset_transaction.id_barang')
                     ->get();
 
 
         $asset3 = DB::table('tb_asset')
                 ->join('tb_kategori_asset', 'tb_kategori_asset.id_kat', '=', 'tb_asset.id_kat')
-                ->select('tb_asset.id_barang','nama_barang','tb_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location')
+                ->select('tb_asset.id_barang','nama_barang','tb_asset.description','nik', 'serial_number', 'status', 'kategori', 'total_pinjam', 'tb_kategori_asset.id_kat','status_pinjam','tb_kategori_asset.qty as qty_kategori','location', 'acronym', 'code_asset')
                 ->where('status_pinjam', 'TIDAK PERNAH')
                 ->get();
 
@@ -1016,7 +1089,7 @@ class AssetController extends Controller
         // $kategori = $request['id_kat_accept'];
 
         return array(DB::table('tb_asset')
-                ->select('serial_number', 'id_barang', 'nama_barang')
+                ->select('serial_number', 'id_barang', 'nama_barang','code_asset')
                 ->where('id_kat',$kategori)
                 ->where('status', 'AVAILABLE')
                 ->get(),$kategori);
@@ -1027,7 +1100,7 @@ class AssetController extends Controller
         // $kategori = $request['id_kat_accept'];
 
         return array(DB::table('tb_asset')
-            ->select('serial_number', 'nama_barang', 'id_barang','description','id_kat','status')
+            ->select('serial_number', 'nama_barang', 'id_barang','description','id_kat','status','location')
             ->where('id_barang', $request->id_barang)
             ->get(),$request->id_barang);  
     }
@@ -1081,7 +1154,7 @@ class AssetController extends Controller
         return array(DB::table('tb_detail_asset_transaction')
                 ->join('tb_asset_transaction','tb_asset_transaction.id_transaction','=','tb_detail_asset_transaction.id_transaction')
         		->join('tb_asset', 'tb_detail_asset_transaction.id_barang', '=', 'tb_asset.id_barang')
-                ->select('nama_barang', 'serial_number')
+                ->select('nama_barang', 'serial_number','code_asset')
                 ->where('no_peminjaman',$request->id_transaction)
                 ->get(),$request->id_transaction);
     }
@@ -1106,11 +1179,6 @@ class AssetController extends Controller
 
     public function exportExcelTech(Request $request)
     {
-        $tambah_log = new LogAssetTech();
-        $tambah_log->nik = Auth::User()->nik;
-        $tambah_log->keterangan     = "Exporting List Asset";
-        $tambah_log->save();
-
         $spreadsheet = new Spreadsheet();
 
         $prSheet = new Worksheet($spreadsheet,'Report List Asset');
@@ -1162,6 +1230,11 @@ class AssetController extends Controller
         
         $writer = new Xlsx($spreadsheet);
         return $writer->save("php://output");
+
+        $tambah_log = new LogAssetTech();
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->keterangan     = "Exporting List Asset";
+        $tambah_log->save();
 
         // return redirect()->back();
     }
