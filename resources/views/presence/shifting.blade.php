@@ -35,9 +35,15 @@ Presence Shifting
 			color: #fff !important;
 		}
 
-		.Helpdesk {
+		.Helpdesk, .ho, .HO {
 			background-color: #ca195a !important;
 			border-color: #ca195a !important;
+			color: #fff !important;
+		}
+
+		.ho, .HO {
+			background-color: #605ca8 !important;
+			border-color: #605ca8 !important;
 			color: #fff !important;
 		}
 
