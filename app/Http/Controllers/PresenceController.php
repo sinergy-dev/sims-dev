@@ -642,45 +642,59 @@ class PresenceController extends Controller
     }
 
     public function getSummaryThisMonth(Request $req){
-        $count_shift = DB::table('presence__shifting')
-                ->select('nik')
-                ->selectRaw("count(if(`className` = 'Pagi',1,NULL)) AS `shift_pagi`")
-                ->selectRaw("count(if(`className` = 'Sore',1,NULL)) AS `shift_sore`")
-                ->selectRaw("count(if(`className` = 'Malam',1,NULL)) AS `shift_malam`")
-                ->selectRaw("count(if(`className` = 'Libur',1,NULL)) AS `shift_libur`")
-                ->where('start','LIKE',$req->start . '%')
-                ->groupBy('nik');
+        $count_shift = $this->getSchedule($req);
+        $count_shift->getQuery()->orders = null;
+        $count_shift = $count_shift->selectRaw('`nik`,`className`, COUNT(*) AS `count`')
+            ->groupBy('className')
+            ->groupBy('nik');
 
-        return DB::table('presence__shifting_user')
+        // return $count_shift->get();
+
+        $shifting_option = PresenceShiftingOption::select(
+                DB::raw('DISTINCT presence__shifting_option.name_option'),
+                'presence__shifting_option.class_shifting',
+            );
+
+        $count_shift = DB::table($count_shift,'count_shift')
+            ->leftJoinSub($shifting_option,'shifting_option',function($join){
+                $join->on('count_shift.className','=','shifting_option.name_option');
+            })->get()->groupBy('nik');
+
+        // return $count_shift;
+
+        $shifting_summary = DB::table('presence__shifting_user')
             ->select(
                 DB::raw('`users`.`nik` AS `id`'),
                 'users.name',
                 DB::raw('substring_index(`users`.`name`, " ", 1) AS `nickname`'),
-                'presence__shifting_project.project_name',
-                'presence__shifting_project.project_name',
-                DB::raw('`presence__shifting_user`.`shifting_project` AS `on_project`'),
-                DB::raw('ifnull(`shift_pagi`,0) AS `shift_pagi`'),
-                DB::raw('ifnull(`shift_sore`,0) AS `shift_sore`'),
-                DB::raw('ifnull(`shift_malam`,0) AS `shift_malam`'),
-                DB::raw('ifnull(`shift_libur`,0) AS `shift_libur`'),
+                DB::raw('presence__shifting_project.id AS `project_id`'),
+                'presence__shifting_project.project_name'
             )
-            ->leftJoinSub($count_shift,'count_shift',function($join){
-                $join->on('count_shift.nik','=','presence__shifting_user.nik');
-            })
             ->join('users','users.nik','=','presence__shifting_user.nik')
             ->join('presence__shifting_project','presence__shifting_project.id','=','presence__shifting_user.shifting_project')
             ->get();
+
+        $shifting_summary = $shifting_summary->map(function ($item, $key) use ($count_shift) {
+            if(!empty($count_shift[$item->id])) {
+                $item->shifting_summary = $count_shift[$item->id];
+            }
+            return $item;
+        });
+
+        return $shifting_summary;
     }
 
     public function getScheduleThisProject(Request $req){
         return $this->getSchedule($req)
             ->join('presence__shifting_user','presence__shifting_user.nik','=','presence__shifting.nik')
+            ->orderBy('start','DESC')
             ->get()
             ->toArray();
     }
 
     public function getScheduleThisUser(Request $req){
         return $this->getSchedule($req)
+            ->orderBy('start','DESC')
             ->get()
             ->toArray();
     }
