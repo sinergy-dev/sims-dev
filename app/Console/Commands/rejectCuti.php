@@ -46,7 +46,7 @@ class rejectCuti extends Command
         $max_date = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
                     ->join("tb_cuti_detail",'tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
-                    ->select(DB::raw('MAX(date_off) as date_off'),'users.nik','tb_cuti.id_cuti','users.email','decline_reason')
+                    ->select(DB::raw('MAX(date_off) as date_off'),'users.nik','tb_cuti.id_cuti','users.email','decline_reason','users.id_territory','users.id_division')
                     ->where('tb_cuti.status','n')
                     ->groupby('tb_cuti.id_cuti')
                     ->having(DB::raw("DATEDIFF(date_off, now())"), '=', '0')
@@ -60,6 +60,55 @@ class rejectCuti extends Command
             $update->decline_reason = 'Di Reject oleh sistem karena hari cuti telah kadaluwarsa';
             $update->update();
 
+            $nik = $data->nik;
+            $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+            $ter = $territory->id_territory;
+            $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+            $div = $division->id_division;
+            $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+            $pos = $position->id_position; 
+            $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
+            $com = $company->id_company;
+
+            if ($ter != NULL) {
+                if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
+                    if ($div == 'PMO' || $div == 'MSM') {
+                        $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+                    } else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
+                        $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+                    }else{
+                        $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
+                    }
+                }else if ($ter == 'DPG') {
+                    $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
+                }else if ($div == 'WAREHOUSE'){
+                    $nik_kirim = DB::table('users')->select('users.email')->where('email','brillyan@sinergy.co.id')->where('id_company','1')->first();
+                }else{
+                    $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',$data->id_territory)->where('id_position','MANAGER')->where('id_division',$data->id_division)->where('id_company','1')->first();
+                }
+                
+
+                if ($pos == "MANAGER" && $div == "MSM"){
+                    $kirim = [User::where('email', $nik_kirim->email)->first()->email,'rony@sinergy.co.id'];
+                } else {
+                    $kirim = User::where('email', $nik_kirim->email)->first()->email;
+                }         
+                
+            }else{
+                if ($div == 'HR') {
+                    if($pos == 'HR MANAGER'){
+                        $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
+                    }else{
+                        $kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_division',$data->id_division)->where('id_company','1')->first()->email;
+                    }
+                }else if($pos == 'MANAGER'){
+                    $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
+                }else{
+                    $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',$data->id_division)->where('id_company','1')->first()->email;
+                }
+            }
+
+           
             $decline_id = CutiDetil::where('id_cuti',$data->id_cuti)->get();
 
             foreach ($decline_id as $decline_id) {
@@ -84,7 +133,7 @@ class rejectCuti extends Command
 
             $ardetil_after = "";
 
-            Mail::to("ladinar@sinergy.co.id")->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti (Rejected by Sistem)'));
+            Mail::to($data->email)->cc($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti (Rejected by Sistem)'));
 
         }
     }
