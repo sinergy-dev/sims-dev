@@ -643,18 +643,23 @@ Presence Shifting
 				success: function(result){
 					$("#ulUser").empty();
 					var append = "";
-					for (var i = 0; i < result.length; i++) {
-						var showDetail = "showDetail('" + result[i].name + "','" + result[i].nickname + "','" +result[i].id + "','" + result[i].on_project + "')";
-						append = append + '	<li class="' + result[i].on_project + '" style="display:none;padding-bottom:10px">';
-						append = append + '		<a onclick="' + showDetail + '">' + result[i].name;
+					result.forEach(function(item,index){
+						var showDetail = "showDetail('" + item.name + "','" + item.nickname + "','" + item.id + "','" + item.project_id + "')";
+						append = append + '	<li class="' + item.project_id + '" style="display:none;padding-bottom:10px">';
+						append = append + '		<a onclick="' + showDetail + '">' + item.name;
 						append = append + '			<br>';
-						append = append + '			<small class="label label-success pull-right" style="margin-right: 5px;">' + result[i].shift_libur + ' </small>';
-						append = append + '			<small class="label label-primary pull-right" style="margin-right: 5px;">' + result[i].shift_malam + ' </small>';
-						append = append + '			<small class="label label-warning pull-right" style="margin-right: 5px;">' + result[i].shift_sore + ' </small>';
-						append = append + '			<small class="label label-danger pull-right" style="margin-right: 5px;">' + result[i].shift_pagi + ' </small>';
+						if(item.shifting_summary !== undefined){
+							item.shifting_summary.forEach(function(itemSummary,indexSummary){
+								if(itemSummary.class_shifting === null){
+									append = append + '			<small class="label bg-purple pull-right" style="margin-right: 5px;">' + itemSummary.count + ' </small>';
+								} else {
+									append = append + '			<small class="label bg-' + itemSummary.class_shifting + ' pull-right" style="margin-right: 5px;">' + itemSummary.count + ' </small>';
+								}
+							})
+						}
 						append = append + '		</a>';
 						append = append + '	</li>';
-					};
+					})
 					$("#ulUser").append(append);
 					$("." + globalProject).show();
 				},
