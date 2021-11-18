@@ -783,10 +783,18 @@ Leaving Permitte
             disableDate.push(moment( value).format("MM/DD/YYYY"))
           })
 
+          if(result.shiftingUser){
+            var daysOfWeekDisabled = ""
+            var daysOfWeekHighlighted = []
+          } else {
+            var daysOfWeekDisabled = "0,6"
+            var daysOfWeekHighlighted = [0,6]
+          }
+
           $('#date_start').datepicker({
             weekStart: 1,
-            daysOfWeekDisabled: "0,6",
-            daysOfWeekHighlighted: [0,6],
+            daysOfWeekDisabled: daysOfWeekDisabled,
+            daysOfWeekHighlighted: daysOfWeekHighlighted,
             startDate: moment().format("MM/DD/YYYY"),
             todayHighlight: true,
             multidate: true,
@@ -1494,7 +1502,8 @@ Leaving Permitte
         ],
         "searching": true,
         "lengthChange": true,
-        "order": [[ 2, "desc" ]],
+        // "order": [[ 2, "desc" ]],
+        "order": [],
         "fixedColumns":   {
             leftColumns: 1
         },
