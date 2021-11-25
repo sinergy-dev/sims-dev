@@ -271,8 +271,10 @@ class PrController extends Controller
            $akhirnomor = '000' . $lastnumber;
         }elseif($lastnumber > 9 && $lastnumber < 100){
            $akhirnomor = '00' . $lastnumber;
-        }elseif($lastnumber >= 100){
+        }elseif($lastnumber >= 100 && $lastnumber < 1000){
            $akhirnomor = '0' . $lastnumber;
+        } elseif ($lastnumber >= 1000) {
+            $akhirnomor = $lastnumber;
         }
 
         $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
