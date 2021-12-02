@@ -697,7 +697,7 @@
 
         id = "count_pr_"+value.index
         nominal = "nominal_pr_"+value.index
-        $("#count_pr_"+value.index).mask("000.000.000.000,00", {reverse: true});
+        $("#count_pr_"+value.index).mask("000.000.000.000.000,00", {reverse: true});
         countPr.push(id)
         nominalPr.push(nominal)
       })
@@ -707,11 +707,7 @@
       dashboardCount(year)
     })
 
-    function initMoney(){
-      $('.money').mask("000.000.000.000,00", {reverse: true});
-    }
-
-    $("#money").mask("000.000.000.000,00", {reverse: true});
+    $("#money").mask("000.000.000.000.000,00", {reverse: true});
 
     function dashboardCount(year){  
       Pace.restart();
@@ -726,12 +722,9 @@
               $("#"+countPr[0]).text(result.all[0])
               $("#"+countPr[1]).text(result.ipr[0])
               $("#"+countPr[2]).text(result.epr[0])
-              $("#"+nominalPr[0]).text(result.all[1]);
-              $("#"+nominalPr[0]).mask("000.000.000.000.000,00", {reverse: true})
-              $("#"+nominalPr[1]).text(result.ipr[1]);
-              $("#"+nominalPr[1]).mask("000.000.000.000.000,00", {reverse: true})
-              $("#"+nominalPr[2]).text(result.epr[1]);
-              $("#"+nominalPr[2]).mask("000.000.000.000.000,00", {reverse: true})
+              $("#"+nominalPr[0]).text(new Intl.NumberFormat('id').format(result.all[1]));
+              $("#"+nominalPr[1]).text(new Intl.NumberFormat('id').format(result.ipr[1]));
+              $("#"+nominalPr[2]).text(new Intl.NumberFormat('id').format(result.epr[1]));
           }
         })
       })
