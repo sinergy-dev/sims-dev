@@ -932,8 +932,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/create/getAtmPeripheralDetail','TicketingController@getAtmPeripheralDetail');
 
 	Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
+	Route::get('/ticketing/mail/getEmailTemplate','TicketingController@getEmailTemplate');
 	Route::get('/ticketing/mail/getOpenMailTemplate','TicketingController@getOpenMailTemplate');
 	Route::get('/ticketing/mail/sendEmailOpen','TicketingController@sendEmailOpen');
+	Route::post('/ticketing/mail/storeAddMail', 'TicketingController@storeAddMail');
+	Route::get('/ticketing/mail/getSettingEmail', 'TicketingController@getSettingEmail');
 
 	Route::get('/ticketing/getPerformanceAll','TicketingController@getPerformanceAll');
 	Route::get('/ticketing/getPerformanceByClient','TicketingController@getPerformanceByClient');
