@@ -1205,7 +1205,7 @@ class HRGAController extends Controller
 	            })
 	            ->get();
 
-        }elseif ($pos == 'DIRECTOR') {
+            }elseif ($pos == 'DIRECTOR') {
             $cuti = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
@@ -1632,14 +1632,14 @@ class HRGAController extends Controller
         }else{
             if ($div == 'HR') {
                 if($pos == 'HR MANAGER'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+                    $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
                 }else{
-                    $nik_kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
+                    $kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first()->email;
                 }
             }else if($pos == 'MANAGER'){
-                $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
+                $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
             }else{
-                $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
+                $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first()->email;
             }
             
 
@@ -2441,6 +2441,8 @@ class HRGAController extends Controller
         ->groupby('users.nik')
         ->get();
 
+        $getShifingUser = DB::table('presence__shifting_user')->where('nik',$request->nik)->exists();
+
 
         $getAllCutiDate = DB::table('tb_cuti_detail')
             ->select('date_off')
@@ -2452,7 +2454,11 @@ class HRGAController extends Controller
             })
             ->pluck('date_off');
 
-        return collect(["parameterCuti" => $getcuti[0],"allCutiDate" => $getAllCutiDate]);
+        return collect([
+            "parameterCuti" => $getcuti[0],
+            "allCutiDate" => $getAllCutiDate,
+            "shiftingUser" => $getShifingUser
+        ]);
     }
 
     public function getCutiAuth(Request $request){
@@ -3546,7 +3552,8 @@ class HRGAController extends Controller
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail_filterd`.`id_cuti`) as days'))
-                    ->orderBy('tb_cuti.date_req','DESC')                    
+                    ->orderByRaw('FIELD(tb_cuti.status, "n", "v", "d")')               
+                    ->orderBy('tb_cuti.date_req','DESC')
                     ->where('users.id_company',$com)
                     ->groupby('id_cuti');
 

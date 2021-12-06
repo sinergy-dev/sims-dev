@@ -48,6 +48,7 @@ class SalesRemainder extends Command
                     ->orWhere('result' ,'SD')
                     ->groupBy('nik');
             })
+            ->where('status_karyawan','!=','dummy')
             ->where('email','<>','presales@sinergy.co.id')
             ->select('nik','name','email')
             ->get();
