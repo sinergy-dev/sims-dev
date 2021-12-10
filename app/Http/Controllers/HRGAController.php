@@ -1663,7 +1663,9 @@ class HRGAController extends Controller
 
         $hari = collect(['cuti_accept'=>$hari_cuti]);
 
-        Mail::to($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti'));
+        $hr_manager = DB::table('role_user')->join('users','users.nik','=','role_user.user_id')->select('users.email')->where('role_id','2')->first();
+
+        Mail::to($kirim)->cc($hr_manager)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti'));
 
         return redirect()->back();
     
