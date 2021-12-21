@@ -539,6 +539,116 @@ class TicketingController extends Controller
 		return array("data" => $result);
 	}
 
+	public function getPerformanceByFilter(Request $request){
+		$start = microtime(true);
+
+		$occurring_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity','ticketing__id.id_client')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(id) AS activity"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			->join('ticketing__id','ticketing__id.id_ticket','=','ticketing__activity.id_ticket')
+			->where('ticketing__activity.activity','<>','CANCEL')
+			->where('ticketing__activity.activity','<>','CLOSE');
+
+		if(isset($request->client)){
+			$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+				$query->select('ticketing__id.id_ticket')
+					->from('ticketing__id')
+					->whereIn('ticketing__id.id_client',$request->client);
+			});
+		}
+		if(isset($request->severity)){
+			$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+				$query->select('ticketing__detail.id_ticket')
+					->from('ticketing__detail')
+					->whereIn('ticketing__detail.severity',$request->severity);
+			});
+		}
+		if(isset($request->type)){
+			$occurring_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+				$query->select('ticketing__detail.id_ticket')
+					->from('ticketing__detail')
+					->whereIn('ticketing__detail.type_ticket',$request->type);
+			});
+		}
+
+		if(isset($request->startDate) && isset($request->endDate)){
+			$occurring_ticket->whereBetween('ticketing__activity.date', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+		}
+
+		$occurring_ticket->get();
+
+		$occurring_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id,id_client',
+			])
+			->joinSub($occurring_ticket,'occurring_ticket',function($join){
+				$join->on('occurring_ticket.id_ticket','=','ticketing__detail.id_ticket');
+			})
+			->orderBy('id','DESC')
+			->get();
+
+		$finish_ticket = DB::table('ticketing__activity')
+			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
+			->whereIn('ticketing__activity.id',function ($query) {
+				$query->select(DB::raw("MAX(`id`) AS `activity`"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				});
+
+		if(isset($request->client)){
+			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+				$query->select('ticketing__id.id_ticket')
+					->from('ticketing__id')
+					->whereIn('ticketing__id.id_client',$request->client);
+			});
+		}
+		if(isset($request->severity)){
+			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+				$query->select('ticketing__detail.id_ticket')
+					->from('ticketing__detail')
+					->whereIn('ticketing__detail.severity',$request->severity);
+			});
+		}
+		if(isset($request->type)){
+			$finish_ticket->whereIn('ticketing__activity.id_ticket',function($query) use ($request){
+				$query->select('ticketing__detail.id_ticket')
+					->from('ticketing__detail')
+					->whereIn('ticketing__detail.type_ticket',$request->type);
+			});
+		}
+
+		if(isset($request->startDate) && isset($request->endDate)){
+			$finish_ticket->whereBetween('ticketing__activity.date', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+		}
+
+		$limit = $occurring_ticket_result->count() > 100 ? 100 : 100 - $occurring_ticket_result->count();
+
+		$finish_ticket->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
+			->orderBy('ticketing__activity.id','DESC')
+			->take($limit);
+
+		$finish_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id,id_client',
+			])
+			->joinSub($finish_ticket,'finish_ticket',function($join){
+				$join->on('finish_ticket.id_ticket','=','ticketing__detail.id_ticket');
+			})
+			// ->whereIn('id_ticket',$finish_ticket)
+			->orderBy('id','DESC')
+			->get();
+
+		$result = $occurring_ticket_result->merge($finish_ticket_result);
+
+		return array("data" => $result);
+	}
+
 	public function getPerformanceByTicket(Request $req){
 		$idTicket = $req->idTicket;
 		$result = TicketingDetail::whereHas('id_detail', function($query) use ($idTicket){
