@@ -2594,6 +2594,8 @@ Ticketing
 							append = append + '<td><span class="label" style="background-color:#f1c40f !important">Moderate</span></td>';
 						else if (value.severity == 4)
 							append = append + '<td><span class="label label-success">Minor</span></td>';
+						else
+							append = append + '<td><span class="label label-default">N/A</span></td>';
 						append = append + '<td>' + value.operator + '</td>';
 					append = append + '</tr>';
 				});
