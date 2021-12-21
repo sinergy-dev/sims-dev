@@ -386,6 +386,11 @@ class TicketingController extends Controller
 		$detailTicketOpen->note = $request->note;
 		$detailTicketOpen->reporting_time = $request->report;
 		$detailTicketOpen->severity = substr($request->severity,0,1);
+		$detailTicketOpen->type_ticket = $request->type_ticket;
+
+		if($request->engineer != ""){
+			$detailTicketOpen->engineer = $request->engineer;
+		}
 
 		$detailTicketOpen->save();
 
