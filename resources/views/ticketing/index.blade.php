@@ -3014,6 +3014,7 @@ Ticketing
 		$("#inputATM").empty()
 		$("#inputLocation").val('');
 		$("#inputSerial").val('');
+		$("#inputEngineerOpen").val('');
 		// $("#inputReportingTime").val('');
 		$("#inputReportingTime").val(moment().format('HH:mm:ss'))
 		$("#inputReportingDate").val('');
