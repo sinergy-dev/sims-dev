@@ -2978,18 +2978,27 @@ Ticketing
 					$("#holderIPServer").show();
 					$("#holderIPServer2").text($("#inputIpServer").val());
 					$("#holderLocation").text($("#inputAbsenLocation").select2('data')[0].text);
+				} else if($("#inputClient option:selected").text().includes("Switch")){
+					$("#holderIDATM2").hide();
+					$("#holderSerial1").show();
+					$("#holderIDATM3").show();
+					$("#holderIPMechine").show();
+					$("#holderIPMechine2").text($("#inputIpMechine").val());
+					// $("#holderIPServer").show();
+					// $("#holderIPServer2").text($("#inputIpServer").val());
+					$("#holderLocation").text($("#inputSwitchLocation").select2('data')[0].text);
 				} else {
 					$("#holderIDATM2").hide();
 					$("#holderIDATM3").hide();
 				}
 			}
-			if(clientWincor == 1){
-				$("#createEmailBodyWincor").show()
-				$("#createEmailBodyNormal").hide()
-			} else {
-				$("#createEmailBodyWincor").hide()
-				$("#createEmailBodyNormal").show()
-			}
+			// if(clientWincor == 1){
+			// 	$("#createEmailBodyWincor").show()
+			// 	$("#createEmailBodyNormal").hide()
+			// } else {
+			// 	$("#createEmailBodyWincor").hide()
+			// 	$("#createEmailBodyNormal").show()
+			// }
 		}
 	}
 
