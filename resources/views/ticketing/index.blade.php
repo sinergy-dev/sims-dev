@@ -2944,10 +2944,10 @@ Ticketing
 					$("#holderType").html($("#inputType").val());
 
 					$("#holderSerial1 th").text("CCTV Serial")
-					$("#holderIDATM2 th").text("ID CCTV")
+					// $("#holderIDATM2 th").text("ID CCTV")
 					$("#holderIDATM3 th").text("CCTV Mechine Type")
 					$("#holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
-				} if($("#inputClient").val() == "BDIYUPS"){
+				} if($("#inputClient option:selected").text().includes("UPS")){
 					$("#holderIDATM2").insertAfter($("#holderIDATM2").next())
 					$("#holderIDATM2").show();
 					$("#holderIDATM3").show();
