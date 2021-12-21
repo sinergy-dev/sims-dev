@@ -3811,13 +3811,60 @@ Ticketing
 							})
 						}
 					})
+
+					$.each($("#selectShowColumnTicket li input"),function(index,item){
+						var column = $("#tablePerformance").DataTable().column(index)
+						// column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+						$(item).prop('checked', column.visible())
+					})
 				},
 			})
 
 		}
 	}
 
+	$("#clientList").change(function(){
+		getPerformanceByFilter($(this).val(),[],[],[])
+	})
+
+	$("#severityFilter").change(function(){
+		getPerformanceByFilter([],$(this).val(),[],[])
+	})
+
+	$("#typeFilter").change(function(){
+		getPerformanceByFilter([],[],[],$(this).val())
+	})
+
+	$('#dateFilter').daterangepicker({
+		ranges: {
+			'Today'       : [moment(), moment()],
+			'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+			'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+			'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+			'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+			'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		},
+		startDate: moment().subtract(29, 'days'),
+		endDate: moment()
+	},
+	function (start, end) {
+		$('#dateFilter').html("")
+		$('#dateFilter').html('<i class="fa fa-calendar"></i> <span>' + start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY') + '</span>');
+
+		var startDay = start.format('YYYY-MM-DD');
+		var endDay = end.format('YYYY-MM-DD');
+
+		$("#startDateFilter").val(startDay)
+		$("#endDateFilter").val(endDay)
+
+		startDate = start.format('D MMMM YYYY');
+		endDate = end.format('D MMMM YYYY');
+
+		getPerformanceByFilter([],[],[{start:start,end:start}],[])
+	});
+
 	function getPerformanceByClient(client){
+		var client_param = jQuery.param({client: client});
 		console.log($.fn.dataTable.isDataTable("#tablePerformance"))
 
 		if($.fn.dataTable.isDataTable("#tablePerformance")){
