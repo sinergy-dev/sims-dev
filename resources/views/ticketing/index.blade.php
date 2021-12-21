@@ -4004,12 +4004,29 @@ Ticketing
 					severityClass = "label label-default"
 				}
 
+				if(result.type_ticket == "TT"){
+					ticketType = "Trouble Ticket"
+					ticketClass = "label label-danger"
+				} else if(result.type_ticket == "PM"){
+					ticketType = "Preventive Maintenance"
+					ticketClass = "label label-warning"
+				} else if(result.type_ticket == "PL"){
+					ticketType = "Permintaan Layanan"
+					ticketClass = "label label-success"
+				} else {
+					ticketType = "N/A"
+					ticketClass = "label label-default"
+				}
+
 				$('#ticketID').val(result.id_ticket);
 				$('#ticketOpen').val(moment(result.first_activity_ticket.date).format("D MMMM YYYY (HH:mm)"))
 				$("#modal-ticket-title").html("Ticket ID <b>" + result.id_ticket + "</b>");
 				$("#ticketOperator").html(" latest by: <b>" + result.lastest_activity_ticket.operator + "</b>");
 				$("#ticketSeverity").text(severityType);
+				$("#ticketType").text(ticketType);
 				$("#ticketSeverity").attr('class',severityClass);
+				$("#ticketType").attr('class',ticketClass);
+
 				$("#ticketLatestStatus").text(moment(result.lastest_activity_ticket.date).format('D MMMM YYYY (HH:mm)'));
 				$("#ticketStatus").text(result.lastest_activity_ticket.activity);
 				$("#ticketStatus").attr('style','');
