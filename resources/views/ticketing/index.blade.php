@@ -1824,11 +1824,32 @@ Ticketing
 								</div>
 							</div>
 						</div>
+
+						<hr>
+						<div class="row">
+							<div class="form-group">
+								<div class="col-sm-6">
+									<label class="container">Situation
+									  <input type="checkbox" id="situation">
+									  <span class="checkmark"></span>
+									</label>
+									<label class="container">Banking
+									  <input type="checkbox" id="banking">
+									  <span class="checkmark"></span>
+									</label>
+									<label class="container">Wincor
+									  <input type="checkbox" id="wincor">
+									  <span class="checkmark"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" onclick="saveClient()">Save changes</button>
+					<button type="button" class="btn btn-primary" onclick="saveClient('EditClient')">Save changes</button>
 				</div>
 			</div>
 		</div>
