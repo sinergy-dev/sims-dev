@@ -983,6 +983,12 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/setting/deleteAbsen','TicketingController@deleteAbsen');
 	Route::get('/ticketing/setting/getDetailAtm','TicketingController@getDetailAtm');
 
+	Route::get('/ticketing/setting/getAllSwitch', 'TicketingController@getAllSwitchSetting');
+	Route::get('/ticketing/setting/getDetailSwitch','TicketingController@getDetailSwitch');
+	Route::get('/ticketing/setting/newSwitch','TicketingController@newSwitch');
+	Route::get('/ticketing/setting/setSwitch','TicketingController@setSwitch');
+	Route::get('/ticketing/setting/deleteSwitch','TicketingController@deleteSwitch');
+
 	Route::get('/ticketing/report/getParameter','TicketingController@getReportParameter');
 	Route::get('/ticketing/report/make','TicketingController@makeReportTicket');
 	Route::get('/ticketing/report/download','TicketingController@downloadReportTicket');
