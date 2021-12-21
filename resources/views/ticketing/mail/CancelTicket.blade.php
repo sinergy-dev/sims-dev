@@ -5,7 +5,7 @@
 	<table style="width: 401px;">
 		<tr style="text-align: right;">
 			<td style=" width:120px">
-				<h3 style="font-size: 24px;"><b><i>Trouble Ticket</i></b></h3>
+				<h3 style="font-size: 24px;"><b><i>Cancel Ticket</i></b></h3>
 			</td>
 			<td >
 				<img src="{{asset('/img/header-ticketing.jpg')}}">
