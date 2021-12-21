@@ -750,13 +750,13 @@ class TicketingController extends Controller
 
 		$activityTicketUpdate->save();
 
-		$clientAcronymFilter = Ticketing::with('client_ticket')
+		$clientIdFilter = Ticketing::with('client_ticket')
 			->where('id_ticket',$req->id_ticket)
 			->first()
 			->client_ticket
-			->client_acronym;
+			->id;
 
-		$activityTicketUpdate->client_acronym_filter = $clientAcronymFilter;
+		$activityTicketUpdate->client_id_filter = $clientIdFilter;
 		
 		return $activityTicketUpdate;
 	}
