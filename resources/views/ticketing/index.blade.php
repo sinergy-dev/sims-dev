@@ -938,7 +938,7 @@ Ticketing
 										<th style="vertical-align: middle;text-align: center;">Serial Number</th>
 										<th style="vertical-align: middle;text-align: center;">Location</th>
 										<th style="vertical-align: middle;text-align: center;">Activation</th>
-										<th style="vertical-align: middle;text-align: center;"></th>
+										<th style="vertical-align: middle;text-align: center;">Action</th>
 									</tr>
 								</thead>
 							</table>
