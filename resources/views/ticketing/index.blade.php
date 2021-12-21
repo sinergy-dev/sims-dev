@@ -6053,6 +6053,219 @@ Ticketing
 		}
 	);
 
+	function switchSetting(){
+		$(".settingComponent").hide()
+		$("#switchSetting").show()
+		$("#addSwitch").show()
+		$("#addSwitch2").show()
+
+		if($.fn.dataTable.isDataTable("#tableSwitch")){
+
+		} else {
+			$("#tableSwitch").DataTable({
+				ajax:{
+					type:"GET",
+					url:"{{url('/ticketing/setting/getAllSwitch')}}",
+					dataSrc: function (json){
+						json.data.forEach(function(data,idex){
+							data.action = '<button type="button" class="btn btn-flat btn-block btn-default" onclick="editSwitch(' + data.id + ')">Edit</button>'
+						})
+						return json.data
+					}
+				},
+				columns:[
+					{
+						data:'location',
+						className:'text-center',
+					},
+					{ 	
+						data:'cabang',
+						className:'text-center',
+					},
+					{
+						data:'type',
+						className:'text-center',
+					},
+					{ 
+						data:'port',
+						className:'text-center',
+					},
+					{ 
+						data:'serial_number',
+						className:'text-center',
+					},
+					{ 
+						data:'ip_management',
+						className:'text-center',
+					},
+					{
+						data:'action',
+						className:'text-center',
+						orderable: false,
+						searchable: true,
+					}
+				],
+				// order: [[10, "DESC" ]],
+				autoWidth:false,
+				lengthChange: false,
+				searching:true,
+			})
+		}
+	}
+
+	function switchAdd(){
+		$("#modal-setting-switch-add input.form-control").val("")
+		$("#modal-setting-switch-add").modal('toggle');
+	}
+
+	function newSwitch(){
+		$.ajax({
+			type:"GET",
+			url:"{{url('/ticketing/setting/newSwitch')}}",
+			data:{
+				switchAddType:$("#switchAddType").val(),
+				switchAddPort:$("#switchAddPort").val(),
+				switchAddSerialNumber:$("#switchAddSerialNumber").val(),
+				switchAddIPManagement:$("#switchAddIPManagement").val(),
+				switchAddLocation:$("#switchAddLocation").val(),
+				switchAddCabang:$("#switchAddCabang").val(),
+				switchAddNote:$("#switchAddNote").val()
+			},
+			success: function (data){
+				if(!$.isEmptyObject(data.error)){
+					var errorMessage = ""
+					data.error.forEach(function(data,index){
+						errorMessage = errorMessage + data + "<br>";
+					})
+                    swalWithCustomClass.fire(
+						'Error',
+						errorMessage,
+						'error'
+					)
+                } else {
+                	 swalWithCustomClass.fire(
+						'Success',
+						'Absen Added',
+						'success'
+					)
+					$("#modal-setting-switch-add").modal('toggle');
+					$("#tableSwitch").DataTable().ajax.url("/ticketing/setting/getAllSwitch").load();
+                }
+			},
+		})
+	}
+
+	function editSwitch(switch_id){
+		$.ajax({
+			type:"GET",
+			url:"{{url('/ticketing/setting/getDetailSwitch')}}",
+			data:{
+				id_switch:switch_id
+			},
+			success:function(result){
+				$("#switchEditType").val(result.switch.type)
+				$("#switchEditPort").val(result.switch.port)
+				$("#switchEditSerialNumber").val(result.switch.serial_number)
+				$("#switchEditIPManagement").val(result.switch.ip_management)
+				$("#switchEditLocation").val(result.switch.location)
+				$("#switchEditCabang").val(result.switch.cabang)
+				$("#switchEditNote").val(result.switch.note)
+				$("#idEditSwitch").val(result.switch.id)
+
+				$("#modal-setting-switch").modal('toggle');
+			}
+		});
+	}
+
+	function saveSwitch(){
+		$.ajax({
+			type:"GET",
+			url:"{{url('/ticketing/setting/setSwitch')}}",
+			data:{
+				idSwitch:$("#idEditSwitch").val(),
+				switchEditType:$("#switchEditType").val(),
+				switchEditPort:$("#switchEditPort").val(),
+				switchEditSerialNumber:$("#switchEditSerialNumber").val(),
+				switchEditIPManagement:$("#switchEditIPManagement").val(),
+				switchEditLocation:$("#switchEditLocation").val(),
+				switchEditCabang:$("#switchEditCabang").val(),
+				switchEditNote:$("#switchEditNote").val(),
+			},
+			success: function (data){
+				if(!$.isEmptyObject(data.error)){
+					var errorMessage = ""
+					data.error.forEach(function(data,index){
+						errorMessage = errorMessage + data + "<br>";
+					})
+                    swalWithCustomClass.fire(
+						'Error',
+						errorMessage,
+						'error'
+					)
+                } else {
+                	 swalWithCustomClass.fire(
+						'Success',
+						'Absen Changed',
+						'success'
+					)
+					$("#modal-setting-switch").modal('toggle');
+					$("#tableSwitch").DataTable().ajax.url("/ticketing/setting/getAllSwitch").load();
+                }
+			}
+		})
+	}
+
+	function deleteSwitch(){
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "To delete this Switch?",
+			icon: "warning",
+			showCancelButton: true,
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No',
+			}).then((result) => {
+				if (result.value){
+					Swal.fire({
+						title: 'Please Wait..!',
+						text: "It's Deleting",
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						allowEnterKey: false,
+						customClass: {
+							popup: 'border-radius-0',
+						},
+						onOpen: () => {
+							Swal.showLoading()
+						}
+					})
+
+					$.ajax({
+						type:"GET",
+						url:"{{url('/ticketing/setting/deleteSwitch')}}",
+						data:{
+							idSwitch:$("#idEditSwitch").val(),
+						},
+						success: function(resultAjax){
+							Swal.hideLoading()
+							swalWithCustomClass.fire({
+								title: 'Success!',
+								text: "Switch Deleted",
+								icon: 'success',
+								confirmButtonText: 'Reload',
+							}).then((result) => {
+								$("#modal-setting-switch").modal('toggle');
+								$("#tableSwitch").DataTable().ajax.url("/ticketing/setting/getAllSwitch").load();
+							})
+						}
+					});
+				}
+			}
+		);
+	}
+
 	$.ajax({
 		type:"GET",
 		url:"{{url('/ticketing/report/getParameter')}}",
