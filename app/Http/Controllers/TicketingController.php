@@ -307,7 +307,7 @@ class TicketingController extends Controller
 
 	public function getEmailData(Request $req){
 		if(isset($req->client)){
-			return $result = TicketingClient::where('client_acronym',$req->client)
+			return TicketingClient::where('id',$req->client)
 				->first();
 		} else {
 			$idTicket = $req->id_ticket;
