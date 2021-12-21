@@ -5088,6 +5088,65 @@ Ticketing
 	function emailSetting(){
 		$(".settingComponent").hide()
 		$("#emailSetting").show()
+		$("#addEmail2").show()
+
+		if($.fn.dataTable.isDataTable("#tableClient")){
+
+		} else {
+			$("#tableClient").DataTable({
+				ajax:{
+					type:"GET",
+					url:"{{url('/ticketing/mail/getSettingEmail')}}",
+					dataSrc: function (json){
+						json.data.forEach(function(data,idex){
+							data.action = '<button type="button" class="btn btn-flat btn-block btn-default" onclick="editClient('+ data.id + ')">Edit</button>'
+						})
+						return json.data
+					}
+				},
+				columns:[
+					{
+						data:'client_name',
+					},
+					{ 	
+						data:'client_acronym',
+					},
+					{
+						data:'open_dear',
+					},
+					{ 
+						data:'open_to',
+					},
+					{ 
+						data:'open_cc',
+					},
+					{ 
+						data:'close_dear',
+					},
+					{ 
+						data:'close_to',
+					},
+					{ 
+						data:'close_cc',
+					},
+					{
+						data:'action',
+						className:'text-center',
+						orderable: false,
+						searchable: true,
+					}
+				],
+				// order: [[10, "DESC" ]],
+				autoWidth:false,
+				lengthChange: false,
+				searching:true,
+				"processing": true,
+				"ColumnDefs":[
+			        { targets: 'no-sort', orderable: false }
+			    ],
+			    "aaSorting": [],
+			})
+		}
 	}
 
 	function editClient(id){
