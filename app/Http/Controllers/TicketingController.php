@@ -267,6 +267,14 @@ class TicketingController extends Controller
 			->get()->all();
 	}
 
+	public function getSwitchId(Request $req){
+		return TicketingSwitch::select(
+				'id',
+				DB::raw('CONCAT(`location`," - ",`cabang`," [",`serial_number`,"]") AS `text`')
+			)
+			->get()->all();
+	}
+
 	public function getAtmDetail(Request $request){
 		return TicketingATM::where('id',$request->id_atm)->first();
 	}
