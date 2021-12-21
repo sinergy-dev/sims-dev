@@ -930,6 +930,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/create/getAtmDetail','TicketingController@getAtmDetail');
 	Route::get('/ticketing/create/getAbsenDetail','TicketingController@getAbsenDetail');
 	Route::get('/ticketing/create/getAtmPeripheralDetail','TicketingController@getAtmPeripheralDetail');
+	Route::get('/ticketing/create/getSwitchId','TicketingController@getSwitchId');
+	Route::get('/ticketing/create/getSwitchDetail','TicketingController@getSwitchDetail');
 
 	Route::get('/ticketing/mail/getEmailData','TicketingController@getEmailData');
 	Route::get('/ticketing/mail/getEmailTemplate','TicketingController@getEmailTemplate');
