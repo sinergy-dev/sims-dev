@@ -3034,6 +3034,7 @@ Ticketing
 		$("#inputATMid").hide()
 		$("#locationDiv").hide()
 		$("#serialDiv").hide()
+		$("#engineerDiv").hide()
 		$("#typeDiv").hide()
 		$("#reportDiv").hide()
 		$("#dateDiv").hide()
@@ -3059,6 +3060,7 @@ Ticketing
 		$("#holderNote").text('');
 		$("#holderStatus").html('');
 		$("#holderWaktu").html('');
+
 		$("#holderIDATM2").hide();
 		$("#holderIDATM3").hide();
 		$("#holderIPMechine").hide();
