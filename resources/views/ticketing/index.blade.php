@@ -2399,10 +2399,10 @@ Ticketing
 		})
 
 		$('#bodyOpenMail').slimScroll({
-			height: '250px'
+			height: '600px'
 		});
 		$('#bodyCloseMail').slimScroll({
-			height: '250px'
+			height: '600px'
 		});
 		
 		swalWithCustomClass = Swal.mixin({
