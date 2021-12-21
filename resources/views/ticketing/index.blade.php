@@ -4805,7 +4805,9 @@ Ticketing
 							$(".holderCloseLocation").text(result.ticket_data.location);
 							$(".holderCloseProblem").text(result.ticket_data.problem);
 							$(".holderCloseSerial").html(result.ticket_data.serial_device);
-							$(".holderCloseSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+							if(result.ticket_data.severity_detail != null){
+								$(".holderCloseSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+							}
 							
 							$(".holderCloseIDATM").text(result.ticket_data.id_atm);
 
