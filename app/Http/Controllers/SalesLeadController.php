@@ -99,6 +99,18 @@ class SalesLeadController extends Controller
                 $count_lose = $total_lose->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
+
+                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+
+                $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+                $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+                $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+                $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+                $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
             } else if ($div == 'SALES') {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                         ->where('id_company','1')
@@ -123,6 +135,17 @@ class SalesLeadController extends Controller
                 $count_lose = $total_lose->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
+                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+
+                $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+                $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+                $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+                $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+                $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
             } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $count_lead = $total_lead->where('users.id_company','1')
                             ->where('result','OPEN')
@@ -142,6 +165,18 @@ class SalesLeadController extends Controller
 
                 $count_lose = $total_lose->where('users.id_company','1')
                             ->count('lead_id');
+
+                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+
+                $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+                $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+                $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+                $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+                $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
             } else {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                             ->where('id_company','1')
@@ -166,6 +201,18 @@ class SalesLeadController extends Controller
                 $count_lose = $total_lose->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
+
+                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+
+                $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+                $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+                $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+                $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+                $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
             }             
         } else {
             $count_lead = $total_lead->count('lead_id');
@@ -670,40 +717,64 @@ class SalesLeadController extends Controller
             $total_lose->whereIn('tb_contact.id_customer',$request->customer);
         }
 
-        if($ter != null){
-            if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-            } else if ($div == 'SALES') {
-            } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+        // if($ter != null){
+        //     if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+        //     } else if ($div == 'SALES') {
+
+        //     } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                
-            } else {
+        //     } else {
 
-            }             
-        } else {
-            $count_lead = $total_lead->count('sales_lead_register.lead_id');
+        //     }             
+        // } else {
+        //     $count_lead = $total_lead->count('sales_lead_register.lead_id');
 
-            $count_open = $total_open->where('result','')->count('sales_lead_register.lead_id');
+        //     $count_open = $total_open->where('result','')->count('sales_lead_register.lead_id');
 
-            $count_sd = $total_sd->count('sales_lead_register.lead_id');
+        //     $count_sd = $total_sd->count('sales_lead_register.lead_id');
 
-            $count_tp = $total_tp->where('result','TP')->count('sales_lead_register.lead_id');
+        //     $count_tp = $total_tp->where('result','TP')->count('sales_lead_register.lead_id');
 
-            $count_win = $total_win->where('result','WIN')->count('sales_lead_register.lead_id');
+        //     $count_win = $total_win->where('result','WIN')->count('sales_lead_register.lead_id');
 
-            $count_lose = $total_lose->where('result','LOSE')->count('sales_lead_register.lead_id');
+        //     $count_lose = $total_lose->where('result','LOSE')->count('sales_lead_register.lead_id');
 
-            $sum_amount_lead = $total_lead->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) AS amount_lead'))->first();
+        //     $sum_amount_lead = $total_lead->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) AS amount_lead'))->first();
 
-            $sum_amount_open = $total_open->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_open'))->first();
+        //     $sum_amount_open = $total_open->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_open'))->first();
 
-            $sum_amount_sd = $total_sd->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_sd'))->first();
+        //     $sum_amount_sd = $total_sd->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_sd'))->first();
 
-            $sum_amount_tp = $total_tp->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_tp'))->first();
+        //     $sum_amount_tp = $total_tp->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_tp'))->first();
 
-            $sum_amount_win = $total_win->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_win'))->first();
+        //     $sum_amount_win = $total_win->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_win'))->first();
 
-            $sum_amount_lose = $total_lose->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_lose'))->first();
+        //     $sum_amount_lose = $total_lose->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_lose'))->first();
 
-        }
+        // }
+        $count_lead = $total_lead->count('sales_lead_register.lead_id');
+
+        $count_open = $total_open->where('result','')->count('sales_lead_register.lead_id');
+
+        $count_sd = $total_sd->count('sales_lead_register.lead_id');
+
+        $count_tp = $total_tp->where('result','TP')->count('sales_lead_register.lead_id');
+
+        $count_win = $total_win->where('result','WIN')->count('sales_lead_register.lead_id');
+
+        $count_lose = $total_lose->where('result','LOSE')->count('sales_lead_register.lead_id');
+
+        $sum_amount_lead = $total_lead->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) AS amount_lead'))->first();
+
+        $sum_amount_open = $total_open->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_open'))->first();
+
+        $sum_amount_sd = $total_sd->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_sd'))->first();
+
+        $sum_amount_tp = $total_tp->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_tp'))->first();
+
+        $sum_amount_win = $total_win->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_win'))->first();
+
+        $sum_amount_lose = $total_lose->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_lose'))->first();
 
         return collect([
             'lead'=>$count_lead,

@@ -145,7 +145,7 @@ Permission Config
 							<div class="tab-pane active" id="list_user">
 								<div class="row">
 									<dir class="col-md-8" style="margin-bottom: 0px; margin-top: 0px;">
-										<button class="btn btn-default" data-toggle="modal" data-target="#modal-add-role">
+										<button class="btn btn-default btn-flat" data-toggle="modal" data-target="#modal-add-role">
 											Change Role User
 										</button>
 									</dir>
@@ -181,7 +181,7 @@ Permission Config
 							<div class="tab-pane" id="list_fature">
 								<div class="row">
 									<dir class="col-md-8" style="margin-bottom: 0px; margin-top: 0px;">
-										<button class="btn btn-default" data-toggle="modal" data-target="#modal-add-feature">
+										<button class="btn btn-default btn-flat" data-toggle="modal" data-target="#modal-add-feature">
 											Change Feature Role
 										</button>
 									</dir>
@@ -217,7 +217,7 @@ Permission Config
 							<div class="tab-pane" id="cofig_role">
 								<div class="row">
 									<dir class="col-md-8" style="margin-bottom: 0px; margin-top: 0px;">
-										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-role">
+										<button class="btn btn-success btn-flat" data-toggle="modal" data-target="#modal-config-role">
 											Add Role
 										</button>
 									</dir>
@@ -253,7 +253,7 @@ Permission Config
 							<div class="tab-pane" id="config_fature">
 								<div class="row">
 									<dir class="col-md-8" style="margin-bottom: 0px; margin-top: 0px;">
-										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-feature">
+										<button class="btn btn-success btn-flat" data-toggle="modal" data-target="#modal-config-feature">
 											Add Feature
 										</button>
 									</dir>
@@ -290,7 +290,7 @@ Permission Config
 							<div class="tab-pane" id="config_fature_item">
 								<div class="row">
 									<dir class="col-md-8" style=" margin-top: 0px;">
-										<button class="btn btn-success" data-toggle="modal" data-target="#modal-config-feature-item">
+										<button class="btn btn-success btn-flat" data-toggle="modal" data-target="#modal-config-feature-item">
 											Add Feature Item
 										</button>
 										<select class="form-control select2" id="filterByRoleGroup" style="width: 140px"></select>
@@ -758,10 +758,18 @@ Permission Config
 							var rows = api.rows( {page:'current'} ).nodes();
 							var last = null;
 
+							console.log(api)
+
 							api.column(0, {page:'current'} ).data().each( function ( group, i ) {
 								if ( last !== group ) {
+									var append = ''
+									append = append + '<tr class="group">'
+									append = append + '	<td colspan="' + (result.column.length + 1) + '">'
+									append = append + '		<b>Feature : <i title="' + group + '">' + group + '</i></b>'
+									append = append + '	</td>'
+									append = append + '</tr>'
 									$(rows).eq( i ).before(
-										'<tr class="group"><td colspan="' + (result.column.length + 1) + '"><b>Feature : ' + group + '</b></td></tr>'
+										append
 									);
 
 									last = group;

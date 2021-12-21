@@ -475,7 +475,7 @@ Dashboard
 		$.each(top_win_sip_ter, function(key, value){
 			append = append + '<tr>'
 		    append = append + '<td>'+ no++ +'</td>'
-		    append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
+		    append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
 		    append = append + '<td align="right">'
 		    append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
 		    append = append + '</td>'

@@ -282,6 +282,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/get_data_tp_report_sales', 'ReportController@get_data_tp_report_sales');
 	Route::get('/get_data_win_report_sales', 'ReportController@get_data_win_report_sales');
 	Route::get('/get_data_lose_report_sales', 'ReportController@get_data_lose_report_sales');
+	Route::get('/getReportExcelReportRange', 'ReportController@downloadExcelReportRange');
 
 	Route::get('/report_product_index','ReportController@report_product_index');
 	Route::get('/getreportproduct','ReportController@getreportproduct');

@@ -176,7 +176,11 @@
               return ++meta.row             
             }
           },
-          { "data": "created_at"},
+          { 
+            render: function (data,type,row){
+              return row.created_at.substring(0,10)
+            } 
+          },
           {
             render: function (data, type, row) {
               if(row.status == 'In'){
