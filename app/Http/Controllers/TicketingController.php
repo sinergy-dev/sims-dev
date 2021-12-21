@@ -492,14 +492,16 @@ class TicketingController extends Controller
 				'id_detail:id_ticket,id',
 			])
 			->whereIn('id_ticket',
-				$occurring_ticket->where('id_client','=',DB::table('ticketing__client')
-					->where('client_acronym','=',$client_acronym)
-					->value('id')
-				)
-				->pluck('id_ticket')
+				// $occurring_ticket->where('id_client','=',DB::table('ticketing__client')
+				// 	->where('client_acronym','=',$client_acronym)
+				// 	->value('id')
+				// )
+				$occurring_ticket->where('id_client','=',$client_id)->pluck('id_ticket')
 			)
 			->orderBy('id','DESC')
 			->get();
+
+		$limit = $occurring_ticket_result->count() > 100 ? 100 : 100 - $occurring_ticket_result->count();
 
 		$finish_ticket = DB::table('ticketing__activity')
 			->select('ticketing__activity.id_ticket','ticketing__activity.activity')
