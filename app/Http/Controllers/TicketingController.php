@@ -181,20 +181,26 @@ class TicketingController extends Controller
 			"chart_data" => [
 				"label" => $count_ticket_by_client->pluck('client_acronym'),
 				"data" => $count_ticket_by_client->pluck('ticket_count')
-			]
+			],
+			"severity_label" => $severity_label
 		]);
 	}
 
 	public function getCreateParameter(){
-		$client = TicketingClient::where('situation','=',1)->orderBy('client_acronym')->get();
-		$severity = TicketingSeverity::all();
+		$client = TicketingClient::where('situation','=',1)
+			->select('id','client_name','client_acronym')
+			->orderBy('client_acronym')
+			->get();
+
+		$severity = TicketingSeverity::select('id','name','description')->get();
+
+		$email_template = TicketingEmail::where('activity','Open')->get();
 		
-		return array(
-			$client->pluck('client_acronym'),
-			$severity->pluck('id'),
-			$severity->pluck('name'),
-			$severity->pluck('description'),
-		);
+		return collect([
+			"client" => $client,
+			"severity" => $severity,
+			"email_template" => $email_template
+		]);
 	}
 
 	public function getReserveIdTicket(){
