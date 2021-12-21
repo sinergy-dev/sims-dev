@@ -924,22 +924,6 @@ Ticketing
 											
 										</tr>
 									</thead>
-								<!-- 	@foreach($clients as $client)
-									<tr>
-										<td style="vertical-align: middle;text-align: left;">{{$client->client_name}}</td>
-										<td style="vertical-align: middle;text-align: center;">{{$client->client_acronym}}</td>
-										<td style="vertical-align: middle;text-align: left;">{{$client->open_dear}}</td>
-										<td style="vertical-align: middle;text-align: left;">{!! $client->open_to !!}</td>
-										<td style="vertical-align: middle;text-align: left;">{!! $client->open_cc !!}</td>
-										<td style="vertical-align: middle;text-align: left;">{{ $client->close_dear }}</td>
-										<td style="vertical-align: middle;text-align: left;">{!! $client->close_to !!}</td>
-										<td style="vertical-align: middle;text-align: left;">{!! $client->close_cc !!}</td>
-
-										<td style="vertical-align: middle;text-align: center;">
-											<button type="button" class="btn btn-block btn-default" onclick="editClient({{$client->id}})">Edit</button>
-										</td>
-									</tr>
-									@endforeach
 								</table>
 							</div>		
 						</div>
