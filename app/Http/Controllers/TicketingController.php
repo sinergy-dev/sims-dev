@@ -404,13 +404,13 @@ class TicketingController extends Controller
 		$activityTicketOpen->note = "Open Ticket";
 
 		$activityTicketOpen->save();
+		
+		if($request->type_ticket == "PM"){
+			$detailTicketOpen->reporting_time = date("Y-m-d H:i:s.000000");
+			$detailTicketOpen->save();
+		}
 
-		$clientAcronymFilter = Ticketing::with('client_ticket')
-			->where('id_ticket',$request->id_ticket)
-			->first()
-			->client_ticket
-			->client_acronym;
-		$activityTicketOpen->client_acronym_filter = $clientAcronymFilter;
+		$activityTicketOpen->client_id_filter = $request->clientID;
 		return $activityTicketOpen;
 	}
 
