@@ -2969,7 +2969,7 @@ Ticketing
 				}
 			} else {
 
-				if($("#inputClient").val() == "BTNI"){
+				if($("#inputClient option:selected").text().includes("Absensi")){
 					$("#holderIDATM2").hide();
 					$("#holderSerial1").hide();
 					$("#holderIDATM3").show();
