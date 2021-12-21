@@ -2957,7 +2957,7 @@ Ticketing
 					$("#holderType").html($("#inputType").val());
 
 					$("#holderSerial1 th").text("UPS Serial")
-					$("#holderIDATM2 th").text("ID UPS")
+					// $("#holderIDATM2 th").text("ID UPS")
 					$("#holderIDATM3 th").text("UPS Mechine Type")
 					$("#holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
 				} else {
