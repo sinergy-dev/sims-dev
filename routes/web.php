@@ -944,6 +944,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/getPerformanceByClient','TicketingController@getPerformanceByClient');
 	Route::get('/ticketing/getPerformanceByTicket','TicketingController@getPerformanceByTicket');
 	Route::get('/ticketing/getPerformanceBySeverity','TicketingController@getPerformanceBySeverity');
+	Route::get('/ticketing/getPerformanceByFilter','TicketingController@getPerformanceByFilter');
 
 	Route::get('/ticketing/setUpdateTicket','TicketingController@setUpdateTicket');
 	Route::get('/ticketing/mail/getOnProgressMailTemplate','TicketingController@getOnProgressMailTemplate');
