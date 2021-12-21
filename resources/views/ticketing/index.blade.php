@@ -2475,14 +2475,23 @@ Ticketing
 			$("#tableAbsen").DataTable().search($('#searchBarAbsen').val()).draw();
 		})
 
+		$('#applyFilterTableEmail').click(function(){
+			$("#tableClient").DataTable().search($('#searchBarEmail').val()).draw();
+		})
+
 		$('#clearFilterTable').click(function(){
 			$('#searchBarTicket').val('')
 			$('#tablePerformance').DataTable().search('').draw();
 		});
 
+		$('#reloadTable').click(function(){
+			$('#tablePerformance').DataTable().ajax.reload();
+		});
+
 	})
 
 	function getDashboard(){
+
 		$.ajax({
 			type:"GET",
 			url:"{{url('ticketing/getDashboard')}}",
