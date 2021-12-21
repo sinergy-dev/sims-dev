@@ -2388,6 +2388,8 @@ Ticketing
 	var swalWithCustomClass
 
 	$(document).ready(function(){
+		$("#startDateFilter").val("")
+		$("#endDateFilter").val("")
 		getDashboard()
 
 		$("#inputReportingTime").val(moment().format('HH:mm:ss'))
