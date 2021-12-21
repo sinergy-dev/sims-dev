@@ -5357,6 +5357,14 @@ Ticketing
 
 	}
 
+	function EmailAdd(){
+		$("#modal-add-email").modal('toggle');
+		$("#openToAdd").emailinput({ onlyValidValue: true, delim: ';' })
+		$("#openCcAdd").emailinput({ onlyValidValue: true, delim: ';' })
+		$("#closeToAdd").emailinput({ onlyValidValue: true, delim: ';' })
+		$("#closeCcAdd").emailinput({ onlyValidValue: true, delim: ';' })
+	}
+
 	function atmAdd(){
 		$.ajax({
 			type:"GET",
