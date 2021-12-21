@@ -341,6 +341,16 @@ class TicketingController extends Controller
 		}
 	}
 
+	public function getEmailTemplate(Request $req){
+		$return = TicketingEmail::where('type','=',$req->email_type)
+			->where('activity','=',$req->email_activity)
+			->where('name','=',$req->email_name)
+			->first()
+			->body;
+		return view(["template" => $return]);
+		// return view('ticketing.mail.OpenTicketHitachi');
+	}
+
 	public function getOpenMailTemplate(Request $req){
 		if($req->type == "normal") {
 			return view('ticketing.mail.OpenTicket');
