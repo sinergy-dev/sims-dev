@@ -2509,13 +2509,74 @@ Ticketing
 				$("#countMajor").text(result.counter_severity.Major);
 				$("#countModerate").text(result.counter_severity.Moderate);
 				$("#countMinor").text(result.counter_severity.Minor);
-				var append = ""
+				// var append = ""
+				// $.each(result.customer_list,function(key,value){
+				// 	var onclickFunction = "getPerformanceByClient('" + value + "')";
+				// 	append = append + '<button class="btn btn-flat btn-default buttonFilter buttonFilter' + value+ '" onclick=' + onclickFunction + '>' + value + '</button> ';
+				// });
+
+				// $("#clientList").html(append);
+				var clientList = [{id:0,text:"Chose the client"}]
+
 				$.each(result.customer_list,function(key,value){
-					var onclickFunction = "getPerformanceByClient('" + value + "')";
-					append = append + '<button class="btn btn-flat btn-default buttonFilter buttonFilter' + value+ '" onclick=' + onclickFunction + '>' + value + '</button> ';
+					clientList.push({
+						id:value.id,
+						text:value.client_acronym + " - " + value.client_name
+					})
 				});
 
-				$("#clientList").html(append);
+				$("#clientList").select2({data:clientList})
+
+				var severityFilter = []
+
+				$.each(result.severity_label,function(key,value){
+					severityFilter.push({
+						id:value.id,
+						text:value.name
+					})
+				});
+
+				var severityFilterAll = [
+					{
+						text:"Chose the Severity", 
+						children:severityFilter
+					},{
+						text:"Chose the Type", 
+						children:[
+							{
+								id:"TT",
+								text:"TT - Trouble Ticket",
+							},
+							{
+								id:"PM",
+								text:"PM - Preventive Maintenance"
+							},
+							{
+								id:"PL",
+								text:"PL - Permintaan Layanan"
+							}
+						]
+					}
+				]
+
+				$("#severityFilter").select2({data:severityFilterAll})
+
+				var typeFilter = [
+					{
+						id:"TT",
+						text:"Trouble Ticket",
+					},
+					{
+						id:"PM",
+						text:"Preventive Maintenance"
+					},
+					{
+						id:"PL",
+						text:"Permintaan Layanan"
+					}
+				]
+
+				$("#typeFilter").select2({data:typeFilter})
 
 				var append = '';
 				$("#importanTable").empty(append);
