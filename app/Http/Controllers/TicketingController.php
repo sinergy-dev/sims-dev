@@ -14,11 +14,14 @@ use App\TicketingATM;
 use App\TicketingATMPeripheral;
 use App\TicketingSeverity;
 use App\TicketingAbsen;
+use App\TicketingSwitch;
 use App\TicketingPendingReminder;
 use App\TicketingEscalateEngineer;
+use App\TicketingEmail;
 
 use Auth;
 use Mail;
+use Blade;
 
 use Carbon\Carbon;
 use Validator;
