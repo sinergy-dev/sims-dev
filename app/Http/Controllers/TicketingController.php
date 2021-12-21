@@ -972,14 +972,17 @@ class TicketingController extends Controller
 		DB::table('ticketing__client')
 			->where('id','=',$req->id)
 			->update([
-				"client_name" => $req->client_name,
-				"client_acronym" => $req->client_acronym,
-				"open_dear" => $req->open_dear,
-				"open_to" => $req->open_to,
-				"open_cc" => $req->open_cc,
-				"close_dear" => $req->close_dear,
-				"close_to" => $req->close_to,
-				"close_cc" => $req->close_cc,
+				"client_name" 		=> $req->client_name,
+				"client_acronym"	=> $req->client_acronym,
+				"open_dear" 		=> $req->open_dear,
+				"open_to" 			=> $req->open_to,
+				"open_cc" 			=> $req->open_cc,
+				"close_dear" 		=> $req->close_dear,
+				"close_to" 			=> $req->close_to,
+				"close_cc" 			=> $req->close_cc,
+				"situation" 		=> $req->situation,
+				"banking"			=> $req->banking,
+				"wincor"			=> $req->wincor,
 			]);
 	}
 
