@@ -450,13 +450,15 @@ class TicketingController extends Controller
 			->orderBy('id','DESC')
 			->get();
 
+		$limit = $occurring_ticket->count() > 100 ? 100 : 100 - $occurring_ticket->count();
+
 		$residual_ticket_result = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
 				'lastest_activity_ticket',
 				'id_detail:id_ticket,id',
 			])
 			->whereNotIn('id_ticket',$occurring_ticket)
-			->limit((100 - $occurring_ticket->count()))
+			->limit($limit)
 			->orderBy('id','DESC')
 			->get();
 
