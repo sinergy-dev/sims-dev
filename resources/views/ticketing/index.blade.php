@@ -2724,6 +2724,7 @@ Ticketing
 				data:{
 					id_ticket:$("#inputticket").val() + "/" + acronym_client + moment().format("/MMM/YYYY"),
 					acronym_client:acronym_client,
+					id_client:$("#inputClient").val(),
 					operator:"{{(Auth::check())?Auth::user()->name:'-'}}",
 				},
 				success: function(result){
@@ -2744,6 +2745,7 @@ Ticketing
 				data:{
 					id_ticket_before:$("#inputticket").val(),
 					id_ticket_after:changeResult,
+					id_client:$("#inputClient").val(),
 					acronym_client:acronym_client,
 				},
 				success: function(result){
