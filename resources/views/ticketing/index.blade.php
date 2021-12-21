@@ -658,12 +658,13 @@ Ticketing
 								</div>
 								<div class="form-group">
 									<div class="col-sm-12">
-										<div class="pull-right">
+										<div>
 											<!-- <div class="btn btn-default btn-file">
 												<i class="fa fa-paperclip"></i> Attachment
 												<input type="file" name="attachment" id="emailOpenAttachment">
 											</div> -->
-											<button class="btn btn-flat btn-primary" onclick="sendOpenEmail()"><i class="fa fa-envelope-o"></i> Send</button>
+											<button class="btn btn-flat btn-default pull-left" onclick="backOpenEmail()"><i class="fa fa-chevron-left"></i> Back</button>
+											<button class="btn btn-flat btn-primary pull-right" onclick="sendOpenEmail()"><i class="fa fa-envelope-o"></i> Send</button>
 										</div>
 									</div>
 								</div>
