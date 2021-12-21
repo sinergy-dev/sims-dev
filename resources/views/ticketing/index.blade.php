@@ -4688,7 +4688,8 @@ Ticketing
 						}).then((result) => {
 							$('#modal-pending').modal('toggle');
 							$("#modal-ticket").modal('toggle');
-							getPerformanceByClient(resultAjax)
+							$("#clientList").val(resultAjax.client_id_filter).trigger('change')
+							// getPerformanceByClient(resultAjax)
 						})
 						
 					}
