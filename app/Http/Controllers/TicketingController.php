@@ -1209,6 +1209,49 @@ class TicketingController extends Controller
 		TicketingAbsen::where('id','=',$request->idAbsen)->first()->delete();
 	}
 
+	public function getAllSwitchSetting(){
+		return array('data' => TicketingSwitch::get());
+	}
+
+	public function newSwitch(Request $request){
+		$newSwitch = new TicketingSwitch();
+
+		$newSwitch->type = $request->switchAddType;
+		$newSwitch->port = $request->switchAddPort;
+		$newSwitch->serial_number = $request->switchAddSerialNumber;
+		$newSwitch->ip_management = $request->switchAddIPManagement;
+		$newSwitch->location = $request->switchAddLocation;
+		$newSwitch->cabang = $request->switchAddCabang;
+		$newSwitch->note = $request->switchAddNote;
+
+        $newSwitch->save();
+	}
+
+	public function getDetailSwitch(Request $request){
+		return array(
+			'switch' => TicketingSwitch::where('id',$request->id_switch)->first()
+		);
+	}
+
+	public function setSwitch(Request $request){
+		$setSwitch = TicketingSwitch::where('id','=',$request->idSwitch)->first();
+
+		$setSwitch->type = $request->switchEditType;
+		$setSwitch->port = $request->switchEditPort;
+		$setSwitch->serial_number = $request->switchEditSerialNumber;;
+		$setSwitch->ip_management = $request->switchEditIPManagement;;
+		$setSwitch->location = $request->switchEditLocation;;
+		$setSwitch->cabang = $request->switchEditCabang;;
+		$setSwitch->note = $request->switchEditNote;
+
+		$setSwitch->save();
+
+	}
+
+	public function deleteSwitch(Request $request){
+		TicketingSwitch::where('id','=',$request->idSwitch)->first()->delete();
+	}
+
 	public function getReportParameter(){
 		return array(
 			'client_data' => TicketingClient::select('id','client_acronym','client_name')
