@@ -849,6 +849,19 @@ Ticketing
 
 							
 						</div>
+						<div class="col-sm-3 settingComponent" style="display: none" id="addEmail2">
+							<div class="input-group">	
+								<input id="searchBarEmail" type="text" class="form-control" placeholder="Search Client">
+								<span class="input-group-btn">
+									<button id="applyFilterTableEmail" type="button" class="btn btn-default btn-flat">
+										<i class="fa fa-fw fa-search"></i>
+									</button>
+									<button class="btn btn-flat btn-primary" onclick="EmailAdd()" id="addEmail" style="margin-left: 10px;">
+										Add Email
+									</button>
+								</span>
+							</div>
+						</div>
 						<div class="col-sm-3 settingComponent" style="display: none" id="addAtm2">
 							<div class="input-group">	
 								<input id="searchBarATM" type="text" class="form-control" placeholder="Search ATM">
