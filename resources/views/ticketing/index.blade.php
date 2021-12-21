@@ -888,28 +888,43 @@ Ticketing
 								</span>
 							</div>
 						</div>
+						<div class="col-sm-3 settingComponent" style="display: none" id="addSwitch2">
+							<div class="input-group">	
+								<input id="searchBarSwitch" type="text" class="form-control" placeholder="Search Switch">
+								<span class="input-group-btn">
+									<button id="applyFilterTableSwitch" type="button" class="btn btn-default btn-flat">
+										<i class="fa fa-fw fa-search"></i>
+									</button>
+									<button class="btn btn-flat btn-primary" onclick="switchAdd()" id="addSwitch" style="margin-left: 10px;">
+										Add
+									</button>
+								</span>
+							</div>
+						</div>
 					</div>
 					<div style="display: none" id="emailSetting" class="row form-group settingComponent">
 						<div class="col-md-12">
 							<div class="table-responsive">
-								<table class="table table-bordered">
-									<tr>
-										<th colspan="6" style="vertical-align: middle;text-align: center;">Open</th>
-										<th colspan="6" style="vertical-align: middle;text-align: center;">Close</th>
-									</tr>
-									<tr>
-										<th style="vertical-align: middle;text-align: center;">Client</th>
-										<th style="vertical-align: middle;text-align: center;">Acronym</th>
-										<th style="vertical-align: middle;text-align: center;">Dear</th>
-										<th style="vertical-align: middle;text-align: center;">To</th>
-										<th style="vertical-align: middle;text-align: center;">Cc</th>
-										<th style="vertical-align: middle;text-align: center;">Dear</th>
-										<th style="vertical-align: middle;text-align: center;">To</th>
-										<th style="vertical-align: middle;text-align: center;">Cc</th>
-										<th style="vertical-align: middle;text-align: center;">Action</th>
-										
-									</tr>
-									@foreach($clients as $client)
+								<table class="table table-bordered" id="tableClient">
+									<thead>
+										<tr>
+											<th colspan="6" style="vertical-align: middle;text-align: center;">Open</th>
+											<th colspan="6" style="vertical-align: middle;text-align: center;">Close</th>
+										</tr>
+										<tr>
+											<th style="vertical-align: middle;text-align: center;">Client</th>
+											<th style="vertical-align: middle;text-align: center;">Acronym</th>
+											<th style="vertical-align: middle;text-align: center;">Dear</th>
+											<th style="vertical-align: middle;text-align: center;">To</th>
+											<th style="vertical-align: middle;text-align: center;">Cc</th>
+											<th style="vertical-align: middle;text-align: center;">Dear</th>
+											<th style="vertical-align: middle;text-align: center;">To</th>
+											<th style="vertical-align: middle;text-align: center;">Cc</th>
+											<th style="vertical-align: middle;text-align: center;">Action</th>
+											
+										</tr>
+									</thead>
+								<!-- 	@foreach($clients as $client)
 									<tr>
 										<td style="vertical-align: middle;text-align: left;">{{$client->client_name}}</td>
 										<td style="vertical-align: middle;text-align: center;">{{$client->client_acronym}}</td>
