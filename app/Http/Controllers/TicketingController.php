@@ -706,6 +706,8 @@ class TicketingController extends Controller
 			->get()
 			->pluck('id_ticket');
 
+		$limit = $occurring_ticket_result->count() > 100 ? 100 : 100 - $occurring_ticket_result->count();
+
 		$finish_ticket_result = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
 				'lastest_activity_ticket',
