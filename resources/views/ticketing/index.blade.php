@@ -2463,9 +2463,9 @@ Ticketing
 			}
 		});
 
-		$('#applyFilterTablePerformance').click(function(){
-			$("#tablePerformance").DataTable().search($('#searchBarTicket').val()).draw();
-		})
+		// $('#applyFilterTablePerformance').click(function(){
+		// 	$("#tablePerformance").DataTable().search($('#searchBarTicket').val()).draw();
+		// })
 
 		$('#applyFilterTableATM').click(function(){
 			$("#tableAtm").DataTable().search($('#searchBarATM').val()).draw();
