@@ -3613,7 +3613,11 @@ Ticketing
 							}).then((result) => {
 								// console.log(resultAjax)
 								callback()
-								getPerformanceByClient(resultAjax.client_acronym_filter)
+								// getPerformanceByClient(resultAjax.client_acronym_filter)
+								// getPerformanceByFilter([resultAjax.client_id_filter],[],[],[])
+								$("#clientList").val(resultAjax.client_id_filter).trigger('change')
+								// $("#clientList").val(resultAjax.client_id_filter)
+								// $("#clientList").trigger('change')
 							})
 						},
 						error: function(resultAjax,errorStatus,errorMessage){
