@@ -2868,6 +2868,14 @@ Ticketing
 			$("#inputReportingDate").css("border-color",'#d2d6de')
 			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon").css("border-color",'#d2d6de')
 			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon i").css("color",'#555')
+		} else if($("#inputTypeTicket").val() != "Preventive Maintenance" && $("#inputSeverity").val() == "Chose the severity"){
+			$("#inputSeverity").parent().parent().addClass('has-error')
+			// $("#reportDiv").addClass('has-error')
+			// $("#reportDiv .col-sm-5.secondReport .help-block").show()
+
+			// $("#inputReportingTime").css("border-color",'#d2d6de')
+			// $("#reportDiv .col-sm-5.firstReport .input-group .input-group-addon").css("border-color",'#d2d6de')
+			// $("#reportDiv .col-sm-5.firstReport .input-group .input-group-addon i").css("color",'#555')
 		} else if($("#inputReportingDate").val() == "" ){
 			$("#reportDiv").addClass('has-error')
 			$("#reportDiv .col-sm-5.secondReport .help-block").show()
