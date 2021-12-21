@@ -605,8 +605,17 @@ Ticketing
 									<td id="holderNote"></td>
 								</tr>
 							</table>
-							<i class="btn btn-flat btn-info pull-right" id="createEmailBodyNormal" onclick="createEmailBody('normal')">Create Email</i>
-							<i class="btn btn-flat btn-success pull-right" id="createEmailBodyWincor" onclick="createEmailBody('wincor')">Create Wincor Email</i>
+							<div class="row">
+								<div class="col-md-8">
+									<select class="form-control" id="inputTemplateEmail">
+									</select>
+								</div>
+								<div class="col-md-4">
+									<i style="width:100%" class="btn btn-flat btn-info" id="createEmailBody" onclick="createEmailBody()" disabled>Create Email</i>
+									<!-- <i style="width:100%" class="btn btn-flat btn-info" id="createEmailBodyNormal" onclick="createEmailBody('normal')">Create Email</i>
+									<i style="width:100%" class="btn btn-flat btn-success" id="createEmailBodyWincor" onclick="createEmailBody('wincor')">Create Wincor Email</i> -->
+								</div>
+							</div>
 						</div>
 					</div>
 					<div class="row" id="sendTicket" style="display: none;">
