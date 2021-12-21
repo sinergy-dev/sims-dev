@@ -168,6 +168,8 @@ class TicketingController extends Controller
 			return $item->count;
 		});
 
+		$severity_label = TicketingSeverity::select('id','name')->orderBy('id','DESC')->get();
+
 		// $time_elapsed_secs = microtime(true) - $start;
 		// return $time_elapsed_secs;
 
