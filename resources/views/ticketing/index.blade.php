@@ -3885,15 +3885,91 @@ Ticketing
 			}
 		}
 		
-		$('#clientList').find(".buttonFilter" + client).removeClass('btn-default').addClass('btn-primary')
-		$('#clientList').find(":not(.buttonFilter" + client + ")").removeClass('btn-primary').addClass('btn-default')
+		// $('#clientList').find(".buttonFilter" + client).removeClass('btn-default').addClass('btn-primary')
+		// $('#clientList').find(":not(.buttonFilter" + client + ")").removeClass('btn-primary').addClass('btn-default')
 		$("#tablePerformance").DataTable().clear().draw();
-		$("#tablePerformance").DataTable().ajax.url("{{url('/ticketing/getPerformanceByClient?client=')}}" + client).load();
+		$("#tablePerformance").DataTable().ajax.url("{{url('/ticketing/getPerformanceByClient?')}}" + client_param).load();
+	}
+
+	function getPerformanceByFilter(client,severity,date,type){
+		Pace.restart();
+		Pace.track(function() {
+			var url_ajax = "{{url('/ticketing/getPerformanceByFilter?')}}"
+
+			if($("#clientList").val().length !== 0){
+				var match = false;
+				$("#clientList").select2('data').forEach(function(item,index){ 
+					if(item.text.includes("Absensi")){
+						match = true;
+					}
+				})
+				
+				var client_param = jQuery.param({client: $("#clientList").val()});
+
+				if($.fn.dataTable.isDataTable("#tablePerformance")){
+					if(match){
+						$("#tablePerformance").DataTable().column(1).visible(false)
+						$("#tablePerformance").DataTable().column(2).visible(false)
+					} else {
+						$("#tablePerformance").DataTable().column(1).visible(true)
+						$("#tablePerformance").DataTable().column(2).visible(true)
+					}
+				} else {
+					if(match){
+						$(".columnIdAtm").hide()
+						$(".columnTicketNum").hide()
+					} else {
+						$(".columnIdAtm").show()
+						$(".columnTicketNum").show()
+					}
+				}
+				url_ajax = url_ajax + client_param
+			} else if(client.length != 0){
+				var client_param = jQuery.param({client: client});
+				url_ajax = url_ajax + client_param
+			}
+
+			if($("#severityFilter").val().length !== 0){
+				var severity_param = jQuery.param({severity: $("#severityFilter").val()});
+				url_ajax = url_ajax + "&" + severity_param
+			}
+
+			if($("#typeFilter").val().length !== 0){
+				var type_param = jQuery.param({type: $("#typeFilter").val()});
+				url_ajax = url_ajax + "&" + type_param
+			}
+
+			if($("#startDateFilter").val() !== "" && $("#endDateFilter").val() !== ""){
+				var date_param = "startDate=" + $("#startDateFilter").val() + "&endDate=" + $("#endDateFilter").val();
+				url_ajax = url_ajax + "&" + date_param
+			}
+
+			
+			// $('#clientList').find(".buttonFilter" + client).removeClass('btn-default').addClass('btn-primary')
+			// $('#clientList').find(":not(.buttonFilter" + client + ")").removeClass('btn-primary').addClass('btn-default')
+			$("#tablePerformance").DataTable().clear().draw();
+			$(".dataTables_empty").text("Please wait, the data is being processed...");
+			$("#tablePerformance").DataTable().ajax.url(url_ajax).load();
+		})
+		Pace.on('done',function(){
+			$(".select2-selection__choice[title='TT - Trouble Ticket']").css({"background-color": "#dd4b39","border-color": "#c84231"})
+			$(".select2-selection__choice[title='PM - Preventive Maintenance']").css({"background-color": "#dd4b39","border-color": "#c84231"})
+			$(".select2-selection__choice[title='PL - Permintaan Layanan']").css({"background-color": "#dd4b39","border-color": "#c84231"})
+		})
 	}
 
 	function changeNumberEntries(number){
-		$("#btnShowEntryTicket").html('Show ' + number + ' entries <span class="fa fa-caret-down"></span>')
+		$("#btnShowEntryTicket").html('Show ' + number + ' <span class="fa fa-caret-down"></span>')
 		$("#tablePerformance").DataTable().page.len( number ).draw();
+	}
+
+	function changeColumnTable(data){
+		// console.log($(data).attr("data-column"))
+		var column = $("#tablePerformance").DataTable().column($(data).attr("data-column"))
+		// console.log(column.visible())
+		column.visible( ! column.visible() );
+		// $(data).prop('checked', column.visible())
+		// column.visible() ? $(data).addClass('active') : $(data).removeClass('active')
 	}
 
 	function showTicket(id){
