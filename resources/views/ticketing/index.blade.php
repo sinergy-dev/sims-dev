@@ -3273,253 +3273,209 @@ Ticketing
 		}
 	})
 
-	function createTicket(clientBanking){
-		$(".help-block").hide()
-		if($("#inputPIC").val() == "" ){
-			$("#picDiv").addClass('has-error')
-			$("#picDiv .col-sm-10 .help-block").show()
-		} else if($("#inputContact").val() == "" ){
-			$("#contactDiv").addClass('has-error')
-			$("#contactDiv .col-sm-10 .help-block").show()
-		} else if($("#inputProblem").val() == "" ){
-			$("#problemDiv").addClass('has-error')
-			$("#problemDiv .col-sm-10 .help-block").show()
-		} else if($("#inputATMid").is(':visible') && $("#inputATM").select2('data')[0].text === "Select One"){
-			$("#inputATMid").addClass('has-error')
-			$("#inputATMid .col-sm-10 .help-block").show()
-		} else if($("#inputLocation").val() == "" ){
-			$("#locationDiv").addClass('has-error')
-			$("#locationDiv .col-sm-10 .help-block").show()
-		} else if($("#inputReportingTime").val() == "" ){
-			$("#reportDiv").addClass('has-error')
-			$("#reportDiv .col-sm-5.firstReport .help-block").show()
-
-			$("#inputReportingDate").css("border-color",'#d2d6de')
-			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon").css("border-color",'#d2d6de')
-			$("#reportDiv .col-sm-5.secondReport .input-group .input-group-addon i").css("color",'#555')
-		} else if($("#inputReportingDate").val() == "" ){
-			$("#reportDiv").addClass('has-error')
-			$("#reportDiv .col-sm-5.secondReport .help-block").show()
-
-			$("#inputReportingTime").css("border-color",'#d2d6de')
-			$("#reportDiv .col-sm-5.firstReport .input-group .input-group-addon").css("border-color",'#d2d6de')
-			$("#reportDiv .col-sm-5.firstReport .input-group .input-group-addon i").css("color",'#555')
+	$("#inputSwitchLocation").change(function(){
+		if(this.value === "Select One"){
+			$("#inputSerial").val("");
+			$("#inputType").val("");
+			$("#inputIpMechine").val("");
 		} else {
-			$(".has-error").removeClass('has-error')
-			var waktu = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("D MMMM YYYY");
-			var waktu2 = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("HH:mm");
+			$.ajax({
+				type:"GET",
+				url:"{{url('/ticketing/create/getSwitchDetail')}}",
+				data:{
+					id_switch:this.value
+				},
+				success: function(result){
+					$("#inputSerial").val(result.serial_number);
+					$("#inputType").val(result.type + " - " + result.port);
+					$("#inputIpMechine").val(result.ip_management);
+					// $("#inputIpServer").val(result.ip_server);
+				}
+			});
+		}
+	})
 
-			$("#tableTicket").show();
-			$("#holderID").text($("#inputticket").val());
-			$("#holderRefrence").text($("#inputRefrence").val());
-			$("#holderCustomer").text($("#inputClient").val());
-			$("#holderPIC").text($("#inputPIC").val());
-			$("#holderContact").text($("#inputContact").val());
-			$("#holderProblem").text($("#inputProblem").val());
-			$("#holderLocation").text($("#inputLocation").val());
-			$("#holderEngineer").text($("#inputEngineer").val());
-			$("#holderDate").text(waktu);
-			$("#holderSerial").html($("#inputSerial").val());
-			$("#holderType").html($("#inputType").val());
-			
-			$("#holderSeverity").text($("#inputSeverity").val());
-			// $("#holderRoot").text($("#inputticket").val();
-			$("#holderNote").text($("#inputNote").val());
-			$("#holderStatus").html("<b>OPEN</b>");
-			$("#holderWaktu").html("<b>" + waktu2 + "</b>");
+	$("#inputTemplateEmail").change(function(){
+		if($("#inputTemplateEmail").val() != "none"){
+			$("#createEmailBody").removeAttr("disabled")
+		} else {
+			$("#createEmailBody").attr("disabled",true)
+		}
+	})
 
-			if(clientBanking){
-				if($("#inputClient").val() == "BDIYCCTV"){
-					$("#holderIDATM2").insertAfter($("#holderIDATM2").next())
-					$("#holderIDATM2").show();
-					$("#holderIDATM3").show();
+	function createEmailBody(){
+		if($("#inputTemplateEmail").val() != "none"){
+			$("#sendTicket").show();
+			$("#formNewTicket").hide();
 
-					$("#holderSerial").html($("#inputSerial").val());
-					$("#holderType").html($("#inputType").val());
-					$("#holderType").html($("#inputType").val());
+			$("#createEmailBody").removeAttr("disabled")
 
-					$("#holderSerial1 th").text("CCTV Serial")
-					$("#holderIDATM2 th").text("ID CCTV")
-					$("#holderIDATM3 th").text("CCTV Mechine Type")
-					$("#holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
-				} if($("#inputClient").val() == "BDIYUPS"){
-					$("#holderIDATM2").insertAfter($("#holderIDATM2").next())
-					$("#holderIDATM2").show();
-					$("#holderIDATM3").show();
+			$.ajax({
+				url:"{{url('ticketing/mail/getEmailTemplate')}}",
+				data:{
+					email_type:$("#inputTypeTicket").val(),
+					email_name:$("#inputTemplateEmail").val(),
+					email_activity:"Open"
+				},
+				type:"GET",
+				success: function (result){
+					$("#bodyOpenMail").html(result);
+					$.ajax({
+						type:"GET",
+						url:"{{url('ticketing/mail/getEmailData')}}",
+						data:{
+							client:$("#inputClient").val()
+						},
+						success: function(result){
+							if($("#inputTemplateEmail").val() != "Wincor Template"){
+								if($("#inputClient option:selected").text().includes("Absensi")){
+									var subject = "Open Tiket " + $("#inputAbsenLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
+								} else if($("#inputClient option:selected").text().includes("Switch")){
+									var subject = "Open Tiket " + $("#inputSwitchLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
+								} else if ($("#inputTemplateEmail").val() == "ATM Template"){
+									var subject = "Permohonan Open Tiket " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " " + result.client_name.split(' - ')[0] + " " + $("#inputLocation").val()
+								} else {
+									var subject = "Open Tiket " + $("#inputLocation").val() + " [" + $("#inputProblem").val() +"]"
+								}
+							} else {
+								var subject = "#ATC - Permohonan Open Ticket"
+							}
 
-					$("#holderSerial").html($("#inputSerial").val());
-					$("#holderType").html($("#inputType").val());
-					$("#holderType").html($("#inputType").val());
+							$('.emailMultiSelector').remove()
+							$("#emailOpenTo").val(result.open_to)
+							$("#emailOpenTo").emailinput({ onlyValidValue: true, delim: ';' });
+							$("#emailOpenCc").val(result.open_cc)
+							$("#emailOpenCc").emailinput({ onlyValidValue: true, delim: ';' });
+							
+							$("#emailOpenSubject").val(subject);
+							if($("#inputClient option:selected").text().includes("Absensi")){
+								$("#emailOpenHeader").html("Dear <b>" + result.open_dear + "</b><br>Berikut terlampir Open Tiket untuk <b>" + $("#inputAbsenLocation").select2('data')[0].text + "</b> : ");
+							} else if($("#inputClient option:selected").text().includes("Switch")){
+								$("#emailOpenHeader").html("Dear <b>" + result.open_dear + "</b><br>Berikut terlampir Open Tiket untuk <b>" + $("#inputSwitchLocation").select2('data')[0].text + "</b> : ");
+							} else if($("#inputTemplateEmail").val() == "ATM Template") {
+								$("#emailOpenHeader").html("Dear " + result.open_dear + ", ");
+							} else {
+								$("#emailOpenHeader").html("Dear <b>" + result.open_dear + "</b><br>Berikut terlampir Open Tiket untuk <b>" + $("#inputLocation").val() + "</b> : ");
+							}
+							$(".holderCustomer").text(result.client_name.split(' - ')[0]);
+						}
+					});
 
-					$("#holderSerial1 th").text("UPS Serial")
-					$("#holderIDATM2 th").text("ID UPS")
-					$("#holderIDATM3 th").text("UPS Mechine Type")
-					$("#holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
-				} else {
-					$("#holderIDATM2").show();
-					$("#holderIDATM3").show();
-					$("#holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
-					$("#holderType").html($("#inputType").val());
+					if(!$("#inputATM").val()){
+						$("#inputATM").val(" - ");
+					} else {
+						$(".holderIDATM2").show();
+						$(".holderIDATM3").show();
+						$(".holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
+						$(".holderType").html($("#inputType").val());
+					}
+
+					if(!$("#inputSerial").val()){
+						$("#inputSerial").val(" - ");
+					}
+
+					if(!$("#inputRefrence").val()){
+						$("#inputRefrence").val(" - ");
+					}
+
+					if(!$("#inputNote").val()){
+						$("#inputNote").val(" - ");
+					}
 					
-				}
-			} else {
+					var waktu = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("D MMMM YYYY");
+					var waktu2 = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("HH:mm");
+					var schedule = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm - D MMMM YYYY");
 
-				if($("#inputClient").val() == "BTNI"){
-					$("#holderIDATM2").hide();
-					$("#holderSerial1").hide();
-					$("#holderIDATM3").show();
-					$("#holderIPMechine").show();
-					$("#holderIPMechine2").text($("#inputIpMechine").val());
-					$("#holderIPServer").show();
-					$("#holderIPServer2").text($("#inputIpServer").val());
-					$("#holderLocation").text($("#inputAbsenLocation").select2('data')[0].text);
-				} else {
-					$("#holderIDATM2").hide();
-					$("#holderIDATM3").hide();
+					if($("#inputClient option:selected").text().includes("CCTV")){
+						$(".holderIDATM2").insertAfter($(".holderIDATM2").next());
+						$(".holderIDATM2 th").text("ATM ID");
+						$(".holderIDATM3 th").text("CCTV Type");
+						$(".holderSerial").prev().text("CCTV Serial")
+						$(".holderSerial").html($("#inputSerial").val());
+					} else if ($("#inputClient option:selected").text().includes("UPS")){
+						$(".holderIDATM2").insertAfter($(".holderIDATM2").next());
+						$(".holderIDATM2 th").text("ATM ID");
+						$(".holderIDATM3 th").text("UPS Type");
+						$(".holderSerial").prev().text("UPS Serial")
+						$(".holderSerial").html($("#inputSerial").val());
+					} else {
+						if($("#inputTemplateEmail").val() != "Wincor Template"){
+							$(".holderSerial").html($("#inputSerial").val());
+						} else {
+							$(".holderSerial").html($("#inputSerial").val() + ";");
+						}
+					}
+
+					$(".holderID").text($("#inputticket").val());
+					
+					$(".holderRefrence").text($("#inputRefrence").val());
+					if($("#inputTemplateEmail").val() != "Wincor Template"){
+						$("#locationProblem").text($("#inputLocation").val())
+						$(".holderPIC").text($("#inputPIC").val());
+						$(".holderContact").text($("#inputContact").val());
+						$(".holderLocation").text($("#inputLocation").val());
+						$(".holderProblem").text($("#inputProblem").val());
+						$(".holderType").html($("#inputType").val());
+					} else {
+						$("#locationProblem").text($("#inputLocation").val() + ";")
+						$(".holderPIC").text($("#inputPIC").val() + ";");
+						$(".holderContact").text($("#inputContact").val() + ";");
+						$(".holderLocation").text($("#inputLocation").val() + ";");
+						$(".holderProblem").text($("#inputProblem").val() + ";");
+						$(".holderType").html($("#inputType").val() + ";");
+					}
+
+					if($("#inputClient option:selected").text().includes("Absensi")){
+						$(".holderIDATM3").show();
+						$(".holderType").html($("#inputType").val());
+						$(".holderIPMechine3").show();
+						$(".holderIPMechine4").text($("#inputIpMechine").val());
+						$(".holderLocation").text($("#inputAbsenLocation").select2('data')[0].text);
+						$(".holderIPServer3").show();
+						$(".holderIPServer4").text($("#inputIpServer").val());
+					} 
+
+					if($("#inputClient option:selected").text().includes("Switch")){
+						$(".holderIDATM3").show();
+						$(".holderType").html($("#inputType").val());
+						$(".holderIPMechine3").show();
+						$(".holderIPMechine4").text($("#inputIpMechine").val());
+						$(".holderLocation").text($("#inputSwitchLocation").select2('data')[0].text);
+						// $(".holderIPServer3").show();
+						// $(".holderIPServer4").text($("#inputIpServer").val());
+					}
+					
+
+					$(".holderSeverity").text($("#inputSeverity").val());
+					$(".holderNote").text($("#inputNote").val());
+					
+					$(".holderDate").text(waktu);
+					$(".holderName").html("{{Auth::user()->name}}")
+					$(".holderPhone").html("{{Auth::user()->phone}}")
+
+					$(".holderStatus").html("<b>OPEN</b>");
+					$(".holderWaktu").html("<b>" + waktu2 + "</b>");
+
+					if($("#inputTypeTicket").val() == "Preventive Maintenance"){
+						var schedule_date = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("D MMMM YYYY");
+						var schedule_time = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm");
+
+						$(".holderStatus").html("<b>" + schedule_date + "</b>");
+						$(".holderWaktu").html("<b>" + schedule_time + "</b>");
+
+						$(".holderActivity").html($("#inputProblem").val())
+						$(".holderEngineer").html($("#inputEngineerOpen").val())
+					}
 				}
-			}
-			if(clientWincor == 1){
-				$("#createEmailBodyWincor").show()
-				$("#createEmailBodyNormal").hide()
-			} else {
-				$("#createEmailBodyWincor").hide()
-				$("#createEmailBodyNormal").show()
-			}
+			})
 		}
 	}
 
-	function createEmailBody(type){
-		$("#sendTicket").show();
-		$("#formNewTicket").hide();
+	function backOpenEmail(){
+		$("#sendTicket").hide();
+		$("#formNewTicket").show();
 
-		
-		$.ajax({
-			url:"{{url('ticketing/mail/getOpenMailTemplate')}}",
-			data:{
-				type:type
-			},
-			type:"GET",
-			success: function (result){
-				$("#bodyOpenMail").html(result);
-				$.ajax({
-					type:"GET",
-					url:"{{url('ticketing/mail/getEmailData')}}",
-					data:{
-						client:$("#inputClient").val()
-					},
-					success: function(result){
-						console.log(type)
-						if(type == "normal"){
-							if($("#inputClient").val() == "BTNI"){
-								var subject = "Open Tiket " + $("#inputAbsenLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
-							} else {
-								var subject = "Open Tiket " + $("#inputLocation").val() + " [" + $("#inputProblem").val() +"]"
-							}
-						} else {
-							// var subject = "#ATC - Permohonan Open Ticket " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " " + result.client_name + " " + $("#inputLocation").val()
-							var subject = "#ATC - Permohonan Open Ticket"
-						}
-
-						$('.emailMultiSelector').remove()
-						$("#emailOpenTo").val(result.open_to)
-						$("#emailOpenTo").emailinput({ onlyValidValue: true, delim: ';' });
-						$("#emailOpenCc").val(result.open_cc)
-						$("#emailOpenCc").emailinput({ onlyValidValue: true, delim: ';' });
-						
-						$("#emailOpenSubject").val(subject);
-						if($("#inputClient").val() == "BTNI"){
-							$("#emailOpenHeader").html("Dear <b>" + result.open_dear + "</b><br>Berikut terlampir Open Tiket untuk Problem <b>" + $("#inputAbsenLocation").select2('data')[0].text + "</b> : ");
-						} else {
-							$("#emailOpenHeader").html("Dear <b>" + result.open_dear + "</b><br>Berikut terlampir Open Tiket untuk Problem <b>" + $("#inputLocation").val() + "</b> : ");
-						}
-						$(".holderCustomer").text(result.client_name);
-					}
-				});
-
-				if(!$("#inputATM").val()){
-					$("#inputATM").val(" - ");
-				} else {
-					$(".holderIDATM2").show();
-					$(".holderIDATM3").show();
-					$(".holderIDATM").text($("#inputATM").select2('data')[0].text.split(' -')[0]);
-					$(".holderType").html($("#inputType").val());
-				}
-
-				if(!$("#inputSerial").val()){
-					$("#inputSerial").val(" - ");
-				}
-
-				if(!$("#inputRefrence").val()){
-					$("#inputRefrence").val(" - ");
-				}
-
-				if(!$("#inputNote").val()){
-					$("#inputNote").val(" - ");
-				}
-				
-				var waktu = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("D MMMM YYYY");
-				var waktu2 = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("HH:mm");
-
-				if($("#inputClient").val() == "BDIYCCTV"){
-					$(".holderIDATM2").insertAfter($(".holderIDATM2").next());
-					$(".holderIDATM2 th").text("ATM ID");
-					$(".holderIDATM3 th").text("CCTV Type");
-					$(".holderSerial").prev().text("CCTV Serial")
-					$(".holderSerial").html($("#inputSerial").val());
-				} else if ($("#inputClient").val() == "BDIYUPS"){
-					$(".holderIDATM2").insertAfter($(".holderIDATM2").next());
-					$(".holderIDATM2 th").text("ATM ID");
-					$(".holderIDATM3 th").text("UPS Type");
-					$(".holderSerial").prev().text("UPS Serial")
-					$(".holderSerial").html($("#inputSerial").val());
-				} else {
-					if(type == "normal"){
-						$(".holderSerial").html($("#inputSerial").val());
-					} else {
-						$(".holderSerial").html($("#inputSerial").val() + ";");
-					}
-				}
-
-				$(".holderID").text($("#inputticket").val());
-				
-				$(".holderRefrence").text($("#inputRefrence").val());
-				if(type == "normal"){
-					$("#locationProblem").text($("#inputLocation").val())
-					$(".holderPIC").text($("#inputPIC").val());
-					$(".holderContact").text($("#inputContact").val());
-					$(".holderLocation").text($("#inputLocation").val());
-					$(".holderProblem").text($("#inputProblem").val());
-					$(".holderType").html($("#inputType").val());
-				} else {
-					$("#locationProblem").text($("#inputLocation").val() + ";")
-					$(".holderPIC").text($("#inputPIC").val() + ";");
-					$(".holderContact").text($("#inputContact").val() + ";");
-					$(".holderLocation").text($("#inputLocation").val() + ";");
-					$(".holderProblem").text($("#inputProblem").val() + ";");
-					$(".holderType").html($("#inputType").val() + ";");
-				}
-
-				if($("#inputClient").val() == "BTNI"){
-					$(".holderIDATM3").show();
-					$(".holderType").html($("#inputType").val());
-					$(".holderIPMechine3").show();
-					$(".holderIPMechine4").text($("#inputIpMechine").val());
-					$(".holderLocation").text($("#inputAbsenLocation").select2('data')[0].text);
-					$(".holderIPServer3").show();
-					$(".holderIPServer4").text($("#inputIpServer").val());
-				}
-				
-
-				$(".holderSeverity").text($("#inputSeverity").val());
-				$(".holderNote").text($("#inputNote").val());
-				
-				$(".holderEngineer").text($("#inputEngineer").val());
-				$(".holderDate").text(waktu);
-
-				$(".holderStatus").html("<b>OPEN</b>");
-				$(".holderWaktu").html("<b>" + waktu2 + "</b>");
-			}
-		})
+		$("#createEmailBody").attr("disabled","true")
 	}
 
 	function sendOpenEmail(){
