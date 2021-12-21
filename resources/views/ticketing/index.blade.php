@@ -724,15 +724,45 @@ Ticketing
 									</ul>
 								</div>
 								<span class="input-group-btn">
-									<button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-flat">
+									<!-- <button id="applyFilterTablePerformance" type="button" class="btn btn-default btn-flat">
 										<i class="fa fa-fw fa-search"></i>
-									</button>
-									<!-- <button id="clearFilterTable" type="button" class="btn btn-default btn-flat">
+									</button> -->
+									<button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" type="button" class="btn btn-default btn-flat">
 										<i class="fa fa-fw fa-remove"></i>
-									</button> -->
-									<!-- <button id="reloadTable" type="button" class="btn btn-default btn-flat">
+									</button>
+									
+								</span>
+								<span class="input-group-btn">
+									<button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+										Displayed Column
+										<span class="fa fa-caret-down"></span>
+									</button>
+									<ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
+										<!-- <li class="active severityCounter" onclick="changeColumnTable(this)" data-column="0"><a>ID Ticket</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="1"><a>ID ATM</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="2"><a>Ticket Number</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="3"><a>Open</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="4"><a>Location - Problem</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="5"><a>PIC</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="6"><a>Severity</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="7"><a>Status</a></li>
+										<li class="active severityCounter" onclick="changeColumnTable(this)" data-column="8"><a>Operator</a></li> -->
+										<!-- <li>
+											<input type="checkbox" value=""><span class="text">ID ATM</span>
+										</li> -->
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="0"><span class="text">ID Ticket</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="1"><span class="text">ID ATM</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="2"><span class="text">Ticket Number</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="3"><span class="text">Open</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="4"><span class="text">Location - Problem</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="5"><span class="text">PIC</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="6"><span class="text">Severity</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="7"><span class="text">Status</span></li>
+										<li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="8"><span class="text">Operator</span></li>
+									</ul>
+									<button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" type="button" class="btn btn-default btn-flat">
 										<i class="fa fa-fw fa-refresh"></i>
-									</button> -->
+									</button>
 								</span>
 							</div>
 						</div>
