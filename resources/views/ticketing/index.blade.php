@@ -3169,23 +3169,34 @@ Ticketing
 				}
 			});
 		} else {
-			if($("#inputClient").val() == "BTNI"){
+			if($("#inputClient option:selected").text().includes("Absensi")){
 				$.ajax({
 					type:"GET",
 					url:"{{url('ticketing/create/getAbsenId')}}",
 					success: function(result){
-						// $("#typeDiv").show();
-						// $("#inputATMid").show();
-						// $("#categoryDiv").show();
 						if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
 							$("#inputAbsenLocation").select2('destroy');
 						}
 						result.unshift('Select One')
-						// console.log(result);
+
 						$("#inputAbsenLocation").select2({
 							data:result
 						});
-						// $("#locationDiv .col-sm-2").text('Location')
+					}
+				});
+			} else if($("#inputClient option:selected").text().includes("Switch")){
+				$.ajax({
+					type:"GET",
+					url:"{{url('ticketing/create/getSwitchId')}}",
+					success: function(result){
+						if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
+							$("#inputSwitchLocation").select2('destroy');
+						}
+						result.unshift('Select One')
+
+						$("#inputSwitchLocation").select2({
+							data:result
+						});
 					}
 				});
 			} else {
