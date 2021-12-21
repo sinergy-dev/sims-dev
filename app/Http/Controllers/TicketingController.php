@@ -227,22 +227,31 @@ class TicketingController extends Controller
 
 		$updateTicketId = Ticketing::where('id_ticket',$req->id_ticket_before)->first();
 		$updateTicketId->id_ticket = $req->id_ticket_after;
-		$client = TicketingClient::where('client_acronym',$req->acronym_client);
-		$updateTicketId->id_client = $client->value('id');
+		$client = TicketingClient::find($req->id_client);
+		$updateTicketId->id_client = $client->id;
 
 		$updateTicketId->save();
 		return collect([
-			"banking" => $client->value('banking'),
-			"wincor" => $client->value('wincor')
+			"banking" => $client->banking,
+			"wincor" => $client->wincor
 		]);
 	}
 
 	public function getAtmId(Request $request){
-		$client_acronym = $request->acronym;
-		if($request->acronym == "BDIYCCTV" || $request->acronym == "BDIYUPS"){
-			$client_acronym = "BDIY";
+		if($request->acronym == "BDIY"){
+			$request->client_id = 19;
 		}
-		return TicketingATM::where('owner',TicketingClient::where('client_acronym',$client_acronym)->first()->id)
+
+		// return TicketingATM::where('owner',TicketingClient::where('client_acronym',$client_acronym)->first()->id)
+		// 	->select(
+		// 		'id',
+		// 		DB::raw('CONCAT(`atm_id`," - ", `location`) AS `text`')
+		// 	)
+		// 	->get()->all();
+
+		// return $request->client_id;
+
+		return TicketingATM::where('owner',$request->client_id)
 			->select(
 				'id',
 				DB::raw('CONCAT(`atm_id`," - ", `location`) AS `text`')
