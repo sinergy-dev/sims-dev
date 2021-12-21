@@ -56,6 +56,36 @@ class TicketingController extends Controller
 			]);
 	}
 
+	public function storeAddMail(Request $request)
+	{
+		$store = new TicketingClient();
+		$store->client_name = $request->client_name;
+		$store->client_acronym = $request->client_acronym;
+		$store->open_dear = $request->open_dear;
+		$store->close_dear = $request->close_dear;
+		$store->situation = '1';
+		$store->banking = $request->banking;
+		$store->wincor = $request->wincor;
+		$store->open_to = $request->open_to;
+		$store->open_cc = $request->open_cc;
+		$store->close_to = $request->close_to;
+		$store->close_cc = $request->close_cc;
+		$store->save();
+	}
+
+	public function getSettingEmail()
+	{
+		$clients = TicketingClient::select('id', 'client_acronym', 'client_name', 'open_dear', 'close_dear')
+			->selectRaw("REPLACE(`open_to`,';','<br>') AS `open_to`")
+			->selectRaw("REPLACE(`open_cc`,';','<br>') AS `open_cc`")
+			->selectRaw("REPLACE(`close_to`,';','<br>') AS `close_to`")
+			->selectRaw("REPLACE(`close_cc`,';','<br>') AS `close_cc`")
+			->orderBy('id', 'desc')
+			->get();
+
+		return array("data" => $clients);
+	}
+
 	public function getDashboard() {
 		// $start = microtime(true);
 
