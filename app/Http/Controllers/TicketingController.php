@@ -715,7 +715,7 @@ class TicketingController extends Controller
 			])
 			->whereIn('id_ticket',$finish_ticket)
 			->where('severity',$req->severity)
-			->take(100 - $occurring_ticket_result->count())
+			->take($limit)
 			->orderBy('id','DESC')
 			->get();
 
