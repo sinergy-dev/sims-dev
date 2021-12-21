@@ -3730,9 +3730,15 @@ Ticketing
 						className:'text-center',
 						width:"10%"
 					},
-					{
-						data:'location',
-						width:"12%"
+					// {
+					// 	data:'location',
+					// 	width:"12%"
+					// },
+					{ 
+						data:'severity',
+						className:'text-center',
+						orderData:[ 11 ],
+						width:"3%"
 					},
 					{ 
 						data:'lastest_status',
