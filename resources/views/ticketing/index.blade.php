@@ -3538,19 +3538,23 @@ Ticketing
 				id_ticket:$("#inputticket").val(),
 
 				id:$("#inputID").val(),
-				client:$("#inputClient").val(),
+				client:$("#inputClient option:selected").text().split(" - ")[0],
+				clientID:$("#inputClient").select2('data')[0].id,
 
 				id_atm:id_atm,
 				refrence:$("#inputRefrence").val(),
 				pic:$("#inputPIC").val(),
 				contact_pic:$("#inputContact").val(),
+				switchLocation:switchLocation,
 				location:location,
 				absen:absen,
-				problem:$("#inputProblem").val(),
+				problem:problem,
+				engineer:engineer,
 				serial_device:$("#inputSerial").val(),
 				note:$("#inputNote").val(),
 				report:moment($("#inputReportingDate").val(),'DD/MM/YYYY').format("YYYY-MM-DD") + " " + moment($("#inputReportingTime").val(),'HH:mm:ss').format("HH:mm:ss.000000"),
-				severity:$("#inputSeverity").val()
+				severity:severity,
+				type_ticket:type_ticket
 			}
 			var textSwal = ""
 			if($("#emailOpenCc").val() == ""){
