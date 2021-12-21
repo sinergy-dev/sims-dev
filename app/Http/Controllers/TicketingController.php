@@ -283,6 +283,10 @@ class TicketingController extends Controller
 		return TicketingAbsen::where('id',$request->id_absen)->first();
 	}
 
+	public function getSwitchDetail(Request $request){
+		return TicketingSwitch::where('id',$request->id_switch)->first();
+	}
+
 	public function getAtmPeripheralDetail(Request $request){
 		if($request->type == "CCTV"){
 			$result = TicketingATMPeripheral::with('atm')
