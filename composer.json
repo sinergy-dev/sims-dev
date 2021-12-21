@@ -19,7 +19,8 @@
         "nasution/terbilang": " *",
         "nesbot/carbon": "^2.42.0",
         "phpoffice/phpexcel": "1.8.1",
-        "phpoffice/phpspreadsheet": "^1.17"
+        "phpoffice/phpspreadsheet": "^1.17",
+        "wpb/string-blade-compiler": "^6.0"
     },
     "require-dev": {
         "filp/whoops": "^2.0",
