@@ -5173,6 +5173,18 @@ Ticketing
 				$("#clientId").val(id);
 				$("#clientTitle").val(result[0].client_name);
 				$("#clientAcronym").val(result[0].client_acronym);
+
+				if (result[0].situation == 1) {
+					$('#situation').prop('checked', true);
+				}
+
+				if (result[0].banking == 1) {
+					$('#banking').prop('checked', true);
+				}
+
+				if (result[0].wincor == 1) {
+					$('#wincor').prop('checked', true);
+				}
 				
 				$("#openDear").val(result[0].open_dear);
 				$("#openTo").val(result[0].open_to);
