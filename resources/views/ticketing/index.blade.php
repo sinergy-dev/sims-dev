@@ -1684,6 +1684,88 @@ Ticketing
 		</div>
 	</div>
 
+	<div class="modal fade" id="modal-add-email">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"> Add Email </h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<label>Client Title</label>
+							<input type="text" class="form-control" id="clientTitleAdd">
+						</div>
+						<div class="form-group">
+							<label>Client Acronym</label>
+							<input type="text" class="form-control" id="clientAcronymAdd" style="text-transform:uppercase" maxlength="4">
+						</div>
+						<hr>
+						<div class="form-group">
+							<label>Open Dear</label>
+							<input type="text" class="form-control" id="openDearAdd">
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Open To</label>
+									<textarea class="form-control" rows="3" id="openToAdd"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Open Cc</label>
+									<textarea class="form-control" rows="3" id="openCcAdd"></textarea>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="form-group">
+							<label>Close Dear</label>
+							<input type="text" class="form-control" id="closeDearAdd">
+						</div>
+
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Close To</label>
+									<textarea class="form-control" rows="3" id="closeToAdd"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Close Cc</label>
+									<textarea class="form-control" rows="3" id="closeCcAdd"></textarea>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="form-group">
+								<div class="col-sm-6">
+									<label class="container">Banking
+									  <input type="checkbox" id="bankingAdd">
+									  <span class="checkmark"></span>
+									</label>
+									<label class="container">Wincor
+									  <input type="checkbox" id="wincorAdd">
+									  <span class="checkmark"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveClient('AddClient')">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="modal fade" id="modal-setting-email">
 		<div class="modal-dialog">
 			<div class="modal-content">
