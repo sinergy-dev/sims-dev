@@ -3670,10 +3670,37 @@ Ticketing
 							} 
 							data.lastest_operator = data.lastest_activity_ticket.operator
 							data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="showTicket(' + data.id_detail.id + ')">Detail</button>'
+							data.problem = "<b>" + data.location + "</b> - " + data.problem
+
+							if(data.type_ticket == "TT"){
+								data.type_ticket = "Trouble Ticket"
+							} else if (data.type_ticket == "PM"){
+								data.type_ticket = "Preventive Maintenance"
+							} else if (data.type_ticket == "PL"){
+								data.type_ticket = "Permintaan Layanan"
+							}
+
+							if(data.severity == 1){
+								data.severity_numerical = 1
+								data.severity = '<span class="label bg-red">' + data.type_ticket + ' - Critical</span>'
+							} else if(data.severity == 2) {
+								data.severity_numerical = 2
+								data.severity = '<span class="label bg-orange">' + data.type_ticket + ' - Major</span>'
+							} else if(data.severity == 3) {
+								data.severity_numerical = 3
+								data.severity = '<span class="label bg-custom-yellow">' + data.type_ticket + ' - Moderate</span>'
+							} else if(data.severity == 4) {
+								data.severity_numerical = 4
+								data.severity = '<span class="label bg-green">' + data.type_ticket + ' - Minor</span>'
+							} else if(data.severity == 0){
+								data.severity_numerical = 0
+								data.severity = '<span class="label label-default">' + data.type_ticket + '</span>'
+							}
 						})
 						return json.data
 					}
 				},
+				stateSave: true,
 				columns:[
 					{
 						data:'id_ticket',
