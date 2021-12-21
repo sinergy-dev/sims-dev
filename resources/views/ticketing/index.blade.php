@@ -3506,10 +3506,29 @@ Ticketing
 			if ($('#inputAbsenLocation').hasClass("select2-hidden-accessible")) {
 				var absen = $("#inputAbsenLocation").select2('data')[0].id
 				var location = $("#inputAbsenLocation").select2('data')[0].text
+			} else if ($('#inputSwitchLocation').hasClass("select2-hidden-accessible")) {
+				var switchLocation = $("#inputSwitchLocation").select2('data')[0].id
+				var location = $("#inputSwitchLocation").select2('data')[0].text
 			} else {
 				var absen = "-";
+				var switchLocation = "-";
 				var location = $("#inputLocation").val();
 			}
+
+			var type_ticket = ""
+			var problem = $("#inputProblem").val()
+			var engineer = ""
+			var severity = $("#inputSeverity").val()
+			if($("#inputTypeTicket").val() == "Trouble Ticket"){
+				type_ticket = "TT"
+			}else if($("#inputTypeTicket").val() == "Preventive Maintenance"){
+				type_ticket = "PM"
+				engineer = $("#inputEngineerOpen").val()
+				severity = "0"
+			}else if($("#inputTypeTicket").val() == "Permintaan Layanan"){
+				type_ticket = "PL"
+			}
+
 			var dataAjax = {
 				body:$("#bodyOpenMail").html(),
 				subject: $("#emailOpenSubject").val(),
