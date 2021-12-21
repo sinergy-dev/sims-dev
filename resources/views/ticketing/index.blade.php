@@ -837,6 +837,9 @@ Ticketing
 							<button class="btn btn-flat btn-default" onclick="absenSetting()">
 								Absen Setting
 							</button>
+							<button class="btn btn-flat btn-default" onclick="switchSetting()">
+								Switch Setting
+							</button>
 							<button class="btn btn-flat btn-default" onclick="severitySetting()">
 								Severity Setting
 							</button>
