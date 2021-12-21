@@ -743,6 +743,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getdetailAssetPeminjaman','AssetController@getdetailAssetPeminjaman');
 	Route::get('/getAsset','AssetController@getAsset');
 	Route::get('/getidbarangaccept', 'AssetController@getid_barang_accept');
+	Route::post('/asset_pinjam/updateKategori', 'AssetController@updateKategori');
+	Route::get('/asset_pinjam/getKategoriById', 'AssetController@getKategoriById');
 
 	//App Incident
 	Route::get('/app_incident', 'AppIncidentController@index');
