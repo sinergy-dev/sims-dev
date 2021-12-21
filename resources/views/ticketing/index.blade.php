@@ -3487,19 +3487,17 @@ Ticketing
 			$("#emailOpenTo").parent().parent().removeClass("has-error")
 			$("#emailOpenTo").parent().siblings().last().hide()
 			var customerAcronym = $("#inputticket").val().split('/')[1];
-			if(
-				customerAcronym == "BJBR" 
-				|| customerAcronym == "BSBB" 
-				|| customerAcronym == "BRKR" 
-				|| customerAcronym == "BJTG" 
-				|| customerAcronym == "BDIY"
-				|| customerAcronym == "BDIYCCTV"
-				|| customerAcronym == "BDIYUPS"
-				){
-				var id_atm = $("#inputATM").select2('data')[0].text.split(' -')[0]
-			} else {
+			// if(
+			// 	customerAcronym == "BJBR" 
+			// 	|| customerAcronym == "BSBB" 
+			// 	|| customerAcronym == "BRKR" 
+			// 	|| customerAcronym == "BJTG" 
+			// 	|| customerAcronym == "BDIY"
+			// 	){
+			// 	var id_atm = $("#inputATM").select2('data')[0].text.split(' -')[0]
+			// } else {
 				var id_atm = $("#inputATM").val()
-			}
+			// }
 
 			var typeAlert = 'warning'
 			var typeActivity = 'Open'
