@@ -4259,7 +4259,9 @@ Ticketing
 				$("#cancelButton").prop('disabled',false);
 				$("#pendingButton").prop('disabled',false);
 				$("#modal-ticket").modal('toggle')
-				getPerformanceByClient(result.client_acronym_filter)
+				$("#clientList").val(result.client_id_filter).trigger('change')
+				// getPerformanceByFilter([result.client_id_filter],[],[],[])
+				// getPerformanceByClient(result.client_acronym_filter)
 				swalWithCustomClass.fire(
 					'Success',
 					'Update Completed!',
