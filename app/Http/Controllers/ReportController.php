@@ -15,15 +15,17 @@ use PDF;
 use App\user;
 use App\ProductTagRelation;
 use App\ProductTag;
+use App\solution_design;
 
 use Excel;
 
+use Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportController extends Controller
 {
@@ -2275,7 +2277,7 @@ class ReportController extends Controller
            }
     }
 
-    public function report_range()
+    public function report_range(Request $request)
     {
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -2302,37 +2304,39 @@ class ReportController extends Controller
                     $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
                 })
                 ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
                 ->join('tb_territory','tb_territory.id_territory','=','u_sales.id_territory')
                 ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
                 ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                ->select('sales_tender_process.win_prob','sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales','tb_presales.priority','sales_lead_register.year','tb_territory.name_territory',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
+                ->select('sales_tender_process.win_prob','sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales','tb_presales.priority','sales_lead_register.year','tb_territory.name_territory',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"), 'code_company', 'u_sales.id_company')
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result','!=','hmm')
                 ->orderBy('created_at', 'desc');  
 
-        $total_deal_price = DB::table('sales_lead_register')
-                                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+        $total_deal_price = Sales::join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
                                 ->select(DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'))
+                                ->where('code_company', 'MSP')
                                 ->where('result','!=','hmm'); 
 
         if($ter != null){
             $leads = $leadsnow->where('u_sales.id_company', '1')->get();
 
-            $total_deal_price->where('u_sales.id_company', '1')->first();
+            $total_deal_price = $total_deal_price->where('u_sales.id_company', '1')->first();
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leads = $leadsnow->where('nik_presales', $nik)->get();
 
-                $total_deal_price->where('nik_presales', $nik)->first();
+                $total_deal_price = $total_deal_price->where('nik_presales', $nik)->first();
 
             } else if ($div == 'SALES') {
                 $leads = $leadsnow->where('u_sales.id_territory', $ter)->get();
                 
-                $total_deal_price->where('u_sales.id_territory', $ter)->first();
+                $total_deal_price = $total_deal_price->where('u_sales.id_territory', $ter)->first();
             }        
         }else{
             $leads = $leadsnow->get();
             
-            $total_deal_price->first();
+            $total_deal_price = $total_deal_price->first();
         }  
 
         // count semua lead
@@ -2542,8 +2546,125 @@ class ReportController extends Controller
         return view('report/report_range', compact('leads','lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years'))->with(['initView'=> $this->initMenuBase()]);
     }
 
+    public function downloadExcelReportRange(Request $request) {
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Lead Register');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Lead Register');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $sheet->getStyle('A2:H2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["LEAD ID", "OWNER", "OPP NAME", "CUSTOMER", "CREATEDATE",  "CLOSING DATE", "AMOUNT", "STATUS"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $getPresales = solution_design::join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`, GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->selectRaw('name')->where('status','closed')->groupBy('lead_id','name_presales');
+
+        $leadsnow = DB::table('sales_lead_register')->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                })
+                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+                ->join('tb_territory','tb_territory.id_territory','=','u_sales.id_territory')
+                ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                ->select('sales_lead_register.lead_id', 'u_sales.name', 'sales_lead_register.opp_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.closing_date', DB::raw("IFNULL(`sales_lead_register`.`deal_price`,0) AS `deal_price`"), DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
+                ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
+                ->where('result','!=','hmm')
+                ->orderBy('created_at', 'desc'); 
+
+        if (isset($request->year)) {
+            $leadsnow->where('year', $request->year);   
+        }
+
+        if (isset($request->comp)) {
+            $leadsnow->where('code_company', $request->comp);
+        }
+
+        if (isset($request->ter)) {
+            $leadsnow->where('u_sales.id_territory', $request->ter);
+        }
+
+        if (isset($request->sales)) {
+            $leadsnow->where('u_sales.name', $request->sales);
+        }
+
+        if (isset($request->presales)) {
+            $leadsnow->where('tb_presales.name', $request->presales);
+        }
+        
+        if (isset($request->winprob)) {
+            $leadsnow->where('win_prob', $request->winProb);
+        }
+
+        if (isset($request->priority)) {
+            $leadsnow->where('priority', $request->priority);
+        }
+
+        if (isset($request->status)) {
+            $leadsnow->where('result', $request->status);
+        } 
+
+        if (isset($request->closing_date)) {
+            $leadsnow->whereYear('closing_date', $request->closing_date);
+        } 
+
+        if (isset($request->date_start)) {
+            $leadsnow->where('sales_lead_register.created_at', '>=', $request->date_start)
+                 ->where('sales_lead_register.created_at', '<=', $request->date_end);   
+        }
+
+        $datas = json_decode(json_encode($leadsnow->get()), true);
+
+        foreach ($datas as $key => $data) {
+            $data['deal_price'] = number_format((int)$data['deal_price'],2,",",".");
+            $sheet->fromArray($data,NULL,'A' . ($key + 3));
+        }
+
+        // $sheet->fromArray(["BBRI190901","Liliany","Pengadaan Server dan Sosama Teknologi Bank BRI","Bank BRI","2019-09-03 18:58:10","2019-09-30","0","SPECIAL"],NULL,'A' . 3);
+
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setWidth(35);
+
+
+        $fileName = 'Lead Register ' . date('Y-m-d') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+    }
+
     public function filter_sales_report(Request $req){
-        return user::where('nik',$req->nik)->first()->name;
+        return user::join('tb_company', 'tb_company.id_company', '=', 'users.id_company')->join('sales_lead_register', 'sales_lead_register.nik', '=', 'users.nik')->select('name', 'code_company', 'result', 'year')->where('users.nik',$req->nik)->where('result', 'WIN')->where('year', date('Y'))->first();
     }
 
     public function total_deal_price(Request $request){
@@ -2555,24 +2676,61 @@ class ReportController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`,GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->selectRaw('name')->where('status','closed')->groupBy('lead_id','name_presales');
+
         $data = DB::table('sales_lead_register')
                 ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
-                ->where('year', $request->year);
+                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+                ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                })
+                ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                ->where('result', '!=', 'hmm');
 
-        if($ter != null){
-            $data->where('u_sales.id_company', '1');
-            if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
-                $data->where('nik_presales', $nik);
-
-            } else if ($div == 'SALES') {                
-                $data->where('u_sales.id_territory', $ter);
-            }        
+        if (isset($request->nik)) {
+            if (isset($request->year)) {
+                $data->whereYear('closing_date', $request->year);   
+            }
         }else{
-            $data;
+             if (isset($request->year)) {
+                $data->where('year', $request->year);   
+            }
+        }       
+
+        if (isset($request->date_start)) {
+            $data->where('sales_lead_register.created_at', '>=', $request->date_start)
+                 ->where('sales_lead_register.created_at', '<=', $request->date_end);   
         }
 
-        return array($data->sum('deal_price'));
+        if (isset($request->comp)) {
+            $data->where('code_company', $request->comp);
+        }
 
+        if (isset($request->ter)) {
+            $data->where('u_sales.id_territory', $request->ter);
+        }
+
+        if (isset($request->sales)) {
+            $data->where('u_sales.name', $request->sales);
+        }
+
+        if (isset($request->presales)) {
+            $data->where('tb_presales.name', $request->presales);
+        }
+        
+        if (isset($request->winprob)) {
+            $data->where('win_prob', $request->winProb);
+        }
+
+        if (isset($request->priority)) {
+            $data->where('priority', $request->priority);
+        }
+
+        if (isset($request->status)) {
+            $data->where('result', $request->status);
+        }
+        
+        return array($data->sum('deal_price'));
     	
     }
 
