@@ -1081,6 +1081,7 @@ Ticketing
 					</button>
 					<div class="modal-tools pull-right" style="text-align: right";>
 						<div>
+							<span class="label label-default" id="ticketType" style="font-size: 15px;"></span>
 							<span class="label label-default" id="ticketSeverity" style="font-size: 15px;"></span>
 						</div>
 						<div style="margin-top: 5px;">
