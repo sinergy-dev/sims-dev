@@ -2887,28 +2887,54 @@ Ticketing
 			$(".has-error").removeClass('has-error')
 			var waktu = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("D MMMM YYYY");
 			var waktu2 = moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("HH:mm");
+			var schedule_date = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("D MMMM YYYY");
+			var schedule_time = moment(($("#inputReportingTime").val() + " " + $("#inputReportingDate").val()), "HH:mm:ss DD/MM/YYYY ").format("HH:mm");
 
 			$("#tableTicket").show();
 			$("#holderID").text($("#inputticket").val());
 			$("#holderRefrence").text($("#inputRefrence").val());
-			$("#holderCustomer").text($("#inputClient").val());
+			$("#holderCustomer").text($("#inputClient option:selected").text().split(" - ")[1]);
 			$("#holderPIC").text($("#inputPIC").val());
 			$("#holderContact").text($("#inputContact").val());
 			$("#holderProblem").text($("#inputProblem").val());
 			$("#holderLocation").text($("#inputLocation").val());
-			$("#holderEngineer").text($("#inputEngineer").val());
 			$("#holderDate").text(waktu);
 			$("#holderSerial").html($("#inputSerial").val());
 			$("#holderType").html($("#inputType").val());
 			
-			$("#holderSeverity").text($("#inputSeverity").val());
 			// $("#holderRoot").text($("#inputticket").val();
 			$("#holderNote").text($("#inputNote").val());
-			$("#holderStatus").html("<b>OPEN</b>");
-			$("#holderWaktu").html("<b>" + waktu2 + "</b>");
+			$("#holderProblem").prev().text("Problem")
+			$("#holderDate").parent().show()
+			$("#holderEngineer").hide();
+			$("#holderSeverity").parent().show()
+			$("#holderStatus").prev().text("Status")
+			$("#holderWaktu").prev().text("Time")
+
+			if($("#inputTypeTicket").val() == "Preventive Maintenance"){
+				$("#holderStatus").html("<b>" + schedule_date + "</b>");
+				$("#holderWaktu").html("<b>" + schedule_time + "</b>");
+				$("#holderEngineer").show();
+				$("#holderEngineerOpen").html($("#inputEngineerOpen").val());
+				$("#holderSeverity").text($("#inputSeverity").val());
+
+				$("#holderProblem").prev().text("Activity")
+				$("#holderStatus").prev().text("Date")
+				$("#holderWaktu").prev().text("Time")
+				$("#holderDate").parent().hide()
+				$("#holderSeverity").parent().hide()
+			} else {
+				if($("#inputTypeTicket").val() == "Permintaan Layanan"){
+					$("#holderProblem").prev().text("Activity")
+				}
+				$("#holderSeverity").text($("#inputSeverity").val());
+				$("#holderStatus").html("<b>OPEN</b>");
+				$("#holderWaktu").html("<b>" + waktu2 + "</b>");
+			}
+
 
 			if(clientBanking){
-				if($("#inputClient").val() == "BDIYCCTV"){
+				if($("#inputClient option:selected").text().includes("CCTV")){
 					$("#holderIDATM2").insertAfter($("#holderIDATM2").next())
 					$("#holderIDATM2").show();
 					$("#holderIDATM3").show();
