@@ -360,23 +360,32 @@ Ticketing
 							<form class="form-horizontal">
 								<input type="hidden" id="inputID">
 								<div class="form-group" id="nomorDiv" style="display: none;">
-									<label for="inputNomor" class="col-sm-2 control-label" >Nomor Ticket</label>
-									<div class="col-sm-10">
+									<label for="inputNomor" class="col-sm-1 control-label" >ID Ticket</label>
+									<div class="col-sm-11">
 										<input type="text" class="form-control" id="inputticket" value="" readonly>
 									</div>
 								</div>
 								<div class="form-group" id="clientDiv" style="display: none;">
-									<label class="col-sm-2 control-label">Client</label>
-									<div class="col-sm-4">
-										<select class="form-control" id="inputClient">
-											<option selected="selected">Chose the client</option>
+									<label class="col-sm-1 control-label">Client</label>
+									<div class="col-sm-3">
+										<select class="form-control" id="inputClient" style="width:100%">
 										</select>
 									</div>
-									<label class="col-sm-1 control-label">Severity</label>
-									<div class="col-sm-5">
-										<select class="form-control" id="inputSeverity">
-											<option selected="selected">Chose the severity</option>
+									<label class="col-sm-1 control-label">Type</label>
+									<div class="col-sm-3">
+										<select class="form-control" id="inputTypeTicket">
+											<option selected="selected" value="none">Chose Type</option>
+											<option value="Trouble Ticket">Trouble Ticket</option>
+											<option value="Preventive Maintenance">Preventive Maintenance Ticket</option>
+											<option value="Permintaan Layanan">Permintaan Layanan Ticket</option>
 										</select>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-1 control-label">Severity</label>
+										<div class="col-sm-3">
+											<select class="form-control" id="inputSeverity">
+											</select>
+										</div>
 									</div>
 								</div>
 
