@@ -568,16 +568,20 @@ Ticketing
 									<th class="bg-primary">Date</th>
 									<td id="holderDate"></td>
 								</tr>
+								<tr id="holderEngineer" style="display: none;">
+									<th class="bg-primary">Engineer</th>
+									<td id="holderEngineerOpen"></td>
+								</tr>
 								<tr id="holderSerial1">
 									<th class="bg-primary">Serial number</th>
 									<td id="holderSerial"></td>
 								</tr>
 								<tr id="holderIDATM3" style="display: none;">
-									<th class="bg-primary">Mechine Type</th>
+									<th class="bg-primary">Device Type</th>
 									<td id="holderType"></td>
 								</tr>
 								<tr id="holderIPMechine" style="display: none;">
-									<th class="bg-primary">IP Mechine</th>
+									<th class="bg-primary">IP Address</th>
 									<td id="holderIPMechine2"></td>
 								</tr>
 								<tr id="holderIPServer" style="display: none;">
