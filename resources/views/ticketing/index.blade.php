@@ -960,6 +960,23 @@ Ticketing
 							</table>
 						</div>
 					</div>
+					<div style="display: none" id="switchSetting" class="row form-group settingComponent">
+						<div class="col-md-12">
+							<table class="table table-striped" id="tableSwitch">
+								<thead>
+									<tr>
+										<th style="vertical-align: middle;text-align: center;">Location</th>
+										<th style="vertical-align: middle;text-align: center;">Cabang</th>
+										<th style="vertical-align: middle;text-align: center;">Type</th>
+										<th style="vertical-align: middle;text-align: center;">Port</th>
+										<th style="vertical-align: middle;text-align: center;">Serial_number</th>
+										<th style="vertical-align: middle;text-align: center;">IP Management</th>
+										<th style="vertical-align: middle;text-align: center;"></th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
 					<div style="display: none" id="severitySetting" class="row form-group settingComponent">
 						<div class="col-md-12">
 							Comming Soon...
