@@ -128,7 +128,7 @@ class TicketingController extends Controller
 		$get_client = DB::table('ticketing__client')
 			->select('id','client_name','client_acronym')
 			->where('situation','=','1')
-			->pluck('client_acronym');
+			->get();
 		// return $get_client;
 
 		$count_ticket_by_client = DB::table('ticketing__id')
