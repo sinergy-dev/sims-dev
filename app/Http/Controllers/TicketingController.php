@@ -471,6 +471,7 @@ class TicketingController extends Controller
 	public function getPerformanceByClient(Request $request){
 		$start = microtime(true);
 		$client_acronym = $request->client;
+		$client_id = $request->client;
 
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('ticketing__activity.id_ticket','ticketing__activity.activity','ticketing__id.id_client')
