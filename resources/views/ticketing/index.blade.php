@@ -4038,7 +4038,7 @@ Ticketing
 				$("#rowAbsen").hide()
 				$("#ticketLocation").val(result.location);
 
-				if(result.id_ticket.split("/")[1] == "BDIYCCTV"){
+				if($("#inputClient option:selected").text().includes("CCTV")){
 					$("#ticketSerialArea").show()
 					$("#ticketSerial").hide()
 					$("#ticketSerialArea").val(result.serial_device.substring(0, result.serial_device.length - 4).replace(regex, "\n"));
