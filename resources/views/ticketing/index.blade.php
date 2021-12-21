@@ -3215,10 +3215,10 @@ Ticketing
 			$("#inputSerial").val("");
 			$("#inputType").val("");
 		} else {
-			if($("#inputClient").val() == "BDIYCCTV" || $("#inputClient").val() == "BDIYUPS"){
-				if($("#inputClient").val() == "BDIYCCTV"){
+			if($("#inputClient option:selected").text().includes("CCTV") || $("#inputClient option:selected").text().includes("UPS")){
+				if($("#inputClient option:selected").text().includes("CCTV")){
 					var type = "CCTV"
-				} else if($("#inputClient").val() == "BDIYUPS") {
+				} else if($("#inputClient option:selected").text().includes("UPS")) {
 					var type = "UPS"
 				}
 				$.ajax({
