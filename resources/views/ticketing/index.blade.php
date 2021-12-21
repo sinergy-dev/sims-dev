@@ -3090,63 +3090,68 @@ Ticketing
 			}).then((result) => {
 				firstTimeTicket = 0
 				clearFormNewTicket()
-				$.ajax({
-					type:"GET",
-					url:"{{url('ticketing/create/getParameter')}}",
-					success: function (result){
-						var append = "";
-						var append2 = "<option selected='selected'>Chose the client</option> ";
-						var append3 = "<option selected='selected' val='None'>Chose the severity</option> ";
-
-						$.each(result[0],function(key,value){
-							var dummy = "getPerformance('" + value + "')";
-							append = append + '<button class="btn btn-default" onclick=' + dummy + '>' + value + '</button> ';
-							append2 = append2 + "<option value='" + value + "'>" + value + "</option>";
-						});
-
-						$.each(result[2],function(key,value){
-							append3 = append3 + "<option value='" + result[1][key] + " (" + value + ")'>" + value + " (" + result[3][key] +")</option>";
-						});
-
-						$("#inputClient").html(append2);
-						$("#inputSeverity").html(append3);
-					},
-				});
+				prepareNewParameter()
 			})
 		} else {
-			$.ajax({
-				type:"GET",
-				url:"{{url('ticketing/create/getParameter')}}",
-				success: function (result){
-					var append = "";
-					var append2 = "<option selected='selected'>Chose the client</option> ";
-					var append3 = "<option selected='selected' val='None'>Chose the severity</option> ";
-
-					$.each(result[0],function(key,value){
-						var dummy = "getPerformance('" + value + "')";
-						append = append + '<button class="btn btn-default" onclick=' + dummy + '>' + value + '</button> ';
-						append2 = append2 + "<option value='" + value + "'>" + value + "</option>";
-					});
-
-					$.each(result[2],function(key,value){
-						append3 = append3 + "<option value='" + result[1][key] + " (" + value + ")'>" + value + " (" + result[3][key] +")</option>";
-					});
-
-					$("#inputClient").html(append2);
-					$("#inputSeverity").html(append3);
-				},
-			});
+			prepareNewParameter()
 		}	
+	}
+
+	function prepareNewParameter(){
+		$.ajax({
+			type:"GET",
+			url:"{{url('ticketing/create/getParameter')}}",
+			success: function (result){
+				var appendClient = "<option selected='selected'>Chose the client</option> ";
+				var appendSeverity = "<option selected='selected' val='None'>Chose the severity</option> ";
+				var appendEmailTemplate = "<option selected='selected' value='none'>Chose Template Email</option> ";
+
+				var arrayClient = [{id:0,text:"Chose the client"}]
+				var arraySeverity = [{id:'None',text:"Chose the severity"}]
+
+				$.each(result.client,function(key,value){
+					var getPerformanceAppend = "getPerformance('" + value.client_acronym + "')";
+					arrayClient.push({
+						id:value.id,
+						text:value.client_acronym + " - " + value.client_name
+					})
+					// console.log(value.client_name)
+				});
+
+				$.each(result.severity,function(key,value){
+					appendSeverity = appendSeverity + "<option value='" + value.id + " (" + value.name + ")'>" + value.name + " - (" + value.description +")</option>";
+				});
+
+				$.each(result.email_template,function(key,value){
+					appendEmailTemplate = appendEmailTemplate + "<option value='" + value.name + "'>" + value.name +" - " + value.type + "</option>";
+				});
+
+				var temp = "";
+				if ($('#inputClient').hasClass("select2-hidden-accessible")) {
+					temp = $('#inputClient').val()
+					$("#inputClient").select2('destroy');
+				}
+
+				$("#inputClient").select2({data:arrayClient});
+				if(temp != ""){
+					$("#inputClient").val(temp).trigger('change')
+				}
+
+				$("#inputSeverity").html(appendSeverity);
+
+				$("#inputTemplateEmail").html(appendEmailTemplate)
+			},
+		});
 	}
 
 	function getBankAtm(clientBanking){
 		if(clientBanking){
-		// if($("#inputClient").val() == "BJBR" || $("#inputClient").val() == "BSBB" || $("#inputClient").val() == "BRKR" || $("#inputClient").val() == "BPRKS" || $("#inputClient").val() == "BDIY"){
 			$.ajax({
 				type:"GET",
 				url:"{{url('ticketing/create/getAtmId')}}",
 				data:{
-					acronym:$("#inputClient").val(),
+					acronym:$("#inputClient option:selected").text().split(" - ")[0],
+					client_id:$("#inputClient").val()
 				},
 				success: function(result){
 					$("#typeDiv").show();
