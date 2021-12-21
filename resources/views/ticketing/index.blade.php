@@ -5201,26 +5201,103 @@ Ticketing
 		});
 	}
 
-	function saveClient(){
-		$.ajax({
-			type:"POST",
-			url:"{{url('/ticketing/setting/setSettingClient')}}",
-			data:{
-				"_token": "{{ csrf_token() }}",
-				id:$("#clientId").val(),
-				client_name:$("#clientTitle").val(),
-				client_acronym:$("#clientAcronym").val(),
-				open_dear:$("#openDear").val(),
-				open_to:$("#openTo").val(),
-				open_cc:$("#openCc").val(),
-				close_dear:$("#closeDear").val(),
-				close_to:$("#closeTo").val(),
-				close_cc:$("#closeCc").val(),
-			},
-			success : function(){
-				$('#modal-setting-email').modal('toggle');
+	function saveClient(value){
+		if (value == 'AddClient') {
+			if ($('input#bankingAdd').is(':checked')) {
+				$('input#bankingAdd').val(1)
+			}else{
+				$('input#bankingAdd').val(0)
 			}
-		});
+
+			if ($('input#wincorAdd').is(':checked')) {
+				$('input#wincorAdd').val(1)
+			}else{
+				$('input#wincorAdd').val(0)
+			}
+
+			$.ajax({
+				type:"POST",
+				url:"{{url('/ticketing/mail/storeAddMail')}}",
+				data:{
+					"_token": "{{ csrf_token() }}",
+					client_name:$("#clientTitleAdd").val(),
+					client_acronym:$("#clientAcronymAdd").val(),
+					open_dear:$("#openDearAdd").val(),
+					open_to:$("#openToAdd").val(),
+					open_cc:$("#openCcAdd").val(),
+					close_dear:$("#closeDearAdd").val(),
+					close_to:$("#closeToAdd").val(),
+					close_cc:$("#closeCcAdd").val(),
+					banking:$("#bankingAdd").val(),
+					wincor:$("#wincorAdd").val()
+				},
+				success : function(){
+					swalWithCustomClass.fire({
+						title: 'Success!',
+						text: "Email Client Add Successfully!",
+						icon: 'success',
+						confirmButtonText: 'Reload',
+					}).then((result) => {
+						$('#modal-add-email').modal('toggle');
+						$('#tableClient').DataTable().ajax.url("{{url('/ticketing/mail/getSettingEmail')}}").load();
+						// getPerformanceByClient(resultAjax.client_acronym_filter)
+						getPerformanceByFilter(resultAjax.client_id_filter,[],[],[])
+					})
+				}
+			});
+			
+		}else{
+			if ($('input#banking').is(':checked')) {
+				$('input#banking').val(1)
+			}else{
+				$('input#banking').val(0)
+			}
+
+			if ($('input#wincor').is(':checked')) {
+				$('input#wincor').val(1)
+			}else{
+				$('input#wincor').val(0)
+			}
+
+			if ($('input#situation').is(':checked')) {
+				$('input#situation').val(1)
+			}else{
+				$('input#situation').val(0)
+			}
+
+			$.ajax({
+				type:"POST",
+				url:"{{url('/ticketing/setting/setSettingClient')}}",
+				data:{
+					"_token": "{{ csrf_token() }}",
+					id:$("#clientId").val(),
+					client_name:$("#clientTitle").val(),
+					client_acronym:$("#clientAcronym").val(),
+					open_dear:$("#openDear").val(),
+					open_to:$("#openTo").val(),
+					open_cc:$("#openCc").val(),
+					close_dear:$("#closeDear").val(),
+					close_to:$("#closeTo").val(),
+					close_cc:$("#closeCc").val(),
+					banking:$("#banking").val(),
+					wincor:$("#wincor").val(),
+					situation:$("#situation").val()
+				},
+				success : function(){
+					swalWithCustomClass.fire({
+						title: 'Success!',
+						text: "Email Client Update Successfully!",
+						icon: 'success',
+						confirmButtonText: 'Reload',
+					}).then((result) => {
+						$('#modal-setting-email').modal('toggle');
+						$('#tableClient').DataTable().ajax.url("{{url('/ticketing/mail/getSettingEmail')}}").load();
+						// getPerformanceByClient(resultAjax.client_acronym_filter)
+					})
+				}
+			});
+		}
+		
 	}
 
 	function atmSetting(){
