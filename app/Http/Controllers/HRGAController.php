@@ -1875,7 +1875,9 @@ class HRGAController extends Controller
       
         $ardetil = explode(',', $cuti_accept_data->dates); 
 
-        Mail::to($kirim)->cc('elfi@sinergy.co.id')->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));        
+        $hr_manager = DB::table('role_user')->join('users','users.nik','=','role_user.user_id')->select('users.email')->where('role_id','2')->first();        
+
+        Mail::to($kirim)->cc($hr_manager)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Approve - Permohonan Cuti'));        
 
 
         return redirect()->back();
