@@ -510,10 +510,15 @@ class TicketingController extends Controller
 					->from('ticketing__activity')
 					->groupBy('id_ticket');
 				})
-			->whereRaw('`ticketing__activity`.`id_ticket` LIKE "%/' . $client_acronym . '/%"')
+			// ->whereRaw('`ticketing__activity`.`id_ticket` LIKE "%/' . $client_acronym . '/%"')
+			->whereIn('ticketing__activity.id_ticket',function($query) use ($client_id){
+				$query->select('ticketing__id.id_ticket')
+					->from('ticketing__id')
+					->where('ticketing__id.id_client','=',$client_id);
+			})
 			->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
 			->orderBy('ticketing__activity.id','DESC')
-			->take(100 - $occurring_ticket_result->count())
+			->take($limit)
 			->get()
 			->pluck('id_ticket');
 
