@@ -45,7 +45,7 @@ class TicketingController extends Controller
 			->selectRaw("REPLACE(`open_cc`,';','<br>') AS `open_cc`")
 			->selectRaw("REPLACE(`close_to`,';','<br>') AS `close_to`")
 			->selectRaw("REPLACE(`close_cc`,';','<br>') AS `close_cc`")
-			->where('situation','=',1)
+			// ->where('situation','=',1)
 			->get();
 
 		return view('ticketing.index')
