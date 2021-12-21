@@ -675,18 +675,45 @@ Ticketing
 
 				<div class="tab-pane" id="performance">
 					<div class="row">
-						<div class="col-md-9">
+						<div class="col-md-4">
 							<b>Filter by Client : </b>
-							<div id="clientList"></div>
+							<div>
+								<select class="form-control" id="clientList" style="width:100%" multiple="multiple"></select>
+							</div>
 						</div>
-						<div class="col-md-3">
-							<b class="pull-right" style="color: white;">.</b>
+						<div class="col-md-2" style="display:none">
+							<b>Filter by Severity or Type : </b>
+							<div>
+								<select class="form-control" id="severityFilter" style="width:100%" multiple="multiple"></select>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<b>Filter by Type Ticket : </b>
+							<div>
+								<select class="form-control" id="typeFilter" style="width:100%" multiple="multiple"></select>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<b>Range Date : </b>
+							<div>
+								<input type="hidden" id="startDateFilter">
+					          	<input type="hidden" id="endDateFilter">
+								<button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="dateFilter">
+									<i class="fa fa-calendar"></i> Date range picker
+									<span>
+										<i class="fa fa-caret-down"></i>
+									</span>
+								</button>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<b>Search Anything</b>
 							<div class="input-group pull-right">
-								<input id="searchBarTicket" type="text" class="form-control" placeholder="Search Anything">
+								<input id="searchBarTicket" type="text" class="form-control" placeholder="ex: Ticket ID">
 								
 								<div class="input-group-btn">
 									<button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-										Show 10 entries 
+										Show 10 
 										<span class="fa fa-caret-down"></span>
 									</button>
 									<ul class="dropdown-menu" id="selectShowEntryTicket">
