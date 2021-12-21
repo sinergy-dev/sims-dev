@@ -528,6 +528,8 @@ Ticketing
 						</div>
 
 						<div class="col-md-4" id="tableTicket" style="display: none;">
+							<h1>Preview Ticket : </h1>
+							<hr>
 							<table class="table table2">
 								<tr>
 									<th class="bg-primary">Ticket ID</th>
