@@ -3764,6 +3764,12 @@ Ticketing
 						visible: false ,
 						searchable: true
 					},
+					{ 
+						data: "severity_numerical",
+						targets: [ 6 ] ,
+						visible: false ,
+						searchable: true
+					},
 				],
 				// order: [[10, "DESC" ]],
 				autoWidth:false,
