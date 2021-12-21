@@ -2432,9 +2432,22 @@ Ticketing
 
 		$("#atmAddActivation, #atmEditActivation").inputmask("date");
 
-		$('#searchBarTicket').keypress(function(e){
-			if(e.keyCode == 13){
+		$('#searchBarTicket').keydown(function(e){
+			// // if(e.keyCode == 13){
+				
+			// // }
+			// if($('#searchBarTicket').val() == ""){
+			// 	$("#tablePerformance").DataTable().ajax.reload()
+			// } else {
 				$("#tablePerformance").DataTable().search($('#searchBarTicket').val()).draw();
+			// }
+		});
+
+		// $('#searchBarTicket').
+
+		$('#searchBarEmail').keypress(function(e){
+			if(e.keyCode == 13){
+				$("#tableClient").DataTable().search($('#searchBarEmail').val()).draw();
 			}
 		});
 
