@@ -2759,44 +2759,90 @@ Ticketing
 
 
 		if($("#inputSeverity").val() != "Chose the severity"){
+			showInputDetailTicket();
 			getBankAtm(clientBanking);
-
 		}
 
 		firstTimeTicket = 1;
 	});
 
-	$("#inputSeverity").change(function(){
-		$("#hrLine").show();
-		$("#hrLine2").show();
-		$("#refrenceDiv").show();
-		$("#picDiv").show();
-		$("#contactDiv").show();
-		$("#problemDiv").show();
-		$("#locationDiv").show();
-		$("#dateDiv").show();
-		$("#noteDiv").show();
-		$("#serialDiv").show();
-		$("#reportDiv").show();
+	$("#inputTypeTicket").change(function(){
+		$("#inputSeverity").attr("disabled",false)
+		$("#problemDiv label").text("Problem*")
+		$("#reportDiv label").text("Report Time*")
+		$("#engineerDiv").hide();
 
-		if($("#inputClient").val() == "BTNI"){
-			$("#serialDiv").hide();
-			$("#typeDiv").show();
-			$("#inputAbsenLocation").show();
-			$("#inputLocation").remove();
-			$("#ipMechineDiv").show();
-			$("#ipServerDiv").show();
+		if($(this).val() == "Preventive Maintenance"){
+			$("#inputSeverity").attr("disabled",true)
+			$("#problemDiv label").text("Activity*")
+			$("#reportDiv label").text("Schedule PM*")
+			$("#engineerDiv").show();
+
+			showInputDetailTicket()
+		} else if ($(this).val() == "Permintaan Layanan") {
+			$("#problemDiv label").text("Activity*")
+			if($("#inputSeverity option").length > 2) {
+				$("#inputSeverity option")[1].remove()
+				$("#inputSeverity option")[1].remove()
+				$("#inputSeverity option")[1].remove()
+			}
 		} else {
-			$("#inputAbsenLocation").remove();
-			$("#inputLocation").show();
+			prepareNewParameter()
 		}
-		
-		$("#createTicket").show();
-		var onclick = "createTicket(" + clientBanking + ")"
-		$("#createTicket").attr("onclick",onclick);
-		
-		getBankAtm(clientBanking);
+	})
+
+	$("#inputSeverity").change(function(){
+		showInputDetailTicket()
 	});
+
+	function showInputDetailTicket(){
+		if($("#inputTypeTicket").val() != "none"){
+			$("#hrLine").show();
+			$("#hrLine2").show();
+			$("#refrenceDiv").show();
+			$("#picDiv").show();
+			$("#contactDiv").show();
+			$("#problemDiv").show();
+			$("#locationDiv").show();
+			$("#dateDiv").show();
+			$("#noteDiv").show();
+			$("#serialDiv").show();
+			$("#reportDiv").show();
+
+			if($("#inputClient option:selected").text().includes("Absensi")){
+				$("#serialDiv").hide();
+				$("#typeDiv").show();
+				$("#inputAbsenLocation").show();
+				$("#inputLocation").remove();
+				$("#ipMechineDiv").show();
+				$("#ipServerDiv").show();
+			} if($("#inputClient option:selected").text().includes("Switch")){
+				// $("#serialDiv").hide();
+				// $("#inputLocation").remove();
+				// $("#typeDiv").show();
+				// $("#inputAbsenLocation").show();
+				// $("#ipMechineDiv").show();
+				// $("#ipServerDiv").show();
+
+				$("#inputLocation").remove();
+				$("#typeDiv").show();
+				$("#inputSwitchLocation").show();
+				$("#ipMechineDiv").show();
+				// $("#ipServerDiv").show();
+
+			} else {
+				$("#inputAbsenLocation").remove();
+				$("#inputSwitchLocation").remove();
+				$("#inputLocation").show();
+			}
+			
+			$("#createTicket").show();
+			var onclick = "createTicket(" + clientBanking + ")"
+			$("#createTicket").attr("onclick",onclick);
+			
+			getBankAtm(clientBanking);
+		}
+	}
 
 	function createTicket(clientBanking){
 		$(".help-block").hide()
