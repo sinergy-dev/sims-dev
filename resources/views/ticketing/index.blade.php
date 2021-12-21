@@ -2713,7 +2713,7 @@ Ticketing
 	var clientWincor = 0;
 
 	$("#inputClient").change(function(){
-		var acronym_client = this.value;
+		var acronym_client = $("#inputClient option:selected").text().split(" - ")[0];
 		if(firstTimeTicket == 0){
 			$.ajax({
 				beforeSend: function(request) {
