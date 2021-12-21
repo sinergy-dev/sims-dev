@@ -212,8 +212,8 @@ class TicketingController extends Controller
 		$newTicketId = new Ticketing();
 		$newTicketId->id = $req->id;
 		$newTicketId->id_ticket = $req->id_ticket;
-		$client = TicketingClient::where('client_acronym',$req->acronym_client);
-		$newTicketId->id_client = $client->value('id');
+		$client = TicketingClient::find($req->id_client);
+		$newTicketId->id_client = $client->id;
 		$newTicketId->operator = Auth::user()->name;
 
 		$newTicketId->save();
