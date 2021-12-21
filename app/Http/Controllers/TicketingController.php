@@ -363,11 +363,20 @@ class TicketingController extends Controller
 
 		$detailTicketOpen = new TicketingDetail();
 		$detailTicketOpen->id_ticket = $request->id_ticket;
-		if($request->absen == "-"){
-			$detailTicketOpen->id_atm = $request->id_atm;
-		} else {
+		
+		if($request->absen != "-"){
 			$detailTicketOpen->id_atm = $request->absen;
+		} else if($request->switchLocation != "-"){
+			$detailTicketOpen->id_atm = $request->switchLocation;
+		} else {
+			if($request->id_atm != null){
+				$atm = TicketingATM::find($request->id_atm);
+				$detailTicketOpen->id_atm = $atm->atm_id;
+			} else {
+				$detailTicketOpen->id_atm = $request->id_atm;
+			}
 		}
+
 		$detailTicketOpen->refrence = $request->refrence;
 		$detailTicketOpen->pic = $request->pic;
 		$detailTicketOpen->contact_pic = $request->contact_pic;
