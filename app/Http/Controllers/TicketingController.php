@@ -1789,7 +1789,7 @@ class TicketingController extends Controller
 
 		$request->start = Carbon::parse($request->start . " 00:00:00")->toDateTimeString();
 		$request->end = Carbon::parse($request->end . " 23:59:59")->toDateTimeString();
-		$limitQuery = 500;
+		$limitQuery = 600;
 
 		$ticketing_activity_max = DB::table('ticketing__activity')
 			->selectRaw("MAX(`id`) AS `id`")
