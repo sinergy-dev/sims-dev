@@ -420,18 +420,18 @@ Ticketing
 									<div class="col-sm-10">
 										<select class="form-control" id="inputCategory" required>
 											<option selected="selected">Chose problem category</option>
-											<option>Aktivasi</option>
-											<option>Cash Handler Fatal</option>
-											<option>Cassette Fatal</option>
-											<option>EJ Fail</option>
-											<option>Key Fail</option>
-											<option>Listening</option>
-											<option>Vandalisme</option>
-											<option>Softkey</option>
-											<option>Dispenser</option>
-											<option>Cartreader</option>
-											<option>Printer</option>
-											<option>Lain-lain</option>
+											<option value="Aktivasi">Aktivasi</option>
+											<option value="Cash Handler Fatal">Cash Handler Fatal</option>
+											<option value="Cassette Fatal">Cassette Fatal</option>
+											<option value="EJ Fail">EJ Fail</option>
+											<option value="Key Fail">Key Fail</option>
+											<option value="Listening">Listening</option>
+											<option value="Vandalisme">Vandalisme</option>
+											<option value="Softkey">Softkey</option>
+											<option value="Dispenser">Dispenser</option>
+											<option value="Cartreader">Cartreader</option>
+											<option value="Printer">Printer</option>
+											<option value="Lain-lain">Lain-lain</option>
 										</select>
 									</div>
 								</div>
