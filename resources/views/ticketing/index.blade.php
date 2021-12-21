@@ -2219,6 +2219,150 @@ Ticketing
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" id="modal-setting-switch-add">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="modal-setting-title">Switch Add</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Type Switch</label>
+									<input type="text" class="form-control" id="switchAddType" placeholder="ex: Ruckus">
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Port</label>
+									<input type="text" class="form-control" id="switchAddPort" placeholder="24/48 Port">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Serial Number</label>
+									<input class="form-control" id="switchAddSerialNumber" placeholder="FA123123">
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>IP Management</label>
+									<input type="text" class="form-control" id="switchAddIPManagement" placeholder="192.168.2.xxx">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Location</label>
+									<input type="text" class="form-control" id="switchAddLocation" placeholder="Pekanbaru">
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Cabang</label>
+									<input type="text" class="form-control" id="switchAddCabang" placeholder="Simpang Empat">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<label>Note</label>
+									<input type="text" class="form-control" id="switchAddNote">
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-flat btn-primary" onclick="newSwitch()" id="switchAddFormButton">Add</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-setting-switch">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="modal-setting-title">Change Switch Detail</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<input type="hidden" id="idEditSwitch">
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Type Switch</label>
+									<input type="text" class="form-control" id="switchEditType" placeholder="ex: Ruckus">
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Port</label>
+									<input type="text" class="form-control" id="switchEditPort" placeholder="24/48 Port">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Serial Number</label>
+									<input class="form-control" id="switchEditSerialNumber" placeholder="FA123123">
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>IP Management</label>
+									<input type="text" class="form-control" id="switchEditIPManagement" placeholder="192.168.2.xxx">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Location</label>
+									<input type="text" class="form-control" id="switchEditLocation" placeholder="Pekanbaru">
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label>Cabang</label>
+									<input type="text" class="form-control" id="switchEditCabang" placeholder="Simpang Empat">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<label>Note</label>
+									<input type="text" class="form-control" id="switchEditNote">
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-flat btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-flat btn-danger pull-left" onclick="deleteSwitch()">Delete</button>
+					<button type="button" class="btn btn-flat btn-primary" onclick="saveSwitch()">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection
 @section('scriptImport')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
