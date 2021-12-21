@@ -453,8 +453,16 @@ Ticketing
 									<label for="inputEmail" class="col-sm-2 control-label">Location*</label>
 									<div class="col-sm-10">
 										<select class="form-control select2" id="inputAbsenLocation" style="width: 100%; display: none"></select>
+										<select class="form-control select2" id="inputSwitchLocation" style="width: 100%; display: none"></select>
 										<input type="text" class="form-control" id="inputLocation" placeholder="" required>
 										<span class="help-block" style="margin-bottom: 0px; display: none;">Location Must be fill!</span>
+									</div>
+								</div>
+								<div class="form-group" id="engineerDiv" style="display: none;">
+									<label for="inputEmail" class="col-sm-2 control-label">Engineer*</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="inputEngineerOpen" placeholder="" required>
+										<span class="help-block" style="margin-bottom: 0px; display: none;">Engineer must be fill!</span>
 									</div>
 								</div>
 								<div class="form-group" id="serialDiv" style="display: none;">
