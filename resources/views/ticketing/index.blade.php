@@ -472,13 +472,13 @@ Ticketing
 									</div>
 								</div>
 								<div class="form-group" id="typeDiv" style="display: none;">
-									<label for="inputType" class="col-sm-2 control-label">Machine Type</label>
+									<label for="inputType" class="col-sm-2 control-label">Device Type</label>
 									<div class="col-sm-10">
 										<input type="text" class="form-control" id="inputType" placeholder="">
 									</div>
 								</div>
 								<div class="form-group" id="ipMechineDiv" style="display: none;">
-									<label for="inputType" class="col-sm-2 control-label">IP Mechine</label>
+									<label for="inputType" class="col-sm-2 control-label">IP Address</label>
 									<div class="col-sm-10">
 										<input type="text" class="form-control" id="inputIpMechine" placeholder="">
 									</div>
