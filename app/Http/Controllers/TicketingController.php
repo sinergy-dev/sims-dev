@@ -217,9 +217,11 @@ class TicketingController extends Controller
 		$newTicketId->operator = Auth::user()->name;
 
 		$newTicketId->save();
+
+		// return $client;
 		return collect([
-			"banking" => $client->value('banking'),
-			"wincor" => $client->value('wincor')
+			"banking" => $client->banking,
+			"wincor" => $client->wincor
 		]);
 	}
 
