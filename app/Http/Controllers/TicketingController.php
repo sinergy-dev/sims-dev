@@ -344,12 +344,19 @@ class TicketingController extends Controller
 	}
 
 	public function getEmailTemplate(Request $req){
-		$return = TicketingEmail::where('type','=',$req->email_type)
-			->where('activity','=',$req->email_activity)
-			->where('name','=',$req->email_name)
-			->first()
-			->body;
-		return view(["template" => $return]);
+		$return = TicketingEmail::where('activity','=',$req->email_activity);
+
+		if($req->email_name != "Wincor Template"){
+			$return->where('type','=',$req->email_type);	
+		}
+
+		$return->where('name','=',$req->email_name);
+
+		// dd();
+
+		// return;
+
+		return view(["template" => $return->first()->body]);
 		// return view('ticketing.mail.OpenTicketHitachi');
 	}
 
