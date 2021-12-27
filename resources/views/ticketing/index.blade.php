@@ -2816,7 +2816,9 @@ Ticketing
 				$("#inputLocation").remove();
 				$("#ipMechineDiv").show();
 				$("#ipServerDiv").show();
-			} if($("#inputClient option:selected").text().includes("Switch")){
+			} 
+
+			if($("#inputClient option:selected").text().includes("Switch")){
 				// $("#serialDiv").hide();
 				// $("#inputLocation").remove();
 				// $("#typeDiv").show();
@@ -2830,7 +2832,9 @@ Ticketing
 				$("#ipMechineDiv").show();
 				// $("#ipServerDiv").show();
 
-			} else {
+			} 
+
+			if(!$("#inputClient option:selected").text().includes("Switch") && !$("#inputClient option:selected").text().includes("Absensi")) {
 				$("#inputAbsenLocation").remove();
 				$("#inputSwitchLocation").remove();
 				$("#inputLocation").show();
