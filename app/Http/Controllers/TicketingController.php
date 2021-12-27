@@ -1056,9 +1056,9 @@ class TicketingController extends Controller
 	}
 
 	public function newAtmPeripheral(Request $request){
-		if(TicketingClient::find($request->atmOwner)->client_acronym == "BDIYCCTV"){
+		if(strpos(TicketingClient::find(26)->client_name,"CCTV")){
 			$request->peripheralType = "CCTV";
-		} else if (TicketingClient::find($request->atmOwner)->client_acronym == "BDIYUPS"){
+		} else if (strpos(TicketingClient::find(26)->client_name,"UPS")){
 			$request->peripheralType = "UPS";
 		}
 		$newAtmPeripheral = new TicketingATMPeripheral();
