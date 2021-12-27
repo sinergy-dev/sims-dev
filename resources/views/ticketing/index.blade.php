@@ -3137,9 +3137,9 @@ Ticketing
 				}
 
 				$("#inputClient").select2({data:arrayClient});
-				if(temp != ""){
-					$("#inputClient").val(temp).trigger('change')
-				}
+				// if(temp != ""){
+				// 	$("#inputClient").val(temp).trigger('change')
+				// }
 
 				$("#inputSeverity").html(appendSeverity);
 
