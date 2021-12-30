@@ -551,6 +551,8 @@ class TicketingController extends Controller
 	public function getPerformanceByFilter(Request $request){
 		$start = microtime(true);
 
+		$limitAll = 200;
+
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('ticketing__activity.id_ticket','ticketing__activity.activity','ticketing__id.id_client')
 			->whereIn('ticketing__activity.id',function ($query) {
@@ -635,7 +637,7 @@ class TicketingController extends Controller
 			$finish_ticket->whereBetween('ticketing__activity.date', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
 		}
 
-		$limit = $occurring_ticket_result->count() > 100 ? 100 : 100 - $occurring_ticket_result->count();
+		$limit = $occurring_ticket_result->count() > $limitAll ? $limitAll : $limitAll - $occurring_ticket_result->count();
 
 		$finish_ticket->whereRaw('(`ticketing__activity`.`activity` = "CANCEL" OR `ticketing__activity`.`activity` = "CLOSE")')
 			->orderBy('ticketing__activity.id','DESC')
