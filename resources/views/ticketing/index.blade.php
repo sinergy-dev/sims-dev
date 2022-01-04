@@ -4324,7 +4324,7 @@ Ticketing
 				$("#emailOnProgressCc").emailinput({ onlyValidValue: true, delim: ';' });
 
 				$("#emailOnProgressSubject").val("On Progress Tiket " + $(".holderOnProgressLocation").text() + " [" + $(".holderOnProgressProblem").text() +"]");
-				$("#emailOnProgressHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir On Progress Tiket untuk Problem <b>" + $(".holderOnProgressLocation").text() + "</b> : ");
+				$("#emailOnProgressHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir On Progress Tiket untuk <b>" + $(".holderOnProgressLocation").text() + "</b> : ");
 				$(".holderOnProgressCustomer").text(result.ticket_reciver.client_name);
 				var timeOnProgress = moment()
 				$(".holderOnProgressWaktu").html("<b>" + timeOnProgress.format("DD MMMM YYYY (HH:mm)") + "</b>");
@@ -4454,7 +4454,7 @@ Ticketing
 							$("#emailCancelCc").emailinput({ onlyValidValue: true, delim: ';' });
 
 							$("#emailCancelSubject").val("Cancel Tiket " + $(".holderCancelLocation").text() + " [" + $(".holderCancelProblem").text() +"]");
-							$("#emailCancelHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Cancel Tiket untuk Problem <b>" + $(".holderCancelLocation").text() + "</b> : ");
+							$("#emailCancelHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Cancel Tiket untuk <b>" + $(".holderCancelLocation").text() + "</b> : ");
 							$(".holderCancelCustomer").text(result.ticket_reciver.client_name);
 
 							if(
@@ -4630,7 +4630,7 @@ Ticketing
 							$("#emailPendingCc").emailinput({ onlyValidValue: true, delim: ';' });
 
 							$("#emailPendingSubject").val("Pending Tiket " + $(".holderPendingLocation").text() + " [" + $(".holderPendingProblem").text() +"]");
-							$("#emailPendingHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Pending Tiket untuk Problem <b>" + $(".holderPendingLocation").text() + "</b> : ");
+							$("#emailPendingHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Pending Tiket untuk <b>" + $(".holderPendingLocation").text() + "</b> : ");
 							$(".holderPendingCustomer").text(result.ticket_reciver.client_name);
 
 							if(
@@ -4802,6 +4802,10 @@ Ticketing
 						success: function (result){
 							// Holder Close
 
+							if(result.ticket_data.type_ticket == "PM"){
+								$(".holderCloseProblem").siblings().first().text("Action")
+							}
+
 							$(".holderCloseID").text(result.ticket_data.id_ticket);
 							$(".holderCloseRefrence").text(result.ticket_data.refrence);
 							$(".holderClosePIC").text(result.ticket_data.pic);
@@ -4833,14 +4837,10 @@ Ticketing
 							$("#emailCloseCc").emailinput({ onlyValidValue: true, delim: ';' });
 
 							$("#emailCloseSubject").val("Close Tiket " + $(".holderCloseLocation").text() + " [" + $(".holderCloseProblem").text() +"]");
-							$("#emailCloseHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Close Tiket untuk Problem <b>" + $(".holderCloseLocation").text() + "</b> : ");
+							$("#emailCloseHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Close Tiket untuk <b>" + $(".holderCloseLocation").text() + "</b> : ");
 							$(".holderCloseCustomer").text(result.ticket_reciver.client_name);
 
-							if(result.ticket_reciver.client_acronym  == "BJBR" || 
-								result.ticket_reciver.client_acronym  == "BSBB" || 
-								result.ticket_reciver.client_acronym  == "BRKR" || 
-								result.ticket_reciver.client_acronym  == "BPRKS"
-								){
+							if(result.ticket_reciver.banking == 1){
 								$(".holderCloseIDATM2").show();
 								$(".holderNumberTicket2").show();
 							} else {
@@ -4848,14 +4848,14 @@ Ticketing
 								$(".holderNumberTicket2").hide();
 							}
 
-							if(result.ticket_reciver.client_acronym  == "BDIYUPS") {
+							if(result.ticket_reciver.client_name.includes("UPS")) {
 								$(".holderCloseIDATM2").show();
 								$(".holderCloseUPSSerial2").show()
 								$(".holderCloseUPSSerial").text(result.ticket_data.atm_detail.serial_number)
 								$(".holderCloseUPSType2").show()
 								$(".holderCloseUPSType").text(result.ticket_data.atm_detail.machine_type)
 								$(".holderCloseSerial").parent().hide()	
-							} else if (result.ticket_reciver.client_acronym  == "BDIYCCTV") {
+							} else if (result.ticket_reciver.client_name.includes("CCTV")) {
 
 							}
 
