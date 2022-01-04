@@ -219,144 +219,75 @@ class HRNumberController extends Controller
 
     public function store(Request $request)
     {
-
         $tahun = date("Y");
         $cek = DB::table('tb_hr_number')
                 ->where('date','like',$tahun."%")
                 ->count('no');
 
-        if ($cek > 0 ) {
-            $type = $request['type'];
-            $divisi = 'HR';
-            
-            $edate = strtotime($_POST['date']); 
-            $edate = date("Y-m-d",$edate);
+        $type = $request['type'];
+        $divisi = 'HR';
+        
+        $edate = strtotime($_POST['date']); 
+        $edate = date("Y-m-d",$edate);
 
-            $month_hr = substr($edate,5,2);
-            $year_hr = substr($edate,0,4);
+        $month_hr = substr($edate,5,2);
+        $year_hr = substr($edate,0,4);
 
-            $array_bln = array('01' => "I",
-                                '02' => "II",
-                                '03' => "III",
-                                '04' => "IV",
-                                '05' => "V",
-                                '06' => "VI",
-                                '07' => "VII",
-                                '08' => "VIII",
-                                '09' => "IX",
-                                '10' => "X",
-                                '11' => "XI",
-                                '12' => "XII");
-            $bln = $array_bln[$month_hr];
+        $array_bln = array('01' => "I",
+                            '02' => "II",
+                            '03' => "III",
+                            '04' => "IV",
+                            '05' => "V",
+                            '06' => "VI",
+                            '07' => "VII",
+                            '08' => "VIII",
+                            '09' => "IX",
+                            '10' => "X",
+                            '11' => "XI",
+                            '12' => "XII");
+        $bln = $array_bln[$month_hr];
 
-            $getnumber = HRNumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+        $getnumber = HRNumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
 
-            $getnumbers = HRNumber::orderBy('no', 'desc')->first();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor.'/'.$divisi .'/'. $type.'/' . $bln .'/'. $year_hr;
-            $nom = HRNumber::select('no')->orderBy('created_at','desc')->first();
-
-            $tambah = new HRNumber();
-            $tambah->no = $nom->no+1;
-            $tambah->no_letter = $no;
-            $tambah->type_of_letter = $type;
-            $tambah->divsion = $divisi;
-            $tambah->pt = $request['pt'];
-            $tambah->month = $bln;
-            $tambah->date = $edate;
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->title = $request['title'];
-            $tambah->project = $request['project'];
-            $tambah->description = $request['description'];
-            $tambah->from = Auth::User()->nik;
-            $tambah->division = $request['division'];
-            // $tambah->project_id = $request['project_id'];
-            $tambah->save();
-
-            return redirect('admin_hr')->with('success', 'Success!');
-        } else {
-            $type = $request['type'];
-            $divisi = 'HR';
-            
-            $edate = strtotime($_POST['date']); 
-            $edate = date("Y-m-d",$edate);
-
-            $month_hr = substr($edate,5,2);
-            $year_hr = substr($edate,0,4);
-
-            $array_bln = array('01' => "I",
-                                '02' => "II",
-                                '03' => "III",
-                                '04' => "IV",
-                                '05' => "V",
-                                '06' => "VI",
-                                '07' => "VII",
-                                '08' => "VIII",
-                                '09' => "IX",
-                                '10' => "X",
-                                '11' => "XI",
-                                '12' => "XII");
-            $bln = $array_bln[$month_hr];
-
-            $getnumber = HRNumber::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
-
-            $getnumbers = HRNumber::orderBy('no', 'desc')->first();
-
-            if($getnumber == NULL){
-                $getlastnumber = 1;
-                $lastnumber = $getlastnumber;
-            } else{
-                $lastnumber = $getnumber+1;
-            }
-
-            if($lastnumber < 10){
-               $akhirnomor = '000' . $lastnumber;
-            }elseif($lastnumber > 9 && $lastnumber < 100){
-               $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
-               $akhirnomor = '0' . $lastnumber;
-            }
-
-            $no = $akhirnomor.'/'.$divisi .'/'. $type.'/' . $bln .'/'. $year_hr;
-
-            $tambah = new HRNumber();
-            $tambah->no = $getnumbers->no+1;
-            $tambah->no_letter = $no;
-            $tambah->type_of_letter = $type;
-            $tambah->divsion = $divisi;
-            $tambah->pt = $request['pt'];
-            $tambah->month = $bln;
-            $tambah->date = $edate;
-            $tambah->to = $request['to'];
-            $tambah->attention = $request['attention'];
-            $tambah->title = $request['title'];
-            $tambah->project = $request['project'];
-            $tambah->description = $request['description'];
-            $tambah->from = Auth::User()->nik;
-            $tambah->division = $request['division'];
-            // $tambah->project_id = $request['project_id'];
-            $tambah->save();
-
-            return redirect('admin_hr')->with('success', 'Success!');
+        if($getnumber == NULL){
+            $getlastnumber = 1;
+            $lastnumber = $getlastnumber;
+        } else{
+            $lastnumber = $getnumber+1;
         }
 
-    	
+        if($lastnumber < 10){
+           $akhirnomor = '000' . $lastnumber;
+        }elseif($lastnumber > 9 && $lastnumber < 100){
+           $akhirnomor = '00' . $lastnumber;
+        }elseif($lastnumber >= 100 && $lastnumber < 1000){
+           $akhirnomor = '0' . $lastnumber;
+        } elseif ($lastnumber >= 1000) {
+            $akhirnomor = $lastnumber;
+        }
+
+        $no = $akhirnomor.'/'.$divisi .'/'. $type.'/' . $bln .'/'. $year_hr;
+        $nom = HRNumber::select('no')->orderBy('no','desc')->first();
+
+        $tambah = new HRNumber();
+        $tambah->no = $nom->no+1;
+        $tambah->no_letter = $no;
+        $tambah->type_of_letter = $type;
+        $tambah->divsion = $divisi;
+        $tambah->pt = $request['pt'];
+        $tambah->month = $bln;
+        $tambah->date = $edate;
+        $tambah->to = $request['to'];
+        $tambah->attention = $request['attention'];
+        $tambah->title = $request['title'];
+        $tambah->project = $request['project'];
+        $tambah->description = $request['description'];
+        $tambah->from = Auth::User()->nik;
+        $tambah->division = $request['division'];
+        // $tambah->project_id = $request['project_id'];
+        $tambah->save();
+
+        return redirect('admin_hr')->with('success', 'Success!');    	
     }
 
     public function update(Request $request)
