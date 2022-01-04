@@ -188,12 +188,14 @@ Lead Register
 	  				<div class="box-body" id="filter-body">
 	  					<div class="form-group">
 								<label>Tahun</label>
-								<select class="select2 form-control" style="width:100%" id="year_dif" onchange="searchCustom()">
+								<select class="select2 form-control" style="width:100%" id="year_dif" onchange="searchCustom()" multiple>
 									@foreach($year as $years)
-			              @if($years->year < $year_now)
+			              @if($years->year < $year_now-1)
+			              {{-- @if($years->year < $year_now) --}}
 			                <option value="{{$years->year}}">{{$years->year}}</option>
 			              @endif
 			            @endforeach
+		              <option selected value="{{date('Y')-1}}">{{date("Y")-1}}</option>
 			            <option selected value="{{$year_now}}">{{$year_now}}</option>
 								</select>
 							</div>

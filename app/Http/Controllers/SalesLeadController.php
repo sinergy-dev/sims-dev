@@ -394,7 +394,8 @@ class SalesLeadController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
-        $year = date('Y');
+        // $year = date('Y');
+        $year = [date('Y'), date('Y')-1];
 
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
@@ -408,7 +409,8 @@ class SalesLeadController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result','!=','hmm')
-                ->where('year',$year)
+                ->whereIn('year',$year)
+                // ->where('year', $year)
                 ->orderBy('created_at', 'desc');
 
          
