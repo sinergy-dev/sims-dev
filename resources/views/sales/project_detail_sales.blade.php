@@ -1580,22 +1580,22 @@ Detail Lead Register
         autoclose: true,
 	      }).on('changeDate', function(date) {
 
-	    	if (moment(date.date).format("YYYY") < new Date().getFullYear()) {
-	    		Swal.fire("<h3>Warning Pembuatan PID!!!</h3>", "<h4>lead dengan tanggal PO tahun lalu (backdate) harap kirim email manual pada Bu Anne untuk pembuatan PID seperti proses manual terdahulu! Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</h4>")
+	    	// if (moment(date.date).format("YYYY") < new Date().getFullYear()) {
+	    	// 	Swal.fire("<h3>Warning Pembuatan PID!!!</h3>", "<h4>lead dengan tanggal PO tahun lalu (backdate) harap kirim email manual pada Bu Anne untuk pembuatan PID seperti proses manual terdahulu! Dikarenakan semua PID yang melalui sistem hanya di peruntukkan untuk tanggal PO di tahun ini</h4>")
 
-	    		if ($('.date').datepicker('setDate', null)) {
-	    			$("#no_po_result").prop( "disabled", true );
-	      		$("#amount_pid_result").prop( "disabled", true );
-	      		$("#quote_number_final").prop( "disabled", true );
-	      		$("#checkbox_result").css("display", "none");
-	    		}
-	    		console.log($('#date').val())
-	    	}else{
+	    	// 	if ($('.date').datepicker('setDate', null)) {
+	    	// 		$("#no_po_result").prop( "disabled", true );
+	     //  		$("#amount_pid_result").prop( "disabled", true );
+	     //  		$("#quote_number_final").prop( "disabled", true );
+	     //  		$("#checkbox_result").css("display", "none");
+	    	// 	}
+	    	// 	console.log($('#date').val())
+	    	// }else{
 	    		$("#no_po_result").prop( "disabled", false );
 	      	$("#amount_pid_result").prop( "disabled", false );
 	      	$("#checkbox_result").css("display", "block");
 	      	$("#quote_number_final").prop( "disabled", false );
-	    	}
+	    	// }
 	    });
 
 	    $(document).on('input', '.new-price', function() {
