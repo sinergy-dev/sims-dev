@@ -554,6 +554,7 @@ ID Project
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
@@ -961,32 +962,62 @@ ID Project
       customer_name = $("#inputCustomer").val()
     }
 
-    $('#tunggu').modal('show');
-    $('#showRequestProjectID').modal('hide')
-
-    $.ajax({
-      type:"GET",
-      url:"{{url('/store_sp')}}",
-      data:{
-        _token: "{{ csrf_token() }}",
-        customer_name:customer_name,
-        // sales:$("#inputCustomer").val(),
-        date:($("#inputDate").val()),
-        amount:$("#inputAmount").val(),
-        note:$("#inputNote").val(),
-        p_order:$("#inputPO").val(),
-        quote:$("#inputQuo").val(),
-        id_cus:$("#code_name").val(),
-        // id_customer_quotation:$("#code_name").val(),
-        // payungs:$("#inputCustomer").val(),
-      },
-      success:function(result){
-        $('#tunggu').modal('hide');
-    	  $('#showRequestProjectID').modal('hide')
-        window.location.href = "{{url('salesproject')}}"
-
-      }
-    })
+    Swal.fire({
+          title: 'Are you sure?',  
+          text: "Submit Request PID",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              onOpen: () => {
+                  Swal.showLoading()
+              }
+          })
+          $.ajax({
+            type: "GET",
+            url: "{{url('/store_sp')}}",
+            data: {
+              _token: "{{ csrf_token() }}",
+              customer_name:customer_name,
+              // sales:$("#inputCustomer").val(),
+              date:($("#inputDate").val()),
+              amount:$("#inputAmount").val(),
+              note:$("#inputNote").val(),
+              p_order:$("#inputPO").val(),
+              quote:$("#inputQuo").val(),
+              id_cus:$("#code_name").val(),
+              // id_customer_quotation:$("#code_name").val(),
+              // payungs:$("#inputCustomer").val(),
+            },
+            success: function(result) {
+              Swal.showLoading()
+              Swal.fire(
+                  'Successfully!',
+                  'Project ID Created.',
+                  'success'
+              ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                    $("#showRequestProjectID").modal('hide')
+                  }
+              })
+            }
+          })          
+        }
+      })
   }
 
   $('#table-pid').on('click', '.btn-edit', function(){
