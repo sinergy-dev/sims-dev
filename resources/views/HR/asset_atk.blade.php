@@ -166,17 +166,13 @@ GA ATK
           <button class="btn btn-sm btn-warning pull-right btnExport" id="btnExport" style="margin-right: 5px; display: none;" onclick="exportExcel('{{action('AssetAtkController@reportExcel')}}')"><i class="fa fa-download"> </i>&nbsp Excel</button>
           <div class="input-group-btn pull-right dropdownBln" style="margin-right: 100px; display: none;">
             <button type="button" id="btnShowMonth" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              Januari - 2022 
+              Select Month
               <span class="fa fa-caret-down"></span>
             </button>
-            <ul class="dropdown-menu" id="selectShowEntryTicket">
-              <li><a onclick="reportExcel(this)">July 2021</a></li>
-              <li><a onclick="reportExcel(this)">August 2021</a></li>
-              <li><a onclick="reportExcel(this)">September 2021</a></li>
-              <li><a onclick="reportExcel(this)">October 2021</a></li>
-              <li><a onclick="reportExcel(this)">November 2021</a></li>
-              <li><a onclick="reportExcel(this)">December 2021</a></li>
-              <li><a onclick="reportExcel(this)">January 2022</a></li>
+            <ul class="dropdown-menu" id="selectShowMonth">
+              @foreach($month_formatted as $value)
+                <li><a onclick="reportExcel(this)">{{$value}}</a></li>
+              @endforeach
             </ul>
           </div>
           <div class="pull-right dropdown" style="margin-left: 5px">
@@ -965,7 +961,12 @@ GA ATK
     }
 
     function exportExcel(url){
-      window.location = url + "?month=" + month + "&year=" + year;
+      console.log(month)
+      if (month != '') {
+        window.location = url + "?month=" + month + "&year=" + year;
+      } else {
+        Swal.fire("<h3>Warning!!!</h3>", "<h4>Please Select Month First!</h4>")
+      }
     }
 
     function initatk() {
