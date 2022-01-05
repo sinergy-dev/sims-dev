@@ -12,6 +12,15 @@ use App\Mail\RequestATK;
 use Mail;
 use App\AssetAtkChangelog;
 use App\AssetAtkRequest;
+use Carbon\Carbon;
+
+use Validator;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class AssetAtkController extends Controller
 {
@@ -469,6 +478,18 @@ class AssetAtkController extends Controller
         return array("data"=>$summary);
     }
 
+    public function getSummaryQty(Request $request)
+    {
+        $summary = AssetAtkChangelog::selectRaw('SUM(CASE WHEN `status` = "In" THEN qty ELSE 0 END) AS `sum_in`')
+            ->selectRaw('SUM(CASE WHEN `status` = "Out" THEN qty ELSE 0 END) AS `sum_out`')
+            ->selectRaw('LEFT(`created_at`, 7) AS `month`')
+            ->where('id_barang', $request->id_barang)
+            ->groupBy('month')
+            ->get();        
+
+        return array("data"=>$summary);
+    }
+
     public function detail_produk_request(Request $request)
     {
         $id_barang = $request->id_barang;
@@ -879,5 +900,86 @@ class AssetAtkController extends Controller
         }
 
         return redirect()->back()->with('update', 'Successfully!');   
+    }
+
+    public function reportExcel(Request $request)
+    {
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'LAPORAN PENGGUNAAN ATK');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:I1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID];
+        $titleStyle['font']['bold'] = true;
+
+        $dateReport = Carbon::parse($request->month  . "/01/" . $request->year);
+        $sheet->getStyle('A1:I1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','LAPORAN PENGGUNAAN ALAT TULIS KANTOR');
+        $sheet->setCellValue('B2','Bulan ' . $dateReport->format("F"));
+        $sheet->setCellValue('B3','Tahun ' . $request->year);
+        $sheet->setCellValue('B4','Report Pada ' . date('Y-m-d'));
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER];
+        $sheet->getStyle('A6:I7')->applyFromArray($headerStyle);
+
+        $headerContent = ["No", "Jenis Barang", "In", "", "Out",  "", "Tanggal Terakhir Request", "Jumlah Terakhir", ""];
+        $sheet->fromArray($headerContent,NULL,'A6');
+
+        $headerContent = ["", "", "Jumlah", "Unit", "Jumlah",  "Unit", "", "Jumlah", "Unit"];
+        $sheet->fromArray($headerContent,NULL,'A7');
+        $sheet->mergeCells("A6:A7");
+        $sheet->mergeCells("B6:B7");
+        $sheet->mergeCells("C6:D6");
+        $sheet->mergeCells("E6:F6");
+        $sheet->mergeCells("G6:G7");
+        $sheet->mergeCells("H6:I6");
+
+        $change_log = AssetAtkChangelog::join('tb_asset_atk', 'tb_asset_atk.id_barang', '=', 'tb_asset_atk_changelog.id_barang')
+                    ->selectRaw('`tb_asset_atk`.`nama_barang`')
+                    ->selectRaw('SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "In" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_in`, `unit` as `unit_in` ')
+                    ->selectRaw('SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "Out" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_out`, `unit`  as `unit_out`, LEFT(MAX(`tb_asset_atk_changelog`.`created_at`),10) AS `latest_date_request`, `tb_asset_atk`.`qty` as `qty_akhir`, `unit` ')
+                    ->whereMonth('tb_asset_atk_changelog.created_at', $request->month)
+                    ->whereYear('tb_asset_atk_changelog.created_at', $request->year)
+                    ->groupBy('tb_asset_atk_changelog.id_barang')
+                    ->get();
+
+        foreach ($change_log as $key => $data) {
+            $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 8));
+        }
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+
+
+        $fileName = 'LAPORAN PENGGUNAAN ATK ' . date('Y-m-d') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+
     }
 }
