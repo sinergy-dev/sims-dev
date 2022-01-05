@@ -77,12 +77,35 @@
 
       <div class="box box-success">
         <div class="box-header with-border">
-        <h3 class="box-title">Summary Table</h3>
+        <h3 class="box-title">Summary Transaksi</h3>
         </div>
 
         <div class="box-body">
           <div class="table-responsive">
               <table class="table table-bordered display no-wrap" id="summary_table" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Month</th>
+                    <th>In</th>
+                    <th>Out</th>
+                  </tr>
+                </thead>
+                <tbody id="products-list" name="products-list">
+                </tbody>
+              </table>
+          </div>  
+        </div>
+      </div>
+
+      <div class="box box-success">
+        <div class="box-header with-border">
+        <h3 class="box-title">Summary Quantity</h3>
+        </div>
+
+        <div class="box-body">
+          <div class="table-responsive">
+              <table class="table table-bordered display no-wrap" id="summary_quantity" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>No</th>
@@ -203,6 +226,30 @@
       "ajax":{
           "type":"GET",
           "url":"{{url('/asset_atk/getSummaryAtk')}}",
+          "data":{
+            "id_barang":window.location.href.split("/")[5]
+          }
+        },
+        "columns": [
+          { 
+            render: function (data, type, row, meta){
+              return ++meta.row             
+            }
+          },
+          { "data": "month"},
+          { "data": "sum_in"},
+          { "data": "sum_out"},
+        ],
+        columnDefs:[{targets:1, render:function(data){
+          return moment(data).format('MMMM');
+        }}],
+        "order":[]
+    })
+
+    $("#summary_quantity").dataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('/asset_atk/getSummaryQty')}}",
           "data":{
             "id_barang":window.location.href.split("/")[5]
           }
