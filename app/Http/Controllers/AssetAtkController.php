@@ -239,13 +239,20 @@ class AssetAtkController extends Controller
 
         $atk = AssetAtk::select('id_barang','nama_barang')->get();
 
+        $month = AssetAtkChangelog::selectRaw('LEFT(`created_at`, 7) AS `month`')->groupBy('month')->limit(10)->orderBy('month', 'desc')->get()->pluck('month');
+        // return $month;
+
+        $month_formatted = [];
+
+        foreach ($month as $data) {
+            array_push($month_formatted, Carbon::parse($data . "-01")->format("F Y"));
+        }
+
         $unit_assets = AssetAtk::select('unit')->where('unit', '<>', null)->groupBy('unit')->get();
-        // return $unit;
 
         $cek = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk_transaction.id_barang', '=', 'tb_asset_atk.id_barang', 'left')->select('tb_asset_atk_transaction.id_barang')->get();
-        // return $cek;
 
-    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request', 'request2'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_atk')]);
+    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request', 'request2', 'month', 'month_formatted'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_atk')]);
     }
 
     public function getAtk(Request $request){
@@ -949,16 +956,24 @@ class AssetAtkController extends Controller
         $sheet->mergeCells("G6:G7");
         $sheet->mergeCells("H6:I6");
 
-        $change_log = AssetAtkChangelog::join('tb_asset_atk', 'tb_asset_atk.id_barang', '=', 'tb_asset_atk_changelog.id_barang')
-                    ->selectRaw('`tb_asset_atk`.`nama_barang`')
-                    ->selectRaw('SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "In" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_in`, `unit` as `unit_in` ')
-                    ->selectRaw('SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "Out" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_out`, `unit`  as `unit_out`, LEFT(MAX(`tb_asset_atk_changelog`.`created_at`),10) AS `latest_date_request`, `tb_asset_atk`.`qty` as `qty_akhir`, `unit` ')
-                    ->whereMonth('tb_asset_atk_changelog.created_at', $request->month)
-                    ->whereYear('tb_asset_atk_changelog.created_at', $request->year)
-                    ->groupBy('tb_asset_atk_changelog.id_barang')
-                    ->get();
+        $latestrequest = AssetAtkChangelog::selectRaw('`id_barang`, LEFT(MAX(`tb_asset_atk_changelog`.`created_at`),10) AS `latest_date_request`')->where('status', 'Out')->groupby('id_barang');
 
-        foreach ($change_log as $key => $data) {
+        $change_log = AssetAtkChangelog::selectRaw('`id_barang`, SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "In" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_in` ')
+            ->selectRaw('SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "Out" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_out`')
+            ->whereMonth('tb_asset_atk_changelog.created_at', $request->month)
+            ->whereYear('tb_asset_atk_changelog.created_at', $request->year)
+            ->groupBy('tb_asset_atk_changelog.id_barang');
+
+        $change_logAll = AssetAtk::leftJoinSub($change_log, 'change_log',function($join){
+                    $join->on("change_log.id_barang", '=', 'tb_asset_atk.id_barang');
+                })
+                ->leftJoinSub($latestrequest, 'latestrequest',function($join){
+                    $join->on("latestrequest.id_barang", '=', 'tb_asset_atk.id_barang');
+                })
+                ->selectRaw('`nama_barang`, IFNULL(`sum_in`,"0") AS `sum_in`, `unit` as `unit_in`, IFNULL(`sum_out`,"0") AS `sum_out`, `unit`  as `unit_out`, IFNULL(`latest_date_request`,"-") AS `latest_date_request`, IFNULL(`qty`,"0") AS `qty_akhir`, `unit`')
+                ->get();
+
+        foreach ($change_logAll as $key => $data) {
             $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 8));
         }
 
