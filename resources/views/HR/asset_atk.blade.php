@@ -163,8 +163,24 @@ GA ATK
           </li>
           @endif -->
           <button class="btn btn-sm btn-success pull-right tambah_asset_atk" data-toggle="modal" id="tambah_asset_atk" data-target="#add_asset" style="display: none"><i class="fa fa-plus"> </i>&nbsp Asset</button>
+          <button class="btn btn-sm btn-warning pull-right btnExport" id="btnExport" style="margin-right: 5px; display: none;" onclick="exportExcel('{{action('AssetAtkController@reportExcel')}}')"><i class="fa fa-download"> </i>&nbsp Excel</button>
+          <div class="input-group-btn pull-right dropdownBln" style="margin-right: 100px; display: none;">
+            <button type="button" id="btnShowMonth" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              Januari - 2022 
+              <span class="fa fa-caret-down"></span>
+            </button>
+            <ul class="dropdown-menu" id="selectShowEntryTicket">
+              <li><a onclick="reportExcel(this)">July 2021</a></li>
+              <li><a onclick="reportExcel(this)">August 2021</a></li>
+              <li><a onclick="reportExcel(this)">September 2021</a></li>
+              <li><a onclick="reportExcel(this)">October 2021</a></li>
+              <li><a onclick="reportExcel(this)">November 2021</a></li>
+              <li><a onclick="reportExcel(this)">December 2021</a></li>
+              <li><a onclick="reportExcel(this)">January 2022</a></li>
+            </ul>
+          </div>
           <div class="pull-right dropdown" style="margin-left: 5px">
-            <button class="dropbtn request_atk" id="request_atk" style="display: none;"><i class="fa fa-plus"> </i>&nbspRequest ATK</button>
+            <button class="dropbtn request_atk" id="request_atk" style="margin-right: 5px;" style="display: none;"><i class="fa fa-plus"> </i>&nbspRequest ATK</button>
             <div class="dropdown-content">
               <a data-toggle="modal" data-target="#peminjaman_modal">Available</a>
               <a data-toggle="modal" data-target="#request_modal">Unavailable</a>
@@ -930,6 +946,9 @@ GA ATK
 @section('script')
   <script type="text/javascript">
 
+    var month = '';
+    var year = '';
+
     var accesable = @json($feature_item);
     accesable.forEach(function(item,index){
       $("." + item).show()
@@ -938,6 +957,16 @@ GA ATK
     $(document).ready(function(){
       initatk();
     })
+
+    function reportExcel(data){
+      $("#btnShowMonth").html(data.innerText + ' <span class="fa fa-caret-down"></span>')
+      month = moment('1 ' + data.innerText ).format('MM')
+      year = moment('1 ' + data.innerText ).format('YYYY')
+    }
+
+    function exportExcel(url){
+      window.location = url + "?month=" + month + "&year=" + year;
+    }
 
     function initatk() {
       var datas_kat = [];
