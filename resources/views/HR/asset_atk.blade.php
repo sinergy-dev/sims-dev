@@ -1036,58 +1036,59 @@ GA ATK
       $('#tgl_request_accept').val(created_at.substring(0, 10));
 
       $("#btn_accept_atk").click(function(){
-        swalAccept = Swal.fire({
-          title: titleStatus,
-          text: "are you sure?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-        })
-
-
-        swalAccept.then((result) => {
-          if (result.value) {
-            Swal.fire({
-              title: 'Please Wait..!',
-              text: "It's updating..",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              customClass: {
-                popup: 'border-radius-0',
-              },
-              onOpen: () => {
-                Swal.showLoading()
-              }
-            })
-            $.ajax({
-              type:"GET",
-              url:"{{url('asset_atk/accept_request')}}",
-              data:{
-                id_transaction:id_transaction,
-                id_barang:id_barang,
-                qty:qty,
-                qty_akhir:qty_akhir,
-                nama_barang:nama_barang,
-                nik_peminjam:nik_peminjam
-              },
-              success: function(result){
-                Swal.showLoading()
-                Swal.fire(
-                  'Successfully!',
-                  'success'
-                ).then((result) => {
-                  if (result.value) {
-                    location.reload()
-                  }
-                })
-              },
-            }) 
-          }        
-        })
+        if (qty == '0') {
+          Swal.fire("<h3>Warning!!!</h3>", "<h4>Please Restock Quantity First!</h4>")
+        } else {
+          swalAccept = Swal.fire({
+            title: titleStatus,
+            text: "are you sure?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          }).then((result) => {
+            if (result.value) {
+              Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's updating..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                  popup: 'border-radius-0',
+                },
+                onOpen: () => {
+                  Swal.showLoading()
+                }
+              })
+              $.ajax({
+                type:"GET",
+                url:"{{url('asset_atk/accept_request')}}",
+                data:{
+                  id_transaction:id_transaction,
+                  id_barang:id_barang,
+                  qty:qty,
+                  qty_akhir:qty_akhir,
+                  nama_barang:nama_barang,
+                  nik_peminjam:nik_peminjam
+                },
+                success: function(result){
+                  Swal.showLoading()
+                  Swal.fire(
+                    'Successfully!',
+                    'success'
+                  ).then((result) => {
+                    if (result.value) {
+                      location.reload()
+                    }
+                  })
+                },
+              }) 
+            }        
+          })
+        }
       })  
     }
 
