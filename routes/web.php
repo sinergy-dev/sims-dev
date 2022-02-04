@@ -72,6 +72,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getQuote', 'SalesLeadController@getQuoteNumber');
 	Route::post('project/addContribute', 'SalesLeadController@addContribute');
 	Route::post('project/updateResult', 'SalesLeadController@updateResult');
+	Route::get('project/showTagging','SalesLeadController@showTagging');
 	Route::post('project/updateResultRequestPid', 'SalesLeadController@updateResultRequestPid');
 	Route::get('project/getPid', 'SalesLeadController@getPid');
 	Route::post('project/storeLead', 'SalesLeadController@storeLead');
