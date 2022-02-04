@@ -468,7 +468,8 @@ class SalesLeadController extends Controller
         } 
 
         if(isset($request->year)){
-            $leads->whereIn('year',$request->year);
+            $leads->whereIn('year',$request->year)
+                   ->orWhereIn('DB::raw("YEAR(closing_date)")', '=', ['2021','2020']) ;
         }
 
         if(isset($request->territory)){
@@ -870,12 +871,13 @@ class SalesLeadController extends Controller
     public function getDetailLead(Request $request)
     {
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
-                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`name_product`) as `name_product_tag`'))
+                        ->join('tb_technology_tag','tb_technology_tag.id','=','tb_product_tag_relation.id_technology_tag')
+                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`name_product`) as `name_product_tag`'), DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
                         ->groupBy('lead_id');
 
-        $getListTechTag = DB::table('tb_technology_tag')->join('tb_technology_tag_relation', 'tb_technology_tag_relation.id_tech_tag', '=', 'tb_technology_tag.id')
-                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
-                        ->groupBy('lead_id');
+        // $getListTechTag = DB::table('tb_technology_tag')->join('tb_technology_tag_relation', 'tb_technology_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
+        //                 ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
+        //                 ->groupBy('lead_id');
 
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
@@ -887,9 +889,6 @@ class SalesLeadController extends Controller
                 })
                 ->leftJoinSub($getListProductLead, 'product_lead', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
-                })
-                ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
-                    $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
                 ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name', 'sales_lead_register.amount', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','name_presales', 'name', 'customer_legal_name','sales_lead_register.result', DB::raw("(CASE WHEN (name_product_tag is null) THEN '' ELSE name_product_tag END) as name_product_tag"), DB::raw("(CASE WHEN (name_tech is null) THEN '' ELSE name_tech END) as name_tech"), DB::raw("(CASE WHEN (keterangan is null) THEN '' ELSE keterangan END) as keterangan"))
                 ->where('sales_lead_register.lead_id',$request->lead_id)
@@ -1183,6 +1182,29 @@ class SalesLeadController extends Controller
 
     public function update_sd(Request $request)
     {
+        $lead_id = $request['lead_id'];   
+
+        $lead_tagging = ProductTagRelation::where('lead_id',$request->lead_id)->get();
+
+        if (isset($lead_tagging)) {
+            foreach ($lead_tagging as $key => $value) {
+                ProductTagRelation::where('lead_id',$value->lead_id)->delete(); 
+            }
+        }
+
+        if(isset($request->tagData)){
+            if(!empty($request->tagData["tagProduct"])){
+                foreach ($request->tagData["tagProduct"] as $key => $value) {
+                    $store = new ProductTagRelation;
+                    $store->lead_id = $request->lead_id;
+                    $store->id_product_tag = $value['tag_product']['productTag'];
+                    $store->id_technology_tag = $value['tag_product']['techTag'];
+                    $store->price = $value['tag_price'];
+                    $store->save(); 
+                }
+            }
+        }
+
         $update = solution_design::where('lead_id', $request->lead_id)->first();
         $update->assessment = $request['assessment'];
         if ($request['assessment_date'] != '') {
@@ -1201,13 +1223,29 @@ class SalesLeadController extends Controller
         $update->project_size = $request['proyek_size'];
         $update->update();
 
-        $lead_id = $request['lead_id'];        
-
         $update = Sales::where('lead_id', $request->lead_id)->first();
         $update->result = 'SD';
-        $update->update();
+        $update->update();        
 
         return redirect()->back();
+    }
+
+    public function showTagging(Request $request)
+    {
+        return ProductTagRelation::
+                // join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+                // ->join('tb_technology_tag','tb_technology_tag.id','=','tb_product_tag_relation.id_technology_tag')
+                // ->select(DB::raw("`name_tech` as `text`"),DB::raw("`tb_technology_tag`.`id` as `id`"),"price")
+                // ->select(DB::raw("`name_product` as `text`"),DB::raw("`tb_product_tag`.`id` as `id`"),"price")
+                joinSub(DB::table('tb_product_tag'), 'tb_product_tag_alias', function ($join) {
+                    $join->on('tb_product_tag_alias.id', '=', 'tb_product_tag_relation.id_product_tag');
+                })
+                ->joinSub(DB::table('tb_technology_tag'), 'tb_technology_tag_alias', function ($join) {
+                    $join->on('tb_technology_tag_alias.id', '=', 'tb_product_tag_relation.id_technology_tag');
+                })
+                ->select('name_tech','name_product','id_technology_tag','id_product_tag','price')
+                ->where('lead_id',$request->lead_id)
+                ->get();
     }
 
     public function changelog_sd(Request $request)
@@ -1310,6 +1348,14 @@ class SalesLeadController extends Controller
         $data = Sales::join('users','sales_lead_register.nik','=','users.nik')->where('lead_id',$request->lead_id_result)->first();
 
         if($request['result'] == 'WIN'){
+
+            $lead_tagging = ProductTagRelation::where('lead_id',$request->lead_id_result)->get();
+
+            if (isset($lead_tagging)) {
+                foreach ($lead_tagging as $key => $value) {
+                    ProductTagRelation::where('lead_id',$value->lead_id)->delete(); 
+                }
+            }
 
             if(isset($request->tagData)){
                 if(!empty($request->tagData["tagProduct"])){
