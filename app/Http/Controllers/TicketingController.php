@@ -52,7 +52,7 @@ class TicketingController extends Controller
 			->with([
 				'clients' => $clients,
 				'initView' => $this->initMenuBase(),
-				'sidebar_collapse' => 'True'
+				'sidebar_collapse' => 'true'
 			]);
 	}
 
