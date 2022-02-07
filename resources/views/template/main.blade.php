@@ -72,9 +72,9 @@
 		<!-- FastClick -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
 		<!-- AdminLTE App -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/js/adminlte.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/adminlte.min.js"></script>
 		<!-- AdminLTE for demo purposes -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/js/demo.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/js/demo.js"></script>
 
 		<script>
 			$(document).ready(function () {
