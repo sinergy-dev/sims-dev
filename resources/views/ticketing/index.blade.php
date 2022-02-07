@@ -6493,8 +6493,8 @@ Ticketing
 						type:"GET",
 						url:"{{url('/ticketing/report/newDeny')}}",
 						data:{
-							start:$('#daterange-btn').data('daterangepicker').startDate.format('YYYY-MM-DD 00:00:00'),
-							end:$('#daterange-btn').data('daterangepicker').endDate.format('YYYY-MM-DD 23:59:59')
+							start:$('#daterange-btn2').data('daterangepicker').startDate.format('YYYY-MM-DD 00:00:00'),
+							end:$('#daterange-btn2').data('daterangepicker').endDate.format('YYYY-MM-DD 23:59:59')
 						},
 						success: function(result){
 							Swal.hideLoading()
