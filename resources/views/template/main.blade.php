@@ -25,7 +25,7 @@
 	<link rel="stylesheet" href="{{url('css/sims-custom.css')}}">
 	
 	<!-- Theme style -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/AdminLTE.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.17/css/AdminLTE.min.css">
 	@yield('head_css_and')
 	<!-- AdminLTE Skins -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.0/css/skins/skin-blue.min.css">
