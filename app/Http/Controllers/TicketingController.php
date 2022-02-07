@@ -2150,8 +2150,8 @@ class TicketingController extends Controller
 		// return $latest_activity_table->get();
 		// return $latest_activity_table->pluck('latest_activity');
 		
-    	// $latest_activity_table = DB::table('ticketing__activitya')
-  //   	$latest_activity_table = DB::table(function ($query) use ($request){
+		// $latest_activity_table = DB::table('ticketing__activitya')
+		// $latest_activity_table = DB::table(function ($query) use ($request){
 		// 	$query->from('ticketing__activity')
 		// 		->selectRaw('ticketing__activity.id_ticket')
 		// 		->whereRaw('`date` BETWEEN "' . $request->start . '" AND "' . $request->end  . '"')
