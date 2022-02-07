@@ -2388,9 +2388,15 @@ Ticketing
 	var swalWithCustomClass
 
 	$(document).ready(function(){
+		// var hash = location.hash.replace(/^#/, '');
+		// if (hash) {
+		// 	$('.nav-tabs a[href="#' + hash + '"]').tab('show');
+		// }
+
 		$("#startDateFilter").val("")
 		$("#endDateFilter").val("")
 		getDashboard()
+
 
 		$("#inputReportingTime").val(moment().format('HH:mm:ss'))
 		$('#inputReportingDate').datepicker({
@@ -2687,7 +2693,12 @@ Ticketing
 
 				var ctx = document.getElementById("pieChart").getContext("2d");
 				window.myDoughnut = new Chart(ctx, config);
-			}
+
+				var hash = location.hash.replace(/^#/, '');
+				if (hash) {
+					$('.nav-tabs a[href="#' + hash + '"]').tab('show');
+				}
+			},
 		});
 	}
 
@@ -3097,14 +3108,17 @@ Ticketing
 	function makeNewTicket(){
 		if(firstTimeTicket !== 0){
 			swalWithCustomClass.fire({
-				title: 'Are you sure?',
+				title: 'Reset Create Ticket',
 				text: "This information of create ticket will be reset!",
 				icon: 'warning',
-				showCancelButton: true,
+				confirmButtonText: 'Reset',
 			}).then((result) => {
 				firstTimeTicket = 0
-				clearFormNewTicket()
-				prepareNewParameter()
+				window.location.assign("https://app.sinergy.co.id/ticketing#create");
+				location.reload();
+
+				// clearFormNewTicket()
+				// prepareNewParameter()
 			})
 		} else {
 			prepareNewParameter()
