@@ -2481,6 +2481,10 @@ Ticketing
 			$("#tableAbsen").DataTable().search($('#searchBarAbsen').val()).draw();
 		})
 
+		$('#applyFilterTableSwitch').click(function(){
+			$("#tableSwitch").DataTable().search($('#searchBarSwitch').val()).draw();
+		})
+
 		$('#applyFilterTableEmail').click(function(){
 			$("#tableClient").DataTable().search($('#searchBarEmail').val()).draw();
 		})
