@@ -2463,6 +2463,12 @@ Ticketing
 			}
 		});
 
+		$('#searchBarSwitch').keypress(function(e){
+			if(e.keyCode == 13){
+				$("#tableSwitch").DataTable().search($('#searchBarSwitch').val()).draw();
+			}
+		});
+
 		// $('#applyFilterTablePerformance').click(function(){
 		// 	$("#tablePerformance").DataTable().search($('#searchBarTicket').val()).draw();
 		// })
