@@ -3714,7 +3714,7 @@ Ticketing
 						return json.data
 					}
 				},
-				stateSave: true,
+				// stateSave: true,
 				columns:[
 					{
 						data:'id_ticket',
