@@ -2048,10 +2048,14 @@ class TicketingController extends Controller
 			->orWhere('activity','=',"ON PROGRESS")
 			->orWhere('activity','=',"PENDING");
 
-		$ticketing_activity_occurring_all = DB::table('ticketing__activity')
-			->joinSub($ticketing_activity_occurring,'ticketing_activity_occurring',function($join){
-				$join->on('ticketing_activity_occurring.id_ticket','=','ticketing__activity.id_ticket');
-			});
+		// return $ticketing_activity_occurring->get();
+
+		// $ticketing_activity_occurring_all = DB::table('ticketing__activity')
+		// 	->joinSub($ticketing_activity_occurring,'ticketing_activity_occurring',function($join){
+		// 		$join->on('ticketing_activity_occurring.id_ticket','=','ticketing__activity.id_ticket');
+		// 	});
+
+		// return $ticketing_activity_occurring_all->get();
 
         $ticketing_id_filtered = DB::table('ticketing__activity')
         	// ->selectRaw("MAX(`id`) AS `latest_id`")
