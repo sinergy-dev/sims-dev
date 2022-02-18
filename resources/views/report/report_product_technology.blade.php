@@ -93,7 +93,9 @@ Report Tag Product & Technology
               </div>
               <div class="col-md-4">
                 <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
-                 <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+                <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+                <!-- <button class="btn btn-danger btn-sm report-pdf" style="margin-top: 25px"><i class="fa fa-file-pdf-o"></i> PDF</button> -->
+                <button class="btn btn-success btn-sm report-excel" onclick="exportExcel('{{action('ReportController@reportExcelTag')}}')" style="margin-top: 25px"><i class="fa fa-file-excel-o"></i> Excel</button>
               </div>
             </div>     
             
@@ -425,10 +427,6 @@ Report Tag Product & Technology
         TagsPersona = TagsPersona + "&TagsPersona[]=" + $("#searchTagsPerson").val();
       }
 
-      // start_date = start_date + "&start_date=" + start_date
-
-      // end_date = end_date + "&end_date=" + end_date
-
       if ($("#searchTagsProduct").val() == "" || $("#searchTagsTechnology").val() == "" || $("#searchTagsPerson").val() == "") {
         Swal.fire({
           title: 'Can`t Process',
@@ -441,25 +439,13 @@ Report Tag Product & Technology
           cancelButtonText: 'Okey',
         });
       }else{
-
           $('#data_lead').DataTable().clear().destroy();
           var table = $("#data_lead").DataTable({
               "ajax":{
                 "type":"GET",
                 "url":"{{url('/getFilterTags')}}?="+ TagsProduct + TagsTechno + TagsPersona + "&start_date=" + start_date + "&end_date=" + end_date,
-                // "url":"{{url('/getFilterTags')}}",
-                // "data":{
-                //   "TagsProduct":TagsProduct,
-                //   "Tagstechno":TagsTechno,
-                //   "TagsPersona":TagsPersona,
-                //   "start_date":start_date,
-                //   "end_date":end_date
-                // }
               },
-              "columns": [
-                // { "data": "lead_id" },  
-                // { "data": "brand_name" },  
-                // { "data": "opp_name" },  
+              "columns": [ 
                 {
                   render: function ( data, type, row, meta ) {
                     if (meta.row == 0) {
@@ -539,7 +525,7 @@ Report Tag Product & Technology
                     $.each(row.tag_price,function(key,value){
                       append += $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(value) + "<br>"
                     })
-                    return append;
+                    return append
                   }
                 },
                 {
@@ -562,16 +548,8 @@ Report Tag Product & Technology
               "ordering": false,
               "processing": true,
               "paging": false,
-              // "columnDefs": [
-              //   { "orderable": false, "targets": [0,1,2,3,4,5,6] }
-              // ]
           })
       }
-      // start_date  = $("#reportrange").val().split("-")[0];
-      // end_date    = $("#reportrange").val().split("-")[1];
-      // console.log($("#daterange-btn").datepicker("getDate"))
-
-      console.log(start_date,end_date)
     })
 
     $("#reload-table").click(function(){
@@ -584,6 +562,26 @@ Report Tag Product & Technology
       $("#searchTagsTechnology").val(null).trigger("change");
       $("#searchTagsPerson").val(null).trigger("change");
     })
+
+    function exportExcel(url){
+      var TagsProduct = [];
+      var TagsTechno = [];
+      var TagsPersona = [];
+
+      if ($("#searchTagsProduct").val() != '-1') {
+        TagsProduct = TagsProduct + "&TagsProduct[]=" + $("#searchTagsProduct").val();
+      }
+
+      if ($("#searchTagsTechnology").val() != '-1') {
+        TagsTechno  = TagsTechno + "&Tagstechno[]=" + $("#searchTagsTechnology").val();
+      }
+
+      if ($("#searchTagsPerson").val() != '2') {
+        TagsPersona = TagsPersona + "&TagsPersona[]=" + $("#searchTagsPerson").val();
+      }
+
+      window.location = url + "?start_date=" + start_date + "&end_date=" + end_date  + TagsProduct + TagsTechno + TagsPersona 
+    }
 
     
   </script>
