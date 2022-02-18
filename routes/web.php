@@ -91,6 +91,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getProductTechTagDetail', 'SalesLeadController@getProductTechTagDetail');
 	Route::get('project/getCustomerByLead', 'SalesLeadController@getCustomerbyLead');
 	Route::get('project/filterCountLead','SalesLeadController@filterCountLead');
+	Route::post('project/checkProductTech', 'SalesLeadController@checkProductTech');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
 
@@ -284,6 +285,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/get_data_win_report_sales', 'ReportController@get_data_win_report_sales');
 	Route::get('/get_data_lose_report_sales', 'ReportController@get_data_lose_report_sales');
 	Route::get('/getReportExcelReportRange', 'ReportController@downloadExcelReportRange');
+	Route::get('/reportExcelTag', 'ReportController@reportExcelTag');
+	Route::get('/reportPdfTag','TestController@reportPdfTag');
+	
+
 
 	Route::get('/report_product_index','ReportController@report_product_index');
 	Route::get('/getreportproduct','ReportController@getreportproduct');
