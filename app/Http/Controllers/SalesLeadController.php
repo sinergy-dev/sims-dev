@@ -973,7 +973,7 @@ class SalesLeadController extends Controller
                         DB::raw("(CASE WHEN (sales_solution_design.status is null) THEN '' ELSE sales_solution_design.status END) as status"), 
                         DB::raw("(CASE WHEN (assessment_date is null) THEN '-' ELSE assessment_date END) as assessment_date"),
                         DB::raw("(CASE WHEN (pd_date is null) THEN '-' ELSE pd_date END) as pd_date"),
-                        DB::raw("(CASE WHEN (pov_date is null) THEN '-' ELSE pov_date END) as pov_date"), 'sales_lead_register.amount', 'sales_lead_register.deal_price')
+                        DB::raw("(CASE WHEN (pov_date is null) THEN '-' ELSE pov_date END) as pov_date"), 'sales_lead_register.amount', 'sales_lead_register.deal_price', 'checked')
                     ->where('sales_solution_design.lead_id',$request->lead_id)
                     ->first();
 
@@ -1180,6 +1180,15 @@ class SalesLeadController extends Controller
         return redirect()->back();
     }
 
+    public function checkProductTech(Request $request)
+    {
+        // foreach ($request->lead_id as $value) {
+            $update = solution_design::where('lead_id', $request->lead_id)->first();
+            $update->checked = 'checked';
+            $update->update();
+        // }
+    }
+
     public function update_sd(Request $request)
     {
         $lead_id = $request['lead_id'];   
@@ -1243,7 +1252,7 @@ class SalesLeadController extends Controller
                 ->joinSub(DB::table('tb_technology_tag'), 'tb_technology_tag_alias', function ($join) {
                     $join->on('tb_technology_tag_alias.id', '=', 'tb_product_tag_relation.id_technology_tag');
                 })
-                ->select('name_tech','name_product','id_technology_tag','id_product_tag','price')
+                ->select('name_tech','name_product','id_technology_tag','id_product_tag','price','tb_product_tag_relation.id')
                 ->where('lead_id',$request->lead_id)
                 ->get();
     }
