@@ -567,7 +567,7 @@ Human Resources
 		          <a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}"> EXCEL </a>
 		        </div> -->
 		        <a href="{{action('HRController@exportExcelEmployee')}}"><button class="btn btn-sm btn-warning" style=" margin-bottom: 5px;" id="btnExport"><i class="fa fa-print"></i> EXCEL </button></a>
-		        <button class="btn btn-sm btn-primary" style="margin-bottom: 5px" id="btnAdd" data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i>&nbsp Employee</button>
+		        <button class="btn btn-sm btn-primary" onclick="showTabAdd(0)" style="margin-bottom: 5px"><i class="fa fa-plus"></i>&nbsp Employee</button>
 		      </div>
 
 		      <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -642,11 +642,8 @@ Human Resources
 			                      <td>
 			                      	<button class="btn btn-xs btn-primary btn-attach" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-upload"></i>&nbspUpload</button>
 			                      </td>
-
-			                      <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
 			                      <td>
-			                        <button class="btn btn-xs btn-primary btn-editan" id="btnEdit" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
-
+			                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" id="btnEdit" data-value="0" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
 			                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 			                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
 			                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
@@ -683,7 +680,7 @@ Human Resources
 		                      <td>&#8212</td>
 		                      @endif
 		                      <td>
-		                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
 		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
@@ -719,7 +716,7 @@ Human Resources
 		                      <td>&#8212</td>
 		                      @endif
 		                      <td>
-		                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
 		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
@@ -757,7 +754,7 @@ Human Resources
 			                      <td>&#8212</td>
 			                      @endif
 			                      <td>
-			                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
+			                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 
 			                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 			                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
@@ -795,10 +792,7 @@ Human Resources
 		                      <td>&#8212</td>
 		                      @endif
 		                      <td>
-		                        <!-- <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button> -->
-
-		                        <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
-
+		                        <button class="btn btn-xs btn-primary" onclick="showEditTab(this.value,0)" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspEdit</button>
 		                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 		                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
 		                        <button class="btn btn-xs btn-warning btnReset" id="btnReset" value="{{$data->nik}}" name="btnReset" style="vertical-align: top; width: 60px"><i class="fa fa-refresh"></i>&nbspReset</button>
@@ -834,7 +828,7 @@ Human Resources
 		                      <td>&#8212</td>
 		                      @endif
 		                      <td>
-		                        <button class="btn btn-xs btn-primary btn-editan2" value="{{$data->nik}}" name="edit_hurec"><i class="fa fa-search"></i>&nbspShow</button>
+		                        <button class="btn btn-xs btn-primary"  onclick="showEditTab(this.value,0)" value="{{$data->nik}}"><i class="fa fa-search"></i>&nbspShow</button>
 		                      </td>
 		                    </tr>
 		                    @endforeach
@@ -1163,147 +1157,8 @@ Human Resources
 		  		</div>
 		  	</div>
 		    
-		    <!-- <div class="table-responsive">
-		        <table class="table table-bordered table-striped dataTable" id="data_all_msp" width="100%" cellspacing="0">
-		          <thead>
-		            <tr>
-		              <th>NIK</th>
-		              <th>Employees Name</th>
-		              <th>Position</th>
-		              <th>Action</th>
-		            </tr>
-		          </thead>
-		          <tbody>
-		            @foreach($hr_msp as $data)
-		            @if($data->id_company == '2')
-		            <tr>
-		              <td><?=str_replace('/', '', $data->nik)?></td>
-		              <td>{{ $data->name }}</td>
-		              @if($data->id_position != '')
-		              <td>
-		                @if($data->id_position == 'DIRECTOR' && $data->id_division == '')
-		                  President Director
-		                @elseif($data->id_division == 'TECHNICAL')
-		                  @if($data->id_territory == 'DPG')
-		                    @if($data->id_position == 'ENGINEER MANAGER')
-		                      Dept. Implementation Manager
-		                    @elseif($data->id_position == 'ENGINEER STAFF')
-		                      Staff. Systems Engineer
-		                    @endif
-		                  @elseif($data->id_territory == 'DVG')
-		                    @if($data->id_position == 'MANAGER')
-		                      Dept. Development Manager
-		                    @elseif($data->id_position == 'STAFF')
-		                      Staff. Dev Ops
-		                    @elseif($data->id_position == 'INTERNAL IT')
-		                      Staff. Internal IT Engineer
-		                    @elseif($data->id_position == 'ADMIN')
-		                      Staff. TEC Admin
-		                    @endif
-		                  @elseif($data->id_territory == 'SPECIALIST')
-		                    @if($data->id_position == 'EXPERT ENGINEER')
-		                      Expert Engineer
-		                    @endif
-		                  @else
-		                    @if($data->id_position == 'MANAGER')
-		                      Div. Technical Head
-		                    @elseif($data->id_position == 'INTERNAL IT')
-		                      Staff. Internal IT Engineer
-		                    @elseif($data->id_position == 'ADMIN')
-		                      Staff. TEC Admin
-		                    @endif
-		                  @endif
-		                @elseif($data->id_division == 'TECHNICAL PRESALES')
-		                  @if($data->id_position == 'MANAGER')
-		                    Dept. Presales Manager
-		                  @elseif($data->id_position == 'STAFF')
-		                    Staff. Presales Engineer
-		                  @endif
-		                @elseif($data->id_division == 'SALES')
-		                  @if($data->id_position == 'MANAGER')
-		                    Dept. MSP Sales
-		                  @else
-		                    Staff. Sales Executive
-		                  @endif
-		                @elseif($data->id_division == 'FINANCE')
-		                  @if($data->id_position != 'FINANCE DIRECTOR')
-		                    @if($data->id_territory == 'FINANCE')
-		                      @if($data->id_position == 'STAFF')
-		                        Staff. Finance
-		                      @elseif($data->id_position == 'COURIER')
-		                        Staff. Courier
-		                      @endif
-		                    @elseif($data->id_territory == 'ACC')
-		                      @if($data->id_position == 'MANAGER')
-		                        Div. Accounting
-		                      @elseif($data->id_position == 'STAFF')
-		                        Staff. Accounting
-		                      @endif
-		                    @endif
-		                  @else
-		                    Finance Director
-		                  @endif
-		                @elseif($data->id_territory == 'OPERATION')
-		                  @if($data->id_division == null)
-		                    Operation Director
-		                  @elseif($data->id_division == 'PMO')
-		                    @if($data->id_position == 'MANAGER')
-		                      Div. Project Management Office
-		                    @elseif($data->id_position == 'PM')
-		                      Staff. Project Manager
-		                    @elseif($data->id_position == 'ADMIN')
-		                      Staff. PMO Admin
-		                    @endif
-		                  @elseif($data->id_division == 'MSM')
-		                    @if($data->id_position == 'MANAGER')
-		                      Div. Managed Services & Maintenance
-		                    @elseif($data->id_position == 'ADMIN')
-		                      Staff. MSM Admin
-		                    @elseif($data->id_position == 'CALL SO')
-		                      Staff. Call Center Operator
-		                    @elseif($data->id_position == 'HELP DESK')
-		                      Staff. Dedicated Help Desk
-		                    @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
-		                      Dept. Technical Support
-		                    @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
-		                      Staff. Support Engineer
-		                    @elseif($data->id_position == 'SERVICE PROJECT(HEAD)')
-		                      Dept. Services Project Manager
-		                    @elseif($data->id_position == 'SERVICE PROJECT(STAFF)')
-		                      Staff. Services Project Coordinator
-		                    @endif
-		                  @endif
-		                @elseif($data->id_division == 'HR')
-		                  @if($data->id_position == 'HR MANAGER')
-		                    Div. Human Resource Head
-		                  @elseif($data->id_position == 'STAFF GA')
-		                    Staff. General Affair
-		                  @elseif($data->id_position == 'STAFF HR')
-		                    Staff. Human Resource
-		                  @endif
-		                @elseif($data->id_position == 'ADMIN')
-		                  Staff. Admin MSP
-		                @else
-		                  {{ $data->id_position }}
-		                @endif
-		              </td>
-		              @else
-		              <td>&#8212</td>
-		              @endif
-		              <td>
-		                <button class="btn btn-xs btn-primary btn-editan" value="{{$data->nik}}" name="edit_hurec" style="width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
-		                <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
-		                <i class="fa fa-trash"></i>&nbspDelete</button></a>
-		              </td>
-		            </tr>
-		            @endif
-		            @endforeach
-		          </tbody>
-		        </table>
-		    </div> -->
 			</div>
 		  </div>
-		<!-- </div> -->
 
 		<div class="modal fade" id="modalAdd" role="dialog">
 		    <div class="modal-dialog modal-md">
@@ -1311,584 +1166,566 @@ Human Resources
 		      <!-- Modal content-->
 		      <div class="modal-content modal-md">
 		        <div class="modal-header">
-		          <h4 class="modal-title">Add Employees</h4>
+		        	<button type="button" class="close" aria-label="Close">
+						<span aria-hidden="true">×</span></button>
+		          	<h4 class="modal-title">Add Employees</h4>
 		        </div>
 		        <div class="modal-body">
-		        	<form class="form-horizontal" method="POST" action="{{url('hu_rec/store')}}" enctype="multipart/form-data">
+		        	<form class="form-horizontal" id="formAdd" enctype="multipart/form-data">
 	                @csrf
 
-	                <!-- <div class="form-group row" hidden>
-	                    <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
+	                <div class="tab-add" style="display: none;">
+	                	<div class="form-group">
+		                    <label class="col-md-4 control-label">{{ __('Employees Name') }}</label>
 
-	                    <div class="col-md-8">
-	                        <input id="nik" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik" value="{{ old('nik') }}" readonly required autofocus>
+		                    <div class="col-md-8">
+		                        <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" required autofocus>
 
-	                        @if ($errors->has('nik'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('nik') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div> -->
-
-	                <div class="form-group">
-	                    <label class="col-md-4 control-label">{{ __('Employees Name') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" required autofocus>
-
-	                        @if ($errors->has('name'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('name') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="email" class="col-md-4 control-label">{{ __('E-Mail Address') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
-
-	                        @if ($errors->has('email'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('email') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="email_personal" class="col-md-4 control-label">{{ __('Personal E-Mail') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="email_personal" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email_personal" value="{{ old('email') }}" required>
-
-	                        @if ($errors->has('email'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('email') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="password" class="col-md-4 control-label">{{ __('Password') }}</label>
-
-	                    <div class="col-md-8">
-	                        <div class="input-group">
-	                        	<input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }} float-left" name="password" required>
-		                        <span class="input-group-addon">
-		                        	<i toggle="#password-field" class="fa fa-fw fa-eye  toggle-password"></i>
-		                        </span>
-		                        @if ($errors->has('password'))
+		                        @if ($errors->has('name'))
 		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('password') }}</strong>
+		                                <strong>{{ $errors->first('name') }}</strong>
 		                            </span>
 		                        @endif
-	                        </div>
+		                    </div>
+		                </div>
 
-	                    </div>
+		                <div class="form-group">
+		                    <label for="email" class="col-md-4 control-label">{{ __('E-Mail Address') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
+
+		                        @if ($errors->has('email'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('email') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="email_personal" class="col-md-4 control-label">{{ __('Personal E-Mail') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="email_personal" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email_personal" value="{{ old('email') }}" required>
+
+		                        @if ($errors->has('email'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('email') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="password" class="col-md-4 control-label">{{ __('Password') }}</label>
+
+		                    <div class="col-md-8">
+		                        <div class="input-group">
+		                        	<input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }} float-left" name="password" required>
+			                        <span class="input-group-addon">
+			                        	<i toggle="#password-field" class="fa fa-fw fa-eye  toggle-password"></i>
+			                        </span>
+			                        @if ($errors->has('password'))
+			                            <span class="invalid-feedback">
+			                                <strong>{{ $errors->first('password') }}</strong>
+			                            </span>
+			                        @endif
+		                        </div>
+
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="password-confirm" class="col-md-4 control-label">{{ __('Confirm Password') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="tempat_lahir" class="col-md-4 control-label">{{ __('Place of Birth') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="tempat_lahir" type="text" class="form-control" name="tempat_lahir" value="{{ old('tempat_lahir') }}" autofocus>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="date_of_birth" class="col-md-4 control-label">{{ __('Date Of Birth') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="date_of_birth" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
+
+		                        @if ($errors->has('date_of_birth'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('date_of_birth') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="jenis_kelamin" style="padding-top: 7px;" class="col-md-4 control-label">{{ __('Gender') }}</label>
+		                    <div class="col-md-8 form-group" style="padding-left: 28px; padding-top: 7px">
+		                    	<div class="form-check">
+								  <input class="form-check-input" type="radio" name="jenis_kelamin" id="flexRadioDefault1" value="Pria">
+								  <label class="form-check-label" for="flexRadioDefault1">Male</label>
+								  <input class="form-check-input" type="radio" name="jenis_kelamin" style="margin-left: 25px;" id="flexRadioDefault2"  value="Wanita">
+								  <label class="form-check-label" for="flexRadioDefault2">Female</label>
+								</div>
+		                    </div>
+		                </div>		                
 	                </div>
 
-	                <div class="form-group">
-	                    <label for="password-confirm" class="col-md-4 control-label">{{ __('Confirm Password') }}</label>
+	                <div class="tab-add" style="display: none;">
+	                	<div class="form-group">
+		                    <label for="address" class="col-md-4 control-label">{{ __('Residence Address') }}</label>
 
-	                    <div class="col-md-8">
-	                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
-	                    </div>
-	                </div>
+		                    <div class="col-md-8">
+		                        <textarea id="address" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address" value="{{ old('address') }}" autofocus></textarea>
 
-	                <div class="form-group">
-	                    <label for="company" class="col-md-4 control-label">{{ __('Company') }}</label>
+		                        @if ($errors->has('address'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('address') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
 
-	                    <div class="col-md-8">
-	                        <select id="company" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company" value="{{ old('company') }}" onkeyup="copytextbox();" required autofocus>
-	                            <option value="">-- Select Company --</option>
-	                            <option value="1" data-target="sip" id="1">SIP</option>
-	                            <option value="2" data-target="msp" id="2">MSP</option>
-	                        </select>
-	                        @if ($errors->has('company'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('company') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
+		                <div class="form-group">
+		                    <label for="address_ktp" class="col-md-4 control-label">{{ __('ID Address') }}</label>
 
-	                <!--SIP-->
+		                    <div class="col-md-8">
+		                        <textarea id="address_ktp" rows="5" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address_ktp" value="{{ old('address_ktp') }}" autofocus></textarea>
 
-	                <div class="form-group"  style="display:none;"  id="company-sip">
-	                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Division') }}</label>
+		                        @if ($errors->has('address'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('address') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
 
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="division" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_sip" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select division --</option>
-	                            <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
-	                            <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
-	                            <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
-	                            <option value="SALES" data-target="sales" id="sales">SALES</option>
-	                            <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
-	                            <option value="SPECIALIST" data-target="specialist" id="specialist">OTHER</option>
-	                            <option value="NULL" data-target="director" id="director">NONE</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
+		                <div class="form-group">
+		                    <label for="phone_number" class="col-md-4 control-label">{{ __('Phone Number') }}</label>
 
-	                    <label for="roles_user" class="col-md-4 control-label margin-top">{{ __('Roles') }}</label>
+		                    <div class="col-md-8">
+		                        <input id="phone_number" type="text" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
 
-	                    <div class="col-md-8 margin-top">
-	                        <select id="roles_user" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="roles_user" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Roles --</option>
-	                            @foreach($roles as $data)
-	                            <option value="{{$data->id}}">{{$data->name}}</option>
-	                            @endforeach
-	                        </select>
-	                    </div>
-	                </div>
+		                        @if ($errors->has('phone_number'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('phone_number') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
 
-	                <!--DIRECTOR-->
-	                <div class="form-group"  style="display:none;"  id="division-director">
-	                    <label for="position" class="col-md-4 control-label margin-bottom">{{ __('Position') }}</label>
+	                	<div class="form-group">
+	                   		<label for="company" class="col-md-4 control-label">{{ __('Company') }}</label>
 
-	                    <div class="col-md-8">
-	                        <select id="position-dir" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_dir" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Position --</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
+		                    <div class="col-md-8">
+		                        <select id="company" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company" value="{{ old('company') }}" onkeyup="copytextbox();" required autofocus>
+		                            <option value="">-- Select Company --</option>
+		                            <option value="1" data-target="sip" id="1">SIP</option>
+		                            <option value="2" data-target="msp" id="2">MSP</option>
+		                        </select>
+		                        @if ($errors->has('company'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('company') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
 
-	                <!--expert sales-->
-	                <div class="form-group"  style="display:none;"  id="division-specialist" >
+		                <!--SIP-->
 
-	                    <label for="territory" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
+		                <div class="form-group"  style="display:none;"  id="company-sip">
+		                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Division') }}</label>
 
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="territory-expert-sales" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory_expert" value="{{ old('expert_sales') }}" autofocus>
-	                            <option value="">-- Select Territory --</option>
-	                        </select>
-	                        @if ($errors->has('territory'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('territory') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="division" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_sip" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select division --</option>
+		                            <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
+		                            <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
+		                            <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
+		                            <option value="SALES" data-target="sales" id="sales">SALES</option>
+		                            <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
+		                            <option value="SPECIALIST" data-target="specialist" id="specialist">OTHER</option>
+		                            <option value="NULL" data-target="director" id="director">NONE</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
 
-	                    <label for="position" class="col-md-4 control-label">{{ __('Position') }}</label>
+		                    <label for="roles_user" class="col-md-4 control-label margin-top">{{ __('Roles') }}</label>
 
-	                    <div class="col-md-8">
-	                        <select id="position-expert-sales" class="form-control{{ $errors->has('position') ? ' is-invalid' : '' }}" name="pos_expert_sales" value="{{ old('expert_sales') }}" autofocus>
-	                            <option value="">-- Select Position --</option>
-	                            <option value="EXPERT SALES">EXPERT SALES</option>
-	                            <option value="EXPERT ENGINEER">EXPERT ENGINEER</option>
-	                            <option value="COURIER">COURIER</option>
-	                        </select>
-	                    </div>
-	                </div>
+		                    <div class="col-md-8 margin-top">
+		                        <select id="roles_user" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="roles_user" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Roles --</option>
+		                            @foreach($roles as $data)
+		                            <option value="{{$data->id}}">{{$data->name}}</option>
+		                            @endforeach
+		                        </select>
+		                    </div>
+		                </div>
+
+		                <!--DIRECTOR-->
+		                <div class="form-group"  style="display:none;"  id="division-director">
+		                    <label for="position" class="col-md-4 control-label margin-bottom">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8">
+		                        <select id="position-dir" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_dir" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Position --</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <!--expert sales-->
+		                <div class="form-group"  style="display:none;"  id="division-specialist" >
+
+		                    <label for="territory" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="territory-expert-sales" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory_expert" value="{{ old('expert_sales') }}" autofocus>
+		                            <option value="">-- Select Territory --</option>
+		                        </select>
+		                        @if ($errors->has('territory'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('territory') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+
+		                    <label for="position" class="col-md-4 control-label">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8">
+		                        <select id="position-expert-sales" class="form-control{{ $errors->has('position') ? ' is-invalid' : '' }}" name="pos_expert_sales" value="{{ old('expert_sales') }}" autofocus>
+		                            <option value="">-- Select Position --</option>
+		                            <option value="EXPERT SALES">EXPERT SALES</option>
+		                            <option value="EXPERT ENGINEER">EXPERT ENGINEER</option>
+		                            <option value="COURIER">COURIER</option>
+		                        </select>
+		                    </div>
+		                </div>
+		                
+		                <!-- Technical -->
+		                <div class="form-group"  style="display:none;"  id="division-technical">
+		                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="subdivision-tech" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Sub Division --</option>
+		                            <option value="DPG" data-target="dvg" id="dvg">IMPLEMENTATION</option>
+		                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
+		                            <option value="DVG" data-target="dvg" id="dvg">DEVELOPMENT</option>
+		                            <option value="NONE" data-target="dpg" id="dpg">NONE</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+
+		                    <label for="position" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8 margin-top">
+		                        <select id="position-tech" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Position --</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <!-- Sales -->
+		                <div class="form-group"  style="display:none;"  id="division-sales" >
+
+		                    <label for="territory" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="territory-sales" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Territory --</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+
+		                    <label for="position" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8 margin-top">
+		                        <select id="position-sales" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Position --</option>
+		                            <option value="MANAGER">MANAGER</option>
+		                            <option value="STAFF">STAFF</option>
+		                            <option value="ADMIN">ADMIN</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <!-- Finance -->
+		                <div class="form-group"  style="display:none;"  id="division-finance">
+		                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="subdivision-finance" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_finance" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Sub Division --</option>
+		                            <option value="FINANCE" data-target="dvg" id="dvg">FINANCE</option>
+		                            <option value="ACC" data-target="dpg" id="dpg">ACCOUNTING</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+
+		                    <label for="division" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8 margin-top">
+		                        <select id="position-finance" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_finance" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Position --</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <!-- Operation -->
+		                <div class="form-group "  style="display:none;"  id="division-operation">
+		                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="subdivision-operation" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Sub Division --</option>
+		                            <option value="MSM" data-target="MSM" id="MSM">MSM</option>
+		                            <option value="PMO" data-target="PMO" id="PMO">PMO</option>
+		                            <option value="DIR" data-target="DIR" id="PMO">NONE</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+
+		                    <label for="division" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8 margin-top">
+		                        <select id="position-operation" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_operation" autofocus>
+		                          <option value="">-- Select position --</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <!-- HR -->
+		                <div class="form-group"  style="display:none;"  id="division-hr">
+		                    <label for="position" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="position-hr" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_hr" value="{{ old('division') }}" autofocus>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <!-- MSP -->
+
+		                <div class="form-group"  style="display:none;"  id="company-msp">
+		                    <label for="division-msp" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Division') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="division-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Division --</option>
+		                            <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
+		                            <option value="TECHNICAL" data-target="TECHNICAL_MSP" id="TECHNICAL_MSP">TECHNICAL</option>
+		                            <option value="WAREHOUSE_MSP" data-target="sales_msp" id="warehouse_msp">WAREHOUSE</option>
+		                            <option value="OPERATION_MSP" data-target="sales_msp" id="operation_msp">OPERATION</option>
+		                            <option value="ADMIN_MSP" data-target="sales_msp">NONE</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <div class="form-group"  style="display:none;"  id="division-msp-sales_msp">
+		                  <label for="position" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8">
+		                        <select id="position-sales-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_msp" value="{{ old('division') }}" autofocus>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+
+		                <div class="form-group"  style="display:none;"  id="division-msp-TECHNICAL_MSP">
+		                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+
+		                    <div class="col-md-8 margin-bottom">
+		                        <select id="subdivision-tech-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Sub Division --</option>
+		                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
+		                            <option value="NONE_MSP" data-target="dpg" id="dpg">NONE</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+
+		                    <label for="position" class="col-md-4 margin-top">{{ __('Position') }}</label>
+
+		                    <div class="col-md-8 margin-top">
+		                        <select id="position-tech-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp" value="{{ old('division') }}" autofocus>
+		                            <option value="">-- Select Position --</option>
+		                        </select>
+		                        @if ($errors->has('division'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('division') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+	                </div>	                
+
 	                
-	                <!-- Technical -->
-	                <div class="form-group"  style="display:none;"  id="division-technical">
-	                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="subdivision-tech" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Sub Division --</option>
-	                            <option value="DPG" data-target="dvg" id="dvg">IMPLEMENTATION</option>
-	                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-	                            <option value="DVG" data-target="dvg" id="dvg">DEVELOPMENT</option>
-	                            <option value="NONE" data-target="dpg" id="dpg">NONE</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-
-	                    <label for="position" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
-
-	                    <div class="col-md-8 margin-top">
-	                        <select id="position-tech" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Position --</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <!-- Sales -->
-	                <div class="form-group"  style="display:none;"  id="division-sales" >
-
-	                    <label for="territory" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
-
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="territory-sales" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Territory --</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-
-	                    <label for="position" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
-
-	                    <div class="col-md-8 margin-top">
-	                        <select id="position-sales" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Position --</option>
-	                            <option value="MANAGER">MANAGER</option>
-	                            <option value="STAFF">STAFF</option>
-	                            <option value="ADMIN">ADMIN</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <!-- Finance -->
-	                <div class="form-group"  style="display:none;"  id="division-finance">
-	                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="subdivision-finance" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_finance" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Sub Division --</option>
-	                            <option value="FINANCE" data-target="dvg" id="dvg">FINANCE</option>
-	                            <option value="ACC" data-target="dpg" id="dpg">ACCOUNTING</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-
-	                    <label for="division" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
-
-	                    <div class="col-md-8 margin-top">
-	                        <select id="position-finance" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_finance" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Position --</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <!-- Operation -->
-	                <div class="form-group "  style="display:none;"  id="division-operation">
-	                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="subdivision-operation" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Sub Division --</option>
-	                            <option value="MSM" data-target="MSM" id="MSM">MSM</option>
-	                            <option value="PMO" data-target="PMO" id="PMO">PMO</option>
-	                            <option value="DIR" data-target="DIR" id="PMO">NONE</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-
-	                    <label for="division" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
-
-	                    <div class="col-md-8 margin-top">
-	                        <select id="position-operation" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_operation" autofocus>
-	                          <option value="">-- Select position --</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <!-- HR -->
-	                <div class="form-group"  style="display:none;"  id="division-hr">
-	                    <label for="position" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="position-hr" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_hr" value="{{ old('division') }}" autofocus>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <!-- MSP -->
-
-	                <div class="form-group"  style="display:none;"  id="company-msp">
-	                    <label for="division-msp" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Division') }}</label>
-
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="division-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Division --</option>
-	                            <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
-	                            <option value="TECHNICAL" data-target="TECHNICAL_MSP" id="TECHNICAL_MSP">TECHNICAL</option>
-	                            <option value="WAREHOUSE_MSP" data-target="sales_msp" id="warehouse_msp">WAREHOUSE</option>
-	                            <option value="OPERATION_MSP" data-target="sales_msp" id="operation_msp">OPERATION</option>
-	                            <option value="ADMIN_MSP" data-target="sales_msp">NONE</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group"  style="display:none;"  id="division-msp-sales_msp">
-	                  <label for="position" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-	                    <div class="col-md-8">
-	                        <select id="position-sales-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_msp" value="{{ old('division') }}" autofocus>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-
-	                <div class="form-group"  style="display:none;"  id="division-msp-TECHNICAL_MSP">
-	                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-	                    <div class="col-md-8 margin-bottom">
-	                        <select id="subdivision-tech-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Sub Division --</option>
-	                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-	                            <option value="NONE_MSP" data-target="dpg" id="dpg">NONE</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-
-	                    <label for="position" class="col-md-4 margin-top">{{ __('Position') }}</label>
-
-	                    <div class="col-md-8 margin-top">
-	                        <select id="position-tech-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp" value="{{ old('division') }}" autofocus>
-	                            <option value="">-- Select Position --</option>
-	                        </select>
-	                        @if ($errors->has('division'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('division') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="tempat_lahir" class="col-md-4 control-label">{{ __('Place of Birth') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="tempat_lahir" type="text" class="form-control" name="tempat_lahir" value="{{ old('tempat_lahir') }}" autofocus>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="date_of_birth" class="col-md-4 control-label">{{ __('Date Of Birth') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="date_of_birth" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
-
-	                        @if ($errors->has('date_of_birth'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('date_of_birth') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="date_of_entry" class="col-md-4 control-label">{{ __('Date Of Entry') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="date_of_entry" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
-
-	                        @if ($errors->has('date_of_entry'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('date_of_entry') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="jenis_kelamin" style="padding-top: 7px;" class="col-md-4 control-label">{{ __('Gender') }}</label>
-	                    <div class="col-md-8 form-group" style="padding-left: 28px; padding-top: 7px">
-	                    	<div class="form-check">
-							  <input class="form-check-input" type="radio" name="jenis_kelamin" id="flexRadioDefault1" value="Pria">
-							  <label class="form-check-label" for="flexRadioDefault1">Male</label>
-							  <input class="form-check-input" type="radio" name="jenis_kelamin" style="margin-left: 25px;" id="flexRadioDefault2"  value="Wanita">
-							  <label class="form-check-label" for="flexRadioDefault2">Female</label>
-							</div>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="status_karyawan" class="col-md-4 control-label">{{ __('Employee Status') }}</label>
-
-	                    <div class="col-md-8">
-	                        <select id="status_kerja" class="form-control" name="status_kerja" onchange="statusSelect(this)">
-	                            <option value="">-- Select Status --</option>
-	                            <option value="Tetap">Karyawan Tetap</option>
-	                            <option value="Kontrak">Karyawan Kontrak</option>
-	                        </select>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="akhir_kontrak" class="col-md-4 control-label">{{ __('Last Contract Date') }}</label>
-
-	                     <div class="col-md-8">
-	                        <input id="akhir_kontrak" type="date" class="form-control" name="akhir_kontrak" onkeyup="copytextbox();" required autofocus>
-
-	                        @if ($errors->has('last_contract date'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('last_contract date') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>	                        
-
-	                <div class="form-group">
-	                    <label for="address" class="col-md-4 control-label">{{ __('Residence Address') }}</label>
-
-	                    <div class="col-md-8">
-	                        <textarea id="address" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address" value="{{ old('address') }}" autofocus></textarea>
-
-	                        @if ($errors->has('address'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('address') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="address_ktp" class="col-md-4 control-label">{{ __('ID Address') }}</label>
-
-	                    <div class="col-md-8">
-	                        <textarea id="address_ktp" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address_ktp" value="{{ old('address_ktp') }}" autofocus></textarea>
-
-	                        @if ($errors->has('address'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('address') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="phone_number" class="col-md-4 control-label">{{ __('Phone Number') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="phone_number" type="text" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number" value="{{ old('phone_number') }}" autofocus>
-
-	                        @if ($errors->has('phone_number'))
-	                            <span class="invalid-feedback">
-	                                <strong>{{ $errors->first('phone_number') }}</strong>
-	                            </span>
-	                        @endif
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="pend_terakhir" class="col-md-4 control-label">{{ __('Last Education') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="pend_terakhir" type="text" class="form-control" name="pend_terakhir" value="{{ old('pend_terakhir') }}" autofocus>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="no_ktp" class="col-md-4 control-label">{{ __('KTP') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="no_ktp" type="number" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="no_kk" class="col-md-4 control-label">{{ __('KK') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="no_kk" type="number" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="no_npwp" class="col-md-4 control-label">{{ __('NPWP') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input type="text" class="form-control" id="no_npwp" name="no_npwp" value="{{ old('no_npwp') }}" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask autofocus>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="bpjs_kes" class="col-md-4 control-label">{{ __('BPJS KESEHATAN') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="bpjs_kes" type="number" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" autofocus>
-	                    </div>
-	                </div>
-
-	                <div class="form-group">
-	                    <label for="bpjs_ket" class="col-md-4 control-label">{{ __('BPJS KETENAGAKERJAAN') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="bpjs_ket" type="number" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" autofocus>
-	                    </div>
-	                </div>
-
-	                <!-- <div class="form-group row">
-	                    <div class="col-md-8">
-	                        <img src="http://placehold.it/100x100" id="showgambarnpwp" style="max-width: 400px;max-height: 400px;float: left;"/>
-	                    </div>
-	                </div>
-
-	                <div class="form-group row">
-	                    <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
-
-	                    <div class="col-md-8">
-	                        <input id="inputgambarnpwp" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
-	                    </div>
-	                </div> -->
+	                <div class="tab-add" style="display: none;">   
+		                <div class="form-group">
+		                    <label for="date_of_entry" class="col-md-4 control-label">{{ __('Date Of Entry') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="date_of_entry" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
+
+		                        @if ($errors->has('date_of_entry'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('date_of_entry') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="status_karyawan" class="col-md-4 control-label">{{ __('Employee Status') }}</label>
+
+		                    <div class="col-md-8">
+		                        <select id="status_kerja" class="form-control" name="status_kerja" onchange="statusSelect(this)">
+		                            <option value="">-- Select Status --</option>
+		                            <option value="Tetap">Karyawan Tetap</option>
+		                            <option value="Kontrak">Karyawan Kontrak</option>
+		                        </select>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="akhir_kontrak" class="col-md-4 control-label">{{ __('Last Contract Date') }}</label>
+
+		                     <div class="col-md-8">
+		                        <input id="akhir_kontrak" type="date" class="form-control" name="akhir_kontrak" onkeyup="copytextbox();" required autofocus>
+
+		                        @if ($errors->has('last_contract date'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('last_contract date') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>	                        
+		                
+		                <div class="form-group">
+		                    <label for="pend_terakhir" class="col-md-4 control-label">{{ __('Last Education') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="pend_terakhir" type="text" class="form-control" name="pend_terakhir" value="{{ old('pend_terakhir') }}" autofocus>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="no_ktp" class="col-md-4 control-label">{{ __('KTP') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="no_ktp" type="number" class="form-control" name="no_ktp" value="{{ old('no_ktp') }}" autofocus>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="no_kk" class="col-md-4 control-label">{{ __('KK') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="no_kk" type="number" class="form-control" name="no_kk" value="{{ old('no_kk') }}" autofocus>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="no_npwp" class="col-md-4 control-label">{{ __('NPWP') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input type="text" class="form-control" id="no_npwp" name="no_npwp" value="{{ old('no_npwp') }}" data-inputmask='"mask": "99.999.999.9-999.999"' data-mask autofocus>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="bpjs_kes" class="col-md-4 control-label">{{ __('BPJS KESEHATAN') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="bpjs_kes" type="number" class="form-control" name="bpjs_kes" value="{{ old('bpjs_kes') }}" autofocus>
+		                    </div>
+		                </div>
+
+		                <div class="form-group">
+		                    <label for="bpjs_ket" class="col-md-4 control-label">{{ __('BPJS KETENAGAKERJAAN') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="bpjs_ket" type="number" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" autofocus>
+		                    </div>
+		                </div>
+		            </div>
 
 	                <div class="modal-footer">
-	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	                  <button type="submit" class="btn btn-primary">
-	                      {{ __('Register') }}
+	                	<button type="button" class="btn btn-secondary" id="prevBtnAdd" onclick="NextPrevAdd()">Back</button>
+						<button type="button" class="btn btn-primary" id="nextBtnAdd" onclick="NextPrevAdd()">Next</button>
+	                 <!--  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	                  <button type="submit" class="btn btn-primary"> -->
 	                  </button>
 	                </div>
 		          </form>
@@ -1898,34 +1735,31 @@ Human Resources
 		</div>
 			
 		<div class="modal fade" id="modal_update" role="dialog">
-		    <div class="modal-dialog modal-md">
-		    
+		    <div class="modal-dialog modal-md">		    
 		      <!-- Modal content-->
 		      <div class="modal-content">
 		        <div class="modal-header">
-		          <h4 class="modal-title">Detail Employees</h4>
+		          	<button type="button" class="close" aria-label="Close">
+						<span aria-hidden="true">×</span></button>
+		          	<h4 class="modal-title">Detail Employees</h4>
 		        </div>
 		        <div class="modal-body">
-
-		          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
-		                @csrf
-		                <div class="form-group row">
-		                    <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
-
-		                    <div class="col-md-8">
-		                        <input id="nik_update" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
-
-		                        @if ($errors->has('nik'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('nik') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div>
-
-		                <div class="form-group row">
+		          <!-- <form method="POST" id="formUpdate" enctype="multipart/form-data"> -->
+		                <!-- @csrf -->
+		            <div class="tab" style="display: none;">
+		            	<div class="mb-3 form-group row">
+		            		<label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
+		            		<div class="col-md-8">
+	                        	<input id="nik_update" type="text" class="col-md-8 form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
+		            		</div>
+		            		@if ($errors->has('nik'))
+	                            <span class="invalid-feedback">
+	                                <strong>{{ $errors->first('nik') }}</strong>
+	                            </span>
+	                        @endif
+		            	</div>
+		            	<div class="mb-3 form-group row">
 		                    <label for="name" class="col-md-4 col-form-label">{{ __('Employees Name') }}</label>
-
 		                    <div class="col-md-8">
 		                        <input id="name_update" type="text" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}" name="name_update" value="{{ old('name') }}" autofocus>
 
@@ -1936,8 +1770,7 @@ Human Resources
 		                        @endif
 		                    </div>
 		                </div>
-
-		                <div class="form-group row">
+		                <div class="mb-3 form-group row">
 		                    <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
 		                    <div class="col-md-8">
@@ -1950,8 +1783,7 @@ Human Resources
 		                        @endif
 		                    </div>
 		                </div>
-
-		                <div class="form-group row">
+		                <div class="mb-3 form-group row">
 		                    <label for="email_personal" class="col-md-4 col-form-label text-md-right">{{ __('Personal E-Mail') }}</label>
 
 		                    <div class="col-md-8">
@@ -1964,8 +1796,84 @@ Human Resources
 		                        @endif
 		                    </div>
 		                </div>
+		                <div class="mb-3 form-group row">
+		                    <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
 
-		                <div class="form-group row">
+		                    <div class="col-md-8">
+		                        <input id="date_of_entry_update" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry_update" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
+
+		                        @if ($errors->has('date_of_entry'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('date_of_entry') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+		                <div class="mb-3 form-group row">
+	                        <label for="tempat_lahir" class="col-md-4 col-form-label text-md-right">{{ __('Place of Birth') }}</label>
+
+	                        <div class="col-md-8">
+	                            <input id="tempat_lahir_update" type="text" class="form-control" name="tempat_lahir_update" value="{{ old('tempat_lahir') }}" autofocus>
+	                        </div>
+	                    </div>
+	                    <div class="mb-3 form-group row">
+		                    <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="date_of_birth_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth_update" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
+
+		                        @if ($errors->has('date_of_birth'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('date_of_birth') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+		                <div class="mb-3 form-group row">
+		                    <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Residence Address') }}</label>
+
+		                    <div class="col-md-8">
+		                        <textarea id="address_update" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address_update" value="{{ old('address') }}" autofocus></textarea>
+
+		                        @if ($errors->has('address'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('address') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+
+		                <div class="mb-3 form-group row">
+	                        <label for="address_ktp" class="col-md-4 col-form-label text-md-right">{{ __('ID Address') }}</label>
+
+	                        <div class="col-md-8">
+	                            <textarea id="address_ktp_update" rows="5" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address_ktp_update" value="{{ old('address_ktp') }}" autofocus></textarea>
+
+	                            @if ($errors->has('address'))
+	                                <span class="invalid-feedback">
+	                                    <strong>{{ $errors->first('address') }}</strong>
+	                                </span>
+	                            @endif
+	                        </div>
+	                    </div>
+
+		                <div class="mb-3 form-group row">
+		                    <label for="phone_number" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="phone_number_update" type="text" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number_update" value="{{ old('phone_number') }}" autofocus>
+
+		                        @if ($errors->has('phone_number'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('phone_number') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+		            </div>              
+
+		            <div class="tab" style="display: none;">
+		            	<div class="form-group row">
 		                    <label for="status_karyawan" class="col-md-4 col-form-label text-md-right">{{ __('Employee Status') }}</label>
 
 		                    <div class="col-md-4" id="div_status_karyawan_update">
@@ -2072,363 +1980,7 @@ Human Resources
 		                        @endif
 		                    </div>
 		                </div>
-		              <!--SIP-->
-
-		                <!-- <div class="form-group row"  style="display:none;"  id="company_update-sip">
-		                    <label for="division" class="col-md-4 col-form-label text-md-right">{{ __('Division') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="division_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select division --</option>
-		                            <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
-		                            <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
-		                            <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
-		                            <option value="SALES" data-target="sales" id="sales">SALES</option>
-		                            <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
-		                            <option value="NULL" data-target="director" id="director">NONE</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!--DIRECTOR-->
-		                <!-- <div class="form-group row"  style="display:none;"  id="division_update-director">
-		                    <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="position-dir-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_dir_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Position --</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-		                
-		                <!-- Technical -->
-		                <!-- <div class="form-group row"  style="display:none;"  id="division_update-technical">
-		                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="subdivision-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Sub Division --</option>
-		                            <option value="DPG" data-target="dvg" id="dvg">IMPLEMENTATION</option>
-		                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-		                            <option value="DVG" data-target="dvg" id="dvg">DEVELOPMENT</option>
-		                            <option value="NONE" data-target="dpg" id="dpg">NONE</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-
-		                    <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8 margin-top">
-		                        <select id="position-tech-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Position --</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- Sales -->
-		                <!-- <div class="form-group row"  style="display:none;"  id="division_update-sales" >
-
-		                    <label for="territory" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Territory') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="territory-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="territory_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Territory --</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-
-		                    <label for="position" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8 margin-top">
-		                        <select id="position-sales-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Position --</option>
-		                            <option value="MANAGER">MANAGER</option>
-		                            <option value="STAFF">STAFF</option>
-		                            <option value="ADMIN">ADMIN</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- Finance -->
-		                <!-- <div class="form-group row"  style="display:none;"  id="division_update-finance">
-		                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="subdivision-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_finance_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Sub Division --</option>
-		                            <option value="FINANCE" data-target="dvg" id="dvg">FINANCE</option>
-		                            <option value="ACC" data-target="dpg" id="dpg">ACCOUNTING</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-
-		                    <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8 margin-top">
-		                        <select id="position-finance-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_finance_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Position --</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- Operation -->
-		                <!-- <div class="form-group row"  style="display:none;"  id="division_update-operation">
-		                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="subdivision-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Sub Division --</option>
-		                            <option value="MSM" data-target="MSM" id="MSM">MSM</option>
-		                            <option value="PMO" data-target="PMO" id="PMO">PMO</option>
-		                            <option value="DIR" data-target="DIR" id="PMO">NONE</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-
-		                    <label for="division" class="col-md-4 col-form-label text-md-right margin-top">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8 margin-top">
-		                        <select id="position-operation-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_operation_update" autofocus>
-		                          <option value="">-- Select position --</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- HR -->
-		                <!-- <div class="form-group row"  style="display:none;"  id="division_update-hr">
-		                    <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="position-hr-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_hr_update" value="{{ old('division') }}" autofocus>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- MSP -->
-
-		               <!--  <div class="form-group row"  style="display:none;"  id="company_update-msp">
-		                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Division --</option>
-		                            <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
-		                            <option value="ADMIN_MSP" >NONE</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-
-		                    <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Position --</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- <div class="form-group row"  style="display:none;"  id="company_update-msp">
-		                    <label for="division-msp" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Division') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="division-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Division --</option>
-		                            <option value="SALES_MSP" data-target="sales_msp_update" id="sales_msp">SALES</option>
-		                            <option value="TECHNICAL_MSP" data-target="technical_msp_update" id="TECHNICAL_MSP">TECHNICAL</option>
-		                            <option value="WAREHOUSE_MSP" data-target="sales_msp_update" id="warehouse_msp">WAREHOUSE</option>
-		                            <option value="OPERATION_MSP" data-target="sales_msp_update" id="operation_msp">OPERATION</option>
-		                            <option value="ADMIN_MSP" data-target="sales_msp_update">NONE</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-sales_msp_update">
-		                  <label for="position" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="position-sales-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales" value="{{ old('division') }}" autofocus>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <!-- <div class="form-group row"  style="display:none;"  id="division-msp-update-technical_msp_update">
-		                    <label for="division" class="col-md-4 col-form-label text-md-right" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="subdivision-tech-msp_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Sub Division --</option>
-		                            <option value="PRESALES" data-target="dpg" id="dpg">PRESALES</option>
-		                            <option value="NONE_MSP" data-target="dpg" id="dpg">NONE</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-
-		                    <label for="position" class="col-md-4 col-form-label text-md-right">{{ __('Position') }}</label>
-
-		                    <div class="col-md-8">
-		                        <select id="position-tech-msp-update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp_update" value="{{ old('division') }}" autofocus>
-		                            <option value="">-- Select Position --</option>
-		                        </select>
-		                        @if ($errors->has('division'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('division') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div> -->
-
-		                <div class="form-group row">
-		                    <label for="date_of_entry" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Entry') }}</label>
-
-		                    <div class="col-md-8">
-		                        <input id="date_of_entry_update" type="date" class="form-control{{ $errors->has('date_of_entry') ? ' is-invalid' : '' }}" name="date_of_entry_update" value="{{ old('date_of_entry') }}" onkeyup="copytextbox();" required autofocus>
-
-		                        @if ($errors->has('date_of_entry'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('date_of_entry') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div>
-
-		                <div class="form-group row">
-	                        <label for="tempat_lahir" class="col-md-4 col-form-label text-md-right">{{ __('Place of Birth') }}</label>
-
-	                        <div class="col-md-8">
-	                            <input id="tempat_lahir_update" type="text" class="form-control" name="tempat_lahir_update" value="{{ old('tempat_lahir') }}" autofocus>
-	                        </div>
-	                    </div>
-
-		                <div class="form-group row">
-		                    <label for="date_of_birth" class="col-md-4 col-form-label text-md-right">{{ __('Date Of Birth') }}</label>
-
-		                    <div class="col-md-8">
-		                        <input id="date_of_birth_update" type="date" class="form-control{{ $errors->has('date_of_birth') ? ' is-invalid' : '' }}" name="date_of_birth_update" value="{{ old('date_of_birth') }}" onkeyup="copytextbox();" required autofocus>
-
-		                        @if ($errors->has('date_of_birth'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('date_of_birth') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div>
-
-		                <div class="form-group row">
-		                    <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Residence Address') }}</label>
-
-		                    <div class="col-md-8">
-		                        <textarea id="address_update" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address_update" value="{{ old('address') }}" autofocus></textarea>
-
-		                        @if ($errors->has('address'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('address') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div>
-
-		                <div class="form-group row">
-	                        <label for="address_ktp" class="col-md-4 col-form-label text-md-right">{{ __('ID Address') }}</label>
-
-	                        <div class="col-md-8">
-	                            <textarea id="address_ktp_update" type="text" class="form-control{{ $errors->has('address') ? ' is-invalid' : '' }}" name="address_ktp_update" value="{{ old('address_ktp') }}" autofocus></textarea>
-
-	                            @if ($errors->has('address'))
-	                                <span class="invalid-feedback">
-	                                    <strong>{{ $errors->first('address') }}</strong>
-	                                </span>
-	                            @endif
-	                        </div>
-	                    </div>
-
-		                <div class="form-group row">
-		                    <label for="phone_number" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
-
-		                    <div class="col-md-8">
-		                        <input id="phone_number_update" type="text" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" name="phone_number_update" value="{{ old('phone_number') }}" autofocus>
-
-		                        @if ($errors->has('phone_number'))
-		                            <span class="invalid-feedback">
-		                                <strong>{{ $errors->first('phone_number') }}</strong>
-		                            </span>
-		                        @endif
-		                    </div>
-		                </div>
-
+		                  
 		                <div class="form-group row">
 	                        <label for="pend_terakhir" class="col-md-4 col-form-label text-md-right">{{ __('Last Education') }}</label>
 
@@ -2437,7 +1989,10 @@ Human Resources
 	                        </div>
 	                    </div>
 
-		                <div class="form-group row">
+		            </div>
+
+		            <div class="tab" style="display:none;">
+		            	<div class="form-group row">
 		                    <label for="no_ktp" class="col-md-4 col-form-label text-md-right">{{ __('KTP') }}</label>
 
 		                    <div class="col-md-8">
@@ -2477,17 +2032,53 @@ Human Resources
 	                        </div>
 	                    </div>
 
+		            	<hr>
+	                    <span>Contact Emergency</span>
+	                    <hr>
+
+	                    <div class="form-group row">
+	                        <label for="name_ec_update" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
+
+	                        <div class="col-md-8">
+	                            <input id="name_ec_update" type="text" class="form-control" name="name_ec_update" value="{{ old('pend_terakhir') }}" autofocus>
+	                        </div>
+	                    </div>
+
+	                    <div class="form-group row">
+	                        <label for="hubungan_ec_update" class="col-md-4 col-form-label text-md-right">{{ __('Relationship') }}</label>
+
+	                        <div class="col-md-8">
+	                            <input id="hubungan_ec_update" type="text" class="form-control" name="hubungan_ec_update" value="{{ old('pend_terakhir') }}" autofocus>
+	                        </div>
+	                    </div>
+
+	                    <div class="form-group row">
+		                    <label for="phone_ec_update" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
+
+		                    <div class="col-md-8">
+		                        <input id="phone_ec_update" type="text" class="form-control{{ $errors->has('phone_ec_update') ? ' is-invalid' : '' }}" name="phone_ec_update" value="{{ old('phone_ec_update') }}" autofocus>
+
+		                        @if ($errors->has('phone_number'))
+		                            <span class="invalid-feedback">
+		                                <strong>{{ $errors->first('phone_number') }}</strong>
+		                            </span>
+		                        @endif
+		                    </div>
+		                </div>
+		            </div>             
+                 
 
 		            <div class="modal-footer">
-		              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		            	<button type="button" class="btn btn-secondary" id="prevBtn" onclick="nextPrev()">Back</button>
+						<button type="button" class="btn btn-primary" id="nextBtn" onclick="nextPrev()">Next</button>
+		             <!--  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 		              <button type="submit" class="btn btn-primary btn-submit-update">
 		                  {{ __('Update') }}
-		              </button>
+		              </button> -->
 		            </div>
-		          </form>
+		          <!-- </form> -->
 		        </div>
-		      </div>
-		      
+		      </div>		      
 		    </div>
 		</div>
 
@@ -2519,85 +2110,83 @@ Human Resources
 	          <h4 class="modal-title">Attach File</h4>
 	        </div>
 	        <div class="modal-body">
+	          	<form method="POST" action="{{url('/update_profile_npwp') }}" enctype="multipart/form-data">
+	                @csrf
+                    <div class="form-group row">
+                        <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
 
-	          <form method="POST" action="{{url('hu_rec/update') }}" enctype="multipart/form-data">
-	                        @csrf
+                        <div class="col-md-8">
+                            <input id="nik_update_attach" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_profile" value="{{ old('nik') }}" readonly autofocus>
 
-	                        <div class="form-group row">
-	                            <label for="nik" class="col-md-4 col-form-label text-md-right">{{ __('NIK') }}</label>
+                            @if ($errors->has('nik'))
+                                <span class="invalid-feedback">
+                                    <strong>{{ $errors->first('nik') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
 
-	                            <div class="col-md-8">
-	                                <input id="nik_update_attach" type="text" class="form-control{{ $errors->has('nik') ? ' is-invalid' : '' }}" name="nik_update" value="{{ old('nik') }}" readonly autofocus>
+                    <div class="form-group row">
+                        <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
+                        <div class="col-md-8">
+                            <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
+                        </div>
+                    </div>
 
-	                                @if ($errors->has('nik'))
-	                                    <span class="invalid-feedback">
-	                                        <strong>{{ $errors->first('nik') }}</strong>
-	                                    </span>
-	                                @endif
-	                            </div>
-	                        </div>
+                    <center>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;">
+                        </div>
+                    </div>
+                    </center>
 
-	                        <div class="form-group row">
-	                            <label for="npwp_file" class="col-md-4 col-form-label text-md-right">{{ __('NPWP File') }}</label>
-	                            <div class="col-md-8">
-	                                <input id="inputgambarnpwp_update" type="file" class="form-control" name="npwp_file" value="{{ old('npwp_file') }}" class="validate" autofocus>
-	                            </div>
-	                        </div>
+                    <div class="form-group row">
+                    	<label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('KTP')}}</label>
+                    	<div class="col-md-8">
+                    		<input id="inputgambarktp_update" type="file" class="form-control" name="ktp_file" value="{{old('ktp_file')}}" class="validate" autofocus>
+                    	</div>
+                    </div>
 
-	                        <center>
-	                        <div class="form-group row">
-	                            <div class="col-md-12">
-	                                <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarnpwp_update" style="max-width:400px;max-height:400px;">
-	                            </div>
-	                        </div>
-	                        </center>
+                    <center>
+                    	<div class="form-group row">
+                    		<div class="col-md-12">
+                    			<img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarktp_update" style="max-width: 400px; max-height: 400px;">
+                    		</div>
+                    	</div>
+                    </center>
 
-	                        <div class="form-group row">
-	                        	<label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('KTP')}}</label>
-	                        	<div class="col-md-8">
-	                        		<input id="inputgambarktp_update" type="file" class="form-control" name="ktp_file" value="{{old('ktp_file')}}" class="validate" autofocus>
-	                        	</div>
-	                        </div>
+                    <div class="form-group row">
+                    	<label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Kesehatan')}}</label>
+                    	<div class="col-md-8">
+                    		<input id="inputgambarbpjs_kes_update" type="file" class="form-control" name="bpjs_kes" value="{{old('bpjs_kes')}}" class="validate" autofocus>
+                    	</div>
+                    </div>
 
-	                        <center>
-	                        	<div class="form-group row">
-	                        		<div class="col-md-12">
-	                        			<img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarktp_update" style="max-width: 400px; max-height: 400px;">
-	                        		</div>
-	                        	</div>
-	                        </center>
-
-	                        <div class="form-group row">
-	                        	<label for="ktp_file" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Kesehatan')}}</label>
-	                        	<div class="col-md-8">
-	                        		<input id="inputgambarbpjs_kes_update" type="file" class="form-control" name="bpjs_kes" value="{{old('bpjs_kes')}}" class="validate" autofocus>
-	                        	</div>
-	                        </div>
-
-	                        <center>
-	                        	<div class="form-group row">
-	                        		<div class="col-md-12">
-	                        			<img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_kes_update" style="max-width: 400px; max-height: 400px;">
-	                        		</div>
-	                        	</div>
-	                        </center>
+                    <center>
+                    	<div class="form-group row">
+                    		<div class="col-md-12">
+                    			<img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_kes_update" style="max-width: 400px; max-height: 400px;">
+                    		</div>
+                    	</div>
+                    </center>
 
 
-	                        <div class="form-group row">
-	                            <label for="bpjs_ket" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Ketenagakerjaan') }}</label>
+                    <div class="form-group row">
+                        <label for="bpjs_ket" class="col-md-4 col-form-label text-md-right">{{ __('BPJS Ketenagakerjaan') }}</label>
 
-	                            <div class="col-md-8">
-	                                <input id="inputgambarbpjs_ket_update" type="file" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" class="validate" autofocus>
-	                            </div>
-	                        </div>
+                        <div class="col-md-8">
+                            <input id="inputgambarbpjs_ket_update" type="file" class="form-control" name="bpjs_ket" value="{{ old('bpjs_ket') }}" class="validate" autofocus>
+                        </div>
+                    </div>
 
-	                        <center>
-	                        <div class="form-group row">
-	                            <div class="col-md-12">
-	                                <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_ket_update" style="max-width:400px;max-height:400px;">
-	                            </div>
-	                        </div>
-	                        </center>
+                    <center>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <img src="{{url('image/img_nf.png')}}" class="zoom center" id="showgambarbpjs_ket_update" style="max-width:400px;max-height:400px;">
+                        </div>
+                    </div>
+                    </center>
 
 	                <div class="modal-footer">
 	                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -2605,7 +2194,7 @@ Human Resources
 	                      {{ __('Update') }}
 	                  </button>
 	                </div>
-	          </form>
+	          	</form>
 	        </div>
 	      </div>
 	      
@@ -2614,11 +2203,11 @@ Human Resources
 	</section>
 @endsection
 @section('scriptImport')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 @section('script')
 <script type="">
@@ -2653,6 +2242,7 @@ Human Resources
 	$(":input").inputmask();
 	$("#phone_number").inputmask({"mask": "(+62) 999-9999-9999"});
 	$("#phone_number_update").inputmask({"mask": "(+62) 999-9999-9999"});
+	$("#phone_ec_update").inputmask({"mask": "(+62) 999-9999-9999"});
 
 	$("#roles_user").select2();
 
@@ -2673,6 +2263,30 @@ Human Resources
     $(".modal_edit_status").click(function(){
    		$("#modal_edit_status").modal("show");
    	})
+
+   	function showTabAdd(n){
+   		if (n == 0) {
+		document.getElementById("prevBtnAdd").style.display = "none";
+		} else {
+			document.getElementById("prevBtnAdd").style.display = "inline";
+		}
+		var x = document.getElementsByClassName("tab-add");
+		x[n].style.display = "inline";
+		if (n == (x.length - 1)) {
+			console.log(n)
+			document.getElementById("nextBtnAdd").innerHTML = "Register";
+			$("#nextBtnAdd").attr('onclick','submitRegEmp()');				
+		} else {
+			console.log(n)
+			$("#nextBtnAdd").attr('onclick','nextPrevAdd(1)');
+			$("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')
+			document.getElementById("nextBtnAdd").innerHTML = "Next";
+			$("#nextBtnAdd").prop("disabled",false)
+		}
+   		$("#modalAdd").modal("show")
+   	}
+
+
 
 
     $('.btn-attach').click(function(){
@@ -2729,12 +2343,121 @@ Human Resources
         $("#modal_update_file").modal("show");
     });
 
-    $('.btn-editan').click(function(){
-        $.ajax({
+    // $('.btn-editan').click(function(){
+    //     $.ajax({
+    //       type:"GET",
+    //       url:"{{url('/hu_rec/get_hu')}}",
+    //       data:{
+    //         id_hu:this.value,
+    //       },
+    //       "processing": true,
+	   //    "language": {
+    //         'loadingRecords': '&nbsp;',
+    //         'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+    //       },
+    //       success: function(result){
+    //         $.each(result[0], function(key, value){
+    //            $("#nik_update").val(value.nik);
+    //            $("#name_update").val(value.name);
+    //            $("#email_update").val(value.email);
+    //            $("#date_of_entry_update").val(value.date_of_entry);
+    //            $("#date_of_birth_update").val(value.date_of_birth);
+    //            $("#akhir_kontrak_update").val(value.akhir_kontrak);
+    //            $("#address_update").val(value.address);
+    //            $("#phone_number_update").val(value.phone);
+    //            $("#no_ktp_update").val(value.no_ktp);
+    //            $("#no_kk_update").val(value.no_kk);
+    //            $("#no_npwp_update").val(value.no_npwp);
+    //            $("#tempat_lahir_update").val(value.tempat_lahir);
+    //            $("#email_personal_update").val(value.email_pribadi);
+    //            $("#bpjs_ket_update").val(value.bpjs_ket);
+    //            $("#bpjs_kes_update").val(value.bpjs_kes);
+    //            $("#address_ktp_update").val(value.alamat_ktp);
+    //            $("#pend_terakhir_update").val(value.pend_terakhir);
+    //            $("#name_ec_update").val(value.name_ec)
+    //            $("#phone_ec_update").val(value.phone_ec)
+    //            $("#hubungan_ec_update").val(value.hubungan_ec)
+    //            if (value.status_kerja == 'Tetap') {
+    //            	$("#status_karyawan_update").val("Karyawan Tetap");
+    //            }else if (value.status_kerja == 'Kontrak') {
+    //            	$("#status_karyawan_update").val("Karyawan Kontrak");
+    //            }else{
+    //            	$("#status_karyawan_update").val("");
+    //            }
+    //            if (value.npwp_file == null) {
+    //            	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
+    //            } else {
+    //            	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+    //            }
+    //            if (value.ktp_file == null) {
+    //            	$("#showgambarktp_update").attr("src","img/img_nf.png");
+    //            } else {
+    //            	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+    //            }
+    //            if (value.bpjs_kes == null) {
+    //            	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
+    //            } else {
+    //            	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+    //            }
+    //            if (value.bpjs_ket == null) {
+    //            	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
+    //            } else {
+    //            	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+    //            }
+               
+
+    //            $("#password_update").val(value.password);
+    //            $("#divisi_view_update").val(value.id_division);
+    //            $("#subdivisi_view_update").val(value.id_territory);
+    //            if (value.id_company == '1') {
+    //            	$("#company_view_update").val("SIP")
+    //            }else{
+    //            	$("#company_view_update").val("MSP")
+    //            }
+    //            $("#posisi_view_update").val(value.id_position);
+               
+    //         });
+
+    //       }
+    //     }); 
+    //     $("#modal_update").modal("show");
+    // });
+    var currentTab = 0
+
+    $(".close").click(function(){
+    	$("#modal_update").modal('hide')
+    	if (localStorage.length > 0 ) {
+		    localStorage.clear();
+		}
+    	location.reload()
+    	console.log("oke")
+    })
+
+    function showEditTab(value,n){ 
+    	console.log(value)	
+    	if (n == 0) {
+		document.getElementById("prevBtn").style.display = "none";
+		} else {
+			document.getElementById("prevBtn").style.display = "inline";
+		}
+		var x = document.getElementsByClassName("tab");
+		x[n].style.display = "inline";
+		if (n == (x.length - 1)) {
+			console.log(n)
+			document.getElementById("nextBtn").innerHTML = "Update";
+			$("#nextBtn").attr('onclick','submitBtnEmp()');				
+		} else {
+			console.log(n)
+			$("#nextBtn").attr('onclick','nextPrev('+value+',1)');
+			$("#prevBtn").attr('onclick','nextPrev('+value+',-1)')
+			document.getElementById("nextBtn").innerHTML = "Next";
+			$("#nextBtn").prop("disabled",false)
+		}
+		$.ajax({
           type:"GET",
           url:"{{url('/hu_rec/get_hu')}}",
           data:{
-            id_hu:this.value,
+            id_hu:value,
           },
           "processing": true,
 	      "language": {
@@ -2742,163 +2465,478 @@ Human Resources
             'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
           },
           success: function(result){
-            $.each(result[0], function(key, value){
-               $("#nik_update").val(value.nik);
-               $("#name_update").val(value.name);
-               $("#email_update").val(value.email);
-               $("#date_of_entry_update").val(value.date_of_entry);
-               $("#date_of_birth_update").val(value.date_of_birth);
-               $("#akhir_kontrak_update").val(value.akhir_kontrak);
-               $("#address_update").val(value.address);
-               $("#phone_number_update").val(value.phone);
-               $("#no_ktp_update").val(value.no_ktp);
-               $("#no_kk_update").val(value.no_kk);
-               $("#no_npwp_update").val(value.no_npwp);
-               $("#tempat_lahir_update").val(value.tempat_lahir);
-               $("#email_personal_update").val(value.email_pribadi);
-               $("#bpjs_ket_update").val(value.bpjs_ket);
-               $("#bpjs_kes_update").val(value.bpjs_kes);
-               $("#address_ktp_update").val(value.alamat_ktp);
-               $("#pend_terakhir_update").val(value.pend_terakhir);
-               if (value.status_kerja == 'Tetap') {
-               	$("#status_karyawan_update").val("Karyawan Tetap");
-               }else if (value.status_kerja == 'Kontrak') {
-               	$("#status_karyawan_update").val("Karyawan Kontrak");
-               }else{
-               	$("#status_karyawan_update").val("");
-               }
-               if (value.npwp_file == null) {
-               	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
-               }
-               if (value.ktp_file == null) {
-               	$("#showgambarktp_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
-               }
-               if (value.bpjs_kes == null) {
-               	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
-               }
-               if (value.bpjs_ket == null) {
-               	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
-               }
-               
+          	  window.localStorage.clear()
+          	   $.each(result[0], function(key, value){
+               if (value.status_delete == "D") {
+               	 console.log("delete")
+               	 	if (n == 2) {
+						document.getElementById("nextBtn").style.display = "none";
+               	 	}else{
+						document.getElementById("nextBtn").style.display = "inline";
+               	 	}
+               	   $("#nik_update").val(value.nik).prop("readonly", true);
+	               $("#name_update").val(value.name).prop("readonly", true);
+	               $("#email_update").val(value.email).prop("readonly", true);
+	               $("#date_of_entry_update").val(value.date_of_entry).prop("readonly", true);
+	               $("#date_of_birth_update").val(value.date_of_birth).prop("readonly", true);
+	               $("#akhir_kontrak_update").val(value.akhir_kontrak).prop("readonly", true);
+	               $("#address_update").val(value.address).prop("readonly", true);
+	               $("#phone_number_update").val(value.phone).prop("readonly", true);
+	               $("#no_ktp_update").val(value.no_ktp).prop("readonly", true);
+	               $("#no_kk_update").val(value.no_kk).prop("readonly", true);
+	               $("#no_npwp_update").val(value.no_npwp).prop("readonly", true);
+	               $("#tempat_lahir_update").val(value.tempat_lahir).prop("readonly", true);
+	               $("#email_personal_update").val(value.email_pribadi).prop("readonly", true);
+	               $("#bpjs_ket_update").val(value.bpjs_ket).prop("readonly", true);
+	               $("#bpjs_kes_update").val(value.bpjs_kes).prop("readonly", true);
+	               $("#address_ktp_update").val(value.alamat_ktp).prop("readonly", true);
+	               $("#pend_terakhir_update").val(value.pend_terakhir).prop("readonly", true);
+	               $("#name_ec_update").val(value.name_ec)
+	               $("#phone_ec_update").val(value.phone_ec)
+	               $("#hubungan_ec_update").val(value.hubungan_ec)
+	               if (value.status_kerja == 'Tetap') {
+	               	$("#status_karyawan_update").val("Karyawan Tetap").prop("readonly", true);
+	               }else if (value.status_kerja == 'Kontrak') {
+	               	$("#status_karyawan_update").val("Karyawan Kontrak").prop("readonly", true);
+	               }else{
+	               	$("#status_karyawan_update").val("").prop("readonly", true);
+	               }
+	               if (value.npwp_file == null) {
+	               	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
+	               } else {
+	               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+	               }
+	               if (value.ktp_file == null) {
+	               	$("#showgambarktp_update").attr("src","img/img_nf.png");
+	               } else {
+	               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+	               }
+	               if (value.bpjs_kes == null) {
+	               	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
+	               } else {
+	               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+	               }
+	               if (value.bpjs_ket == null) {
+	               	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
+	               } else {
+	               	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+	               }
+	               
 
-               $("#password_update").val(value.password);
-               $("#divisi_view_update").val(value.id_division);
-               $("#subdivisi_view_update").val(value.id_territory);
-               if (value.id_company == '1') {
-               	$("#company_view_update").val("SIP")
-               }else{
-               	$("#company_view_update").val("MSP")
+	               $("#password_update").val(value.password).prop("readonly", true);
+	               $("#divisi_view_update").val(value.id_division).prop("readonly", true);
+	               $("#subdivisi_view_update").val(value.id_territory).prop("readonly", true);
+	               if (value.id_company == '1') {
+	               	$("#company_view_update").val("SIP").prop("readonly", true);
+	               }else{
+	               	$("#company_view_update").val("MSP").prop("readonly", true);
+	               }
+	               $("#posisi_view_update").val(value.id_position).prop("readonly", true);
+	               
+               }else{               		
+				   $("#nik_update").val(value.nik);
+				   localStorage.setItem("name_update", $("#name_update").val())
+				   if (!localStorage.getItem("name_update")) {
+	               	$("#name_update").val(value.name);
+				   }
+				   localStorage.setItem("email_update", $("#email_update").val())
+				   if (!localStorage.getItem("email_update")) {
+	               	$("#email_update").val(value.email);
+				   }
+				   localStorage.setItem("date_of_entry_update", $("#date_of_entry_update").val())
+				   if (!localStorage.getItem("date_of_entry_update")) {
+	               	$("#date_of_entry_update").val(value.date_of_entry).prop("readonly",true);
+				   }
+				   localStorage.setItem("date_of_birth_update", $("#date_of_birth_update").val())
+				   if (!localStorage.getItem("date_of_entry_update")) {
+	               	$("#date_of_birth_update").val(value.date_of_birth).prop("readonly",true);
+				   }
+				   localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
+				   if (!localStorage.getItem("akhir_kontrak_update")) {
+	               	$("#akhir_kontrak_update").val(value.akhir_kontrak);
+				   }
+				   localStorage.setItem("address_update", $("#address_update").val())
+				   if (!localStorage.getItem("address_update")) {
+	               	$("#address_update").val(value.address);
+				   }
+				   localStorage.setItem("phone_number_update", $("#phone_number_update").val())
+				   if (!localStorage.getItem("phone_number_update")) {
+	               	$("#phone_number_update").val(value.phone);
+				   }
+				   localStorage.setItem("no_ktp_update", $("#no_ktp_update").val())
+				   if (!localStorage.getItem("no_ktp_update")) {
+	               	$("#no_ktp_update").val(value.no_ktp);
+				   }
+				   localStorage.setItem("no_kk_update", $("#no_kk_update").val())
+				   if (!localStorage.getItem("no_kk_update")) {
+	               	$("#no_kk_update").val(value.no_kk);
+				   }
+				   localStorage.setItem("no_npwp_update", $("#no_npwp_update").val())
+				   if (!localStorage.getItem("no_npwp_update")) {
+	               	$("#no_npwp_update").val(value.no_npwp);
+				   }
+				   localStorage.setItem("tempat_lahir_update", $("#tempat_lahir_update").val())
+				   if (!localStorage.getItem("tempat_lahir_update")) {
+	               	$("#tempat_lahir_update").val(value.tempat_lahir);
+				   }
+				   localStorage.setItem("email_personal_update", $("#email_personal_update").val())
+				   if (!localStorage.getItem("email_personal_update")) {
+	               	$("#email_personal_update").val(value.email_pribadi);
+				   }
+				   localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
+				   if (!localStorage.getItem("bpjs_ket_update")) {
+	               	$("#bpjs_ket_update").val(value.bpjs_ket);
+				   }
+				   localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
+				   if (!localStorage.getItem("bpjs_kes_update")) {
+	               	$("#bpjs_kes_update").val(value.bpjs_kes);
+				   }
+				   localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
+				   if (!localStorage.getItem("address_ktp_update")) {
+	               	$("#address_ktp_update").val(value.alamat_ktp);
+				   }
+				   localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
+				   if (!localStorage.getItem("pend_terakhir_update")) {
+	               	$("#pend_terakhir_update").val(value.pend_terakhir);
+				   }
+				   localStorage.setItem("name_ec_update", $("#name_ec_update").val())
+				   if (!localStorage.getItem("name_ec_update")) {
+	               	$("#name_ec_update").val(value.name_ec);
+				   }
+				   localStorage.setItem("phone_ec_update", $("#phone_ec_update").val())
+				   if (!localStorage.getItem("phone_ec_update")) {
+	               	$("#phone_ec_update").val(value.phone_ec);
+				   }
+				   localStorage.setItem("hubungan_ec_update", $("#hubungan_ec_update").val())
+				   if (!localStorage.getItem("hubungan_ec_update")) {
+	               	$("#hubungan_ec_update").val(value.hubungan_ec);
+				   }
+	               if (value.status_kerja == 'Tetap') {
+	               	$("#status_karyawan_update").val("Karyawan Tetap");
+	               }else if (value.status_kerja == 'Kontrak') {
+	               	$("#status_karyawan_update").val("Karyawan Kontrak");
+	               }else{
+	               	$("#status_karyawan_update").val("");
+	               }
+
+	               if (value.npwp_file == null) {
+	               	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
+	               } else {
+	               	localStorage.setItem("showgambarnpwp_update", $("#showgambarnpwp_update").val())
+					   if (!localStorage.getItem("showgambarnpwp_update")) {
+		               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+					   }
+	               	
+	               }
+	               if (value.ktp_file == null) {
+	               	$("#showgambarktp_update").attr("src","img/img_nf.png");
+	               } else {
+	               	localStorage.setItem("showgambarktp_update", $("#showgambarktp_update").val())
+					   if (!localStorage.getItem("showgambarktp_update")) {
+		               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+					   }
+	               }
+	               if (value.bpjs_kes == null) {
+	               	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
+	               } else {
+	               	localStorage.setItem("showgambarbpjs_kes_update", $("#showgambarbpjs_kes_update").val())
+					   if (!localStorage.getItem("showgambarbpjs_kes_update")) {
+		               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+					   }
+	               	
+	               }
+	               if (value.bpjs_ket == null) {
+	               	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
+	               } else {
+	               	localStorage.setItem("showgambarbpjs_ket_update", $("#showgambarbpjs_ket_update").val())
+					   if (!localStorage.getItem("showgambarbpjs_ket_update")) {
+	               		$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+		               }
+	               }
+	               
+	               localStorage.setItem("password_update", $("#password_update").val())
+					   if (!localStorage.getItem("password_update")) {
+	               		$("#password_update").val(value.password);
+		               }
+
+	                localStorage.setItem("divisi_view_update", $("#divisi_view_update").val())
+					   if (!localStorage.getItem("divisi_view_update")) {
+	               		$("#divisi_view_update").val(value.id_division);
+		               }
+
+		            localStorage.setItem("subdivisi_view_update", $("#subdivisi_view_update").val())
+					   if (!localStorage.getItem("subdivisi_view_update")) {
+	               		$("#subdivisi_view_update").val(value.id_territory);
+		               }
+	               if (value.id_company == '1') {
+	               	$("#company_view_update").val("SIP")
+	               }else{
+	               	$("#company_view_update").val("MSP")
+	               }
+	               localStorage.setItem("posisi_view_update", $("#posisi_view_update").val())
+					   if (!localStorage.getItem("posisi_view_update")) {
+	               		$("#posisi_view_update").val(value.id_position);
+		               }               
+               
                }
-               $("#posisi_view_update").val(value.id_position);
                
             });
-
           }
-        }); 
-        $("#modal_update").modal("show");
-    });
+        });
+        $("#modal_update").modal({
+	        backdrop: 'static',
+	        keyboard: false,
+	        show: true // added property here
+    	});
+    }
 
-    $('.btn-editan2').click(function(){
-        $.ajax({
-          type:"GET",
-          url:"{{url('/hu_rec/get_hu')}}",
-          data:{
-            id_hu:this.value,
-          },
-          "processing": true,
-	      "language": {
-            'loadingRecords': '&nbsp;',
-            'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
-          },
-          success: function(result){
-            $.each(result[0], function(key, value){
-               $("#nik_update").val(value.nik).prop("readonly", true);
-               $("#name_update").val(value.name).prop("readonly", true);
-               $("#email_update").val(value.email).prop("readonly", true);
-               $("#date_of_entry_update").val(value.date_of_entry).prop("readonly", true);
-               $("#date_of_birth_update").val(value.date_of_birth).prop("readonly", true);
-               $("#akhir_kontrak_update").val(value.akhir_kontrak).prop("readonly", true);
-               $("#address_update").val(value.address).prop("readonly", true);
-               $("#phone_number_update").val(value.phone).prop("readonly", true);
-               $("#no_ktp_update").val(value.no_ktp).prop("readonly", true);
-               $("#no_kk_update").val(value.no_kk).prop("readonly", true);
-               $("#no_npwp_update").val(value.no_npwp).prop("readonly", true);
-               $("#tempat_lahir_update").val(value.tempat_lahir).prop("readonly", true);
-               $("#email_personal_update").val(value.email_pribadi).prop("readonly", true);
-               $("#bpjs_ket_update").val(value.bpjs_ket).prop("readonly", true);
-               $("#bpjs_kes_update").val(value.bpjs_kes).prop("readonly", true);
-               $("#address_ktp_update").val(value.alamat_ktp).prop("readonly", true);
-               $("#pend_terakhir_update").val(value.pend_terakhir).prop("readonly", true);
-               if (value.status_kerja == 'Tetap') {
-               	$("#status_karyawan_update").val("Karyawan Tetap").prop("readonly", true);
-               }else if (value.status_kerja == 'Kontrak') {
-               	$("#status_karyawan_update").val("Karyawan Kontrak").prop("readonly", true);
-               }else{
-               	$("#status_karyawan_update").val("").prop("readonly", true);
-               }
-               if (value.npwp_file == null) {
-               	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
-               }
-               if (value.ktp_file == null) {
-               	$("#showgambarktp_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
-               }
-               if (value.bpjs_kes == null) {
-               	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
-               }
-               if (value.bpjs_ket == null) {
-               	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
-               } else {
-               	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
-               }
+    function nextPrev(value,n) {
+		var x = document.getElementsByClassName("tab");
+
+    	x[currentTab].style.display = "none";
+		currentTab = currentTab + n;
+		if (currentTab >= x.length) {
+			// $("#exampleModalCenter").modal('hide');
+			x[n].style.display = "none";
+			currentTab = 0;
+		} 
+		showEditTab(value,currentTab);
+    }
+
+    function nextPrevAdd(n) {
+		var x = document.getElementsByClassName("tab-add");
+
+    	x[currentTab].style.display = "none";
+		currentTab = currentTab + n;
+		if (currentTab >= x.length) {
+			// $("#exampleModalCenter").modal('hide');
+			x[n].style.display = "none";
+			currentTab = 0;
+		} 
+		showTabAdd(currentTab);
+    }
+
+    function submitBtnEmp()
+    {
+    	Swal.fire({
+	      title: 'Update Employee Data',
+	      text: "Are you sure?",
+	      icon: 'warning',
+	      showCancelButton: true,
+	      confirmButtonColor: '#3085d6',
+	      cancelButtonColor: '#d33',
+	      confirmButtonText: 'Yes',
+	      cancelButtonText: 'No',
+	    }).then((result) => {
+	      if (result.value) {
+	        Swal.fire({
+	          title: 'Please Wait..!',
+	          text: "It's updating..",
+	          allowOutsideClick: false,
+	          allowEscapeKey: false,
+	          allowEnterKey: false,
+	          customClass: {
+	            popup: 'border-radius-0',
+	          },
+	          onOpen: () => {
+	            Swal.showLoading()
+	          }
+	        })
+	        $.ajax({
+	            url: "{{'/hu_rec/update'}}",
+	            type: 'post',
+	            // dataType: 'application/json',
+	            data: {
+	        		"_token": "{{ csrf_token() }}",
+	        		nik_update:$("#nik_update").val(),
+	        		name_update:localStorage.getItem("name_update"),
+	        		date_of_entry_update:localStorage.getItem("date_of_entry_update"),
+	        		date_of_birth_update:localStorage.getItem("date_of_birth_update"),
+	        		email_update:localStorage.getItem("email_update"),
+	        		pend_terakhir_update:localStorage.getItem("pend_terakhir_update"),
+	        		tempat_lahir_update:localStorage.getItem("tempat_lahir_update"),
+	        		email_personal_update:localStorage.getItem("email_personal_update"),
+	        		bpjs_ket_update:localStorage.getItem("bpjs_ket_update"),
+	        		bpjs_kes_update:localStorage.getItem("bpjs_kes_update"),
+	        		address_ktp_update:localStorage.getItem("address_ktp_update"),
+	        		company_update:localStorage.getItem("company_update"),
+	        		divisi_update:localStorage.getItem("divisi_update"),
+	        		sub_divisi_update:localStorage.getItem("sub_divisi_update"),
+	        		posisi_update:localStorage.getItem("posisi_update"),
+	        		address_update:localStorage.getItem("address_update"),
+	        		phone_number_update:localStorage.getItem("phone_number_update"),
+	        		no_ktp_update:$("#no_ktp_update").val(),
+					no_kk_update:$("#no_kk_update").val(),
+					name_ec_update:$("#name_ec_update").val(),
+					phone_ec_update:$("#phone_ec_update").val(),
+					hubungan_ec_update:$("#hubungan_ec_update").val(),
+					status_kerja_update:$("#status_kerja_update").val(),
+					akhir_kontrak_update:$("#akhir_kontrak_update").val()
+	            },
+	            success: function(result) {
+	                Swal.showLoading()
+		            Swal.fire(
+		              'Successfully!',
+		              'success'
+		            ).then((result) => {
+		              if (result.value) {
+		                location.reload()
+		              }
+		            })
+	            }
+	        }); 
+	      }    
+    	})
+	}
+
+	function submitRegEmp()
+	{
+		Swal.fire({
+	      title: 'Add Employee Data',
+	      text: "Are you sure?",
+	      icon: 'warning',
+	      showCancelButton: true,
+	      confirmButtonColor: '#3085d6',
+	      cancelButtonColor: '#d33',
+	      confirmButtonText: 'Yes',
+	      cancelButtonText: 'No',
+	    }).then((result) => {
+	      if (result.value) {
+	        Swal.fire({
+	          title: 'Please Wait..!',
+	          text: "It's updating..",
+	          allowOutsideClick: false,
+	          allowEscapeKey: false,
+	          allowEnterKey: false,
+	          customClass: {
+	            popup: 'border-radius-0',
+	          },
+	          onOpen: () => {
+	            Swal.showLoading()
+	          }
+	        })
+	        $.ajax({
+	            url: "{{'/hu_rec/store'}}",
+	            type: 'post',
+	            // dataType: 'application/json',
+	            data: $("#formAdd").serialize(), // serializes the form's elements.
+		        success: function(data)
+		        {
+		          	Swal.showLoading()
+			            Swal.fire(
+			              'Successfully!',
+			              'success'
+			            ).then((result) => {
+			              if (result.value) {
+			                location.reload()
+			              }
+		            })
+		        }
+	        }); 
+	      }    
+    	})
+	}
+
+  //   $('.btn-editan2').click(function(n){    	
+		// var currentTab = 0
+
+		// console.log(n)
+  //       $.ajax({
+  //         type:"GET",
+  //         url:"{{url('/hu_rec/get_hu')}}",
+  //         data:{
+  //           id_hu:this.value,
+  //         },
+  //         "processing": true,
+	 //      "language": {
+  //           'loadingRecords': '&nbsp;',
+  //           'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+  //         },
+  //         success: function(result){
+  //         	console.log(result)
+  //           $.each(result[0], function(key, value){
+  //              $("#nik_update").val(value.nik).prop("readonly", true);
+  //              $("#name_update").val(value.name).prop("readonly", true);
+  //              $("#email_update").val(value.email).prop("readonly", true);
+  //              $("#date_of_entry_update").val(value.date_of_entry).prop("readonly", true);
+  //              $("#date_of_birth_update").val(value.date_of_birth).prop("readonly", true);
+  //              $("#akhir_kontrak_update").val(value.akhir_kontrak).prop("readonly", true);
+  //              $("#address_update").val(value.address).prop("readonly", true);
+  //              $("#phone_number_update").val(value.phone).prop("readonly", true);
+  //              $("#no_ktp_update").val(value.no_ktp).prop("readonly", true);
+  //              $("#no_kk_update").val(value.no_kk).prop("readonly", true);
+  //              $("#no_npwp_update").val(value.no_npwp).prop("readonly", true);
+  //              $("#tempat_lahir_update").val(value.tempat_lahir).prop("readonly", true);
+  //              $("#email_personal_update").val(value.email_pribadi).prop("readonly", true);
+  //              $("#bpjs_ket_update").val(value.bpjs_ket).prop("readonly", true);
+  //              $("#bpjs_kes_update").val(value.bpjs_kes).prop("readonly", true);
+  //              $("#address_ktp_update").val(value.alamat_ktp).prop("readonly", true);
+  //              $("#pend_terakhir_update").val(value.pend_terakhir).prop("readonly", true);
+  //              $("#name_ec_update").val(value.name_ec)
+  //              $("#phone_ec_update").val(value.phone_ec)
+  //              $("#hubungan_ec_update").val(value.hubungan_ec)
+  //              if (value.status_kerja == 'Tetap') {
+  //              	$("#status_karyawan_update").val("Karyawan Tetap").prop("readonly", true);
+  //              }else if (value.status_kerja == 'Kontrak') {
+  //              	$("#status_karyawan_update").val("Karyawan Kontrak").prop("readonly", true);
+  //              }else{
+  //              	$("#status_karyawan_update").val("").prop("readonly", true);
+  //              }
+  //              if (value.npwp_file == null) {
+  //              	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
+  //              } else {
+  //              	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+  //              }
+  //              if (value.ktp_file == null) {
+  //              	$("#showgambarktp_update").attr("src","img/img_nf.png");
+  //              } else {
+  //              	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+  //              }
+  //              if (value.bpjs_kes == null) {
+  //              	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
+  //              } else {
+  //              	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+  //              }
+  //              if (value.bpjs_ket == null) {
+  //              	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
+  //              } else {
+  //              	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+  //              }
                
 
-               $("#password_update").val(value.password).prop("readonly", true);
-               $("#divisi_view_update").val(value.id_division).prop("readonly", true);
-               $("#subdivisi_view_update").val(value.id_territory).prop("readonly", true);
-               if (value.id_company == '1') {
-               	$("#company_view_update").val("SIP").prop("readonly", true);
-               }else{
-               	$("#company_view_update").val("MSP").prop("readonly", true);
-               }
-               $("#posisi_view_update").val(value.id_position).prop("readonly", true);
+  //              $("#password_update").val(value.password).prop("readonly", true);
+  //              $("#divisi_view_update").val(value.id_division).prop("readonly", true);
+  //              $("#subdivisi_view_update").val(value.id_territory).prop("readonly", true);
+  //              if (value.id_company == '1') {
+  //              	$("#company_view_update").val("SIP").prop("readonly", true);
+  //              }else{
+  //              	$("#company_view_update").val("MSP").prop("readonly", true);
+  //              }
+  //              $("#posisi_view_update").val(value.id_position).prop("readonly", true);
 
                
-            });
+  //           });
 
-          }
-        }); 
-        $(".btn-submit-update").hide();
-        $("#status_kerja_update").hide();
-        $("#company_update").hide();
-        $("#divisi_update").hide();
-        $("#sub_divisi_update").hide();
-        $("#posisi_update").hide();
-        $('#div_company_view_update').removeClass('col-md-4');
-        $('#div_company_view_update').addClass('col-md-8');
-        $('#div_status_karyawan_update').removeClass('col-md-4');
-        $('#div_status_karyawan_update').addClass('col-md-8');
-        $('#div_divisi_view_update').removeClass('col-md-4');
-        $('#div_divisi_view_update').addClass('col-md-8');
-        $('#div_subdivisi_view_update').removeClass('col-md-4');
-        $('#div_subdivisi_view_update').addClass('col-md-8');
-        $('#div_posisi_view_update').removeClass('col-md-4');
-        $('#div_posisi_view_update').addClass('col-md-8');
-        $("#modal_update").modal("show");
-    });
+  //         }
+  //       }); 
+  //       $(".btn-submit-update").hide();
+  //       $("#status_kerja_update").hide();
+  //       $("#company_update").hide();
+  //       $("#divisi_update").hide();
+  //       $("#sub_divisi_update").hide();
+  //       $("#posisi_update").hide();
+  //       $('#div_company_view_update').removeClass('col-md-4');
+  //       $('#div_company_view_update').addClass('col-md-8');
+  //       $('#div_status_karyawan_update').removeClass('col-md-4');
+  //       $('#div_status_karyawan_update').addClass('col-md-8');
+  //       $('#div_divisi_view_update').removeClass('col-md-4');
+  //       $('#div_divisi_view_update').addClass('col-md-8');
+  //       $('#div_subdivisi_view_update').removeClass('col-md-4');
+  //       $('#div_subdivisi_view_update').addClass('col-md-8');
+  //       $('#div_posisi_view_update').removeClass('col-md-4');
+  //       $('#div_posisi_view_update').addClass('col-md-8');
+  //       $("#modal_update").modal("show");
+  //   });
 
 	$('.btnReset').click(function(){
 		var swalAccept = Swal.fire({
