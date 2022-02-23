@@ -367,7 +367,7 @@ Route::group(['middleware' => ['auth']], function () {
 	// Route::get('/hu_rec/store', function(){
 	// 	return 'b';
 	// });
-	Route::post('/hu_rec/update', 'HRController@update_humanresource')->middleware('HRMiddleware');
+	Route::post('/hu_rec/update', 'HRController@update_humanresource');
 	Route::get('delete_hr/{nik}', 'HRController@destroy_hr')->middleware('HRMiddleware');
 	Route::get('/profile_user','HRController@user_profile');
 	Route::post('/update_profile','HRController@update_profile');
