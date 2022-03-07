@@ -898,6 +898,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/presence/setting/setLocation', 'PresenceController@presenceSettingSetLocation');
 	Route::post('/presence/setting/addLocation', 'PresenceController@presenceSettingAddLocation');
 	Route::get('/presence/setting/showLocationAll', 'PresenceController@presenceSettingShowAllLocation');
+	Route::get('/presence/getUser','PresenceController@getAllUser');
 
 
 	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
