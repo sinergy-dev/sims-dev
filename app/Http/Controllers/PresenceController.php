@@ -336,8 +336,31 @@ class PresenceController extends Controller
         $notifsd = $notifAll["notifsd"];
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
+
+        $sidebar_collapse = true;
         
-        return view('presence.reporting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
+        return view('presence.reporting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim', 'sidebar_collapse'))->with(['initView'=>$this->initMenuBase()]);
+    }
+
+    public function getAllUser()
+    {
+        $getUserSip = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik`  AS `nik`,`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserMsp = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','2')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipMsm = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'MSM')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipSim = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_territory', 'DVG')->orwhere('id_division', 'WAREHOUSE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipFin = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'FINANCE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipHr = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'HR')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipPmo = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'PMO')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+
+        return array(
+            collect(["text"=>'SIP',"children"=>$getUserSip]),
+            collect(["text"=>'MSM',"children"=>$getUserSipMsm]),
+            collect(["text"=>'SIM',"children"=>$getUserSipSim]),
+            collect(["text"=>'FIN',"children"=>$getUserSipFin]),
+            collect(["text"=>'HR',"children"=>$getUserSipHr]),
+            collect(["text"=>'PMO',"children"=>$getUserSipPmo]),
+            collect(["text"=>'MSP',"children"=>$getUserMsp])
+        );
     }
 
     public function presenceSetting() {
@@ -823,7 +846,7 @@ class PresenceController extends Controller
         return PresenceLocationUser::with('location')->where('user_id',$req->nik)->get();
     }
 
-    public function getPresenceReportData($typeData = "notAll", $typeCompany = "all",$date){
+    public function getPresenceReportData($typeData = "notAll",$nik = "", $typeCompany = "all",$date){
         // $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
         // $endDate = Carbon::now()->format("Y-m-16");
         $startDate = $date["startDate"];
@@ -845,13 +868,12 @@ class PresenceController extends Controller
                 ->where('roles.group','=','MSM')
                 ->pluck('user_id');
 
-        if($typeCompany == "1"){
-            $parameterUser = $parameterUser->where('users.id_company','=','1')
-                ->whereNotIn('users.nik',$listUserMSM);
-        } else if($typeCompany == "2"){
-            $parameterUser = $parameterUser->whereIn('users.nik',$listUserMSM);
-        } else if($typeCompany == "3"){
-            $parameterUser = $parameterUser->where('users.id_company','=','2');
+        // return $typeCompany;
+
+        if($nik == ""){
+            $parameterUser = $parameterUser;
+        } else {
+            $parameterUser = $parameterUser->whereIn('users.nik',$nik);
         }
 
         // if($typeCompany != "all"){
@@ -999,8 +1021,10 @@ class PresenceController extends Controller
     }
 
     public function getDataReportPresence($typeCompany = "all"){
+        // return $typeCompany;
 
         $startDate = Carbon::now()->subMonths()->format("Y-m-16");
+        // return $startDate;
         // $startDate = Carbon::now()->subMonth(1);
         $endDate = Carbon::now()->format("Y-m-15");
         // $endDate = "2021-06-15";
@@ -1023,6 +1047,8 @@ class PresenceController extends Controller
                 ->get()
                 ->toArray();
         }
+
+        // return $parameterUser;
 
         // return $startDate;
 
@@ -1103,16 +1129,23 @@ class PresenceController extends Controller
 
         // $startDate = Carbon::now()->subMonths(1)->format("Y-m-16");
         // $endDate = Carbon::now()->format("Y-m-16");
-
-        $parameterUser = DB::table('users')
-            ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
-            ->select('users.nik', 'users.name')
-            ->where('presence_actual','>=',$req->start)
-            ->where('presence_actual','<=',$req->end)
-            ->get()
-            ->toArray();
-        
-
+        if (isset($req->nik)) {
+            $parameterUser = DB::table('users')
+                ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
+                ->select('users.nik', 'users.name')
+                ->where('presence_actual','>=',$req->start)
+                ->where('presence_actual','<=',$req->end)
+                ->whereIn('presence__history.nik',$req->nik)
+                ->get()->toArray();  
+        } else {
+            $parameterUser = DB::table('users')
+                ->join('presence__history', 'presence__history.nik', '=', 'users.nik')
+                ->select('users.nik', 'users.name')
+                ->where('presence_actual','>=',$req->start)
+                ->where('presence_actual','<=',$req->end)
+                ->get()->toArray();  
+        }
+                  
         $status;
 
         foreach($parameterUser as $user){
@@ -1231,23 +1264,44 @@ class PresenceController extends Controller
         $headerContent = ["No", "Nik", "Name", "Date","Location","Schedule","Check-In","Check-Out","Condition","Valid"];
         $summarySheet->getStyle('A2:J2')->applyFromArray($headerStyle);
         $summarySheet->fromArray($headerContent,NULL,'A2');
-        if(isset($req->type)){
-            if($req->type == "SIP"){
-                $typeCompany = "1";
-            } elseif ($req->type == "SIP-MSM") {
-                $typeCompany = "2";
-            } else {
-                $typeCompany = "3";
-            }
-        // return $this->getPresenceReportData("all",$typeCompany,$date);
+        // return $req->nik;
+
+        // if(isset($req->type)){
+        //     if($req->type == "SIP"){
+        //         $typeCompany = "1";
+        //     } elseif ($req->type == "MSM") {
+        //         $typeCompany = "2";
+        //     }elseif ($req->type == "SIM") {
+        //         $typeCompany = "3";
+        //     }elseif ($req->type == "FIN") {
+        //         $typeCompany = "4";
+        //     }elseif ($req->type == "HR") {
+        //         $typeCompany = "5";
+        //     }elseif ($req->type == "PMO") {
+        //         $typeCompany = "6";
+        //     } else {
+        //         $typeCompany = "7";
+        //     }
+        // // return $this->getPresenceReportData("all",$typeCompany,$date);
             
-            // return $typeCompany;
-            $typeCompany = ($req->type == "SIP") ? "1" : (($req->type == "SIP-MSM") ? "2" : "3");
-            $dataPresence = $this->getPresenceReportData("all",$typeCompany,$date);
-            $exportName = 'Report Presence ' . $req->type . ' (reported at ' . date("Y-m-d") . ')';
+        //     // return $req->nik;
+        //     // return $typeCompany;
+        //     // $typeCompany = ($req->type == "SIP") ? "1" : "2";
+        //     $typeCompany = ($req->type == "SIP") ? "1" : ($req->type == "MSM") ? "2" : ($req->type == "SIM") ? "3" : ($req->type == "FIN") ? "4" : ($req->type == "HR") ? "5" : (($req->type == "PMO") ? "6" : "7");
+        //     $dataPresence = $this->getPresenceReportData("all",array($req->nik),$typeCompany,$date);
+        //     $exportName = 'Report Presence ' . $req->type . ' (reported at ' . date("Y-m-d") . ')';
+        // } else {
+        //     $dataPresence = $this->getPresenceReportData("all",array($req->nik),"all",$date);
+        //     $exportName = 'Report Presence (reported at' . date("Y-m-d") . ')';
+        // }
+            // return $req->nik;
+
+        if(isset($req->nik)){
+            $dataPresence = $this->getPresenceReportData("all",$req->nik,'all',$date);
+            $exportName = 'Report Presence ' . $req->type . '(reported at ' . date("Y-m-d") . ')';
         } else {
-            $dataPresence = $this->getPresenceReportData("all","all",$date);
-            $exportName = 'Report Presence (reported at' . date("Y-m-d") . ')';
+            $dataPresence = $this->getPresenceReportData("all",'','all',$date);
+            $exportName = 'Report Presence ' . $req->type . '(reported at ' . date("Y-m-d") . ')';
         }
 
         // return $dataPresence;
