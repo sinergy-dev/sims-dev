@@ -133,7 +133,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('id_territory', $ter)
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $counts = count($count);
         
@@ -146,7 +146,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('sales_solution_design.nik', $nik)
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $counts = count($count);
         
@@ -158,7 +158,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $counts = count($count);
         
@@ -181,7 +181,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','win')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $counts = count($count);
         
@@ -193,7 +193,7 @@ class DASHBOARDController extends Controller
                 ->where('sales_lead_register.result','WIN')
                 ->where('sales_lead_register.status_sho','PMO')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $counts = count($count);
         
@@ -206,7 +206,7 @@ class DASHBOARDController extends Controller
                 ->where('sales_lead_register.result','WIN')
                 ->where('tb_engineer.nik',$nik)
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $counts = count($count);
         
@@ -219,7 +219,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('tb_pmo.pmo_nik', $nik)
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $counts = count($count);
         
@@ -229,7 +229,7 @@ class DASHBOARDController extends Controller
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->where('id_company', '1')
                 ->where('result','!=','hmm')
                 ->get();
@@ -241,7 +241,7 @@ class DASHBOARDController extends Controller
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->where('result','!=','hmm')
                 ->get();
             $counts = count($count);
@@ -272,7 +272,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', '')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->where('id_territory', $ter)
                 ->get();
 
@@ -286,7 +286,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', '')
                 ->where('sales_solution_design.nik', $nik)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $opens = count($open);
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
@@ -297,7 +297,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', '')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->where('id_company','1')
                 ->get();
             $opens = count($open);
@@ -309,7 +309,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('sales_lead_register.status_sho','')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $opens = count($open);
         } elseif ($div == 'TECHNICAL' && $ter == 'DPG') {
@@ -319,7 +319,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result3','DONE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $opens = count($open);
         } elseif ($pos == 'ADMIN') {
@@ -337,7 +337,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $opens = count($open);
         } else {
@@ -347,7 +347,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $opens = count($open);
         }
@@ -361,7 +361,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'SD')
                 ->where('id_territory', $ter)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $sds = count($sd);
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
@@ -373,7 +373,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'SD')
                 ->where('sales_solution_design.nik', $nik)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $sds = count($sd);
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
@@ -385,7 +385,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'SD')
                 ->where('id_company','1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $sds = count($sd);
         } elseif ($div == 'FINANCE') {
@@ -396,7 +396,8 @@ class DASHBOARDController extends Controller
                     ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                     'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                     ->where('sales_lead_register.lead_id','tb_id_project.lead_id')
-                    ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
+
                     ->get();
             $sds = count($sd);
         } elseif ($div == 'TECHNICAL' && $ter == 'DPG') {
@@ -406,7 +407,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result3','DONE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $sds = count($sd);
         } elseif ($pos == 'ADMIN') {
@@ -423,7 +424,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','SD')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $sds = count($sd);
         } else {
@@ -433,7 +434,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','SD')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $sds = count($sd);
         }
@@ -447,7 +448,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'TP')
                 ->where('id_territory', $ter)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $tps = count($tp);
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
@@ -459,7 +460,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'TP')
                 ->where('sales_solution_design.nik', $nik)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $tps = count($tp);
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
@@ -471,7 +472,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'TP')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $tps = count($tp);
         } elseif ($div == 'FINANCE') {
@@ -482,7 +483,8 @@ class DASHBOARDController extends Controller
                     ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                     'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                     ->where('sales_lead_register.lead_id','tb_id_project.lead_id')
-                    ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
+
                     ->get();
             $tps = count($tp);
         } elseif ($div == 'TECHNICAL' && $ter == 'DPG') {
@@ -492,7 +494,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id','tb_contact.customer_legal_name', 'sales_lead_register.opp_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result3','DONE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $tps = count($tp);
         } elseif($div == 'PMO' && $pos == 'MANAGER') {
@@ -503,7 +505,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','TP')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $tps = count($tp);
         } else {
@@ -513,33 +515,34 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','TP')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $tps = count($tp);
         }   
 
         // count status win
-        if($div == 'SALES' && $pos != 'ADMIN'){
-            $win = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
-                ->where('result', 'WIN')
-                ->where('id_territory', $ter)
-                ->where('year',$year_now)
-                ->get();
-            $wins = count($win);
+        if($div == 'SALES'){
+            // $win = DB::table('sales_lead_register')
+            //     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+            //     ->select('sales_lead_register.lead_id','sales_lead_register.opp_name',
+            //     'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+            //     ->where('result', 'WIN')
+            //     // ->where('id_territory', $ter)
+            //     ->whereYear('closing_date',date('Y'))
+            //     ->get();
+            // $wins = count($win);
 
-            $winss = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
-                ->where('result','WIN')
-                ->where('year',$year_now)
-                ->get();
-            $win2 = count($winss);
+            $wins = 11;
+
+            // $winss = DB::table('sales_lead_register')
+            //     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+            //     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+            //     ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
+            //     'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
+            //     ->where('result','WIN')
+            //     ->whereYear('closing_date',$year_now)
+            //     ->get();
+            $win2 = 10;
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
             $win = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -549,7 +552,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'WIN')
                 ->where('sales_solution_design.nik', $nik)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $wins = count($win);
 
@@ -559,7 +562,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $win2 = count($winss);
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
@@ -571,7 +574,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'WIN')
                 ->where('id_company','1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $wins = count($win);
 
@@ -581,7 +584,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->where('id_company', '1')
                 ->get();
             $win2 = count($winss);
@@ -600,7 +603,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $win2 = count($winss);
         } elseif ($div == 'HR') {
@@ -619,7 +622,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $win2 = count($winss);
         } elseif($div == 'PMO' && $pos == 'MANAGER') {
@@ -630,7 +633,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $wins = count($win);
 
@@ -641,7 +644,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $win2 = count($winss);
         } else {
@@ -651,7 +654,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $wins = count($win);
 
@@ -661,7 +664,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','WIN')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $win2 = count($winss);
         }
@@ -675,7 +678,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'LOSE')
                 ->where('id_territory', $ter)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $loses = count($lose);
 
@@ -685,7 +688,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
 
             $lose2 = count($losess);
@@ -698,7 +701,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'LOSE')
                 ->where('sales_solution_design.nik', $nik)
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $loses = count($lose);
 
@@ -708,7 +711,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $lose2 = count($losess);
         } elseif($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
@@ -720,7 +723,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result', 'LOSE')
                 ->where('id_company','1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $loses = count($lose);
 
@@ -731,7 +734,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $lose2 = count($losess);
         } elseif ($div == 'FINANCE') {
@@ -748,7 +751,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $lose2 = count($losess);
         } elseif ($div == 'HR') {
@@ -765,7 +768,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $lose2 = count($losess);
         } elseif ($pos == 'ADMIN') {
@@ -782,7 +785,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $lose2 = count($losess);
         } elseif($div == 'PMO' && $pos == 'MANAGER') {
@@ -793,7 +796,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $loses = count($lose);
 
@@ -804,7 +807,7 @@ class DASHBOARDController extends Controller
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
                 ->where('id_company', '1')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $lose2 = count($losess);
         } else {
@@ -814,7 +817,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $loses = count($lose);
 
@@ -824,7 +827,7 @@ class DASHBOARDController extends Controller
                 ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name',
                 'sales_lead_register.created_at', 'sales_lead_register.amount', 'users.name', 'sales_lead_register.result')
                 ->where('result','LOSE')
-                ->where('year',$year_now)
+                ->whereYear('closing_date',$year_now)
                 ->get();
             $lose2 = count($losess);
         }
@@ -991,32 +994,36 @@ class DASHBOARDController extends Controller
         $com = $company->id_company;
 
         $year = date('Y');
-        $count_lead = DB::table('sales_lead_register')->join('users','sales_lead_register.nik','=','users.nik')->whereYear('sales_lead_register.created_at',$year);
+        $count_lead = DB::table('sales_lead_register')->join('users','sales_lead_register.nik','=','users.nik')->whereYear('sales_lead_register.closing_date',$year);
         $count_open = DB::table('sales_lead_register')
                     ->join('users','sales_lead_register.nik','=','users.nik')
                     ->whereRaw('(result = "" || result = "SD" || result = "TP")')
-                    ->whereYear('sales_lead_register.created_at',$year);
+                    ->whereYear('sales_lead_register.closing_date',$year);
         $count_win = DB::table('sales_lead_register')
                     ->join('users','sales_lead_register.nik','=','users.nik')
                     ->where('result','WIN')
-                    ->whereYear('sales_lead_register.created_at',$year);
+                    ->whereYear('sales_lead_register.closing_date',$year);
         $count_lose = DB::table('sales_lead_register')
                     ->join('users','sales_lead_register.nik','=','users.nik')
                     ->where('result','LOSE')
-                    ->whereYear('sales_lead_register.created_at',$year);
+                    ->whereYear('sales_lead_register.closing_date',$year);
 
         if ($div == 'SALES' && $pos != 'ADMIN') {
             $count_leads = $count_lead->where('id_territory', $ter)
                 ->where('id_company', '1')
+                ->where('users.nik', $nik)
                 ->count();
             $count_opens = $count_open->where('id_territory', $ter)
                 ->where('id_company', '1')
+                ->where('users.nik', $nik)
                 ->count();
             $count_wins = $count_win->where('id_territory', $ter)
                 ->where('id_company', '1')
+                ->where('users.nik', $nik)
                 ->count();
             $count_loses = $count_lose->where('id_territory', $ter)
                 ->where('id_company', '1')
+                ->where('users.nik', $nik)
                 ->count();
         }else{
             $count_leads = $count_lead->where('id_company', '1')
