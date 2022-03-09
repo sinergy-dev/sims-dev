@@ -48,7 +48,7 @@ Report Range
     </ol>
   </section>
   <section class="content">
-    <div class="row mb-3">
+    <div class="row mb-3" style="display:none">
       <div class="col-lg-2 col-xs-6">
 
         <div class="small-box bg-purple">
@@ -262,6 +262,7 @@ Report Range
                             <td hidden>{{$data->year}}</td>
                             <td hidden>{{$data->nik}}</td>
                             <td hidden class="closing_date">{!!substr($data->closing_date,0,4)!!}</td>
+
                             <td class="lead_id">{{ $data->lead_id }}</td>
                             <td>{{ $data->name }}</td>
                             <td>{{ $data->opp_name }}</td>
@@ -378,10 +379,12 @@ Report Range
         //nama belakang = 1
         //tanggal terdaftar =2
         var evalDate= parseDateValue(aData[14]);
+        var evalClosingDate = parseDateValue(aData[15]);
+
           if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
                ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
                ( dateStart <= evalDate && isNaN( dateEnd ) ) ||
-               ( dateStart <= evalDate && evalDate <= dateEnd ) )
+               ( dateStart <= evalDate && evalDate <= dateEnd ))
           {
               return true;
           }
@@ -472,10 +475,11 @@ Report Range
           nik:window.location.href.split('/')[4]
         },
         success:function(result){
+          console.log(result.name)
           $("#kat_drop_0").append('<option selected>' + result.code_company + '</option>')
           $("#kat_drop_2").append('<option selected>' + result.name + '</option>')
           $("#kat_drop_6").append('<option selected>' + result.result + '</option>')
-          $("#year_dif").append('<option selected>' + result.year + '</option>')
+          $("#year_dif").append('<option selected>' + result.year.substr(0, 4) + '</option>')
         },
         complete:function(){
           filter_deal_price(true)
@@ -499,6 +503,7 @@ Report Range
          table.draw();
           
          filter_deal_price()
+         $("#year_dif").prop('disabled',true)
       });
 
       $('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
@@ -507,6 +512,7 @@ Report Range
         end_date='';
         $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(DateFilterFunction, 1));
         table.draw();
+        $("#year_dif").prop('disabled',false)
       });
 
   })
@@ -515,9 +521,10 @@ Report Range
     $.fn.dataTable.ext.search.push(
       function(settings, data, dataIndex) {
           var years = parseInt($('#year_dif').val());
-          var tahunbanding = parseInt(data[7]);
+          var created_at = parseInt(data[7])
+          var closing_date = parseInt(data[9])
       if ( ( isNaN( years ) ) ||
-           ( years  ==  tahunbanding ))
+           ( years  ==  closing_date ))
       {
       return true;
       }
@@ -526,6 +533,11 @@ Report Range
     );    
     table.draw()
     filter_deal_price()
+    if (this.value == '') {
+      $("#reportrange").prop('disabled',false)
+    }else{
+      $("#reportrange").prop('disabled',true)
+    }
   })
 
   function filter_deal_price(nik){
@@ -561,7 +573,7 @@ Report Range
       url:'/total_deal_price?='+ tempyear + tempcomp + tempSales + tempTer + tempPresales + tempPriority + tempWinProb + tempStatus + tempdateStart + tempdateEnd + nik,
       success: function(result){
         console.log(result)
-        $('#total_deal_prices').text(result[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g,","));
+        $('#total_deal_prices').text(result.total_deal_price[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g,","));
       }
     });
   }
