@@ -20,6 +20,7 @@ Route::post('/update_result3', 'SalesController@update_result');
 Route::post('/update_result4', 'SalesController@update_result');
 Route::post('/update_result5', 'SalesController@update_result');
 Route::get('testBladeNew','TestController@testBladeNew');
+Route::get('testGetWorkDays','PresenceController@getWorkDaysRoute');
 
 Route::get('/testEmailTrap',function(){
 	Mail::to('agastya@sinergy.co.id')->send(new App\Mail\TestEmailTrap());
@@ -244,6 +245,12 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getTotalNominalByCatIpr', 'PrController@getTotalNominalByCatIpr');
 	Route::get('/getTotalNominalByCatEpr', 'PrController@getTotalNominalByCatEpr');
 
+	Route::get('/getTotalPrbyTypeYear', 'PrController@getTotalPrYear');
+	Route::get('/getTotalNominalByCatYear', 'PrController@getTotalNominalByCatYear');
+	Route::get('/getTotalNominalByPidYear', 'PrController@getTotalNominalByPidYear');
+	Route::get('/getTotalNominalByCatIprYear', 'PrController@getTotalNominalByCatIprYear');
+	Route::get('/getTotalNominalByCatEprYear', 'PrController@getTotalNominalByCatEprYear');
+
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
 	Route::post('/store_po', 'PONumberController@store');
@@ -426,6 +433,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getdatabackdatequote', 'QuoteController@getdatabackdate');
 	Route::get('/getfilteryearquote', 'QuoteController@getfilteryear');
 	Route::get('/get_backdate_num', 'QuoteController@get_backdate_num');
+	Route::get('/quote/getCustomer', 'QuoteController@getCustomer');
 
 	Route::get('/delete_detail_sho/{id_transaction}', 'SHOController@destroy_detail');
 
@@ -904,6 +912,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/shifting/getThisUser', 'PresenceController@getScheduleThisUser');
 	Route::get('/presence/shifting/createSchedule', 'PresenceController@createSchedule');
 	Route::get('/presence/shifting/deleteSchedule', 'PresenceController@deleteSchedule');
+	Route::get('/presence/shifting/addProject', 'PresenceController@addProject');
+
 
 	Route::post('/presence/shifting/modifyUserShifting', 'PresenceController@modifyUserShifting');
 	Route::get('/presence/shifting/modifyOptionShifting', 'PresenceController@modifyOptionShifting');
