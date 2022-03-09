@@ -6,6 +6,8 @@ Quote Number
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <!-- DataTables -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css"> 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 
@@ -333,7 +335,8 @@ Quote Number
               </div>
               <div class="form-group">
                   <label>To</label>
-                  <input class="form-control" id="edit_to" placeholder="Enter To" name="edit_to" >
+                  <select id="edit_to" name="edit_to" class="form-control" style="width:100%"></select>
+                  <!-- <input class="form-control" id="edit_to" placeholder="Enter To" name="edit_to" > -->
               </div>
 
               <div class="form-group">
@@ -381,10 +384,10 @@ Quote Number
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 @endsection
 @section('script')
@@ -427,13 +430,25 @@ Quote Number
       // });
     })
 
-    function edit_quote(quote_number,customer_legal_name,attention,title,project,description, project_id,note) {
+    function edit_quote(quote_number,id_customer,attention,title,project,description, project_id,note) {
+      console.log(id_customer)
       $('#modalEdit').modal('show');
       $('#edit_quote_number').val(quote_number);
-      if (customer_legal_name == "null") {
+      if (id_customer == "null") {
         ''
       } else {
-        $('#edit_to').val(customer_legal_name);
+         $.ajax({
+            url: "{{url('/quote/getCustomer')}}",
+            type: "GET",
+            success: function(result) {
+              $('#edit_to').select2({
+                  placeholder:"Select Customer",
+                  data:result.data
+              })
+              $("#edit_to").val(id_customer).trigger("change")
+            }
+        })
+        // $('#edit_to').val(customer_legal_name);
       }
       if (attention == "null") {
         '';
@@ -495,10 +510,10 @@ Quote Number
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.nik) {
-                var x = '"' + data.quote_number + '","' + data.customer_legal_name + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
-                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_quote(" + x + ")'>&nbsp Edit</button>";
+                var x = '"' + data.quote_number + '","' + data.id_customer + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
+                data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_quote(" + x + ")'>&nbsp Edit</button>";
               } else {
-                data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+                data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button>";
               }
                 
             });
@@ -511,14 +526,15 @@ Quote Number
           { "data": "position" ,"width": "20%"},
           { "data": "type_of_letter","width": "20%" },
           { "data": "month","width": "20%" },
-          { "data": "date","width": "20%" },
+          { "data": "date","width": "20%" },          
           {
              "render": function ( data, type, row, meta ) {
-                if(row.id_customer == null){
-                  return '<div class="truncate"> - </div>'
-                } else {
-                  return '<div class="truncate">' + row.customer_legal_name + '</div>'
-                }
+                return '<div class="truncate">' + row.customer_legal_name + '</div>'
+
+                // if(row.id_customer == null){
+                //   return '<div class="truncate"> - </div>'
+                // } else {
+                // }
               }
           },
           {
@@ -572,6 +588,9 @@ Quote Number
         "searching": true,
         "scrollX": true,
         "order": [[ 0, "desc" ]],
+        // fixedColumns:   {
+        //   leftColumns: 1,
+        // },
         "fixedColumns":   {
             leftColumns: 1
         },
