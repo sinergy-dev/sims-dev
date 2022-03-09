@@ -1478,11 +1478,14 @@ Lead Register
 
 		  	dashboardCount(temp)
 		  }, 800);
+		  console.log('undefinde!')
 		}else{
 			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
 			if (checklist == false) {
 				dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer)
 			}
+		  console.log('undefin!')
+
 		}
 
 
@@ -1491,21 +1494,21 @@ Lead Register
 
 	//dashboard count
 	function initMoneyHeader(){
-		$("#sum_amount_0").mask('000.000.000.000', {reverse: true})
-		$("#sum_amount_1").mask('000.000.000.000', {reverse: true})
-		$("#sum_amount_2").mask('000.000.000.000', {reverse: true})
-		$("#sum_amount_3").mask('000.000.000.000', {reverse: true})
-		$("#sum_amount_4").mask('000.000.000.000', {reverse: true})
-		$("#sum_amount_5").mask('000.000.000.000', {reverse: true})
+		$("#sum_amount_0").mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_1").mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_2").mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_3").mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_4").mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_5").mask('000.000.000.000.000', {reverse: true})
 	}
 
 	function initRemoveMask(){
-		$("#sum_amount_0").unmask('000.000.000.000', {reverse: true})
-		$("#sum_amount_1").unmask('000.000.000.000', {reverse: true})
-		$("#sum_amount_2").unmask('000.000.000.000', {reverse: true})
-		$("#sum_amount_3").unmask('000.000.000.000', {reverse: true})
-		$("#sum_amount_4").unmask('000.000.000.000', {reverse: true})
-		$("#sum_amount_5").unmask('000.000.000.000', {reverse: true})
+		$("#sum_amount_0").unmask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_1").unmask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_2").unmask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_3").unmask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_4").unmask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_5").unmask('000.000.000.000.000', {reverse: true})
 	}
 
 	function dashboardCount(year){	

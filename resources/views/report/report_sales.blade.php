@@ -893,18 +893,25 @@ Report Sales
 
   $('#dropdown').select2();
 
+  var tahun,type
 
   $('#year_filter').change(function(){
-    var tahun = this.value;
-    $("#dropdown").change(function(){
-      var type = this.value;
+    tahun = this.value;
+    changeTopSales(tahun,"ALL")
+  });
+
+  $("#dropdown").change(function(){
+    type = this.value
+    changeTopSales(tahun,type)
+  });
+
+  function changeTopSales(tahun,type){
       $.ajax({
         type:"GET",
         url:"getfiltertop",
         data:{
-          data:this.value,
           type:type,
-          tahun:$('#year_filter').val(),
+          tahun:tahun,
         },
         success: function(result){
           $('#body_sip').empty();
@@ -930,9 +937,8 @@ Report Sales
         type:"GET",
         url:"getfiltertopmsp",
         data:{
-          data:this.value,
           type:type,
-          tahun:$('#year_filter').val(),
+          tahun:tahun,
         },
         success: function(result){
           $('#body_msp').empty();
@@ -952,9 +958,8 @@ Report Sales
 
           $('#body_msp').append(table);
         },
-      });
-    });
-  });
+      });    
+  }
 
   $('.money').mask('000,000,000,000,000,000', {reverse: true});
   $('.total').mask('000,000,000,000,000,000.00', {reverse: true});
