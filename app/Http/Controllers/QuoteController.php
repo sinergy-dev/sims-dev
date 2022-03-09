@@ -225,6 +225,13 @@ class QuoteController extends Controller
         
     }
 
+    public function getCustomer(Request $req)
+    {
+        $data = collect(TB_Contact::select(DB::raw('`id_customer` AS `id`,`customer_legal_name` AS `text`'))->get());
+
+        return array("data" => $data);
+    }
+
     public function getdataquote(Request $request)
     {
         $tahun = date("Y"); 
@@ -441,7 +448,7 @@ class QuoteController extends Controller
 
             if($lastnumber < 10){
                $akhirnomor  = '000' . $lastnumber;
-               $akhirnomor9 = '00' . $lastnumber9;
+               $akhirnomor9 = '000' . $lastnumber9;
             }elseif($lastnumber > 9 && $lastnumber < 100){
                $akhirnomor = '00' . $lastnumber;
                $akhirnomor9 = '00' . $lastnumber9;
@@ -691,7 +698,8 @@ class QuoteController extends Controller
         $update = Quote::where('quote_number', $quote_number)->first();
         $update->quote_number = $request['quote_number'];
         
-        $update->to = $request['edit_to'];
+        // $update->to = $request['edit_to'];
+        $update->id_customer = $request['edit_to'];
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
         $update->project = $request['edit_project'];
