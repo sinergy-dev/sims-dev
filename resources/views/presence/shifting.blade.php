@@ -465,7 +465,6 @@ Presence Shifting
 <script type="text/javascript">
 	$(document).ready(function(){
 		var accesable = @json($feature_item);
-		console.log(accesable)
 	    accesable.forEach(function(item,index){
 	      $("#" + item).show()
 	      $("." + item).show()
@@ -488,6 +487,35 @@ Presence Shifting
 		},
 		buttonsStyling: false,
 	})
+
+	$.ajax({
+		type:"GET",
+		url:"{{url('presence/setting/showLocationAll')}}",
+		beforeSend:function(){
+			$("#addLocationProjects").empty()
+		},
+		success:function(result){
+			$("#addLocationProjects").select2({
+				placeholder:" Select location",
+		        // multiple:true,
+		        data:result.data
+		    })
+
+		}
+	})
+
+	function saveAddProject(){
+		$.ajax({
+			url:"{{url('presence/shifting/addProject')}}",
+			data:{
+				name:$("#addNameProject").val(),
+				location:$("#addLocationProjects").val()
+			},
+			success:function(){
+				
+			}
+		})
+	}
 	
 	$.ajax({
 		url:"{{url('presence/shifting/getProject')}}",
