@@ -418,6 +418,32 @@ Presence Shifting
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" id="modal-addProject" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Add Project</h4>
+				</div>
+				<div class="modal-body" id="modal-settingOption-body">
+					<form>
+						<div class="form-group">
+							<label for="exampleInputEmail1">Name Project</label>
+							<input type="email" class="form-control" id="addNameProject" placeholder="ex : BPJS Kesehatan">
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail1">Location</label>
+							<select class="form-control select2" style="width: 100%;" id="addLocationProjects"></select>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success pull-right" data-dismiss="modal" onclick="saveAddProject()">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection
 
 @section('scriptImport')
