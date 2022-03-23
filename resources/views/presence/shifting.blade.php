@@ -237,6 +237,7 @@ Presence Shifting
 						<div id="external-events">
 							<p id="name2"></p>
 							<input type="hidden" id="nickname">
+							<!-- <input id="nickname"> -->
 							<br id="external-event-br">
 							<br>
 							<button class="btn btn-default" id="buttonBack2">
@@ -272,6 +273,45 @@ Presence Shifting
 								<tbody id="log-content">
 								</tbody>
 							</table>
+						</div>
+						<div id="reporting" class="display-none table-responsive padding-10">
+							<h2>Reporting</h2>
+							<label>Select Year</label>
+							<select id="yearReport" class="form-control" style="width: 200px;">
+								<option>Chose One</option>
+								<option value="2020">2020</option>
+								<option value="2021">2021</option>
+								<option value="2022">2022</option>
+							</select>
+							<br>
+							<label>Select Month</label>
+							<select id="monthReport" class="form-control" style="width: 200px;">
+								<option>Chose One</option>
+								<option value="01">Jan</option>
+								<option value="02">Feb</option>
+								<option value="03">Mar</option>
+								<option value="04">Apr</option>
+								<option value="05">Mei</option>
+								<option value="06">Jun</option>
+								<option value="07">Jul</option>
+								<option value="08">Aug</option>
+								<option value="09">Sep</option>
+								<option value="10">Oct</option>
+								<option value="11">Nov</option>
+								<option value="12">Des</option>
+							</select>
+							<br>
+							<button type="button" class="btn btn-default" id="daterange-btn">
+								<i class="fa fa-calendar"></i> Date range for Latest Update
+								<span>
+									<i class="fa fa-caret-down"></i>
+								</span>
+							</button>
+							<br>
+							<br>
+							<button type="button" class="btn btn-info" id="downloadReportBtn">
+								<i class="fa fa-download"></i> Download
+							</button>
 						</div>
 					</div>
 				</div>	
