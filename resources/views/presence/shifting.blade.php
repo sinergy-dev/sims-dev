@@ -23,7 +23,7 @@ Presence Shifting
 			height: 120px;
 			-webkit-animation: spin 2s linear infinite;
 			animation: spin 2s linear infinite;
-			margin: auto;
+			margin: auto;	
 			position: absolute;
 			top:0;
 			bottom: 0;
@@ -187,6 +187,9 @@ Presence Shifting
 		</a>
 		<a href="#" class="pull-right btn-box-tool text-green pull-left" data-toggle="modal" data-target="#modal-settingOption" id="buttonEditShiftingOption" style="display:none">
 			<i class="fa fa-plus"></i> Modify Shifting Option
+		</a>
+		<a href="#" class="pull-right btn-box-tool text-orange pull-left" data-toggle="modal" data-target="#modal-addProject" id="buttonAddProject" style="display:none">
+			<i class="fa fa-plus"></i> Add Project
 		</a>					
 		<ol class="breadcrumb">
 			<li>
