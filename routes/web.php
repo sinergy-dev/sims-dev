@@ -916,6 +916,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/shifting/modifyOptionShifting', 'PresenceController@modifyOptionShifting');
 	Route::get('/presence/shifting/getOptionGrouped', 'PresenceController@getOptionGrouped');
 
+	Route::get('/presence/shifting/showLogActivity', 'PresenceController@getLogActivityShifting');
+	Route::get('/presence/shifting/getReportShifting', 'PresenceController@getReportShifting');
 
 	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
 
