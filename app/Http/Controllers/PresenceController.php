@@ -811,6 +811,165 @@ class PresenceController extends Controller
         }
     }
 
+    public function getReportShifting(Request $req)
+    {
+        $beforeData = PresenceShifting::join('users','users.nik','=','presence__shifting.nik')
+            ->join('presence__shifting_project', 'presence__shifting_project.id', '=', 'presence__shifting.id_project')
+            ->selectRaw('`presence__shifting`.`id`,`users`.`name`, `project_name`, `className`,DATE_FORMAT(`start`, "%H:%i") as `start`, DATE_FORMAT(`end`, "%H:%i") as `end`, DATE_FORMAT(`presence__shifting`.`tanggal_shift`, "%d-%m-%Y") as `tanggal_shift`, DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
+            ->orderBy('presence__shifting.created_at','asc')
+            ->whereMonth('tanggal_shift', $req->month)
+            ->whereYear('tanggal_shift', $req->year)
+            ->where('presence__shifting.created_at', '<', $req->start)
+            ->get();
+
+        $afterData = PresenceShifting::join('users','users.nik','=','presence__shifting.nik')
+            ->join('presence__shifting_project', 'presence__shifting_project.id', '=', 'presence__shifting.id_project')
+            ->selectRaw('`presence__shifting`.`id`,`users`.`name`, `project_name`, `className`,DATE_FORMAT(`start`, "%H:%i") as `start`, DATE_FORMAT(`end`, "%H:%i") as `end`, DATE_FORMAT(`presence__shifting`.`tanggal_shift`, "%d-%m-%Y") as `tanggal_shift`, DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
+            ->orderBy('presence__shifting.created_at','asc')
+            ->whereMonth('tanggal_shift', $req->month)
+            ->whereYear('tanggal_shift', $req->year)
+            ->where('presence__shifting.created_at', '<', $req->end)
+            ->get();
+
+        $beforeDate = Carbon::parse($req->start)->format("d M Y");
+        $afterDate = Carbon::parse($req->end)->format("d M Y");
+
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->removeSheetByIndex(0);
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Diff'));
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'Before'));
+        $spreadsheet->addSheet(new Worksheet($spreadsheet,'After'));
+        $diffSheet = $spreadsheet->setActiveSheetIndex(0);
+        $beforeSheet = $spreadsheet->setActiveSheetIndex(1);
+        $afterSheet = $spreadsheet->setActiveSheetIndex(2);
+
+        $beforeSheet->mergeCells('A3:H3');
+        $afterSheet->mergeCells('A3:H3');
+        $diffSheet->mergeCells('A2:C2');
+        $diffSheet->mergeCells('D2:F2');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $titleStyle['font']['bold'] = true;
+
+        $titleStyle2 = $normalStyle;
+        $titleStyle2['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle2['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle2['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "fffa7952"]];
+        $titleStyle2['font']['bold'] = true;
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+
+        $diffSheet->getStyle('A2:C2')->applyFromArray($titleStyle);
+        $diffSheet->getStyle('D2:F2')->applyFromArray($titleStyle2);
+        $diffSheet->setCellValue('A2','Before');
+        $diffSheet->setCellValue('D2','After');
+
+        $diffbeforeData = PresenceShifting::join('users','users.nik','=','presence__shifting.nik')
+            ->join('presence__shifting_project', 'presence__shifting_project.id', '=', 'presence__shifting.id_project')
+            ->selectRaw('`users`.`name`, `className`, DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
+            ->orderBy('presence__shifting.created_at','asc')
+            ->whereIn('presence__shifting.id',array_values(array_diff($beforeData->pluck('id')->toArray(), $afterData->pluck('id')->toArray())))
+            ->get();
+
+        $diffafterData = PresenceShifting::join('users','users.nik','=','presence__shifting.nik')
+            ->join('presence__shifting_project', 'presence__shifting_project.id', '=', 'presence__shifting.id_project')
+            ->selectRaw('`users`.`name`, `className`, DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
+            ->orderBy('presence__shifting.created_at','asc')
+            ->whereIn('presence__shifting.id',array_values(array_diff($afterData->pluck('id')->toArray(), $beforeData->pluck('id')->toArray())))
+            ->get();
+
+        $headerContent = ["Name", "Shift", "Created Date", "Name", "Shift", "Created Date"];
+        $diffSheet->getStyle('A3:F3')->applyFromArray($headerStyle);
+        $diffSheet->fromArray($headerContent,NULL,'A3');
+
+        $diffbeforeData->map(function($item,$key) use ($diffSheet){
+            $diffSheet->fromArray(array_values($item->toArray()),NULL,'A' . ($key + 4));
+        });
+        $diffafterData->map(function($item,$key) use ($diffSheet){
+            $diffSheet->fromArray(array_values($item->toArray()),NULL,'D' . ($key + 4));
+        });
+
+        $diffSheet->getColumnDimension('A')->setAutoSize(true);
+        $diffSheet->getColumnDimension('B')->setAutoSize(true);
+        $diffSheet->getColumnDimension('C')->setAutoSize(true);
+        $diffSheet->getColumnDimension('D')->setAutoSize(true);
+        $diffSheet->getColumnDimension('E')->setAutoSize(true);
+        $diffSheet->getColumnDimension('F')->setAutoSize(true);
+
+        //before sheet
+
+        $beforeSheet->getStyle('A3:H3')->applyFromArray($titleStyle);
+        $beforeSheet->setCellValue('A1','Last Update: ');
+        $beforeSheet->setCellValue('B1',$beforeDate);
+        $beforeSheet->setCellValue('A3','Report Shifting Before');
+
+        $headerContent = ["No", "Name", "Project", "Shift(Title)", "Start Shift", "End Shift ", "Shifting Date", "Created Shifting"];
+        $beforeSheet->getStyle('A4:H4')->applyFromArray($headerStyle);
+        $beforeSheet->fromArray($headerContent,NULL,'A4');
+
+        $beforeData->map(function($item,$key) use ($beforeSheet){
+            $data = array_values($item->toArray());
+            array_shift($data);
+            $beforeSheet->fromArray(array_merge([$key + 1],$data),NULL,'A' . ($key + 5));
+        });
+
+        $beforeSheet->getColumnDimension('A')->setAutoSize(true);
+        $beforeSheet->getColumnDimension('B')->setAutoSize(true);
+        $beforeSheet->getColumnDimension('C')->setAutoSize(true);
+        $beforeSheet->getColumnDimension('D')->setAutoSize(true);
+        $beforeSheet->getColumnDimension('E')->setAutoSize(true);
+        $beforeSheet->getColumnDimension('F')->setAutoSize(true);
+        $beforeSheet->getColumnDimension('G')->setAutoSize(true);
+        $beforeSheet->getColumnDimension('H')->setAutoSize(true);
+
+        //after sheet
+
+        $afterSheet->getStyle('A3:H3')->applyFromArray($titleStyle);
+        $afterSheet->setCellValue('A1','Last Update: ');
+        $afterSheet->setCellValue('B1',$afterDate);
+        $afterSheet->setCellValue('A3','Report Shifting After');
+
+        $headerContent = ["No", "Name", "Project", "Shift(Title)", "Start Shift", "End Shift ", "Shifting Date", "Created Shifting"];
+        $afterSheet->getStyle('A4:H4')->applyFromArray($headerStyle);
+        $afterSheet->fromArray($headerContent,NULL,'A4');
+
+        $afterData->map(function($item,$key) use ($afterSheet){
+            $data = array_values($item->toArray());
+            array_shift($data);
+            $afterSheet->fromArray(array_merge([$key + 1],$data),NULL,'A' . ($key + 5));
+        });
+
+        $afterSheet->getColumnDimension('A')->setAutoSize(true);
+        $afterSheet->getColumnDimension('B')->setAutoSize(true);
+        $afterSheet->getColumnDimension('C')->setAutoSize(true);
+        $afterSheet->getColumnDimension('D')->setAutoSize(true);
+        $afterSheet->getColumnDimension('E')->setAutoSize(true);
+        $afterSheet->getColumnDimension('F')->setAutoSize(true);
+        $afterSheet->getColumnDimension('G')->setAutoSize(true);
+        $afterSheet->getColumnDimension('H')->setAutoSize(true);
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $fileName = 'Report Log Shifting '. $req->year .' '. $req->month . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+    }
+
     public function modifyOptionShifting(Request $req){
         foreach($req->option_id as $option_key => $option_id){
             $option = PresenceShiftingOption::find($option_id);
