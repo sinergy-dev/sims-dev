@@ -220,11 +220,14 @@ Presence Shifting
 							<li>
 								<a href="#" onclick="showLog()">Log Activity</a>
 							</li>
+							<li>
+								<a href="#" onclick="showReporting()">Reporting</a>
+							</li>
 						</ul>
 					</div>
 					<div class="box-body" id="listName" style="display: none;">
 						<p id="name"></p>
-						<ul class="nav nav-stacked" id="ulUser" style="display:none"></ul>
+						<ul class="nav nav-stacked" id="ulUser"></ul>
 						<br>
 						<button class="btn btn-default" id="buttonBack">Back</button>
 					</div>
