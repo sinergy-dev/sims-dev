@@ -286,8 +286,10 @@ Presence Report
 			        	selectedUser = []
 			        	filterUser = []
 			        	$.each(items,function(key,value){
-			            	selectedUser = selectedUser + '&nik[]=' + value.nik
-			            	filterUser.push(value.nik)
+			        			if (!filterUser.includes(value.nik)) {
+			            		filterUser.push(value.nik)
+			            		selectedUser = selectedUser + '&nik[]=' + value.nik
+			        			}
 			        	})
 
 			        	// var string = JSON.stringify(selectedUser)
