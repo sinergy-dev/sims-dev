@@ -1378,6 +1378,15 @@ class PresenceController extends Controller
         ]);
     }
 
+    function getLogActivityShifting(Request $req){
+        return array("data"=>DB::table('presence__shifting_log')
+            ->join('users','users.nik','=','presence__shifting_log.nik_user')
+            ->select('title','presence__shifting_log.created_at','users.name','start_before','end_before','className_before','status')
+            ->orderBy('presence__shifting_log.created_at','desc')
+            ->get());
+    }
+
+
     public function getExportReport(Request $req){
 
         if(isset($req->startDate) && isset($req->endDate)){
