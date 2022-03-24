@@ -5,7 +5,11 @@ Report Purchase Request
 @section('head_css')
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+  <!-- DataTables -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
 @endsection
 @section('content')
 
@@ -23,13 +27,30 @@ Report Purchase Request
   <section class="content">
 
     <div class="row">
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header with-border">
+            <select style="width: 100px; font-size: 14px;" class="form-control btn-primary fa" id="year_filter">
+              <option value="{{$year}}">&#xf073 &nbsp{{$year}}</option>
+              @foreach($year_before as $years)
+                @if($years->year != $year)
+                  <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                @endif
+              @endforeach
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
       <div class="col-md-6">
         <div class="box box-primary">
           <div class="box-header with-border">
             <h3 class="box-title"> Total PR</h3>
           </div>
           <div class="box-body">
-            <canvas id="myPieChart" style="height: 250px; width: 787px;" height="350" width="787"></canvas>
+            <canvas id="myPieChart" height="350" width="787"></canvas>
           </div>
         </div>
 
@@ -49,7 +70,7 @@ Report Purchase Request
             <h3 class="box-title"> Total Amount PR (By Category)</h3>
           </div>
           <div class="box-body">
-            <canvas id="myPieChartAmount" style="height: 250px; width: 787px;" height="350" width="787"></canvas>
+            <canvas id="myPieChartAmount" height="350" width="787"></canvas>
           </div>
         </div>
 
@@ -189,11 +210,16 @@ Report Purchase Request
     var chart4 = document.getElementById("barChartByType");
     var theHelp = Chart.helpers;
 
+    var myPieChartpr;
+    var myPieChart;
+    var barChartByMonth;
+    var barChartByType;
+
     $.ajax({
       type:"GET",
       url:"getTotalPrbyType",
       success:function(result){
-        var myPieChart = new Chart(chart1, {
+        myPieChartpr = new Chart(chart1, {
           type: 'pie',
           data: {
             labels: ["IPR", "EPR"],
@@ -259,7 +285,7 @@ Report Purchase Request
         // console.log(Object.keys(result.data[0]))
         // console.log(Object.values(result.data[0]))
 
-        var myPieChart = new Chart(chart2, {
+        myPieChart = new Chart(chart2, {
           type: 'pie',
           data: {
             labels: labelCategoryPR,
@@ -337,35 +363,33 @@ Report Purchase Request
 
     $.ajax({
       type:"GET",
-      url:"getTotalPrByMonth",
+      url:"getTotalAmountByType",
       success:function(result){
-        console.log(result)
-        var total_ipr = result.data.map(function(e) {
-            return e.IPR
+        var amount_IPR = result.data.map(function(e) {
+            return e.amount_IPR
         })
 
-        var total_epr = result.data.map(function(e) {
-            return e.EPR
+        var amount_EPR = result.data.map(function(e) {
+            return e.amount_EPR
         })
 
-        var barChartByStatus = new Chart(chart3, {
+        barChartByType = new Chart(chart4, {
           type: 'bar',
           data: {
               labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
-              labels2:[total_ipr,total_epr],        
-            datasets: [{
-              label: "IPR",
-              backgroundColor: "#04dda3",
-              borderColor: "#04dda3",
-              data: total_ipr
-            },
-            {
-              label: "EPR",
-              backgroundColor: "#246d18",
-              borderColor: "#246d18",
-              data: total_epr
-            }
-            ]
+              labels2:[amount_IPR,amount_EPR],        
+              datasets: [{
+                label: "IPR",
+                backgroundColor: "#04dda3",
+                borderColor: "#04dda3",
+                data: amount_IPR
+              },
+              {
+                label: "EPR",
+                backgroundColor: "#246d18",
+                borderColor: "#246d18",
+                data: amount_EPR
+              }]
         },
         options: {
           tooltips: {
@@ -373,7 +397,7 @@ Report Purchase Request
               title: function(tooltipItem, data) {
               },
               label: function(tooltipItem, data) {
-                return data.datasets[tooltipItem.datasetIndex].label + ' Total: ' + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']]
+                return data.datasets[tooltipItem.datasetIndex].label + ': Rp.' + data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               }
             }
           },
@@ -388,39 +412,40 @@ Report Purchase Request
             }
           }
         });
+
+        // console.log(barChartByType.data.datasets)
       }
     })
 
     $.ajax({
       type:"GET",
-      url:"getTotalAmountByType",
+      url:"getTotalPrByMonth",
       success:function(result){
-        var amount_IPR = result.data.map(function(e) {
-            return e.amount_IPR
+        console.log(result)
+        var total_ipr = result.data.map(function(e) {
+            return e.IPR
         })
 
-        var amount_EPR = result.data.map(function(e) {
-            return e.amount_EPR
+        var total_epr = result.data.map(function(e) {
+            return e.EPR
         })
 
-        var barChartByStatus = new Chart(chart4, {
+        barChartByMonth = new Chart(chart3, {
           type: 'bar',
           data: {
               labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"],
-              labels2:[amount_IPR,amount_EPR],        
-            datasets: [{
-              label: "IPR",
-              backgroundColor: "#04dda3",
-              borderColor: "#04dda3",
-              data: amount_IPR
-            },
-            {
-              label: "EPR",
-              backgroundColor: "#246d18",
-              borderColor: "#246d18",
-              data: amount_EPR
-            }
-            ]
+              datasets: [{
+                label: "IPR",
+                backgroundColor: "#04dda3",
+                borderColor: "#04dda3",
+                data: total_ipr
+              },
+              {
+                label: "EPR",
+                backgroundColor: "#246d18",
+                borderColor: "#246d18",
+                data: total_epr
+              }]
         },
         options: {
           tooltips: {
@@ -428,7 +453,7 @@ Report Purchase Request
               title: function(tooltipItem, data) {
               },
               label: function(tooltipItem, data) {
-                return data.datasets[tooltipItem.datasetIndex].label + ': Rp.' + data['labels2'][tooltipItem.datasetIndex][tooltipItem['index']].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                return data.datasets[tooltipItem.datasetIndex].label + ' Total: ' + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']]
               }
             }
           },
@@ -537,6 +562,107 @@ Report Purchase Request
         "order":[],
       pageLength: 10,
     })
+
+    $("#year_filter").change(function(){
+      $('#dataTableCat').DataTable().ajax.url("{{url('getTotalNominalByCatYear')}}?year=" + this.value).load();
+      $('#dataTablePid').DataTable().ajax.url("{{url('getTotalNominalByPidYear')}}?year=" + this.value).load();
+      $('#dataTableAmountIpr').DataTable().ajax.url("{{url('getTotalNominalByCatIprYear')}}?year=" + this.value).load();
+      $('#dataTableAmountEpr').DataTable().ajax.url("{{url('getTotalNominalByCatEprYear')}}?year=" + this.value).load();
+
+      myPieChartpr.data.labels = [];
+      myPieChartpr.data.datasets.forEach((dataset) => {
+          dataset.data = [];
+      });
+      myPieChartpr.update();
+
+      myPieChart.data.labels = [];
+      myPieChart.data.datasets.forEach((dataset) => {
+          dataset.data = [];
+      });
+      myPieChart.update();
+
+      barChartByMonth.data.labels = [];
+      barChartByMonth.data.datasets.forEach((dataset) => {
+          dataset.data = [];
+      });
+      barChartByMonth.update();
+
+      barChartByType.data.labels = [];
+      barChartByType.data.datasets.forEach((dataset) => {
+          dataset.data = [];
+      });
+      barChartByType.update();
+
+      $.ajax({
+        type:"GET",
+        url:"getTotalPrbyTypeYear",
+        data: {
+          year: this.value, 
+        },
+        success:function(result){
+          myPieChartpr.data.labels = result['dataTotalPr']['label'];
+          myPieChartpr.data.datasets.forEach((dataset) => {
+              dataset.data = result['dataTotalPr']['data'];
+          });
+          myPieChartpr.update();
+
+          myPieChart.data.labels = result['dataAmountByCat']['label'];
+          myPieChart.data.datasets.forEach((dataset) => {
+              dataset.data = result['dataAmountByCat']['precentage'];
+          });
+          myPieChart.update();
+
+          barChartByMonth.data.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"];
+          var total_ipr = result['dataTotalPrByCat'].map(function(e) {
+              return e.IPR
+          })
+
+          var total_epr = result['dataTotalPrByCat'].map(function(e) {
+              return e.EPR
+          })
+
+          barChartByMonth.data.datasets = [{
+            label: "IPR",
+            backgroundColor: "#04dda3",
+            borderColor: "#04dda3",
+            data: total_ipr
+          },
+          {
+            label: "EPR",
+            backgroundColor: "#246d18",
+            borderColor: "#246d18",
+            data: total_epr
+          }]
+          barChartByMonth.update();
+
+
+          barChartByType.data.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Desember"];
+          var amount_IPR = result['dataAmountPrByType'].map(function(e) {
+              return e.amount_IPR
+          })
+
+          var amount_EPR = result['dataAmountPrByType'].map(function(e) {
+              return e.amount_EPR
+          })
+
+          console.log(amount_EPR)
+          barChartByType.data.labels2 = [amount_IPR,amount_EPR]
+          barChartByType.data.datasets = [{
+            label: "IPR",
+            backgroundColor: "#04dda3",
+            borderColor: "#04dda3",
+            data: amount_IPR
+          },
+          {
+            label: "EPR",
+            backgroundColor: "#246d18",
+            borderColor: "#246d18",
+            data: amount_EPR
+          }]
+          barChartByType.update();
+        }
+      })
+    });
 
   </script>
 @endsection
