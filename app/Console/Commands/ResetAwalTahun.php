@@ -62,11 +62,17 @@ class ResetAwalTahun extends Command
 
         // print_r(12  - $total_cuti);
 
-        $total_cuti = 12 - $i;
+        // $total_cuti = 12 - $i;
+        $total_cuti = 12;
 
-        echo("cuti". $total_cuti);
+        // echo("cuti". $total_cuti);
+        syslog(LOG_ERR, "Reset Cuti Start");
+        syslog(LOG_ERR, "-------------------------");
         
-        $reset = User::select('nik','name')->where('status_karyawan','cuti')->get();
+        $reset = User::select('nik','name','cuti','cuti2')
+            ->where('status_karyawan','cuti')
+            ->orderBy('name','ASC') 
+            ->get();
 
         // $update = User::where('nik',$reset->nik)->first();
         //     // $data->cuti2 = 12 - $total_cuti;
