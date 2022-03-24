@@ -926,5 +926,158 @@ Presence Shifting
 			})
 		})
 	}
+
+	function showLog(){
+		$('#calendar').removeClass('display-block').addClass('display-none');
+		$('#log-activity').removeClass('display-none').addClass('display-block');
+
+		$('#table-log').DataTable({
+			"ajax": {
+			    "url": "{{url('presence/shifting/showLogActivity')}}",
+			    "type": "GET"
+			},
+			"columns": [
+				{
+		            render: function ( data, type, row, meta ) {
+		               return  meta.row+1;
+		            }
+		        },
+		        {
+		            render: function ( data, type, row, meta ) {
+		            	if (row.status == 'create') {
+		            		return "Create Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a') + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a') + "]";
+		            	}else if (row.status == 'update') {
+		            		return  "Updated Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]" + "<br> menjadi <br>"+ row.className_updated + " [" + moment(row.start_updated).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_updated).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}else{
+		            		return  "Deleted Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}
+		            }
+		        },
+	            { "data": "created_at" },
+	            { "data": "name" },
+        	]
+		});
+		// $("#log-activity").append(table);
+	}
+
+	function showReporting(){
+		$('#calendar').removeClass('display-block').addClass('display-none');
+		$('#reporting').removeClass('display-none').addClass('display-block');
+
+		$('#table-log').DataTable({
+			"ajax": {
+			    "url": "{{url('presence/shifting/showLogActivity')}}",
+			    "type": "GET"
+			},
+			"columns": [
+				{
+		            render: function ( data, type, row, meta ) {
+		               return  meta.row+1;
+		            }
+		        },
+		        {
+		            render: function ( data, type, row, meta ) {
+		            	if (row.status == 'create') {
+		            		return "Create Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a') + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a') + "]";
+		            	}else if (row.status == 'update') {
+		            		return  "Updated Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]" + "<br> menjadi <br>"+ row.className_updated + " [" + moment(row.start_updated).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_updated).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}else{
+		            		return  "Deleted Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}
+		            }
+		        },
+	            { "data": "created_at" },
+	            { "data": "name" },
+        	]
+		});
+		// $("#log-activity").append(table);
+	}
+
+	$('#daterange-btn').daterangepicker({
+		startDate: moment().subtract(29, 'days'),
+		endDate: moment()
+	},
+	function (start, end) {
+		$("#shuttle-box").prop("disabled",false)
+
+		$('#daterange-btn span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+
+		startDay = start.format('YYYY-MM-DD');
+		endDay = end.format('YYYY-MM-DD');
+
+		$("#startDate").val(startDay)
+		$("#endDate").val(endDay)
+
+		startDate = start.format('D MMMM YYYY');
+		endDate = end.format('D MMMM YYYY');
+
+		$("#table_report").empty();
+	});
+
+	$("#downloadReportBtn").on('click',function(){
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "Make sure there is nothing wrong to get this report!",
+			icon: "warning",
+			showCancelButton: true,
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No',
+			}).then((result) => {
+				if (result.value){
+					Swal.fire({
+						title: 'Please Wait..!',
+						text: "Prossesing Data Report",
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						allowEnterKey: false,
+						customClass: {
+							popup: 'border-radius-0',
+						},
+						onOpen: () => {
+							Swal.showLoading()
+						}
+					})
+
+					var start = $('#daterange-btn').data('daterangepicker').startDate.format('YYYY-MM-DD 00:00:00')
+					var end = $('#daterange-btn').data('daterangepicker').endDate.format('YYYY-MM-DD 23:59:59')
+					var year = $("#yearReport").val()
+					var month = $("#monthReport").val()
+					var url = "{{url('presence/shifting/getReportShifting')}}?start=" + start + "&end=" + end + "&year=" + year + "&month=" + month
+
+					$.ajax({
+						type:"GET",
+						url:"https://reqres.in/api/users",
+						data:{
+							delay:3
+						},
+						success: function(result){
+							Swal.hideLoading()
+							if(result == 0){
+								swalWithCustomClass.fire({
+									//icon: 'error',
+									title: 'Success!',
+									text: "The file is unavailable",
+									type: 'error',
+									//confirmButtonText: '<a style="color:#fff;" href="report/' + result.slice(1) + '">Get Report</a>',
+								})
+							}else{
+								swalWithCustomClass.fire({
+									title: 'Success!',
+									text: "You can get your file now",
+									type: 'success',
+									confirmButtonText: '<a style="color:#fff;" target="_blank" href="' + url + '">Get Report</a>',
+								})
+							}
+						}
+					})
+				}
+			}
+		);
+	})
+
+	
 </script>
 @endsection
