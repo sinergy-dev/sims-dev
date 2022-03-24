@@ -441,7 +441,7 @@ class QuoteController extends Controller
 
             if($lastnumber < 10){
                $akhirnomor  = '000' . $lastnumber;
-               $akhirnomor9 = '00' . $lastnumber9;
+               $akhirnomor9 = '000' . $lastnumber9;
             }elseif($lastnumber > 9 && $lastnumber < 100){
                $akhirnomor = '00' . $lastnumber;
                $akhirnomor9 = '00' . $lastnumber9;
