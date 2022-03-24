@@ -323,10 +323,10 @@ class HRController extends Controller
 
     public function getdatahu(Request $request)
     {
-    	$id_hu = $request['edit_hurec'];
+        $id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi')
+                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -484,7 +484,7 @@ class HRController extends Controller
         // return 'bcl';
 
         if ($request['pos_tech'] != '') {
-        	if($request['id_sub_division_tech'] == 'DPG'){
+            if($request['id_sub_division_tech'] == 'DPG'){
                 if($request['pos_tech'] == 'MANAGER'){
                     $tambah->id_position = 'ENGINEER MANAGER';  
                 } elseif($request['pos_tech'] == 'STAFF'){
@@ -501,20 +501,20 @@ class HRController extends Controller
             }
         } else if($request['pos_finance'] != ''){
            if($request['pos_finance'] == 'HEAD'){
-           		$tambah->id_position = 'MANAGER';	
-           	} elseif($request['pos_finance'] == 'DIRECTOR'){
-           		$tambah->id_position = 'FINANCE DIRECTOR';
-           	} else {
-           		$tambah->id_position = $request['pos_finance'];
-           	}
+                $tambah->id_position = 'MANAGER';   
+            } elseif($request['pos_finance'] == 'DIRECTOR'){
+                $tambah->id_position = 'FINANCE DIRECTOR';
+            } else {
+                $tambah->id_position = $request['pos_finance'];
+            }
         } else if($request['pos_dir'] != ''){
            $tambah->id_position = $request['pos_dir'];
         } else if($request['pos_operation'] != ''){
-        	if ($request['pos_operation'] == 'DIRECTOR') {
-        		$tambah->id_position = 'OPERATION DIRECTOR';
-        	}else{
-        		$tambah->id_position = $request['pos_operation']; 
-        	}
+            if ($request['pos_operation'] == 'DIRECTOR') {
+                $tambah->id_position = 'OPERATION DIRECTOR';
+            }else{
+                $tambah->id_position = $request['pos_operation']; 
+            }
         } else if($request['pos_sales'] != ''){
            $tambah->id_position = $request['pos_sales']; 
         } else if($request['pos_hr'] != ''){
@@ -554,10 +554,10 @@ class HRController extends Controller
         $file = $request->file('npwp_file');
 
         if ($file !== null) {
-        	$fileName = $nik."_npwp_ver1".".jpg";
-        	$request->file('npwp_file')->move("image/", $fileName);
+            $fileName = $nik."_npwp_ver1".".jpg";
+            $request->file('npwp_file')->move("image/", $fileName);
         }else{
-        	$fileName = "";
+            $fileName = "";
         }
 
         $tambah->npwp_file = $fileName;
@@ -677,29 +677,30 @@ class HRController extends Controller
                     ->get();
 
         if ($cek < 1) {
-        	$nomor = '0';
+            $nomor = '0';
         }else{
             $nomor = $cek;
         }
         
-        $nims = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth. $nomor;
+        // $nims = $company->id_company . $year_entry. $month_entry . $year_birth. $month_birth. $nomor;
 
         $update = User::where('nik',$nik)->first();
-        if ($request['date_of_entry_update'] != "" && $request['date_of_birth_update'] != "") {
-            if ($check_nik->date_of_entry !=  $request['date_of_entry_update'] && $check_nik->date_of_entry !=  $request['date_of_birth_update']) {
-                $update->nik =  $nims;
-            }
+        if ($request['date_of_birth_update'] != "") {
+            // if ($check_nik->date_of_entry !=  $request['date_of_entry_update'] && $check_nik->date_of_entry !=  $request['date_of_birth_update']) {
+            //     $update->nik =  $nims;
+            // }
             $update->date_of_birth = $request['date_of_birth_update'];
-            $update->date_of_entry = $request['date_of_entry_update'];
+            // $update->date_of_entry = $request['date_of_entry_update'];
         }else{
             $update->nik =  $nik;
         }
         
 
         
-        if ($request['name_update'] != "") {
-            $update->name = $request['name_update'];
+        if ($request->name_update != "") {
+            $update->name = $request->name_update;
         } 
+
         if ($request['email_update'] != "") {
             $update->email = $request['email_update'];
         } 
@@ -765,92 +766,6 @@ class HRController extends Controller
                 $update->id_division = '-';
             }
         }
-        
-        
-        
-
-        // if($request['id_sub_division_tech_update'] == 'PRESALES'){
-        //     $update->id_division = 'TECHNICAL PRESALES';
-        // } elseif($request['division_update'] == 'OPERATION'){
-        //     if($request['id_sub_division_operation_update'] == 'PMO'){
-        //         $update->id_division = 'PMO';
-        //     } elseif($request['id_sub_division_operation_update'] == 'MSM'){
-        //         $update->id_division = 'MSM';
-        //     }  
-        // } elseif($request['division_msp_update'] == 'SALES_MSP'){
-        //         $update->id_division = 'SALES';
-        // } elseif ($request['division_msp_update'] == 'TECHNICAL_MSP') {
-        //         $update->id_division = 'TECHNICAL';
-        // } elseif ($request['division_msp_update'] == 'WAREHOUSE_MSP') {
-        //         $update->id_division = 'WAREHOUSE';
-        // } elseif($request['division_update'] == 'NONE'){
-        //         $update->id_division = NULL;
-       	// } elseif($request['id_sub_division_tech_msp_update'] == 'PRESALES'){
-        //         $update->id_division = 'TECHNICAL PRESALES';
-        // }  else {
-        //         $update->id_division = $request['division_update'];
-        // }
-
-        // if ($request['pos_tech_update'] != '') {
-        //     if($request['id_sub_division_tech_update'] == 'DPG'){
-        //         if($request['pos_tech_update'] == 'MANAGER'){
-        //             $update->id_position = 'ENGINEER MANAGER';  
-        //         } elseif($request['pos_tech_update'] == 'STAFF'){
-        //             $update->id_position = 'ENGINEER STAFF';
-        //         } elseif($request['pos_tech_update'] == 'HEAD'){
-        //             $update->id_position = 'MANAGER';
-        //         }
-        //     }elseif ($request['id_sub_division_tech_update'] == 'NONE') {
-        //         if($request['pos_tech_update'] == 'HEAD'){
-        //             $update->id_position = 'MANAGER';  
-        //         }
-        //     } else {
-        //         $update->id_position = $request['pos_tech_update'];
-        //     }
-        // } else if($request['pos_finance_update'] != ''){
-        //    if($request['pos_finance_update'] == 'HEAD'){
-        //         $update->id_position = 'MANAGER';   
-        //     } elseif($request['pos_finance_update'] == 'DIRECTOR'){
-        //         $update->id_position = 'FINANCE DIRECTOR';
-        //     } else {
-        //         $update->id_position = $request['pos_finance_update'];
-        //     }
-        // } else if($request['pos_dir_update'] != ''){
-        //    $update->id_position = $request['pos_dir_update'];
-        // } else if($request['pos_operation_update'] != ''){
-        //     if ($request['pos_operation_update'] == 'DIRECTOR') {
-        //         $update->id_position = 'OPERATION DIRECTOR';
-        //     }else{
-        //         $update->id_position = $request['pos_operation_update']; 
-        //     }
-        // } else if($request['pos_sales_update'] != ''){
-        //    $update->id_position = $request['pos_sales_update']; 
-        // } else if($request['pos_hr_update'] != ''){
-        //    $update->id_position = $request['pos_hr_update']; 
-        // } else if ($request['pos_tech_msp_update'] != '') {
-        //    $update->id_position = $request['pos_tech_msp_update'];
-        // } else if ($request['pos_sales_msp_update'] != '') {
-        //    $update->id_position = $request['pos_sales_msp_update'];
-        // }
-
-        // if ($request['id_sub_division_finance'] != '') {
-        //     $update->id_territory = $request['id_sub_division_finance'];
-        // }else if ($request['id_sub_division_operation_update'] != '') {
-        //     if ($request['id_sub_division_operation_update'] == 'DIR') {
-        //         $update->id_territory = NULL;
-        //     } else if ($request['id_sub_division_operation_update'] == 'PMO' || $request['id_sub_division_operation_update'] == 'MSM') {
-        //         $update->id_territory = 'OPERATION';
-        //     } else{
-        //         $update->id_territory = $request['id_sub_division_operation_update'];
-        //     }
-        // }else if ($request['territory_update']!= '') {
-        //     $update->id_territory = $request['territory_update'];
-        // }else if ($request['id_sub_division_tech_update'] == 'NONE') {
-        //     $update->id_territory = NULL;
-        // }else if ($request['id_sub_division_tech_update'] != '') {
-        //     $update->id_territory = $request['id_sub_division_tech_update'];
-        // }
-
 
         if ($request['address_update'] != "") {
             $update->address = $request['address_update'];
@@ -868,6 +783,18 @@ class HRController extends Controller
             $update->no_npwp = $request['no_npwp_update'];
         }
 
+        if($request['name_ec_update'] != ""){
+            $update->name_ec = $request['name_ec_update'];
+        }
+
+        if($request['phone_ec_update'] != ""){
+            $update->phone_ec = substr(str_replace('-', '', $request['phone_ec_update']),6);
+        }
+
+        if($request['hubungan_ec_update'] != ""){
+            $update->hubungan_ec = $request['hubungan_ec_update'];
+        }
+
         // return ($request['no_npwp'] != "" ? "true" : "false");
         
         $file       = $request->file('npwp_file');
@@ -875,42 +802,23 @@ class HRController extends Controller
         if ($file == "") {
             
         }else{
-
             $fileName   = $nik."_npwp_ver1".".jpg";
 
             $request->file('npwp_file')->move("image/", $fileName);
             $update->npwp_file = $fileName;
         }
 
-        // $file = $request->file('bpjs_kes');
-        // if ($file == "") {
-            
-        // }else{
-        //     $fileName = $nik."_bpjs_kes_ver1".".jpg";
-        //     $request->file('bpjs_kes')->move("image/", $fileName);
-        //     $update->bpjs_kes = $fileName;
-        // }
-
-        // $file = $request->file('bpjs_ket');
-        // if ($file == "") {
-            
-        // }else{
-        //     $fileName = $nik."_bpjs_ket_ver1".".jpg";
-        //     $request->file('bpjs_ket')->move("image/", $fileName);
-        //     $update->bpjs_ket = $fileName;
-        // }
-
         if ($request['status_kerja_update'] != "") {
             $update->status_kerja = $request['status_kerja_update'];
         } else if ($request['akhir_kontrak_update'] != "") {
-            $update->email = $request['akhir_kontrak_update'];
+            $update->akhir_kontrak = $request['akhir_kontrak_update'];
         }
 
         // return $update;
 
         $update->update();
 
-        return redirect('hu_rec')->with('update', 'Updated Employee Data Successfully!');
+        // return redirect('hu_rec')->with('update', 'Updated Employee Data Successfully!');
         
     }
 
@@ -1235,9 +1143,9 @@ class HRController extends Controller
                     ->first();
 
         if ($cek = 1) {
-        	$nomor = '0';
+            $nomor = '0';
         }else{
-        	$niks = substr($cek_nik->nik, -1, 1);
+            $niks = substr($cek_nik->nik, -1, 1);
             $nomor = $niks+1;
         }
         

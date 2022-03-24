@@ -73,6 +73,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getQuote', 'SalesLeadController@getQuoteNumber');
 	Route::post('project/addContribute', 'SalesLeadController@addContribute');
 	Route::post('project/updateResult', 'SalesLeadController@updateResult');
+	Route::get('project/showTagging','SalesLeadController@showTagging');
 	Route::post('project/updateResultRequestPid', 'SalesLeadController@updateResultRequestPid');
 	Route::get('project/getPid', 'SalesLeadController@getPid');
 	Route::post('project/storeLead', 'SalesLeadController@storeLead');
@@ -91,6 +92,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getProductTechTagDetail', 'SalesLeadController@getProductTechTagDetail');
 	Route::get('project/getCustomerByLead', 'SalesLeadController@getCustomerbyLead');
 	Route::get('project/filterCountLead','SalesLeadController@filterCountLead');
+	Route::post('project/checkProductTech', 'SalesLeadController@checkProductTech');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
 
@@ -290,6 +292,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/get_data_win_report_sales', 'ReportController@get_data_win_report_sales');
 	Route::get('/get_data_lose_report_sales', 'ReportController@get_data_lose_report_sales');
 	Route::get('/getReportExcelReportRange', 'ReportController@downloadExcelReportRange');
+	Route::get('/reportExcelTag', 'ReportController@reportExcelTag');
+	Route::get('/reportPdfTag','TestController@reportPdfTag');
+	
+
 
 	Route::get('/report_product_index','ReportController@report_product_index');
 	Route::get('/getreportproduct','ReportController@getreportproduct');
@@ -368,7 +374,7 @@ Route::group(['middleware' => ['auth']], function () {
 	// Route::get('/hu_rec/store', function(){
 	// 	return 'b';
 	// });
-	Route::post('/hu_rec/update', 'HRController@update_humanresource')->middleware('HRMiddleware');
+	Route::post('/hu_rec/update', 'HRController@update_humanresource');
 	Route::get('delete_hr/{nik}', 'HRController@destroy_hr')->middleware('HRMiddleware');
 	Route::get('/profile_user','HRController@user_profile');
 	Route::post('/update_profile','HRController@update_profile');
@@ -900,6 +906,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/presence/setting/setLocation', 'PresenceController@presenceSettingSetLocation');
 	Route::post('/presence/setting/addLocation', 'PresenceController@presenceSettingAddLocation');
 	Route::get('/presence/setting/showLocationAll', 'PresenceController@presenceSettingShowAllLocation');
+	Route::get('/presence/getUser','PresenceController@getAllUser');
 
 
 	Route::get('/presence/shifting', 'PresenceController@presenceShifting');
@@ -919,6 +926,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/shifting/modifyOptionShifting', 'PresenceController@modifyOptionShifting');
 	Route::get('/presence/shifting/getOptionGrouped', 'PresenceController@getOptionGrouped');
 
+	Route::get('/presence/shifting/showLogActivity', 'PresenceController@getLogActivityShifting');
+	Route::get('/presence/shifting/getReportShifting', 'PresenceController@getReportShifting');
 
 	Route::get('/presence/history/personalMsp', 'PresenceController@personalHistoryMsp');
 

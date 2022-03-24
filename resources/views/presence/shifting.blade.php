@@ -9,6 +9,8 @@ Presence Shifting
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.5/fullcalendar.print.css" media="print">
 	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 	<style>
 		.swal2-margin {
 			margin: .3125em;
@@ -21,7 +23,7 @@ Presence Shifting
 			height: 120px;
 			-webkit-animation: spin 2s linear infinite;
 			animation: spin 2s linear infinite;
-			margin: auto;
+			margin: auto;	
 			position: absolute;
 			top:0;
 			bottom: 0;
@@ -185,6 +187,9 @@ Presence Shifting
 		</a>
 		<a href="#" class="pull-right btn-box-tool text-green pull-left" data-toggle="modal" data-target="#modal-settingOption" id="buttonEditShiftingOption" style="display:none">
 			<i class="fa fa-plus"></i> Modify Shifting Option
+		</a>
+		<a href="#" class="pull-right btn-box-tool text-orange pull-left" data-toggle="modal" data-target="#modal-addProject" id="buttonAddProject" style="display:none">
+			<i class="fa fa-plus"></i> Add Project
 		</a>					
 		<ol class="breadcrumb">
 			<li>
@@ -215,11 +220,14 @@ Presence Shifting
 							<li>
 								<a href="#" onclick="showLog()">Log Activity</a>
 							</li>
+							<li>
+								<a href="#" onclick="showReporting()">Reporting</a>
+							</li>
 						</ul>
 					</div>
 					<div class="box-body" id="listName" style="display: none;">
 						<p id="name"></p>
-						<ul class="nav nav-stacked" id="ulUser" style="display:none"></ul>
+						<ul class="nav nav-stacked" id="ulUser"></ul>
 						<br>
 						<button class="btn btn-default" id="buttonBack">Back</button>
 					</div>
@@ -229,6 +237,7 @@ Presence Shifting
 						<div id="external-events">
 							<p id="name2"></p>
 							<input type="hidden" id="nickname">
+							<!-- <input id="nickname"> -->
 							<br id="external-event-br">
 							<br>
 							<button class="btn btn-default" id="buttonBack2">
@@ -264,6 +273,45 @@ Presence Shifting
 								<tbody id="log-content">
 								</tbody>
 							</table>
+						</div>
+						<div id="reporting" class="display-none table-responsive padding-10">
+							<h2>Reporting</h2>
+							<label>Select Year</label>
+							<select id="yearReport" class="form-control" style="width: 200px;">
+								<option>Chose One</option>
+								<option value="2020">2020</option>
+								<option value="2021">2021</option>
+								<option value="2022">2022</option>
+							</select>
+							<br>
+							<label>Select Month</label>
+							<select id="monthReport" class="form-control" style="width: 200px;">
+								<option>Chose One</option>
+								<option value="01">Jan</option>
+								<option value="02">Feb</option>
+								<option value="03">Mar</option>
+								<option value="04">Apr</option>
+								<option value="05">Mei</option>
+								<option value="06">Jun</option>
+								<option value="07">Jul</option>
+								<option value="08">Aug</option>
+								<option value="09">Sep</option>
+								<option value="10">Oct</option>
+								<option value="11">Nov</option>
+								<option value="12">Des</option>
+							</select>
+							<br>
+							<button type="button" class="btn btn-default" id="daterange-btn">
+								<i class="fa fa-calendar"></i> Date range for Latest Update
+								<span>
+									<i class="fa fa-caret-down"></i>
+								</span>
+							</button>
+							<br>
+							<br>
+							<button type="button" class="btn btn-info" id="downloadReportBtn">
+								<i class="fa fa-download"></i> Download
+							</button>
 						</div>
 					</div>
 				</div>	
@@ -370,6 +418,32 @@ Presence Shifting
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" id="modal-addProject" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Add Project</h4>
+				</div>
+				<div class="modal-body" id="modal-settingOption-body">
+					<form>
+						<div class="form-group">
+							<label for="exampleInputEmail1">Name Project</label>
+							<input type="email" class="form-control" id="addNameProject" placeholder="ex : BPJS Kesehatan">
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail1">Location</label>
+							<select class="form-control select2" style="width: 100%;" id="addLocationProjects"></select>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success pull-right" data-dismiss="modal" onclick="saveAddProject()">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection
 
 @section('scriptImport')
@@ -382,6 +456,8 @@ Presence Shifting
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 
 @endsection
 
@@ -389,7 +465,6 @@ Presence Shifting
 <script type="text/javascript">
 	$(document).ready(function(){
 		var accesable = @json($feature_item);
-		console.log(accesable)
 	    accesable.forEach(function(item,index){
 	      $("#" + item).show()
 	      $("." + item).show()
@@ -412,6 +487,35 @@ Presence Shifting
 		},
 		buttonsStyling: false,
 	})
+
+	$.ajax({
+		type:"GET",
+		url:"{{url('presence/setting/showLocationAll')}}",
+		beforeSend:function(){
+			$("#addLocationProjects").empty()
+		},
+		success:function(result){
+			$("#addLocationProjects").select2({
+				placeholder:" Select location",
+		        // multiple:true,
+		        data:result.data
+		    })
+
+		}
+	})
+
+	function saveAddProject(){
+		$.ajax({
+			url:"{{url('presence/shifting/addProject')}}",
+			data:{
+				name:$("#addNameProject").val(),
+				location:$("#addLocationProjects").val()
+			},
+			success:function(){
+				
+			}
+		})
+	}
 	
 	$.ajax({
 		url:"{{url('presence/shifting/getProject')}}",
@@ -490,24 +594,23 @@ Presence Shifting
 
 				})
 			}
-			console.log(result)
 		}
 	})
 
-	function showProject(name,idProject){
-		$("#listProject").fadeOut(function (){
-			$("#listName").fadeIn();
-			$("#name").text("for " + name);
-			$("#calendar").removeClass('display-none').addClass('display-block');
-			$("#log-activity").removeClass('display-block').addClass('display-none');
-			$("#table-log").dataTable().fnDestroy();
-			$("#calendar").fullCalendar('removeEventSources');
-			$("#calendar").fullCalendar('addEventSource', "{{url('schedule/getThisProject')}}?project=" + idProject + "&month=" + moment($("#indicatorMonth").text().split(" ")[3],"MMMM").format('MM'));
-			$("." + idProject).show();
-			globalProject = idProject;
-			$("#buttonBack").attr("onclick","backListProject(" + idProject + ")");
-		});
-	};
+	// function showProject(name,idProject){
+	// 	$("#listProject").fadeOut(function (){
+	// 		$("#listName").fadeIn();
+	// 		$("#name").text("for " + name);
+	// 		$("#calendar").removeClass('display-none').addClass('display-block');
+	// 		$("#log-activity").removeClass('display-block').addClass('display-none');
+	// 		$("#table-log").dataTable().fnDestroy();
+	// 		$("#calendar").fullCalendar('removeEventSources');
+	// 		$("#calendar").fullCalendar('addEventSource', "{{url('schedule/getThisProject')}}?project=" + idProject + "&month=" + moment($("#indicatorMonth").text().split(" ")[3],"MMMM").format('MM'));
+	// 		$("." + idProject).show();
+	// 		globalProject = idProject;
+	// 		$("#buttonBack").attr("onclick","backListProject(" + idProject + ")");
+	// 	});
+	// };
 
 	var shift_user = [], shift_time = [], shift_date = [];
 	var i = 0;
@@ -525,14 +628,12 @@ Presence Shifting
 
 			var originalEventObject = $(this).data('eventObject');
 			var name3 = $("#nickname").val();
-			console.log(name3)
 			var copiedEventObject = $.extend({}, originalEventObject);
 
 			copiedEventObject.start = date;
 			var waktu = date._d;
 			waktu = new Date(waktu);
 
-			console.log(originalEventObject)
 			var day = moment(waktu).toISOString(true);
 			var startShift2 = moment(waktu).format('YYYY-MM-DD') + "T" + originalEventObject.startShift + ":00.000Z";
 			var endShift2 = moment(waktu).format('YYYY-MM-DD') + "T" + originalEventObject.endShift + ":00.000Z";
@@ -644,6 +745,14 @@ Presence Shifting
 					$("#ulUser").empty();
 					var append = "";
 					result.forEach(function(item,index){
+						if (item.nickname) {
+							item.nickname = item.nickname.split(" ")[1]
+						} 
+
+						if (item.nickname_all) {
+							item.nickname = item.nickname_all.split(" ")[0]
+						}
+
 						var showDetail = "showDetail('" + item.name + "','" + item.nickname + "','" + item.id + "','" + item.project_id + "')";
 						append = append + '	<li class="' + item.project_id + '" style="display:none;padding-bottom:10px">';
 						append = append + '		<a onclick="' + showDetail + '">' + item.name;
@@ -660,6 +769,7 @@ Presence Shifting
 						append = append + '		</a>';
 						append = append + '	</li>';
 					})
+					console.log(append)
 					$("#ulUser").append(append);
 					$("." + globalProject).show();
 				},
@@ -765,7 +875,6 @@ Presence Shifting
 		})
 
 		$(".checkbox-" + id_project).each(function(index){
-			console.log($(this).is(":checked"))
 			if($(this).is(":checked")){
 				optionStatus.push("ACTIVE")
 			} else {
@@ -817,5 +926,158 @@ Presence Shifting
 			})
 		})
 	}
+
+	function showLog(){
+		$('#calendar').removeClass('display-block').addClass('display-none');
+		$('#log-activity').removeClass('display-none').addClass('display-block');
+
+		$('#table-log').DataTable({
+			"ajax": {
+			    "url": "{{url('presence/shifting/showLogActivity')}}",
+			    "type": "GET"
+			},
+			"columns": [
+				{
+		            render: function ( data, type, row, meta ) {
+		               return  meta.row+1;
+		            }
+		        },
+		        {
+		            render: function ( data, type, row, meta ) {
+		            	if (row.status == 'create') {
+		            		return "Create Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a') + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a') + "]";
+		            	}else if (row.status == 'update') {
+		            		return  "Updated Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]" + "<br> menjadi <br>"+ row.className_updated + " [" + moment(row.start_updated).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_updated).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}else{
+		            		return  "Deleted Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}
+		            }
+		        },
+	            { "data": "created_at" },
+	            { "data": "name" },
+        	]
+		});
+		// $("#log-activity").append(table);
+	}
+
+	function showReporting(){
+		$('#calendar').removeClass('display-block').addClass('display-none');
+		$('#reporting').removeClass('display-none').addClass('display-block');
+
+		$('#table-log').DataTable({
+			"ajax": {
+			    "url": "{{url('presence/shifting/showLogActivity')}}",
+			    "type": "GET"
+			},
+			"columns": [
+				{
+		            render: function ( data, type, row, meta ) {
+		               return  meta.row+1;
+		            }
+		        },
+		        {
+		            render: function ( data, type, row, meta ) {
+		            	if (row.status == 'create') {
+		            		return "Create Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a') + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a') + "]";
+		            	}else if (row.status == 'update') {
+		            		return  "Updated Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]" + "<br> menjadi <br>"+ row.className_updated + " [" + moment(row.start_updated).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_updated).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}else{
+		            		return  "Deleted Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+		            	}
+		            }
+		        },
+	            { "data": "created_at" },
+	            { "data": "name" },
+        	]
+		});
+		// $("#log-activity").append(table);
+	}
+
+	$('#daterange-btn').daterangepicker({
+		startDate: moment().subtract(29, 'days'),
+		endDate: moment()
+	},
+	function (start, end) {
+		$("#shuttle-box").prop("disabled",false)
+
+		$('#daterange-btn span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+
+		startDay = start.format('YYYY-MM-DD');
+		endDay = end.format('YYYY-MM-DD');
+
+		$("#startDate").val(startDay)
+		$("#endDate").val(endDay)
+
+		startDate = start.format('D MMMM YYYY');
+		endDate = end.format('D MMMM YYYY');
+
+		$("#table_report").empty();
+	});
+
+	$("#downloadReportBtn").on('click',function(){
+		swalWithCustomClass.fire({
+			title: 'Are you sure?',
+			text: "Make sure there is nothing wrong to get this report!",
+			icon: "warning",
+			showCancelButton: true,
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			confirmButtonText: 'Yes',
+			cancelButtonText: 'No',
+			}).then((result) => {
+				if (result.value){
+					Swal.fire({
+						title: 'Please Wait..!',
+						text: "Prossesing Data Report",
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						allowEnterKey: false,
+						customClass: {
+							popup: 'border-radius-0',
+						},
+						onOpen: () => {
+							Swal.showLoading()
+						}
+					})
+
+					var start = $('#daterange-btn').data('daterangepicker').startDate.format('YYYY-MM-DD 00:00:00')
+					var end = $('#daterange-btn').data('daterangepicker').endDate.format('YYYY-MM-DD 23:59:59')
+					var year = $("#yearReport").val()
+					var month = $("#monthReport").val()
+					var url = "{{url('presence/shifting/getReportShifting')}}?start=" + start + "&end=" + end + "&year=" + year + "&month=" + month
+
+					$.ajax({
+						type:"GET",
+						url:"https://reqres.in/api/users",
+						data:{
+							delay:3
+						},
+						success: function(result){
+							Swal.hideLoading()
+							if(result == 0){
+								swalWithCustomClass.fire({
+									//icon: 'error',
+									title: 'Success!',
+									text: "The file is unavailable",
+									type: 'error',
+									//confirmButtonText: '<a style="color:#fff;" href="report/' + result.slice(1) + '">Get Report</a>',
+								})
+							}else{
+								swalWithCustomClass.fire({
+									title: 'Success!',
+									text: "You can get your file now",
+									type: 'success',
+									confirmButtonText: '<a style="color:#fff;" target="_blank" href="' + url + '">Get Report</a>',
+								})
+							}
+						}
+					})
+				}
+			}
+		);
+	})
+
+	
 </script>
 @endsection

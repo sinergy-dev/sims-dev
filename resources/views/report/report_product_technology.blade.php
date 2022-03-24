@@ -93,7 +93,9 @@ Report Tag Product & Technology
               </div>
               <div class="col-md-4">
                 <button class="btn btn-primary btn-sm" id="apply-btn" style="margin-top: 25px"><i class="fa   fa-check-circle"></i> Apply</button>
-                 <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+                <button class="btn btn-info btn-sm reload-table" id="reload-table" style="margin-top: 25px"><i class="fa fa-refresh"></i> Refresh</button>
+                <!-- <button class="btn btn-danger btn-sm report-pdf" style="margin-top: 25px"><i class="fa fa-file-pdf-o"></i> PDF</button> -->
+                <button class="btn btn-success btn-sm report-excel" onclick="exportExcel('{{action('ReportController@reportExcelTag')}}')" style="margin-top: 25px"><i class="fa fa-file-excel-o"></i> Excel</button>
               </div>
             </div>     
             
@@ -121,9 +123,9 @@ Report Tag Product & Technology
                       <th>Customer</th>
                       <th>Opty Name</th>                    
                       <th>Persona</th>
-                      <th>Nominal</th>
-                      <th>Product/Technology</th>
-                      <th>List Price</th>
+                      <th>Product/technology</th>
+                      <th>Price</th>
+                      <th>Nominal (Deal Price)</th>
                     </tr>
                   </thead>
                 </table>
@@ -413,8 +415,6 @@ Report Tag Product & Technology
       var TagsTechno = [];
       var TagsPersona = [];
 
-      console.log(TagsPersona)
-
       if ($("#searchTagsProduct").val() != '-1') {
         TagsProduct = TagsProduct + "&TagsProduct[]=" + $("#searchTagsProduct").val();
       }
@@ -426,10 +426,6 @@ Report Tag Product & Technology
       if ($("#searchTagsPerson").val() != '2') {
         TagsPersona = TagsPersona + "&TagsPersona[]=" + $("#searchTagsPerson").val();
       }
-
-      // start_date = start_date + "&start_date=" + start_date
-
-      // end_date = end_date + "&end_date=" + end_date
 
       if ($("#searchTagsProduct").val() == "" || $("#searchTagsTechnology").val() == "" || $("#searchTagsPerson").val() == "") {
         Swal.fire({
@@ -443,32 +439,20 @@ Report Tag Product & Technology
           cancelButtonText: 'Okey',
         });
       }else{
-
           $('#data_lead').DataTable().clear().destroy();
           var table = $("#data_lead").DataTable({
               "ajax":{
                 "type":"GET",
                 "url":"{{url('/getFilterTags')}}?="+ TagsProduct + TagsTechno + TagsPersona + "&start_date=" + start_date + "&end_date=" + end_date,
-                // "url":"{{url('/getFilterTags')}}",
-                // "data":{
-                //   "TagsProduct":TagsProduct,
-                //   "Tagstechno":TagsTechno,
-                //   "TagsPersona":TagsPersona,
-                //   "start_date":start_date,
-                //   "end_date":end_date
-                // }
               },
-              "columns": [
-                // { "data": "lead_id" },  
-                // { "data": "brand_name" },  
-                // { "data": "opp_name" },  
+              "columns": [ 
                 {
                   render: function ( data, type, row, meta ) {
                     if (meta.row == 0) {
-                      return "<b>"+row.lead_id+"</b>";
+                      return row.lead_id;
                     }else{
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
-                        return "<b>"+row.lead_id+"</b>";
+                        return row.lead_id;
                       }else{
                         return "";
                       }
@@ -478,10 +462,10 @@ Report Tag Product & Technology
                 {
                   render: function ( data, type, row, meta ) {
                     if (meta.row == 0) {
-                      return "<b>"+row.brand_name+"</b>";
+                      return row.brand_name;
                     }else{
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
-                        return "<b>"+row.brand_name+"</b>";
+                        return row.brand_name;
                       }else{
                         return "";
                       }
@@ -491,10 +475,10 @@ Report Tag Product & Technology
                 {
                   render: function ( data, type, row, meta ) {
                     if (meta.row == 0) {
-                      return "<b>"+row.opp_name+"</b>";
+                      return row.opp_name;
                     }else{
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
-                        return "<b>"+row.opp_name+"</b>";
+                        return row.opp_name;
                       }else{
                         return "";
                       }
@@ -505,20 +489,20 @@ Report Tag Product & Technology
                   render: function ( data, type, row, meta) {
                     if (meta.row == 0) {
                       if (row.name_sales == null) {
-                        return "<b>"+row.name_presales+"</b>";
+                        return row.name_presales;
                       }else if (row.name_presales == null) {
-                        return "<b>"+row.name_sales+"</b>";
+                        return row.name_sales;
                       }else{
-                        return "<b>"+row.name_sales +','+"</b>"+"<b>"+ row.name_presales+"</b>";
+                        return row.name_sales +','+ row.name_presales;
                       }                      
                     }else{
                       if (table.rows({ selected: true }).data()[meta.row]['lead_id'] != table.rows({ selected: true }).data()[meta.row -1]['lead_id']) {
                         if (row.name_sales == null) {
-                          return "<b>"+row.name_presales+"</b>";
+                          return row.name_presales;
                         }else if (row.name_presales == null) {
-                          return "<b>"+row.name_sales+"</b>";
+                          return row.name_sales;
                         }else{
-                          return "<b>"+row.name_sales + ',' + "</b>"+"<b>" + row.name_presales +"</b>";
+                          return row.name_sales + ',' + row.name_presales ;
                         }
                       }else{
                         return "";
@@ -526,6 +510,24 @@ Report Tag Product & Technology
                     }
                   }
                 }, 
+                {
+                  render: function ( data, type, row, meta ) {
+                    var append = ""
+                    $.each(row.tag_product,function(key,value){
+                      append += "<span class='badge bg-blue'>"+value+"</span>" + " <span class='badge bg-green'>"+row.tag_tech[key]+"</span><br>"
+                    })
+                    return append;
+                  }
+                }, 
+                {
+                  render: function ( data, type, row, meta ) {
+                    var append = ""
+                    $.each(row.tag_price,function(key,value){
+                      append += $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(value) + "<br>"
+                    })
+                    return append
+                  }
+                },
                 {
                   render: function ( data, type, row, meta ) {
                     if (meta.row == 0) {
@@ -539,21 +541,6 @@ Report Tag Product & Technology
                     }
                   }
                 },
-                {
-                  render: function ( data, type, row, meta ) {
-                    if (row.name_product != null) {
-                      return "<span style='color:#4075c9'>"+row.name_product+"</span>";
-                    }
-                    if (row.name_tech != null) {
-                      return "<span style='color:#448c35;'>"+row.name_tech+"</span>";
-                    }
-                  }
-                }, 
-                {
-                  render: function ( data, type, row, meta ) {
-                    return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.price);
-                  }
-                },
                 // { "data": "amount" },        
               ],
               // "info":false,
@@ -561,16 +548,8 @@ Report Tag Product & Technology
               "ordering": false,
               "processing": true,
               "paging": false,
-              // "columnDefs": [
-              //   { "orderable": false, "targets": [0,1,2,3,4,5,6] }
-              // ]
           })
       }
-      // start_date  = $("#reportrange").val().split("-")[0];
-      // end_date    = $("#reportrange").val().split("-")[1];
-      // console.log($("#daterange-btn").datepicker("getDate"))
-
-      console.log(start_date,end_date)
     })
 
     $("#reload-table").click(function(){
@@ -583,6 +562,26 @@ Report Tag Product & Technology
       $("#searchTagsTechnology").val(null).trigger("change");
       $("#searchTagsPerson").val(null).trigger("change");
     })
+
+    function exportExcel(url){
+      var TagsProduct = [];
+      var TagsTechno = [];
+      var TagsPersona = [];
+
+      if ($("#searchTagsProduct").val() != '-1') {
+        TagsProduct = TagsProduct + "&TagsProduct[]=" + $("#searchTagsProduct").val();
+      }
+
+      if ($("#searchTagsTechnology").val() != '-1') {
+        TagsTechno  = TagsTechno + "&Tagstechno[]=" + $("#searchTagsTechnology").val();
+      }
+
+      if ($("#searchTagsPerson").val() != '2') {
+        TagsPersona = TagsPersona + "&TagsPersona[]=" + $("#searchTagsPerson").val();
+      }
+
+      window.location = url + "?start_date=" + start_date + "&end_date=" + end_date  + TagsProduct + TagsTechno + TagsPersona 
+    }
 
     
   </script>

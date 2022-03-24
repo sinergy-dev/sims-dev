@@ -215,57 +215,83 @@ Detail Lead Register
           </div>
           <div class="box-body">
           	<fieldset id="formSD" disabled>
-          		<input type="" name="lead_id" id="lead_id" value="" hidden>
-              <div class="form-group">
-                <label for="assesment">Assessment</label>
-                <textarea class="form-control" type="text" placeholder="Enter assesment" onkeyup="textAreaAdjust(this)" name="assesment" id="assesment" style="overflow: hidden;resize: none;"></textarea>
-                <span id="assessment_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
-              </div>
-              <div class="form-group">
-               	<label for="proof of value">Proposed Design</label>
-               	 <textarea class="form-control" type="email" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Propossed Design" name="propossed_design" id="propossed_design"></textarea>
-                <span id="pDesign_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
-          		</div>
-          		<div class="form-group">
-                <label for="propossed_design">Proof Of Value</label>
-                <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Proof Of Value" name="pov"  id="pov" ></textarea>
-                	<span id="pov_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
-          		</div>
-              <div class="form-group">
-                <label for="project_budget"> Project Budget </label>
-                <div class="input-group">
-		              <div class="input-group-addon" style="background-color:#aaa;color:white">
-		                <b><i>Rp</i></b>
-		              </div>
-		              <input type="text" class="form-control money" placeholder="Enter Amount" name="project_budget" id="project_budget" pattern= "[0-9]">
-		            </div>
-          			<span class="help-block" style="display:none">Project Budget Melebihi Amount!</span>
-              </div>
-              <div class="row">
-              	<div class="form-group col-md-6">
-                		<label for="priority">Priority</label>                  
-	                <select class="form-control float-left" id="priority"  name="priority">
-	                  	<option value="">Choose Priority</option>
-	                    <option value="Contribute" selected>Contribute</option>
-	                    <option value="Fight" >Fight</option>
-	                    <option value="Foot Print" >Foot Print</option>
-	                    <option value="Guided" >Guided</option>
-	                </select>
-              	</div>
+          		<fieldset id="endSD">
+          			<input type="" name="lead_id" id="lead_id" value="" hidden>
+	              <div class="form-group">
+	                <label for="assesment">Assessment</label>
+	                <textarea class="form-control" type="text" placeholder="Enter assesment" onkeyup="textAreaAdjust(this)" name="assesment" id="assesment" style="overflow: hidden;resize: none;"></textarea>
+	                <span id="assessment_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
+	              </div>
+	              <div class="form-group">
+	               	<label for="proof of value">Proposed Design</label>
+	               	 <textarea class="form-control" type="email" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Propossed Design" name="propossed_design" id="propossed_design"></textarea>
+	                <span id="pDesign_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
+	          		</div>
+	          		<div class="form-group">
+	                <label for="propossed_design">Proof Of Value</label>
+	                <textarea class="form-control float-left" type="text" aria-describedby="emailHelp" style="overflow: hidden;resize: none;" onkeyup="textAreaAdjust(this)" placeholder="Enter Proof Of Value" name="pov"  id="pov" ></textarea>
+	                	<span id="pov_last_update"><small>Last Update  : yy/mm/dd HH:ii::ss</small></span>
+	          		</div>
+	              <div class="form-group">
+	                <label for="project_budget"> Project Budget </label>
+	                <div class="input-group">
+			              <div class="input-group-addon" style="background-color:#aaa;color:white">
+			                <b><i>Rp</i></b>
+			              </div>
+			              <input type="text" class="form-control money" placeholder="Enter Amount" name="project_budget" id="project_budget" pattern= "[0-9]">
+			            </div>
+	          			<span class="help-block" style="display:none">Project Budget Melebihi Amount!</span>
+	              </div>
+	              <div class="row">
+	              	<div class="form-group col-md-6">
+	                		<label for="priority">Priority</label>                  
+		                <select class="form-control float-left" id="priority"  name="priority">
+		                  	<option value="">Choose Priority</option>
+		                    <option value="Contribute" selected>Contribute</option>
+		                    <option value="Fight" >Fight</option>
+		                    <option value="Foot Print" >Foot Print</option>
+		                    <option value="Guided" >Guided</option>
+		                </select>
+	              	</div>
 
-                <div class="form-group col-md-6">
-                  <label for="proyek_size" class="margin-top-form">Project size</label>
-                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size">
-	                    <option value="">-- Choose Project Size --</option>
-	                    <option value="Small" selected>Small</option>
-	                    <option value="Medium" >Medium</option>
-	                    <option value="Advance" >Advance</option>
-                    </select>
-                </div>
-              </div>                
+	                <div class="form-group col-md-6">
+	                  <label for="proyek_size" class="margin-top-form">Project size</label>
+	                    <select class="form-control float-left margin-bottom" id="proyek_size"  name="proyek_size">
+		                    <option value="">-- Choose Project Size --</option>
+		                    <option value="Small" selected>Small</option>
+		                    <option value="Medium" >Medium</option>
+		                    <option value="Advance" >Advance</option>
+	                    </select>
+	                </div>
+	              </div> 
+	              <div class="row">
+	              	<div class="col-lg-12 col-xs-12">
+	              		<label>Product Tagging</label>
+	              		<div class="table-responsive">
+	              			<table class="table" id="table-tagging">
+		                    <thead>
+		                      <tr>
+		                        <th>Product Tag</th>
+		                        <th>Technology Tag</th>
+		                        <th>Price</th>
+		                        <td class="text-center">
+		                          <button class="btn btn-xs btn-primary" onclick="addTagging()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
+								              	<i class="fa fa-plus"></i>
+								              </button> 
+		                        </td>
+		                      </tr>
+			                  </thead>
+			                  <tbody id="tbtagging">
+			                  </tbody>
+			                </table>
+	              		</div>              		
+	              	</div>
+	              </div>  
+          		</fieldset>          		            
               <div class="form-group">
               	<button class="btn btn-md btn-sd btn-primary" id="btnSubmitSD" style="float: left;" type="button">Submit</button>
               	<button class="btn btn-md btn-sd btn-success" id="btnRaiseTP" onclick="btnRaiseTP()" style="float: right;" type="button" onclick="" data-toggle="modal">Raise To Tender</button>
+              	<!-- <input style="float: right;margin-right: 5px;margin-top: 10px;" type="checkbox" name="" id="cbSubmitSD"> -->
               </div>
           	</fieldset>
           </div>
@@ -359,7 +385,7 @@ Detail Lead Register
 			              <div class="input-group-addon" style="background-color:#aaa;color:white">
 			                <b><i>Rp</i></b>
 			              </div>
-			              <input type="text" class="form-control money" placeholder="Enter Amount" name="deal_price" id="deal_price" pattern= "[0-9]">
+			              <input type="text" class="form-control" placeholder="Enter Amount" name="deal_price" id="deal_price" pattern= "[0-9]">
 			          </div>
           			<span class="help-block" style="display:none">Please Fill and Submit Deal Price Before Result!</span>
               </div>
@@ -665,10 +691,8 @@ Detail Lead Register
 		if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent) 
 		    || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4))) { 
 		    isMobile = true;
-
 				$("#box-TP").height()
-				$("#box-SD").height()		      	
-
+				$("#box-SD").height()		  	
 		}
 
 		function initmoney(){
@@ -679,7 +703,6 @@ Detail Lead Register
 		  element.style.height = "1px";
 		  element.style.height = (25+element.scrollHeight)+"px";
 		  if(accesable.includes('formSD') || accesable.includes('formTP')){
-		  	console.log('sd')
 				var heightSD = parseInt($("#box-SD").innerHeight())
 				// $("#box-TP").height(heightSD)		      	
 			}	
@@ -691,21 +714,6 @@ Detail Lead Register
   	})
 
   	$(document).ready(function(){
-  	// 	var heightSD = parseInt($("#box-SD").innerHeight())
-			// var heightTP = parseInt($("#box-TP").innerHeight())
-			// console.log(heightSD)
-			// console.log(heightTP)
-			// if(accesable.includes('formSD') || accesable.includes('formTP')){					
-			// 	if (heightSD > heightTP) {
-			// 		console.log('besar SD')
-			// 		$("#box-SD").height(heightSD)
-			// 		$("#box-TP").height(heightSD)
-			// 	}else if(heightTP > heightSD){
-			// 		console.log('besar TP')
-			// 		$("#box-TP").height(heightTP)
-			// 		$("#box-SD").height(heightTP)
-			// 	}	      	
-			// }
   		Pace.restart();
 			Pace.track(function() {
 	  		$.ajax({
@@ -961,11 +969,23 @@ Detail Lead Register
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Product</th>'
-	  		  		append = append + '<td>'+result.data[0].name_product_tag+'</td>'
+	  		  		var str_array = result.data[0].name_product_tag.split(',')
+	  		  		append = append + '<td>' 
+	  		  		for(var i = 0; i < str_array.length; i++) {
+	  		  			str_array[i] = str_array[i].replace(/^\s*/, "").replace(/\s*$/, "");
+	  		  			append = append + '<span class="badge bg-blue">' + str_array[i] + '</span> '
+	  		  		}
+	  		  		append = append +'</td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Technology</th>'
-	  		  		append = append + '<td>'+result.data[0].name_tech+'</td>'
+	  		  		var str_array_tech = result.data[0].name_tech.split(',')
+	  		  		append = append + '<td>' 
+	  		  		for(var i = 0; i < str_array_tech.length; i++) {
+	  		  			str_array_tech[i] = str_array_tech[i].replace(/^\s*/, "").replace(/\s*$/, "");
+	  		  			append = append + '<span class="badge bg-green">' + str_array_tech[i] + '</span> '
+	  		  		}
+	  		  		append = append +'</td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Note</th>'
@@ -980,7 +1000,6 @@ Detail Lead Register
 
 			      current_presales = []
 			      current_presales.push(result.data[0].name_presales)
-			      console.log(current_presales[0].split(","))
 
 			      $.ajax({
 					    url: "{{url('/project/getPresales')}}",
@@ -988,7 +1007,6 @@ Detail Lead Register
 					    success: function(result) {
 					    	var newArr = []
 					    	$.each(result.data,function(key,value){
-									console.log(value.text)
 					        if (current_presales[0].split(",").includes(value.text)) {
 					        	newValue = $.grep(value, function(value) {
 										  return value != current_presales;
@@ -999,7 +1017,6 @@ Detail Lead Register
 					        	newArr.push(value)
 					        }
 					      })
-					    	console.log(result.data)
 				        $("#contribute_presales").select2({
 				        	placeholder:"Select Contribute Presales",
 				        	multiple:true,
@@ -1017,7 +1034,6 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						console.log(result)
 						$("#assesment").val(result.data.assessment)
 						if (result.data.assessment_date != '-') {
 							$("#assessment_last_update").html('<small> Last Update : '+result.data.assessment_date+'</small>')
@@ -1037,34 +1053,14 @@ Detail Lead Register
 
 						$("textarea").height( $("textarea")[0].scrollHeight)
 
-						var fd = new FormData()												
+						// if (result.data.checked == "checked") {
+      //       	$("#endSD").prop("disabled",true)
+      //       	$("#btnSubmitSD").prop("disabled",true)
+      //       	$("#cbSubmitSD").prop("disabled",true)
+      //       	$("#btnRaiseTP").prop("disabled",false)
+      //       }
 
-						// var heightSD = parseInt($("#box-SD").innerHeight())
-						// var heightTP = parseInt($("#box-TP").innerHeight())
-						// console.log(heightSD)
-						// console.log(heightTP)
-						// if(accesable.includes('formSD')){					
-						// 	if (heightSD > heightTP) {
-						// 		console.log('besar SD')
-						// 		$("#box-SD").height(heightSD)
-						// 		// $("#box-TP").height(heightSD)
-						// 	}else if(heightTP > heightSD){
-						// 		console.log('besar TP')
-						// 		// $("#box-TP").height(heightTP)
-						// 		$("#box-SD").height(heightTP)
-						// 	}	      	
-						// }else if (accesable.includes('formTP')){
-						// 	if (heightSD > heightTP) {
-						// 		console.log('besar SD')
-						// 		$("#box-SD").height(heightSD)
-						// 		// $("#box-TP").height(heightSD)
-						// 	}else if(heightTP > heightSD){
-						// 		console.log('besar TP')
-						// 		// $("#box-TP").height(heightTP)
-						// 		$("#box-SD").height(heightTP)
-						// 	}	 
-						// }
-
+						var fd = new FormData()					
 						$("#btnSubmitSD").click(function(){
 							if (parseInt($("#project_budget").val().replaceAll(".", "")) > result.data.amount) {
 			  				$("#project_budget").closest('.form-group').addClass('has-error')
@@ -1163,6 +1159,7 @@ Detail Lead Register
 	              fd.append('proyek_size',$("#proyek_size").val())
 	              fd.append('_token',"{{csrf_token()}}")
 	              fd.append('lead_id',window.location.href.split("/")[5])
+	              
 
 								$("btnSubmitSD").attr("onclick",btnSubmit(fd,'SD'))
 			  			}							
@@ -1177,7 +1174,6 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						console.log(result)
 						$("#lelang").val(result.data.auction_number)
 						$("#submit_price").val(result.data.submit_price).mask('000.000.000.000', {reverse: true})	
 						$("#project_class").val(result.data.project_class)
@@ -1187,8 +1183,10 @@ Detail Lead Register
         			$("#price_deal").css("display", "block").val()
 						}
 						$("#jumlah_tahun").val(result.data.jumlah_tahun)
-						$("#deal_price_total").val(result.data.deal_price_total).mask('000.000.000.000', {reverse: true})	
-						$("#deal_price").val(result.data.deal_price).mask('000.000.000.000', {reverse: true})	
+						$("#deal_price_total").unmask().mask('000.000.000.000', {reverse: true});
+   					$("#deal_price_total").val(result.data.deal_price).trigger("input");
+						$("#deal_price").unmask().mask('000.000.000.000', {reverse: true});
+   					$("#deal_price").val(result.data.deal_price).trigger("input");	
 						$("#win_prob").val(result.data.win_prob)
 						$("#project_name").val(result.data.project_name)
 						$("#submit_date").val(result.data.submit_date)
@@ -1326,6 +1324,7 @@ Detail Lead Register
 	            fd.append("project_class",$("#project_class").val())
 	            fd.append("jumlah_tahun",$("#jumlah_tahun").val())
 	            fd.append("deal_price_total",$("#deal_price_total").val())
+
 								
 							$("btnSubmitTP").attr("onclick",btnSubmit(fd,'TP'))
 						
@@ -1364,6 +1363,265 @@ Detail Lead Register
 				
 			})
 		})
+
+		function grandTotal(){
+    	var sum = 0
+      $('.new-price').each(function() {
+          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          sum += temp;
+      });
+      $("#table-grand-total").show()
+      var formatter = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+
+      $("#input_gran_total").val(formatter.format(sum))
+    }
+		
+		var i = 0;
+  	function addTagging(){
+  		if ($('#tbtagging tr').length < 0) {
+  			$("#btnRaiseTP").prop("disabled",false)
+  		}else{
+  			$("#btnRaiseTP").prop("disabled",true)
+  		}
+  		$.ajax({
+        url: "{{url('/project/getProductTechTagDetail')}}",
+        type: "GET",
+        data: {
+            lead_id: window.location.href.split('/')[5],
+        },
+        success: function(result) {
+            $("#searchTagsProductSol[data-value='" + i + "']").empty("");
+            $("#searchTagsTechnologySol[data-value='" + i + "']").empty("");
+            var product_tag = result.product_tag;
+            var product_tag_selectOption = [];
+
+            var technology_tag = result.technology_tag;
+            var technology_tag_selectOption = [];
+
+            $.each(product_tag, function(key, value) {
+                product_tag_selectOption.push(value)
+            })
+
+            $.each(technology_tag, function(key, value) {
+                technology_tag_selectOption.push(value)
+            })
+
+            var TagProduct = $("#searchTagsProductSol[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Product",
+                data: product_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+            var TagProduct = $("#searchTagsTechnologySol[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Technology",
+                data: technology_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+        }
+    	})
+
+      i++;
+      var append = ""
+      append = append + "<tr class='new-tagging'>"
+      append = append + " <td>"
+      append = append + " <select class='form-control select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td>"
+      append = append + " <select class='form-control select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip' title='50000' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input data-value='" + i + "' class='money form-control new-price-sol' type='text' placeholder='Enter Product Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center'>"
+      append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash-tagging'>"
+      append = append + " <i class='fa fa-trash'></i>"
+      append = append + " </button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+      
+      $("#tbtagging").append(append)
+      initmoney();
+    }
+
+    $(document).on('keypress', '.new-price-sol', function() {
+    	if (isMobile == true) {
+    		console.log('oke')
+			  Swal.fire({
+				  title: 'product price',
+				  input: 'text',
+				  inputAttributes: {
+				    autocapitalize: 'off',
+				    id: 'price'
+				  },
+				  onOpen: function(el) {
+	        	var container = $(el);
+	        	container.find('#price').mask('000.000.000.000', {reverse: true});
+	    		},
+				  showCancelButton: true,
+				  confirmButtonText: 'oke',
+				}).then((result) => {
+				  if (result.isConfirmed) {
+				    $(".new-price-sol[data-value='" + i + "']").val(result.value)
+				  }
+				})
+    	}		
+		})
+
+    $.ajax({
+    	url: "{{url('/project/showTagging')}}",
+      type: "GET",
+      data: {
+          lead_id: window.location.href.split('/')[5],
+      },success: function(result){
+    		i = 0
+      	$.each(result, function(key,value){
+      		i++
+      		addTaggingNotEmpty(value.id_product_tag,value.id_technology_tag,value.price,i)
+      	})
+      }
+    })
+
+    function addTaggingNotEmpty(id_product,id_tech,price,i){
+    	var append = ""
+      append = append + "<tr class='new-tagging'>"
+      append = append + " <td>"
+      append = append + " <select class='form-control col-xs-12 select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td>"
+      append = append + " <select class='form-control col-xs-12 select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip'  style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input data-value='" + i + "' class='money form-control col-xs-12 new-price-sol' type='text' placeholder='Enter Product Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center'>"
+      append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash-tagging'>"
+      append = append + " <i class='fa fa-trash'></i>"
+      append = append + " </button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+
+      $("#tbtagging").append(append)	      
+
+  		$.ajax({
+        url: "{{url('/project/getProductTechTagDetail')}}",
+        type: "GET",
+        success: function(result) {
+            $("#searchTagsProductSol[data-value='" + i + "']").empty("");
+            $("#searchTagsTechnologySol[data-value='" + i + "']").empty("");
+            var product_tag = result.product_tag;
+            var product_tag_selectOption = [];
+
+            var technology_tag = result.technology_tag;
+            var technology_tag_selectOption = [];
+
+            $.each(product_tag, function(key, value) {
+
+            	if (value.id == "p"+id_product) {
+            		value.selected = true
+            	}
+                product_tag_selectOption.push(value)
+            })
+            $.each(technology_tag, function(key, value) {
+            	if (value.id == "t"+id_tech) {
+            		value.selected = true
+            	}
+                technology_tag_selectOption.push(value)
+            })
+
+            var TagProduct = $("#searchTagsProductSol[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Product",
+                data: product_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+            
+            var TagProduct = $("#searchTagsTechnologySol[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Technology",
+                data: technology_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+        }
+    	})
+
+  		$("[data-toggle=tooltip][data-value='" + i + "']").mouseenter(function(){
+    		var $this = $(this);
+        $this.attr('title', 'uang');
+    	})  
+  		$(".new-price-sol[data-value='" + i + "']").val(price)  
+
+      initmoney();
+    }
+
+    // $("#cbSubmitSD").change(function() {
+    //     if(this.checked) {
+    //     	Swal.fire({
+				// 	  title: 'Are you sure?',
+				// 	  text: "all processes in solution design are ends, ready to tender process",
+				// 	  icon: 'warning',
+				// 	  showCancelButton: true,
+				// 	  confirmButtonColor: '#3085d6',
+				// 	  cancelButtonColor: '#d33',
+				// 	  confirmButtonText: 'Yes, Sure!',
+				// 	  showLoaderOnConfirm: true,
+				// 	  preConfirm: function (email) {
+				// 	    return new Promise(function (resolve, reject) {
+				// 	      setTimeout(function() {
+				// 	        $.ajax({
+				//             type:"POST",
+				//             url:"{{url('/project/checkProductTech')}}",
+				//             data:{
+				//               lead_id:window.location.href.split("/")[5],
+				//               _token:"{{ csrf_token() }}"
+				//             },success:function(){
+				//             	Swal.fire(
+				// 		              'Successfully!',
+				// 		              'success'
+				// 		          ).then((result) => {
+				// 	              if (result.value) {
+				// 	              	$(".select2-customTechnologySol").prop("disabled",true)
+				// 							  	$(".select2-customProductSol").prop("disabled",true)
+				// 		          		$("#btnRaiseTP").prop("disabled",false)
+				// 		          		$("#btnSubmitSD").prop("disabled",true)
+				// 		          		$("#cbSubmitSD").prop("disabled",true)
+				// 		          		$(".btn-trash").prop("disabled",true)
+				// 		          		$("#endSD").prop("disabled",true)	
+				// 	              }
+    //   									$("#cbSubmitSD").prop("checked",false)
+				// 		          })
+				// 						}
+				//           }) 
+				// 	      }, 2000)
+				// 	    })
+				// 	  },
+				// 	  allowOutsideClick: false
+				// 	}).then((result) => {
+				// 	  if (result.isConfirmed) {		
+				// 		}
+				// 	})
+    //     }else{
+    //     	$("#btnRaiseTP").prop("disabled",true)
+    //       $("#btnSubmitSD").prop("disabled",false)       
+    //     }
+    // });
 
 		function submitContributePresales(){
 			var concat_name = []
@@ -1432,10 +1690,7 @@ Detail Lead Register
         $("#price_deal").css("display", "none");
         $("#purchase-order").css("display", "none");
         $("#box-SD").height("")
-
-  		}
-
-  		
+  		}  		
   	}
 
   	function btnRaiseTP(){
@@ -1488,6 +1743,26 @@ Detail Lead Register
 
   	function btnSubmit(data,val){
   		if (val == 'SD') {
+  			var i = 0
+  			var tagProduct = []
+	      $('#table-tagging #tbtagging .new-tagging').each(function() {
+	        // tagProduct.push({
+	        //   tag_price:$(this).find(".new-price").val().replace(/\D/g, ""),
+	        //   tag_product:{
+	        //     productTag:$(this).find('.select2-customProductSol').select2("data")[0].id.substr(1),
+	        //     techTag:$(this).find('.select2-customTechnologySol').select2("data")[0].id.substr(1)
+	        //   }
+	        // })
+	        data.append("tagData[tagProduct]["+i+"][tag_price]",$(this).find(".new-price-sol").val().replace(/\D/g, ""))
+	        data.append("tagData[tagProduct]["+i+"][tag_product][productTag]",$(this).find('.select2-customProductSol').select2("data")[0].id.substr(1))
+	        data.append("tagData[tagProduct]["+i+"][tag_product][techTag]",$(this).find('.select2-customTechnologySol').select2("data")[0].id.substr(1))
+	        i++
+	      });
+
+	      // var tagData = {
+	      //   tagProduct:tagProduct
+	      // }
+
   			Swal.fire({
 			        title: 'Please Wait..!',
 			        text: "It's sending..",
@@ -1502,25 +1777,38 @@ Detail Lead Register
 			        }
 			    })
 
-			    $.ajax({
-            type:"POST",
-            url:"{{url('project/update_sd')}}",
-            data:data,
-            contentType: false,
-						processData: false,
-            success: function(result){
-              Swal.showLoading()
-              Swal.fire(
-                'Successfully!',
-                'You`re updated Solution Design.',
-                'success'
-              ).then((result) => {
-                if (result.value) {
-                  location.reload();
-                }
-              })
+  				// $.ajax({
+      //       type:"POST",
+      //       url:"{{url('project/update_sd')}}",
+      //       data:{
+				  //     lead_id:window.location.href.split("/")[5],
+      //       	tagData:tagData,
+      //     		_token:"{{ csrf_token() }}"
+      //       },
+      //       success: function(result){
+            	
+      //       }
+      //     })
+      $.ajax({
+        type:"POST",
+        url:"{{url('project/update_sd')}}",
+        data:data,
+        contentType: false,
+				processData: false,
+        success: function(result){
+          Swal.showLoading()
+          Swal.fire(
+            'Successfully!',
+            'You`re updated Solution Design.',
+            'success'
+          ).then((result) => {
+            if (result.value) {
+              location.reload();
             }
           })
+        }
+      })
+
   		}else{
   			Swal.fire({
 		        title: 'Please Wait..!',
@@ -1559,6 +1847,7 @@ Detail Lead Register
 
   	function btnResult(lead_id,id_cus,opp_name){
   		$("#formResult").modal('show') 
+		  initmoney(); 
 
   		$("#opp_name_result").html("<b>Opp Name : "+opp_name+"<i></i></b>")
 
@@ -1599,28 +1888,12 @@ Detail Lead Register
 	    });
 
 	    $(document).on('input', '.new-price', function() {
-        var sum = 0
-        $('.new-price').each(function() {
-            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-            sum += temp;
-            console.log(temp)
-        });
-        $("#table-grand-total").show()
-        var formatter = new Intl.NumberFormat('en-US', {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        });
-
-        console.log(sum)
-        $("#input_gran_total").val(formatter.format(sum))
+        grandTotal()
       });
-
-		  initmoney();  
 
 			$('#result').on('change', function (e) {
         var optionSelected = $("option:selected", this);
         var valueSelected = this.value;
-        console.log(valueSelected);
           if (valueSelected == "WIN") {
             document.getElementById("nextBtn").innerHTML = "Next";
             $("#result-win").css("display", "block");
@@ -1714,110 +1987,134 @@ Detail Lead Register
 		            document.getElementById("prevBtn").innerHTML = "Prev";
 		            document.getElementById("nextBtn").innerHTML = "Submit";
 		        }
+		        initmoney();
+		        // $.ajax({
+		        //     url: "{{url('/sales/getProductTechByLead')}}",
+		        //     type: "GET",
+		        //     data: {
+		        //         lead_id: lead_id,
+		        //     },
+		        //     success: function(result) {
+		        //         $("#tbtagprice").empty();
+		        //         var append = ""
+		        //         $.each(result, function(key, value) {
+		        //             append = append + "<tr class='existing-products'>"
+		        //             append = append + " <td class = 'existing-id' style='vertical-align: middle;'>"
+		        //             append = append + value.name_product + "<input class=' existing-id-product' value='" + value.id.substr(1) + "' hidden />"
+		        //             append = append + "</td>"
+		        //             append = append + "<td>"
+		        //             append = append + " <div class='input-group'>"
+		        //             append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+		        //             append = append + " <input class='money form-control existing-price' data-value='" + i + "' type='text' placeholder='Enter Product Price' name='project_budget'>"
+		        //             append = append + " <span class='input-group-btn'>"
+		        //             append = append + " <button type='button' style='width: auto !important;margin-left: 10px;' class='btn btn-danger btn-flat btn-trash'>"
+		        //             append = append + " <i class='fa fa-trash'></i>"
+		        //             append = append + " </button>"
+		        //             append = append + " </span>"
+		        //             append = append + " </div>"
+		        //             append = append + "</td>"
+		        //             append = append + " </tr > "
 
-		        $.ajax({
-		            url: "{{url('/project/getProductTechByLead')}}",
-		            type: "GET",
-		            data: {
-		                lead_id: lead_id,
-		            },
-		            success: function(result) {
-		                $("#tbtagprice").empty();
-		                var append = ""
-		                $.each(result, function(key, value) {
-		                    append = append + "<tr class='existing-products'>"
-		                    append = append + " <td class = 'existing-id' style='vertical-align: middle;'>"
-		                    append = append + value.name_product + "<input class=' existing-id-product' value='" + value.id.substr(1) + "' hidden />"
-		                    append = append + "</td>"
-		                    append = append + "<td>"
-		                    append = append + " <div class='input-group'>"
-		                    append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-		                    append = append + " <input class='money form-control existing-price' data-value='" + i + "' type='text' placeholder='Enter Product Price' name='project_budget'>"
-		                    append = append + " <span class='input-group-btn'>"
-		                    append = append + " <button type='button' style='width: auto !important;margin-left: 10px;' class='btn btn-danger btn-flat btn-trash'>"
-		                    append = append + " <i class='fa fa-trash'></i>"
-		                    append = append + " </button>"
-		                    append = append + " </span>"
-		                    append = append + " </div>"
-		                    append = append + "</td>"
-		                    append = append + " </tr > "
-
-		                })
-		                $("#tbtagprice").append(append)
-		                initmoney();
-		            },
-		        })
+		        //         })
+		        //         $("#tbtagprice").append(append)
+		        //         initmoney();
+		        //     },
+		        // })
 
 		        var i = 0;
-		        $("#addProductTech").click(function() {
-		            $("#nextBtn").prop("disabled", false);
-		            $.ajax({
-		                url: "{{url('/project/getProductTechTagDetail')}}",
-		                type: "GET",
-		                data: {
-		                    lead_id: window.location.href.split('/')[5],
-		                },
-		                success: function(result) {
-		                    $("#searchTagsProduct[data-value='" + i + "']").empty("");
-		                    $("#searchTagsTechnology[data-value='" + i + "']").empty("");
-		                    var product_tag = result.product_tag;
-		                    var product_tag_selectOption = [];
+		        $("#tbtagprice").empty()		        
 
-		                    var technology_tag = result.technology_tag;
-		                    var technology_tag_selectOption = [];
+		        $.ajax({
+				    	url: "{{url('/project/showTagging')}}",
+				      type: "GET",
+				      data: {
+				          lead_id: window.location.href.split('/')[5],
+				      },success: function(result){
+				    		i = 0
+				      	$.each(result, function(key,value){
+				      		i++
+				      		addProductTechInitiate(value.id_product_tag,value.id_technology_tag,value.price,i)
+				      	})
+				      	grandTotal()
+				      }
+				    })
 
-		                    $.each(product_tag, function(key, value) {
-		                        product_tag_selectOption.push(value)
-		                    })
+		        $("#tbtagprice").empty();
 
-		                    $.each(technology_tag, function(key, value) {
-		                        technology_tag_selectOption.push(value)
-		                    })
+				    function addProductTechInitiate(id_product,id_tech,price,i){
+				    	var append = ""
+				      append = append + "<tr class='new-product'>"
+				      append = append + " <td>"
+				      append = append + " <select class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
+				      append = append + " </td>"
+				      append = append + " <td>"
+				      append = append + " <select class='form-control select2-customTechnology' data-value='" + i + "' id='searchTagsTechnology' style='width: 100%!important'></select>"
+				      append = append + " </td>"
+				      append = append + " <td style='white-space: nowrap'>"
+				      append = append + " <div class='input-group'>"
+				      append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+				      append = append + " <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price'>"
+				      append = append + " </div>"
+				      append = append + " </td>"
+				      append = append + " <td class='text-center'>"
+				      append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash'>"
+				      append = append + " <i class='fa fa-trash'></i>"
+				      append = append + " </button>"
+				      append = append + " </td>"
+				      append = append + "</tr>"
 
-		                    var TagProduct = $("#searchTagsProduct[data-value='" + i + "']").select2({
-		                        dropdownParent: $('#formResult'),
-		                        placeholder: " Select #Tags#Product",
-		                        data: product_tag_selectOption,
-		                        templateSelection: function(selection, container) {
-		                            return $.parseHTML('<span>' + selection.text + '</span>');
-		                        }
-		                    })
-		                    var TagProduct = $("#searchTagsTechnology[data-value='" + i + "']").select2({
-		                        dropdownParent: $('#formResult'),
-		                        placeholder: " Select #Tags#Technology",
-		                        data: technology_tag_selectOption,
-		                        templateSelection: function(selection, container) {
-		                            return $.parseHTML('<span>' + selection.text + '</span>');
-		                        }
-		                    })
-		                }
-		            })
+				      $("#tbtagprice").append(append)	      
 
-		            i++;
-		            var append = ""
-		            append = append + "<tr class='new-product'>"
-		            append = append + " <td>"
-		            append = append + " <select class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
-		            append = append + " </td>"
-		            append = append + " <td>"
-		            append = append + " <select class='form-control select2-customTechnology' data-value='" + i + "' id='searchTagsTechnology' style='width: 100%!important'></select>"
-		            append = append + " </td>"
-		            append = append + " <td style='white-space: nowrap'>"
-		            append = append + " <div class='input-group'>"
-		            append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-		            append = append + " <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price' name='project_budget'>"
-		            append = append + " </div>"
-		            append = append + " </td>"
-		            append = append + " <td class='text-center'>"
-		            append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash'>"
-		            append = append + " <i class='fa fa-trash'></i>"
-		            append = append + " </button>"
-		            append = append + " </td>"
-		            append = append + "</tr>"
+				  		$.ajax({
+				        url: "{{url('/project/getProductTechTagDetail')}}",
+				        type: "GET",
+				        success: function(result) {
+				            $("#searchTagsProduct[data-value='" + i + "']").empty("");
+				            $("#searchTagsTechnology[data-value='" + i + "']").empty("");
+				            var product_tag = result.product_tag;
+				            var product_tag_selectOption = [];
 
-		            $("#tbtagprice").append(append)
-		            initmoney();
-		        })
+				            var technology_tag = result.technology_tag;
+				            var technology_tag_selectOption = [];
+
+				            $.each(product_tag, function(key, value) {
+
+				            	if (value.id == "p"+id_product) {
+				            		value.selected = true
+				            	}
+				                product_tag_selectOption.push(value)
+				            })
+				            $.each(technology_tag, function(key, value) {
+				            	if (value.id == "t"+id_tech) {
+				            		value.selected = true
+				            	}
+				                technology_tag_selectOption.push(value)
+				            })
+
+				            var TagProduct = $("#searchTagsProduct[data-value='" + i + "']").select2({
+				                dropdownParent: $('#formSD'),
+				                placeholder: " Select #Tags#Product",
+				                data: product_tag_selectOption,
+				                templateSelection: function(selection, container) {
+				                    return $.parseHTML('<span>' + selection.text + '</span>');
+				                }
+				            })
+				            
+				            var TagProduct = $("#searchTagsTechnology[data-value='" + i + "']").select2({
+				                dropdownParent: $('#formSD'),
+				                placeholder: " Select #Tags#Technology",
+				                data: technology_tag_selectOption,
+				                templateSelection: function(selection, container) {
+				                    return $.parseHTML('<span>' + selection.text + '</span>');
+				                }
+				            })
+				        }
+				    	})
+
+				    	$(".new-price[data-value='" + i + "']").val(price)	      
+
+				      initmoney();
+				    }
 
 		        $("#addService").click(function() {
 		            $("#nextBtn").prop("disabled", false);
@@ -1850,9 +2147,82 @@ Detail Lead Register
 		    }
 		}
 
-		function submitBtnWin(n){
-      $("#nextBtn").prop("disabled",true);
-      $("#prevBtn").prop("disabled",true);
+		$("#addProductTech").click(function() {
+			addNewTag()
+    })
+
+		function addNewTag(){
+  	 	$("#nextBtn").prop("disabled", false);
+      $.ajax({
+          url: "{{url('/project/getProductTechTagDetail')}}",
+          type: "GET",
+          data: {
+              lead_id: window.location.href.split('/')[5],
+          },
+          beforeSend: function(){
+          	i++;
+            var append = ""
+            append = append + "<tr class='new-product'>"
+            append = append + " <td>"
+            append = append + " <select class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
+            append = append + " </td>"
+            append = append + " <td>"
+            append = append + " <select class='form-control select2-customTechnology' data-value='" + i + "' id='searchTagsTechnology' style='width: 100%!important'></select>"
+            append = append + " </td>"
+            append = append + " <td style='white-space: nowrap'>"
+            append = append + " <div class='input-group'>"
+            append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+            append = append + " <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price' name='project_budget'>"
+            append = append + " </div>"
+            append = append + " </td>"
+            append = append + " <td class='text-center'>"
+            append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash'>"
+            append = append + " <i class='fa fa-trash'></i>"
+            append = append + " </button>"
+            append = append + " </td>"
+            append = append + "</tr>"
+
+            $("#tbtagprice").append(append)
+            initmoney();
+          },
+          success: function(result) {
+              $("#searchTagsProduct[data-value='" + i + "']").empty("");
+              $("#searchTagsTechnology[data-value='" + i + "']").empty("");
+              var product_tag = result.product_tag;
+              var product_tag_selectOption = [];
+
+              var technology_tag = result.technology_tag;
+              var technology_tag_selectOption = [];
+
+              $.each(product_tag, function(key, value) {
+                  product_tag_selectOption.push(value)
+              })
+
+              $.each(technology_tag, function(key, value) {
+                  technology_tag_selectOption.push(value)
+              })
+
+              var TagProduct = $("#searchTagsProduct[data-value='" + i + "']").select2({
+                  dropdownParent: $('#formResult'),
+                  placeholder: " Select #Tags#Product",
+                  data: product_tag_selectOption,
+                  templateSelection: function(selection, container) {
+                      return $.parseHTML('<span>' + selection.text + '</span>');
+                  }
+              })
+              var TagProduct = $("#searchTagsTechnology[data-value='" + i + "']").select2({
+                  dropdownParent: $('#formResult'),
+                  placeholder: " Select #Tags#Technology",
+                  data: technology_tag_selectOption,
+                  templateSelection: function(selection, container) {
+                      return $.parseHTML('<span>' + selection.text + '</span>');
+                  }
+              })
+          }
+      })
+  	}
+
+		function submitBtnWin(n){    
 
       var rowCount = $('#tbtagprice tr').length + $('#tbserviceprice tr').length
 
@@ -1877,6 +2247,7 @@ Detail Lead Register
     }
 
     function submitWinStep2(){
+
       var emptyProduct = $("#table-product #tbtagprice tr input").filter(function() {
         return !this.value.trim();
       })
@@ -1906,6 +2277,8 @@ Detail Lead Register
           confirmButtonText: 'Oke',
         })
       } else {
+      	$("#nextBtn").prop("disabled",true);
+      	$("#prevBtn").prop("disabled",true);
         var tagProduct = []
         $('#table-product #tbtagprice .new-product').each(function() {
           tagProduct.push({
@@ -1930,8 +2303,6 @@ Detail Lead Register
           tagProduct:tagProduct,
           tagService:tagService
         }
-
-        console.log(tagData)
 
         Swal.fire({
           title: 'Please Wait..!',
@@ -2014,6 +2385,16 @@ Detail Lead Register
       if($(this).closest("tr.new-service").length > 0){
         $("#addService").show()
       }
+    });
+
+    $(document).on('click', '.btn-trash-tagging', function() {
+      $(this).closest("tr").remove();
+      console.log($('#tbtagging tr').length)
+      if ($('#tbtagging tr').length <= 0) {
+  			$("#btnRaiseTP").prop("disabled",false)
+  		}else{
+  			$("#btnRaiseTP").prop("disabled",true)
+  		}
     });
 
     function submitChangeLog(){

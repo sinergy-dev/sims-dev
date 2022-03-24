@@ -36,6 +36,8 @@ use App\Mail\CutiKaryawan;
 use App\PresenceHistory;
 use App\PresenceLocationUser;
 
+use PDF;
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -77,6 +79,12 @@ class TestController extends Controller
 
 				// return Mail::to('tito@sinergy.co.id')->send(new MailResult($users,$pid_info));
 	}
+
+	public function reportPdfTag(Request $request) {
+        $pdf = PDF::loadView('report.report_tag_pdf');
+        return view('report.report_tag_pdf');
+        // return $pdf->download('report tagging'.date("d-m-Y").'.pdf');
+    }
 
 	public function mailCuti(){
 				$id_cuti = 181;

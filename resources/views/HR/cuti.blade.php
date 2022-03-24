@@ -692,27 +692,29 @@ Leaving Permitte
               swal_html = swal_html + '  </div>'
               swal_html = swal_html + '</div>'
 
-              swal_html = swal_html + '<div class="panel" style="background:LavenderBlush;font-weight:bold">'
-              swal_html = swal_html + '  <div class="panel-heading panel-danger text-center btn-danger">'
-              swal_html = swal_html + '    <b>Informasi Libur Nasional </b>'
-              swal_html = swal_html + '  </div>'
-              swal_html = swal_html + '  <div class="panel-body">'
-              swal_html = swal_html + '    <table>'
-              swal_html = swal_html + '      <b>'
+              // INFORMASI LIBUR NASIONAL DI BUTTON SISA CUTI
 
-              $.each(resultGoogle.items,function(key,value){
-                if(value.description == "Public holiday" && value.start.date.includes(year_now) && !(value.summary.includes("Joint Holiday"))){
-                  if(!liburNasionalException.includes(value.start.date)){
-                    swal_html = swal_html + '        <p style="font-weight:bold">' + value.summary + ' <br>(' + moment( value.start.date).format("MM/DD/YYYY") + ')</p>'
-                  }
-                }
-              })
+              // swal_html = swal_html + '<div class="panel" style="background:LavenderBlush;font-weight:bold">'
+              // swal_html = swal_html + '  <div class="panel-heading panel-danger text-center btn-danger">'
+              // swal_html = swal_html + '    <b>Informasi Libur Nasional </b>'
+              // swal_html = swal_html + '  </div>'
+              // swal_html = swal_html + '  <div class="panel-body">'
+              // swal_html = swal_html + '    <table>'
+              // swal_html = swal_html + '      <b>'
 
-              swal_html = swal_html + '      </b>'
-              swal_html = swal_html + '    </table>'
-              swal_html = swal_html + '  </div>'
-              swal_html = swal_html + '  </div>'
-              swal_html = swal_html + '</div>'
+              // $.each(resultGoogle.items,function(key,value){
+              //   if(value.description == "Public holiday" && value.start.date.includes(year_now) && !(value.summary.includes("Joint Holiday"))){
+              //     if(!liburNasionalException.includes(value.start.date)){
+              //       swal_html = swal_html + '        <p style="font-weight:bold">' + value.summary + ' <br>(' + moment( value.start.date).format("MM/DD/YYYY") + ')</p>'
+              //     }
+              //   }
+              // })
+
+              // swal_html = swal_html + '      </b>'
+              // swal_html = swal_html + '    </table>'
+              // swal_html = swal_html + '  </div>'
+              // swal_html = swal_html + '  </div>'
+              // swal_html = swal_html + '</div>'
               swal.fire({title: "Hai, " + result[0].name, html: swal_html})
             },
           });
@@ -829,9 +831,38 @@ Leaving Permitte
               $(".btn-submit").prop('disabled', true);
               $("#tooltip").show();
             }
-          });
 
-          
+          }).on('changeMonth', function(e){
+            console.log(moment(e.date).format("MM/YYYY"));
+
+            const array = hari_libur_nasional_2;
+
+            const substring = moment(e.date).format("MM/YYYY");
+
+            var match = []
+            $('#info_libur').empty()
+            array.forEach(function(item, index){
+              if (item.includes(substring)) {
+
+                match.push(item);
+                
+                $('#info_libur').append('<b>'+item+' - '+hari_libur_nasional_tooltip[index]+'</b><br>')
+              }
+            })
+            // array.find(element => {
+            //   if (element.includes(substring)) {
+
+            //     match.push(element);
+                
+            //     $('#info_libur').append('<b>'+element+'</b><br>')
+            //   }
+            // });
+
+            console.log(match);
+
+          }).on('show.daterangepicker', function(e){
+            $('.datepicker.datepicker-dropdown.dropdown-menu').append('<div id="info_libur" style="margin-top: 4px; color: #ff0000; max-width: 100%;"></div>')
+          });
         },
       });
 
@@ -2036,6 +2067,7 @@ Leaving Permitte
     });
 
     var hari_libur_nasional = []
+    var hari_libur_nasional_2 = []
     var hari_libur_nasional_tooltip = []
 
     $.ajax({
@@ -2051,7 +2083,9 @@ Leaving Permitte
               if(value.description == "Public holiday"){
                 if(!liburNasionalException.includes(value.start.date)){
                   hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
+                  hari_libur_nasional_2.push(moment( value.start.date).format("DD/MM/YYYY"))
                   hari_libur_nasional_tooltip.push(value.summary)
+
                 }
               }
             })
