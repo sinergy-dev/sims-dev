@@ -7,9 +7,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <!-- VENDOR CSS -->
-  <link rel="stylesheet" href="{{asset('/css/bootstrap.min.css')}}">
-  <link rel="stylesheet" href="{{asset('/vendor2/font-awesome/css/font-awesome.min.css')}}">
-  <link rel="stylesheet" href="{{asset('/vendor2/linearicons/style.css')}}">
+  <!-- <link rel="stylesheet" href="{{asset('/css/bootstrap.min.css')}}"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="{{asset('/vendor2/font-awesome/css/font-awesome.min.css')}}"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- <link rel="stylesheet" href="{{asset('/vendor2/linearicons/style.css')}}"> -->
+  <link rel="stylesheet" href="https://unpkg.com/linearicons@1.0.2/dist/web-font/style.css">
+  
+  <!-- Tidak bisa di cdn, karena tidak ketemu source nya -->
   <!-- MAIN CSS -->
   <link rel="stylesheet" href="{{asset('/css/main.css')}}">
   <!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
@@ -19,6 +24,7 @@
   <!-- ICONS -->
   <link rel="apple-touch-icon" href="{{asset('/img/logopng.png')}}">
   <link rel="icon" type="image/png" href="{{asset('/img/logopng.png')}}">
+  
 </head>
 
 <body class="bg-wall">
