@@ -43,18 +43,18 @@ class ResetAwalTahun extends Command
      */
     public function handle()
     {
-        $client = new Client();
-        $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_YEY'));
-        $variable = json_decode($client->getBody())->items;
-        $i = 0;
-        foreach ($variable as $key => $value) {
-          if(strpos($value->summary,'Cuti Bersama') === 0){
-            if(strpos($value->start->date , date('Y')) === 0){
-              // echo "</br>". $value->start->date . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
-              $i++;
-            }
-          }
-        }
+        // $client = new Client();
+        // $client = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=' . env('GOOGLE_API_YEY'));
+        // $variable = json_decode($client->getBody())->items;
+        // $i = 0;
+        // foreach ($variable as $key => $value) {
+        //   if(strpos($value->summary,'Cuti Bersama') === 0){
+        //     if(strpos($value->start->date , date('Y')) === 0){
+        //       // echo "</br>". $value->start->date . strpos($value->summary,'Cuti Bersama') . ' - ' . $value->summary . "<br>";
+        //       $i++;
+        //     }
+        //   }
+        // }
 
         // $cuti_custom = DB::table('tb_cuti_custom')->count();
 
