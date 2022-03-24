@@ -6,6 +6,8 @@ Letter Number
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <!-- DataTables -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 
   <link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
@@ -122,7 +124,7 @@ Letter Number
           <button type="button" class="btn btn-success margin-bottom pull-right disabled" id="" data-target="#letter_backdate" data-toggle="modal" style="width: 100px; color: white; margin-right: 10px;" disabled><i class="fa fa-plus"> </i>&nbsp Back Date</button>
           @endif
           <!-- <a href="{{url('/downloadExcelLetter')}}"><button class="btn btn-warning" style=" margin-right: 10px;"><i class="fa fa-print"></i> EXCEL </button></a> -->
-          <button class="btn btn-warning" onclick="exportLetter('{{action('LetterController@downloadExcel')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i>Excel</button>
+          <button class="btn btn-warning" onclick="exportLetter('{{action('LetterController@downloadExcel')}}')" style="margin-right: 10px;"><i class="fa fa-print"></i> Excel</button>
         </div>
     </div>
     <div class="box-body">
@@ -450,9 +452,10 @@ Letter Number
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="{{asset('js/dataTables.fixedColumns.min.js')}}"></script> -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 @endsection
 
@@ -563,9 +566,9 @@ Letter Number
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.nik) {
                 var x = '"' + data.no_letter + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
-                data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_letter(" + x + ")'>&nbsp Edit</button>";
+                data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_letter(" + x + ")'>&nbsp Edit</button>";
               } else {
-                data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+                data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button>";
               }
                 
             });
