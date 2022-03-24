@@ -80,10 +80,21 @@ class ResetAwalTahun extends Command
         // $update->update();
 
         foreach ($reset as $data) {
-            $update = User::where('nik',$data->nik)->first();
+            syslog(LOG_ERR, "Reset Cuti for " . $data->name);
+            syslog(LOG_ERR, "before reset cuti : " . $data->cuti);
+            syslog(LOG_ERR, "before reset cuti2 : " . $data->cuti2);
+            syslog(LOG_ERR, "-------------------------");
+
+            // $update = User::where('nik',$data->nik)->first();
             // $data->cuti2 = 12 - $total_cuti;
-            $update->cuti2 = $total_cuti;
-            $update->update();
+            // $update->cuti2 = $total_cuti;
+            // $update->update();
+            $data->cuti2 = $total_cuti;
+            syslog(LOG_ERR, "after reset cuti : " . $data->cuti);
+            syslog(LOG_ERR, "after reset cuti2 : " . $data->cuti2);
+            syslog(LOG_ERR, "-------------------------");
+            
+            $data->save();
 
         }
     }
