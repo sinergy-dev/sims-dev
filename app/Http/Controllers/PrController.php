@@ -314,8 +314,9 @@ class PrController extends Controller
     {
         $year = date("Y");
         $sidebar_collapse = true;
+        $year_before = PR::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('admin/report_pr', compact('year', 'sidebar_collapse'))->with(['initView'=> $this->initMenuBase()]);
+        return view('admin/report_pr', compact('year', 'sidebar_collapse', 'year_before'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function getTotalPr()
@@ -452,6 +453,129 @@ class PrController extends Controller
 
         return array("data" => $data->get());
     }
+
+    public function getTotalPrYear(Request $request)
+    {
+        $pie = 0;
+        $total = PR::orderby('type_of_letter')->whereYear('date', $request->year)->whereRaw("(`status` is NULL OR `status` != 'Cancel')")->get();
+
+        $first = $total[0]->type_of_letter;
+        $hasil = [0,0];
+        $type_pr = ['IPR', 'EPR'];
+
+        foreach ($type_pr as $key => $value2) {
+            foreach ($total as $value) {
+                    if ($value->type_of_letter == $value2) {
+                        $hasil[$key]++;
+                        $pie++;
+                    }
+                }
+        }
+
+        $hasil2 = [0,0];
+        foreach ($hasil as $key => $value) {
+            $hasil2[$key] = ($value/$pie)*100;
+        }
+
+        $sum_all = PR::selectRaw('SUM(`amount`) as `sum_all`')
+            ->whereYear('date',  $request->year)
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->first();
+
+        $sum_cat = PR::select('category')
+            // ->selectRaw('SUM(`amount`) as `sum`')
+            ->selectRaw('SUM(`amount`)/' . $sum_all->sum_all . '*100 as `precentage`')
+            ->orderBy('precentage','DESC')
+            ->whereYear('date',  $request->year)
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->groupBy('category')->get();
+
+        $data = PR::select(
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "IPR",1,NULL)) AS "IPR"'),
+                DB::raw('COUNT(IF(`tb_pr`.`type_of_letter` = "EPR",1,NULL)) AS "EPR"'), 'month'
+            )
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereYear('date',  $request->year)
+            ->groupBy('month')
+            ->get();
+
+        $totalAmount = PR::select(
+                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "IPR",amount,"")) AS "amount_IPR"'),
+                DB::raw('SUM(IF(`tb_pr`.`type_of_letter` = "EPR",amount,"")) AS "amount_EPR"'), 'month'
+            )
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->whereYear('date', $request->year)
+            ->groupBy('month')
+            ->get();
+
+
+        return [ "dataTotalPr"=> [ "data" => $hasil2, "label" => $type_pr], 
+                 "dataAmountByCat" => ["label"=>$sum_cat->pluck('category'), "precentage"=>$sum_cat->pluck('precentage')], 
+                 "dataTotalPrByCat" => $data,
+                 "dataAmountPrByType" => $totalAmount];
+    }
+
+    public function getTotalNominalByCatYear(Request $request)
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'category'
+            )
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->orderBy('nominal', 'desc')
+            ->whereYear('date', $request->year)
+            ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByPidYear(Request $request)
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'project_id'
+            )
+            ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+            ->whereYear('date', $request->year)
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->groupBy('project_id');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByCatIprYear(Request $request)
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'category'
+            )
+            ->whereYear('date', $request->year)
+            ->where('type_of_letter', 'IPR')
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->orderBy('nominal', 'desc')
+            ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByCatEprYear(Request $request)
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'category'
+            )
+            ->whereYear('date', $request->year)
+            ->where('type_of_letter', 'EPR')
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->orderBy('nominal', 'desc')
+            ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
     
     public function update_pr(Request $request)
     {
@@ -479,7 +603,7 @@ class PrController extends Controller
         $filter_pr = DB::table('tb_pr')
                         ->join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                         ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'status')
+                        ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'status', 'amount')
                         ->where('result', '!=', 'R')
                         ->whereYear('tb_pr.created_at', $request->data)
                         ->get();
