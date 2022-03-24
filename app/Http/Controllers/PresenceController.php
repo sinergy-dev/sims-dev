@@ -685,14 +685,41 @@ class PresenceController extends Controller
 
         // return $count_shift;
 
+        $nicknameM = DB::table('users')
+                   ->select('name as nickname','nik')
+                   ->where('name','RLIKE','^M[[:>:]]')
+                   ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
+                   ->orWhere('name','RLIKE','^Mochammad[[:>:]]')
+                   ->orWhere('name','RLIKE','^Muhammad[[:>:]]');
+
+        $nicknameAll = DB::table('users')
+                    ->select('name as nickname_all','nik')
+                    ->whereNotIn('name',function($query){
+                        $query->select('name')
+                        ->where('name','RLIKE','^M[[:>:]]')
+                       ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
+                       ->orWhere('name','RLIKE','^Mochammad[[:>:]]')
+                       ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
+                        ->from('users');
+                    });
+
         $shifting_summary = DB::table('presence__shifting_user')
             ->select(
                 DB::raw('`users`.`nik` AS `id`'),
                 'users.name',
-                DB::raw('substring_index(`users`.`name`, " ", 1) AS `nickname`'),
+                // DB::raw('(CASE WHEN substring_index(`users`.`name`, " ", 1) = "M" THEN substring_index(`users`.`name`, " ", 2) ELSE substring_index(`users`.`name`, " ", 1) END) AS `nickname`'),
+                // DB::raw('`users`.`name` AS `nickname_all`'),
                 DB::raw('presence__shifting_project.id AS `project_id`'),
-                'presence__shifting_project.project_name'
+                'presence__shifting_project.project_name',
+                'nickname',
+                'nickname_all'
             )
+            ->LeftjoinSub($nicknameM, 'nickname__nik', function ($join) {
+                $join->on('presence__shifting_user.nik', '=', 'nickname__nik.nik');
+            })
+            ->LeftjoinSub($nicknameAll, 'nicknameAll__nik', function ($join) {
+                $join->on('presence__shifting_user.nik', '=', 'nicknameAll__nik.nik');
+            })
             ->join('users','users.nik','=','presence__shifting_user.nik')
             ->join('presence__shifting_project','presence__shifting_project.id','=','presence__shifting_user.shifting_project')
             ->get();
