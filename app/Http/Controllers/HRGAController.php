@@ -2439,7 +2439,7 @@ class HRGAController extends Controller
             DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),
             DB::raw('(CASE WHEN (cuti IS NULL) THEN 0 ELSE cuti END) as cuti'),
             DB::raw('(CASE WHEN (cuti2 IS NULL) THEN 0 ELSE cuti2 END) as cuti2'),
-            DB::raw('sum(cuti + cuti2) AS total_cuti'),
+            DB::raw('sum(IFNULL(`cuti`,0) + IFNULL(`cuti2`,0)) AS total_cuti'),
             'date_of_entry'
         )->where('nik',$request->nik)
         ->groupby('users.nik')
