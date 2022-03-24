@@ -769,6 +769,7 @@ Presence Shifting
 						append = append + '		</a>';
 						append = append + '	</li>';
 					})
+					console.log(append)
 					$("#ulUser").append(append);
 					$("." + globalProject).show();
 				},
@@ -874,7 +875,6 @@ Presence Shifting
 		})
 
 		$(".checkbox-" + id_project).each(function(index){
-			console.log($(this).is(":checked"))
 			if($(this).is(":checked")){
 				optionStatus.push("ACTIVE")
 			} else {
