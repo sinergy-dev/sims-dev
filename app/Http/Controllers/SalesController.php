@@ -5168,7 +5168,7 @@ class SALESController extends Controller{
 
             $name_msp = $request['id_cus'];
 
-            $project = $nomor.'/'. $name_msp .'/'. 'MSP/' .$bln .'/'. date('Y');
+            $project = $nomor.'/'. $name_msp .'/'. 'MSP/' .$bln .'/'. substr($edate, 0,4);
 
             $lead_id = $request['customer_name'];
 
