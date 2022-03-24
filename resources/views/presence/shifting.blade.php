@@ -745,6 +745,14 @@ Presence Shifting
 					$("#ulUser").empty();
 					var append = "";
 					result.forEach(function(item,index){
+						if (item.nickname) {
+							item.nickname = item.nickname.split(" ")[1]
+						} 
+
+						if (item.nickname_all) {
+							item.nickname = item.nickname_all.split(" ")[0]
+						}
+
 						var showDetail = "showDetail('" + item.name + "','" + item.nickname + "','" + item.id + "','" + item.project_id + "')";
 						append = append + '	<li class="' + item.project_id + '" style="display:none;padding-bottom:10px">';
 						append = append + '		<a onclick="' + showDetail + '">' + item.name;
