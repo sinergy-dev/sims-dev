@@ -184,6 +184,8 @@ Presence
 						<div class="alert alert-danger" role="alert">Check-In Complete (Late)</div>
 					@endif
 					<button type="button" class="btn btn-danger" onclick="checkOut()">Check Out</button>
+				@elseif($presenceStatus == "not-schedule")
+					<div class="alert alert-info" role="alert">Shifting - Not Yet Scheduled</div>
 				@elseif($presenceStatus == "libur")
 					<div class="alert alert-info" role="alert">Shifting - Libur</div>
 				@else
@@ -205,6 +207,7 @@ Presence
 @section('script')
 	<script>
 		var presenceLocation;
+
 
 		$(document).ready(function(){
 			updateTime();
@@ -266,6 +269,17 @@ Presence
 								).then((result) => {
 									location.reload();
 								})
+							},
+							error: function(e,textStatus,errorThrown){
+								console.log(e.responseJSON.message)
+								// console.log(textStatus)
+								// console.log(errorThrown)
+								Swal.hideLoading(); 
+								Swal.fire(
+									'Check-in error',
+									"Your shifting is not Something error on server.",
+									'error'
+								)
 							}
 						})
 					} else {
