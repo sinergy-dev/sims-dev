@@ -628,14 +628,12 @@ Presence Shifting
 
 			var originalEventObject = $(this).data('eventObject');
 			var name3 = $("#nickname").val();
-			console.log(name3)
 			var copiedEventObject = $.extend({}, originalEventObject);
 
 			copiedEventObject.start = date;
 			var waktu = date._d;
 			waktu = new Date(waktu);
 
-			console.log(originalEventObject)
 			var day = moment(waktu).toISOString(true);
 			var startShift2 = moment(waktu).format('YYYY-MM-DD') + "T" + originalEventObject.startShift + ":00.000Z";
 			var endShift2 = moment(waktu).format('YYYY-MM-DD') + "T" + originalEventObject.endShift + ":00.000Z";
