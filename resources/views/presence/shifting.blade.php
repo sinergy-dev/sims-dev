@@ -798,7 +798,8 @@ Presence Shifting
 			$("#name").text("for " + name);
 			$("#calendar").removeClass('display-none').addClass('display-block');
 			$("#log-activity").removeClass('display-block').addClass('display-none');
-			$("#table-log").dataTable().fnDestroy();
+			$("#reporting").removeClass('display-block').addClass('display-none');
+			// $("#table-log").dataTable().fnDestroy();
 			$("#calendar").fullCalendar('removeEventSources');
 			$("#calendar").fullCalendar('addEventSource', "{{url('presence/shifting/getThisProject')}}?project=" + idProject + "&month=" + moment($("#indicatorMonth").text().split(" ")[3],"MMMM").format('MM'));
 			$("." + idProject).show();
