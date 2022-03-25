@@ -940,67 +940,47 @@ Presence Shifting
 
 	function showLog(){
 		$('#calendar').removeClass('display-block').addClass('display-none');
+		$('#reporting').removeClass('display-block').addClass('display-none');
 		$('#log-activity').removeClass('display-none').addClass('display-block');
 
-		$('#table-log').DataTable({
-			"ajax": {
-			    "url": "{{url('presence/shifting/showLogActivity')}}",
-			    "type": "GET"
-			},
-			"columns": [
-				{
-		            render: function ( data, type, row, meta ) {
-		               return  meta.row+1;
-		            }
-		        },
-		        {
-		            render: function ( data, type, row, meta ) {
-		            	if (row.status == 'create') {
-		            		return "Create Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a') + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a') + "]";
-		            	}else if (row.status == 'update') {
-		            		return  "Updated Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]" + "<br> menjadi <br>"+ row.className_updated + " [" + moment(row.start_updated).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_updated).format('MMMM Do YYYY, h:mm:ss a')  + "]";
-		            	}else{
-		            		return  "Deleted Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]";
-		            	}
-		            }
-		        },
-	            { "data": "created_at" },
-	            { "data": "name" },
-        	]
-		});
+
+		if($.fn.dataTable.isDataTable("#table-log")){
+			$("#table-log").DataTable().ajax.url('{{url('presence/shifting/showLogActivity')}}').load();
+		} else {
+			$('#table-log').DataTable({
+				"ajax": {
+				    "url": "{{url('presence/shifting/showLogActivity')}}",
+				    "type": "GET"
+				},
+				"columns": [
+					{
+			            render: function ( data, type, row, meta ) {
+			               return  meta.row+1;
+			            }
+			        },
+			        {
+			            render: function ( data, type, row, meta ) {
+			            	if (row.status == 'create') {
+			            		return "Create Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a') + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a') + "]";
+			            	}else if (row.status == 'update') {
+			            		return  "Updated Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]" + "<br> menjadi <br>"+ row.className_updated + " [" + moment(row.start_updated).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_updated).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+			            	}else{
+			            		return  "Deleted Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]";
+			            	}
+			            }
+			        },
+		            { "data": "created_at" },
+		            { "data": "name" },
+	        	]
+			});
+		}
 		// $("#log-activity").append(table);
 	}
 
 	function showReporting(){
 		$('#calendar').removeClass('display-block').addClass('display-none');
+		$('#log-activity').removeClass('display-block').addClass('display-none');
 		$('#reporting').removeClass('display-none').addClass('display-block');
-
-		$('#table-log').DataTable({
-			"ajax": {
-			    "url": "{{url('presence/shifting/showLogActivity')}}",
-			    "type": "GET"
-			},
-			"columns": [
-				{
-		            render: function ( data, type, row, meta ) {
-		               return  meta.row+1;
-		            }
-		        },
-		        {
-		            render: function ( data, type, row, meta ) {
-		            	if (row.status == 'create') {
-		            		return "Create Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a') + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a') + "]";
-		            	}else if (row.status == 'update') {
-		            		return  "Updated Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]" + "<br> menjadi <br>"+ row.className_updated + " [" + moment(row.start_updated).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_updated).format('MMMM Do YYYY, h:mm:ss a')  + "]";
-		            	}else{
-		            		return  "Deleted Schedule " + row.title + "<br>[" + moment(row.start_before).format('MMMM Do YYYY, h:mm:ss a')  + " - " + moment(row.end_before).format('MMMM Do YYYY, h:mm:ss a')  + "]";
-		            	}
-		            }
-		        },
-	            { "data": "created_at" },
-	            { "data": "name" },
-        	]
-		});
 		// $("#log-activity").append(table);
 	}
 
