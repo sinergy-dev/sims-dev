@@ -1069,6 +1069,11 @@ Presence Shifting
 		);
 	})
 
+	function editShifting(id_project){
+		$(".label-input-" + id_project).toggle()
+		$(".div-input-" + id_project).toggle()
+	}
+
 	
 </script>
 @endsection
