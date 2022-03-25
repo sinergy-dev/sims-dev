@@ -382,9 +382,13 @@ Presence Shifting
 										<div class="box-body">
 											@foreach($shiftingOptionValues as $shiftingOptionValue)
 											<div class="form-group">
-												<label class="col-sm-3 control-label" style="text-align:center">
+												<label class="col-sm-3 control-label label-input-{{$shiftingOptionValue['id_project']}}" style="text-align:center">
 													<small class="label bg-{{$shiftingOptionValue['class_shifting']}}" style="font-size: 100%;">{{$shiftingOptionValue["name_option"]}}</small>
 												</label>
+
+												<div class="col-sm-3 div-input-{{$shiftingOptionValue['id_project']}}" style="display: none">
+													<input type="text" class="form-control input-{{$shiftingOptionValue['id_project']}}" value="{{$shiftingOptionValue['name_option']}}" placeholder="Label">
+												</div>
 
 												<div class="col-sm-3">
 													<input type="text" class="form-control checkin-input-{{$shiftingOptionValue['id_project']}} option-{{$shiftingOptionValue['id']}}" value="{{$shiftingOptionValue['start_shifting']}}" placeholder="Start">
