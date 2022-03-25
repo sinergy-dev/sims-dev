@@ -933,6 +933,8 @@ class PresenceController extends Controller
         $diffSheet->getColumnDimension('D')->setAutoSize(true);
         $diffSheet->getColumnDimension('E')->setAutoSize(true);
         $diffSheet->getColumnDimension('F')->setAutoSize(true);
+        $diffSheet->getColumnDimension('G')->setAutoSize(true);
+        $diffSheet->getColumnDimension('H')->setAutoSize(true);
 
         //before sheet
 
