@@ -897,34 +897,34 @@ class PresenceController extends Controller
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
 
-        $diffSheet->getStyle('A2:C2')->applyFromArray($titleStyle);
-        $diffSheet->getStyle('D2:F2')->applyFromArray($titleStyle2);
+        $diffSheet->getStyle('A2:D2')->applyFromArray($titleStyle);
+        $diffSheet->getStyle('E2:H2')->applyFromArray($titleStyle2);
         $diffSheet->setCellValue('A2','Before');
-        $diffSheet->setCellValue('D2','After');
+        $diffSheet->setCellValue('E2','After');
 
         $diffbeforeData = PresenceShifting::join('users','users.nik','=','presence__shifting.nik')
             ->join('presence__shifting_project', 'presence__shifting_project.id', '=', 'presence__shifting.id_project')
-            ->selectRaw('`users`.`name`, `className`, DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
+            ->selectRaw('`users`.`name`, `className`, DATE_FORMAT(`presence__shifting`.`tanggal_shift`, "%d-%m-%Y") as `tanggal_shift`,DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
             ->orderBy('presence__shifting.created_at','asc')
             ->whereIn('presence__shifting.id',array_values(array_diff($beforeData->pluck('id')->toArray(), $afterData->pluck('id')->toArray())))
             ->get();
 
         $diffafterData = PresenceShifting::join('users','users.nik','=','presence__shifting.nik')
             ->join('presence__shifting_project', 'presence__shifting_project.id', '=', 'presence__shifting.id_project')
-            ->selectRaw('`users`.`name`, `className`, DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
+            ->selectRaw('`users`.`name`, `className`, DATE_FORMAT(`presence__shifting`.`tanggal_shift`, "%d-%m-%Y") as `tanggal_shift`,DATE_FORMAT(`presence__shifting`.`created_at`, "%d-%m-%Y") as `created_at`')
             ->orderBy('presence__shifting.created_at','asc')
             ->whereIn('presence__shifting.id',array_values(array_diff($afterData->pluck('id')->toArray(), $beforeData->pluck('id')->toArray())))
             ->get();
 
-        $headerContent = ["Name", "Shift", "Created Date", "Name", "Shift", "Created Date"];
-        $diffSheet->getStyle('A3:F3')->applyFromArray($headerStyle);
+        $headerContent = ["Name", "Shift", "Shifting Date","Created Date", "Name", "Shift", "Shifting Date", "Created Date"];
+        $diffSheet->getStyle('A3:H3')->applyFromArray($headerStyle);
         $diffSheet->fromArray($headerContent,NULL,'A3');
 
         $diffbeforeData->map(function($item,$key) use ($diffSheet){
             $diffSheet->fromArray(array_values($item->toArray()),NULL,'A' . ($key + 4));
         });
         $diffafterData->map(function($item,$key) use ($diffSheet){
-            $diffSheet->fromArray(array_values($item->toArray()),NULL,'D' . ($key + 4));
+            $diffSheet->fromArray(array_values($item->toArray()),NULL,'E' . ($key + 4));
         });
 
         $diffSheet->getColumnDimension('A')->setAutoSize(true);
