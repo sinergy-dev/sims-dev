@@ -873,8 +873,8 @@ class PresenceController extends Controller
 
         $beforeSheet->mergeCells('A3:H3');
         $afterSheet->mergeCells('A3:H3');
-        $diffSheet->mergeCells('A2:C2');
-        $diffSheet->mergeCells('D2:F2');
+        $diffSheet->mergeCells('A2:D2');
+        $diffSheet->mergeCells('E2:H2');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
