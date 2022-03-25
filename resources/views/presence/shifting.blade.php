@@ -903,6 +903,7 @@ Presence Shifting
 				url:"{{url('/presence/shifting/modifyOptionShifting')}}",
 				data:{
 					option_id:optionId,
+					option_label:optionLabel,
 					checkin_value:checkInValue,
 					checkout_value:checkOutValue,
 					status_value:optionStatus,
