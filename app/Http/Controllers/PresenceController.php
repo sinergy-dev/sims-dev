@@ -1002,6 +1002,7 @@ class PresenceController extends Controller
     public function modifyOptionShifting(Request $req){
         foreach($req->option_id as $option_key => $option_id){
             $option = PresenceShiftingOption::find($option_id);
+            $option->name_option = $req->option_label[$option_key];
             $option->start_shifting = $req->checkin_value[$option_key];
             $option->end_shifting = $req->checkout_value[$option_key];
             $option->status = $req->status_value[$option_key];
