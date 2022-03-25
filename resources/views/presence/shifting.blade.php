@@ -867,10 +867,15 @@ Presence Shifting
 	function saveChangeShiftingOption(id_project){
 
 		var optionId = []
+		var optionLabel = []
 		var checkInValue = []
 		var checkOutValue = []
 		var optionStatus = []
 
+		$(".input-" + id_project).each(function(index){
+			// optionId.push($(this).attr('class').split(" option-")[1])
+			optionLabel.push($(this).val())
+		})
 		$(".checkin-input-" + id_project).each(function(index){
 			optionId.push($(this).attr('class').split(" option-")[1])
 			checkInValue.push($(this).val())
