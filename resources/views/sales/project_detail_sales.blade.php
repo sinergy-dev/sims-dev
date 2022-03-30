@@ -716,6 +716,8 @@ Detail Lead Register
   	$(document).ready(function(){
   		Pace.restart();
 			Pace.track(function() {
+				$("#pov,#assesment,#propossed_design").height( $("#pov,#assesment,#propossed_design")[0].scrollHeight)
+
 	  		$.ajax({
 					type:"GET",
 					url:"{{url('/project/getDetailLead')}}",
@@ -1049,16 +1051,11 @@ Detail Lead Register
 						$("#amount_check").val(result.data.pb)
 						$("#priority").val(result.data.priority)
 						$("#proyek_size").val(result.data.project_size)
-						$("#project_budget").val(result.data.pb).mask('000.000.000.000', {reverse: true})			
+						$("#project_budget").val(result.data.pb).unmask().mask('000.000.000.000', {reverse: true})		
 
-						$("textarea").height( $("textarea")[0].scrollHeight)
-
-						// if (result.data.checked == "checked") {
-      //       	$("#endSD").prop("disabled",true)
-      //       	$("#btnSubmitSD").prop("disabled",true)
-      //       	$("#cbSubmitSD").prop("disabled",true)
-      //       	$("#btnRaiseTP").prop("disabled",false)
-      //       }
+						$("#pov").height( $("#pov")[0].scrollHeight)
+						$("#propossed_design").height( $("#propossed_design")[0].scrollHeight)
+						$("#assesment").height( $("#assesment")[0].scrollHeight)
 
 						var fd = new FormData()					
 						$("#btnSubmitSD").click(function(){
@@ -2390,7 +2387,7 @@ Detail Lead Register
     $(document).on('click', '.btn-trash-tagging', function() {
       $(this).closest("tr").remove();
       console.log($('#tbtagging tr').length)
-      if ($('#tbtagging tr').length <= 0) {
+      if ($('#tbtagging tr').length < 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
   			$("#btnRaiseTP").prop("disabled",true)
