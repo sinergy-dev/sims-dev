@@ -499,6 +499,17 @@ class ReportController extends Controller
                     ->where('year',$year)
                     ->orderBy('sales_lead_register.created_at','DESC')                    
                     ->get();
+            }elseif ($div == 'SALES' && $pos != 'ADMIN'){
+                $lead = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.brand_name',
+                    'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'sales_lead_register.deal_price', 'users.name')
+                    ->whereYear('closing_date',date('Y'))
+                    ->where('id_territory', $ter)
+                    ->where('users.nik', $nik)
+                    ->orderBy('sales_lead_register.created_at','DESC')                    
+                    ->get();
             } elseif ($div == 'PMO' && $pos == 'MANAGER') {
                 $lead = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
@@ -545,17 +556,6 @@ class ReportController extends Controller
                     ->orderBy('sales_lead_register.created_at','DESC')                    
                     ->get();
             }
-        }elseif ($ter == null && $div == 'SALES') {
-            $lead = DB::table('sales_lead_register')
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
-                ->select('sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.brand_name',
-                'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result', 'sales_lead_register.deal_price', 'users.name')
-                ->where('id_territory', $ter)
-                ->where('year',$year)
-                ->where('id_company','2')
-                ->orderBy('sales_lead_register.created_at','DESC')                   
-                ->get();
         } elseif ($ter == 'DPG' && $pos == 'ENGINEER MANAGER') {
             $lead = DB::table('sales_lead_register')
                 ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
