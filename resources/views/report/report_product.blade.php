@@ -7,36 +7,88 @@ Report Product
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <style type="text/css">
     .header th:first-child{
-        background-color: #dbe2ff !important;
+        background-color: #003A95 !important;
+        color: white;
       }
 
       .header th:nth-child(2){
-        background-color: #c2c3ff !important;
+        background-color: #4C4CA6 !important;
+        color: white;
+
       }
 
       .header th:nth-child(3){
-        background-color: #d2c2ff !important;
+        background-color: #7561B8 !important;
+        color: white;
+
       }
 
       .header th:nth-child(4){
-        background-color: #dcc2ff !important;
+        background-color: #9A76C9 !important;
+        color: white;
+
       }
 
       .header th:nth-child(5){
-        background-color: #e1c2ff!important;
+        background-color: #BD8EDB!important;
+        color: white;
+
       }
 
       .header th:nth-child(6){
-         background-color: #e8c2ff !important;
+        background-color: #DFA6ED !important;
+        color: white;
+
       }
 
       .header th:nth-child(7){
-        background-color: #f8c2ff !important;
+        background-color: #FFC0FF !important;
+        color: #801d0f;
+
       }
 
-      
+      .green1-color{
+        background-color: #003A95 !important;
+        color: white;
+      }
 
-    .green1-color {
+      .green2-color{
+        background-color: #4C4CA6 !important;
+        color: white;
+
+      }
+
+      .green3-color{
+        background-color: #7561B8 !important;
+        color: white;
+
+      }
+
+      .green4-color{
+        background-color: #9A76C9 !important;
+        color: white;
+
+      }
+
+      .green5-color{
+        background-color: #BD8EDB!important;
+        color: white;
+
+      }
+
+      .green6-color{
+        background-color: #DFA6ED !important;
+        color: white;
+
+      }
+
+      .green7-color{
+        background-color: #FFC0FF !important;
+        color: #801d0f;
+
+      }
+
+  /*  .green1-color {
         background-color: #c2c3ff !important;
     }
     .green2-color {
@@ -56,7 +108,7 @@ Report Product
     }
     .green7-color {
         background-color: #dbe2ff !important;
-    }
+    }*/
   </style>
 @endsection
 @section('content')
@@ -111,6 +163,7 @@ Report Product
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.2/js/dataTables.rowGroup.min.js"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -170,14 +223,63 @@ Report Product
             "processing": true,
             "paging": true,
             "rowCallback": function( row, data ) {
-            		$('td', row).eq(0).addClass('green7-color');
-  		        $('td', row).eq(1).addClass('green1-color');
-  		        $('td', row).eq(2).addClass('green2-color');
-  		        $('td', row).eq(3).addClass('green3-color');
-  		        $('td', row).eq(4).addClass('green4-color');
-  		        $('td', row).eq(5).addClass('green5-color');
-  		        $('td', row).eq(6).addClass('green6-color');
-  		    }
+            	$('td', row).eq(0).addClass('green1-color');
+  		        $('td', row).eq(1).addClass('green2-color');
+  		        $('td', row).eq(2).addClass('green3-color');
+  		        $('td', row).eq(3).addClass('green4-color');
+  		        $('td', row).eq(4).addClass('green5-color');
+  		        $('td', row).eq(5).addClass('green6-color');
+  		        $('td', row).eq(6).addClass('green7-color');
+  		    },
+          rowGroup: {
+              startRender: null,
+              endRender: function ( rows, group ) {
+                var intVal = function ( i ) {
+                  return typeof i === 'string' ?
+                      i.replace(/[\$,]/g, '')*1 :
+                      typeof i === 'number' ?
+                          i : 0;
+                };
+
+                var amount_ter1 = rows
+                    .data()
+                    .pluck('ter1_price')
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                var amount_ter2 = rows
+                    .data()
+                    .pluck('ter2_price')
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                var amount_ter3 = rows
+                    .data()
+                    .pluck('ter3_price')
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                var amount_ter4 = rows
+                    .data()
+                    .pluck('ter4_price')
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                var amount_ter5 = rows
+                    .data()
+                    .pluck('ter5_price')
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                console.log(amount_ter1)
+                return $('<tr><td>'+ '<b>' + 'Total Amount : ' + '</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter1 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter2 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter3 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter4 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter5 ) + '</b></center>' +'</td>' + '</tr>');
+              }
+          }
   	});
   })
 </script>
