@@ -279,6 +279,7 @@ Lead Register
 										<th>Amount</th>
 										<th>Status</th>
 										<th>Action</th>
+										<th>orderable amount</th>
 									</tr>
 								</thead>
 								<tfoot>
@@ -286,6 +287,7 @@ Lead Register
 			                <th colspan="6" style="text-align:right">Total:</th>
 			                <th></th>
 			                <th colspan="3"></th>
+			                <th></th>
 			            </tr>
 				        </tfoot>
 			        </table>
@@ -567,7 +569,8 @@ Lead Register
         {
 	        render: function ( data, type, row ) {
 	          return new Intl.NumberFormat('id').format(row.amount)
-	        }
+	        },
+	        "orderData":[10]
 	      },
         {
           render: function (data, type, row) {
@@ -610,7 +613,7 @@ Lead Register
       				onclickAssign = "onclick=btnAssign('reassign',"+row.lead_id+")"
       				status = 'reassign'
       				if (row.result_modif == 'WIN' || row.result_modif == 'LOSE' || row.result_modif == 'CANCEL') {
-      					console.log(row.status == 'pending')
+      					// console.log(row.status == 'pending')
       					if (row.status == 'pending') {
   								return btnIdProject      								
   							}else{
@@ -625,6 +628,12 @@ Lead Register
       			
       		}
         	
+        },
+        {
+        	"data":"amount",
+        	"targets":[7],
+        	"visible":false,
+        	"searchable":true
         },
       ],
       footerCallback: function( row, data, start, end, display ) {
@@ -1073,15 +1082,12 @@ Lead Register
     	value = $(value).text()
     }
 
-    console.log(value)
-
     $.ajax({
     	type:"GET",
     	url:"{{url('/project/getPid')}}",
     	data:{
     		lead_id:value
     	},success:function(result){
-    		console.log(result)
     		$("#lead_req_pid").val(result.data[0].lead_id)
     		$("#opp_name_req_pid").val(result.data[0].opp_name)
     		$("#amount_req_pid").val(result.data[0].amount_pid).mask('000.000.000.000', {reverse: true})
@@ -1197,7 +1203,6 @@ Lead Register
 		url: "{{url('/project/getSalesByTerritory')}}",
 		type: "GET",
 		success:function(result){
-			console.log(result)
 			$("#filter_sales").select2({
       	placeholder: "Select sales",
 		  	multiple:true,
@@ -1271,8 +1276,6 @@ Lead Register
 		})
 
 		$("#BoxId").prepend(prepend)
-
-    	dashboardCount(year)
 
 		if (accesable.includes('searchTags')) {
 			$.ajax({
@@ -1376,7 +1379,6 @@ Lead Register
 							$("#filter_sales").empty('')
 						},
 						success:function(result){
-							console.log(result)
 							$("#filter_sales").select2({
 				      	placeholder: "Select sales",
 						  	multiple:true,
@@ -1391,17 +1393,17 @@ Lead Register
 			}
 		})
 
-
 		var prependFilterStatus = ""
 		prependFilterStatus = prependFilterStatus + '<label>Status Lead</label>'
+		
 		$.ajax({
 			type:"GET",
 			url:'{{url("/project/getResult")}}',
 			success:function(result){
 				$.each(result,function(key,value){
 					prependFilterStatus = prependFilterStatus + '<div>'
-				  	prependFilterStatus = prependFilterStatus + '<input type="checkbox" class="cb-result" name="cb-filter" value="'+value.result_value+'"> '
-				    prependFilterStatus = prependFilterStatus + value.result_modif
+				  	prependFilterStatus = prependFilterStatus + '<input type="checkbox" class="cb-result" name="cb-filter" value="'+value.result_value+'" id="filter_lead_' + key + '"> '
+				    prependFilterStatus = prependFilterStatus + '<span>' + value.result_modif + '</span>'
 				  prependFilterStatus = prependFilterStatus + '</div>'
 				})
 
@@ -1412,6 +1414,8 @@ Lead Register
 				})
 			}
 		})
+
+		dashboardCount(year)
 	  
   })	
 	
@@ -1466,9 +1470,6 @@ Lead Register
 			checklist = true
 		})
 
-		console.log(checklist)
-
-
 		tempSearch = tempSearch + '&search=' + $('#searchLead').val()
 
 		if (id_table != undefined) {
@@ -1482,8 +1483,12 @@ Lead Register
 		}else{
 			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
 			if (checklist == false) {
-				dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer)
+				dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult)
+			} else {
+				console.log("result yet")
 			}
+			dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult)
+
 		  console.log('undefin!')
 
 		}
@@ -1514,6 +1519,7 @@ Lead Register
 	function dashboardCount(year){	
 		Pace.restart();
 		Pace.track(function() {
+			var resultComplete
 			$.ajax({
 				type:"GET",
 				url:"{{url('/project/getCountLead')}}",
@@ -1521,8 +1527,14 @@ Lead Register
 					year:year,
 				},
 				success:function(result){
-					$.each(result,function(){						
-						$("#"+countLead[0]).text(result.lead)
+					 console.log(result)
+						// Buat Mas ganjar total lead di ganti jadi Lead - Unassigned
+						if(result.presales){
+							$("#"+countLead[0]).prev().html("<b>Lead - Unassigned </b>")
+							$("#"+countLead[0]).text(result.initial)
+						} else {
+							$("#"+countLead[0]).text(result.lead)
+						}
 						$("#"+countLead[1]).text(result.open)
 						$("#"+countLead[2]).text(result.sd)
 						$("#"+countLead[3]).text(result.tp)
@@ -1535,7 +1547,15 @@ Lead Register
 						$("#"+sumAmount[4]).text(result.amount_win)
 						$("#"+sumAmount[5]).text(result.amount_lose)
 
-					})
+						resultComplete = result		
+
+						$("#filter_lead_0").next().text("INITIAL (" + result.initial + ")")
+						$("#filter_lead_1").next().text("OPEN (" + result.open + ")")
+						$("#filter_lead_2").next().text("SD (" + result.sd + ")")
+						$("#filter_lead_3").next().text("TP (" + result.tp + ")")
+						$("#filter_lead_4").next().text("WIN (" + result.win + ")")
+						$("#filter_lead_5").next().text("LOSE (" + result.lose + ")")
+						$("#filter_lead_6").next().text("CANCEL (" + result.cancel + ")")	
 
 					initMoneyHeader()
 
@@ -1550,18 +1570,29 @@ Lead Register
 					      }
 					    });
 					});
+				},
+				complete:function(){
+					console.log("result complete")
+					console.log(resultComplete)
+					$("#filter_lead_0").next().text("INITIAL (" + resultComplete.initial + ")")
+					$("#filter_lead_1").next().text("OPEN (" + resultComplete.open + ")")
+					$("#filter_lead_2").next().text("SD (" + resultComplete.sd + ")")
+					$("#filter_lead_3").next().text("TP (" + resultComplete.tp + ")")
+					$("#filter_lead_4").next().text("WIN (" + resultComplete.win + ")")
+					$("#filter_lead_5").next().text("LOSE (" + resultComplete.lose + ")")
+					$("#filter_lead_6").next().text("CANCEL (" + resultComplete.cancel + ")")
 				}
 			})
 		})
 	}
 
-	function dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer){	
+	function dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult){	
 		initRemoveMask()
 		Pace.restart();
 		Pace.track(function() {
 			$.ajax({
 				type:"GET",
-				url:"{{url('/project/filterCountLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom  + tempProduct + tempTech + tempCustomer,
+				url:"{{url('/project/filterCountLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom  + tempProduct + tempTech + tempCustomer + tempResult,
 				success:function(result){
 					$.each(result,function(){						
 						$("#"+countLead[0]).text(result.lead)
@@ -1576,6 +1607,14 @@ Lead Register
 						$("#"+sumAmount[3]).text(result.amount_tp)
 						$("#"+sumAmount[4]).text(result.amount_win)
 						$("#"+sumAmount[5]).text(result.amount_lose)
+
+						$("#filter_lead_0").next().text("INITIAL (" + result.initial_unfiltered + ")")
+						$("#filter_lead_1").next().text("OPEN (" + result.open_unfiltered + ")")
+						$("#filter_lead_2").next().text("SD (" + result.sd_unfiltered + ")")
+						$("#filter_lead_3").next().text("TP (" + result.tp_unfiltered + ")")
+						$("#filter_lead_4").next().text("WIN (" + result.win_unfiltered + ")")
+						$("#filter_lead_5").next().text("LOSE (" + result.lose_unfiltered + ")")
+						$("#filter_lead_6").next().text("CANCEL (" + result.cancel_unfiltered + ")")	
 
 					})
 
