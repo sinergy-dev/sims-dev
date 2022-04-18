@@ -44,35 +44,49 @@ class SalesLeadController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        // return $request->year;
+
         $total_lead = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('sales_lead_register.result','!=','hmm')
-                    ->where('year',$request->year);
+                    ->whereIn('year',$request->year);
 
         $total_open = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('sales_lead_register.result','')
-                    ->where('year',$request->year);
+                    ->whereIn('year',$request->year);
 
         $total_sd = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('sales_lead_register.result','SD')
-                    ->where('year',$request->year);
+                    ->whereIn('year',$request->year);
 
         $total_tp = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('sales_lead_register.result','TP')
-                    ->where('year',$request->year);
+                    ->whereIn('year',$request->year);
 
         $total_win = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('sales_lead_register.result','WIN')
-                    ->where('year',$request->year);
+                    ->whereIn('year',$request->year);
 
         $total_lose = DB::table('sales_lead_register')
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                     ->where('sales_lead_register.result','LOSE')
-                    ->where('year',$request->year);
+                    ->whereIn('year',$request->year);
+
+        $total_cancel = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->where('sales_lead_register.result','CANCEL')
+                    ->whereIn('year',$request->year);
+
+        $total_initial = DB::table('sales_lead_register')
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->where('sales_lead_register.result','OPEN')
+                    ->whereIn('year',$request->year);
+
+        $presales = false;
 
         if($ter != null){
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
@@ -100,6 +114,14 @@ class SalesLeadController extends Controller
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
 
+                $count_cancel = $total_cancel->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                            ->where('sales_solution_design.nik', $nik)
+                            ->count('sales_lead_register.lead_id');
+
+                $count_initial = $total_initial->join('sales_solution_design', 'sales_solution_design.lead_id', '=', 'sales_lead_register.lead_id')
+                            ->where('sales_solution_design.nik', $nik)
+                            ->count('sales_lead_register.lead_id');
+
                 $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
@@ -111,6 +133,7 @@ class SalesLeadController extends Controller
                 $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
+
             } else if ($div == 'SALES') {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                         ->where('id_company','1')
@@ -135,6 +158,15 @@ class SalesLeadController extends Controller
                 $count_lose = $total_lose->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
+
+                $count_cancel = $total_cancel->where('users.id_territory',$ter)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_initial = $total_initial->where('users.id_territory',$ter)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
                 $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
@@ -146,9 +178,9 @@ class SalesLeadController extends Controller
                 $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
+
             } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
                 $count_lead = $total_lead->where('users.id_company','1')
-                            ->where('result','OPEN')
                             ->count('lead_id');
 
                 $count_open = $total_open->where('users.id_company','1')
@@ -166,7 +198,13 @@ class SalesLeadController extends Controller
                 $count_lose = $total_lose->where('users.id_company','1')
                             ->count('lead_id');
 
-                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                $count_cancel = $total_cancel->where('users.id_company','1')
+                            ->count('lead_id');
+
+                $count_initial = $total_initial->where('users.id_company','1')
+                            ->count('lead_id');
+
+                $sum_amount_lead = $total_initial->select(DB::raw('SUM(amount) as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -177,6 +215,8 @@ class SalesLeadController extends Controller
                 $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
+            
+                $presales = true;
             } else {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                             ->where('id_company','1')
@@ -202,6 +242,14 @@ class SalesLeadController extends Controller
                             ->where('id_company','1')
                             ->count('lead_id');
 
+                $count_cancel = $total_cancel->where('users.id_territory',$ter)
+                            ->where('id_company','1')
+                            ->count('lead_id');
+
+                $count_initial = $total_initial->where('users.id_territory',$ter)
+                            ->where('id_company','1')
+                            ->count('lead_id');
+
                 $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
@@ -213,8 +261,10 @@ class SalesLeadController extends Controller
                 $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
+                
             }             
         } else {
+
             $count_lead = $total_lead->count('lead_id');
 
             $count_open = $total_open->count('lead_id');
@@ -226,6 +276,10 @@ class SalesLeadController extends Controller
             $count_win = $total_win->count('lead_id');
 
             $count_lose = $total_lose->count('lead_id');
+            
+            $count_cancel = $total_cancel->count('lead_id');
+            
+            $count_initial = $total_initial->count('lead_id');
 
             $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
 
@@ -243,17 +297,27 @@ class SalesLeadController extends Controller
 
         return collect([
             'lead'=>$count_lead,
+            'initial'=>$count_initial,
             'open'=>$count_open,
             'sd'=>$count_sd,
             'tp'=>$count_tp,
             'win'=>$count_win,
             'lose'=>$count_lose,
+            'cancel'=>$count_cancel,
+            'initial_unfiltered'=>$count_initial,
+            'open_unfiltered'=>$count_open,
+            'sd_unfiltered'=>$count_sd,
+            'tp_unfiltered'=>$count_tp,
+            'win_unfiltered'=>$count_win,
+            'lose_unfiltered'=>$count_lose,
+            'cancel_unfiltered'=>$count_cancel,
             'amount_lead'=>$sum_amount_lead->amount_lead,
             'amount_open'=>$sum_amount_open->amount_open,
             'amount_sd'=>$sum_amount_sd->amount_sd,
             'amount_tp'=>$sum_amount_tp->amount_tp,
             'amount_win'=>$sum_amount_win->amount_win,
-            'amount_lose'=>$sum_amount_lose->amount_lose
+            'amount_lose'=>$sum_amount_lose->amount_lose,
+            'presales'=>$presales
         ]);
     }
 
@@ -544,8 +608,22 @@ class SalesLeadController extends Controller
                 ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
-                ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                ->where('sales_lead_register.result','!=','hmm');
+                ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                // ->where('sales_lead_register.result','!=','hmm');
+
+        $total_initial = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                    // ->where('sales_lead_register.result','OPEN');
 
         $total_open = DB::table('sales_lead_register')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -558,8 +636,8 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
-                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->where('sales_lead_register.result','');
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                    // ->where('sales_lead_register.result','');
 
         $total_sd = DB::table('sales_lead_register')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -572,8 +650,8 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
-                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->where('sales_lead_register.result','SD');
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                    // ->where('sales_lead_register.result','SD');
 
         $total_tp = DB::table('sales_lead_register')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -586,8 +664,8 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
-                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->where('sales_lead_register.result','TP');
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                    // ->where('sales_lead_register.result','TP');
 
         $total_win = DB::table('sales_lead_register')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -600,8 +678,8 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
-                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->where('sales_lead_register.result','WIN');
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                    // ->where('sales_lead_register.result','WIN');
 
         $total_lose = DB::table('sales_lead_register')
                     ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -614,9 +692,33 @@ class SalesLeadController extends Controller
                     ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
                         $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                     })
-                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
-                    ->where('sales_lead_register.result','LOSE');
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                    // ->where('sales_lead_register.result','LOSE');
 
+        $total_cancel = DB::table('sales_lead_register')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                        $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                    })
+                    ->leftJoinSub($getListProductLead, 'product_lead', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
+                    })
+                    ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
+                        $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
+                    })
+                    ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
+                    // ->where('sales_lead_register.result','CANCEL');
+
+        $total_lead->where('sales_lead_register.result',"!=","hmm");
+        $total_open->where('sales_lead_register.result',"");
+        $total_initial->where('sales_lead_register.result',"OPEN");
+        $total_sd->where('sales_lead_register.result',"SD");
+        $total_tp->where('sales_lead_register.result',"TP");
+        $total_win->where('sales_lead_register.result',"WIN");
+        $total_lose->where('sales_lead_register.result',"LOSE");
+        $total_cancel->where('sales_lead_register.result',"CANCEL");
+
+        // Year
         if(isset($request->year)){
             $total_lead->whereIn('year',$request->year);
             $total_open->whereIn('year',$request->year);
@@ -624,8 +726,11 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('year',$request->year);
             $total_win->whereIn('year',$request->year);
             $total_lose->whereIn('year',$request->year);
+            $total_initial->whereIn('year',$request->year);
+            $total_cancel->whereIn('year',$request->year);
         }
 
+        // Territory
         if(isset($request->territory)){
             $total_lead->whereIn('id_territory',$request->territory);
             $total_open->whereIn('id_territory',$request->territory);
@@ -633,8 +738,12 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('id_territory',$request->territory);
             $total_win->whereIn('id_territory',$request->territory);
             $total_lose->whereIn('id_territory',$request->territory);
+            $total_initial->whereIn('id_territory',$request->territory);
+            $total_cancel->whereIn('id_territory',$request->territory);
         }
 
+
+        // Company
         if(isset($request->company)){
             $total_lead->whereIn('id_company',$request->company);
             $total_open->whereIn('id_company',$request->company);
@@ -642,37 +751,9 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('id_company',$request->company);
             $total_win->whereIn('id_company',$request->company);
             $total_lose->whereIn('id_company',$request->company);
+            $total_initial->whereIn('id_company',$request->company);
+            $total_cancel->whereIn('id_company',$request->company);
         }
-
-        // if(isset($request->result)){
-        //     if(in_array("null", $request->result)){
-        //         $total_lead->whereIn('sales_lead_register.result',array_merge($request->result,['']));
-        //         $total_open->whereIn('sales_lead_register.result',array_merge($request->result,['']));
-        //         $total_sd->whereIn('sales_lead_register.result',array_merge($request->result,['']));
-        //         $total_tp->whereIn('sales_lead_register.result',array_merge($request->result,['']));
-        //         $total_win->whereIn('sales_lead_register.result',array_merge($request->result,['']));
-        //         $total_lose->whereIn('sales_lead_register.result',array_merge($request->result,['']));
-        //     } else {
-        //         if ($request->result == 'OPEN') {
-        //             $total_lead->whereIn('sales_lead_register.result',$request->result);
-        //         }else if ($request->result == '') {
-        //             $total_open->whereIn('sales_lead_register.result',$request->result);
-                    
-        //         }else if ($request->result == 'SD') {
-        //             $total_sd->whereIn('sales_lead_register.result',$request->result);
-        //             # code...
-        //         }else if ($request->result == 'TP') {
-        //             $total_tp->whereIn('sales_lead_register.result',$request->result);
-        //             # code...
-        //         }else if ($request->result == 'WIN') {
-        //             $total_win->whereIn('sales_lead_register.result',$request->result);
-        //             # code...
-        //         }else if ($request->result == 'LOSE') {
-        //             $total_lose->whereIn('sales_lead_register.result',$request->result);
-        //             # code...
-        //         }
-        //     }
-        // }
 
         if (isset($request->sales_name)) {
             $total_lead->whereIn('sales_lead_register.nik',$request->sales_name);
@@ -681,6 +762,8 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('sales_lead_register.nik',$request->sales_name);
             $total_win->whereIn('sales_lead_register.nik',$request->sales_name);
             $total_lose->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_initial->whereIn('sales_lead_register.nik',$request->sales_name);
+            $total_cancel->whereIn('sales_lead_register.nik',$request->sales_name);
             
         }
 
@@ -691,6 +774,8 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('nik_presales',$request->presales_name);
             $total_win->whereIn('nik_presales',$request->presales_name);
             $total_lose->whereIn('nik_presales',$request->presales_name);  
+            $total_initial->whereIn('nik_presales',$request->presales_name);  
+            $total_cancel->whereIn('nik_presales',$request->presales_name);  
         }
 
         if (isset($request->product_tag)) {
@@ -700,6 +785,8 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('id_product_tag',$request->product_tag);
             $total_win->whereIn('id_product_tag',$request->product_tag);
             $total_lose->whereIn('id_product_tag',$request->product_tag); 
+            $total_initial->whereIn('id_product_tag',$request->product_tag); 
+            $total_cancel->whereIn('id_product_tag',$request->product_tag); 
         }
 
         if (isset($request->tech_tag)) {
@@ -709,6 +796,8 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('id_tech',$request->tech_tag);
             $total_win->whereIn('id_tech',$request->tech_tag);
             $total_lose->whereIn('id_tech',$request->tech_tag);
+            $total_initial->whereIn('id_tech',$request->tech_tag);
+            $total_cancel->whereIn('id_tech',$request->tech_tag);
         }
         
         if (isset($request->customer)) {
@@ -718,6 +807,64 @@ class SalesLeadController extends Controller
             $total_tp->whereIn('tb_contact.id_customer',$request->customer);
             $total_win->whereIn('tb_contact.id_customer',$request->customer);
             $total_lose->whereIn('tb_contact.id_customer',$request->customer);
+            $total_initial->whereIn('tb_contact.id_customer',$request->customer);
+            $total_cancel->whereIn('tb_contact.id_customer',$request->customer);
+        }
+
+        $total_initial_unfiltered = $total_initial->where('sales_lead_register.result',"OPEN")->count();
+        $total_open_unfiltered = $total_open->where('sales_lead_register.result',"")->count();
+        $total_sd_unfiltered = $total_sd->where('sales_lead_register.result',"SD")->count();
+        $total_tp_unfiltered = $total_tp->where('sales_lead_register.result',"TP")->count();
+        $total_win_unfiltered = $total_win->where('sales_lead_register.result',"WIN")->count();
+        $total_lose_unfiltered = $total_lose->where('sales_lead_register.result',"LOSE")->count();
+        $total_cancel_unfiltered = $total_cancel->where('sales_lead_register.result',"CANCEL")->count();
+
+        if(isset($request->result)){
+            if (in_array("null", $request->result)) {
+                $total_lead->whereNull('sales_lead_register.result');
+            }
+            $total_lead->whereIn('sales_lead_register.result',$request->result);
+
+            $total_lead->where(function ($query) use ($request,$total_initial,$total_open,$total_sd,$total_tp,$total_win,$total_lose){
+                // Init
+                if (!in_array("OPEN", $request->result)) {
+                    $total_initial->where('sales_lead_register.result',"hmm");
+                } else {
+                    $query->orWhere('sales_lead_register.result',"OPEN");
+                }
+                if (!in_array("null", $request->result)) {
+                    $total_open->where('sales_lead_register.result',"hmm");
+                } else {
+                    $query->where('sales_lead_register.result',"");
+
+                }
+                if (!in_array("SD", $request->result)) {
+
+                    $total_sd->where('sales_lead_register.result',"hmm");
+
+                } else {
+                    $query->orWhere('sales_lead_register.result',"SD");
+                }
+                if (!in_array("TP", $request->result)) {
+                    $total_tp->where('sales_lead_register.result',"hmm");
+
+                } else {
+                    $query->orWhere('sales_lead_register.result',"TP");
+                }
+                if (!in_array("WIN", $request->result)) {
+                    $total_win->where('sales_lead_register.result',"hmm");
+
+                } else {
+                    $query->orWhere('sales_lead_register.result',"WIN");
+                }
+                if (!in_array("LOSE", $request->result)) {
+                    $total_lose->where('sales_lead_register.result',"hmm");
+
+                } else {
+                    $query->orWhere('sales_lead_register.result',"LOSE");
+                }
+
+            });
         }
 
         // if($ter != null){
@@ -766,6 +913,10 @@ class SalesLeadController extends Controller
         $count_win = $total_win->where('result','WIN')->count('sales_lead_register.lead_id');
 
         $count_lose = $total_lose->where('result','LOSE')->count('sales_lead_register.lead_id');
+        
+        $count_initial = $total_initial->where('result','OPEN')->count('sales_lead_register.lead_id');
+        
+        $count_cancel = $total_cancel->where('result','CANCEL')->count('sales_lead_register.lead_id');
 
         $sum_amount_lead = $total_lead->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) AS amount_lead'))->first();
 
@@ -781,11 +932,20 @@ class SalesLeadController extends Controller
 
         return collect([
             'lead'=>$count_lead,
+            'initial'=>$count_initial,
             'open'=>$count_open,
             'sd'=>$count_sd,
             'tp'=>$count_tp,
             'win'=>$count_win,
             'lose'=>$count_lose,
+            'cancel'=>$count_cancel,
+            'initial_unfiltered'=>$total_initial_unfiltered,
+            'open_unfiltered'=>$total_open_unfiltered,
+            'sd_unfiltered'=>$total_sd_unfiltered,
+            'tp_unfiltered'=>$total_tp_unfiltered,
+            'win_unfiltered'=>$total_win_unfiltered,
+            'lose_unfiltered'=>$total_lose_unfiltered,
+            'cancel_unfiltered'=>$total_cancel_unfiltered,
             'amount_lead'=>$sum_amount_lead->amount_lead,
             'amount_open'=>$sum_amount_open->amount_open,
             'amount_sd'=>$sum_amount_sd->amount_sd,
@@ -1193,7 +1353,9 @@ class SalesLeadController extends Controller
     {
         $lead_id = $request['lead_id'];   
 
-        $lead_tagging = ProductTagRelation::where('lead_id',$request->lead_id)->get();
+        $lead_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+                    ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
+                    ->where('lead_id',$request->lead_id)->get();
 
         if (isset($lead_tagging)) {
             foreach ($lead_tagging as $key => $value) {
@@ -1210,6 +1372,12 @@ class SalesLeadController extends Controller
                     $store->id_technology_tag = $value['tag_product']['techTag'];
                     $store->price = $value['tag_price'];
                     $store->save(); 
+
+                    $add_changelog = new SalesChangeLog();
+                    $add_changelog->lead_id = $request->lead_id;
+                    $add_changelog->nik = Auth::User()->nik;
+                    $add_changelog->status = 'Add Tagging Product ' .  $value['tag_product']['productTagText'] . ', Technology ' .  $value['tag_product']['techTagText'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
+                    $add_changelog->save();
                 }
             }
         }
@@ -1358,7 +1526,9 @@ class SalesLeadController extends Controller
 
         if($request['result'] == 'WIN'){
 
-            $lead_tagging = ProductTagRelation::where('lead_id',$request->lead_id_result)->get();
+            $lead_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+                    ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
+                    ->where('lead_id',$request->lead_id_result)->get();
 
             if (isset($lead_tagging)) {
                 foreach ($lead_tagging as $key => $value) {
@@ -1375,6 +1545,12 @@ class SalesLeadController extends Controller
                         $store->id_technology_tag = $value['tag_product']['techTag'];
                         $store->price = $value['tag_price'];
                         $store->save(); 
+
+                        $add_changelog = new SalesChangeLog();
+                        $add_changelog->lead_id = $request->lead_id_result;
+                        $add_changelog->nik = Auth::User()->nik;
+                        $add_changelog->status = 'Update Tagging Product ' .  $value['tag_product']['productTagText'] . ', Technology ' .  $value['tag_product']['techTagText'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
+                        $add_changelog->save();
                     }
                 }
 
