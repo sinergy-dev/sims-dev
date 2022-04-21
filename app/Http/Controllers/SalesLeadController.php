@@ -1351,20 +1351,35 @@ class SalesLeadController extends Controller
 
     public function update_sd(Request $request)
     {
-        $lead_id = $request['lead_id'];   
+        $id = explode(',', $request->id);
 
-        $lead_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+        $name_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
                     ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
-                    ->where('lead_id',$request->lead_id)->get();
+                    ->select('name_product', 'name_tech', 'price', 'tb_product_tag_relation.id')
+                    ->whereIn('tb_product_tag_relation.id', $id)->get();
 
-        if (isset($lead_tagging)) {
-            foreach ($lead_tagging as $key => $value) {
-                ProductTagRelation::where('lead_id',$value->lead_id)->delete(); 
+        if(isset($name_tagging)){
+            foreach($name_tagging as $data){
+                $add_changelog = new SalesChangeLog();
+                $add_changelog->lead_id = $request->lead_id;
+                $add_changelog->nik = Auth::User()->nik;
+                $add_changelog->status = 'Delete Tagging Product ' .  $data['name_product'] . ', Technology ' .  $data['name_tech'] . ', with Price ' . str_replace('.', '', $data['price']);
+                $add_changelog->save();
+            }    
+        }
+
+        // $lead_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+        //             ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
+        //             ->where('lead_id',$request->lead_id)->get();
+
+        if (isset($name_tagging)) {
+            foreach ($name_tagging as $key => $value) {
+                ProductTagRelation::where('id',$value->id)->delete(); 
             }
         }
 
-        if(isset($request->tagData)){
-            if(!empty($request->tagData["tagProduct"])){
+        if(!isset($request->id)){
+            if(isset($request->tagData["tagProduct"])){
                 foreach ($request->tagData["tagProduct"] as $key => $value) {
                     $store = new ProductTagRelation;
                     $store->lead_id = $request->lead_id;
@@ -1380,7 +1395,7 @@ class SalesLeadController extends Controller
                     $add_changelog->save();
                 }
             }
-        }
+        } 
 
         $update = solution_design::where('lead_id', $request->lead_id)->first();
         $update->assessment = $request['assessment'];
@@ -1403,6 +1418,34 @@ class SalesLeadController extends Controller
         $update = Sales::where('lead_id', $request->lead_id)->first();
         $update->result = 'SD';
         $update->update();        
+
+        return redirect()->back();
+    }
+
+    public function updateProductTag(Request $request)
+    {
+        $update = ProductTagRelation::where('id', $request->id_exist)->first();
+        $update->lead_id = $request->lead_id;
+        $update->id_product_tag = $request->id_product;
+        $update->id_technology_tag = $request->id_techno;
+        $update->price = str_replace('.', '', $request->price);
+        $update->update(); 
+
+        $get_name = ProductTagRelation::joinSub(DB::table('tb_product_tag'), 'tb_product_tag_alias', function ($join) {
+                    $join->on('tb_product_tag_alias.id', '=', 'tb_product_tag_relation.id_product_tag');
+                })
+                ->joinSub(DB::table('tb_technology_tag'), 'tb_technology_tag_alias', function ($join) {
+                    $join->on('tb_technology_tag_alias.id', '=', 'tb_product_tag_relation.id_technology_tag');
+                })
+                ->select('name_tech','name_product','id_technology_tag','id_product_tag','price','tb_product_tag_relation.id')
+                ->where('tb_product_tag_relation.id',$request->id_exist)
+                ->first();
+
+        $add_changelog = new SalesChangeLog();
+        $add_changelog->lead_id = $request->lead_id;
+        $add_changelog->nik = Auth::User()->nik;
+        $add_changelog->status = 'Update Tagging Product ' .  $get_name->name_product . ', Technology ' .  $get_name->name_tech . ', with Price ' . str_replace('.', '', $request->price);
+        $add_changelog->save();
 
         return redirect()->back();
     }
@@ -1504,6 +1547,7 @@ class SalesLeadController extends Controller
 
     public function updateResult(Request $request)
     {
+        // return $request->tagData;
 
         $update = Sales::where('lead_id', $request->lead_id_result)->first();
         $update->result = $request['result'];
@@ -1526,41 +1570,56 @@ class SalesLeadController extends Controller
 
         if($request['result'] == 'WIN'){
 
-            $lead_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
-                    ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
-                    ->where('lead_id',$request->lead_id_result)->get();
+            if (isset($request->tagData['id'])) {
+                $id = $request->tagData['id'];
 
-            if (isset($lead_tagging)) {
-                foreach ($lead_tagging as $key => $value) {
-                    ProductTagRelation::where('lead_id',$value->lead_id)->delete(); 
-                }
-            }
+                $name_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+                            ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
+                            ->select('name_product', 'name_tech', 'price', 'tb_product_tag_relation.id')
+                            ->whereIn('tb_product_tag_relation.id', $id)->get();
 
-            if(isset($request->tagData)){
-                if(!empty($request->tagData["tagProduct"])){
-                    foreach ($request->tagData["tagProduct"] as $key => $value) {
-                        $store = new ProductTagRelation;
-                        $store->lead_id = $request->lead_id_result;
-                        $store->id_product_tag = $value['tag_product']['productTag'];
-                        $store->id_technology_tag = $value['tag_product']['techTag'];
-                        $store->price = $value['tag_price'];
-                        $store->save(); 
-
+                if(isset($name_tagging)){
+                    foreach($name_tagging as $data){
                         $add_changelog = new SalesChangeLog();
                         $add_changelog->lead_id = $request->lead_id_result;
                         $add_changelog->nik = Auth::User()->nik;
-                        $add_changelog->status = 'Update Tagging Product ' .  $value['tag_product']['productTagText'] . ', Technology ' .  $value['tag_product']['techTagText'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
+                        $add_changelog->status = 'Delete Tagging Product ' .  $data['name_product'] . ', Technology ' .  $data['name_tech'] . ', with Price ' . str_replace('.', '', $data['price']);
                         $add_changelog->save();
-                    }
+                    }    
                 }
 
-                if(!empty($request->tagData["tagService"])){
-                    foreach ($request->tagData["tagService"] as $key => $value) {
-                        $store = new ServiceTagRelation;
-                        $store->lead_id = $request->lead_id_result;
-                        $store->id_service_tag = $value['tag_service'];
-                        $store->price = $value['tag_price'];
-                        $store->save(); 
+                if (isset($name_tagging)) {
+                    foreach ($name_tagging as $key => $value) {
+                        ProductTagRelation::where('id',$value->id)->delete(); 
+                    }
+                }   
+            } else {
+                if(isset($request->tagData)){
+                    if(!empty($request->tagData["tagProduct"])){
+                        foreach ($request->tagData["tagProduct"] as $key => $value) {
+                            $store = new ProductTagRelation;
+                            $store->lead_id = $request->lead_id_result;
+                            $store->id_product_tag = $value['tag_product']['productTag'];
+                            $store->id_technology_tag = $value['tag_product']['techTag'];
+                            $store->price = $value['tag_price'];
+                            $store->save(); 
+
+                            $add_changelog = new SalesChangeLog();
+                            $add_changelog->lead_id = $request->lead_id_result;
+                            $add_changelog->nik = Auth::User()->nik;
+                            $add_changelog->status = 'Add Tagging Product ' .  $value['tag_product']['productTagText'] . ', Technology ' .  $value['tag_product']['techTagText'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
+                            $add_changelog->save();
+                        }
+                    }
+
+                    if(!empty($request->tagData["tagService"])){
+                        foreach ($request->tagData["tagService"] as $key => $value) {
+                            $store = new ServiceTagRelation;
+                            $store->lead_id = $request->lead_id_result;
+                            $store->id_service_tag = $value['tag_service'];
+                            $store->price = $value['tag_price'];
+                            $store->save(); 
+                        }
                     }
                 }
             }
