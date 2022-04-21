@@ -266,12 +266,13 @@ Detail Lead Register
 	              </div> 
 	              <div class="row">
 	              	<div class="col-lg-12 col-xs-12">
-	              		<label>Product Tagging</label>
+	              		<label>Product Tagging <span style="color: red;">(required)</span></label>
 	              		<div class="table-responsive">
 	              			<table class="table" id="table-tagging">
 		                    <thead>
 		                      <tr>
-		                        <th>Product Tag</th>
+		                      	<th hidden></th>
+		                        <th title="Product Tagging is Required!">Product Tag</th>
 		                        <th>Technology Tag</th>
 		                        <th>Price</th>
 		                        <td class="text-center">
@@ -290,7 +291,7 @@ Detail Lead Register
           		</fieldset>          		            
               <div class="form-group">
               	<button class="btn btn-md btn-sd btn-primary" id="btnSubmitSD" style="float: left;" type="button">Submit</button>
-              	<button class="btn btn-md btn-sd btn-success" id="btnRaiseTP" onclick="btnRaiseTP()" style="float: right;" type="button" onclick="" data-toggle="modal">Raise To Tender</button>
+              	<button class="btn btn-md btn-sd btn-success" id="btnRaiseTP" onclick="btnRaiseTP()" style="float: right;" type="button" disabled onclick="" data-toggle="modal">Raise To Tender</button>
               	<!-- <input style="float: right;margin-right: 5px;margin-top: 10px;" type="checkbox" name="" id="cbSubmitSD"> -->
               </div>
           	</fieldset>
@@ -485,7 +486,7 @@ Detail Lead Register
     </div>
 
     <div class="modal fade" id="formResult" tabindex="-1" role="dialog" aria-hidden="true">
-		    <div class="modal-dialog modal-md">
+		    <div class="modal-dialog modal-lg">
 		        <div class="modal-content">
 		            <div class="modal-header">
 		                <h4 class="modal-title">Choose Result</h4>
@@ -1191,160 +1192,140 @@ Detail Lead Register
 						var fd = new FormData()
 
 						$("#btnSubmitTP").click(function(){
-							if($("#lelang").val() != result.data.auction_number){
-								auction_number = $("#lelang").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'No Lelang ' + auction_number
-				       			},					
-								})
-							}
+								if($("#lelang").val() != result.data.auction_number){
+									auction_number = $("#lelang").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'No Lelang ' + auction_number
+					       			},					
+									})
+								}
 
-							if($("#submit_date").val() != result.data.submit_date){
-								submit_date = $("#submit_date").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Submit Date ' + submit_date
-				            },
-				        })						
-							}
+								if($("#submit_date").val() != result.data.submit_date){
+									submit_date = $("#submit_date").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Submit Date ' + submit_date
+					            },
+					        })						
+								}
 
-							if($("#project_name").val() != result.data.project_name){
-								project_name = $("#project_name").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Project Name ' + project_name
-				            },
-				        })						
-							}
+								if($("#project_name").val() != result.data.project_name){
+									project_name = $("#project_name").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Project Name ' + project_name
+					            },
+					        })						
+								}
 
-							if($("#deal_price").val().replaceAll(".","") != result.data.deal_price){
-								deal_price = $("#deal_price").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Deal Price ' + deal_price
-				            },
-				        })						
-							}
+								if($("#deal_price").val().replaceAll(".","") != result.data.deal_price){
+									deal_price = $("#deal_price").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Deal Price ' + deal_price
+					            },
+					        })						
+								}
 
-							if($("#win_prob").val() != result.data.win_prob){
-								win_prob = $("#win_prob").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Win Probability ' + win_prob
-				            },
-				        })						
-							}
+								if($("#win_prob").val() != result.data.win_prob){
+									win_prob = $("#win_prob").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Win Probability ' + win_prob
+					            },
+					        })						
+								}
 
-							if($("#deal_price_total").val().replaceAll(".","") != result.data.deal_price_total){
-								deal_price_total = $("#deal_price_total").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Deal Price Total ' + deal_price_total
-				            },
-				        })						
-							}
+								if($("#deal_price_total").val().replaceAll(".","") != result.data.deal_price_total){
+									deal_price_total = $("#deal_price_total").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Deal Price Total ' + deal_price_total
+					            },
+					        })						
+								}
 
-							if($("#submit_price").val().replaceAll(".","") != result.data.submit_price){
-								submit_price = $("#submit_price").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Submit Price ' + submit_price
-				            },
-				        })						
-							}
+								if($("#submit_price").val().replaceAll(".","") != result.data.submit_price){
+									submit_price = $("#submit_price").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Submit Price ' + submit_price
+					            },
+					        })						
+								}
 
-							if($("#project_class").val() != result.data.project_class){
-								project_class = $("#project_class").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Project Class ' + project_class
-				            },
-				        })						
-							}
+								if($("#project_class").val() != result.data.project_class){
+									project_class = $("#project_class").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Project Class ' + project_class
+					            },
+					        })						
+								}
 
-							if($("#quote_number").val() != result.data.quote_number){
-								quote_number = $("#quote_number").val()
-								$.ajax({
-				            type: "POST",
-				            url: "{{url('/project/changelogTp')}}",
-				            data: {
-				              _token: "{{ csrf_token() }}",
-				              lead_id:window.location.href.split("/")[5],
-				              status:'Quote Number ' + quote_number
-				            },
-				        })						
-							}
+								if($("#quote_number").val() != result.data.quote_number){
+									quote_number = $("#quote_number").val()
+									$.ajax({
+					            type: "POST",
+					            url: "{{url('/project/changelogTp')}}",
+					            data: {
+					              _token: "{{ csrf_token() }}",
+					              lead_id:window.location.href.split("/")[5],
+					              status:'Quote Number ' + quote_number
+					            },
+					        })						
+								}
 
-	            fd.append('_token',"{{csrf_token()}}")
-							fd.append("lead_id",window.location.href.split("/")[5])
-	            fd.append("submit_price",$("#submit_price").val())
-	            fd.append("lelang",$("#lelang").val())
-	            fd.append("win_prob",$("#win_prob").val())
-	            fd.append("project_name",$("#project_name").val())
-	            fd.append("submit_date",$("#submit_date").val())
-	            fd.append("assigned_by",$("#assigned_by").val())
-	            fd.append("quote_number",$("#quote_number").val())
-	            fd.append("deal_price",$("#deal_price").val())
-	            fd.append("project_class",$("#project_class").val())
-	            fd.append("jumlah_tahun",$("#jumlah_tahun").val())
-	            fd.append("deal_price_total",$("#deal_price_total").val())
-
-								
-							$("btnSubmitTP").attr("onclick",btnSubmit(fd,'TP'))
-						
+		            fd.append('_token',"{{csrf_token()}}")
+								fd.append("lead_id",window.location.href.split("/")[5])
+		            fd.append("submit_price",$("#submit_price").val())
+		            fd.append("lelang",$("#lelang").val())
+		            fd.append("win_prob",$("#win_prob").val())
+		            fd.append("project_name",$("#project_name").val())
+		            fd.append("submit_date",$("#submit_date").val())
+		            fd.append("assigned_by",$("#assigned_by").val())
+		            fd.append("quote_number",$("#quote_number").val())
+		            fd.append("deal_price",$("#deal_price").val())
+		            fd.append("project_class",$("#project_class").val())
+		            fd.append("jumlah_tahun",$("#jumlah_tahun").val())
+		            fd.append("deal_price_total",$("#deal_price_total").val())
+									
+								$("btnSubmitTP").attr("onclick",btnSubmit(fd,'TP'))
 						})
 
-						// var heightSD = parseInt($("#box-SD").innerHeight())
-						// var heightTP = parseInt($("#box-TP").innerHeight())
-						// console.log(heightSD)
-						// console.log(heightTP)
-						// if(accesable.includes('formSD') || accesable.includes('formTP')){					
-						// 	if (heightSD > heightTP) {
-						// 		console.log('besar SD')
-						// 		$("#box-SD").height(heightSD)
-						// 		$("#box-TP").height(heightSD)
-						// 	}else if(heightTP > heightSD){
-						// 		console.log('besar TP')
-						// 		$("#box-TP").height(parseInt($("#box-SD").innerHeight()))
-			  	// 			var heightSD = parseInt($("#box-SD").innerHeight())
-						// 		$("#box-SD").height(heightSD)
-						// 	}	      	
-						// }
-
-						
 						$("#btnResult").click(function(){
 							if (result.data.deal_price == "") {
 								$("#deal_price").closest('.form-group').addClass('has-error')
@@ -1378,6 +1359,8 @@ Detail Lead Register
 		
 		var i = 0;
   	function addTagging(){
+  		// $("#btnRaiseTP").prop("disabled",false)
+
   		if ($('#tbtagging tr').length < 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
@@ -1428,22 +1411,20 @@ Detail Lead Register
       i++;
       var append = ""
       append = append + "<tr class='new-tagging'>"
-      append = append + " <td>"
-      append = append + " <select class='form-control select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' style='width: 100%!important'></select>"
+      append = append + " <td><input hidden class='id' data-value='"+ i +"' />"
+      append = append + " <select class='form-control select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' name='searchTagsProductSol' style='width: 100%!important'></select>"
       append = append + " </td>"
       append = append + " <td>"
-      append = append + " <select class='form-control select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' style='width: 100%!important'></select>"
+      append = append + " <select class='form-control select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' name='searchTagsTechnologySol' style='width: 100%!important'></select>"
       append = append + " </td>"
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip' title='50000' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input data-value='" + i + "' class='money form-control new-price-sol' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input data-value='" + i + "' class='money form-control new-price-sol' name='new-price-sol' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
-      append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash-tagging'>"
-      append = append + " <i class='fa fa-trash'></i>"
-      append = append + " </button>"
+      append = append + " <button type='button' data-value='"+i+"' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging'><i class='fa fa-trash'></i></button><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
       append = append + " </td>"
       append = append + "</tr>"
       
@@ -1475,6 +1456,7 @@ Detail Lead Register
     	}		
 		})
 
+    var idExist = []
     $.ajax({
     	url: "{{url('/project/showTagging')}}",
       type: "GET",
@@ -1484,30 +1466,40 @@ Detail Lead Register
     		i = 0
       	$.each(result, function(key,value){
       		i++
-      		addTaggingNotEmpty(value.id_product_tag,value.id_technology_tag,value.price,i)
+      		addTaggingNotEmpty(value.id,value.id_product_tag,value.id_technology_tag,value.price,i)
+    			idExist.push(value.id)
       	})
+      	console.log(result.length > 0)
+      	if (result.length > 0){
+      		if ($('#tbtagging tr').length < 0) {
+		  			$("#btnRaiseTP").prop("disabled",true)
+		  		}else{
+		  			$("#btnRaiseTP").prop("disabled",false)
+		  		}
+      	}      	
       }
     })
 
-    function addTaggingNotEmpty(id_product,id_tech,price,i){
+    console.log(idExist)
+
+    function addTaggingNotEmpty(id,id_product,id_tech,price,i){
     	var append = ""
-      append = append + "<tr class='new-tagging'>"
+      append = append + "<tr class='exist-tagging'>"
+      append = append + "<td hidden><input class='id' name='id' data-value='"+i+"'/></td>"
       append = append + " <td>"
-      append = append + " <select class='form-control col-xs-12 select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' style='width: 100%!important'></select>"
+      append = append + " <select disabled class='form-control col-xs-12 select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' style='width: 100%!important'></select>"
       append = append + " </td>"
       append = append + " <td>"
-      append = append + " <select class='form-control col-xs-12 select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' style='width: 100%!important'></select>"
+      append = append + " <select disabled class='form-control col-xs-12 select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' style='width: 100%!important'></select>"
       append = append + " </td>"
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip'  style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input data-value='" + i + "' class='money form-control col-xs-12 new-price-sol' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input disabled data-value='" + i + "' class='money form-control col-xs-12 new-price-sol' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
-      append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash-tagging'>"
-      append = append + " <i class='fa fa-trash'></i>"
-      append = append + " </button>"
+      append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging'><i class='fa fa-trash'></i></button><button type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging'><i class='fa fa-pencil'></i></button>"
       append = append + " </td>"
       append = append + "</tr>"
 
@@ -1563,6 +1555,7 @@ Detail Lead Register
     		var $this = $(this);
         $this.attr('title', 'uang');
     	})  
+    	$(".id[data-value='" + i + "']").val(id) 
   		$(".new-price-sol[data-value='" + i + "']").val(price)  
 
       initmoney();
@@ -1738,23 +1731,149 @@ Detail Lead Register
       })
   	}
 
-  	function btnSubmit(data,val){
+  	var deletedProduct = []
+
+		$(document).on('click', '.btn-trash-tagging', function() {
+      $(this).closest("tr").remove();
+      console.log($('#tbtagging tr').length)
+      if ($('#tbtagging tr').length < 0) {
+  			$("#btnRaiseTP").prop("disabled",false)
+  		}else{
+  			$("#btnRaiseTP").prop("disabled",true)
+  		}
+		  row = $(this).parents("tr").find("input[name='id']").val();
+    	deletedProduct.push(row)
+
+    });
+
+    localStorage.setItem("status","pencil")
+
+    $(document).on('click', '.btn-edit-tagging', function() {
+    	$(this).parents("tr").find(".select2-customProductSol").prop("disabled",false)
+    	$(this).parents("tr").find(".select2-customTechnologySol").prop("disabled",false)
+    	$(this).parents("tr").find(".new-price-sol").prop("disabled",false)
+    	$(this).parents("tr").find(".btn-edit-tagging").removeClass('btn-primary').addClass('btn-warning')
+    	$(this).parents("tr").find(".btn-edit-tagging").find('i').removeClass('fa-pencil').addClass('fa-check')
+		  id_exist = $(this).parents("tr").find("input[name='id']").val()
+    	product = $(this).parents("tr").find(".select2-customProductSol").val().substr(1)
+    	techno = $(this).parents("tr").find(".select2-customTechnologySol").val().substr(1)
+    	price = $(this).parents("tr").find(".new-price-sol").val()
+
+    	console.log(id_exist)
+
+    	if (localStorage.getItem("status") == "pencil") {
+    		localStorage.setItem("status","ubah")
+    	}else{
+    		$(this).parents("tr").find(".btn-edit-tagging").attr("onclick",updateTagging(id_exist,product,techno,price))
+    	}
+    	$("#btnSubmitSD").prop("disabled",true)
+    	$("#btnRaiseTP").prop("disabled",true)
+    })
+
+    function updateTagging(id_exist,product,techno,price){
+    	alert("updated")
+  		$.ajax({
+          url: "{{url('/project/updateProductTag')}}",
+          type: 'post',
+          data: {
+          	_token:"{{ csrf_token() }}",
+          	id_exist:id_exist,
+          	id_product:product,
+          	id_techno:techno,
+          	price:price,
+          	lead_id:window.location.href.split("/")[5]
+          },
+        success: function()
+        {
+            Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                	localStorage.setItem("status", "pencil");
+                  location.reload()
+                }
+            })
+        }
+      })
+    }
+
+    var id_exist,product,techno,price,dataValue,lead_id = ''
+
+    $(document).on('click', '.btn-edit-taggingWin', function() {
+    	$(this).parents("tr").find(".select2-customProduct").prop("disabled",false)
+    	$(this).parents("tr").find(".select2-customTechnology").prop("disabled",false)
+    	$(this).parents("tr").find(".new-price").prop("disabled",false)
+    	$(this).parents("tr").find(".btn-edit-taggingWin").removeClass('btn-primary').addClass('btn-warning')
+    	$(this).parents("tr").find(".btn-edit-taggingWin").find('i').removeClass('fa-pencil').addClass('fa-check')
+		  var id_exist = $(this).parents("tr").find("input[name='id']").val()
+    	var product = $(this).parents("tr").find(".select2-customProduct").val().substr(1)
+    	var techno = $(this).parents("tr").find(".select2-customTechnology").val().substr(1)
+    	var price = $(this).parents("tr").find(".new-price").val()
+    	var dataValue = $(this).parents("tr").find(".new-price").data("value")
+    	console.log(dataValue)
+    	var lead_id = window.location.href.split("/")[5]
+
+    	if (localStorage.getItem("status") == "pencil") {
+    		localStorage.setItem("status","ubah")
+    	}else{
+    		$(this).parents("tr").find(".btn-edit-taggingWin").attr("onclick",updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id))
+    	}
+    })  	  
+
+    function updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id){
+    	console.log(dataValue)
+    	console.log(window.location.href.split("/")[5])
+    	alert("updated")
+  		$.ajax({
+          url: "{{url('/project/updateProductTag')}}",
+          type: 'post',
+          data: {
+          	_token:"{{ csrf_token() }}",
+          	id_exist:id_exist,
+          	id_product:product,
+          	id_techno:techno,
+          	price:price,
+          	lead_id:lead_id
+          },
+        success: function()
+        {
+            Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                	localStorage.setItem("status", "pencil");
+                	$(".select2-customProduct[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".select2-customTechnology[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".new-price[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".btn-edit-taggingWin[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
+						    	$(".btn-edit-taggingWin[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+                }
+            })
+        }
+      })
+    }  
+
+  	function btnSubmit(data,val){  		
   		if (val == 'SD') {
   			var i = 0
   			var tagProduct = []
 	      $('#table-tagging #tbtagging .new-tagging').each(function() {
-	        // tagProduct.push({
-	        //   tag_price:$(this).find(".new-price").val().replace(/\D/g, ""),
-	        //   tag_product:{
-	        //     productTag:$(this).find('.select2-customProductSol').select2("data")[0].id.substr(1),
-	        //     techTag:$(this).find('.select2-customTechnologySol').select2("data")[0].id.substr(1)
-	        //   }
-	        // })
 	        data.append("tagData[tagProduct]["+i+"][tag_price]",$(this).find(".new-price-sol").val().replace(/\D/g, ""))
 	        data.append("tagData[tagProduct]["+i+"][tag_product][productTag]",$(this).find('.select2-customProductSol').select2("data")[0].id.substr(1))
+	        data.append("tagData[tagProduct]["+i+"][tag_product][productTagText]",$(this).find('.select2-customProductSol').select2("data")[0].text)
 	        data.append("tagData[tagProduct]["+i+"][tag_product][techTag]",$(this).find('.select2-customTechnologySol').select2("data")[0].id.substr(1))
+	         data.append("tagData[tagProduct]["+i+"][tag_product][techTagText]",$(this).find('.select2-customTechnologySol').select2("data")[0].text)
 	        i++
 	      });
+
+	      data.append("id",deletedProduct)
+	      data.append("id_exist",idExist)
+
+
 
 	      // var tagData = {
 	      //   tagProduct:tagProduct
@@ -1985,38 +2104,6 @@ Detail Lead Register
 		            document.getElementById("nextBtn").innerHTML = "Submit";
 		        }
 		        initmoney();
-		        // $.ajax({
-		        //     url: "{{url('/sales/getProductTechByLead')}}",
-		        //     type: "GET",
-		        //     data: {
-		        //         lead_id: lead_id,
-		        //     },
-		        //     success: function(result) {
-		        //         $("#tbtagprice").empty();
-		        //         var append = ""
-		        //         $.each(result, function(key, value) {
-		        //             append = append + "<tr class='existing-products'>"
-		        //             append = append + " <td class = 'existing-id' style='vertical-align: middle;'>"
-		        //             append = append + value.name_product + "<input class=' existing-id-product' value='" + value.id.substr(1) + "' hidden />"
-		        //             append = append + "</td>"
-		        //             append = append + "<td>"
-		        //             append = append + " <div class='input-group'>"
-		        //             append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-		        //             append = append + " <input class='money form-control existing-price' data-value='" + i + "' type='text' placeholder='Enter Product Price' name='project_budget'>"
-		        //             append = append + " <span class='input-group-btn'>"
-		        //             append = append + " <button type='button' style='width: auto !important;margin-left: 10px;' class='btn btn-danger btn-flat btn-trash'>"
-		        //             append = append + " <i class='fa fa-trash'></i>"
-		        //             append = append + " </button>"
-		        //             append = append + " </span>"
-		        //             append = append + " </div>"
-		        //             append = append + "</td>"
-		        //             append = append + " </tr > "
-
-		        //         })
-		        //         $("#tbtagprice").append(append)
-		        //         initmoney();
-		        //     },
-		        // })
 
 		        var i = 0;
 		        $("#tbtagprice").empty()		        
@@ -2030,7 +2117,7 @@ Detail Lead Register
 				    		i = 0
 				      	$.each(result, function(key,value){
 				      		i++
-				      		addProductTechInitiate(value.id_product_tag,value.id_technology_tag,value.price,i)
+				      		addProductTechInitiate(value.id,value.id_product_tag,value.id_technology_tag,value.price,i)
 				      	})
 				      	grandTotal()
 				      }
@@ -2038,25 +2125,23 @@ Detail Lead Register
 
 		        $("#tbtagprice").empty();
 
-				    function addProductTechInitiate(id_product,id_tech,price,i){
+				    function addProductTechInitiate(id,id_product,id_tech,price,i){
 				    	var append = ""
-				      append = append + "<tr class='new-product'>"
-				      append = append + " <td>"
-				      append = append + " <select class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
+				      append = append + "<tr class='exist-product'>"
+				      append = append + " <td><input hidden class='idWinTagging' name='id' data-value='"+ i +"'/>"
+				      append = append + " <select disabled class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
 				      append = append + " </td>"
 				      append = append + " <td>"
-				      append = append + " <select class='form-control select2-customTechnology' data-value='" + i + "' id='searchTagsTechnology' style='width: 100%!important'></select>"
+				      append = append + " <select disabled class='form-control select2-customTechnology' data-value='" + i + "' id='searchTagsTechnology' style='width: 100%!important'></select>"
 				      append = append + " </td>"
 				      append = append + " <td style='white-space: nowrap'>"
 				      append = append + " <div class='input-group'>"
 				      append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-				      append = append + " <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price'>"
+				      append = append + " <input disabled data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price'>"
 				      append = append + " </div>"
 				      append = append + " </td>"
 				      append = append + " <td class='text-center'>"
-				      append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash'>"
-				      append = append + " <i class='fa fa-trash'></i>"
-				      append = append + " </button>"
+				      append = append + " <button type='button' data-value='"+ i +"' style='width: auto !important;vertical-align:sub' class='btn btn-sm btn-danger btn-flat btn-trash'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;vertical-align:sub;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-taggingWin'><i class='fa fa-pencil'></i></button>"
 				      append = append + " </td>"
 				      append = append + "</tr>"
 
@@ -2108,7 +2193,9 @@ Detail Lead Register
 				        }
 				    	})
 
-				    	$(".new-price[data-value='" + i + "']").val(price)	      
+				    	$(".new-price[data-value='" + i + "']").val(price)	    
+
+				    	$(".idWinTagging[data-value='" + i +"']").val(id)  
 
 				      initmoney();
 				    }
@@ -2173,9 +2260,8 @@ Detail Lead Register
             append = append + " </div>"
             append = append + " </td>"
             append = append + " <td class='text-center'>"
-            append = append + " <button type='button' style='width: auto !important;' class='btn btn-danger btn-flat btn-trash'>"
-            append = append + " <i class='fa fa-trash'></i>"
-            append = append + " </button>"
+            append = append + " <button data-value='"+i+"' type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash'>"
+            append = append + " <i class='fa fa-trash'></i></button><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
             append = append + " </td>"
             append = append + "</tr>"
 
@@ -2219,8 +2305,7 @@ Detail Lead Register
       })
   	}
 
-		function submitBtnWin(n){    
-
+		function submitBtnWin(n){  
       var rowCount = $('#tbtagprice tr').length + $('#tbserviceprice tr').length
 
       if (rowCount == 0) {
@@ -2233,18 +2318,18 @@ Detail Lead Register
           cancelButtonText: 'No'
         }).then((result) => {
           if (result.isConfirmed) {
-            submitWinStep2()
+            submitWinStep2(deletedProductWin)
           } else {
             Swal.close()
           }
         })
       } else {
-        submitWinStep2()
+        submitWinStep2(deletedProductWin)
       }       
     }
 
-    function submitWinStep2(){
-
+    function submitWinStep2(id){
+    	console.log(id)
       var emptyProduct = $("#table-product #tbtagprice tr input").filter(function() {
         return !this.value.trim();
       })
@@ -2282,7 +2367,9 @@ Detail Lead Register
             tag_price:$(this).find(".new-price").val().replace(/\D/g, ""),
             tag_product:{
               productTag:$(this).find('.select2-customProduct').select2("data")[0].id.substr(1),
-              techTag:$(this).find('.select2-customTechnology').select2("data")[0].id.substr(1)
+              productTagText:$(this).find('.select2-customProduct').select2("data")[0].text,
+              techTag:$(this).find('.select2-customTechnology').select2("data")[0].id.substr(1),
+              techTagText:$(this).find('.select2-customTechnology').select2("data")[0].text,
             }
           })
         });
@@ -2298,7 +2385,8 @@ Detail Lead Register
 
         var tagData = {
           tagProduct:tagProduct,
-          tagService:tagService
+          tagService:tagService,
+          id:id
         }
 
         Swal.fire({
@@ -2377,21 +2465,16 @@ Detail Lead Register
       $("#formResult").modal("hide"); 
     }
 
+    deletedProductWin = []
+
     $(document).on('click', '.btn-trash', function() {
       $(this).closest("tr").remove();
       if($(this).closest("tr.new-service").length > 0){
         $("#addService").show()
       }
-    });
 
-    $(document).on('click', '.btn-trash-tagging', function() {
-      $(this).closest("tr").remove();
-      console.log($('#tbtagging tr').length)
-      if ($('#tbtagging tr').length < 0) {
-  			$("#btnRaiseTP").prop("disabled",false)
-  		}else{
-  			$("#btnRaiseTP").prop("disabled",true)
-  		}
+      row = $(this).parents("tr").find("input[name='id']").val();
+    	deletedProductWin.push(row)
     });
 
     function submitChangeLog(){
@@ -2468,14 +2551,19 @@ Detail Lead Register
           { "data": "created_at" },
           { 
           	render : function (data, type, row){
+          		var check = row.status.split(", ")
           		if(row.status == 'Update Lead with Amount ' || row.status == 'Create Lead with Amount '){
           			return row.status + '<i class="money">' + new Intl.NumberFormat('id').format(row.submit_price) + '</i>'
           		}else if (row.status == 'Update TP') {
           			return row.status + '-' + 'Submitted Price [<i>'+ new Intl.NumberFormat('id').format(row.submit_price) + '</i>] - Deal Price [<i>'+ new Intl.NumberFormat('id').format(row.deal_price) +'</i>]'
           		}else if (row.progress_date != null) {
           			return row.status + ' - ' + '[' + row.progress_date + ']'
-          		}else if (row.status != 'Update Lead with Amount ' || row.status == 'Create Lead with Amount ') {
-          			return row.status
+          		}else if ($.isNumeric(String(check[2]).split(" ")[2])){
+          			return check[0] + ", " + check[1] + ", " + String(check[2]).split(" ")[0] + " " + String(check[2]).split(" ")[1] + " " + new Intl.NumberFormat('id').format(String(check[2]).split(" ")[2])
+          		}else {
+          			//String(check[2]).split(" ")[2]
+          			return row.status 
+
           		}
           	}
           },
