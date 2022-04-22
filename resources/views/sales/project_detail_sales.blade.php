@@ -726,197 +726,7 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						if (result.data[0].result == 'LOSE') {
-							    var i = 0;
-							    setInterval(function() {
-							        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-							        i++
-							        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-							        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-							        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-							        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active6');
-						        	$('#win_lose').parent("span").addClass('box-shadow')
-
-							        $('#s_init').html("<b> INITIAL </b>");
-							        $('#s_open').html("<b> OPEN </b>");
-							        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-							        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-							        $('#s_winlose').html("<b> LOSE </b>");
-							    }, 1000)
-							    var kedipan = 500;
-							    var dumet = setInterval(function() {
-							        var ele = document.getElementById('win_lose');
-							        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-							    }, kedipan);
-						} else if (result.data[0].result == 'WIN') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active4');
-						        $('#win_lose').parent("span").addClass('box-shadow')
-
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						        $('#s_winlose').html("<b> WIN </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('win_lose');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-						} else if (result.data[0].result == 'HOLD') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
-						        $('#win_lose').parent("span").addClass('box-shadow')
-
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						        $('#s_winlose').html("<b> HOLD </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('win_lose');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formTP')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-						} else if (result.data[0].result == 'SPECIAL') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
-						        $('#win_lose').parent("span").addClass('box-shadow')
-
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						        $('#s_winlose').html("<b> SPECIAL </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('win_lose');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-						} else if (result.data[0].result == 'CANCEL') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        $('#win_lose').parent("span").addClass('box-shadow')
-
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						        $('#s_winlose').html("<b> CANCEL </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('win_lose');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-						} else if (result.data[0].result == '') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1')
-						        $('#open').parent("span").addClass('box-shadow')
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('open');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formSD')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-
-						} else if (result.data[0].result == 'SD') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#sd').parent("span").addClass('box-shadow')
-
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('sd');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formSD')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-						} else if (result.data[0].result == 'TP') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#tp').parent("span").addClass('box-shadow')
-
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('tp');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan)
-
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formTP')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-						} else if (result.data[0].result == 'OPEN') {
-						    $('#init').addClass('active5');
-						}
+						showTagging(result.data[0].result)
 
 	  				if (result.data[0].result == "") {
 	  					lead_id = '<span class="label" style="background-color: #f2562b;color: white">'+result.data[0].lead_id+'</span>'
@@ -997,9 +807,9 @@ Detail Lead Register
 
 	  		  	$("#tbody-detail").append(append)
 
-	  		  	var height = parseInt($("#box-detail").innerHeight())
+	  		  	// var height = parseInt($("#box-detail").innerHeight())
 
-			      $("#box-status").height(height)
+			     //  $("#box-status").height(height)
 
 			      current_presales = []
 			      current_presales.push(result.data[0].name_presales)
@@ -1058,7 +868,28 @@ Detail Lead Register
 						$("#propossed_design").height( $("#propossed_design")[0].scrollHeight)
 						$("#assesment").height( $("#assesment")[0].scrollHeight)
 
-						var fd = new FormData()					
+						var fd = new FormData()			
+
+						if (result.data.result == 'SD') {
+							console.log("SD")
+							var i = 0
+							setInterval(function() {
+					        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+					        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+					        i++
+					        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+					        $('#sd').parent("span").addClass('box-shadow')
+
+					        $('#s_init').html("<b> INITIAL </b>");
+					        $('#s_open').html("<b> OPEN </b>");
+					        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+					    }, 1000)
+					    var kedipan = 500;
+					    var dumet = setInterval(function() {
+					        var ele = document.getElementById('sd');
+					        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+					    }, kedipan); 
+						}		
 						$("#btnSubmitSD").click(function(){
 							if (parseInt($("#project_budget").val().replaceAll(".", "")) > result.data.amount) {
 			  				$("#project_budget").closest('.form-group').addClass('has-error')
@@ -1191,6 +1022,28 @@ Detail Lead Register
 
 						var fd = new FormData()
 
+						var i = 0;
+
+						if (result.data.result == 'TP') {
+					    setInterval(function() {
+					        i++
+					        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+					        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+					        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+					        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+					        $('#tp').parent("span").addClass('box-shadow')
+
+					        $('#s_init').html("<b> INITIAL </b>");
+					        $('#s_open').html("<b> OPEN </b>");
+					        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+					        $('#s_tp').html("<b> TENDER PROCCESS </b>");
+					    }, 1000)
+					    var kedipan = 500;
+					    var dumet = setInterval(function() {
+					        var ele = document.getElementById('tp');
+					        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+					    }, kedipan)
+						}
 						$("#btnSubmitTP").click(function(){
 								if($("#lelang").val() != result.data.auction_number){
 									auction_number = $("#lelang").val()
@@ -1365,13 +1218,12 @@ Detail Lead Register
 		
 		var i = 0;
   	function addTagging(){
-  		// $("#btnRaiseTP").prop("disabled",false)
-
   		if ($('#tbtagging tr').length < 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
   			$("#btnRaiseTP").prop("disabled",true)
   		}
+
   		$.ajax({
         url: "{{url('/project/getProductTechTagDetail')}}",
         type: "GET",
@@ -1464,30 +1316,187 @@ Detail Lead Register
 		})
 
     var idExist = []
-    $.ajax({
-    	url: "{{url('/project/showTagging')}}",
-      type: "GET",
-      data: {
-          lead_id: window.location.href.split('/')[5],
-      },success: function(result){
-    		i = 0
-      	$.each(result, function(key,value){
-      		i++
-      		addTaggingNotEmpty(value.id,value.id_product_tag,value.id_technology_tag,value.price,i)
-    			idExist.push(value.id)
-      	})
-      	console.log(result.length > 0)
-      	if (result.length > 0){
-      		if ($('#tbtagging tr').length < 0) {
-		  			$("#btnRaiseTP").prop("disabled",true)
-		  		}else{
-		  			$("#btnRaiseTP").prop("disabled",false)
-		  		}
-      	}      	
-      }
-    })
+    function showTagging(status){
+    	console.log("result" + result)
+    	$.ajax({
+	    	url: "{{url('/project/showTagging')}}",
+	      type: "GET",
+	      data: {
+	          lead_id: window.location.href.split('/')[5],
+	      },success: function(result){
+	    		i = 0
+	      	$.each(result, function(key,value){
+	      		addTaggingNotEmpty(value.id,value.id_product_tag,value.id_technology_tag,value.price,i)
+	    			idExist.push(value.id)
+	      		++i
+	      	})
+	      	if (result.length > 0){
+	      		if ($('#tbtagging tr').length < 0) {
+			  			$("#btnRaiseTP").prop("disabled",true)
+			  		}else{
+			  			$("#btnRaiseTP").prop("disabled",false)
+			  		}
+	      	}	
 
-    console.log(idExist)
+	      	if (status == 'LOSE') {
+							    var i = 0;
+							    setInterval(function() {
+							        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+							        i++
+							        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+							        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+							        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+							        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active6');
+						        	$('#win_lose').parent("span").addClass('box-shadow')
+
+							        $('#s_init').html("<b> INITIAL </b>");
+							        $('#s_open').html("<b> OPEN </b>");
+							        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+							        $('#s_tp').html("<b> TENDER PROCCESS </b>");
+							        $('#s_winlose').html("<b> LOSE </b>");
+							    }, 1000)
+							    var kedipan = 500;
+							    var dumet = setInterval(function() {
+							        var ele = document.getElementById('win_lose');
+							        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+							    }, kedipan);
+						} else if (status == 'HOLD') {
+						    var i = 0;
+						    setInterval(function() {
+						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+						        i++
+						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
+						        $('#win_lose').parent("span").addClass('box-shadow')
+
+						        $('#s_init').html("<b> INITIAL </b>");
+						        $('#s_open').html("<b> OPEN </b>");
+						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
+						        $('#s_winlose').html("<b> HOLD </b>");
+						    }, 1000)
+						    var kedipan = 500;
+						    var dumet = setInterval(function() {
+						        var ele = document.getElementById('win_lose');
+						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+						    }, kedipan);
+
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formTP')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+						} else if (status == 'SPECIAL') {
+						    var i = 0;
+						    setInterval(function() {
+						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+						        i++
+						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
+						        $('#win_lose').parent("span").addClass('box-shadow')
+
+						        $('#s_init').html("<b> INITIAL </b>");
+						        $('#s_open').html("<b> OPEN </b>");
+						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
+						        $('#s_winlose').html("<b> SPECIAL </b>");
+						    }, 1000)
+						    var kedipan = 500;
+						    var dumet = setInterval(function() {
+						        var ele = document.getElementById('win_lose');
+						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+						    }, kedipan);
+						} else if (status == 'CANCEL') {
+						    var i = 0;
+						    setInterval(function() {
+						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+						        i++
+						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+						        $('#win_lose').parent("span").addClass('box-shadow')
+
+						        $('#s_init').html("<b> INITIAL </b>");
+						        $('#s_open').html("<b> OPEN </b>");
+						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
+						        $('#s_winlose').html("<b> CANCEL </b>");
+						    }, 1000)
+						    var kedipan = 500;
+						    var dumet = setInterval(function() {
+						        var ele = document.getElementById('win_lose');
+						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+						    }, kedipan);
+						} else if (status == '') {
+						    var i = 0;
+						    setInterval(function() {
+						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+						        i++
+						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1')
+						        $('#open').parent("span").addClass('box-shadow')
+						        $('#s_init').html("<b> INITIAL </b>");
+						        $('#s_open').html("<b> OPEN </b>");
+						    }, 1000)
+						    var kedipan = 500;
+						    var dumet = setInterval(function() {
+						        var ele = document.getElementById('open');
+						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+						    }, kedipan);
+
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formSD')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+
+						} else if (status == 'SD') {
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formSD')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+						} else if (status == 'TP') {
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formTP')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+						} else if (status == 'OPEN') {
+						    $('#init').addClass('active5');
+					}else if (status == "WIN"){
+	      		var i = 0;
+				    setInterval(function() {
+				        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
+				        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
+				        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
+				        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
+				        i++
+
+				        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active4');
+				        $('#win_lose').parent("span").addClass('box-shadow')
+
+				        $('#s_init').html("<b> INITIAL </b>");
+				        $('#s_open').html("<b> OPEN </b>");
+				        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
+				        $('#s_tp').html("<b> TENDER PROCCESS </b>");
+				        $('#s_winlose').html("<b> WIN </b>");
+				    }, 1000)
+				    var kedipan = 500;
+				    var dumet = setInterval(function() {
+				        var ele = document.getElementById('win_lose');
+				        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
+				    }, kedipan);
+	      	}
+
+	      }
+	    })
+    }
+    
 
     function addTaggingNotEmpty(id,id_product,id_tech,price,i){
     	var append = ""
