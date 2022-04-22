@@ -266,17 +266,17 @@ Detail Lead Register
 	              </div> 
 	              <div class="row">
 	              	<div class="col-lg-12 col-xs-12">
-	              		<label>Product Tagging <span style="color: red;">(required)</span></label>
+	              		<label>Brand Tagging <span style="color: red;">(required)</span></label>
 	              		<div class="table-responsive">
 	              			<table class="table" id="table-tagging">
 		                    <thead>
 		                      <tr>
 		                      	<th hidden></th>
-		                        <th title="Product Tagging is Required!">Product Tag</th>
+		                        <th title="Product Tagging is Required!">Brand Tag</th>
 		                        <th>Technology Tag</th>
 		                        <th>Price</th>
 		                        <td class="text-center">
-		                          <button class="btn btn-xs btn-primary" onclick="addTagging()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
+		                          <button class="btn btn-xs btn-primary" id="btn-addTagging" onclick="addTagging()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
 								              	<i class="fa fa-plus"></i>
 								              </button> 
 		                        </td>
@@ -1338,6 +1338,12 @@ Detail Lead Register
 
 					}
   			})
+
+				// if ($("#btnRaiseTP").is(":disabled")) {
+				// 	$("#btnRaiseTP").hover(function(){
+				// 		$("#btnRaiseTP").attr("data-toggle", "tooltip").attr('data-original-title', "Please Submit First!").tooltip('show')
+				// 	})					
+				// }
 				
 			})
 		})
@@ -1430,6 +1436,7 @@ Detail Lead Register
       
       $("#tbtagging").append(append)
       initmoney();
+      $(".btn-edit-tagging").prop("disabled",true)
     }
 
     $(document).on('keypress', '.new-price-sol', function() {
@@ -1499,7 +1506,7 @@ Detail Lead Register
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
-      append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging'><i class='fa fa-trash'></i></button><button type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging'><i class='fa fa-pencil'></i></button>"
+      append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging'><i class='fa fa-pencil'></i></button>"
       append = append + " </td>"
       append = append + "</tr>"
 
@@ -1744,9 +1751,10 @@ Detail Lead Register
 		  row = $(this).parents("tr").find("input[name='id']").val();
     	deletedProduct.push(row)
 
+    	$(".btn-edit-tagging").prop("disabled",false)
     });
 
-    localStorage.setItem("status","pencil")
+    localStorage.setItem("status_tagging","pencil")
 
     $(document).on('click', '.btn-edit-tagging', function() {
     	$(this).parents("tr").find(".select2-customProductSol").prop("disabled",false)
@@ -1758,20 +1766,19 @@ Detail Lead Register
     	product = $(this).parents("tr").find(".select2-customProductSol").val().substr(1)
     	techno = $(this).parents("tr").find(".select2-customTechnologySol").val().substr(1)
     	price = $(this).parents("tr").find(".new-price-sol").val()
-
-    	console.log(id_exist)
-
-    	if (localStorage.getItem("status") == "pencil") {
-    		localStorage.setItem("status","ubah")
+    	dataValue = $(this).parents("tr").find(".new-price-sol").data("value")
+    	if (localStorage.getItem("status_tagging") == "pencil") {
+    		localStorage.setItem("status_tagging","ubah")
     	}else{
-    		$(this).parents("tr").find(".btn-edit-tagging").attr("onclick",updateTagging(id_exist,product,techno,price))
+    		$(this).parents("tr").find(".btn-edit-tagging").attr("onclick",updateTagging(id_exist,product,techno,price,dataValue))
     	}
+    	$("#btn-addTagging").prop("disabled",true).attr("data-toggle", "tooltip").attr('title', "You in edit mode!").show()
+
     	$("#btnSubmitSD").prop("disabled",true)
     	$("#btnRaiseTP").prop("disabled",true)
     })
 
-    function updateTagging(id_exist,product,techno,price){
-    	alert("updated")
+    function updateTagging(id_exist,product,techno,price,dataValue){
   		$.ajax({
           url: "{{url('/project/updateProductTag')}}",
           type: 'post',
@@ -1791,8 +1798,14 @@ Detail Lead Register
                 'success'
               ).then((result) => {
                 if (result.value) {
-                	localStorage.setItem("status", "pencil");
-                  location.reload()
+                	localStorage.setItem("status_tagging", "pencil");
+                	$(".select2-customProductSol[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".select2-customTechnologySol[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".new-price-sol[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".btn-edit-tagging[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
+						    	$(".btn-edit-tagging[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+						    	$("#btn-addTagging").prop('disabled',false).tooltip('disable')
+    							$("#btnSubmitSD").prop("disabled",false)
                 }
             })
         }
@@ -1815,8 +1828,8 @@ Detail Lead Register
     	console.log(dataValue)
     	var lead_id = window.location.href.split("/")[5]
 
-    	if (localStorage.getItem("status") == "pencil") {
-    		localStorage.setItem("status","ubah")
+    	if (localStorage.getItem("status_tagging") == "pencil") {
+    		localStorage.setItem("status_tagging","ubah")
     	}else{
     		$(this).parents("tr").find(".btn-edit-taggingWin").attr("onclick",updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id))
     	}
@@ -1825,7 +1838,6 @@ Detail Lead Register
     function updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id){
     	console.log(dataValue)
     	console.log(window.location.href.split("/")[5])
-    	alert("updated")
   		$.ajax({
           url: "{{url('/project/updateProductTag')}}",
           type: 'post',
@@ -1845,7 +1857,7 @@ Detail Lead Register
                 'success'
               ).then((result) => {
                 if (result.value) {
-                	localStorage.setItem("status", "pencil");
+                	localStorage.setItem("status_tagging", "pencil");
                 	$(".select2-customProduct[data-value='" + dataValue + "']").prop("disabled",true)
 						    	$(".select2-customTechnology[data-value='" + dataValue + "']").prop("disabled",true)
 						    	$(".new-price[data-value='" + dataValue + "']").prop("disabled",true)
