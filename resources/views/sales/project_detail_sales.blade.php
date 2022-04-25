@@ -1840,7 +1840,17 @@ Detail Lead Register
     	if (localStorage.getItem("status_tagging") == "pencil") {
     		localStorage.setItem("status_tagging","ubah")
     	}else{
-    		$(this).parents("tr").find(".btn-edit-taggingWin").attr("onclick",updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id))
+    		if (price == '') {
+    			console.log(price)
+    			Swal.fire({
+	          title: 'Can`t Submit Result!',
+	          icon: 'error',
+	          html: "<p style='text-align:center;'>Column Price is Required!</p>",
+	          confirmButtonText: 'Oke',
+	        })
+    		}else{
+    			$(this).parents("tr").find(".btn-edit-taggingWin").attr("onclick",updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id))
+    		}    		
     	}
     })  	  
 
