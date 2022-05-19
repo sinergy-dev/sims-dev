@@ -18,6 +18,7 @@ use App\TenderProcess;
 use App\Quote;
 use App\PID;
 use App\ServiceTagRelation;
+use App\SbeRelation;
 
 use Mail;
 use App\Mail\MailResult;
@@ -1133,7 +1134,7 @@ class SalesLeadController extends Controller
                         DB::raw("(CASE WHEN (sales_solution_design.status is null) THEN '' ELSE sales_solution_design.status END) as status"), 
                         DB::raw("(CASE WHEN (assessment_date is null) THEN '-' ELSE assessment_date END) as assessment_date"),
                         DB::raw("(CASE WHEN (pd_date is null) THEN '-' ELSE pd_date END) as pd_date"),
-                        DB::raw("(CASE WHEN (pov_date is null) THEN '-' ELSE pov_date END) as pov_date"), 'sales_lead_register.amount', 'sales_lead_register.deal_price', 'checked')
+                        DB::raw("(CASE WHEN (pov_date is null) THEN '-' ELSE pov_date END) as pov_date"), 'sales_lead_register.amount', 'sales_lead_register.deal_price', 'checked','sales_lead_register.result')
                     ->where('sales_solution_design.lead_id',$request->lead_id)
                     ->first();
 
@@ -1351,6 +1352,8 @@ class SalesLeadController extends Controller
 
     public function update_sd(Request $request)
     {
+        // return $request->id_sbe;
+
         $id = explode(',', $request->id);
 
         $name_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
@@ -1368,15 +1371,11 @@ class SalesLeadController extends Controller
             }    
         }
 
-        // $lead_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
-        //             ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
-        //             ->where('lead_id',$request->lead_id)->get();
-
         if (isset($name_tagging)) {
             foreach ($name_tagging as $key => $value) {
                 ProductTagRelation::where('id',$value->id)->delete(); 
             }
-        }
+        } 
 
         if(!isset($request->id)){
             if(isset($request->tagData["tagProduct"])){
@@ -1395,7 +1394,47 @@ class SalesLeadController extends Controller
                     $add_changelog->save();
                 }
             }
-        } 
+        }
+
+        if (isset($request->tagData["tagSBE"])) {
+            foreach ($request->tagData["tagSBE"] as $key => $value) {
+                $store = new SbeRelation;
+                $store->lead_id = $request->lead_id;
+                $store->tag_sbe = $value['tag_sbe'];
+                $store->price_sbe = $value['price_sbe'];
+                $store->save();
+
+                $add_changelog = new SalesChangeLog();
+                $add_changelog->lead_id = $request->lead_id;
+                $add_changelog->nik = Auth::User()->nik;
+                $add_changelog->status = 'Add Tagging SBE ' .  $value['sbeText'] . ', with Price ' . str_replace('.', '', $value['price_sbe']);
+                $add_changelog->save();
+            }
+        }
+
+        if(isset($request->id_sbe_delete)){
+            $id_sbe = explode(',', $request->id_sbe_delete);
+            $name = explode(',', $request->name_sbe_delete);
+            $price = explode(',', $request->price_sbe_delete);
+
+            for($i=0; $i < count($id_sbe) ; $i++) {
+                $add_changelog_sbe = new SalesChangeLog();
+                $add_changelog_sbe->lead_id = $request->lead_id;
+                $add_changelog_sbe->nik = Auth::User()->nik;
+                $add_changelog_sbe->status = 'Delete Tagging SBE ' .  $name[$i] . ', with Price ' . str_replace('.', '', $price[$i]);
+                $add_changelog_sbe->save();
+            }
+        }
+
+        $id_sbe = explode(',', $request->id_sbe_delete);
+
+        $get_id = SbeRelation::whereIn('id', $id_sbe)->get();
+
+        if (isset($get_id)){
+            foreach ($get_id as $value) {
+                SbeRelation::where('id',$value->id)->delete(); 
+            }
+        }
 
         $update = solution_design::where('lead_id', $request->lead_id)->first();
         $update->assessment = $request['assessment'];
@@ -1450,14 +1489,24 @@ class SalesLeadController extends Controller
         return redirect()->back();
     }
 
+    public function updateSbeTag(Request $request)
+    {
+        $update_sbe = SbeRelation::where('id', $request->id_exist)->first();
+        $update_sbe->lead_id = $request->lead_id;
+        $update_sbe->tag_sbe = $request->id_sbe;
+        $update_sbe->price_sbe = str_replace('.', '', $request->price);
+        $update_sbe->update();
+
+        $add_changelog_sbe = new SalesChangeLog();
+        $add_changelog_sbe->lead_id = $request->lead_id;
+        $add_changelog_sbe->nik = Auth::User()->nik;
+        $add_changelog_sbe->status = 'Update Tagging SBE ' .  $request->name_sbe . ', with Price ' . str_replace('.', '', $request->price);
+        $add_changelog_sbe->save();
+    }
+
     public function showTagging(Request $request)
     {
-        return ProductTagRelation::
-                // join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
-                // ->join('tb_technology_tag','tb_technology_tag.id','=','tb_product_tag_relation.id_technology_tag')
-                // ->select(DB::raw("`name_tech` as `text`"),DB::raw("`tb_technology_tag`.`id` as `id`"),"price")
-                // ->select(DB::raw("`name_product` as `text`"),DB::raw("`tb_product_tag`.`id` as `id`"),"price")
-                joinSub(DB::table('tb_product_tag'), 'tb_product_tag_alias', function ($join) {
+        return ProductTagRelation::joinSub(DB::table('tb_product_tag'), 'tb_product_tag_alias', function ($join) {
                     $join->on('tb_product_tag_alias.id', '=', 'tb_product_tag_relation.id_product_tag');
                 })
                 ->joinSub(DB::table('tb_technology_tag'), 'tb_technology_tag_alias', function ($join) {
@@ -1466,6 +1515,11 @@ class SalesLeadController extends Controller
                 ->select('name_tech','name_product','id_technology_tag','id_product_tag','price','tb_product_tag_relation.id')
                 ->where('lead_id',$request->lead_id)
                 ->get();
+    }
+
+    public function showSbe(Request $request)
+    {
+        return SbeRelation::select('id', 'lead_id', 'price_sbe', 'tag_sbe')->where('lead_id', $request->lead_id)->get();
     }
 
     public function changelog_sd(Request $request)
@@ -1547,7 +1601,7 @@ class SalesLeadController extends Controller
 
     public function updateResult(Request $request)
     {
-        // return $request->tagData;
+        // return $request->tagData['arr_sbe'];
 
         $update = Sales::where('lead_id', $request->lead_id_result)->first();
         $update->result = $request['result'];
@@ -1624,6 +1678,35 @@ class SalesLeadController extends Controller
                 }
             }
 
+            if (isset($request->tagData["tagSbe"])) {
+                foreach ($request->tagData["tagSbe"] as $key => $value) {
+                    $store = new SbeRelation;
+                    $store->lead_id = $request->lead_id_result;
+                    $store->tag_sbe = $value['tag_sbe_id'];
+                    $store->price_sbe = str_replace('.', '', $value['tag_price']);
+                    $store->save();
+
+                    $add_changelog = new SalesChangeLog();
+                    $add_changelog->lead_id = $request->lead_id_result;
+                    $add_changelog->nik = Auth::User()->nik;
+                    $add_changelog->status = 'Add Tagging SBE ' .  $value['tag_sbe_text'] . ', with Price ' . str_replace('.', '', $value['tag_price']);
+                    $add_changelog->save();
+                }
+            }
+
+            if(isset($request->tagData['arr_sbe'])){  
+
+                foreach($request->tagData['arr_sbe'] as $key => $value){
+                    $add_changelog = new SalesChangeLog();
+                    $add_changelog->lead_id = $request->lead_id_result;
+                    $add_changelog->nik = Auth::User()->nik;
+                    $add_changelog->status = 'Delete Tagging SBE ' .  $value['name'] . ', with Price ' . str_replace('.', '', $value['price']);
+                    $add_changelog->save();
+
+                    $delete = SbeRelation::where('id',$value['id'])->delete();
+                }
+
+            }
 
             $tambah->status = 'Update WIN';
 
