@@ -285,6 +285,26 @@ Detail Lead Register
 			                  <tbody id="tbtagging">
 			                  </tbody>
 			                </table>
+	              		</div>
+
+	              		<label>SBE Tagging <span style="color: red;">(required)</span></label>
+	              		<div class="table-responsive">
+	              			<table class="table" id="table-tagging-SBE">
+		                    <thead>
+		                      <tr>
+		                      	<th hidden></th>
+		                        <th title="Product Tagging is Required!">SBE Tag</th>
+		                        <th>Price</th>
+		                        <td class="text-center">
+		                          <button class="btn btn-xs btn-primary" id="btn-addSBE" onclick="addSBE()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
+								              	<i class="fa fa-plus"></i>
+								              </button> 
+		                        </td>
+		                      </tr>
+			                  </thead>
+			                  <tbody id="tbSBE">
+			                  </tbody>
+			                </table>
 	              		</div>              		
 	              	</div>
 	              </div>  
@@ -581,6 +601,21 @@ Detail Lead Register
 		                                <tbody id="tbtagprice">
 		                                </tbody>
 		                            </table>
+		                            <table class="table" id="table-sbe">
+		                                <thead>
+		                                    <tr>
+		                                        <th>Sbe Tag</th>
+		                                        <th>Price</th>
+		                                        <th class="text-center">
+		                                            <button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;" id="addSbe" onclick="addSBEResult()">
+		                                                <i class="fa fa-plus"></i>
+		                                            </button>
+		                                        </th>
+		                                    </tr>
+		                                </thead>
+		                                <tbody id="tbtagsbe">
+		                                </tbody>
+		                            </table>
 		                            <table class="table" id="table-service">
 		                                <thead>
 		                                    <tr>
@@ -727,6 +762,8 @@ Detail Lead Register
 					},
 					success:function(result){
 						showTagging(result.data[0].result)
+
+						showSbe()
 
 	  				if (result.data[0].result == "") {
 	  					lead_id = '<span class="label" style="background-color: #f2562b;color: white">'+result.data[0].lead_id+'</span>'
@@ -1216,8 +1253,8 @@ Detail Lead Register
       $("#input_gran_total").val(formatter.format(sum))
     }
 		
-		var i = 0;
   	function addTagging(){
+			var i = 0;
   		if ($('#tbtagging tr').length < 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
@@ -1289,6 +1326,84 @@ Detail Lead Register
       $("#tbtagging").append(append)
       initmoney();
       $(".btn-edit-tagging").prop("disabled",true)
+    }
+
+    var arrSbe = []
+    arrSbe = [
+	    {
+	      "id": 1,
+	      "text": "Supply Only"
+	    },
+	    {
+	      "id": 2,
+	      "text": "Maintenance"
+	    },
+	    {
+	      "id": 3,
+	      "text": "Implement Maintenance"
+	    },
+	    {
+	      "id": 4,
+	      "text": "Implement"
+	    }
+	  ]
+
+    function addSBE(){
+    	i = 0
+    	i++;    	
+
+      var append = ""
+      append = append + "<tr class='new-SBE'>"
+      append = append + " <td><input hidden class='id' name='id_sbe' data-value='"+ i +"' />"
+      append = append + " <select class='form-control select2-customSBE tag_sbe' id='searchSBE' name='tag_SBE' data-value='" + i + "' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' name='price_SBE' type='text' placeholder='Enter Product Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center'>"
+      append = append + " <button type='button' data-value='"+i+"' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe'><i class='fa fa-trash'></i></button><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+
+      $("#tbSBE").append(append)
+      initmoney();
+      $(".btn-edit-tagging-sbe").prop("disabled",true)
+
+      $("#searchSBE[data-value='" + i + "']").select2({
+			  data: arrSbe
+      })
+    }
+
+    function addSBEResult(){
+    	i = 0
+    	i++;    	
+
+      var append = ""
+      append = append + "<tr class='tag-sbe-win'>"
+      append = append + " <td><input hidden class='id' name='id_sbe' data-value='"+ i +"' />"
+      append = append + " <select class='form-control select2-customSBE tag_sbe' id='searchSBE' name='tag_sbe_win' data-value='" + i + "' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' name='price_sbe_win' type='text' placeholder='Enter Product Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center'>"
+      append = append + " <button type='button' data-value='"+i+"' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe-win'><i class='fa fa-trash'></i></button><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+
+      $("#tbtagsbe").append(append)
+      initmoney();
+      $(".btn-edit-tagging-sbe").prop("disabled",true)
+
+      $("#searchSBE[data-value='" + i + "']").select2({
+			  data: arrSbe
+      })
     }
 
     $(document).on('keypress', '.new-price-sol', function() {
@@ -1496,12 +1611,36 @@ Detail Lead Register
 	      }
 	    })
     }
-    
+
+    function showSbe(status){
+    	$.ajax({   		
+	    	url: "{{url('/project/showSbeTagging')}}",
+	      type: "GET",
+	      data: {
+	          lead_id: window.location.href.split('/')[5],
+	      },success: function(result){
+	    		i = 0
+	      	$.each(result, function(key,value){
+	      		addSbeNotEmpty(value.id,value.tag_sbe,value.price_sbe,i)
+	    			idExist.push(value.id)
+	      		++i
+	      	})
+	      	if (result.length > 0){
+	      		if ($('#tbtagging tr').length < 0) {
+			  			$("#btnRaiseTP").prop("disabled",true)
+			  		}else{
+			  			$("#btnRaiseTP").prop("disabled",false)
+			  		}
+	      	}	
+
+	      }
+	    })
+    }    
 
     function addTaggingNotEmpty(id,id_product,id_tech,price,i){
     	var append = ""
       append = append + "<tr class='exist-tagging'>"
-      append = append + "<td hidden><input class='id' name='id' data-value='"+i+"'/></td>"
+      append = append + "<td hidden><input id='tagging_status' data-value='"+ i +"'/><input class='id' name='id' data-value='"+i+"'/></td>"
       append = append + " <td>"
       append = append + " <select disabled class='form-control col-xs-12 select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' style='width: 100%!important'></select>"
       append = append + " </td>"
@@ -1577,57 +1716,138 @@ Detail Lead Register
       initmoney();
     }
 
-    // $("#cbSubmitSD").change(function() {
-    //     if(this.checked) {
-    //     	Swal.fire({
-				// 	  title: 'Are you sure?',
-				// 	  text: "all processes in solution design are ends, ready to tender process",
-				// 	  icon: 'warning',
-				// 	  showCancelButton: true,
-				// 	  confirmButtonColor: '#3085d6',
-				// 	  cancelButtonColor: '#d33',
-				// 	  confirmButtonText: 'Yes, Sure!',
-				// 	  showLoaderOnConfirm: true,
-				// 	  preConfirm: function (email) {
-				// 	    return new Promise(function (resolve, reject) {
-				// 	      setTimeout(function() {
-				// 	        $.ajax({
-				//             type:"POST",
-				//             url:"{{url('/project/checkProductTech')}}",
-				//             data:{
-				//               lead_id:window.location.href.split("/")[5],
-				//               _token:"{{ csrf_token() }}"
-				//             },success:function(){
-				//             	Swal.fire(
-				// 		              'Successfully!',
-				// 		              'success'
-				// 		          ).then((result) => {
-				// 	              if (result.value) {
-				// 	              	$(".select2-customTechnologySol").prop("disabled",true)
-				// 							  	$(".select2-customProductSol").prop("disabled",true)
-				// 		          		$("#btnRaiseTP").prop("disabled",false)
-				// 		          		$("#btnSubmitSD").prop("disabled",true)
-				// 		          		$("#cbSubmitSD").prop("disabled",true)
-				// 		          		$(".btn-trash").prop("disabled",true)
-				// 		          		$("#endSD").prop("disabled",true)	
-				// 	              }
-    //   									$("#cbSubmitSD").prop("checked",false)
-				// 		          })
-				// 						}
-				//           }) 
-				// 	      }, 2000)
-				// 	    })
-				// 	  },
-				// 	  allowOutsideClick: false
-				// 	}).then((result) => {
-				// 	  if (result.isConfirmed) {		
-				// 		}
-				// 	})
-    //     }else{
-    //     	$("#btnRaiseTP").prop("disabled",true)
-    //       $("#btnSubmitSD").prop("disabled",false)       
-    //     }
-    // });
+    function addProductTechInitiate(id,id_product,id_tech,price,i){
+    	var append = ""
+      append = append + "<tr class='exist-product'>"
+      append = append + " <td><input id='tagging-win-status' data-value='"+i+"'/><input hidden class='idWinTagging' name='id-win' data-value='"+ i +"'/>"
+      append = append + " <select disabled class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td>"
+      append = append + " <select disabled class='form-control select2-customTechnology' data-value='" + i + "' id='searchTagsTechnology' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input disabled data-value='" + i + "' class='money form-control new-price-win' type='text' placeholder='Enter Product Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center'>"
+      append = append + " <button type='button' data-value='"+ i +"' style='width: auto !important;vertical-align:sub' class='btn btn-sm btn-danger btn-flat btn-trash'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;vertical-align:sub;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-taggingWin'><i class='fa fa-pencil'></i></button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+
+      $("#tbtagprice").append(append)	      
+
+  		$.ajax({
+        url: "{{url('/project/getProductTechTagDetail')}}",
+        type: "GET",
+        success: function(result) {
+            $("#searchTagsProduct[data-value='" + i + "']").empty("");
+            $("#searchTagsTechnology[data-value='" + i + "']").empty("");
+            var product_tag = result.product_tag;
+            var product_tag_selectOption = [];
+
+            var technology_tag = result.technology_tag;
+            var technology_tag_selectOption = [];
+
+            $.each(product_tag, function(key, value) {
+
+            	if (value.id == "p"+id_product) {
+            		value.selected = true
+            	}
+                product_tag_selectOption.push(value)
+            })
+            $.each(technology_tag, function(key, value) {
+            	if (value.id == "t"+id_tech) {
+            		value.selected = true
+            	}
+                technology_tag_selectOption.push(value)
+            })
+
+            var TagProduct = $("#searchTagsProduct[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Product",
+                data: product_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+            
+            var TagProduct = $("#searchTagsTechnology[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Technology",
+                data: technology_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+        }
+    	})
+
+    	$(".new-price-win[data-value='" + i + "']").val(price)	    
+
+    	$(".idWinTagging[data-value='" + i +"']").val(id)  
+
+      initmoney();
+    }
+
+    function addSbeNotEmpty(id,tag_sbe,price,i){
+    	var append = ""
+      append = append + "<tr class='exist-tagging-sbe'>"
+      append = append + " <td><input hidden id='sbe_tagging_status' data-value='" + i +"'><input hidden class='id_sbe' name='id_sbe' data-value='"+ i +"' />"
+      append = append + " <select class='form-control select2-customSBE tag_sbe' disabled id='searchSBE' name='tag_SBE' data-value='" + i + "' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' disabled name='price_SBE' type='text' placeholder='Enter Product Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center'>"
+      append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging-sbe'><i class='fa fa-pencil'></i></button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+
+      $("#tbSBE").append(append)	 
+      $("#searchSBE[data-value='" + i + "']").select2({
+			  data: arrSbe
+      })    
+
+    	$(".id_sbe[data-value='" + i + "']").val(id) 
+  		$(".price_sbe[data-value='" + i + "']").val(price) 
+  		$(".tag_sbe[data-value='" + i + "']").val(tag_sbe).trigger('change')   
+
+      initmoney();
+    }
+
+    function addSbeResultNotEmpty(id,tag_sbe,price,i){
+	    	var append = ""
+	      append = append + "<tr class='exist-sbe-win'>"
+	      append = append + " <td><input id='tagging-sbe-win-status' data-value='"+i+"'/><input hidden class='id_sbe_win' name='id_sbe' data-value='"+ i +"' />"
+	      append = append + " <select class='form-control select2-customSBE tag_sbe_win' disabled id='searchSBE' name='tag_sbe_win' data-value='" + i + "' style='width: 100%!important'></select>"
+	      append = append + " </td>"
+	      append = append + " <td style='white-space: nowrap'>"
+	      append = append + " <div class='input-group'>"
+	      append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+	      append = append + " <input data-value='" + i + "' class='money form-control price_sbe_win' disabled name='price_sbe_win' type='text' placeholder='Enter Product Price'>"
+	      append = append + " </div>"
+	      append = append + " </td>"
+	      append = append + " <td class='text-center'>"
+	      append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe-win'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging-sbe-win'><i class='fa fa-pencil'></i></button>"
+	      append = append + " </td>"
+	      append = append + "</tr>"
+
+	      $("#tbtagsbe").append(append)	 
+	      $("#searchSBE[data-value='" + i + "']").select2({
+				  data: arrSbe
+	      })    
+
+	    	$(".id_sbe_win[data-value='" + i + "']").val(id) 
+	  		$(".price_sbe_win[data-value='" + i + "']").val(price) 
+	  		$(".tag_sbe_win[data-value='" + i + "']").val(tag_sbe).trigger('change')   
+
+	      initmoney();
+    }
 
 		function submitContributePresales(){
 			var concat_name = []
@@ -1748,6 +1968,22 @@ Detail Lead Register
   	}
 
   	var deletedProduct = []
+  	var deletedProductWin = []
+  	var deleteSbe = []
+  	var deleteSbeWin = []
+  	var nameSbe = []
+  	var priceSbe = []
+  	var objWin = {};
+
+    $(document).on('click', '.btn-trash', function() {
+      $(this).closest("tr").remove();
+      if($(this).closest("tr.new-service").length > 0){
+        $("#addService").show()
+      }
+
+      row = $(this).parents("tr").find("input[name='id']").val();
+    	deletedProductWin.push(row)
+    });
 
 		$(document).on('click', '.btn-trash-tagging', function() {
       $(this).closest("tr").remove();
@@ -1763,7 +1999,41 @@ Detail Lead Register
     	$(".btn-edit-tagging").prop("disabled",false)
     });
 
-    localStorage.setItem("status_tagging","pencil")
+    $(document).on('click', '.btn-trash-tagging-sbe', function() {
+      $(this).closest("tr").remove();
+      console.log($('#tbSbe tr').length)
+      if ($('#tbSbe tr').length < 0) {
+  			$("#btnRaiseTP").prop("disabled",false)
+  		}else{
+  			$("#btnRaiseTP").prop("disabled",true)
+  		}
+		  rowId = $(this).parents("tr").find("input[name='id_sbe']").val();
+		  rowName = $(this).parents("tr").find(".tag_sbe option:selected").text();
+		  rowPrice = $(this).parents("tr").find(".price_sbe").val();
+
+    	deleteSbe.push(rowId)
+    	nameSbe.push(rowName)
+    	priceSbe.push(rowPrice)
+
+    	$(".btn-edit-tagging-sbe").prop("disabled",false)
+    });
+
+    $(document).on('click', '.btn-trash-tagging-sbe-win', function() {
+      $(this).closest("tr").remove();
+      if($(this).closest("tr.new-service").length > 0){
+        $("#addService").show()
+      }
+
+      rowId = $(this).parents("tr").find("input[name='id_sbe']").val();
+		  rowName = $(this).parents("tr").find(".tag_sbe_win option:selected").text();
+		  rowPrice = $(this).parents("tr").find(".price_sbe_win").val();
+
+		  objWin["id"] = rowId
+		  objWin["name"] = rowName
+			objWin["price"] = rowPrice
+
+    	deleteSbeWin.push(objWin)
+    });
 
     $(document).on('click', '.btn-edit-tagging', function() {
     	$(this).parents("tr").find(".select2-customProductSol").prop("disabled",false)
@@ -1776,12 +2046,103 @@ Detail Lead Register
     	techno = $(this).parents("tr").find(".select2-customTechnologySol").val().substr(1)
     	price = $(this).parents("tr").find(".new-price-sol").val()
     	dataValue = $(this).parents("tr").find(".new-price-sol").data("value")
-    	if (localStorage.getItem("status_tagging") == "pencil") {
-    		localStorage.setItem("status_tagging","ubah")
-    	}else{
-    		$(this).parents("tr").find(".btn-edit-tagging").attr("onclick",updateTagging(id_exist,product,techno,price,dataValue))
+    	id_val = $(this).parents("tr").find("#tagging_status").val()
+    	
+    	if (id_val == '') {
+    		$("#tagging_status[data-value='"+ dataValue +"']").val("pencil"+dataValue)
+    	}else if (id_val == "pencil"+dataValue) {
+	  		$(this).parents("tr").find(".btn-edit-tagging").attr("onclick",updateTagging(id_exist,product,techno,price,dataValue))
+    		$("#tagging_status[data-value='"+ dataValue +"']").val('')
     	}
+
     	$("#btn-addTagging").prop("disabled",true).attr("data-toggle", "tooltip").attr('title', "You in edit mode!").show()
+
+    	$("#btnSubmitSD").prop("disabled",true)
+    	$("#btnRaiseTP").prop("disabled",true)
+    })
+
+    $(document).on('click','.btn-edit-tagging-sbe',function(){
+    	$(this).parents("tr").find(".tag_sbe").prop("disabled",false)
+    	$(this).parents("tr").find(".price_sbe").prop("disabled",false)
+    	$(this).parents("tr").find(".btn-edit-tagging-sbe").removeClass('btn-primary').addClass('btn-warning')
+    	$(this).parents("tr").find(".btn-edit-tagging-sbe").find('i').removeClass('fa-pencil').addClass('fa-check')
+		  id_exist = $(this).parents("tr").find(".id_sbe").val()
+    	tag_sbe = $(this).parents("tr").find(".tag_sbe").val()
+    	name_sbe = $(this).parents("tr").find(".tag_sbe option:selected").text()
+    	price = $(this).parents("tr").find(".price_sbe").val()
+    	dataValue = $(this).parents("tr").find(".price_sbe").data("value")
+    	id_val = $(this).parents("tr").find("#sbe_tagging_status").val()
+    	
+    	if (id_val == '') {
+    		$("#sbe_tagging_status[data-value='"+ dataValue +"']").val("pencil"+dataValue)
+    	}else if (id_val == "pencil"+dataValue) {
+	  		$(this).parents("tr").find(".btn-edit-tagging-sbe").attr("onclick",updateTaggingSbe(id_exist,tag_sbe,name_sbe,price,dataValue))
+    		$("#sbe_tagging_status[data-value='"+ dataValue +"']").val('')
+    	}
+    	$("#btn-addSBE").prop("disabled",true).attr("data-toggle", "tooltip").attr('title', "You in edit mode!").show()
+
+    	$("#btnSubmitSD").prop("disabled",true)
+    	$("#btnRaiseTP").prop("disabled",true)
+    })
+
+    $(document).on('click', '.btn-edit-taggingWin', function() {
+    	$(this).parents("tr").find(".select2-customProduct").prop("disabled",false)
+    	$(this).parents("tr").find(".select2-customTechnology").prop("disabled",false)
+    	$(this).parents("tr").find(".new-price-win").prop("disabled",false)
+    	$(this).parents("tr").find(".btn-edit-taggingWin").removeClass('btn-primary').addClass('btn-warning')
+    	$(this).parents("tr").find(".btn-edit-taggingWin").find('i').removeClass('fa-pencil').addClass('fa-check')
+		  var id_exist = $(this).parents("tr").find("input[name='id-win']").val()
+    	var product = $(this).parents("tr").find(".select2-customProduct").val().substr(1)
+    	var techno = $(this).parents("tr").find(".select2-customTechnology").val().substr(1)
+    	var price = $(this).parents("tr").find(".new-price-win").val()
+    	var dataValue = $(this).parents("tr").find(".idWinTagging").data("value")
+    	var lead_id = window.location.href.split("/")[5]
+
+    	id_val = $(this).parents("tr").find("#tagging-win-status").val()
+    	console.log(id_val+"id_val")
+
+    	if (id_val == '') {
+    		console.log($("#tagging-win-status[data-value="+dataValue+"]"))
+    		console.log(dataValue)
+    		// $("#tagging-win-status[data-value="+dataValue+"]").val("pencil"+dataValue) 
+    		$("#tagging-win-status[data-value='"+dataValue+"']").val("pencil"+dataValue)    		
+
+    	}else if (id_val == "pencil"+dataValue) {
+    		if (price == '') {
+    			console.log(price)
+    			Swal.fire({
+	          title: 'Can`t Submit Result!',
+	          icon: 'error',
+	          html: "<p style='text-align:center;'>Column Price is Required!</p>",
+	          confirmButtonText: 'Oke',
+	        })
+    		}else{
+    			$(this).parents("tr").find(".btn-edit-taggingWin").attr("onclick",updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id))
+    			$("#tagging-win-status[data-value='"+dataValue+"']").val("")  
+    		} 
+    	}
+
+    }) 
+
+    $(document).on('click','.btn-edit-tagging-sbe-win',function(){
+    	$(this).parents("tr").find(".tag_sbe_win").prop("disabled",false)
+    	$(this).parents("tr").find(".price_sbe_win").prop("disabled",false)
+    	$(this).parents("tr").find(".btn-edit-tagging-sbe-win").removeClass('btn-primary').addClass('btn-warning')
+    	$(this).parents("tr").find(".btn-edit-tagging-sbe-win").find('i').removeClass('fa-pencil').addClass('fa-check')
+		  id_exist = $(this).parents("tr").find(".id_sbe_win").val()
+    	tag_sbe = $(this).parents("tr").find(".tag_sbe_win").val()
+    	name_sbe = $(this).parents("tr").find(".tag_sbe_win option:selected").text()
+    	price = $(this).parents("tr").find(".price_sbe_win").val()
+    	dataValue = $(this).parents("tr").find(".price_sbe_win").data("value")
+    	id_val = $(this).parents("tr").find("#tagging-sbe-win-status").val()
+
+    	if (id_val == '') {
+    		$("#tagging-sbe-win-status[data-value='"+dataValue+"']").val("pencil"+dataValue)    		
+    	}else if (id_val == "pencil"+dataValue) {
+    		$(this).parents("tr").find(".btn-edit-tagging-sbe-win").attr("onclick",updateTaggingSbeWin(id_exist,tag_sbe,name_sbe,price,dataValue))
+    		$("#tagging-sbe-win-status[data-value='"+dataValue+"']").val("")  
+    	}
+    	$("#btn-addSBE").prop("disabled",true).attr("data-toggle", "tooltip").attr('title', "You in edit mode!").show()
 
     	$("#btnSubmitSD").prop("disabled",true)
     	$("#btnRaiseTP").prop("disabled",true)
@@ -1821,38 +2182,72 @@ Detail Lead Register
       })
     }
 
-    var id_exist,product,techno,price,dataValue,lead_id = ''
+    function updateTaggingSbe(id_exist,tag_sbe,name_sbe,price,dataValue){
+    	$.ajax({
+          url: "{{url('/project/updateSbeTag')}}",
+          type: 'post',
+          data: {
+          	_token:"{{ csrf_token() }}",
+          	id_exist:id_exist,
+          	id_sbe:tag_sbe,
+          	name_sbe:name_sbe,
+          	price:price,
+          	lead_id:window.location.href.split("/")[5]
+          },
+        success: function()
+        {
+            Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                	localStorage.setItem("status_tagging_sbe", "pencil");
+                	$(".tag_sbe[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".price_sbe[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
+						    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+						    	$("#btn-addSBE").prop('disabled',false).tooltip('disable')
+    							$("#btnSubmitSD").prop("disabled",false)
+                }
+            })
+        }
+      })
+    }
 
-    $(document).on('click', '.btn-edit-taggingWin', function() {
-    	$(this).parents("tr").find(".select2-customProduct").prop("disabled",false)
-    	$(this).parents("tr").find(".select2-customTechnology").prop("disabled",false)
-    	$(this).parents("tr").find(".new-price").prop("disabled",false)
-    	$(this).parents("tr").find(".btn-edit-taggingWin").removeClass('btn-primary').addClass('btn-warning')
-    	$(this).parents("tr").find(".btn-edit-taggingWin").find('i').removeClass('fa-pencil').addClass('fa-check')
-		  var id_exist = $(this).parents("tr").find("input[name='id']").val()
-    	var product = $(this).parents("tr").find(".select2-customProduct").val().substr(1)
-    	var techno = $(this).parents("tr").find(".select2-customTechnology").val().substr(1)
-    	var price = $(this).parents("tr").find(".new-price").val()
-    	var dataValue = $(this).parents("tr").find(".new-price").data("value")
-    	console.log(dataValue)
-    	var lead_id = window.location.href.split("/")[5]
+    function updateTaggingSbeWin(id_exist,tag_sbe,name_sbe,price,dataValue){
+    	console.log(id_exist)
+    	$.ajax({
+          url: "{{url('/project/updateSbeTag')}}",
+          type: 'post',
+          data: {
+          	_token:"{{ csrf_token() }}",
+          	id_exist:id_exist,
+          	id_sbe:tag_sbe,
+          	name_sbe:name_sbe,
+          	price:price,
+          	lead_id:window.location.href.split("/")[5]
+          },
+        success: function()
+        {
+            Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                	$(".tag_sbe_win[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".price_sbe_win[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".btn-edit-tagging-sbe-win[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
+						    	$(".btn-edit-tagging-sbe-win[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+						    	$("#btn-addSBE").prop('disabled',false).tooltip('disable')
+                }
+            })
+        }
+      })
+    }
 
-    	if (localStorage.getItem("status_tagging") == "pencil") {
-    		localStorage.setItem("status_tagging","ubah")
-    	}else{
-    		if (price == '') {
-    			console.log(price)
-    			Swal.fire({
-	          title: 'Can`t Submit Result!',
-	          icon: 'error',
-	          html: "<p style='text-align:center;'>Column Price is Required!</p>",
-	          confirmButtonText: 'Oke',
-	        })
-    		}else{
-    			$(this).parents("tr").find(".btn-edit-taggingWin").attr("onclick",updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id))
-    		}    		
-    	}
-    })  	  
+    var id_exist,product,techno,price,dataValue,lead_id = '' 	  
 
     function updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id){
     	console.log(dataValue)
@@ -1879,7 +2274,7 @@ Detail Lead Register
                 	localStorage.setItem("status_tagging", "pencil");
                 	$(".select2-customProduct[data-value='" + dataValue + "']").prop("disabled",true)
 						    	$(".select2-customTechnology[data-value='" + dataValue + "']").prop("disabled",true)
-						    	$(".new-price[data-value='" + dataValue + "']").prop("disabled",true)
+						    	$(".new-price-win[data-value='" + dataValue + "']").prop("disabled",true)
 						    	$(".btn-edit-taggingWin[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
 						    	$(".btn-edit-taggingWin[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
                 }
@@ -1901,14 +2296,20 @@ Detail Lead Register
 	        i++
 	      });
 
+	      $('#table-tagging-SBE #tbSBE .new-SBE').each(function() {
+	        data.append("tagData[tagSBE]["+i+"][price_sbe]",$(this).find(".price_sbe").val().replace(/\D/g, ""))
+	        data.append("tagData[tagSBE]["+i+"][tag_sbe]",$(this).find('.tag_sbe').select2("data")[0].id)
+	        data.append("tagData[tagSBE]["+i+"][sbeText]",$(this).find('.tag_sbe').select2("data")[0].text)
+	        i++
+	      });
+
 	      data.append("id",deletedProduct)
+	      data.append("id_sbe_delete",deleteSbe)
+	      data.append("name_sbe_delete",nameSbe)
+	      data.append("price_sbe_delete",priceSbe)
 	      data.append("id_exist",idExist)
 
-
-
-	      // var tagData = {
-	      //   tagProduct:tagProduct
-	      // }
+	      console.log(data)
 
   			Swal.fire({
 			        title: 'Please Wait..!',
@@ -1923,38 +2324,25 @@ Detail Lead Register
 			            Swal.showLoading()
 			        }
 			    })
-
-  				// $.ajax({
-      //       type:"POST",
-      //       url:"{{url('project/update_sd')}}",
-      //       data:{
-				  //     lead_id:window.location.href.split("/")[5],
-      //       	tagData:tagData,
-      //     		_token:"{{ csrf_token() }}"
-      //       },
-      //       success: function(result){
-            	
-      //       }
-      //     })
-      $.ajax({
-        type:"POST",
-        url:"{{url('project/update_sd')}}",
-        data:data,
-        contentType: false,
-				processData: false,
-        success: function(result){
-          Swal.showLoading()
-          Swal.fire(
-            'Successfully!',
-            'You`re updated Solution Design.',
-            'success'
-          ).then((result) => {
-            if (result.value) {
-              location.reload();
-            }
-          })
-        }
-      })
+		      $.ajax({
+		        type:"POST",
+		        url:"{{url('project/update_sd')}}",
+		        data:data,
+		        contentType: false,
+						processData: false,
+		        success: function(result){
+		          Swal.showLoading()
+		          Swal.fire(
+		            'Successfully!',
+		            'You`re updated Solution Design.',
+		            'success'
+		          ).then((result) => {
+		            if (result.value) {
+		              location.reload();
+		            }
+		          })
+		        }
+		      })
 
   		}else{
   			Swal.fire({
@@ -2136,8 +2524,7 @@ Detail Lead Register
 		        }
 		        initmoney();
 
-		        var i = 0;
-		        $("#tbtagprice").empty()		        
+		        $("#tbtagprice").empty()	
 
 		        $.ajax({
 				    	url: "{{url('/project/showTagging')}}",
@@ -2145,91 +2532,28 @@ Detail Lead Register
 				      data: {
 				          lead_id: window.location.href.split('/')[5],
 				      },success: function(result){
-				    		i = 0
 				      	$.each(result, function(key,value){
-				      		i++
-				      		addProductTechInitiate(value.id,value.id_product_tag,value.id_technology_tag,value.price,i)
+				      		console.log(key)
+				      		addProductTechInitiate(value.id,value.id_product_tag,value.id_technology_tag,value.price,key)
 				      	})
 				      	grandTotal()
 				      }
 				    })
 
-		        $("#tbtagprice").empty();
-
-				    function addProductTechInitiate(id,id_product,id_tech,price,i){
-				    	var append = ""
-				      append = append + "<tr class='exist-product'>"
-				      append = append + " <td><input hidden class='idWinTagging' name='id' data-value='"+ i +"'/>"
-				      append = append + " <select disabled class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
-				      append = append + " </td>"
-				      append = append + " <td>"
-				      append = append + " <select disabled class='form-control select2-customTechnology' data-value='" + i + "' id='searchTagsTechnology' style='width: 100%!important'></select>"
-				      append = append + " </td>"
-				      append = append + " <td style='white-space: nowrap'>"
-				      append = append + " <div class='input-group'>"
-				      append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-				      append = append + " <input disabled data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price'>"
-				      append = append + " </div>"
-				      append = append + " </td>"
-				      append = append + " <td class='text-center'>"
-				      append = append + " <button type='button' data-value='"+ i +"' style='width: auto !important;vertical-align:sub' class='btn btn-sm btn-danger btn-flat btn-trash'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;vertical-align:sub;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-taggingWin'><i class='fa fa-pencil'></i></button>"
-				      append = append + " </td>"
-				      append = append + "</tr>"
-
-				      $("#tbtagprice").append(append)	      
-
-				  		$.ajax({
-				        url: "{{url('/project/getProductTechTagDetail')}}",
-				        type: "GET",
-				        success: function(result) {
-				            $("#searchTagsProduct[data-value='" + i + "']").empty("");
-				            $("#searchTagsTechnology[data-value='" + i + "']").empty("");
-				            var product_tag = result.product_tag;
-				            var product_tag_selectOption = [];
-
-				            var technology_tag = result.technology_tag;
-				            var technology_tag_selectOption = [];
-
-				            $.each(product_tag, function(key, value) {
-
-				            	if (value.id == "p"+id_product) {
-				            		value.selected = true
-				            	}
-				                product_tag_selectOption.push(value)
-				            })
-				            $.each(technology_tag, function(key, value) {
-				            	if (value.id == "t"+id_tech) {
-				            		value.selected = true
-				            	}
-				                technology_tag_selectOption.push(value)
-				            })
-
-				            var TagProduct = $("#searchTagsProduct[data-value='" + i + "']").select2({
-				                dropdownParent: $('#formSD'),
-				                placeholder: " Select #Tags#Product",
-				                data: product_tag_selectOption,
-				                templateSelection: function(selection, container) {
-				                    return $.parseHTML('<span>' + selection.text + '</span>');
-				                }
-				            })
-				            
-				            var TagProduct = $("#searchTagsTechnology[data-value='" + i + "']").select2({
-				                dropdownParent: $('#formSD'),
-				                placeholder: " Select #Tags#Technology",
-				                data: technology_tag_selectOption,
-				                templateSelection: function(selection, container) {
-				                    return $.parseHTML('<span>' + selection.text + '</span>');
-				                }
-				            })
-				        }
-				    	})
-
-				    	$(".new-price[data-value='" + i + "']").val(price)	    
-
-				    	$(".idWinTagging[data-value='" + i +"']").val(id)  
-
-				      initmoney();
-				    }
+				    $.ajax({
+				    	url: "{{url('/project/showSbeTagging')}}",
+				      type: "GET",
+				      data: {
+				          lead_id: window.location.href.split('/')[5],
+				      },success: function(result){
+				    		i = 0
+				      	$.each(result, function(key,value){
+				      		i++
+				      		addSbeResultNotEmpty(value.id,value.tag_sbe,value.price_sbe,i)
+				      	})
+				      	grandTotal()
+				      }
+				    })
 
 		        $("#addService").click(function() {
 		            $("#nextBtn").prop("disabled", false);
@@ -2349,17 +2673,17 @@ Detail Lead Register
           cancelButtonText: 'No'
         }).then((result) => {
           if (result.isConfirmed) {
-            submitWinStep2(deletedProductWin)
+            submitWinStep2(deletedProductWin,deleteSbeWin)
           } else {
             Swal.close()
           }
         })
       } else {
-        submitWinStep2(deletedProductWin)
+        submitWinStep2(deletedProductWin,deleteSbeWin)
       }       
     }
 
-    function submitWinStep2(id){
+    function submitWinStep2(id,arr_sbe){
     	console.log(id)
       var emptyProduct = $("#table-product #tbtagprice tr input").filter(function() {
         return !this.value.trim();
@@ -2405,6 +2729,15 @@ Detail Lead Register
           })
         });
 
+        var tagSbe = []
+        $('#table-sbe #tbtagsbe .tag-sbe-win').each(function() {
+          tagSbe.push({
+            tag_price:$(this).find(".price_sbe_win").val(),
+            tag_sbe_id:$(this).find('.tag_sbe_win').select2("data")[0].id,
+            tag_sbe_text:$(this).find('.tag_sbe_win').select2("data")[0].text,
+          })
+        });
+
         var tagService = []
         $('#table-service #tbserviceprice .new-product').each(function() {
           tagService.push({
@@ -2417,7 +2750,10 @@ Detail Lead Register
         var tagData = {
           tagProduct:tagProduct,
           tagService:tagService,
-          id:id
+          tagSbe:tagSbe,
+          id:id,
+          arr_sbe:arr_sbe
+
         }
 
         Swal.fire({
@@ -2496,17 +2832,7 @@ Detail Lead Register
       $("#formResult").modal("hide"); 
     }
 
-    deletedProductWin = []
-
-    $(document).on('click', '.btn-trash', function() {
-      $(this).closest("tr").remove();
-      if($(this).closest("tr.new-service").length > 0){
-        $("#addService").show()
-      }
-
-      row = $(this).parents("tr").find("input[name='id']").val();
-    	deletedProductWin.push(row)
-    });
+    
 
     function submitChangeLog(){
     	Swal.fire({
@@ -2591,6 +2917,8 @@ Detail Lead Register
           			return row.status + ' - ' + '[' + row.progress_date + ']'
           		}else if ($.isNumeric(String(check[2]).split(" ")[2])){
           			return check[0] + ", " + check[1] + ", " + String(check[2]).split(" ")[0] + " " + String(check[2]).split(" ")[1] + " " + new Intl.NumberFormat('id').format(String(check[2]).split(" ")[2])
+          		}else if($.isNumeric(String(check[1]).split(" ")[2])){
+          			return check[0] + ", " + String(check[1].split(" ")[0] + " " + check[1].split(" ")[1] + " " + new Intl.NumberFormat('id').format(String(check[1]).split(" ")[2]))
           		}else {
           			//String(check[2]).split(" ")[2]
           			return row.status 
