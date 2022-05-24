@@ -1171,7 +1171,7 @@ Human Resources
 		          	<h4 class="modal-title">Add Employees</h4>
 		        </div>
 		        <div class="modal-body">
-		        	<form class="form-horizontal" id="formAdd" enctype="multipart/form-data">
+		        	<form class="form-horizontal" id="formAdd">
 	                @csrf
 
 	                <div class="tab-add" style="display: none;">
@@ -1948,7 +1948,7 @@ Human Resources
 		                    <label for="divisi" class="col-md-4 col-form-label text-md-right">{{ __('Sub-Division') }}</label>
 
 		                    <div class="col-md-4" id="div_subdivisi_view_update">
-		                    	<input id="subdivisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
+		                    	<input id="sub_divisi_view_update" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  value="{{ old('email') }}" required readonly>
 		                	</div>
 
 		                    <div class="col-md-4">
@@ -2204,10 +2204,11 @@ Human Resources
 @endsection
 @section('scriptImport')
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
+
 @endsection
 @section('script')
 <script type="">
@@ -2244,7 +2245,9 @@ Human Resources
 	$("#phone_number_update").inputmask({"mask": "(+62) 999-9999-9999"});
 	$("#phone_ec_update").inputmask({"mask": "(+62) 999-9999-9999"});
 
-	$("#roles_user").select2();
+	$("#roles_user").select2({
+		dropdownParent:$("#modalAdd")
+	});
 
 	$(document).ready(function(){
 		$("[data-mask]").inputmask();
@@ -2525,8 +2528,8 @@ Human Resources
 
 	               $("#password_update").val(value.password).prop("readonly", true);
 	               $("#divisi_view_update").val(value.id_division).prop("readonly", true);
-	               $("#subdivisi_view_update").val(value.id_territory).prop("readonly", true);
-	               if (value.id_company == '1') {
+	               $("#sub_divisi_view_update").val(value.id_territory).prop("readonly", true);
+	               if (value.id_company == 1) {
 	               	$("#company_view_update").val("SIP").prop("readonly", true);
 	               }else{
 	               	$("#company_view_update").val("MSP").prop("readonly", true);
@@ -2659,24 +2662,32 @@ Human Resources
 	               		$("#password_update").val(value.password);
 		               }
 
-	                localStorage.setItem("divisi_view_update", $("#divisi_view_update").val())
-					   if (!localStorage.getItem("divisi_view_update")) {
+		            $("#divisi_view_update").val(value.id_division).prop("readonly", true);
+		            $("#sub_divisi_view_update").val(value.id_territory).prop("readonly", true);
+		            if (value.id_company == "1") {
+		            	console.log("sip")
+		             	$("#company_view_update").val("SIP").prop("readonly", true);
+	               		localStorage.setItem("company_update", 1)
+		            }else{
+		               	$("#company_view_update").val("MSP").prop("readonly", true);
+	               		localStorage.setItem("company_update", 2)
+
+		            }
+		            $("#posisi_view_update").val(value.id_position).prop("readonly", true);
+
+	                localStorage.setItem("divisi_update", $("#divisi_view_update").val())
+					   if (!localStorage.getItem("divisi_update")) {
 	               		$("#divisi_view_update").val(value.id_division);
 		               }
 
-		            localStorage.setItem("subdivisi_view_update", $("#subdivisi_view_update").val())
-					   if (!localStorage.getItem("subdivisi_view_update")) {
-	               		$("#subdivisi_view_update").val(value.id_territory);
-		               }
-	               if (value.id_company == '1') {
-	               	$("#company_view_update").val("SIP")
-	               }else{
-	               	$("#company_view_update").val("MSP")
-	               }
-	               localStorage.setItem("posisi_view_update", $("#posisi_view_update").val())
-					   if (!localStorage.getItem("posisi_view_update")) {
+		            localStorage.setItem("sub_divisi_update", $("#sub_divisi_view_update").val())
+					   if (!localStorage.getItem("sub_divisi_update")) {
+	               		$("#sub_divisi_view_update").val(value.id_territory);
+		               }	               	
+	               	localStorage.setItem("posisi_update", $("#posisi_view_update").val())
+					   if (!localStorage.getItem("posisi_update")) {
 	               		$("#posisi_view_update").val(value.id_position);
-		               }               
+		               }              
                
                }
                
@@ -2817,21 +2828,56 @@ Human Resources
 	        })
 	        $.ajax({
 	            url: "{{'/hu_rec/store'}}",
-	            type: 'post',
-	            // dataType: 'application/json',
-	            data: $("#formAdd").serialize(), // serializes the form's elements.
-		        success: function(data)
-		        {
+	            type: 'POST',
+				// contentType: "application/json",
+				// dataType: "json",
+	            data: $("#formAdd").serialize(),
+	            // data: JSON.stringify($("#formAdd").serializeArray()),
+		        success: function(data) {
 		          	Swal.showLoading()
-			            Swal.fire(
-			              'Successfully!',
-			              'success'
-			            ).then((result) => {
-			              if (result.value) {
-			                location.reload()
-			              }
+		            Swal.fire(
+		              'Add user success!',
+		              'Please for new users to try the account that has been created',
+		              'sucess'
+		            ).then((result) => {
+						if (result.value) {
+							location.reload()
+						}
 		            })
-		        }
+		        },
+		        error: function(jqXHR,error, errorThrown) {  
+					if(jqXHR.status && jqXHR.status == 400){
+						Swal.showLoading()
+						Swal.fire(
+							data.message,
+							Object.values(data.errors)[0],
+							'error'
+						)
+					} else if (jqXHR.status && jqXHR.status == 422){
+						Swal.showLoading()
+						Swal.fire(
+							data.message,
+							Object.values(data.errors)[0],
+							'error'
+						)
+					}else{
+						alert("Something went wrong");
+					}
+				}
+				// statusCode: {
+				// 	422: function(data,textStatus,jqXHR) {
+				// 		Swal.showLoading()
+				// 		Swal.fire(
+				// 			data.message,
+				// 			Object.values(data.errors)[0],
+				// 			'error'
+				// 		).then((result) => {
+
+				// 		})
+				// 		// data=data.message;
+				// 		console.log(data.errors);
+				// 	}
+				// }
 	        }); 
 	      }    
     	})
@@ -3839,7 +3885,7 @@ Human Resources
         
         $('#posisi_update').html(append);
 
-        $("#subdivisi_view_update").val(id.value);
+        $("#sub_divisi_view_update").val(id.value);
 
     }
 
