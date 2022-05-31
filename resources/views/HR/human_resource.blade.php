@@ -2776,6 +2776,7 @@ Human Resources
 	        		posisi_update:localStorage.getItem("posisi_update"),
 	        		address_update:localStorage.getItem("address_update"),
 	        		phone_number_update:localStorage.getItem("phone_number_update"),
+	        		no_npwp_update:localStorage.getItem("no_npwp_update"),
 	        		no_ktp_update:$("#no_ktp_update").val(),
 					no_kk_update:$("#no_kk_update").val(),
 					name_ec_update:$("#name_ec_update").val(),
