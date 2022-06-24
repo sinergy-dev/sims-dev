@@ -19,6 +19,7 @@ use App\Quote;
 use App\PID;
 use App\ServiceTagRelation;
 use App\SbeRelation;
+use App\RequestChange;
 
 use Mail;
 use App\Mail\MailResult;
@@ -26,6 +27,7 @@ use App\Mail\CreateLeadRegister;
 use App\Mail\AssignPresales;
 use App\Mail\RaiseTender;
 use App\Mail\AddContribute;
+use App\Mail\EmailChangeCustomer;
 
 use Carbon\Carbon;
 use Google\Auth\CredentialsLoader;
@@ -1051,11 +1053,82 @@ class SalesLeadController extends Controller
                 ->leftJoinSub($getListProductLead, 'product_lead', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
                 })
-                ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name', 'sales_lead_register.amount', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','name_presales', 'name', 'customer_legal_name','sales_lead_register.result', DB::raw("(CASE WHEN (name_product_tag is null) THEN '' ELSE name_product_tag END) as name_product_tag"), DB::raw("(CASE WHEN (name_tech is null) THEN '' ELSE name_tech END) as name_tech"), DB::raw("(CASE WHEN (keterangan is null) THEN '' ELSE keterangan END) as keterangan"))
+                ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name', 'sales_lead_register.amount', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','name_presales', 'name', 'customer_legal_name','sales_lead_register.result', DB::raw("(CASE WHEN (name_product_tag is null) THEN '' ELSE name_product_tag END) as name_product_tag"), DB::raw("(CASE WHEN (name_tech is null) THEN '' ELSE name_tech END) as name_tech"), DB::raw("(CASE WHEN (keterangan is null) THEN '' ELSE keterangan END) as keterangan"), 'sales_lead_register.id_customer')
                 ->where('sales_lead_register.lead_id',$request->lead_id)
                 ->get();
 
         return array("data"=>$lead);
+    }
+
+    public function changeNominal(Request $request)
+    {
+        $getData = Sales::join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('amount', 'deal_price', 'sales_lead_register.created_at', 'opp_name', 'customer_legal_name')->where('lead_id', $request->lead_id)->first();
+
+        $requestChange = new RequestChange();
+        $requestChange->type = "Change Nominal";
+        $requestChange->requester = Auth::user()->name;
+        $requestChange->object_id = $request->lead_id;
+        $requestChange->parameter1_before = $getData->deal_price;
+        $requestChange->parameter1_after = str_replace('.', '', $request['input_amount']);     
+        $requestChange->status = "On-Progress";
+        $requestChange->save();
+
+        $mail = new EmailChangeCustomer(collect([
+                    "type" => "Change Nominal",
+                    "to" => "Rony Cahyadi",
+                    "lead_id" => $request->lead_id,
+                    "reason" => $request->input_reason,
+                    "requestor" => Auth::user()->name,
+                    "nominal_after" => $request->input_amount,
+                    "nominal_before" => $getData->deal_price,
+                    "customer" => $getData->customer_legal_name,
+                    "project" => $getData->opp_name,
+                    "created_at" => $getData->created_at,
+                    "url" =>  url("/requestChange?id_requestChange=" . $requestChange->id)
+                ])
+            );
+        
+        Mail::to("rony@sinergy.co.id")->send($mail);
+
+        return $mail;
+    }
+
+    public function changeCustomer(Request $request)
+    {
+        $cus = Sales::join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select('opp_name', 'customer_legal_name', 'sales_lead_register.created_at', 'sales_lead_register.id_customer')->where('lead_id', $request->lead_id)->first();
+
+        $getCus = TB_Contact::select('customer_legal_name')->where('id_customer', $request->input_cus)->first();
+
+        $requestChange = new RequestChange();
+        $requestChange->type = "Change Customer";
+        $requestChange->requester = Auth::user()->name;
+        $requestChange->object_id = $request->lead_id;
+        $requestChange->parameter1_before = $cus->id_customer;
+        $requestChange->parameter1_after = $request->input_cus; 
+        $requestChange->parameter2_before = $cus->customer_legal_name;
+        $requestChange->parameter2_after = $getCus->customer_legal_name;      
+        $requestChange->status = "On-Progress";
+        $requestChange->save();
+
+        $mail = new EmailChangeCustomer(collect([
+                    "type" => "Change Customer",
+                    "to" => "Rony Cahyadi",
+                    "lead_id" => $request->lead_id,
+                    "reason" => $request->input_reason,
+                    "requestor" => Auth::user()->name,
+                    "customer_after" => $getCus->customer_legal_name,
+                    "customer_before" => $cus->customer_legal_name,
+                    "project" => $cus->opp_name,
+                    "created_at" => $cus->created_at,
+                    "url" =>  url("/requestChange?id_requestChange=" . $requestChange->id)
+                ])
+            );
+        
+        Mail::to("rony@sinergy.co.id")->send($mail);
+
+        return $mail;
     }
 
     public function getChangeLog(Request $request)
