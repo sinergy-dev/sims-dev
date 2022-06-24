@@ -169,7 +169,7 @@ Technical Asset
           </li>
           <a href="{{action('AssetController@exportExcelTech')}}"><button id="export-excel" style="margin-left: 5px" class="btn btn-sm btn-success pull-right display-none"><i class="fa fa-cloud-download"></i> Excel</button></a>
         	<button class="btn btn-sm btn-warning pull-right display-none" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
-        	<button class="btn btn-sm btn-info pull-right" id="kategori-asset" style="margin-right: 5px" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
+        	<button class="btn btn-sm btn-info pull-right" id="kategori-asset" style="margin-right: 5px;display:none;" data-toggle="modal" data-target="#add_kategori"><i class="fa fa-plus"> </i>&nbspKategori</button>
           <button class="btn btn-block btn-primary btn-sm pull-right btn-add-peminjaman" style="width: 100px;margin-right: 5px;" id="btn_add_peminjaman"><i class="fa fa-plus" > </i>&nbsp Peminjaman</button>
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -288,7 +288,7 @@ Technical Asset
                         <th>Tgl Pengembalian</th>
                         <th>Tgl Pengembalian(Actual)</th>
                         <th>Status</th>
-                        <th style="text-align: center;">Action</th>
+                        <th style="text-align: center;" id="col_action">Action</th>
                       </tr>
                     </thead>
                   </table>
@@ -831,9 +831,9 @@ Technical Asset
 
     $(document).ready(function(){
       if (window.location.href.split("/")[3].split("#")[1] == 'list_asset') {
-        ("#list_asset").addClass('active')
+        $("#list_asset").addClass("active")
       }else if (window.location.href.split("/")[3].split("#")[1] == 'kategori_tab') {
-          $("#kategori_tab").addClass('active')
+        $("#kategori_tab").addClass('active')
       }else if (window.location.href.split("/")[3].split("#")[1] == 'peminjaman_tab'){
         $("#peminjaman_tab").addClass('active')
         $("#peminjaman_asset").closest('li').addClass('active')
@@ -849,8 +849,11 @@ Technical Asset
 
       if (!(accesable.includes('col_action'))) {
         // btn action di selain mas franky
-        var column1 = table.column(6);
+        var column1 = table.column(7);
         column1.visible(!column1.visible() );
+
+        var column2 = table1.column(10);
+        column2.visible(!column2.visible() );
       }
       console.log(accesable)
     })
@@ -957,7 +960,7 @@ Technical Asset
     })
 
     //datatble peminjaman moderator
-    $("#datatable1").DataTable({
+    var table1 = $("#datatable1").DataTable({
         "ajax":{
           "type":"GET",
           "url":"{{url('/getAssetTransactionModerator')}}",
@@ -1490,7 +1493,7 @@ Technical Asset
 
               $.each(result[0], function(key, value){
                   // append = append + "<option value="+value.id_detail+">" + value.nama + "</option>";   
-                append = append + "<option value="+value.id_barang+">"+ value.code_asset + ' - ' + value.nama_barang + " - " + value.serial_number +"</option>";
+                append = append + "<option value="+value.id_barang+">" + value.nama_barang + " - " + value.serial_number +"</option>";
                 // console.log(value.id_barang);
               });
 
@@ -1770,7 +1773,7 @@ Technical Asset
         
         $.ajax({
             type:"GET",
-            url:'/dropdownsn',
+            url:'{{url("/dropdownsn")}}',
             data:{
               id_transaction:n,
             },
