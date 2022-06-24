@@ -155,10 +155,6 @@ Quote Number
                           <option value="MSM">MSM</option>
                       </select>
                   </div>
-                  <!-- <div class="form-group">
-                      <label>Date</label>
-                      <input type="date" class="form-control" id="date" name="date" required>
-                  </div> -->
 
                   <div class="form-group">
                     <label for="">Date</label>
@@ -253,6 +249,8 @@ Quote Number
                 <label>Backdate Number</label>
                 <select type="text" class="form-control disabled" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" disabled>
                 </select>
+                <span id="errorname" style="color:red"></span>
+                <span class="pull-right" style="display:none;cursor: pointer;" id="addBackdateNum"><i class="fa fa-plus"></i> backdate number</span>
               </div>
               <div class="form-group">
                 <label for="">Position</label>
@@ -310,7 +308,7 @@ Quote Number
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
-                <button type="submit" class="btn btn-primary"><i class="fa fa-check"> </i>&nbspSubmit</button>
+                <button type="submit" class="btn btn-primary" id="addBackdate"><i class="fa fa-check"> </i>&nbspSubmit</button>
               </div>
             </form>
             </div>
@@ -332,6 +330,24 @@ Quote Number
               <div class="form-group" hidden>
                   <label>Quote Number</label>
                   <input class="form-control" id="edit_quote_number" name="quote_number">
+              </div>
+              <div class="form-group">
+                  <label>Position</label>
+                  <select class="form-control" id="edit_position" name="edit_position" required>
+                      <option value="TAM">TAM</option>
+                      <option value="DIR">DIR</option>
+                      <option value="MSM">MSM</option>
+                  </select>
+              </div>
+
+              <div class="form-group">
+                <label for="">Date</label>
+                <div class="input-group date">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <input type="date" class="form-control pull-right" name="edit_date" id="edit_date">
+                </div>
               </div>
               <div class="form-group">
                   <label>To</label>
@@ -364,7 +380,7 @@ Quote Number
               <div class="form-group">
                   <label>Note</label>
                   <input class="form-control" id="edit_note" name="edit_note" placeholder="Enter Note">
-              </div> 
+              </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
                 <button type="submit" class="btn btn-success"><i class="fa fa-check"> </i>&nbspUpdate</button>
@@ -389,9 +405,13 @@ Quote Number
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 @section('script')
   <script type="text/javascript">
+    $(document).ready(function(){
+      $('#addBackdate').prop("disabled",true)
+    })
     $('#customer_quote').select2();
     // $("#backdate_num").select2();
     $("#customer_quote_backdate").select2();
@@ -407,9 +427,27 @@ Quote Number
       startDate: today 
     }).attr('readonly','readonly').css('background-color','#fff');
 
+    function backdateReload(){
+      $.ajax({
+        url: "/get_backdate_num",
+        type: "GET",
+        data:{
+          tanggal:$('#date_backdate').val()
+        },
+        success: function(result) {
+          $("#backdate_num").prop("disabled",false);
+          $("#errorname").css("display","none")
+          $('#addBackdate').prop("disabled",false)
+          $("#addBackdateNum").css("display","none")
+          $("#backdate_num").select2({
+            data:result.results
+          })
+        }
+      })       
+    }
+
     $('#date_backdate').change(function (argument) {
-      console.log($('#date_backdate').val())
-      $("#backdate_num").prop("disabled",false);
+      errorMessage = document.getElementById('errorname');
       $.ajax({
           url: "/get_backdate_num",
           type: "GET",
@@ -417,20 +455,74 @@ Quote Number
             tanggal:$('#date_backdate').val()
           },
           success: function(result) {
+            console.log(result)
+            if (result.results.length === 0) {
+              $('#backdate_num').empty().trigger("change");
+              $('#addBackdate').prop("disabled",true)
+              $("#backdate_num").prop("disabled",true); 
+              errorMessage.innerText = 'Backdate Number is Not Available';
+              $("#addBackdateNum").css("display","block")
+              $("#addBackdateNum").click(function(){
+                Swal.fire({
+                    title: 'Create a backdate number',  
+                    text: "By pressing `OK`, the system will creating the backdate number",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'No',
+                }).then((result) => {
+                  if (result.value) {
+                      Swal.fire({
+                          title: 'Please Wait..!',
+                          text: "It's sending..",
+                          allowOutsideClick: false,
+                          allowEscapeKey: false,
+                          allowEnterKey: false,
+                          customClass: {
+                              popup: 'border-radius-0',
+                          },
+                          onOpen: () => {
+                              Swal.showLoading()
+                          }
+                      })
+                      $.ajax({
+                          type: "POST",
+                          url: "{{url('/addBackdateNumQuote')}}",
+                          data: {
+                            _token: "{{ csrf_token() }}",
+                            date_backdate:$("#date_backdate").val()
+                          },
+                          success: function(result) {
+                              Swal.showLoading()
+                              Swal.fire(
+                                  'Successfully!',
+                                  'Backdate Number have been Created.',
+                                  'success'
+                              ).then((result) => {
+                                  if (result.value) {
+                                    backdateReload()
+                                  }
+                              })
+                          }
+                      })          
+                  }
+                })
+              })
+            } else {
+              console.log("ada results")
+              $('#addBackdate').prop("disabled",false)
+              $("#backdate_num").prop("disabled",false);
               $("#backdate_num").select2({
                 data:result.results
-              })
+              })             
+            }
           }
       })
-      // $("#backdate_num").select2({
-      //   ajax: {
-      //     url: '{{url("/get_backdate_num")}}' + '?tanggal=' + $('#date_backdate').val(),
-      //     dataType: 'json'
-      //   }
-      // });
     })
 
-    function edit_quote(quote_number,id_customer,attention,title,project,description, project_id,note) {
+    function edit_quote(quote_number,id_customer,attention,title,project,description,project_id,note,date,position) {
       console.log(id_customer)
       $('#modalEdit').modal('show');
       $('#edit_quote_number').val(quote_number);
@@ -485,6 +577,8 @@ Quote Number
       } else {
         $('#edit_note').val(note);
       }
+      $('#edit_date').val(date);
+      $('#edit_position').val(position);
     }
 
     var nowDate = new Date();
@@ -510,7 +604,7 @@ Quote Number
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.nik) {
-                var x = '"' + data.quote_number + '","' + data.id_customer + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
+                var x = '"' + data.quote_number + '","' + data.id_customer + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '","' +data.date+ '","' +data.position+ '"'
                 data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_quote(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button>";
