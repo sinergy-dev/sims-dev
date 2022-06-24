@@ -2328,12 +2328,12 @@ class ReportController extends Controller
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leads = $leadsnow->where('nik_presales', $nik)->get();
 
-                $total_deal_price = $total_deal_price->where('nik_presales', $nik)->first();
+                // $total_deal_price = $total_deal_price->where('nik_presales', $nik)->first();
 
             } else if ($div == 'SALES') {
                 $leads = $leadsnow->where('u_sales.id_territory', $ter)->get();
                 
-                $total_deal_price = $total_deal_price->where('u_sales.id_territory', $ter)->first();
+                // $total_deal_price = $total_deal_price->where('u_sales.id_territory', $ter)->first();
             }        
         }else{
             $leads = $leadsnow->get();
@@ -3077,7 +3077,7 @@ class ReportController extends Controller
 
         $year_now = DATE('Y');
 
-        if ($request->data == 'ALL') {
+        if ($request->type == 'ALL') {
             $top_win_sip = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
@@ -3085,7 +3085,8 @@ class ReportController extends Controller
                         ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.deal_price) as amounts'), 'users.name', 'tb_company.code_company')
                         ->where('result', 'WIN')
                         // ->where('sales_tender_process.win_prob', $request->data)
-                        ->where('year', $request->tahun)
+                        ->whereYear('closing_date', $request->tahun)
+                        ->where('users.status_karyawan', 'cuti')
                         ->where('users.id_company', '1')
                         ->groupBy('sales_lead_register.nik')
                         ->orderBy('amounts', 'desc')
@@ -3099,7 +3100,8 @@ class ReportController extends Controller
                         ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.deal_price) as amounts'), 'users.name', 'tb_company.code_company')
                         ->where('result', 'WIN')
                         ->where('sales_tender_process.win_prob', $request->data)
-                        ->where('year', $request->tahun)
+                        ->whereYear('closing_date', $request->tahun)
+                        ->where('users.status_karyawan', 'cuti')
                         ->where('users.id_company', '1')
                         ->groupBy('sales_lead_register.nik')
                         ->orderBy('amounts', 'desc')
