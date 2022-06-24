@@ -335,7 +335,7 @@ Purchase Order Number
                 }
               }
           },
-          { "data": "name" },
+          { "data": "from_name" },
           { "data": "division" },
           { "data": "issuance" },
           { "data": "project_id" },
@@ -426,7 +426,7 @@ Purchase Order Number
               $("#description").val(value.description);
               $("#division").val(value.division);
               $("#project_id").val(value.project_id);
-              $("#issuance").val(value.issuance);
+              $("#issuance").val(value.issuance_name);
             });
           }
         });
