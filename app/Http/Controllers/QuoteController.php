@@ -213,11 +213,11 @@ class QuoteController extends Controller
 	public function get_backdate_num(Request $request)
     {
         if (isset($request->tanggal)) {
-            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->whereYear('created_at',substr($request->tanggal, 6,4))->orderBy('id_quote','desc')->get();
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->whereYear('created_at',substr($request->tanggal, 6,4))->orderBy('created_at','desc')->get();
             return array('results'=>$backdate_num);
             // return substr($request->tanggal, 6,4);
         } else {
-            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->orderBy('id_quote','desc')->get();
+            $backdate_num = Quote::selectRaw('`quote_number` as `text`')->selectRaw('`id_quote` as `id`')->where('status_backdate', 'T')->orderBy('created_at','desc')->get();
             return array('results'=>$backdate_num);
             // return substr($request->tanggal, 6,4);
 
@@ -302,145 +302,14 @@ class QuoteController extends Controller
         $bln = $array_bln[$month_quote];
 
         if ($cek > 0) {
-            // $getno = Quote::orderBy('id_quote', 'desc')->first();
-            // $getno_new = $getno->id_quote;
-
-            //     if ($getno_new < 7) {
-            //         $angka = '7';
-            //     }
-            //     elseif ($getno_new > 6) {
-            //             $query = Quote::where('id_quote','like','%7')->get();
-            //             foreach ($query as $data) {
-            //                  if ($getno_new == $data->id_quote) {
-            //                      $angka = $data->id_quote;
-            //                  }else{
-            //                      $angka = $data->id_quote;
-            //                  }
-            //             }
-            //     }
-
-            //     if ($getno_new == $angka) {
-                             
-
-            //         $getnumber = Quote::orderBy('no', 'desc')->whereYear('created_at', $tahun)->count();
-
-            //         $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
-
-            //         if($getnumber == NULL){
-            //             $getlastnumber = 1;
-            //             $lastnumber = $getlastnumber;
-            //         } else{
-            //             $lastnumber = $getnumber+1;
-            //             $lastnumber9 = $getnumber+2;
-            //         }
-
-            //         if($lastnumber < 10){
-            //            $akhirnomor = '000' . $lastnumber;
-            //            $akhirnomor9 = '000' . $lastnumber9;
-            //         }elseif($lastnumber > 9 && $lastnumber < 100){
-            //            $akhirnomor = '00' . $lastnumber;
-            //            $akhirnomor9 = '00' . $lastnumber9;
-            //         }elseif($lastnumber >= 100){
-            //            $akhirnomor =  '0' . $lastnumber;
-            //            $akhirnomor9 = '0' . $lastnumber9;
-            //         }
-
-            //         $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
-            //         $nom = Quote::select('id_quote')->orderBy('created_at','desc')->first();
-            //         $no9  = $akhirnomor9;
-
-            //         for ($i=0; $i < 2 ; $i++) { 
-            //             $tambah = new Quote();
-            //             if ($i == 0) {
-            //                 $tambah->id_quote = $nom->id_quote+1;
-            //                 $tambah->quote_number = $no;
-            //                 $tambah->status_backdate = 'A';
-            //             } else{
-            //                 $tambah->id_quote = $nom->id_quote+2;
-            //                 $tambah->quote_number = $no9;
-            //                 $tambah->status_backdate = 'T';
-            //             }
-                        
-            //             $tambah->position = $posti;
-            //             $tambah->type_of_letter = $type;
-            //             $tambah->month = $bln;
-            //             $tambah->date = $edate;
-            //             // $tambah->to = $request['to'];
-            //             $tambah->id_customer = $request['customer_quote'];
-            //             $tambah->attention = $request['attention'];
-            //             $tambah->title = $request['title'];
-            //             $tambah->project = $request['project'];
-            //             $tambah->description = $request['description'];
-            //             $tambah->nik = Auth::User()->nik;
-            //             $tambah->division = $request['division'];
-            //             $tambah->project_id = $request['project_id'];
-            //             $tambah->project_type = $request['project_type'];
-                     
-            //             /*if ($i == 0) {
-            //                $tambah->status_backdate = NULL;
-            //             }else{
-            //                 $tambah->status_backdate = 'T';
-            //             }*/
-
-            //             $tambah->save();
-            //         }
-
-            //         return redirect('quote')->with('success', 'Create Quote Number Successfully!');
-            //     }else{
-
-            //         $getnumber = Quote::orderBy('id_quote', 'desc')->whereYear('created_at', $tahun)->count();
-
-            //         $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
-
-            //         if($getnumber == NULL){
-            //             $getlastnumber = 1;
-            //             $lastnumber = $getlastnumber;
-            //         } else{
-            //             $lastnumber = $getnumber+1;
-            //         }
-
-            //         if($lastnumber < 10){
-            //            $akhirnomor = '000' . $lastnumber;
-            //         }elseif($lastnumber > 9 && $lastnumber < 100){
-            //            $akhirnomor = '00' . $lastnumber;
-            //         }elseif($lastnumber >= 100){
-            //            $akhirnomor = '0' . $lastnumber;
-            //         }
-
-            //         $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
-
-            //         $tambah = new Quote();
-            //         $tambah->id_quote = $getnumbers->id_quote+1;
-            //         $tambah->quote_number = $no;
-            //         $tambah->position = $posti;
-            //         $tambah->type_of_letter = $type;
-            //         $tambah->month = $bln;
-            //         $tambah->date = $edate;
-            //         // $tambah->to = $request['to'];
-            //         $tambah->id_customer = $request['customer_quote'];
-            //         $tambah->attention = $request['attention'];
-            //         $tambah->title = $request['title'];
-            //         $tambah->project = $request['project'];
-            //         $tambah->description = $request['description'];
-            //         $tambah->nik = Auth::User()->nik;
-            //         $tambah->division = $request['division'];
-            //         $tambah->project_id = $request['project_id'];
-            //         $tambah->project_type = $request['project_type'];
-            //         $tambah->status_backdate = 'A';
-            //         $tambah->save();
-
-            //         return redirect('quote')->with('success', 'Create Quote Number Successfully!');
-                        
-            //     }
-
-
+            
             $quote = Quote::where('status_backdate','A')->orderBy('id_quote','desc')->whereYear('created_at',$tahun)->first()->quote_number;
 
             $getnumber =  explode("/",$quote)[0];
 
-            $nom = Quote::select('id_quote')->orderBy('created_at','desc')->whereYear('created_at', $tahun)->first()->id_quote;
+            // $nom = Quote::select('id_quote')->orderBy('created_at','desc')->whereYear('created_at', $tahun)->first()->id_quote;
 
-            $skipNum = Quote::select('quote_number')->orderBy('created_at','desc')->first();
+            // $skipNum = Quote::select('quote_number')->orderBy('created_at','desc')->first();
 
             $lastnumber = $getnumber+1;
 
@@ -455,7 +324,9 @@ class QuoteController extends Controller
             }elseif($lastnumber >= 100){
                $akhirnomor = '0' . $lastnumber;
                $akhirnomor9 = '0' . $lastnumber9;
-            }            
+            }         
+
+            // return substr($getnumber, -1);   
 
             if (substr($getnumber, -1) == '4') {
                 $no   = $akhirnomor9.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
@@ -538,47 +409,6 @@ class QuoteController extends Controller
             
         } else{
 
-            // $getnumber = Quote::orderBy('id_quote', 'desc')->whereYear('created_at', $tahun)->count();
-
-            // $getnumbers = Quote::orderBy('id_quote', 'desc')->first();
-
-            // if($getnumber == NULL){
-            //     $getlastnumber = 1;
-            //     $lastnumber = $getlastnumber;
-            // } else{
-            //     $lastnumber = $getnumber->no+1;
-            // }
-
-            // if($lastnumber < 10){
-            //    $akhirnomor = '000' . $lastnumber;
-            // }elseif($lastnumber > 9 && $lastnumber < 100){
-            //    $akhirnomor = '00' . $lastnumber;
-            // }elseif($lastnumber >= 100){
-            //    $akhirnomor = '0' . $lastnumber;
-            // }
-
-            // $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
-
-            // $tambah = new Quote();
-            // $tambah->id_quote = $getnumbers->id_quote+1;
-            // $tambah->quote_number = $no;
-            // $tambah->position = $posti;
-            // $tambah->type_of_letter = $type;
-            // $tambah->month = $bln;
-            // $tambah->date = $edate;
-            // // $tambah->to = $request['to'];
-            // $tambah->id_customer = $request['customer_quote'];
-            // $tambah->attention = $request['attention'];
-            // $tambah->title = $request['title'];
-            // $tambah->project = $request['project'];
-            // $tambah->description = $request['description'];
-            // $tambah->nik = Auth::User()->nik;
-            // $tambah->division = $request['division'];
-            // $tambah->project_id = $request['project_id'];
-            // $tambah->project_type = $request['project_type'];
-            // $tambah->status_backdate = 'A';
-            // $tambah->save();
-
             $getlastnumber = 1;
             $lastnumber = $getlastnumber;
 
@@ -614,6 +444,38 @@ class QuoteController extends Controller
         }
 
         return redirect('quote')->with('success', 'Create Quote Number Successfully!');
+    }
+
+    public function addBackdateNum(Request $request)
+    {
+        $lastnumber = Quote::whereYear('created_at',substr($request->date_backdate, 6,4))->where('status_backdate', 'F')->orderBy('id_quote', 'desc')->first()->quote_number;
+
+        $getquote =  explode("/",$lastnumber)[0];
+
+        $getnumber = $getquote + 10;
+
+        if($getnumber < 10){
+           $akhirnomor  = '000' . $getnumber;
+        }elseif($getnumber > 9 && $getnumber < 100){
+           $akhirnomor = '00' . $getnumber;
+        }elseif($getnumber >= 100){
+           $akhirnomor = '0' . $getnumber;
+        }     
+
+        $edate = strtotime($_POST['date_backdate']); 
+        $edate = date("Y-m-d",$edate);
+
+        $tambah = new Quote();
+        $tambah->quote_number = $akhirnomor;
+        $tambah->status_backdate = 'T';
+        $tambah->position = 'DIR';
+        $tambah->type_of_letter = 'QO';
+        $tambah->month = 'II';
+        $tambah->date = $edate;
+        $tambah->created_at = $edate . '00:00:00';
+        $tambah->nik = Auth::User()->nik;
+        $tambah->id_customer = '2';
+        $tambah->save();
     }
 
     public function store_backdate(Request $request)
@@ -669,7 +531,7 @@ class QuoteController extends Controller
 
         // $update = Quote::where('id_quote',$akhirnomor)->first();
         $update = Quote::where('id_quote',$request['backdate_num'])->first();
-        $no =         $update->quote_number .'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
+        $no = $update->quote_number .'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_quote;
         $update->quote_number = $no;
         $update->position = $posti;
         $update->type_of_letter = $type;
@@ -694,11 +556,40 @@ class QuoteController extends Controller
 	public function update(Request $request)
 	{
         $quote_number = $request['quote_number'];
+        $posti = $request['edit_position'];
+
+        $edate = strtotime($_POST['edit_date']); 
+        $edate = date("Y-m-d",$edate);
+
+        $month_quote = substr($edate,5,2);
+        $year_quote = substr($edate,0,4);
+
+        $array_bln = array('01' => "I",
+                    '02' => "II",
+                    '03' => "III",
+                    '04' => "IV",
+                    '05' => "V",
+                    '06' => "VI",
+                    '07' => "VII",
+                    '08' => "VIII",
+                    '09' => "IX",
+                    '10' => "X",
+                    '11' => "XI",
+                    '12' => "XII");
+        $bln = $array_bln[$month_quote];
+
+        $getno = Quote::where('quote_number', $quote_number)->first()->quote_number;
+        $getnumberQuote =  explode("/",$getno)[0];
+
+        // return $getnumberQuote;
+
+        $no_update = $getnumberQuote.'/'.$posti .'/QO/' . $bln .'/'. $year_quote;
 
         $update = Quote::where('quote_number', $quote_number)->first();
-        $update->quote_number = $request['quote_number'];
-        
-        // $update->to = $request['edit_to'];
+        $update->quote_number = $no_update;
+        $update->position = $posti;
+        $update->month = $bln;
+        $update->date = $edate;
         $update->id_customer = $request['edit_to'];
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
