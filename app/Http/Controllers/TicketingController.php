@@ -22,6 +22,8 @@ use App\TicketingEmail;
 use Auth;
 use Mail;
 use Blade;
+use App\Mail\EmailRemainderWeekly;
+use App\Mail\EmailReOpenTicket;
 
 use Carbon\Carbon;
 use Validator;
@@ -34,6 +36,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+
+use App\RequestChange;
 
 class TicketingController extends Controller
 {
@@ -969,6 +973,36 @@ class TicketingController extends Controller
 	public function sendEmailEscalate(Request $req){
 		$mail = $this->sendEmail($req->to,$req->cc,$req->subject,$req->body);
 		$this->saveEscalate($req);
+	}
+
+	public function reOpenTicket(Request $req){
+		$req->idTicket = $req->id_ticket;
+		$ticket = $this->getPerformanceByTicket($req);
+
+		$requestChange = new RequestChange();
+		$requestChange->type = "Re-Open Ticket";
+		$requestChange->requester = Auth::user()->name;
+		$requestChange->object_id = $req->id_ticket;
+		$requestChange->status = "On-Progress";
+		$requestChange->save();
+
+		// return $requestChange;
+
+		$mail = new EmailReOpenTicket(collect([
+                    "to" => "Brillyan Aditya Saputra",
+                    "id_ticket" => $req->id_ticket,
+                    "reopen_reason" => $req->reason,
+                    "requestor" => Auth::user()->name,
+                    "customer" => TicketingClient::find($ticket->id_detail->id_client)->client_name,
+					"problem" => $ticket->problem,
+					"last_update" => $ticket->lastest_activity_ticket->date . " [" . $ticket->lastest_activity_ticket->operator . "] - " . $ticket->lastest_activity_ticket->activity,
+					"url" =>  url("/requestChange?id_requestChange=" . $requestChange->id)
+                ])
+            );
+		
+		Mail::to("brillyan@sinergy.co.id")->send($mail);
+
+		return $mail;
 	}
 
 	public function getSettingClient(Request $req){
