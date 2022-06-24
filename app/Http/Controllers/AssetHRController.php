@@ -12,14 +12,19 @@ use App\DetailAssetHR;
 use App\User;
 use App\Mail\RequestAssetHr;
 use Mail;
-use Excel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use Carbon\Carbon;
 
 class AssetHRController extends Controller
 {
     public function index()
     {
-        //testestes
-
     	$nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
         $ter = $territory->id_territory;
@@ -267,9 +272,10 @@ class AssetHRController extends Controller
                ->get();
         }else{
             $current_request = DB::table('tb_asset_hr_request')
+                           ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
-                           ->where('nik',Auth::User()->nik)
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name')
+                           ->where('tb_asset_hr_request.nik',Auth::User()->nik)
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
@@ -378,22 +384,21 @@ class AssetHRController extends Controller
     }
 
     public function getCategoryPinjam(Request $request){
-
         return array("results" => DB::table('tb_kategori_asset_hr')->Leftjoin(DB::raw("(
-                        SELECT
-                            `kategori`,`status`
-                        FROM
-                            `tb_asset_hr`
-                        WHERE
-                            `tb_asset_hr`.`status` = 'AVAILABLE'
-                        GROUP BY
-                            `kategori`
-                        ) as tb_asset_hr"),function($join){
-                            $join->on("tb_kategori_asset_hr.id","=","tb_asset_hr.kategori");
-                        })
-                    ->select(DB::raw("`tb_kategori_asset_hr`.`id` AS `no`,`tb_kategori_asset_hr`.`code_kat` AS `id`,`tb_kategori_asset_hr`.`kategori` AS `text`"))
-                    ->where('tb_asset_hr.status','AVAILABLE')
-                    ->get());
+            SELECT
+                `kategori`,`status`
+            FROM
+                `tb_asset_hr`
+            WHERE
+                `tb_asset_hr`.`status` = 'AVAILABLE'
+            GROUP BY
+                `kategori`
+            ) as tb_asset_hr"),function($join){
+                $join->on("tb_kategori_asset_hr.id","=","tb_asset_hr.kategori");
+            })
+        ->select(DB::raw("`tb_kategori_asset_hr`.`id` AS `no`,`tb_kategori_asset_hr`.`code_kat` AS `id`,`tb_kategori_asset_hr`.`kategori` AS `text`"))
+        ->where('tb_asset_hr.status','AVAILABLE')
+        ->get());
     }
 
     public function getdetail(Request $request)
@@ -484,9 +489,17 @@ class AssetHRController extends Controller
 
         $req_asset = collect(['insertdata'=>$insertData,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
-        $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+        $to = User::select('email')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->where('id_division','HR')
+                ->where('id_position','HR MANAGER')
+                ->where('role_id',11)->get();
 
-        $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+        $users = User::select('name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->where('id_division','HR')
+                ->where('id_position','HR MANAGER')
+                ->where('role_id',11)->first();
 
         Mail::to($to)->send(new RequestAssetHr('new',$users,$req_asset,'[SIMS-APP] Request New Asset'));     
 
@@ -519,9 +532,18 @@ class AssetHRController extends Controller
     	}
         
 
-        $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
 
-        $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+        $to = User::select('email')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->where('id_division','HR')
+                ->where('id_position','HR MANAGER')
+                ->where('role_id',11)->get();
+
+        $users = User::select('name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->where('id_division','HR')
+                ->where('id_position','HR MANAGER')
+                ->where('role_id',11)->first();
 
         Mail::to($to)->send(new RequestAssetHr($sendFor,$users,$req_asset,'[SIMS-APP] Request Asset dibatalkan'));  
     }
@@ -545,9 +567,17 @@ class AssetHRController extends Controller
 
         $req_asset = collect(['asset'=>$asset,'notes'=>$request->notes]);
 
-        $to = User::select('email')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->get();
+        $to = User::select('email')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->where('id_division','HR')
+                ->where('id_position','HR MANAGER')
+                ->where('role_id',11)->get();
 
-        $users = User::select('name')->where('id_division','WAREHOUSE')->where('id_position','WAREHOUSE')->first();
+        $users = User::select('name')
+                ->join('role_user','role_user.user_id','=','users.nik')
+                ->where('id_division','HR')
+                ->where('id_position','HR MANAGER')
+                ->where('role_id',11)->first();
 
         Mail::to($to)->send(new RequestAssetHr($sendFor,$users,$req_asset,'[SIMS-APP] Request New Asset (Update)'));  
     }
@@ -1164,140 +1194,77 @@ class AssetHRController extends Controller
 
     public function export(Request $request)
     {
-        $nama = 'List Asset '.date('Y-m-d');
-        Excel::create($nama, function ($excel) use ($request) {
-            // $excel->sheet('List Asset', function ($sheet) use ($request) {
-            
-            //     $sheet->mergeCells('A1:F1');
+        $spreadsheet = new Spreadsheet();
 
-            //    // $sheet->setAllBorders('thin');
-            //     $sheet->row(1, function ($row) {
-            //         $row->setFontFamily('Calibri');
-            //         $row->setFontSize(12);
-            //         $row->setAlignment('center');
-            //         $row->setFontWeight('bold');
-            //     });
+        $prSheet = new Worksheet($spreadsheet,'LAPORAN PENGGUNAAN ASET GA');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
 
-            //     $sheet->row(1, array('LIST ASSET'));
+        $sheet->mergeCells('A1:I1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
 
-            //     $sheet->row(2, function ($row) {
-            //         $row->setFontFamily('Calibri');
-            //         $row->setFontSize(12);
-            //         $row->setFontWeight('bold');
-            //     });
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID];
+        $titleStyle['font']['bold'] = true;
 
-            //     $asset = AssetHR::select('nama_barang', 'id_barang', 'description','code_name')
-            //         ->where('tb_asset_hr.availability',1)
-            //         ->get();
-                
+        $dateReport = Carbon::parse($request->month . $request->year);
+        $sheet->getStyle('A1:I1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','LAPORAN PENGGUNAAN ASET KANTOR');
+        $sheet->setCellValue('B2','Bulan ' . $dateReport->format("F"));
+        $sheet->setCellValue('B3','Tahun ' . $request->year);
+        $sheet->setCellValue('B4','Report Pada ' . date('Y-m-d'));
 
-            //    // $sheet->appendRow(array_keys($datas[0]));
-            //     $sheet->row($sheet->getHighestRow(), function ($row) {
-            //         $row->setFontWeight('bold');
-            //     });
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER];
+        $sheet->getStyle('A6:I7')->applyFromArray($headerStyle);
 
-            //     $datasheet = array();
-            //     $datasheet[0]  =   array("No","Kode Asset","Nama Barang", "Quantity", "Deskripsi", "Status");
-            //      $i=1;
+        $headerContent = ["No","Kode Asset", "Nama Barang", "Deskripsi", "Latest Peminjam", "Note" , "Status", "Serial Number","Lokasi"];
+        $sheet->fromArray($headerContent,NULL,'A7');
 
-            //     foreach ($asset as $data) {
-            //         if ($data->qty == 0) {
-            //           $datasheet[$i] = array(
-            //             $i,
-            //             $data['code_name'],
-            //             $data['nama_barang'],
-            //             $data['description'],
-            //             'UnAvailable'
-                        
-            //             );
-                      
-            //           $i++;
-            //         }else{
-            //         $datasheet[$i] = array(
-            //             $i,
-            //             $data['code_name'],
-            //             $data['nama_barang'],
-            //             $data['description'],
-            //             'Available'
-                        
-            //         );
-                  
-            //         $i++;
-            //         }
-                    
-            //     }
+        $datas = AssetHR::Leftjoin(DB::raw("(
+            SELECT
+                `id_barang` AS `id_barang`, substring_index(group_concat(`name` ORDER BY `id_transaction` DESC SEPARATOR ','), ',', 1) AS `name`
+            FROM
+                `tb_asset_hr_transaction`
+            LEFT JOIN `users` ON `users`.`nik` = `tb_asset_hr_transaction`.`nik_peminjam`
+            GROUP BY
+                `id_barang`
+            ) as tb_asset_hr_transaction"),function($join){
+            $join->on("tb_asset_hr.id_barang","=","tb_asset_hr_transaction.id_barang");
+        })
+        ->select('code_name','nama_barang','description', 'name', 'note','status', 'serial_number','lokasi','lokasi')
+        ->where('availability',1)
+        ->get();
 
-            //     $sheet->fromArray($datasheet);
-            // });
+        foreach ($datas as $key => $data) {
+            $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 8));
+        }
 
-            $excel->sheet('List  Asset', function ($sheet) use ($request) {
-            
-                $sheet->mergeCells('A1:H1');
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
 
-               // $sheet->setAllBorders('thin');
-                $sheet->row(1, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(12);
-                    $row->setAlignment('center');
-                    $row->setFontWeight('bold');
-                });
 
-                $sheet->row(1, array('LIST ASSET'));
-
-                $sheet->row(2, function ($row) {
-                    $row->setFontFamily('Calibri');
-                    $row->setFontSize(12);
-                    $row->setFontWeight('bold');
-                });
-
-                // $datas    = DetailAssetHR::join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                //             ->where('tb_asset_hr.availability',1)
-                //             ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang', 'left')
-                //             ->select('tb_asset_hr_transaction.id_transaction','tb_asset_hr_transaction.id_barang','tb_asset_hr.nama_barang','tb_asset_hr.description','users.name','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr.status', 'tb_asset_hr_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'no_transac', 'code_name')
-                //             ->get();
-
-                $datas = AssetHR::Leftjoin(DB::raw("(
-                        SELECT
-                            `id_barang` AS `id_barang`, substring_index(group_concat(`name` ORDER BY `id_transaction` DESC SEPARATOR ','), ',', 1) AS `name`
-                        FROM
-                            `tb_asset_hr_transaction`
-                        LEFT JOIN `users` ON `users`.`nik` = `tb_asset_hr_transaction`.`nik_peminjam`
-                        GROUP BY
-                            `id_barang`
-                        ) as tb_asset_hr_transaction"),function($join){
-                        $join->on("tb_asset_hr.id_barang","=","tb_asset_hr_transaction.id_barang");
-                    })
-                    ->select('nama_barang', 'tb_asset_hr.id_barang','status','description','code_name', 'serial_number','name','lokasi','note','lokasi')
-                    ->where('availability',1)
-                    ->get();
-                    
-
-               // $sheet->appendRow(array_keys($datas[0]));
-                $sheet->row($sheet->getHighestRow(), function ($row) {
-                    $row->setFontWeight('bold');
-                });
-
-                $datasheet = array();
-                $datasheet[0]  =   array("No","Kode Asset", "Nama Barang", "Deskripsi", "Latest Peminjam", "Note" , "Status","Lokasi");
-                 $i=1;
-
-                foreach ($datas as $data) {
-                    $datasheet[$i] = array($i,
-                                $data['code_name'],
-                                $data['nama_barang'],
-                                $data['description'],
-                                $data['name'],
-                                $data['note'],
-                                $data['status'],
-                                $data['lokasi']
-                            );
-                    $i++;
-                    
-                }
-
-                $sheet->fromArray($datasheet);
-            });
-
-        })->export('xls');
+        $fileName = 'LAPORAN PENGGUNAAN ASET GA ' . date('Y-m-d') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
     }
 }
