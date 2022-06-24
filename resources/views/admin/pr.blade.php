@@ -328,9 +328,36 @@
               @csrf
             <input type="text" placeholder="Enter No PR" name="edit_no_pr" id="edit_no_pr" hidden>
             <div class="form-group">
+              <label for="">Type</label>
+              <select type="text" class="form-control" name="edit_type" id="edit_type" required onchange="selectType(this.value)">
+                <option value="">Select Type of Letter</option>
+                <option value="IPR">IPR (Internal Purchase Request)</option>
+                <option value="EPR">EPR (Eksternal Purchase Request)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="">Position</label>
+              <select type="text" class="form-control" placeholder="Select Position" name="edit_position" id="edit_position" required>
+                <option>PMO</option>
+                <option>PRE</option>
+                <option>MSM</option>
+                <option>SAL</option>
+                <option>FIN</option>
+                <option>HRD</option>
+                <option>WHO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="">Date</label>
+              <input type="date" class="form-control" placeholder="Enter To" name="edit_date" id="edit_date" >
+            </div>
+            <div class="form-group">
               <label for="">To</label>
               <input type="text" class="form-control" placeholder="Enter To" name="edit_to" id="edit_to" >
             </div>
+            
+            
+            
             <div class="form-group">
               <label for="">Attention</label>
               <input type="text" class="form-control" placeholder="Enter Attention" name="edit_attention" id="edit_attention" >
@@ -455,11 +482,14 @@
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
 
-    function edit_pr(no,to,attention,title,description,amount,project_id,status) {
-      console.log(amount)
+    function edit_pr(no,to,attention,title,description,amount,project_id,status,type,date,position) {
+      console.log(type)
       $('#modaledit').modal('show');
       $('#edit_no_pr').val(no);
       $('#edit_to').val(to);
+      $('#edit_type').val(type);
+      $('#edit_date').val(date);
+      $('#edit_position').val(position);
       if (attention == "null") {
         '';
       } else {
@@ -512,7 +542,7 @@
 
           json.data.forEach(function(data,index){
             if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done') {
-              var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '"'
+              var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date+ '","' + data.position + '"'
               data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
             } else {
               data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
