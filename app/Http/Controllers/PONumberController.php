@@ -169,7 +169,7 @@ class PONumberController extends Controller
         $datas = DB::table('tb_po')
                         ->join('users','users.nik','=','tb_po.from')
                         ->join('tb_pr', 'tb_pr.no', '=', 'tb_po.no_pr', 'left')
-                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name', 'tb_pr.no_pr')
+                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name as from_name', 'tb_pr.no_pr')
                         ->where('tb_po.date','like',$tahun."%")
                         ->get();
 
@@ -217,7 +217,7 @@ class PONumberController extends Controller
 
         return array(DB::table('tb_pr')
             ->join('users', 'users.nik', '=', 'tb_pr.from')
-            ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'name', 'issuance', 'project_id', 'division')
+            ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'project', 'description', 'name', 'users.name as issuance_name', 'project_id', 'division')
             ->where('no',$request->data)
             ->get(),$request->data);
         
@@ -229,7 +229,7 @@ class PONumberController extends Controller
 
         return array("data" => PONumber::join('users','users.nik','=','tb_po.from')
                         ->join('tb_pr', 'tb_pr.no', '=', 'tb_po.no_pr', 'left')
-                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name', 'tb_pr.no_pr')
+                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name as from_name', 'tb_pr.no_pr')
                         ->where('tb_po.date','like',$tahun."%")
                         ->get());
     }
@@ -240,7 +240,7 @@ class PONumberController extends Controller
 
         return array("data" => PONumber::join('users','users.nik','=','tb_po.from')
                         ->join('tb_pr', 'tb_pr.no', '=', 'tb_po.no_pr', 'left')
-                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name', 'tb_pr.no_pr')
+                        ->select('tb_po.no','tb_po.no_po', 'tb_po.position', 'tb_po.type_of_letter', 'tb_po.month', 'tb_po.date', 'tb_po.to', 'tb_po.attention', 'tb_po.title', 'tb_po.project', 'tb_po.description', 'tb_po.from', 'tb_po.division', 'tb_po.issuance', 'tb_po.project_id', 'tb_po.note', 'users.name as from_name', 'tb_pr.no_pr')
                         ->whereYear('tb_po.created_at', $request->data)
                         ->get());
     }
