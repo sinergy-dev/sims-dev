@@ -9,6 +9,7 @@ use App\Mail\CutiKaryawan;
 use Mail;
 use App\Cuti;
 use App\CutiDetil;
+use App\User;
 
 class rejectCuti extends Command
 {
@@ -43,7 +44,7 @@ class rejectCuti extends Command
      */
     public function handle()
     {
-        $max_date = DB::table('tb_cuti')
+         $max_date = DB::table('tb_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
                     ->join("tb_cuti_detail",'tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->select(DB::raw('MAX(date_off) as date_off'),'users.nik','tb_cuti.id_cuti','users.email','decline_reason','users.id_territory','users.id_division')
@@ -54,11 +55,16 @@ class rejectCuti extends Command
 
         print_r($max_date);
 
+        syslog(LOG_ERR, "Reject Cuti");
+        syslog(LOG_ERR, "-------------------------");
+
         foreach ($max_date as $data) {
-            $update = Cuti::where('id_cuti',$data->id_cuti)->first();
-            $update->status = 'd';
-            $update->decline_reason = 'Di Reject oleh sistem karena hari cuti telah kadaluwarsa';
-            $update->update();
+            // $update = Cuti::where('id_cuti',$data->id_cuti)->first();
+            // $update->status = 'd';
+            // $update->decline_reason = 'Di Reject oleh sistem karena hari cuti telah kadaluwarsa';
+            // $update->update();
+
+            syslog(LOG_ERR, "max date". $data->date_off);
 
             $nik = $data->nik;
             $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -82,7 +88,9 @@ class rejectCuti extends Command
                 }else if ($ter == 'DPG') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
                 }else if ($div == 'WAREHOUSE'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','brillyan@sinergy.co.id')->where('id_company','1')->first();
+                    $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+                }else if ($div == 'BCD'){
+                    $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_territory', 'BCD')->where('id_company','1')->first();
                 }else{
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',$data->id_territory)->where('id_position','MANAGER')->where('id_division',$data->id_division)->where('id_company','1')->first();
                 }
@@ -97,7 +105,7 @@ class rejectCuti extends Command
             }else{
                 if ($div == 'HR') {
                     if($pos == 'HR MANAGER'){
-                        $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
+                        $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first()->email;
                     }else{
                         $kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_division',$data->id_division)->where('id_company','1')->first()->email;
                     }
@@ -134,6 +142,10 @@ class rejectCuti extends Command
             $ardetil_after = "";
 
             Mail::to($data->email)->cc($kirim)->send(new CutiKaryawan($name_cuti,$hari,$ardetil,$ardetil_after,'[SIMS-App] Permohonan Cuti (Rejected by Sistem)'));
+
+            syslog(LOG_ERR, "Reject cuti for". $name_cuti);
+            syslog(LOG_ERR, "cc cuti". $kirim);
+            syslog(LOG_ERR, "hari reject". $hari);
 
         }
     }
