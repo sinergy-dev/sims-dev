@@ -437,12 +437,26 @@ ID Project
           </div>
 
           @if(Auth::User()->id_position == 'MANAGER')
-          <div class="form-group  modalIcon inputIconBg">
+          <!-- <div class="form-group  modalIcon inputIconBg">
             <label for="">Amount</label>
             <input type="text" class="form-control money" placeholder="Enter Amount" name="amount_edit" id="amount_edit" required>
             <i class="" aria-hidden="true" style="margin-bottom: 24px">Rp.</i>
-          </div>
+          </div> -->
+            <div class="form-group">
+              <label for="">Amount</label>
+              <div class="input-group">
+                <div class="input-group-addon" style="background-color:#aaa;color:white">
+                  <b><i>Rp</i></b>
+                </div>
+                <input type="text" class="form-control money" placeholder="Enter Amount" name="amount_edit" id="amount_edit">
+              </div>
+            </div>
           @endif
+
+          <div class="form-group">
+            <label for="">Date</label>
+            <input type="date" name="date_edit" id="inputDateEdit" class="form-control" required>
+          </div>
 
           <div class="form-group">
             <label for="">Note</label>
@@ -1033,23 +1047,28 @@ ID Project
         	  $('#tunggu').modal('hide');
             console.log(result)
             $.each(result[0], function(key, value){
-            $('#id_project_edit').val(value.id_project);
-          $('#name_project_edit').val(value.name_project);
-          $('#note_edit').val(value.note);
-            @if(Auth::User()->id_position == 'STAFF')
-	      	$('#po_customer_edit').val(value.no_po_customer);
-	      @else
-	      	$('#po_customer_edit').val(value.no_po_customer);
-	      	$('#amount_edit').val(value.amount_idr);
-	      @endif
-	      if (value.invoice == 'H') {
-	        $('#invoice_edit_h').prop('checked', true);
-	      }
-	      else if (invoice == 'F') {
-	        $('#invoice_edit_f').prop('checked', true);
-	      }else if (value.invoice == 'N') {
-	        $('#invoice_edit_n').prop('checked', true);
-	      }
+              $('#id_project_edit').val(value.id_project);
+              $('#name_project_edit').val(value.name_project);
+              $('#note_edit').val(value.note);
+              @if(Auth::User()->id_position == 'STAFF')
+      	      	$('#po_customer_edit').val(value.no_po_customer);
+      	      @else
+      	      	$('#po_customer_edit').val(value.no_po_customer);
+      	      	$('#amount_edit').val(value.amount_idr);
+      	      @endif
+      	      if (value.invoice == 'H') {
+      	        $('#invoice_edit_h').prop('checked', true);
+      	      }
+      	      else if (value.invoice == 'F') {
+      	        $('#invoice_edit_f').prop('checked', true);
+      	      }else if (value.invoice == 'N') {
+      	        $('#invoice_edit_n').prop('checked', true);
+      	      }
+              if (value.date == null) {
+                $("#inputDateEdit").val(value.date);
+              }else{
+                $("#inputDateEdit").val(value.date);
+              }
             })
           
           }
