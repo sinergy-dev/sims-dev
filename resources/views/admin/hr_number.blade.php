@@ -130,7 +130,7 @@ HR Number
             </select>
           </div>
           <div class="form-group">
-            <label for="">PT</label>
+            <label for="">Company</label>
             <select type="text" class="form-control" placeholder="Select PT" name="pt" id="pt" required>
                 <option>SIP</option>
                 <option>MSP</option>
@@ -202,7 +202,33 @@ HR Number
         <div class="modal-body">
           <form method="POST" action="{{url('/update_admin_hr')}}" id="modaledit" name="modaledit">
             @csrf
-          <input type="text" placeholder="Enter No PR" name="edit_no_letter" id="edit_no_letter">
+          <input type="text" hidden placeholder="Enter No PR" name="edit_no_letter" id="edit_no_letter">
+          <div class="form-group">
+            <label for="">Type of Letter</label>
+            <select type="text" class="form-control" placeholder="Select Type of Letter" name="edit_type" id="edit_type" required>
+                <option value="PKWT">PKWT</option>
+                <option value="PKWTT">PKWTT</option>
+                <option value="SK">SK</option>
+                <option value="SP">SP</option>
+                <option value="IDS">IDS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="">Company</label>
+            <select type="text" class="form-control" placeholder="Select PT" name="edit_company" id="edit_company" required>
+                <option>SIP</option>
+                <option>MSP</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="">Date</label>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="date" class="form-control pull-right date" name="edit_date" id="edit_date">
+            </div>
+          </div>
           <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="edit_to" id="edit_to" >
@@ -256,9 +282,13 @@ HR Number
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
 
-    function edit_hr_number(no,to,attention,title,project,description,from) {
+    function edit_hr_number(no,to,attention,title,project,description,type,company,date) {
       $('#modaledit').modal('show');
       $('#edit_no_letter').val(no);
+      $('#edit_type').val(type);
+      $('#edit_company').val(company);
+      $('#edit_date').val(date);
+
       if (to == "null") {
         '';
       } else {
@@ -298,7 +328,7 @@ HR Number
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.from) {
-                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '"'
+                var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.type_of_letter+ '","' +data.pt+ '","' +data.date+ '"'
                 data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_hr_number(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
