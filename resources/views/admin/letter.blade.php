@@ -247,6 +247,15 @@ Letter Number
             <label for="">Description</label>
             <textarea class="form-control" id="description" name="description" placeholder="Enter Description"></textarea>
           </div>
+          <div class="form-group" id="pid">
+            <label for="">Project ID</label>                
+            <select type="text" class="form-control select2" name="project_id" id="project_id" style="width: 100%">
+              <option value="">Select project id</option>
+              @foreach($pid as $data)
+              <option value="{{$data->id_project}}">{{$data->id_project}}</option>
+              @endforeach
+            </select>
+          </div>
           <div class="form-group">
             <label for="">Division</label>
             <select type="text" class="form-control" placeholder="Select Division" name="division" id="division" required>
@@ -257,10 +266,10 @@ Letter Number
                 <option>TEC</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Project ID</label>
             <input type="text" class="form-control" placeholder="Enter Project ID" name="project_id" id="project_id">
-          </div>
+          </div> -->
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
             <button type="submit" class="btn btn-primary" id="addLetter"><i class="fa fa-check"> </i>&nbspSubmit</button>
@@ -280,31 +289,21 @@ Letter Number
         <div class="modal-body">
           <form method="POST" action="{{url('/store_letterbackdate')}}" id="letter_backdate" name="letter_backdate">
             @csrf
-          <!-- <div class="form-group">
-            <label>Backdate Number</label>
-            <select type="text" class="form-control" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" required>
-              @foreach($backdate_num as $data)
-              <option value="{{$data->no_letter}}">{{$data->no_letter}}</option>
-              @endforeach
-            </select>
-          </div> -->
-
           <div class="form-group">
             <label for="">Date</label>
             <div class="input-group date">
               <div class="input-group-addon">
                 <i class="fa fa-calendar"></i>
               </div>
-              <input type="text" class="form-control pull-right date" name="date" id="date_backdate" readonly>
+              <input type="text" class="form-control pull-right date" name="date" id="date_backdate" autocomplete="off">
             </div>
           </div>
           <div class="form-group">
             <label>Backdate Number</label>
             <select type="text" class="form-control" placeholder="Select Backdate Number" style="width: 100%" name="backdate_num" id="backdate_num" disabled>
-              <!-- @foreach($backdate_num as $data)
-              <option value="{{$data->no_letter}}">{{$data->no_letter}}</option>
-              @endforeach -->
             </select>
+            <span id="errorname" style="color:red"></span>
+            <span class="pull-right" style="display:none;cursor: pointer;" id="addBackdateNum"><i class="fa fa-plus"></i> backdate number</span>
           </div>
           <div class="form-group">
             <label for="">Position</label>
@@ -329,10 +328,6 @@ Letter Number
                 <option value="AMD">AMD (Amandemen Perjanjian Kerja Sama)</option>
             </select>
           </div>
-          <!-- <div class="form-group">
-            <label for="">Date</label>
-            <input type="date" class="form-control" name="date" id="date" required>
-          </div> -->
           <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="to" id="to" required>
@@ -353,10 +348,15 @@ Letter Number
             <label for="">Description</label>
             <textarea class="form-control" id="description" name="description" placeholder="Enter Description"></textarea>
           </div>
-          <!-- <div class="form-group">
-            <label for="">From</label>
-            <input type="text" class="form-control" id="from" name="from" placeholder="Enter From" required>
-          </div> -->
+          <div class="form-group" id="pid">
+            <label for="">Project ID</label>                
+            <select type="text" class="form-control select2" name="project_id_backdate" id="project_id_backdate" style="width: 100%">
+              <option value="">Select project id</option>
+              @foreach($pid as $data)
+              <option value="{{$data->id_project}}">{{$data->id_project}}</option>
+              @endforeach
+            </select>
+          </div>
           <div class="form-group">
             <label for="">Division</label>
             <select type="text" class="form-control" placeholder="Select Division" name="division" id="division" required>
@@ -367,10 +367,10 @@ Letter Number
                 <option>TEC</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="">Project ID</label>
             <input type="text" class="form-control" placeholder="Enter Project ID" name="project_id" id="project_id">
-          </div>
+          </div> -->
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
             <button type="submit" class="btn btn-primary" id="addBackdate"><i class="fa fa-check"> </i>&nbspSubmit</button>
@@ -392,6 +392,33 @@ Letter Number
           <form method="POST" action="{{url('/update_letter')}}" id="modaledit" name="modaledit">
             @csrf
           <input type="text" placeholder="Enter No Letter" name="edit_no_letter" id="edit_no_letter" hidden>
+          <div class="form-group">
+            <label for="">Position</label>
+            <select type="text" class="form-control" placeholder="Select Position" name="edit_position" id="edit_position" required>
+                <option value="PMO">PMO</option>
+                <option value="TEC">TEC</option>
+                <option value="MSM">MSM</option>
+                <option value="DIR">DIR</option>
+                <option value="TAM">TAM</option>
+                <option value="HRD">HRD</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="">Type of Letter</label>
+            <select type="text" class="form-control" placeholder="Select Type of Letter" name="edit_type" id="edit_type" required>
+                <option value="LTR">LTR (Surat Umum)</option>
+                <option value="PKS">PKS (Perjanjian Kerja Sama)</option>
+                <option value="BST">BST (Berita Acara Serah Terima)</option>
+                <option value="ADM">ADM (Surat Administrasi & Backdate)</option>
+                <option value="SGB">SBG (Surat Garansi Bank)</option>
+                <option value="ADD">ADD (Addendum Perjanjian Kerja Sama)</option>
+                <option value="AMD">AMD (Amandemen Perjanjian Kerja Sama)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="">Date</label>
+            <input type="date" class="form-control" placeholder="Enter Title" name="edit_date" id="edit_date">
+          </div>
           <div class="form-group">
             <label for="">To</label>
             <input type="text" class="form-control" placeholder="Enter To" name="edit_to" id="edit_to">
@@ -457,14 +484,14 @@ Letter Number
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
 
 @section('script')
   <script type="text/javascript">
-  	$(document).ready(function(){
-        $("#addBackdate").prop("disabled",true)  
-  	})
-
+    $(document).ready(function(){
+      $('#addBackdate').prop("disabled",true)
+    })
     $('#date_letter').datepicker({
       autoclose: true,
     }).attr('readonly','readonly').css('background-color','#fff');
@@ -474,45 +501,151 @@ Letter Number
       setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
     });
 
-    $('#addBackdate').click(function(){
-      $('#tunggu').modal('show')
-      $('#letter_backdate').modal('hide')
-      setTimeout(function() {$('#tunggu').modal('hide');}, 2000);
-    });
+    // $('#addBackdate').click(function(){
+    //   $('#tunggu').modal('show')
+    //   $('#letter_backdate').modal('hide')
+    //   setTimeout(function() {$('#tunggu').modal('hide');}, 5000);
+    // });
 
     $('#date_backdate').datepicker({
       autoclose: true,
     }).on('hide', function(e) {
         console.log($("#date_backdate").val());
         // $("#backdate_num").val("").trigger('change')
-        $('#backdate_num').empty().trigger("change");
-        $.ajax({
-            type:"GET",
-            url:"get_backdate_letter",
-            data:{
-              tanggal:$('#date_backdate').val(),
-            },
-            success:function(result){
-              console.log(result.results.length)
-              if (result.results.length == 0) {
-                $('#submitBd').prop("disabled",true)  
-                $("#backdate_num").prop("disabled",true)    
-                $("#addBackdate").prop("disabled",true)        
-              }else{
-                $('#submitBd').prop("disabled",false)
-                $("#backdate_num").prop("disabled",false)            
-                $("#backdate_num").select2({
-                  data: result.results
-                })         
-                $("#addBackdate").prop("disabled",false)       
-              }          
-            }
-          })
+        // $('#backdate_num').empty().trigger("change");
+        // $.ajax({
+        //     type:"GET",
+        //     url:"get_backdate_letter",
+        //     data:{
+        //       tanggal:$('#date_backdate').val(),
+        //     },
+        //     success:function(result){
+        //       console.log(result.results.length)
+        //       if (result.results.length == 0) {
+        //         $('#submitBd').prop("disabled",true)  
+        //         $("#backdate_num").prop("disabled",true)    
+        //         $("#addBackdate").prop("disabled",true)        
+        //       }else{
+        //         $('#submitBd').prop("disabled",false)
+        //         $("#backdate_num").prop("disabled",false)            
+        //         $("#backdate_num").select2({
+        //           data: result.results
+        //         })         
+        //         $("#addBackdate").prop("disabled",false)       
+        //       }          
+        //     }
+        //   })
     });
 
-    function edit_letter(no_letter,to,attention,title,project,description,project_id,note) {
+    $('#project_id').select2({
+      dropdownParent:$("#modal_pr")
+    })
+
+    $('#project_id_backdate').select2({
+      dropdownParent:$("#letter_backdate")
+    })
+
+    function backdateReload(){
+      $.ajax({
+        url: "/get_backdate_letter",
+        type: "GET",
+        data:{
+          tanggal:$('#date_backdate').val()
+        },
+        success: function(result) {
+          $("#backdate_num").prop("disabled",false);
+          $("#errorname").css("display","none")
+          $("#addBackdateNum").css("display","none")
+          $("#addBackdate").prop("disabled",false)
+          $("#backdate_num").select2({
+            data:result.results
+          })
+        }
+      })       
+    }
+
+    $('#date_backdate').change(function (argument) {
+      errorMessage = document.getElementById('errorname');
+      $.ajax({
+          url: "/get_backdate_letter",
+          type: "GET",
+          data:{
+            tanggal:$('#date_backdate').val()
+          },
+          success: function(result) {
+            console.log(result)
+            if (result.results.length === 0) { 
+              $('#addBackdate').prop("disabled",true)              
+              $('#backdate_num').empty().trigger("change");
+              $("#backdate_num").prop("disabled",true); 
+              errorMessage.innerText = 'Backdate Number is Not Available';
+              $("#addBackdateNum").css("display","block")
+              $("#addBackdateNum").click(function(){
+                Swal.fire({
+                    title: 'Create a backdate number',  
+                    text: "By pressing `OK`, the system will creating the backdate number",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'No',
+                }).then((result) => {
+                  if (result.value) {
+                      Swal.fire({
+                          title: 'Please Wait..!',
+                          text: "It's sending..",
+                          allowOutsideClick: false,
+                          allowEscapeKey: false,
+                          allowEnterKey: false,
+                          customClass: {
+                              popup: 'border-radius-0',
+                          },
+                          onOpen: () => {
+                              Swal.showLoading()
+                          }
+                      })
+                      $.ajax({
+                          type: "POST",
+                          url: "{{url('/addBackdateNumLetter')}}",
+                          data: {
+                            _token: "{{ csrf_token() }}",
+                            date_backdate:$("#date_backdate").val()
+                          },
+                          success: function(result) {
+                              Swal.showLoading()
+                              Swal.fire(
+                                  'Successfully!',
+                                  'Backdate Number have been Created.',
+                                  'success'
+                              ).then((result) => {
+                                  if (result.value) {
+                                    backdateReload()
+                                  }
+                              })
+                          }
+                      })          
+                  }
+                })
+              })
+            } else {
+              console.log("ada results")
+              $('#addBackdate').prop("disabled",false)
+              $("#backdate_num").prop("disabled",false);
+              $("#backdate_num").select2({
+                data:result.results
+              })             
+            }
+          }
+      })
+    })
+
+    function edit_letter(no_letter,to,attention,title,project,description,project_id,note,type,date,position) {
       $('#modaledit').modal('show');
       $('#edit_no_letter').val(no_letter);
+      $('#edit_type').val(type);
+      $('#edit_date').val(date);
+      $('#edit_position').val(position);
       // $('#edit_to').val(to);
       if (to == "null") {
         '';
@@ -565,7 +698,7 @@ Letter Number
 
             json.data.forEach(function(data,index){
               if("{{Auth::User()->nik}}" == data.nik) {
-                var x = '"' + data.no_letter + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '"'
+                var x = '"' + data.no_letter + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.project+ '","' +data.description+ '","' +data.project_id+ '","' +data.note+ '","' +data.type_of_letter+ '","' +data.date+ '","' +data.position+ '"'
                 data.btn_edit = "<button class='btn btn-sm btn-primary' onclick='edit_letter(" + x + ")'>&nbsp Edit</button>";
               } else {
                 data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button>";
