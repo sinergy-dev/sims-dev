@@ -197,7 +197,7 @@ class PrController extends Controller
 
         $year_before = PR::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        $pid = SalesProject::select('id_project')->get();
+        $pid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project')->where('id_company', '1')->get();
 
         $user = User::select('name', 'nik')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->orderBy('name','asc')->get();
 
@@ -581,7 +581,42 @@ class PrController extends Controller
     {
         $no = $request['edit_no_pr'];
 
+        $type = $request['edit_type'];
+        $posti = $request['edit_position'];
+
+        $edate = strtotime($_POST['edit_date']); 
+        $edate = date("Y-m-d",$edate);
+
+        $month_pr = substr($edate,5,2);
+        $year_pr = substr($edate,0,4);
+
+        $array_bln = array('01' => "I",
+                    '02' => "II",
+                    '03' => "III",
+                    '04' => "IV",
+                    '05' => "V",
+                    '06' => "VI",
+                    '07' => "VII",
+                    '08' => "VIII",
+                    '09' => "IX",
+                    '10' => "X",
+                    '11' => "XI",
+                    '12' => "XII");
+        $bln = $array_bln[$month_pr];
+
+        $getno = PR::where('no', $no)->first()->no_pr;
+        $getnumberPr =  explode("/",$getno)[0];
+
+        // return $getnumberPr;
+
+        $no_update = $getnumberPr.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+
         $update = PR::where('no',$no)->first();
+        $update->no_pr = $no_update;
+        $update->position = $posti;
+        $update->type_of_letter = $type;
+        $update->month = $bln;
+        $update->date = $edate;
         $update->to = $request['edit_to'];
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
