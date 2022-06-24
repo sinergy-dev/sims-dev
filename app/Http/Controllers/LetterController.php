@@ -627,13 +627,13 @@ class LetterController extends Controller
 
     public function addBackdateNum(Request $request)
     {
-        $lastnumber = Letter::whereYear('created_at',substr($request->date_backdate, 6,4))->where('status', 'F')->orderBy('created_at', 'desc')->first()->no_letter;
+        $lastnumber = Letter::whereYear('created_at',substr($request->date_backdate, 6,4))->where('status', 'F')->orderBy('no', 'desc')->first()->no_letter;
 
         $getletter =  explode("/",$lastnumber)[0];
 
         $getnumber = $getletter + 10;
 
-        return $lastnumber;
+        // return $lastnumber;
 
         if($getnumber < 10){
            $akhirnomor  = '000' . $getnumber;
