@@ -1187,6 +1187,7 @@ Ticketing
 				<div class="modal-footer">
 					<button type="button" class="btn btn-flat btn-default pull-left" onclick="exitTicket()">Exit</button>
 					<button type="button" class="btn btn-flat btn-danger pull-left" id="escalateButton">Escalate</button>
+					<button type="button" class="btn btn-flat btn-info pull-left" id="reOpenButton" disabled>Re-Open Ticket</button>
 					<button type="button" class="btn btn-flat btn-success" id="closeButton">Close</button>
 					<button type="button" class="btn btn-flat btn-warning" id="pendingButton">Pending</button>
 					<button type="button" class="btn btn-flat bg-purple" id="cancelButton" >Cancel</button>
@@ -2866,6 +2867,7 @@ Ticketing
 			$("#createTicket").attr("onclick",onclick);
 			
 			getBankAtm(clientBanking);
+			console.log(clientBanking)
 		}
 	}
 
@@ -4174,6 +4176,8 @@ Ticketing
 					$("#closeButton").prop('disabled',true);
 					$("#updateButton").prop('disabled',true);
 					$("#cancelButton").prop('disabled',true);
+					$("#reOpenButton").prop('disabled',false);
+					$("#reOpenButton").attr("onclick","reOpenTicket('" + result.id_ticket + "','CLOSE')");
 					
 					$("#ticketNoteUpdate").hide();
 					$("#ticketCouter").show();
@@ -4187,6 +4191,7 @@ Ticketing
 					$("#closeButton").prop('disabled',false);
 					$("#cancelButton").prop('disabled',false);
 					$("#pendingButton").prop('disabled',false);
+
 					$('#datePending').datepicker({
 						autoclose: true,
 						startDate: moment().format("MM/DD/YYYY")
@@ -4209,11 +4214,67 @@ Ticketing
 					$("#closeButton").prop('disabled',true);
 					$("#updateButton").prop('disabled',true);
 					$("#cancelButton").prop('disabled',true);
+					$("#reOpenButton").prop('disabled',false);
+					$("#reOpenButton").attr("onclick","reOpenTicket('" + result.id_ticket + "','CANCEL')");
 				}
 
 				$('#modal-ticket').modal('toggle');
 			}
 		});
+	}
+
+	function reOpenTicket(id_ticket,status){
+		$('#modal-ticket').modal('toggle');
+		var reason = ""
+		swalWithCustomClass.fire({
+			title: "Are you sure to re-open this ticket from " + status + "?",
+			html: "By re-opening this ticket, an email will be sent to your supervisor as permission for this activity.<br>Then you must write down your reasons why the ticket in must be reopened below.",
+			input: 'text',
+			icon: 'warning',
+			showCancelButton: true,
+			preConfirm: (login) => {
+				reason = login
+			},
+		}).then((result) => {
+			if(result.value){
+				// console.log(reason)
+				Swal.fire({
+					title: 'Please Wait..!',
+					text: "It's sending",
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					customClass: {
+						popup: 'border-radius-0',
+					},
+					onOpen: () => {
+						Swal.showLoading()
+					}
+				})
+
+				$.ajax({
+					type:"GET",
+					url:"{{url('/ticketing/reOpenTicket')}}",
+					data:{
+						id_ticket:id_ticket,
+						reason:reason
+					},
+					success: function(resultAjax){
+						Swal.hideLoading()
+						swalWithCustomClass.fire({
+							title: 'Request for a re-open ticket has been sent!',
+							text: "Please wait for a reply and response from your manager.",
+							icon: 'success',
+							confirmButtonText: 'Reload',
+						}).then((result) => {
+							// $("#modal-setting-atm").modal('toggle');
+							// $("#tableAtm").DataTable().ajax.url("/ticketing/setting/getAllAtm").load();
+						})
+					}
+				});
+			}
+		})
+		console.log('reOpenTicket' + id_ticket)
 	}
 
 	function updateTicket(id){
