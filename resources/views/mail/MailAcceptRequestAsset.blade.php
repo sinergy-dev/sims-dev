@@ -269,6 +269,11 @@
 				<th> : </th>
 				<td><label style="padding: 5px;background-color:#d73925;color: white">{{$req_asset->status}}</label></td>
 			</tr>
+			<tr>
+				<th>Reason</th>
+				<th> : </th>
+				<td>{{$req_asset->reason}}</td>
+			</tr>
 		</table>
 		<table style="text-align: left;margin: 5px;" class="tableBarang">
 			<tr style="border: solid 1px">
