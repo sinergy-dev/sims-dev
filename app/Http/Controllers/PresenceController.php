@@ -347,10 +347,11 @@ class PresenceController extends Controller
         $getUserSip = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik`  AS `nik`,`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
         $getUserMsp = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','2')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
         $getUserSipMsm = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'MSM')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
-        $getUserSipSim = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_territory', 'DVG')->orwhere('id_division', 'WAREHOUSE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipSim = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_territory', 'DVG')->orwhere('id_division', 'PROCUREMENT')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
         $getUserSipFin = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'FINANCE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
-        $getUserSipHr = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'HR')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserSipHr = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'HR')->orWhere('id_division', 'WAREHOUSE')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
         $getUserSipPmo = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('id_division', 'PMO')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
+        $getUserShifting = User::join('presence__history', 'presence__history.nik', '=', 'users.nik')->join('presence__shifting_user', 'presence__shifting_user.nik', '=', 'users.nik')->selectRaw('`users`.`nik` AS `nik`,`name` AS `text`')->where('id_company','1')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->groupBy('users.nik')->get();
 
         return array(
             collect(["text"=>'SIP',"children"=>$getUserSip]),
@@ -359,7 +360,8 @@ class PresenceController extends Controller
             collect(["text"=>'FIN',"children"=>$getUserSipFin]),
             collect(["text"=>'HR',"children"=>$getUserSipHr]),
             collect(["text"=>'PMO',"children"=>$getUserSipPmo]),
-            collect(["text"=>'MSP',"children"=>$getUserMsp])
+            collect(["text"=>'MSP',"children"=>$getUserMsp]),
+            collect(["text"=>'Shifting', "children"=>$getUserShifting])
         );
     }
 
@@ -1112,13 +1114,13 @@ class PresenceController extends Controller
             $presenceHistoryAll = $presenceHistoryAll->merge($presenceHistory->get());
 
             if(in_array($value, $shiftingUserList)){
-                $workDays = PresenceShifting::where('nik','=',$value)
+                $workDaysShifting = PresenceShifting::where('nik','=',$value)
                     ->where('className','<>','Libur')
                     ->whereBetween('tanggal_shift',[$startDate . ' 00:00:00',$endDate . ' 23:59:59'])
                     // ->select('tanggal_shift','className');
                     ->pluck('tanggal_shift');
 
-                $presenceHistoryAbsent = $workDays->diff($presenceHistory->get()->pluck('date')->values())->values();
+                $presenceHistoryAbsent = $workDaysShifting->diff($presenceHistory->get()->pluck('date')->values())->values();
             } else {
                 $presenceHistoryAbsent = $workDays->diff($presenceHistory->get()->pluck('date')->values())->values();
             }
@@ -1168,6 +1170,10 @@ class PresenceController extends Controller
                 "holiday" => $this->getWorkDays($startDate,$endDate)["workdays"]
             ]);
         }
+    }
+
+    public function getWorkDaysRoute(Request $req){
+        return $this->getWorkDays($req->start,$req->end);
     }
 
     public function getWorkDays($startDate,$endDate){
@@ -1311,7 +1317,7 @@ class PresenceController extends Controller
         return collect([
             "range" => $startDate . " to " . $endDate,
             "data" => $var,
-        ]);
+        ])->sortBy("data");
     }
 
     public function getDataReportPresence2(Request $req){
