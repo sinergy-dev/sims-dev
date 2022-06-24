@@ -66,7 +66,7 @@ class FollowUpCuti extends Command
             if ($ter != NULL) {
                 if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
                     if ($div == 'PMO') {
-                        $nik_kirim = DB::table('users')->select('users.email')->where('email','firman@sinergy.co.id')->where('id_company','1')->first();
+                        $nik_kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
                     }else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
                         $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
                     }else{
@@ -75,7 +75,7 @@ class FollowUpCuti extends Command
                 }else if ($ter == 'DPG') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
                 }else if ($div == 'WAREHOUSE'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('email','firman@sinergy.co.id')->where('id_company','1')->first();
+                    $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
                 }else{
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',$data->id_territory)->where('id_position','MANAGER')->where('id_division',$data->id_division)->where('id_company','1')->first();
                 }
