@@ -158,6 +158,7 @@ Presence Report
 						var append = ""
 						var no = 1
 						$.each(result.data,function(index,data){
+							console.log(data.name)
 							append = append + "<tr>"
 							append = append + "	<td>" + no++ + "</td>"
 							append = append + "	<td>" + data.name + "</td>"
@@ -294,10 +295,8 @@ Presence Report
 
 			        	// var string = JSON.stringify(selectedUser)
 			        	// string.replace (/"/g,'')
+			        	// table_presence()
 								$("#table_report").empty();
-
-			        	table_presence()
-
 			        }
 			    };
 
@@ -319,12 +318,11 @@ Presence Report
 						'nik' : filterUser,
 					},
 					success: function(result){
-						console.log(filterUser)
 						$(".box-title").text("This period " + result.range)
-						console.log(result.range)
 						var append = ""
 						var no = 1
-						$.each(result.data,function(index,data){
+						$.each(result,function(index,data){
+							console.log(data)
 							append = append + "<tr>"
 							append = append + "	<td>" + no++ + "</td>"
 							append = append + "	<td>" + data.name + "</td>"
