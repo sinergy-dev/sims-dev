@@ -5525,28 +5525,67 @@ class SALESController extends Controller{
     {
         $id_project = $request['id_project_edit'];
 
+        $edate = strtotime($request['date_edit']); 
+        $edate = date("Y-m-d",$edate);
+        $month = date("n",strtotime($request['date_edit']));
+        $year = substr($edate,0,4);
+
+        $array_bln = array(1 => "I" ,"II","III","IV","V","VI","VII","VIII","IX","X","XI","XII");
+        $bln = $array_bln[$month];
+
+        $id = SalesProject::where('id_project',$id_project)->first()->id_project;
+
+        $getnumber =  explode("/",$id)[0];
+        $getcus =  explode("/",$id)[1];
+        $getcom =  explode("/",$id)[2];
+
+        $cek_lead_before = Salesproject::select('lead_id')->where('id_project',$id_project)->first()->lead_id;
+
+        $cek_com = Sales::join('users','users.nik','=','sales_lead_register.nik')
+                    ->select('id_company')
+                    ->where('lead_id',$cek_lead_before)
+                    ->first()->id_company;
+
+        $id_year_before = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')
+                            ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                            ->select('id_project')
+                            ->whereYear('date', $year)->orderBy('tb_id_project.id_pro', 'desc')->where('users.id_company', $cek_com)->first()->id_project;
+
+        $get_number_before = explode("/",$id_year_before)[0] + 1;
+
         $update = SalesProject::where('id_project', $id_project)->first();
+        if ($year == date('Y')) {
+           $update->id_project = $getnumber . '/' . $getcus . '/' . $getcom . '/' . $bln . '/' . $year;
+        } else {
+            if ($cek_com = '1') {
+                $update->id_project = $get_number_before . '/' . $getcus . '/SIP/' . $bln . '/' . $year;
+            } else {
+                $update->id_project = $get_number_before . '/' . $getcus . '/MSP/' . $bln . '/' . $year;
+            }
+        }
         $update->no_po_customer = $request['po_customer_edit'];
         $update->name_project = $request['name_project_edit'];
         if (Auth::User()->id_position == 'MANAGER') {
             $amunt = str_replace(',', '', $request['amount_edit']);
-            $update->amount_idr = $amunt.(int)"00";
+            // $update->amount_idr = $amunt.(int)"00";
+            $update->amount_idr = $amunt;
             $update->amount_usd = $request['kurs_edit'];
         }else{
 
         }
         $update->note = $request['note_edit'];
         $update->invoice = $request['invoice'];
+        $update->date = $edate;
         $update->update();//
 
-        $lead_id = Salesproject::select('lead_id')->where('id_project',$id_project)->first()->lead_id;
+        $lead_id = Salesproject::select('lead_id')->where('id_project',$update->id_project)->first()->lead_id;
 
-        $cek_company = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->join('tb_company','tb_company.id_company','=','users.id_company')->where('id_project',$id_project)->first()->id_company;
+        $cek_company = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->join('tb_company','tb_company.id_company','=','users.id_company')->where('id_project',$update->id_project)->first()->id_company;
 
         if ($lead_id != 'MSPQUO' && $lead_id != 'MSPPO' && $lead_id != 'SIPPO' && $lead_id != 'SIPQUO') {
-            $update2 = PID::where('lead_id',$lead_id)->first();
-            $update2->no_po = $request['po_customer_edit'];
-            $update2->update();
+            // $update2 = PID::where('lead_id',$lead_id)->first();
+            // $update2->no_po = $request['po_customer_edit'];
+            // $update2->update();
 
             if ($cek_company == '1') {
                 return redirect('salesproject#tab_1');
