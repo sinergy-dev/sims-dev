@@ -56,21 +56,22 @@ class UpdateStatusKaryawan extends Command
         $reset = User::select('nik','name',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'status_karyawan')->get();
 
         foreach ($reset as $data) {
+
             // print_r($data->name . $data->nik . "\n");
-            // if ($data->date_of_entrys >= '365') {
-            //     if ($data->status_karyawan == 'belum_cuti') {
-            //         $update = User::where('nik',$data->nik)->first();
-            //         $update->status_karyawan = 'cuti';
-            //         $update->update();
-            //         syslog(LOG_ERR, $update->nik . " - " . $update->name . "leaving permit permission updated ");
-            //     }
-            // }
-            if ($data->status_karyawan == 'belum_cuti') {
-                $update = User::where('nik',$data->nik)->first();
-                $update->status_karyawan = 'cuti';
-                $update->update();
-                syslog(LOG_ERR, $update->nik . " - " . $update->name . "leaving permit permission updated ");
+            if ($data->date_of_entrys >= '365') {
+                if ($data->status_karyawan == 'belum_cuti') {
+                    $update = User::where('nik',$data->nik)->first();
+                    $update->status_karyawan = 'cuti';
+                    $update->update();
+                    syslog(LOG_ERR, $update->nik . " - " . $update->name . "leaving permit permission updated ");
+                }
             }
+            // else if ($data->status_karyawan == 'belum_cuti') {
+            //     $update = User::where('nik',$data->nik)->first();
+            //     $update->status_karyawan = 'cuti';
+            //     $update->update();
+            //     syslog(LOG_ERR, $update->nik . " - " . $update->name . "leaving permit permission updated ");
+            // }
             
         }
         // $update = User::where('nik',$reset->nik)->first();

@@ -426,7 +426,7 @@ Purchase Order Number
               $("#description").val(value.description);
               $("#division").val(value.division);
               $("#project_id").val(value.project_id);
-              $("#issuance").val(value.issuance);
+              $("#issuance_name").val(value.issuance_name);
             });
           }
         });

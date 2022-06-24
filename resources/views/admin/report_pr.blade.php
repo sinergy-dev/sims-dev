@@ -76,7 +76,7 @@ Report Purchase Request
 
         <div class="box box-success">
           <div class="box-header with-border">
-            <h3 class="box-title"> Total PR (By Category)</h3>
+            <h3 class="box-title"> Total PR (By Type)</h3>
           </div>
           <div class="box-body">
             <canvas id="myBarChart"></canvas>

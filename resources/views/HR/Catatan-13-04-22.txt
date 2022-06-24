@@ -1,0 +1,16 @@
+Catatan.txt
+product di ganti brand
+buat mandatory untuk tagging di sisi presales, jadi sebelum bisa tp harus di masukkan dulu tagging nya
+
+HP di hapur
+
+
+2019
+
+Buat quisinoer untuk menilai efektifitas dari aplikasi tersebut
+	- SIMS dulu
+	- MSP nanti dulu
+
+Siap kan link untuk cert
+	- dan button untuk upload masing-masing enginer
+

@@ -2328,12 +2328,12 @@ class ReportController extends Controller
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leads = $leadsnow->where('nik_presales', $nik)->get();
 
-                $total_deal_price = $total_deal_price->where('nik_presales', $nik)->first();
+                // $total_deal_price = $total_deal_price->where('nik_presales', $nik)->first();
 
             } else if ($div == 'SALES') {
                 $leads = $leadsnow->where('u_sales.id_territory', $ter)->get();
                 
-                $total_deal_price = $total_deal_price->where('u_sales.id_territory', $ter)->first();
+                // $total_deal_price = $total_deal_price->where('id_territory', $ter)->first();
             }        
         }else{
             $leads = $leadsnow->get();

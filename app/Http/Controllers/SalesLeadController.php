@@ -1460,7 +1460,7 @@ class SalesLeadController extends Controller
                 joinSub(DB::table('tb_product_tag'), 'tb_product_tag_alias', function ($join) {
                     $join->on('tb_product_tag_alias.id', '=', 'tb_product_tag_relation.id_product_tag');
                 })
-                ->joinSub(DB::table('tb_technology_tag'), 'tb_technology_tag_alias', function ($join) {
+                ->LeftjoinSub(DB::table('tb_technology_tag'), 'tb_technology_tag_alias', function ($join) {
                     $join->on('tb_technology_tag_alias.id', '=', 'tb_product_tag_relation.id_technology_tag');
                 })
                 ->select('name_tech','name_product','id_technology_tag','id_product_tag','price','tb_product_tag_relation.id')

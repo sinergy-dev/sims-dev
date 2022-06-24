@@ -128,10 +128,10 @@ Permission Config
 							<li>
 								<a href="#cofig_role" data-toggle="tab" onclick="changeTab('role')">Configure Role</a>
 							</li>
-							<li>
+							<li id="tabFeature" style="display:none;">
 								<a href="#config_fature" data-toggle="tab" onclick="changeTab('feature')">Configure Feature</a>
 							</li>
-							<li>
+							<li id="tabFeatureroles" style="display:none;">
 								<a href="#config_fature_item" data-toggle="tab" onclick="changeTab('feature_item')">Configure Feature Item</a>
 							</li>
 							{{-- <li class="pull-right"> --}}
@@ -625,6 +625,12 @@ Permission Config
 @endsection
 @section('script')
 	<script>
+		$(document).ready(function(){
+			var accesable = @json($feature_item);
+		    accesable.forEach(function(item,index){
+		      $("#" + item).show()  
+		    })
+		})
 
 		function changeTab(id){
 			if (id == 'list') {

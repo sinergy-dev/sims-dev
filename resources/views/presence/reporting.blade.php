@@ -145,9 +145,10 @@ Presence Report
 		var filterUser = []
 		var type_date = ""
 		var startDay,endDay
+		var selectDate = false
+		var selectPerson = false
 
-		$(document).ready(function(){
-
+		$(document).ready(function(){  
 			Pace.restart();
 			Pace.track(function() {
 				$.ajax({
@@ -175,50 +176,6 @@ Presence Report
 				})
 			})
 
-
-					// $.ajax({
-				 //        url:"{{url('/presence/getUser')}}",
-				 //        type:"GET",
-				 //        success:function(result){
-				 //        	var arr = result
-					// 		console.log(arr)
-				 //         //    var selectOption = [];
-					//         // $.each(arr,function(key,value){
-					//         //    selectOption.push(value)
-					//         // })
-					//         data = JSON.parse('{"Car":["Benz","BMW"],"Bike":["Benz"],"Bicycle":["Volvo"]}')
-		   //    				var html = '';
-		  	// 				var target = $('#optgroup');
-		   //    				$.each(arr, function(key, value) {
-		   //    					// console.log(value.text)
-					// 		    html += '<optgroup label="' + value.text + '" id="'+ value.text +'">';
-
-					// 		    $.each(value.children, function(index, element) {
-					// 		      html += '<option label="'+ element.text +'" value="'+ element.nik +'">'+ element.text +'</option>';
-					// 		    });
-
-					// 		    html += '</optgroup>';
-					// 		});
-							  
-					// 		target.html(html);
-					// 		$("#optgroup optgroup").sort(function (a, b) {
-
-					// 		  	console.log($(a).attr('datagroupid'))
-					// 		     return $(a).attr('datagroupid') == $(b).attr('datagroupid') ? 0 : a.label < b.label ? -1 : 1  ;
-					// 		})
-				 //          	$("#optgroup").multiselect({
-				 //          		multiple:true,
-					// 	        search: {
-					// 	            left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-					// 	            right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-					// 	        },
-					// 	        fireSearch: function(value) {
-					// 	            return value.length >= 3;
-					// 	        },
-
-					// 	    })		    
-				 //    	}
-					// })
 		})
 
 		$('#daterange-btn').daterangepicker({
@@ -226,9 +183,7 @@ Presence Report
 				'This Period HRD': [moment("16 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("15 " + moment().format("MM YYYY"),"DD MM YYYY")],
 				'This Period MSM': [moment("26 " + moment().subtract(1,'months').format("MM YYYY"),"DD MM YYYY"), moment("25 " + moment().format("MM YYYY"),"DD MM YYYY")],
 
-			},
-			startDate: moment().subtract(29, 'days'),
-			endDate: moment()
+			}
 		},
 		function (start, end) {
 			// if ($('#daterange-btn').data('daterangepicker').chosenLabel == 'This Period HRD') {
@@ -251,9 +206,8 @@ Presence Report
 			startDate = start.format('D MMMM YYYY');
 			endDate = end.format('D MMMM YYYY');
 
-			$("#table_report").empty();
-
 			table_presence()
+			console.log(startDay + "" + endDay)
 		});
 
 		$(document).on('change', '.validationCheck', function() {
@@ -294,56 +248,55 @@ Presence Report
 
 			        	// var string = JSON.stringify(selectedUser)
 			        	// string.replace (/"/g,'')
-								$("#table_report").empty();
-
 			        	table_presence()
-
 			        }
 			    };
 
     			$("#transfer3").transfer(settings);
+    			// table_presence(selectDate = true,selectPerson = true)
 
 	    	}
 		})
 
 	  function table_presence()
 	  {
-	  	Pace.restart();
-			Pace.track(function() {
-				$.ajax({
-					type:"GET",
-					url:"{{url('/presence/report/getFilterReport')}}",
-					data: {
-						'start' : startDay,
-						'end' : endDay,
-						'nik' : filterUser,
-					},
-					success: function(result){
-						console.log(filterUser)
-						$(".box-title").text("This period " + result.range)
-						console.log(result.range)
-						var append = ""
-						var no = 1
-						$.each(result.data,function(index,data){
-							append = append + "<tr>"
-							append = append + "	<td>" + no++ + "</td>"
-							append = append + "	<td>" + data.name + "</td>"
-							append = append + "	<td>" + data.where + "</td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-green'>" + data.ontime + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-yellow'>" + data.injury + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-red'>" + data.late + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-default'>" + data.absen + "</span> </td>"
-							append = append + "	<td class='text-center'> <span class='badge bg-blue'>" + data.all + "</span> </td>"
-							append = append + "</tr>"
-						})
+		  	Pace.restart();
+				Pace.track(function() {
+					$.ajax({
+						type:"GET",
+						url:"{{url('/presence/report/getFilterReport')}}",
+						data: {
+							'start' : startDay,
+							'end' : endDay,
+							'nik' : filterUser,
+						},
+						success: function(result){
+		  				$("#table_report").empty()
 
-						$("#table_report").append(append)
-					}
-				})
-			})
+							console.log(filterUser)
+							$(".box-title").text("This period " + result.range)
+							console.log(result.range)
+							var append = ""
+							var no = 1
+							$.each(result.data,function(index,value){
+								console.log(value.name)
+								append = append + "<tr>"
+								append = append + "	<td>" + no++ + "</td>"
+								append = append + "	<td>" + value.name + "</td>"
+								append = append + "	<td>" + value.where + "</td>"
+								append = append + "	<td class='text-center'> <span class='badge bg-green'>" + value.ontime + "</span> </td>"
+								append = append + "	<td class='text-center'> <span class='badge bg-yellow'>" + value.injury + "</span> </td>"
+								append = append + "	<td class='text-center'> <span class='badge bg-red'>" + value.late + "</span> </td>"
+								append = append + "	<td class='text-center'> <span class='badge bg-default'>" + value.absen + "</span> </td>"
+								append = append + "	<td class='text-center'> <span class='badge bg-blue'>" + value.all + "</span> </td>"
+								append = append + "</tr>"
+							})
+
+							$("#table_report").append(append)
+						}
+					})
+				})	  	
 	  }
-
-
 			// $("#filter_com").change(function(){
 		 //      var filter_com = this.value;
 		 //      console.log(filter_com);

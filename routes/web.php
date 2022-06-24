@@ -51,7 +51,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getCountLead','SalesLeadController@getCountLead');
 	Route::get('project/index','SalesLeadController@index');
 	Route::get('project/getDataLead','SalesLeadController@getDataLead');
-	Route::get('project/detailSales/{lead_id}','SalesLeadController@detailSales');
+	Route::get('project/detailSales/{lead_id}','SalesLeadController@detailSales')->name('detail_project');
+	Route::get('detail_project/{lead_id}',function($lead_id){
+		return redirect()->route('detail_project', [$lead_id]);
+	});
 	Route::get('project/getPresales', 'SalesLeadController@getPresales');
 	Route::get('project/getSales', 'SalesLeadController@getSales');
 	Route::get('project/getCustomer', 'SalesLeadController@getCustomer');
@@ -144,7 +147,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 	//salescontroller
 	//customer route
-	Route::get('/customer', 'SalesController@customer_index')->middleware('ManagerStaffMiddleware');
+	// Route::get('/customer', 'SalesController@customer_index')->middleware('ManagerStaffMiddleware');
+	Route::get('/customer', 'SalesController@customer_index');
 	Route::post('/customer/storeRequest', 'SalesController@customer_store');
 	Route::get('/customer/getcus','SalesController@getdatacustomer');
 	Route::post('/customer/update', 'SalesController@update_customer');
@@ -370,7 +374,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/dropdownTech', 'HRController@getDropdownTech');
 	Route::get('/hu_rec','HRController@index')->middleware('HRMiddleware');
+	// Route::get('/hu_rec','HRController@index');
 	Route::post('/hu_rec/store', 'HRController@store');
+	Route::get('/hu_rec/store', 'HRController@store');
 	// Route::get('/hu_rec/store', function(){
 	// 	return 'b';
 	// });

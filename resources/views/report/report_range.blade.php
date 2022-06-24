@@ -454,10 +454,11 @@ Report Range
     $('.money').mask('000,000,000,000,000', {reverse: true});
 
     if (window.location.href.split('/')[4] == undefined) {
+      table.draw()
+      
       $("#btnRefresh").click(function(){
         initRefresh(false)
       })
-      table.draw()
       filter_deal_price()
     }else{
       $("#btnRefresh").click(function(){
@@ -596,6 +597,7 @@ Report Range
                         .draw();
 
                     filter_deal_price()
+                    console.log("kat_drop"+column.index())
             });
 
             column.data().unique().sort().each(function(d, j) {
