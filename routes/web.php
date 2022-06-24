@@ -93,6 +93,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('project/getCustomerByLead', 'SalesLeadController@getCustomerbyLead');
 	Route::get('project/filterCountLead','SalesLeadController@filterCountLead');
 	Route::post('project/checkProductTech', 'SalesLeadController@checkProductTech');
+	Route::post('project/updateProductTag', 'SalesLeadController@updateProductTag');
+	Route::get('project/showSbeTagging', 'SalesLeadController@showSbe');
+	Route::post('project/updateSbeTag', 'SalesLeadController@updateSbeTag');
+	Route::post('project/changeNominal', 'SalesLeadController@changeNominal');
+	Route::post('project/changeCustomer', 'SalesLeadController@changeCustomer');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
 
@@ -440,6 +445,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getfilteryearquote', 'QuoteController@getfilteryear');
 	Route::get('/get_backdate_num', 'QuoteController@get_backdate_num');
 	Route::get('/quote/getCustomer', 'QuoteController@getCustomer');
+	Route::post('/addBackdateNumQuote', 'QuoteController@addBackdateNum');
 
 	Route::get('/delete_detail_sho/{id_transaction}', 'SHOController@destroy_detail');
 
@@ -578,6 +584,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getdataletter', 'LetterController@getdataletter');
 	Route::get('/getfilteryearletter', 'LetterController@getfilteryear');
 	Route::get('/get_backdate_letter', 'LetterController@get_backdate_num');
+	Route::post('/addBackdateNumLetter', 'LetterController@addBackdateNum');
 
 
 	Route::get('/do', 'DONumberController@index');
@@ -588,6 +595,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/downloadExcelDO', 'DONumberController@downloadExcelDO');
 
 	Route::get('/partnership', 'PartnershipController@index');
+	Route::get('/partnership_detail/{id}', 'PartnershipController@detail');
 	Route::post('/store_partnership', 'PartnershipController@store');
 	Route::post('/update_partnership', 'PartnershipController@update');
 	Route::get('/downloadPdfpartnership', 'PartnershipController@downloadpdf');
@@ -595,6 +603,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/delete_partnership/{id}', 'PartnershipController@destroy');
 	Route::post('/upload/proses', 'PartnershipController@proses_upload');
 	Route::get('/download_partnership/{id}', 'PartnershipController@download_partnership');
+	Route::get('/partnership/getUser', 'PartnershipController@getUser');
+	Route::get('/partnership/getDetail', 'PartnershipController@getDetailPartnership');
+	Route::get('/partnership/getCert', 'PartnershipController@getListCert');
+	Route::post('/partnership/addCertList', 'PartnershipController@addCertList');
+	Route::post('/partnership/addCert', 'PartnershipController@addCert');
+	Route::post('/partnership/updateCertPerson', 'PartnershipController@updateCertPerson');
+	Route::post('/partnership/deleteCertPerson', 'PartnershipController@deleteCertPerson');
 
 	Route::get('/admin_hr', 'HRNumberController@index');
 	Route::post('/store_admin_hr', 'HRNumberController@store');
@@ -833,7 +848,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getPengembalian', 'AssetHRController@getPengembalian');
 	Route::get('/getEditAsset', 'AssetHRController@getEditAsset');
 	Route::post('/edit_asset', 'AssetHRController@edit_asset');
-	Route::get('exportExcelAsset', 'AssetHRController@export');
+	Route::get('/exportExcelAsset', 'AssetHRController@export');
 	Route::get('/getAssetCategoriHR','AssetHRController@getCategory');
 	Route::get('/getCategoryPinjam','AssetHRController@getCategoryPinjam');
 	Route::post('/store_kategori_asset','AssetHRController@store_kategori');
@@ -988,6 +1003,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/mail/sendEmailEscalate', 'TicketingController@sendEmailEscalate');
 	Route::get('/ticketing/saveEscalate', 'TicketingController@saveEscalate');
 
+	Route::get('/ticketing/reOpenTicket','TicketingController@reOpenTicket');
+
 	Route::get('/ticketing/setting/getSettingClient','TicketingController@getSettingClient');
 	Route::post('/ticketing/setting/setSettingClient' , 'TicketingController@setSettingClient');
 
@@ -1018,6 +1035,9 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/report/download','TicketingController@downloadReportTicket');
 	Route::get('/ticketing/report/new','TicketingController@getReportNew');
 	Route::get('/ticketing/report/newDeny','TicketingController@getReportNewDeny');
+	Route::get('/changeNominal/testRequestChange','TestController@testRequestChange');
+
+	Route::get('/requestChange','RequestChangeController@index');
 
 });
 Route::get('/authentication/{id}','TestController@authentication');
