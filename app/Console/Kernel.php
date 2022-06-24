@@ -33,12 +33,14 @@ class Kernel extends ConsoleKernel
             ->at('07:00');
 
         $schedule->call(function() {
-            if (date("n") == 3 && date("j") == 31) {
-                Artisan::call('CutiRestart:cutirestart');
+            if (date("n") == 4 && date("j") == 1) {
+                if (date("H:i") == "01:30") {
+                    Artisan::call('CutiRestart:cutirestart');
+                }
             }
         })
-        ->monthly()
-        ->at('01:30');
+        ->everyMinute();
+        
 
         $schedule->call(function() {
             if (date("n") == 1 && date("j") == 1) {
