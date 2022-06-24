@@ -1089,10 +1089,10 @@ class AssetController extends Controller
         // $kategori = $request['id_kat_accept'];
 
         return array(DB::table('tb_asset')
-                ->select('serial_number', 'id_barang', 'nama_barang','code_asset')
+                ->select('serial_number', 'id_barang', 'nama_barang')
                 ->where('id_kat',$kategori)
-                ->where('status', 'AVAILABLE')
-                ->get(),$kategori);
+                // ->where('status', 'AVAILABLE')
+                ->get());
     }
 
     public function getAsset(Request $request)
