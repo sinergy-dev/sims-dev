@@ -1347,12 +1347,13 @@ Human Resources
 		                    <div class="col-md-8 margin-bottom">
 		                        <select id="division" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_sip" value="{{ old('division') }}" autofocus>
 		                            <option value="">-- Select division --</option>
-		                            <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option>
+		                            <!-- <option value="TECHNICAL" data-target="technical" id="technical">TECHNICAL</option> -->
 		                            <option value="FINANCE" data-target="finance" id="finance">FINANCE and ACCOUNTING</option>
 		                            <option value="HR" data-target="hr" id="hr">HUMAN RESOURCE</option>
 		                            <option value="SALES" data-target="sales" id="sales">SALES</option>
 		                            <option value="OPERATION" data-target="operation" id="operation">OPERATION</option>
-		                            <option value="SPECIALIST" data-target="specialist" id="specialist">OTHER</option>
+		                            <!-- <option value="BCD" data-target="bcd" id="bcd">BUSINESS CHANNEL DEVELOPEMNT</option> -->
+		                            <!-- <option value="SPECIALIST" data-target="specialist" id="specialist">OTHER</option> -->
 		                            <option value="NULL" data-target="director" id="director">NONE</option>
 		                        </select>
 		                        @if ($errors->has('division'))
@@ -1522,9 +1523,12 @@ Human Resources
 		                    <div class="col-md-8 margin-bottom">
 		                        <select id="subdivision-operation" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_operation" value="{{ old('division') }}" autofocus>
 		                            <option value="">-- Select Sub Division --</option>
-		                            <option value="MSM" data-target="MSM" id="MSM">MSM</option>
+		                            <option value="SOL" data-target="SOL" id="SOL">SOL</option>
 		                            <option value="PMO" data-target="PMO" id="PMO">PMO</option>
-		                            <option value="DIR" data-target="DIR" id="PMO">NONE</option>
+		                            <option value="SID" data-target="SID" id="SID">SID</option>
+		                            <option value="BCD" data-target="BCD" id="BCD">BCD</option>
+		                            <option value="MSM" data-target="MSM" id="MSM">MSM</option>
+		                            <option value="DIR" data-target="DIR" id="DIR">NONE</option>
 		                        </select>
 		                        @if ($errors->has('division'))
 		                            <span class="invalid-feedback">
@@ -1597,7 +1601,6 @@ Human Resources
 		                        @endif
 		                    </div>
 		                </div>
-
 
 		                <div class="form-group"  style="display:none;"  id="division-msp-TECHNICAL_MSP">
 		                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
@@ -2436,6 +2439,10 @@ Human Resources
     	console.log("oke")
     })
 
+	localStorage.setItem("divisi_update", "")
+	localStorage.setItem("sub_divisi_update", "")
+	localStorage.setItem("posisi_update", "")
+
     function showEditTab(value,n){ 
     	console.log(value)	
     	if (n == 0) {
@@ -2675,18 +2682,30 @@ Human Resources
 		            }
 		            $("#posisi_view_update").val(value.id_position).prop("readonly", true);
 
-	                localStorage.setItem("divisi_update", $("#divisi_view_update").val())
-					   if (!localStorage.getItem("divisi_update")) {
-	               		$("#divisi_view_update").val(value.id_division);
+	                localStorage.setItem("divisi_update", $("#divisi_update").val())
+					   if (localStorage.getItem("divisi_update") != 'null') {
+	               		$("#divisi_view_update").val(localStorage.getItem('divisi_update'));
+	                	localStorage.setItem("divisi_update", localStorage.getItem("divisi_update"))
+		               }else{
+		               	$("#divisi_view_update").val(value.id_division);
+	                	localStorage.setItem("divisi_update", value.id_division)
 		               }
 
-		            localStorage.setItem("sub_divisi_update", $("#sub_divisi_view_update").val())
-					   if (!localStorage.getItem("sub_divisi_update")) {
+		            localStorage.setItem("sub_divisi_update", $("#sub_divisi_update").val())
+					   if (localStorage.getItem("sub_divisi_update") != 'null') {
+					   	$("#sub_divisi_view_update").val(localStorage.getItem('sub_divisi_update'));
+	                	localStorage.setItem("sub_divisi_update", localStorage.getItem("sub_divisi_update"))
+		               }else{
 	               		$("#sub_divisi_view_update").val(value.id_territory);
+	                	localStorage.setItem("sub_divisi_update", value.id_territory)
 		               }	               	
-	               	localStorage.setItem("posisi_update", $("#posisi_view_update").val())
-					   if (!localStorage.getItem("posisi_update")) {
+	               	localStorage.setItem("posisi_update", $("#posisi_update").val())
+					   if (localStorage.getItem("posisi_update") != 'null') {
+					   	$("#posisi_view_update").val(localStorage.getItem('posisi_update'));
+	                	localStorage.setItem("posisi_update", localStorage.getItem("posisi_update"))
+		               } else{
 	               		$("#posisi_view_update").val(value.id_position);
+		               	localStorage.setItem("posisi_update", value.id_position)
 		               }              
                
                }
@@ -2770,15 +2789,16 @@ Human Resources
 	        		bpjs_ket_update:localStorage.getItem("bpjs_ket_update"),
 	        		bpjs_kes_update:localStorage.getItem("bpjs_kes_update"),
 	        		address_ktp_update:localStorage.getItem("address_ktp_update"),
-	        		company_update:localStorage.getItem("company_update"),
-	        		divisi_update:localStorage.getItem("divisi_update"),
-	        		sub_divisi_update:localStorage.getItem("sub_divisi_update"),
-	        		posisi_update:localStorage.getItem("posisi_update"),
+	        		company_update:$("#company_update").val(),
+	        		divisi_update:localStorage.getItem("divisi_update"),//$("#divisi_update").val(),
+	        		sub_divisi_update:localStorage.getItem("sub_divisi_update"),//$("#sub_divisi_update").val(),
+	        		posisi_update:localStorage.getItem("posisi_update"),//$("#posisi_update").val(),
 	        		address_update:localStorage.getItem("address_update"),
 	        		phone_number_update:localStorage.getItem("phone_number_update"),
 	        		no_npwp_update:localStorage.getItem("no_npwp_update"),
 	        		no_ktp_update:$("#no_ktp_update").val(),
 					no_kk_update:$("#no_kk_update").val(),
+					no_npwp_update:$("#no_npwp_update").val(),
 					name_ec_update:$("#name_ec_update").val(),
 					phone_ec_update:$("#phone_ec_update").val(),
 					hubungan_ec_update:$("#hubungan_ec_update").val(),
@@ -3091,7 +3111,7 @@ Human Resources
           },
           success: function(result){
             $('#position-dir').html(append)
-            var append = "<option > </option>";
+            var append = "<option > -- Select Position -- </option>";
 
             if (result[1] == 'NULL') {
             $.each(result[0], function(key, value){
@@ -3148,7 +3168,7 @@ Human Resources
           },
           success: function(result){
             $('#position-finance').html(append)
-            var append = "<option > </option>";
+            var append = "<option > -- Select Position -- </option>";
 
             if (result[1] == 'FINANCE') {
               $.each(result[0], function(key, value){
@@ -3197,7 +3217,7 @@ Human Resources
           },
           success: function(result){
             $('#territory-sales').html(append)
-            var append = "<option> </option>";
+            var append = "<option> -- Select Territory </option>";
 
             if (result[1] == 'SALES') {
             $.each(result[0], function(key, value){
@@ -3219,24 +3239,30 @@ Human Resources
           },
           success: function(result){
             $('#position-operation').html(append)
-            var append = "<option > </option>";
+            var append = "<option > -- Select Position -- </option>";
 
             if (result[1] == 'MSM') {
-            $.each(result[0], function(key, value){
-              append = append + "<option>" + value.name_position + "</option>";
-            });
+	            $.each(result[0], function(key, value){
+	              append = append + "<option>" + value.name_position + "</option>";
+	            });
             } else if (result[1] == 'PMO') {
-              $.each(result[0], function(key, value){
-              /*console.log(value);*/
-              append = append + "<option>" + value.name_position + "</option>";
-            });
+              	$.each(result[0], function(key, value){
+	              append = append + "<option>" + value.name_position + "</option>";
+	            });
             } else if (result[1] == 'DIR') {
-              $.each(result[0], function(key, value){
-              /*console.log(value);*/
-              append = append + "<option>" + value.name_position + "</option>";
-            });
+              	$.each(result[0], function(key, value){
+	              append = append + "<option>" + value.name_position + "</option>";
+	            });
+            } else if (result[1] == 'BCD') {
+            	append = append + "<option value='MANAGER'> MANAGER </option>";
+            	append = append + "<option value='PROCUREMENT'> PROCUREMENT </option>";
+            	append = append + "<option value='STAFF'> STAFF </option>";
+            	append = append + "<option value='ADMIN'> ADMIN </option>";
+            } else {
+            	append = append + "<option value='MANAGER'> MANAGER </option>";
+            	append = append + "<option value='STAFF'> STAFF </option>";
+            	append = append + "<option value='ADMIN'> ADMIN </option>";
             }
-
 
             $('#position-operation').html(append);
           },
@@ -3253,7 +3279,7 @@ Human Resources
           },
           success: function(result){
             $('#position-hr').html(append)
-            var append = "<option > </option>";
+            var append = "<option > -- Select Position -- </option>";
 
             if (result[1] == 'HR') {
             $.each(result[0], function(key, value){
@@ -3276,11 +3302,11 @@ Human Resources
           },
           success: function(result){
             $('#position-sales-msp').html(append)
-            var append = "<option> -- Select Option --</option>";
+            var append = "<option value=''> -- Select Option --</option>";
 
             if (result[1] == 'SALES_MSP') {
             $.each(result[0], function(key, value){
-              append = append + "<option>" + value.name_position + "</option>";
+              append = append + "<option >" + value.name_position + "</option>";
             });
             } else if (result[1] == 'ADMIN_MSP') {
               $.each(result[0], function(key, value){
@@ -3313,7 +3339,7 @@ Human Resources
           },
           success: function(result){
             $('#position-tech-msp').html(append)
-            var append = "<option> -- Select Option --</option>";
+            var append = "<option value=''> -- Select Option --</option>";
 
             if (result[1] == 'PRESALES') {
             $.each(result[0], function(key, value){
@@ -3375,7 +3401,7 @@ Human Resources
           },
           success: function(result){
             $('#position-dir-update').html(append)
-            var append = "<option > </option>";
+            var append = "<option value=''> </option>";
 
             if (result[1] == 'NULL') {
             $.each(result[0], function(key, value){
@@ -3397,7 +3423,7 @@ Human Resources
               },
               success: function(result){
                 $('#position-tech-update').html(append)
-                var append = "<option> </option>";
+                var append = "<option value=''> </option>";
 
                 if (result[1] == 'DPG') {
                 $.each(result[0], function(key, value){
@@ -3424,113 +3450,113 @@ Human Resources
     });
 
     $('#subdivision-finance-update').change(function(){
-              $.ajax({
-              type:"GET",
-              url:'/dropdownTech',
-              data:{
-                id_assign:this.value,
-              },
-              success: function(result){
-                $('#position-finance-update').html(append)
-                var append = "<option > </option>";
+        $.ajax({
+          type:"GET",
+          url:'/dropdownTech',
+          data:{
+            id_assign:this.value,
+          },
+          success: function(result){
+            $('#position-finance-update').html(append)
+            var append = "<option value=''> </option>";
 
-                if (result[1] == 'FINANCE') {
-                  $.each(result[0], function(key, value){
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                } else if (result[1] == 'ACC') {
-                  $.each(result[0], function(key, value){
-                  /*console.log(value);*/
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                } 
+            if (result[1] == 'FINANCE') {
+              $.each(result[0], function(key, value){
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            } else if (result[1] == 'ACC') {
+              $.each(result[0], function(key, value){
+              /*console.log(value);*/
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            } 
 
-                $('#position-finance-update').html(append);
-              },
+            $('#position-finance-update').html(append);
+          },
         });
     });
 
     $('#division_update').change(function(){
-              $.ajax({
-              type:"GET",
-              url:'/dropdownTech',
-              data:{
-                id_assign:this.value,
-              },
-              success: function(result){
-                $('#territory-sales-update').html(append)
-                var append = "<option> </option>";
+        $.ajax({
+          type:"GET",
+          url:'/dropdownTech',
+          data:{
+            id_assign:this.value,
+          },
+          success: function(result){
+            $('#territory-sales-update').html(append)
+            var append = "<option value=''> </option>";
 
-                if (result[1] == 'SALES') {
-                $.each(result[0], function(key, value){
-                  append = append + "<option>" + value.name_territory + "</option>";
-                });
-                } 
+            if (result[1] == 'SALES') {
+            $.each(result[0], function(key, value){
+              append = append + "<option>" + value.name_territory + "</option>";
+            });
+            } 
 
-                $('#territory-sales-update').html(append);
-              },
+            $('#territory-sales-update').html(append);
+          },
         });
     });
 
     $('#subdivision-operation-update').change(function(){
-              $.ajax({
-              type:"GET",
-              url:'/dropdownTech',
-              data:{
-                id_assign:this.value,
-              },
-              success: function(result){
-                $('#position-operation-update').html(append)
-                var append = "<option > </option>";
+        $.ajax({
+          type:"GET",
+          url:'/dropdownTech',
+          data:{
+            id_assign:this.value,
+          },
+          success: function(result){
+            $('#position-operation-update').html(append)
+            var append = "<option value=''> </option>";
 
-                if (result[1] == 'MSM') {
-                $.each(result[0], function(key, value){
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                } else if (result[1] == 'PMO') {
-                  $.each(result[0], function(key, value){
-                  /*console.log(value);*/
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                } else if (result[1] == 'DIR') {
-                  $.each(result[0], function(key, value){
-                  /*console.log(value);*/
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                }
+            if (result[1] == 'MSM') {
+            $.each(result[0], function(key, value){
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            } else if (result[1] == 'PMO') {
+              $.each(result[0], function(key, value){
+              /*console.log(value);*/
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            } else if (result[1] == 'DIR') {
+              $.each(result[0], function(key, value){
+              /*console.log(value);*/
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            }
 
 
-                $('#position-operation-update').html(append);
-              },
+            $('#position-operation-update').html(append);
+          },
         });
     });
 
 
     $('#division_update').change(function(){
-              $.ajax({
-              type:"GET",
-              url:'/dropdownTech',
-              data:{
-                id_assign:this.value,
-              },
-              success: function(result){
-                $('#position-hr-update').html(append)
-                var append = "<option > </option>";
+        $.ajax({
+          type:"GET",
+          url:'/dropdownTech',
+          data:{
+            id_assign:this.value,
+          },
+          success: function(result){
+            $('#position-hr-update').html(append)
+            var append = "<option > </option>";
 
-                if (result[1] == 'HR') {
-                $.each(result[0], function(key, value){
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                }
+            if (result[1] == 'HR') {
+            $.each(result[0], function(key, value){
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            }
 
-                $('#position-hr-update').html(append);
-              },
+            $('#position-hr-update').html(append);
+          },
         });
     });
 
 
     $('#division-msp-update').change(function(){
-              $.ajax({
+        $.ajax({
               type:"GET",
               url:'/dropdownTech',
               data:{
@@ -3538,7 +3564,7 @@ Human Resources
               },
               success: function(result){
                 $('#position-sales-msp-update').html(append)
-                var append = "<option>-- Select Option --</option>";
+                var append = "<option value=''>-- Select Option --</option>";
 
                 if (result[1] == 'SALES_MSP') {
                 $.each(result[0], function(key, value){
@@ -3566,28 +3592,28 @@ Human Resources
 
 
     $('#subdivision-tech-msp_update').change(function(){
-              $.ajax({
-              type:"GET",
-              url:'/dropdownTech',
-              data:{
-                id_assign:this.value,
-              },
-              success: function(result){
-                $('#position-tech-msp-update').html(append)
-                var append = "<option>-- Select Option --</option>";
+        $.ajax({
+          type:"GET",
+          url:'/dropdownTech',
+          data:{
+            id_assign:this.value,
+          },
+          success: function(result){
+            $('#position-tech-msp-update').html(append)
+            var append = "<option value=''>-- Select Option --</option>";
 
-                if (result[1] == 'PRESALES') {
-                $.each(result[0], function(key, value){
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                } else if (result[1] == 'NONE_MSP') {
-                $.each(result[0], function(key, value){
-                  append = append + "<option>" + value.name_position + "</option>";
-                });
-                }
+            if (result[1] == 'PRESALES') {
+            $.each(result[0], function(key, value){
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            } else if (result[1] == 'NONE_MSP') {
+            $.each(result[0], function(key, value){
+              append = append + "<option>" + value.name_position + "</option>";
+            });
+            }
 
-                $('#position-tech-msp-update').html(append);
-              },
+            $('#position-tech-msp-update').html(append);
+          },
       });
     });
   
@@ -3745,12 +3771,13 @@ Human Resources
 		console.log(id.value);
 		if (id.value == '1') {
 			$('#divisi_update').html(append)
-            var append = "<option>-- Select Option --</option>";
+            var append = "<option value=''>-- Select Option --</option>";
             
-            append = append + "<option value='TECHNICAL'>" + "TECHNICAL" + "</option>";
+            //append = append + "<option value='TECHNICAL'>" + "TECHNICAL" + "</option>";
             append = append + "<option value='FINANCE'>" + "FINANCE/ACCOUNTING" + "</option>";
             append = append + "<option value='HR'>" + "HUMAN RESOURCE" + "</option>";
             append = append + "<option value='SALES'>" + "SALES" + "</option>";
+            //append = append + "<option value='BCD'>" + "BUSINESS CHANNEL DEV" + "</option>";
             append = append + "<option value='OPERATION'>" + "OPERATION" + "</option>";
             append = append + "<option value=''>" + "NONE" + "</option>";
 
@@ -3759,7 +3786,7 @@ Human Resources
             $('#divisi_update').html(append);		
 		}else{
 			$('#divisi_update').html(append)
-            var append = "<option>-- Select Option --</option>";
+            var append = "<option value=''>-- Select Option --</option>";
             
             append = append + "<option value='SALES'>" + "SALES" + "</option>";
             append = append + "<option value='TECHNICAL'>" + "TECHNICAL" + "</option>";
@@ -3778,7 +3805,7 @@ Human Resources
 		$('#sub_divisi_update').html(append)
 
         if (id.value == 'TECHNICAL') {
-        	var append = "<option>-- Select Option --</option>";
+        	var append = "<option value=''>-- Select Option --</option>";
             
             append = append + "<option value='DPG'>" + "IMPLEMENTATION" + "</option>";
             append = append + "<option value='PRESALES'>" + "PRESALES" + "</option>";
@@ -3786,20 +3813,32 @@ Human Resources
             append = append + "<option value=''>" + "NONE" + "</option>";
 
         }else if(id.value == 'FINANCE'){
-        	var append = "<option>-- Select Option --</option>";
+        	var append = "<option value=''>-- Select Option --</option>";
 
             append = append + "<option value='FINANCE'>" + "FINANCE" + "</option>";
             append = append + "<option value='ACC'>" + "ACCOUNTING" + "</option>";	
 			
+		}else if(id.value == 'OPERATION'){
+        	var append = "<option value=''>-- Select Option --</option>";
+
+            append = append + "<option value='SOL'>" + "SOL" + "</option>";	
+            append = append + "<option value='PMO'>" + "PMO" + "</option>";	
+            append = append + "<option value='SID'>" + "SID" + "</option>";	
+            append = append + "<option value='BCD'>" + "BCD" + "</option>";	
+            append = append + "<option value='MSM'>" + "MSM" + "</option>";	        	
+            append = append + "<option value='NONE'>" + "NONE" + "</option>";	
+			
 		}else if(id.value == 'HR'){
-			var append = "<option>-- Select Option --</option>";
+			var append = "<option value=''>-- Select Option --</option>";
 
     		append = append + "<option value='HR MANAGER'>" + "HR MANAGER" + "</option>";
             append = append + "<option value='STAFF HR'>" + "STAFF HR" + "</option>";
             append = append + "<option value='STAFF GA'>" + "STAFF GA" + "</option>";
+            append = append + "<option value='WAREHOUSE'>" + "WAREHOUSE" + "</option>";
+            append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
 
 		}else if(id.value == 'SALES'){
-			var append = "<option>-- Select Option --</option>";
+			var append = "<option value=''>-- Select Option --</option>";
             
             append = append + "<option value='TERRITORY 1'>" + "TERRITORY 1" + "</option>";
             append = append + "<option value='TERRITORY 2'>" + "TERRITORY 2" + "</option>";
@@ -3809,33 +3848,19 @@ Human Resources
             append = append + "<option value='SALES MSP'>" + "SALES MSP" + "</option>";	
 
 			
-		}else if(id.value == 'OPERATION'){
-			var append = "<option>-- Select Option --</option>";
-
-			if ($("#company_view_update").val() == 'MSP') {
-                append = append + "<option value='PMO'>" + "PMO" + "</option>";
-                append = append + "<option value='WAREHOUSE'>" + "WAREHOUSE" + "</option>";
-                append = append + "<option value='OPERATION'>" + "NONE" + "</option>";
-			}else{
-				append = append + "<option value='MSM'>" + "MSM" + "</option>";
-                append = append + "<option value='PMO'>" + "PMO" + "</option>";
-                append = append + "<option value='WAREHOUSE'>" + "WAREHOUSE" + "</option>";
-                append = append + "<option value='OPERATION'>" + "NONE" + "</option>";
-			}
-			
-        }
+		}
 
 		$('#sub_divisi_update').html(append);
 
 		$('#posisi_update').html(append)
 
 		if(id.value == ''){
-			var append = "<option>-- Select Option --</option>";
+			var append = "<option value=''>-- Select Option --</option>";
 
     		append = append + "<option value='DIRECTOR'>" + "DIRECTOR" + "</option>";
 
 		}else if(id.value == 'WAREHOUSE'){
-			var append = "<option>-- Select Option --</option>";
+			var append = "<option value=''>-- Select Option --</option>";
 
     		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
             append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
@@ -3844,12 +3869,14 @@ Human Resources
 		}
 		$('#posisi_update').html(append);
 
-		$("#divisi_view_update").val(id.value);
+		$("#divisi_view_update").val($("#divisi_update").val());
+
+		localStorage.setItem("divisi_update", $("#divisi_update").val())
 	}
 
 	function subdivisiSelect(id){
 		$('#posisi_update').html(append)
-        var append = "<option>-- Select Option --</option>";
+        var append = "<option value=''>-- Select Option --</option>";
     	if (id.value == '') {
 
     		append = append + "<option value='HEAD'>" + "HEAD" + "</option>";
@@ -3859,24 +3886,30 @@ Human Resources
 
     		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
-            append = append + "<option value='SERVICE PROJECT(HEAD)'>" + "SERVICE PROJECT (HEAD)" + "</option>";
-            append = append + "<option value='SERVICE PROJECT(STAFF)'>" + "SERVICE PROJECT (STAFF)" + "</option>";
-            append = append + "<option value='SUPPORT ENGINEER(HEAD)'>" + "SUPPORT ENGINEER (HEAD)" + "</option>";
-            append = append + "<option value='SUPPORT ENGINEER(STAFF)'>" + "SUPPORT ENGINEER (STAFF)" + "</option>";
+            // append = append + "<option value='SERVICE PROJECT(HEAD)'>" + "SERVICE PROJECT (HEAD)" + "</option>";
+            //append = append + "<option value='SERVICE PROJECT(STAFF)'>" + "SERVICE PROJECT (STAFF)" + "</option>";
+            append = append + "<option value='SUPPORT ENGINEER(HEAD)'>" + "SUPPORT ENGINEER" + "</option>";
             append = append + "<option value='HELP DESK'>" + "HELP DESK" + "</option>";
             append = append + "<option value='CALL SO'>" + "CALL SO" + "</option>";
 
     	}else if (id.value == 'PMO') {
-
     		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
             append = append + "<option value='PM'>" + "PM" + "</option>";
+    		append = append + "<option value='SERVICE PROJECT'>" + "SERVICE PROJECT" + "</option>"
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
 
     	}else if (id.value == 'OPERATION') {
 
     		append = append + "<option value='DIRECTOR'>" + "DIRECTOR" + "</option>";
 
-    	} else{
+    	}else if (id.value == 'BCD'){
+        
+            append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+            append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
+            append = append + "<option value='PROCUREMENT'>" + "PROCUREMENT" + "</option>";
+            append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+
+        }else{
         
             append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
             append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
@@ -3886,12 +3919,17 @@ Human Resources
         
         $('#posisi_update').html(append);
 
-        $("#sub_divisi_view_update").val(id.value);
+        $("#sub_divisi_view_update").val($("#sub_divisi_update").val());
+
+		localStorage.setItem("sub_divisi_update", $("#sub_divisi_update").val())
+
 
     }
 
     function posisiSelect(id){
-    	$("#posisi_view_update").val(id.value);
+    	$("#posisi_view_update").val($("#posisi_update").val());
+
+		localStorage.setItem("posisi_update", $("#posisi_update").val())
     }
 
     function readURL(input) {
