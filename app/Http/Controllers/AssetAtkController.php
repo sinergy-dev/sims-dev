@@ -543,7 +543,7 @@ class AssetAtkController extends Controller
 
         $get_email_user = collect([$kirim]);
 
-        $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
+        $get_divisi_hr = User::select('email','id_position', 'id_division')->where('id_position', 'HR MANAGER')->first();
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
@@ -557,7 +557,7 @@ class AssetAtkController extends Controller
         // return $req_atk;
 
         foreach ($receiver_final as $final) {
-            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK sedang diproses', $req_atk,$final->id_position,$get_email_user, 'PROCESS'));
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK sedang diproses', $req_atk,$final->id_position,$final->id_division,$get_email_user, 'PROCESS'));
         }
 
         return redirect()->back()->with('update', 'Successfully!');
@@ -625,7 +625,7 @@ class AssetAtkController extends Controller
 
         $get_email_user = collect([$kirim]);
 
-        $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
+        $get_divisi_hr = User::select('email','id_position', 'id_division')->where('id_position', 'HR MANAGER')->first();
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
@@ -639,7 +639,7 @@ class AssetAtkController extends Controller
                     ->first();
 
         foreach ($receiver_final as $final) {
-            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Sudah Datang', $req_atk,$final->id_position,$get_email_user, 'DONE'));
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Sudah Datang', $req_atk,$final->id_position,$final->id_division,$get_email_user, 'DONE'));
         }
 
         return redirect()->back()->with('update', 'Successfully!');
@@ -693,7 +693,7 @@ class AssetAtkController extends Controller
 
         $get_id_transac = AssetAtkTransaction::select('id_transaction')->where('id_barang', $request->id_barang)->orderBy('created_at','desc')->first();
 
-        $get_divisi_hr = User::select('email','id_position', 'name')->where('email', 'yudhi@sinergy.co.id')->first();
+        $get_divisi_hr = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
         $get_email_manager = collect([$get_divisi_hr]);
 
@@ -708,7 +708,7 @@ class AssetAtkController extends Controller
         $req_atk = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
         foreach ($receiver_final as $final) {
-            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position,$get_divisi_hr,'PENDING'));
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$final->id_position,$final->id_division,$get_divisi_hr,'PENDING'));
         }
 
 		return redirect()->back()->with('update', 'Request ATK akan diproses!');
@@ -738,7 +738,7 @@ class AssetAtkController extends Controller
 
         $get_id_transac = AssetAtkRequest::select('id_barang')->orderBy('created_at','desc')->first();
 
-        $get_divisi_hr = User::select('email','id_position', 'name')->where('email', 'yudhi@sinergy.co.id')->first();
+        $get_divisi_hr = User::select('email','id_position', 'id_division', 'name')->where('email', 'yudhi@sinergy.co.id')->first();
 
         $get_email_manager = collect([$get_divisi_hr]);
 
@@ -753,7 +753,7 @@ class AssetAtkController extends Controller
         $req_atk = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
         foreach ($receiver_final as $final) {
-            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Baru', $req_atk,$final->id_position,$get_divisi_hr,'REQUEST'));
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Baru', $req_atk,$final->id_position,$final->id_division,$get_divisi_hr,'REQUEST'));
         }
 
         return redirect()->back()->with('update', 'Request ATK akan diproses!');
@@ -785,7 +785,7 @@ class AssetAtkController extends Controller
 
         $get_email_user = collect([$kirim]);
 
-        $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
+        $get_divisi_hr = User::select('email','id_position', 'id_division')->where('id_position', 'HR MANAGER')->first();
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
@@ -801,7 +801,7 @@ class AssetAtkController extends Controller
         // return $req_atk;
 
         foreach ($receiver_final as $final) {
-            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Diterima', $req_atk,$final->id_position,$get_email_user, 'ACCEPT'));
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Diterima', $req_atk,$final->id_position,$final->id_division,$get_email_user, 'ACCEPT'));
         }
 
        	return redirect()->back()->with('update', 'Successfully!');
@@ -831,7 +831,7 @@ class AssetAtkController extends Controller
 
         $get_email_user = collect([$kirim]);
 
-        $get_divisi_hr = User::select('email','id_position')->where('email', 'yudhi@sinergy.co.id')->first();
+        $get_divisi_hr = User::select('email','id_position', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
@@ -846,7 +846,7 @@ class AssetAtkController extends Controller
                     ->first();
 
         foreach ($receiver_final as $final) {
-            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Ditolak', $req_atk,$final->id_position,$get_email_user, 'REJECT'));
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK Ditolak', $req_atk,$final->id_position,$final->id_division,$get_email_user, 'REJECT'));
         }
 
         return redirect()->back()->with('update', 'Successfully!');
@@ -888,7 +888,7 @@ class AssetAtkController extends Controller
 
         $get_email_user = collect([$kirim]);
 
-        $get_divisi_hr = User::select('email','id_position')->where('id_position', 'HR MANAGER')->first();
+        $get_divisi_hr = User::select('email','id_position', 'id_division')->where('id_position', 'HR MANAGER')->first();
 
         $receiver = $get_email_user->concat([$get_divisi_hr]);
 
@@ -903,7 +903,7 @@ class AssetAtkController extends Controller
         $receiver_final = $get_email_user;
 
         foreach ($receiver_final as $final) {
-            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK ditolak', $req_atk,$final->id_position,$get_email_user,'REJECTED'));
+            Mail::to($final)->send(new RequestATK('[SIMS-App] Request ATK ditolak', $req_atk,$final->id_position,$final->id_division,$get_email_user,'REJECTED'));
         }
 
         return redirect()->back()->with('update', 'Successfully!');   
