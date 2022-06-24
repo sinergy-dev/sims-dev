@@ -98,11 +98,11 @@ GA Asset
               <li class="nav-item">
                 <a class="nav-link" id="request_list" style="display: none;" data-toggle="tab" href="#request_asset" role="tab" aria-controls="kategori" aria-selected="false"><i class="fa fa- fa-exclamation"></i>&nbspRequest</a>
               </li>
-              <button class="btn btn-sm btn-primary pull-right" style="width: 120px;margin-left: 5px;display: none;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  
+          <!--     <button class="btn btn-sm btn-primary pull-right" style="display: none;width: 120px;margin-left: 5px;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  --> 
               <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
-              <a href="{{url('exportExcelAsset')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+              <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
               <li class="nav-item">
-                <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Current Borrowed/Request</a>
+                <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Occurance</a>
               </li>          
               <button class="btn btn-sm btn-success pull-right" style="width: 100px;margin-right: 5px;display: none;" id="btnRequest"><i class="fa fa-plus"> </i>&nbsp Request Asset</button>
               <button class="btn btn-sm btn-info pull-right" style="width: 100px;margin-right: 5px;display: none;" id="btnPinjam"><i class="fa fa-plus"> </i>&nbsp Borrow Asset</button>
@@ -257,7 +257,7 @@ GA Asset
                           <label class="label label-info">Request</label>
                         </td>
                         <td>
-                        <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{!!$data->keterangan!!}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
+                        <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
                         <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{!!$data->keterangan!!}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
                       </tr>
                     @endforeach
@@ -265,6 +265,7 @@ GA Asset
                       <tr>
                         <td>{{$datas->id_request}}</td>
                         <td>{{$datas->name}}</td>
+                        <td>{{$data->created_at}}</td>                        
                         <td>{{$datas->nama}}</td>
                         <td><div class="truncate">{{$datas->link}}</div></td> 
                         <td style="display: none" class="links{{$datas->id_request}}">{{$datas->link}}</td>
@@ -1069,7 +1070,7 @@ GA Asset
         	
           	<div class="form-group" id="dropdownAsset">
           		<label>Choose Barang</label>
-          		<select id="barang_asset" name="barang_asset"></select>
+          		<select id="barang_asset" name="barang_asset" style="width: 100%;"></select>
           	</div>
         	
         </div>
@@ -1100,6 +1101,8 @@ GA Asset
 @section('script')  
   <script type="text/javascript">
     $(document).ready(function(){
+        initCategory() 
+
         var accesable = @json($feature_item);
         accesable.forEach(function(item,index){
           $("#" + item).show()          
@@ -1220,8 +1223,6 @@ GA Asset
     $(document).ready(function(){
       $("#btnAdd").attr('data-target','#add_asset') 
 
-      initCategory() 
-
       $("#submitReq").on('click',function(){
         $('#requestAsset').modal('hide')
       })
@@ -1245,7 +1246,7 @@ GA Asset
       var datas_katPinjam = [];
       $.ajax({
         type:"GET",
-        url: "getAssetCategoriHR",
+        url: "{{url('/getAssetCategoriHR')}}",
         success:function(result){
           var arr = result.results;        
             var data = {
@@ -1278,8 +1279,9 @@ GA Asset
 
       $.ajax({
         type:"GET",
-        url: "getCategoryPinjam",
+        url: "{{url('/getCategoryPinjam')}}",
         success:function(result){
+          console.log("---ini result" + result)
           var arr = result.results;        
             var data = {
               id: -1,
@@ -1641,7 +1643,7 @@ GA Asset
     }    
 
     // $("#requestAccept").on('click',function(){
-    function requestAccept(note,keterangan,id_transaction,status){   	
+    function requestAccept(note,id_transac,status){   	
       var swalAccept;
       if (status == 'ACCEPT') {
       	var myArrayOfThings = [];  	
@@ -1649,9 +1651,8 @@ GA Asset
 
       	$("#acceptModalPinjam").modal('show')
         $(".titleWarning").text(titleStatus)
-      	$("#katModal").text(note)
-      	$("#noteModal").html('<br>'+keterangan)
-
+        $("#katModal").text(note)
+        // $("#noteModal").html('<br>'+keterangan)
         $('#dropdownAsset').show()
     	 
 	      $.ajax({
@@ -1659,78 +1660,79 @@ GA Asset
         data:{
           category:note
         },
-		    url: "getListAsset",
+		    url: "{{url('/getListAsset')}}",
 		    success:function(result){
-		      	var arr = result.results;        
-		        var data = {
-		          id: -1,
-		          text: 'Select Category...'
-		        };
+  	      	var arr = result.results;        
+  	        var data = {
+  	          id: -1,
+  	          text: 'Select Category...'
+  	        };
 
-		        myArrayOfThings.push(data)
-		        $.each(arr,function(key,value){
-		          myArrayOfThings.push(value)
-		        })
+  	        myArrayOfThings.push(data)
+  	        $.each(arr,function(key,value){
+  	          myArrayOfThings.push(value)
+  	        })
             console.log(arr)
 
-			    $("#barang_asset").select2({
-		          	placeholder: "Select a category",
-		            // theme: 'bootstrap4',
-		            data: myArrayOfThings
-		        })		       
-		    }
+  		      $("#barang_asset").select2({
+  	          	placeholder: "Select a category",
+  	            // theme: 'bootstrap4',
+  	            data: myArrayOfThings
+  	        })	
+	       
+  		    }
 		    })   
 
   		  $("#btnAcceptRequestModal").click(function(){
-  	    swalAccept = Swal.fire({
-          title: titleStatus,
-          text: "Are you sure?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-        })
+    	    swalAccept = Swal.fire({
+            title: titleStatus,
+            text: "Are you sure?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+          })
 
-        swalAccept.then((result) => {
-  		    if (result.value) {
-  		        Swal.fire({
-              title: 'Please Wait..!',
-              text: "It's updating..",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              allowEnterKey: false,
-              customClass: {
-                popup: 'border-radius-0',
-              },
-              onOpen: () => {
-                Swal.showLoading()
-              }
-            })
-            $.ajax({
-              type:"GET",
-              url:"{{url('acceptPeminjaman')}}",
-              data:{
-                id_transaction:id_transaction,
-                status:status,
-                id_barang:$('#barang_asset').select2('data')[0].id
-              },
-              success: function(result){
-                Swal.showLoading()
-                Swal.fire(
-                  'Successfully!',
-                  'success'
-                ).then((result) => {
-                  if (result.value) {
-                    location.reload()
-                    $("#acceptModalPinjam").modal('toggle')
-                  }
-                })
-              },
-            });
-          }        
-        })
+          swalAccept.then((result) => {
+    		    if (result.value) {
+    		        Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's updating..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                  popup: 'border-radius-0',
+                },
+                onOpen: () => {
+                  Swal.showLoading()
+                }
+              })
+              $.ajax({
+                type:"GET",
+                url:"{{url('acceptPeminjaman')}}",
+                data:{
+                  id_transaction:id_transaction,
+                  status:status,
+                  id_barang:$('#barang_asset').select2('data')[0].id
+                },
+                success: function(result){
+                  Swal.showLoading()
+                  Swal.fire(
+                    'Successfully!',
+                    'success'
+                  ).then((result) => {
+                    if (result.value) {
+                      location.reload()
+                      $("#acceptModalPinjam").modal('toggle')
+                    }
+                  })
+                },
+              });
+            }        
+          })
   		  })	
 
       }else{
@@ -1984,7 +1986,7 @@ GA Asset
     var table = $('#data_table').DataTable({
       pageLength: 20,
       columnDefs: [
-        { orderable: false, targets: 0},
+        // { orderable: false, targets: 0},
         { targets: 8, "visible": false}
       ],
       order: [[8, 'asc']]
