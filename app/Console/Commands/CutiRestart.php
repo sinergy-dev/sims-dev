@@ -47,6 +47,9 @@ class CutiRestart extends Command
             $update = User::where('nik',$data->nik)->first();
             $update->cuti = 0;
             $update->save();
+            syslog(LOG_ERR, "reset total cuti for : " . $data->email);
+
+            syslog(LOG_ERR, "after reset cuti : " . $data->cuti);
         }
     }
 }

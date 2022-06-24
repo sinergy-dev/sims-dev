@@ -19,6 +19,26 @@ Detail Lead Register
 			height: 2px;
 	}
 
+	.modal-dialog-centered{
+		min-height: calc(100% - (1.75rem * 2));
+	}
+
+	/*.modal-changeReq{
+		display: flex;
+		position: fixed;
+		z-index: 1060;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		padding: .625em;
+		overflow-x: hidden;
+		transition: background-color .1s;
+	}*/
+
 	.active-tab{
 	  display: block;
 	}
@@ -149,6 +169,68 @@ Detail Lead Register
 	@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 	@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
+	.dot {
+	  height: 50px;
+	  width: 50px;
+	  border: solid black;
+	  border-radius: 50%;
+	  display: inline-block;
+	  margin: auto;
+	}
+	.dot:nth-child(1){
+		margin-bottom: 10px;
+		/*background-color: #605ca8;*/
+		vertical-align: middle;
+		padding-top: 45px;
+		text-align: center;
+		color: white;
+	}
+
+	.dot:nth-child(3){
+		margin-bottom: 10px;
+		/*background-color: #FF851B;*/
+		vertical-align: middle;
+		padding-top: 45px;
+		text-align: center;
+		color: white;
+	}
+
+	.dot:nth-child(5){
+		margin-bottom: 10px;
+		/*background-color: #00c0ef;*/
+		vertical-align: middle;
+		padding-top: 35px;
+		text-align: center;
+		color: white;
+	}
+
+	.dot:nth-child(7){
+		margin-bottom: 10px;
+		/*background-color: #f39c12;*/
+		vertical-align: middle;
+		padding-top: 35px;
+		text-align: center;
+		color: white;
+	}
+
+	.dot:last-child{
+		margin-bottom: 10px;
+		/*background-color: #dedbd3;*/
+		vertical-align: middle;
+		padding-top: 45px;
+		text-align: center;
+		color: white;
+	/*	margin-bottom: 10px;
+		background-color: #dedbd3;
+		vertical-align: middle;
+		padding-top: 45px;
+		text-align: center;
+		color: #b5b3ac;
+		border-color: #dedbd3;*/
+	}
+
+
+	
 </style>
 @endsection
 @section('content')
@@ -167,8 +249,26 @@ Detail Lead Register
 	      		<div class="box-header">
 	      			<h3 class="box-title">Status</h3>
 	      		</div>
+	      		<div class="box-body">
+	      			<div style="text-align: center;margin: auto;padding-top: 15%;padding-bottom: 15%;" id="stageID">
+							  <span class="dot">INITIAL</span>
+							  <span class="arrow fa-2x fa fa-arrow-right"></span>
+							  <span class="dot"></span>
+
+							  <span class="arrow fa-2x fa fa-arrow-right"></span>
+							  <span class="dot"></span>
+
+							  <span class="arrow fa-2x fa fa-arrow-right"></span>
+							  <span class="dot"></span>
+
+							  <span class="arrow fa-2x fa fa-arrow-right"></span>
+							  <span class="dot"></span>
+							</div>
+	      		</div>
+
+	      		
 		          
-		        <div class="box-body" style="padding:32px">
+		       <!--  <div class="box-body" style="padding:32px">
 		          	<div class='circle-container'>
 		              <a>
 		                <span class="deg315 dot" id="init"></span>
@@ -185,7 +285,7 @@ Detail Lead Register
 		              <div class="step-content">
 		              </div>
 				        </div>
-			    	</div>
+			    	</div> -->
 	        </div>
 	    </div>
 		
@@ -276,7 +376,7 @@ Detail Lead Register
 		                        <th>Technology Tag</th>
 		                        <th>Price</th>
 		                        <td class="text-center">
-		                          <button class="btn btn-xs btn-primary" id="btn-addTagging" onclick="addTagging()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
+		                          <button class="btn btn-xs btn-primary" id="btn-addTagging" type="button" style="border-radius:50%;width: 25px;height: 25px;">
 								              	<i class="fa fa-plus"></i>
 								              </button> 
 		                        </td>
@@ -704,9 +804,23 @@ Detail Lead Register
 		    </div>
 		  </div>
 		</div>
+
+		<div class="modal fade" id="changeReqModal" role="dialog">
+		  <div class="modal-dialog modal-dialog-centered modal-sm">
+		    <div class="modal-content">
+		      <div class="modal-body divReqChange">		        
+		      </div>
+		      <div class="modal-footer">
+	          <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+	          <button type="button" class="btn btn-primary btn-submit-change" id="btn-submit-change">Yes</button>
+	        </div>
+		    </div>
+		  </div>
+		</div>
 </section>
 @endsection
 @section('scriptImport')
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -761,7 +875,290 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						showTagging(result.data[0].result)
+
+						if (result.data[0].result == 'LOSE') {
+							    var i = 0;
+							    $(".dot:eq(0)").first().animate({
+						        backgroundColor: "#605ca8!important",
+						      	color: "#fff",
+						        width: 110,
+						        height:110
+						      }, 200 ).text('INITIAL');
+							    $(".dot:eq(1)").first().animate({
+						        backgroundColor: "#FF851B!important",
+						      	color: "#fff",
+						        width: 110,
+						        height:110
+						      }, 400 ).text('OPEN');
+								 	$(".dot:eq(2)").first().animate({
+						        backgroundColor: "#04dda3!important",
+						      	color: "#fff",
+						        width: 110,
+						        height:110
+						      }, 600 ).text('SOLUTION DESIGN');
+									$(".dot:eq(3)").first().animate({
+						        backgroundColor: "#f7e127!important",
+						      	color: "#fff",
+						        width: 110,
+						        height:110
+						      }, 800 ).text("TENDER PROCESS");
+								$(".dot:eq(4)").first().animate({
+						        backgroundColor: "#e5140d!important",
+						      	color: "#fff",
+						        width: 110,
+						        height:110
+						      }, 1000 ).text("LOSE");
+						} else if (result.data[0].result == 'HOLD') {
+						    $(".dot:eq(0)").first().animate({
+					        backgroundColor: "#605ca8!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 200 ).text('INITIAL');
+						    $(".dot:eq(1)").first().animate({
+					        backgroundColor: "#FF851B!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 400 ).text('OPEN');
+							 	$(".dot:eq(2)").first().animate({
+					        backgroundColor: "#04dda3!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 600 ).text('SOLUTION DESIGN');
+								$(".dot:eq(3)").first().animate({
+					        backgroundColor: "#f7e127!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 800 ).text("TENDER PROCESS");
+								$(".dot:eq(4)").first().animate({
+					        backgroundColor: "#dbd5c5!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					    	}, 1000 ).text("HOLD");
+
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formTP')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+						} else if (result.data[0].result == 'SPECIAL') {
+						    $(".dot:eq(0)").first().animate({
+					        backgroundColor: "#605ca8!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 200 ).text('INITIAL');
+						    $(".dot:eq(1)").first().animate({
+					        backgroundColor: "#FF851B!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 400 ).text('OPEN');
+							 	$(".dot:eq(2)").first().animate({
+					        backgroundColor: "#04dda3!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 600 ).text('SOLUTION DESIGN');
+								$(".dot:eq(3)").first().animate({
+					        backgroundColor: "#f7e127!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 800 ).text("TENDER PROCESS");
+								$(".dot:eq(4)").first().animate({
+					        backgroundColor: "#dbd5c5!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					    	}, 1000 ).text("SPECIAL");
+						} else if (result.data[0].result == 'CANCEL') {
+						    $(".dot:eq(0)").first().animate({
+					        backgroundColor: "#605ca8!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 200 ).text('INITIAL');
+						    $(".dot:eq(1)").first().animate({
+					        backgroundColor: "#FF851B!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 400 ).text('OPEN');
+							 	$(".dot:eq(2)").first().animate({
+					        backgroundColor: "#04dda3!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 600 ).text('SOLUTION DESIGN');
+								$(".dot:eq(3)").first().animate({
+					        backgroundColor: "#f7e127!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 800 ).text("TENDER PROCESS");
+								$(".dot:eq(4)").first().animate({
+					        backgroundColor: "#dbd5c5!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					    	}, 1000 ).text("CANCEL");
+						} else if (result.data[0].result == '') {
+						    $(".dot:eq(0)").first().animate({
+					        backgroundColor: "#605ca8!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 200 ).text('INITIAL');
+						    $(".dot:eq(1)").first().animate({
+					        backgroundColor: "#FF851B!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 400 ).text('OPEN');
+							 	$(".dot:eq(2)").first().animate({
+					        backgroundColor: "#c6cccf!important",
+					      	color: "#86898a",
+					        width: 110,
+					        height:110
+					      }, 600 ).text('SOLUTION DESIGN');
+								$(".dot:eq(3)").first().animate({
+					        backgroundColor: "#c6cccf!important",
+					      	color: "#86898a",
+					        width: 110,
+					        height:110
+					      }, 800 ).text('TENDER PROCESS');
+								$(".dot:eq(4)").first().animate({
+					        backgroundColor: "#c6cccf!important",
+					      	color: "#86898a",
+					        width: 110,
+					        height:110
+					      }, 1000 ).text("WIN/LOSE");
+					      
+						    // alert($('#stageID').attr('class').split(' ')[1])
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formSD')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+
+						} else if (result.data[0].result == 'SD') {
+								$(".dot:eq(0)").first().animate({
+					        backgroundColor: "#605ca8!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 200 ).text('INITIAL');
+						    $(".dot:eq(1)").first().animate({
+					        backgroundColor: "#FF851B!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 400 ).text('OPEN');
+							 	$(".dot:eq(2)").first().animate({
+					        backgroundColor: "#04dda3!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 600 ).text('SOLUTION DESIGN');
+								$(".dot:eq(3)").first().animate({
+					        backgroundColor: "#c6cccf!important",
+					      	color: "#86898a",
+					        width: 110,
+					        height:110
+					      }, 800 ).text("TENDER PROCESS");
+							$(".dot:eq(4)").first().animate({
+					        backgroundColor: "#c6cccf!important",
+					      	color: "#86898a",
+					        width: 110,
+					        height:110
+					      }, 1000 ).text("WIN/LOSE");
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formSD')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+						} else if (result.data[0].result == 'TP') {
+								$(".dot:eq(0)").first().animate({
+					        backgroundColor: "#605ca8!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 200 ).text('INITIAL');
+						    $(".dot:eq(1)").first().animate({
+					        backgroundColor: "#FF851B!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 400 ).text('OPEN');
+							 	$(".dot:eq(2)").first().animate({
+					        backgroundColor: "#04dda3!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 600 ).text('SOLUTION DESIGN');
+								$(".dot:eq(3)").first().animate({
+					        backgroundColor: "#f7e127!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 800 ).text("TENDER PROCESS");
+							$(".dot:eq(4)").first().animate({
+					        backgroundColor: "#c6cccf!important",
+					      	color: "#86898a",
+					        width: 110,
+					        height:110
+					      }, 1000 ).text("WIN/LOSE");
+						    accesable.forEach(function(item,index){
+						  		if (item.includes('formTP')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
+						} else if (result.data[0].result == 'OPEN') {
+								$(".dot:eq(0)").first().animate({
+					        backgroundColor: "#aa0000!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 1000 );
+						    $('#init').addClass('active5');
+						}else if (result.data[0].result == "WIN"){
+								$(".dot:eq(0)").first().animate({
+					        backgroundColor: "#605ca8!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 200 ).text('INITIAL');
+						    $(".dot:eq(1)").first().animate({
+					        backgroundColor: "#FF851B!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 400 ).text('OPEN');
+							 	$(".dot:eq(2)").first().animate({
+					        backgroundColor: "#04dda3!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 600 ).text('SOLUTION DESIGN');
+								$(".dot:eq(3)").first().animate({
+					        backgroundColor: "#f7e127!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 800 ).text("TENDER PROCESS");
+								$(".dot:eq(4)").first().animate({
+					        backgroundColor: "#246d18!important",
+					      	color: "#fff",
+					        width: 110,
+					        height:110
+					      }, 1000 ).text("WIN");
+	      				var i = 0;
+	      		}
 
 						showSbe()
 
@@ -799,7 +1196,7 @@ Detail Lead Register
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Customer</th>'
-	  		  		append = append + '<td>'+result.data[0].customer_legal_name+'</td>'
+	  		  		append = append + '<td>'+result.data[0].customer_legal_name+'<button class="btn btn-warning btn-edit-customer btn-xs pull-right">Edit</button></td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Opty Name</th>'
@@ -811,7 +1208,7 @@ Detail Lead Register
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Amount</th>'
-	  		  		append = append + '<td>'+ new Intl.NumberFormat('id').format(result.data[0].amount) +'</td>'
+	  		  		append = append + '<td>'+ new Intl.NumberFormat('id').format(result.data[0].amount) +'<button class="btn btn-warning btn-edit-amount btn-xs pull-right" style="display:none">Edit</button></td>'
 	  		  	append = append + '</tr>'
 	  		  	append = append + '<tr>'
 	  		  		append = append + '<th>Closing date</th>'
@@ -874,8 +1271,164 @@ Detail Lead Register
 				        })
 					    }
 						})
+
+			      id_customer = result.data[0].id_customer
+						$(".btn-edit-customer").click(function(){
+							$("#changeReqModal").modal("show")
+							$(".divReqChange").empty("")
+
+							var append = ""
+							append = append + "<div><center><i class='fa fa-warning fa-5x' style='color:#f1c40f'></i></center></div>"
+
+							append = append + "<div><i></i><h3><center>Are you sure to change this customer?</center></h3><center>By change this customer, an email will be sent to your supervisor as permission for this activity.Then you must write down your reasons why the customer in must be changed below.</center></div>"
+							append = append + "<div class='form-group'>"
+							append = append + "<label>Reason :</label>"
+							append = append + "<textarea class='form-control' id='textareaChangeCus'></textarea>"
+							append = append + "</div>"
+							append = append + "<div class='form-group'>"
+							append = append + "<label>Customer :</label>"
+							append = append + "<select class='select2 form-control selectChangeCus' id='select2ChangeCus' style='width:100%'></select>"
+							append = append + "</div"							
+
+							$(".divReqChange").append(append)
+
+							$.ajax({
+								url: "{{url('/project/getCustomer')}}",
+								type: "GET",
+								success:function(result){
+									$(".selectChangeCus").select2({
+						      	placeholder: "Select Customer",
+								  	data:result.data,
+									  dropdownParent: $("#changeReqModal"),
+								  })
+
+									$('.selectChangeCus').val(id_customer).trigger('change')
+
+								}
+							})
+
+							$(".btn-submit-change").click(function(){
+								$(".btn-submit-change").attr("onclick",submitChangeCustomer($("#textareaChangeCus").val(),$("#select2ChangeCus").select2('data')[0].id))
+							})
+							
+
+						})	
+
+						amount = result.data[0].amount
+						if (result.data[0].result == 'WIN') {
+							$(".btn-edit-amount").css("display","block")
+						}
+						$(".btn-edit-amount").click(function(){
+							$("#changeReqModal").modal("show")
+							$(".divReqChange").empty("")
+
+							var append = ""
+							append = append + "<div><center><i class='fa fa-warning fa-5x' style='color:#f1c40f'></i></center></div>"
+							
+							append = append + "<div><i></i><h3><center>Are you sure to change this customer?</center></h3><center>By change this customer, an email will be sent to your supervisor as permission for this activity.Then you must write down your reasons why the customer in must be changed below.</center></div>"
+							append = append + "<div class='form-group'>"
+							append = append + "<label>Reason :</label>"
+							append = append + "<textarea id='textareaChangeAmount' class='form-control'></textarea>"
+							append = append + "</div>"
+							append = append + "<div class='form-group'>"
+							append = append + "<label>Amount :</label>"
+								append = append + "<div class='input-group'><span class='input-group-addon'>Rp.</span>"
+									append = append + "<input id='inputChangeAmount' class='form-control' value='"+amount+"'/>"
+								append = append + "</div>"
+							append = append + "</div"							
+
+							$(".divReqChange").append(append)
+
+							$("#inputChangeAmount").unmask().mask('000.000.000.000', {reverse: true})
+
+							$(".btn-submit-change").click(function(){
+								$(".btn-submit-change").attr("onclick",submitChangeAmount($("#textareaChangeAmount").val(),$("#inputChangeAmount").val()))
+							})
+							
+
+						})					
+
 					}
 				})
+
+				function submitChangeCustomer(textarea,input){
+					Swal.fire({
+	            title: 'Please Wait..!',
+	            text: "It's sending..",
+	            allowOutsideClick: false,
+	            allowEscapeKey: false,
+	            allowEnterKey: false,
+	            customClass: {
+	                popup: 'border-radius-0',
+	            },
+	            onOpen: () => {
+	                Swal.showLoading()
+	            }
+	        })
+	        $.ajax({
+						type:"POST",
+						url:"{{url('/project/changeCustomer')}}",
+						data:{
+							_token: "{{ csrf_token() }}",
+							lead_id:window.location.href.split("/")[5],
+							input_cus:input,
+							input_reason:textarea
+						},
+						success: function(result) {
+                Swal.showLoading()
+                Swal.fire(
+                    'Successfully!',
+                   	'Send Request Change.',
+                    'success'
+                ).then((result) => {
+                    if (result.value) {
+                    	location.reload()
+                    	$("#changeReqModal").modal('hide')
+                    }
+                })
+            }
+					})
+					
+				}
+
+				function submitChangeAmount(textarea,input){
+					Swal.fire({
+	            title: 'Please Wait..!',
+	            text: "It's sending..",
+	            allowOutsideClick: false,
+	            allowEscapeKey: false,
+	            allowEnterKey: false,
+	            customClass: {
+	                popup: 'border-radius-0',
+	            },
+	            onOpen: () => {
+	                Swal.showLoading()
+	            }
+	        })
+					$.ajax({
+							type:"POST",
+							url:"{{url('/project/changeNominal')}}",
+							data:{
+								_token: "{{ csrf_token() }}",
+								lead_id:window.location.href.split("/")[5],
+								input_amount:input.replace(/\./g,''),
+								input_reason:textarea
+							},
+							success: function(result) {
+	                Swal.showLoading()
+	                Swal.fire(
+	                    'Successfully!',
+	                   	'Send Request Change.',
+	                    'success'
+	                ).then((result) => {
+	                    if (result.value) {
+	                    	location.reload()
+	                    	$("#changeReqModal").modal('hide')
+	                    }
+	                })
+	            }
+						})
+				}
 
 				$.ajax({
 					type:"GET",
@@ -884,49 +1437,32 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-						$("#assesment").val(result.data.assessment)
-						if (result.data.assessment_date != '-') {
-							$("#assessment_last_update").html('<small> Last Update : '+result.data.assessment_date+'</small>')
-						}
-						$("#propossed_design").val(result.data.pd)
-						if (result.data.pd_date != '-') {
-							$("#pDesign_last_update").html('<small> Last Update : '+result.data.pd_date+'</small>')
-						}
-						$("#pov").val(result.data.pov)
-						if (result.data.pov_date != '-') {
-							$("#pov_last_update").html('<small> Last Update : '+result.data.pov_date+'</small>')
-						}
-						$("#amount_check").val(result.data.pb)
-						$("#priority").val(result.data.priority)
-						$("#proyek_size").val(result.data.project_size)
-						$("#project_budget").val(result.data.pb).unmask().mask('000.000.000.000', {reverse: true})		
+						if (result.data != null) {
+							$("#assesment").val(result.data.assessment)
+							if (result.data.assessment_date != '-') {
+								$("#assessment_last_update").html('<small> Last Update : '+result.data.assessment_date+'</small>')
+							}
+							$("#propossed_design").val(result.data.pd)
+							if (result.data.pd_date != '-') {
+								$("#pDesign_last_update").html('<small> Last Update : '+result.data.pd_date+'</small>')
+							}
+							$("#pov").val(result.data.pov)
+							if (result.data.pov_date != '-') {
+								$("#pov_last_update").html('<small> Last Update : '+result.data.pov_date+'</small>')
+							}
+							$("#amount_check").val(result.data.pb)
+							$("#priority").val(result.data.priority)
+							$("#proyek_size").val(result.data.project_size)
+							$("#project_budget").val(result.data.pb).unmask().mask('000.000.000.000', {reverse: true})		
 
-						$("#pov").height( $("#pov")[0].scrollHeight)
-						$("#propossed_design").height( $("#propossed_design")[0].scrollHeight)
-						$("#assesment").height( $("#assesment")[0].scrollHeight)
+							$("#pov").height( $("#pov")[0].scrollHeight)
+							$("#propossed_design").height( $("#propossed_design")[0].scrollHeight)
+							$("#assesment").height( $("#assesment")[0].scrollHeight)
+						}
+						
 
 						var fd = new FormData()			
-
-						if (result.data.result == 'SD') {
-							console.log("SD")
-							var i = 0
-							setInterval(function() {
-					        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-					        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-					        i++
-					        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-					        $('#sd').parent("span").addClass('box-shadow')
-
-					        $('#s_init').html("<b> INITIAL </b>");
-					        $('#s_open').html("<b> OPEN </b>");
-					        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-					    }, 1000)
-					    var kedipan = 500;
-					    var dumet = setInterval(function() {
-					        var ele = document.getElementById('sd');
-					        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-					    }, kedipan); 
-						}		
+	
 						$("#btnSubmitSD").click(function(){
 							if (parseInt($("#project_budget").val().replaceAll(".", "")) > result.data.amount) {
 			  				$("#project_budget").closest('.form-group').addClass('has-error')
@@ -1061,26 +1597,6 @@ Detail Lead Register
 
 						var i = 0;
 
-						if (result.data.result == 'TP') {
-					    setInterval(function() {
-					        i++
-					        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-					        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-					        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-					        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-					        $('#tp').parent("span").addClass('box-shadow')
-
-					        $('#s_init').html("<b> INITIAL </b>");
-					        $('#s_open').html("<b> OPEN </b>");
-					        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-					        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-					    }, 1000)
-					    var kedipan = 500;
-					    var dumet = setInterval(function() {
-					        var ele = document.getElementById('tp');
-					        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-					    }, kedipan)
-						}
 						$("#btnSubmitTP").click(function(){
 								if($("#lelang").val() != result.data.auction_number){
 									auction_number = $("#lelang").val()
@@ -1240,7 +1756,19 @@ Detail Lead Register
 
 		function grandTotal(){
     	var sum = 0
-      $('.new-price').each(function() {
+    	$('.new-price').each(function() {
+          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          sum += temp;
+      });
+      $('.new-price-win').each(function() {
+          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          sum += temp;
+      });
+      $('.price_sbe_win').each(function() {
+          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          sum += temp;
+      });
+      $('.price_sbe').each(function() {
           var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
           sum += temp;
       });
@@ -1251,81 +1779,6 @@ Detail Lead Register
       });
 
       $("#input_gran_total").val(formatter.format(sum))
-    }
-		
-  	function addTagging(){
-			var i = 0;
-  		if ($('#tbtagging tr').length < 0) {
-  			$("#btnRaiseTP").prop("disabled",false)
-  		}else{
-  			$("#btnRaiseTP").prop("disabled",true)
-  		}
-
-  		$.ajax({
-        url: "{{url('/project/getProductTechTagDetail')}}",
-        type: "GET",
-        data: {
-            lead_id: window.location.href.split('/')[5],
-        },
-        success: function(result) {
-            $("#searchTagsProductSol[data-value='" + i + "']").empty("");
-            $("#searchTagsTechnologySol[data-value='" + i + "']").empty("");
-            var product_tag = result.product_tag;
-            var product_tag_selectOption = [];
-
-            var technology_tag = result.technology_tag;
-            var technology_tag_selectOption = [];
-
-            $.each(product_tag, function(key, value) {
-                product_tag_selectOption.push(value)
-            })
-
-            $.each(technology_tag, function(key, value) {
-                technology_tag_selectOption.push(value)
-            })
-
-            var TagProduct = $("#searchTagsProductSol[data-value='" + i + "']").select2({
-                dropdownParent: $('#formSD'),
-                placeholder: " Select #Tags#Product",
-                data: product_tag_selectOption,
-                templateSelection: function(selection, container) {
-                    return $.parseHTML('<span>' + selection.text + '</span>');
-                }
-            })
-            var TagProduct = $("#searchTagsTechnologySol[data-value='" + i + "']").select2({
-                dropdownParent: $('#formSD'),
-                placeholder: " Select #Tags#Technology",
-                data: technology_tag_selectOption,
-                templateSelection: function(selection, container) {
-                    return $.parseHTML('<span>' + selection.text + '</span>');
-                }
-            })
-        }
-    	})
-
-      i++;
-      var append = ""
-      append = append + "<tr class='new-tagging'>"
-      append = append + " <td><input hidden class='id' data-value='"+ i +"' />"
-      append = append + " <select class='form-control select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' name='searchTagsProductSol' style='width: 100%!important'></select>"
-      append = append + " </td>"
-      append = append + " <td>"
-      append = append + " <select class='form-control select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' name='searchTagsTechnologySol' style='width: 100%!important'></select>"
-      append = append + " </td>"
-      append = append + " <td style='white-space: nowrap'>"
-      append = append + " <div class='input-group'>"
-      append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip' title='50000' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input data-value='" + i + "' class='money form-control new-price-sol' name='new-price-sol' type='text' placeholder='Enter Product Price'>"
-      append = append + " </div>"
-      append = append + " </td>"
-      append = append + " <td class='text-center'>"
-      append = append + " <button type='button' data-value='"+i+"' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging'><i class='fa fa-trash'></i></button><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
-      append = append + " </td>"
-      append = append + "</tr>"
-      
-      $("#tbtagging").append(append)
-      initmoney();
-      $(".btn-edit-tagging").prop("disabled",true)
     }
 
     var arrSbe = []
@@ -1408,7 +1861,6 @@ Detail Lead Register
 
     $(document).on('keypress', '.new-price-sol', function() {
     	if (isMobile == true) {
-    		console.log('oke')
 			  Swal.fire({
 				  title: 'product price',
 				  input: 'text',
@@ -1430,186 +1882,107 @@ Detail Lead Register
     	}		
 		})
 
+    var i;
     var idExist = []
-    function showTagging(status){
-    	console.log("result" + result)
-    	$.ajax({
-	    	url: "{{url('/project/showTagging')}}",
-	      type: "GET",
-	      data: {
-	          lead_id: window.location.href.split('/')[5],
-	      },success: function(result){
-	    		i = 0
-	      	$.each(result, function(key,value){
-	      		addTaggingNotEmpty(value.id,value.id_product_tag,value.id_technology_tag,value.price,i)
-	    			idExist.push(value.id)
-	      		++i
-	      	})
-	      	if (result.length > 0){
-	      		if ($('#tbtagging tr').length < 0) {
-			  			$("#btnRaiseTP").prop("disabled",true)
-			  		}else{
-			  			$("#btnRaiseTP").prop("disabled",false)
-			  		}
-	      	}	
+    $.ajax({
+    	url: "{{url('/project/showTagging')}}",
+      type: "GET",
+      data: {
+          lead_id: window.location.href.split('/')[5],
+      },success: function(result){
+    		var i = 0;
+      	$.each(result, function(key,value){
+      		addTaggingNotEmpty(value.id,value.id_product_tag,value.id_technology_tag,value.price,i)
+    			idExist.push(value.id)
+      		++i
+      	})
+				$("#btn-addTagging").click(function(){
+      		$("#btn-addTagging").attr('onclick',addTagging(i++))
+				})
 
-	      	if (status == 'LOSE') {
-							    var i = 0;
-							    setInterval(function() {
-							        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-							        i++
-							        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-							        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-							        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-							        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active6');
-						        	$('#win_lose').parent("span").addClass('box-shadow')
+      	if (result.length > 0){
+      		if ($('#tbtagging tr').length < 0) {
+		  			$("#btnRaiseTP").prop("disabled",true)
+		  		}else{
+		  			$("#btnRaiseTP").prop("disabled",false)
+		  		}
+      	}     		
 
-							        $('#s_init').html("<b> INITIAL </b>");
-							        $('#s_open').html("<b> OPEN </b>");
-							        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-							        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-							        $('#s_winlose').html("<b> LOSE </b>");
-							    }, 1000)
-							    var kedipan = 500;
-							    var dumet = setInterval(function() {
-							        var ele = document.getElementById('win_lose');
-							        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-							    }, kedipan);
-						} else if (status == 'HOLD') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
-						        $('#win_lose').parent("span").addClass('box-shadow')
+      }
+    })
+		
+  	function addTagging(i){
+  		if ($('#tbtagging tr').length < 0) {
+  			$("#btnRaiseTP").prop("disabled",false)
+  		}else{
+  			$("#btnRaiseTP").prop("disabled",true)
+  		}
 
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						        $('#s_winlose').html("<b> HOLD </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('win_lose');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
+  		$.ajax({
+        url: "{{url('/project/getProductTechTagDetail')}}",
+        type: "GET",
+        data: {
+            lead_id: window.location.href.split('/')[5],
+        },
+        success: function(result) {
+            $("#searchTagsProductSol[data-value='" + i + "']").empty("");
+            $("#searchTagsTechnologySol[data-value='" + i + "']").empty("");
+            var product_tag = result.product_tag;
+            var product_tag_selectOption = [];
 
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formTP')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-						} else if (status == 'SPECIAL') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active');
-						        $('#win_lose').parent("span").addClass('box-shadow')
+            var technology_tag = result.technology_tag;
+            var technology_tag_selectOption = [];
 
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						        $('#s_winlose').html("<b> SPECIAL </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('win_lose');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-						} else if (status == 'CANCEL') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-						        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-						        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-						        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        $('#win_lose').parent("span").addClass('box-shadow')
+            $.each(product_tag, function(key, value) {
+                product_tag_selectOption.push(value)
+            })
 
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-						        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-						        $('#s_winlose').html("<b> CANCEL </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('win_lose');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
-						} else if (status == '') {
-						    var i = 0;
-						    setInterval(function() {
-						        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-						        i++
-						        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1')
-						        $('#open').parent("span").addClass('box-shadow')
-						        $('#s_init').html("<b> INITIAL </b>");
-						        $('#s_open').html("<b> OPEN </b>");
-						    }, 1000)
-						    var kedipan = 500;
-						    var dumet = setInterval(function() {
-						        var ele = document.getElementById('open');
-						        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-						    }, kedipan);
+            $.each(technology_tag, function(key, value) {
+                technology_tag_selectOption.push(value)
+            })
 
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formSD')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
+            var TagProduct = $("#searchTagsProductSol[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Product",
+                data: product_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+            var TagProduct = $("#searchTagsTechnologySol[data-value='" + i + "']").select2({
+                dropdownParent: $('#formSD'),
+                placeholder: " Select #Tags#Technology",
+                data: technology_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+        }
+    	})
 
-						} else if (status == 'SD') {
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formSD')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-						} else if (status == 'TP') {
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formTP')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-						} else if (status == 'OPEN') {
-						    $('#init').addClass('active5');
-					}else if (status == "WIN"){
-	      		var i = 0;
-				    setInterval(function() {
-				        $('#init:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active5');
-				        $('#open:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active1');
-				        $('#sd:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active2');
-				        $('#tp:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active3');
-				        i++
-
-				        $('#win_lose:nth-of-type(' + (i - 1) + ')').removeClass('active').addClass('active4');
-				        $('#win_lose').parent("span").addClass('box-shadow')
-
-				        $('#s_init').html("<b> INITIAL </b>");
-				        $('#s_open').html("<b> OPEN </b>");
-				        $('#s_sd').html("<b> SOLUTION DESIGN </b>");
-				        $('#s_tp').html("<b> TENDER PROCCESS </b>");
-				        $('#s_winlose').html("<b> WIN </b>");
-				    }, 1000)
-				    var kedipan = 500;
-				    var dumet = setInterval(function() {
-				        var ele = document.getElementById('win_lose');
-				        ele.style.visibility = (ele.style.visibility == 'hidden' ? '' : 'hidden');
-				    }, kedipan);
-	      	}
-
-	      }
-	    })
+      i++;
+      var append = ""
+      append = append + "<tr class='new-tagging'>"
+      append = append + " <td><input hidden class='id' data-value='"+ i +"' />"
+      append = append + " <select class='form-control select2-customProductSol' data-value='" + i + "' id='searchTagsProductSol' name='searchTagsProductSol' style='width: 100%!important' required></select>"
+      append = append + " </td>"
+      append = append + " <td>"
+      append = append + " <select class='form-control select2-customTechnologySol' data-value='" + i + "' id='searchTagsTechnologySol' name='searchTagsTechnologySol' style='width: 100%!important' required></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip' title='50000' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input data-value='" + i + "' class='money form-control new-price-sol' name='new-price-sol' type='text' placeholder='Enter Product Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center'>"
+      append = append + " <button type='button' data-value='"+i+"' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging' value='"+i+"'><i class='fa fa-trash'></i></button><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+      
+      $("#tbtagging").append(append)
+      initmoney();
+      $(".btn-edit-tagging").prop("disabled",true)
     }
 
     function showSbe(status){
@@ -1719,7 +2092,7 @@ Detail Lead Register
     function addProductTechInitiate(id,id_product,id_tech,price,i){
     	var append = ""
       append = append + "<tr class='exist-product'>"
-      append = append + " <td><input id='tagging-win-status' data-value='"+i+"'/><input hidden class='idWinTagging' name='id-win' data-value='"+ i +"'/>"
+      append = append + " <td><input id='tagging-win-status' hidden data-value='"+i+"'/><input hidden class='idWinTagging' name='id-win' data-value='"+ i +"'/>"
       append = append + " <select disabled class='form-control select2-customProduct' data-value='" + i + "' id='searchTagsProduct' style='width: 100%!important'></select>"
       append = append + " </td>"
       append = append + " <td>"
@@ -1821,9 +2194,11 @@ Detail Lead Register
     }
 
     function addSbeResultNotEmpty(id,tag_sbe,price,i){
+	 			$("#tbtagsbe").empty()	 
+
 	    	var append = ""
 	      append = append + "<tr class='exist-sbe-win'>"
-	      append = append + " <td><input id='tagging-sbe-win-status' data-value='"+i+"'/><input hidden class='id_sbe_win' name='id_sbe' data-value='"+ i +"' />"
+	      append = append + " <td><input id='tagging-sbe-win-status' hidden data-value='"+i+"'/><input hidden class='id_sbe_win' name='id_sbe' data-value='"+ i +"' />"
 	      append = append + " <select class='form-control select2-customSBE tag_sbe_win' disabled id='searchSBE' name='tag_sbe_win' data-value='" + i + "' style='width: 100%!important'></select>"
 	      append = append + " </td>"
 	      append = append + " <td style='white-space: nowrap'>"
@@ -1981,13 +2356,14 @@ Detail Lead Register
         $("#addService").show()
       }
 
+      grandTotal()
+
       row = $(this).parents("tr").find("input[name='id']").val();
     	deletedProductWin.push(row)
     });
 
 		$(document).on('click', '.btn-trash-tagging', function() {
       $(this).closest("tr").remove();
-      console.log($('#tbtagging tr').length)
       if ($('#tbtagging tr').length < 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
@@ -2001,7 +2377,6 @@ Detail Lead Register
 
     $(document).on('click', '.btn-trash-tagging-sbe', function() {
       $(this).closest("tr").remove();
-      console.log($('#tbSbe tr').length)
       if ($('#tbSbe tr').length < 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
@@ -2023,6 +2398,7 @@ Detail Lead Register
       if($(this).closest("tr.new-service").length > 0){
         $("#addService").show()
       }
+			grandTotal()
 
       rowId = $(this).parents("tr").find("input[name='id_sbe']").val();
 		  rowName = $(this).parents("tr").find(".tag_sbe_win option:selected").text();
@@ -2099,17 +2475,13 @@ Detail Lead Register
     	var lead_id = window.location.href.split("/")[5]
 
     	id_val = $(this).parents("tr").find("#tagging-win-status").val()
-    	console.log(id_val+"id_val")
 
     	if (id_val == '') {
-    		console.log($("#tagging-win-status[data-value="+dataValue+"]"))
-    		console.log(dataValue)
     		// $("#tagging-win-status[data-value="+dataValue+"]").val("pencil"+dataValue) 
     		$("#tagging-win-status[data-value='"+dataValue+"']").val("pencil"+dataValue)    		
 
     	}else if (id_val == "pencil"+dataValue) {
     		if (price == '') {
-    			console.log(price)
     			Swal.fire({
 	          title: 'Can`t Submit Result!',
 	          icon: 'error',
@@ -2216,7 +2588,6 @@ Detail Lead Register
     }
 
     function updateTaggingSbeWin(id_exist,tag_sbe,name_sbe,price,dataValue){
-    	console.log(id_exist)
     	$.ajax({
           url: "{{url('/project/updateSbeTag')}}",
           type: 'post',
@@ -2250,8 +2621,6 @@ Detail Lead Register
     var id_exist,product,techno,price,dataValue,lead_id = '' 	  
 
     function updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id){
-    	console.log(dataValue)
-    	console.log(window.location.href.split("/")[5])
   		$.ajax({
           url: "{{url('/project/updateProductTag')}}",
           type: 'post',
@@ -2308,8 +2677,6 @@ Detail Lead Register
 	      data.append("name_sbe_delete",nameSbe)
 	      data.append("price_sbe_delete",priceSbe)
 	      data.append("id_exist",idExist)
-
-	      console.log(data)
 
   			Swal.fire({
 			        title: 'Please Wait..!',
@@ -2426,6 +2793,18 @@ Detail Lead Register
         grandTotal()
       });
 
+      $(document).on('input', '.new-price-win', function() {
+        grandTotal()
+      });
+
+      $(document).on('input', '.price_sbe_win', function() {
+        grandTotal()
+      });
+
+      $(document).on('input', '.price_sbe', function() {
+        grandTotal()
+      });
+
 			$('#result').on('change', function (e) {
         var optionSelected = $("option:selected", this);
         var valueSelected = this.value;
@@ -2533,7 +2912,6 @@ Detail Lead Register
 				          lead_id: window.location.href.split('/')[5],
 				      },success: function(result){
 				      	$.each(result, function(key,value){
-				      		console.log(key)
 				      		addProductTechInitiate(value.id,value.id_product_tag,value.id_technology_tag,value.price,key)
 				      	})
 				      	grandTotal()
@@ -2567,7 +2945,7 @@ Detail Lead Register
 		            append = append + " <td style='white-space: nowrap'>"
 		            append = append + " <div class='input-group'>"
 		            append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-		            append = append + " <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Service Price'>"
+		            append = append + " <input data-value='" + i + "' class='money form-control new-price-win' type='text' placeholder='Enter Service Price'>"
 		            append = append + " </div>"
 		            append = append + " </td>"
 		            append = append + " <td class='text-center'>"
@@ -2684,7 +3062,6 @@ Detail Lead Register
     }
 
     function submitWinStep2(id,arr_sbe){
-    	console.log(id)
       var emptyProduct = $("#table-product #tbtagprice tr input").filter(function() {
         return !this.value.trim();
       })
@@ -2696,6 +3073,13 @@ Detail Lead Register
         return !this.value.trim();
       })
       var itemsSerice = emptyService.map(function() {
+        return this.placeholder;
+      }).get();
+
+      var emptySbe = $("#table-sbe #tbtagsbe tr input").filter(function() {
+        return !this.value.trim();
+      })
+      var itemsSbe = emptySbe.map(function() {
         return this.placeholder;
       }).get();
 
@@ -2711,6 +3095,13 @@ Detail Lead Register
           title: 'Can`t Submit Result!',
           icon: 'error',
           html: "<p style='text-align:center;'>Please Select Service and fill Price!!</p>",
+          confirmButtonText: 'Oke',
+        })
+      } else if (itemsSbe.includes("Enter Sbe Price")) {
+        Swal.fire({
+          title: 'Can`t Submit Result!',
+          icon: 'error',
+          html: "<p style='text-align:center;'>Please Select Sbe and fill Price!!</p>",
           confirmButtonText: 'Oke',
         })
       } else {
