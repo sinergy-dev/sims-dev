@@ -9,7 +9,11 @@ use App\Partnership;
 use PDF;
 use Excel;
 use File;
+use App\User;
+use App\PartnershipCertification;
+use App\PartnershipImageCertificate;
 
+use Intervention\Image\ImageManagerStatic as Image;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -215,6 +219,27 @@ class PartnershipController extends Controller
         return view('DVG.partnership', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim', 'notifc'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('partnership')]);
     }
 
+    public function detail($id)
+    {
+        $data = Partnership::select('id_partnership', 'partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo')->where('id_partnership', $id)->first();
+
+        $sidebar_collapse = true;
+
+        return view('DVG.partnership_detail', compact('data', 'sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('partnership')]);;
+    }
+
+    public function getUser()
+    {
+        $getUser = collect(User::join('role_user','role_user.user_id','=','users.nik')
+            ->join('roles','role_user.role_id','=','roles.id')
+            ->select(DB::raw('`users`.`nik` AS `id`,`users`.`name` AS `text`'))
+            ->whereRaw("(`roles`.`group` = 'msm' OR `roles`.`group` = 'pmo' OR `roles`.`group` = 'sales' OR `roles`.`group` = 'presales' OR `roles`.`group` = 'DVG' OR `roles`.`group` = 'DPG')")
+            ->where('status_karyawan', '!=', 'dummy')
+            ->get());
+
+        return array("data"=>$getUser);
+    }
+
     public function store(Request $request)
     {
     	$tambah 						= new Partnership();
@@ -222,13 +247,111 @@ class PartnershipController extends Controller
     	$tambah->partner 				= $request['partner'];
         $tambah->level                  = $request['level'];
     	$tambah->renewal_date 			= $request['renewal_date'];
-    	$tambah->annual_fee 			= $request['annual_fee'];
+    	$tambah->annual_fee 			= str_replace('.', '', $request['annual_fee']);;
     	$tambah->sales_target 			= $request['sales_target'];
     	$tambah->sales_certification 	= $request['sales_certification'];
     	$tambah->engineer_certification = $request['engineer_certification'];
+        $tambah->levelling              = $request['levelling'];
+        $tambah->cam_name               = $request['cam'];
+        $tambah->cam_email              = $request['cam_email'];
+        $tambah->cam_phone              = $request['cam_phone'];
+        $tambah->email_support          = $request['email_support'];
+        $tambah->id_mitra               = $request['id_mitra'];
     	$tambah->save();
 
+        $lastid = Partnership::select('id_partnership')->orderBy('created_at', 'desc')->first();
+
+        $count = count($request['cert_name']);
+
+        for($i = 0; $i < $count; $i++){
+            $data = array(
+                'id_partnership'       => $lastid->id_partnership,
+                'nik'                  => $request['cert_person'][$i],
+                'level_certification'  => $request['cert_type'][$i],
+                'name_certification'   => $request['cert_name'][$i],
+            );
+            $insertData[] = $data;
+        }
+        PartnershipCertification::insert($insertData);
+
         return redirect('/partnership')->with('success', 'Created Partnership Successfully!');
+    }
+
+    public function getDetailPartnership(Request $request)
+    {
+        $data = Partnership::select('partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra')->where('id_partnership', $request->id)->first();
+
+        return array("data" => $data);
+    }
+
+    public function addCertList(Request $request)
+    {
+        $count = count($request['cert_name']);
+
+        for($i = 0; $i < $count; $i++){
+            $data = array(
+                'id_partnership'       => $request['id_partnership'],
+                'nik'                  => $request['cert_person'][$i],
+                'level_certification'  => $request['cert_type'][$i],
+                'name_certification'   => $request['cert_name'][$i],
+            );
+            $insertData[] = $data;
+        }
+        PartnershipCertification::insert($insertData);
+
+        return redirect()->back();
+    }
+
+    public function addCert(Request $request)
+    {
+        $id = Partnership::where('id_partnership', $request['id_partnership'])->first();
+
+        $tambah = new PartnershipImageCertificate();
+        $tambah->id_partnership = $id;
+        $tambah->nik = Auth::User()->nik;
+
+        $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+        $file                   = $request->file('cert');
+        $fileName               = $file->getClientOriginalName();
+        $imageName              = $id.'_'.$fileName;
+        $extension              = $file->getClientOriginalExtension();
+        $check                  = in_array($extension,$allowedfileExtension);
+
+        if ($check) {
+            Image::make($file->getRealPath())->save('image/partnerCertificate/'.$imageName);
+
+            $tambah->certificate = $fileName;
+        } else {
+            return redirect()->back()->with('alert','Oops! Only jpg, png');
+        }
+
+        $tambah->save();
+        return redirect()->back();
+    }
+
+    public function updateCertPerson(Request $request)
+    {
+        $update = PartnershipCertification::where('id', $request->id_cert_edit)->first();
+        $update->nik = $request['cert_user_edit'];
+        $update->name_certification = $request['cert_name_edit'];
+        $update->update();
+
+        return redirect()->back();
+    }
+
+    public function deleteCertPerson(Request $request)
+    {
+        $delete = PartnershipCertification::where('id', $request->id);
+        $delete->delete();
+
+        return redirect()->back()->with('alert', 'Deleted!');
+    }
+
+    public function getListCert(Request $request)
+    {
+        $cert = Partnership::where('id_partnership', $request->id)->first();
+
+        return array("data"=>$cert);
     }
 
     public function proses_upload(Request $request) {
@@ -242,12 +365,12 @@ class PartnershipController extends Controller
         }
 
         $update = Partnership::where('id_partnership', $id_partnership)->first();
-                                $file               = $request['file'];
-                                $fileName           = $file->getClientOriginalName();
-                                $nameDoc            = $id_partnership.'_'.$fileName;
-                                $request->file('file')->move("public/pdfpart/", $nameDoc);
-                                $update->doc   = $nameDoc;
-                                $update->update();
+        $file               = $request['file'];
+        $fileName           = $file->getClientOriginalName();
+        $nameDoc            = $id_partnership.'_'.$fileName;
+        $request->file('file')->move("public/pdfpart/", $nameDoc);
+        $update->doc   = $nameDoc;
+        $update->update();
         
         return redirect()->back();
 
@@ -269,20 +392,44 @@ class PartnershipController extends Controller
 
     public function update(Request $request)
     {
-    	$id = $request['edit_id'];
+        // return $request['id_edit'];
+    	$update                    = Partnership::where('id_partnership', $request['id_edit'])->first();
+    	$update->type              = $request['type_edit'];
+    	$update->partner           = $request['partner_edit'];
+        $update->levelling         = $request['levelling_edit'];
+        $update->level             = $request['level_edit'];
+    	$update->renewal_date      = $request['renewal_edit'];
+    	$update->annual_fee        = $request['annual_edit'];
+        $update->cam_name          = $request['cam_edit'];
+        $update->cam_phone         = $request['phone_edit'];
+        $update->cam_email         = $request['email_edit'];
+        $update->email_support     = $request['support_edit'];
+    	$update->id_mitra          = $request['mitra_edit'];
 
-    	$update = Partnership::where('id_partnership', $id)->first();
-    	$update->type = $request['edit_type'];
-    	$update->partner = $request['edit_partner'];
-        $update->level = $request['edit_level'];
-    	$update->renewal_date = $request['edit_renewal_date'];
-    	$update->annual_fee = $request['edit_annual_fee'];
-    	$update->sales_target = $request['edit_sales_target'];
-    	$update->sales_certification = $request['edit_sales_certification'];
-    	$update->engineer_certification = $request['edit_engineer_certification'];
+        // return $request->file('imageUpload') != null ? 'true' : 'false';
+
+        if ($request->file('fileupload') === null) {
+            // $update->logo = $update->logo;  
+        }else{
+
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $file                   = $request->file('fileupload');
+            $fileName               = $file->getClientOriginalName();
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                // Image::make($file->getRealPath())->save('image/logo_partnership/'.$fileName);
+                $request->file('fileupload')->move("image/logo_partnership/", $fileName);
+                $update->logo = $fileName;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png');
+            }
+        }
+
     	$update->update();
 
-        return redirect('/partnership')->with('success', 'Update Successfully!');
+        // return redirect('/partnership')->with('success', 'Update Successfully!');
     }
 
     public function destroy($id)
