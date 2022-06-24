@@ -7,6 +7,7 @@ use DB;
 use Excel;
 use Auth;
 use App\Letter;
+use App\SalesProject;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -214,7 +215,9 @@ class LetterController extends Controller
 
         $year_before = Letter::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('admin/letter', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun'))->with(['initView'=> $this->initMenuBase()]);
+        $pid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project')->where('id_company', '1')->get();
+
+        return view('admin/letter', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim','counts','pops', 'pops2','backdate_num', 'data_backdate', 'sidebar_collapse', 'status_letter','year_before','tahun', 'pid'))->with(['initView'=> $this->initMenuBase()]);
 	}
 
     public function getdataletter(Request $request)
@@ -554,8 +557,41 @@ class LetterController extends Controller
 	{
 		$no = $request['edit_no_letter'];
 
+        $type = $request['edit_type'];
+        $posti = $request['edit_position'];
+
+        $edate = strtotime($_POST['edit_date']); 
+        $edate = date("Y-m-d",$edate);
+
+        $month_letter = substr($edate,5,2);
+        $year_letter = substr($edate,0,4);
+
+        $array_bln = array('01' => "I",
+                    '02' => "II",
+                    '03' => "III",
+                    '04' => "IV",
+                    '05' => "V",
+                    '06' => "VI",
+                    '07' => "VII",
+                    '08' => "VIII",
+                    '09' => "IX",
+                    '10' => "X",
+                    '11' => "XI",
+                    '12' => "XII");
+        $bln = $array_bln[$month_letter];
+
+        $getno = Letter::where('no_letter', $no)->first()->no_letter;
+        $getnumberLetter =  explode("/",$getno)[0];
+
+        $no_update = $getnumberLetter.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_letter;
+
         $update = Letter::where('no_letter',$no)->first();
         $update->to = $request['edit_to'];
+        $update->no_letter = $no_update;
+        $update->position = $posti;
+        $update->type_of_letter = $type;
+        $update->month = $bln;
+        $update->date = $edate;
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
         $update->project = $request['edit_project'];
@@ -587,6 +623,39 @@ class LetterController extends Controller
             return array('results'=>$backdate_num);
         }
         
+    }
+
+    public function addBackdateNum(Request $request)
+    {
+        $lastnumber = Letter::whereYear('created_at',substr($request->date_backdate, 6,4))->where('status', 'F')->orderBy('created_at', 'desc')->first()->no_letter;
+
+        $getletter =  explode("/",$lastnumber)[0];
+
+        $getnumber = $getletter + 10;
+
+        return $lastnumber;
+
+        if($getnumber < 10){
+           $akhirnomor  = '000' . $getnumber;
+        }elseif($getnumber > 9 && $getnumber < 100){
+           $akhirnomor = '00' . $getnumber;
+        }elseif($getnumber >= 100){
+           $akhirnomor = '0' . $getnumber;
+        }     
+
+        $edate = strtotime($_POST['date_backdate']); 
+        $edate = date("Y-m-d",$edate);
+
+        $tambah = new Letter();
+        $tambah->no_letter = $akhirnomor;
+        $tambah->status = 'T';
+        $tambah->position = 'DIR';
+        $tambah->type_of_letter = 'QO';
+        $tambah->month = 'II';
+        $tambah->date = $edate;
+        $tambah->created_at = $edate . '00:00:00';
+        $tambah->nik = Auth::User()->nik;
+        $tambah->save();
     }
 
 	public function downloadExcel(Request $request) {
@@ -777,7 +846,7 @@ class LetterController extends Controller
         $update->nik = Auth::User()->nik;
         // $update->from = $request['from'];
         $update->division = $request['division'];
-        $update->project_id = $request['project_id'];
+        $update->project_id = $request['project_id_backdate'];
         $update->status = 'F';
         $update->update();
 
