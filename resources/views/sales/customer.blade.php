@@ -359,7 +359,7 @@ Customer
           $("#popUp").modal("show");
       }
       sessionStorage.setItem('dontLoad', 'true');
-    @elseif(Auth::User()->id_division == 'WAREHOUSE')
+    @elseif(Auth::User()->id_division == 'BCD')
       if (sessionStorage.getItem('dontLoad') == null){
           $("#popUp2").modal("show");
       }
