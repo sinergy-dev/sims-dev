@@ -294,13 +294,43 @@ class HRNumberController extends Controller
     {
     	$no = $request['edit_no_letter'];
 
+        $edate = strtotime($_POST['edit_date']); 
+        $edate = date("Y-m-d",$edate);
+        $type = $request['edit_type'];
+
+        $month_letter = substr($edate,5,2);
+        $year_letter = substr($edate,0,4);
+
+        $array_bln = array('01' => "I",
+                    '02' => "II",
+                    '03' => "III",
+                    '04' => "IV",
+                    '05' => "V",
+                    '06' => "VI",
+                    '07' => "VII",
+                    '08' => "VIII",
+                    '09' => "IX",
+                    '10' => "X",
+                    '11' => "XI",
+                    '12' => "XII");
+        $bln = $array_bln[$month_letter];
+
+        $getno = HRNumber::where('no', $no)->first()->no_letter;
+        $getnumberLetter =  explode("/",$getno)[0];
+
+        $no_update = $getnumberLetter.'/HR/' . $type . '/' . $bln .'/'. $year_letter;
+
         $update = HRNumber::where('no',$no)->first();
         $update->to = $request['edit_to'];  
+        $update->no_letter = $no_update;
+        $update->pt = $request['edit_company'];
+        $update->type_of_letter = $type;
+        $update->month = $bln;
+        $update->date = $edate;
         $update->attention = $request['edit_attention'];
         $update->title = $request['edit_title'];
         $update->project = $request['edit_project'];
         $update->description = $request['edit_description'];
-        // $update->project_id = $request['edit_project_id'];
         $update->note = $request['edit_note'];
 
         $update->update();
