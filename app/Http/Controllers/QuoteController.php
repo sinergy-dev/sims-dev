@@ -8,7 +8,7 @@ use DB;
 use Auth;
 use Excel;
 use App\TB_Contact;
-
+use App\SalesProject;
 class QuoteController extends Controller
 {
 	public function __construct()
@@ -202,7 +202,9 @@ class QuoteController extends Controller
 
         $year_before = Quote::select(DB::raw('YEAR(created_at) year'))->orderBy('year','desc')->groupBy('year')->get();
 
-        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote','tahun','year_before'))->with(['initView'=> $this->initMenuBase()]);
+        $pid = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select('id_project')->where('id_company', '1')->get();
+
+        return view('quote/quote',compact('notif','datas','notifOpen','notifsd','notiftp', 'notifClaim', 'counts', 'count','pops', 'pops2', 'backdate_num', 'sidebar_collapse', 'customer', 'status_quote','tahun','year_before', 'pid'))->with(['initView'=> $this->initMenuBase()]);
 	}
 
 	public function create()
@@ -473,6 +475,7 @@ class QuoteController extends Controller
         $tambah->month = 'II';
         $tambah->date = $edate;
         $tambah->created_at = $edate . '00:00:00';
+        $update->project_id = $request['project_id_backdate'];
         $tambah->nik = Auth::User()->nik;
         $tambah->id_customer = '2';
         $tambah->save();
@@ -545,7 +548,7 @@ class QuoteController extends Controller
         $update->description = $request['description'];
         $update->nik = Auth::User()->nik;
         $update->division = $request['division'];
-        $update->project_id = $request['project_id'];
+        $update->project_id = $request['project_id_backdate'];
         $update->status_backdate = 'F';
         $update->project_type = $request['project_type'];
         $update->update();

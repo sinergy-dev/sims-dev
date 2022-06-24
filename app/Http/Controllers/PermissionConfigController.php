@@ -13,6 +13,6 @@ class PermissionConfigController extends Controller
     }
 
     public function testPermissionConfig(){ 
-        return view('testPermissionConfig')->with(['initView'=> $this->initMenuBase()]);
+        return view('testPermissionConfig')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('permission_config')]);
     }
 }

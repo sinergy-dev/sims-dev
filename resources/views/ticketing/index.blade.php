@@ -840,12 +840,12 @@ Ticketing
 							<button class="btn btn-flat btn-default" onclick="switchSetting()">
 								Switch Setting
 							</button>
-							<button class="btn btn-flat btn-default" onclick="severitySetting()">
+							<!-- <button class="btn btn-flat btn-default" onclick="severitySetting()">
 								Severity Setting
-							</button>
-							<button class="btn btn-flat btn-default" onclick="clientSetting()">
+							</button> -->
+							<!-- <button class="btn btn-flat btn-default" onclick="clientSetting()">
 								Client Setting
-							</button>
+							</button> -->
 
 							
 						</div>
@@ -997,8 +997,8 @@ Ticketing
 								<select id="selectReportingType" class="form-control">
 									<option>Chose One</option>
 									<option value="1">Finish Report</option>
-									<option value="2">Bayu Report</option>
-									<option value="3">Denny Report</option>
+									<option value="2">Helpesk Report</option>
+									<option value="3">Manager Report</option>
 								</select>
 							</div>
 						</div>
@@ -5640,7 +5640,7 @@ Ticketing
 								append = append + "<li class='itemPeriperal itemPeriperalEach" + value.id + "-" + 2 + "'>"
 								append = append + "<span class='pull-right button-edit-periperal'><button onclick='editAtmPeriperal(" + value.id + "," + 2 + ")' class='btn btn-primary btn-flat btn-xs' type='button'>Edit</button></span>"
 								append = append + "<span>"
-								append = append + "<b>[" + value.type + " Exsternal] <span class='itemPeriperalEach" + value.id + "-" + 2 + "-type'>" + value.cctv_besar_type + "</span></b><br>"
+								append = append + "<b>[" + value.type + " Eksternal] <span class='itemPeriperalEach" + value.id + "-" + 2 + "-type'>" + value.cctv_besar_type + "</span></b><br>"
 								append = append + "Serial Number : <span class='itemPeriperalEach" + value.id + "-" + 2 + "-sn'>" + value.cctv_besar_sn + "</span>"
 								append = append + "</span>"
 								append = append + "</li>"
@@ -5784,7 +5784,7 @@ Ticketing
 		append = append + '	<button onclick="cancelAtmPeriperal(' + selectorHolder +  ',' + holder + ',' + id + ',' + type +')" class="btn btn-default btn-flat btn-xs" type="button">Cancel</button>'
 		append = append + '</span>'
 		append = append + '<span>'
-		type = (type == 1 ? "CCTV DVR" : (type == 2 ? "CCTV Internal" : (type == 3 ? "CCTV Eksternal" : "UPS")))
+		type = (type == 1 ? "CCTV DVR" : (type == 2 ? "CCTV Eksternal" : (type == 3 ? "CCTV Internal" : "UPS")))
 		append = append + '	<b>[' + type + ']</b> <input type="text" class="from-control editPeripheralType" value="' + $(selector + "-type").text() + '"><br>'
 		append = append + '	Serial Number : <input type="text" class="from-control editPeripheralSerial" value="' + $(selector + "-sn").text() + '">'
 		append = append + '</span>'

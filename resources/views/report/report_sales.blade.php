@@ -34,7 +34,6 @@ Report Sales
         <div class="box">
           <div class="box-header with-border">
             <div class="pull-left">
-              <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
               <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
                 @foreach($years as $data)
                 <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
@@ -126,25 +125,24 @@ Report Sales
           <div class="box-header with-border">
             <form action="" method="get" class="margin-bottom">
               <div class="row">
-                <div class="col-md-2">
-                  <label style="margin-top: 5px;margin-right: 5px">&nbsp&nbsp&nbspFilter Year</label>
-                  <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter2">
-                    @foreach($years as $data)
-                    <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
-                    @endforeach
+                <div class="col-md-12">
+                  <select style="width: 100px;float: left;" class="form-control fa" id="year_filter2">
+                  @foreach($years as $data)
+                  <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
+                  @endforeach
                   </select>
-                </div>
-                <div class="col-md-2">
-                  <input type="text" style="float: left;" id="startdate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY">          
-                </div>
-                <div style="float: left;margin-top: 5px">
-                  <small>TO</small>
-                </div>
-                <div class="col-md-2" style="float: left;">
-                  <input type="text" id="enddate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY" disabled>
-                </div>
-                <div class="col-md-2">
-                  <input type="button" name="filter_submit" id="filter_submit" value="Filter" class="btn btn-primary" disabled>
+                  <div class="col-md-2">
+                    <input type="text" id="startdate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY">          
+                  </div>
+                  <div style="float: left;margin-top: 5px">
+                    <small>TO</small>
+                  </div>
+                  <div class="col-md-2">
+                    <input type="text" id="enddate" class="form-control" autocomplete="off" placeholder="DD/MM/YYYY" disabled>
+                  </div>
+                  <div class="col-md-2">
+                    <input type="button" name="filter_submit" id="filter_submit" value="Filter" class="btn btn-primary" disabled>
+                  </div>
                 </div>
               </div>
             </form>

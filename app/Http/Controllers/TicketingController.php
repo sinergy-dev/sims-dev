@@ -334,7 +334,7 @@ class TicketingController extends Controller
 				->client_ticket;
 
 			if(isset($ticket_data->id_atm)){
-				if($ticket_reciver->client_acronym == "BDIYUPS"){
+				if( str_contains($ticket_reciver->client_name,"UPS")){
 					$ticket_data->atm_detail = TicketingATMPeripheral::where('id_atm',TicketingATM::where('atm_id',$ticket_data->id_atm)->first()->id)->where('type','UPS')->first();
 				}
 			} else {
@@ -1092,11 +1092,13 @@ class TicketingController extends Controller
 	}
 
 	public function newAtmPeripheral(Request $request){
-		if(strpos(TicketingClient::find(26)->client_name,"CCTV")){
+		if(strpos(TicketingClient::find($request->atmOwner)->client_name,"CCTV")){
 			$request->peripheralType = "CCTV";
-		} else if (strpos(TicketingClient::find(26)->client_name,"UPS")){
+		} else if (strpos(TicketingClient::find($request->atmOwner)->client_name,"UPS")){
 			$request->peripheralType = "UPS";
 		}
+
+		// return $request->peripheralType;
 		$newAtmPeripheral = new TicketingATMPeripheral();
 		$newAtmPeripheral->id_atm = TicketingATM::where('atm_id',$request->atmID)->first()->id;
 		$newAtmPeripheral->id_peripheral = $request->peripheralID;

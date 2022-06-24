@@ -51,6 +51,8 @@ use DateTime;
 use App\PresenceShiftingUser;
 use App\PresenceShifting;
 
+use App\Mail\EmailChangeNominal;
+
 
 // use App\Notifications\Result;
 
@@ -1312,6 +1314,24 @@ class TestController extends Controller
 			}
 			return redirect('presence/shifting')->with('message', "Add User " . " success.");
 		}
+	}
+
+	public function testRequestChange(){
+		$mail = new EmailChangeNominal(collect([
+                    "to" => "Aurellia Quartas Geraldine",
+                    "requestor" => "Timurta Bagus Prapditya Laksana",
+                    "lead_id" => "UIP2220601",
+                    "project" => "Upgrade Server AMR dan Rapsodi yang sudah Obsolete di Kantor Induk UIP2B",
+                    "customer" => "PLN UIP2B",
+                    "created_at" => "2022-06-08",
+                    "nominal_before" => "Rp. 1.500.000.000",
+                    "nominal_after" => "Rp. 1.650.000.000",
+					"reason" => "Adanya pemecahan PO dimana Server ARM diganti dengan PO nomor A1, dan Rapsodi diganti dengan PO A2 dengan pembayaran yang berbeda",
+					"url" =>  url("/requestChange?id_requestChange=2")
+                ])
+            );
+
+		return $mail;
 	}
 
 }

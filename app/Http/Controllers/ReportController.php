@@ -2332,7 +2332,6 @@ class ReportController extends Controller
 
             } else if ($div == 'SALES') {
                 $leads = $leadsnow->where('u_sales.id_territory', $ter)->get();
-                
                 // $total_deal_price = $total_deal_price->where('u_sales.id_territory', $ter)->first();
             }        
         }else{

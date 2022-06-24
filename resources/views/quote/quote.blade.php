@@ -202,9 +202,18 @@ Quote Number
                         <option>TEC</option>
                     </select>
                   </div>
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                     <label for="">Project ID</label>
                     <input type="text" class="form-control" placeholder="Enter Project ID" name="project_id" id="project_id">
+                  </div> -->
+                  <div class="form-group" id="pid">
+                    <label for="">Project ID</label>                
+                    <select type="text" class="form-control select2" name="project_id" id="project_id" style="width: 100%">
+                      <option value="">Select project id</option>
+                      @foreach($pid as $data)
+                      <option value="{{$data->id_project}}">{{$data->id_project}}</option>
+                      @endforeach
+                    </select>
                   </div>
                   <div class="form-group">
                     <label>Project Type</label>
@@ -293,9 +302,18 @@ Quote Number
                     <option>TEC</option>
                 </select>
               </div>
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="">Project ID</label>
                 <input type="text" class="form-control" placeholder="Enter Project ID" name="project_id" id="project_id">
+              </div> -->
+              <div class="form-group" id="pid">
+                <label for="">Project ID</label>                
+                <select type="text" class="form-control select2" name="project_id_backdate" id="project_id_backdate" style="width: 100%">
+                  <option value="">Select project id</option>
+                  @foreach($pid as $data)
+                  <option value="{{$data->id_project}}">{{$data->id_project}}</option>
+                  @endforeach
+                </select>
               </div>
               <div class="form-group">
                 <label>Project Type</label>
@@ -426,6 +444,14 @@ Quote Number
       autoclose: true,
       startDate: today 
     }).attr('readonly','readonly').css('background-color','#fff');
+
+    $('#project_id').select2({
+      dropdownParent:$("#modalAdd")
+    })
+
+    $('#project_id_backdate').select2({
+      dropdownParent:$("#letter_backdate")
+    })
 
     function backdateReload(){
       $.ajax({

@@ -4597,7 +4597,7 @@ class SALESController extends Controller{
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
                     // ->where('sales_lead_register.nik',$nik)
                     ->where('id_territory', $ter)
-                    ->orWhere('tb_id_project.sales_name',Auth::User()->name)
+                    // ->orWhere('tb_id_project.sales_name',Auth::User()->name)
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.date',date('Y'))
                     ->get();
@@ -4763,7 +4763,7 @@ class SALESController extends Controller{
                     ->select('tb_id_project.customer_name','tb_id_project.id_project','tb_id_project.date','tb_id_project.no_po_customer','sales_lead_register.opp_name','users.name','tb_id_project.amount_idr',DB::raw('(`tb_id_project`.`amount_idr`*10)/11 as `amount_idr_before_tax` '),'tb_id_project.amount_usd','sales_lead_register.lead_id','sales_lead_register.opp_name','tb_id_project.note','tb_id_project.id_pro','tb_id_project.invoice','progres','name_project','tb_id_project.created_at','customer_legal_name','sales_name','sales_tender_process.quote_number_final','tb_id_project.status','users.id_company')
                     // ->where('sales_lead_register.nik',$nik)
                     ->where('id_territory', $ter)
-                    ->orWhere('tb_id_project.sales_name',Auth::User()->name)
+                    // ->orWhere('tb_id_project.sales_name',Auth::User()->name)
                     ->where('id_company','1')
                     ->whereYear('tb_id_project.date',$req->filterYear)
                     ->get();

@@ -74,8 +74,6 @@ class FollowUpCuti extends Command
                     }
                 }else if ($ter == 'DPG') {
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
-                }else if ($div == 'WAREHOUSE'){
-                    $nik_kirim = DB::table('users')->select('users.email')->where('id_position','HR MANAGER')->where('id_company','1')->first();
                 }else if ($div == 'BCD'){
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_division', 'BCD')->where('id_company','1')->first();
                 }else{

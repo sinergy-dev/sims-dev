@@ -16,7 +16,7 @@ class HRMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ( Auth::check() && Auth::User()->id_division == 'HR'  )
+        if ( Auth::check() && Auth::User()->id_position == 'HR MANAGER' || Auth::User()->id_position == 'HR STAFF')
         {
             return $next($request);
         } 

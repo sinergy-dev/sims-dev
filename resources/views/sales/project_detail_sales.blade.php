@@ -875,7 +875,6 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
-
 						if (result.data[0].result == 'LOSE') {
 							    var i = 0;
 							    $(".dot:eq(0)").first().animate({
@@ -939,12 +938,6 @@ Detail Lead Register
 					        width: 110,
 					        height:110
 					    	}, 1000 ).text("HOLD");
-
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formTP')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
 						} else if (result.data[0].result == 'SPECIAL') {
 						    $(".dot:eq(0)").first().animate({
 					        backgroundColor: "#605ca8!important",
@@ -1038,14 +1031,6 @@ Detail Lead Register
 					        width: 110,
 					        height:110
 					      }, 1000 ).text("WIN/LOSE");
-					      
-						    // alert($('#stageID').attr('class').split(' ')[1])
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formSD')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
-
 						} else if (result.data[0].result == 'SD') {
 								$(".dot:eq(0)").first().animate({
 					        backgroundColor: "#605ca8!important",
@@ -1083,6 +1068,11 @@ Detail Lead Register
 						  		}
 						  	})
 						} else if (result.data[0].result == 'TP') {
+								accesable.forEach(function(item,index){
+						  		if (item.includes('formTP')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
 								$(".dot:eq(0)").first().animate({
 					        backgroundColor: "#605ca8!important",
 					      	color: "#fff",
@@ -1107,17 +1097,12 @@ Detail Lead Register
 					        width: 110,
 					        height:110
 					      }, 800 ).text("TENDER PROCESS");
-							$(".dot:eq(4)").first().animate({
+								$(".dot:eq(4)").first().animate({
 					        backgroundColor: "#c6cccf!important",
 					      	color: "#86898a",
 					        width: 110,
 					        height:110
 					      }, 1000 ).text("WIN/LOSE");
-						    accesable.forEach(function(item,index){
-						  		if (item.includes('formTP')) {
-						    		$("#" + item).prop('disabled',false)
-						  		}
-						  	})
 						} else if (result.data[0].result == 'OPEN') {
 								$(".dot:eq(0)").first().animate({
 					        backgroundColor: "#aa0000!important",
@@ -1159,8 +1144,6 @@ Detail Lead Register
 					      }, 1000 ).text("WIN");
 	      				var i = 0;
 	      		}
-
-						showSbe()
 
 	  				if (result.data[0].result == "") {
 	  					lead_id = '<span class="label" style="background-color: #f2562b;color: white">'+result.data[0].lead_id+'</span>'
@@ -1240,10 +1223,6 @@ Detail Lead Register
 	  		  	append = append + '</tr>'
 
 	  		  	$("#tbody-detail").append(append)
-
-	  		  	// var height = parseInt($("#box-detail").innerHeight())
-
-			     //  $("#box-status").height(height)
 
 			      current_presales = []
 			      current_presales.push(result.data[0].name_presales)
@@ -1772,6 +1751,7 @@ Detail Lead Register
           var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
           sum += temp;
       });
+     
       $("#table-grand-total").show()
       var formatter = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 0,
@@ -1858,29 +1838,6 @@ Detail Lead Register
 			  data: arrSbe
       })
     }
-
-    $(document).on('keypress', '.new-price-sol', function() {
-    	if (isMobile == true) {
-			  Swal.fire({
-				  title: 'product price',
-				  input: 'text',
-				  inputAttributes: {
-				    autocapitalize: 'off',
-				    id: 'price'
-				  },
-				  onOpen: function(el) {
-	        	var container = $(el);
-	        	container.find('#price').mask('000.000.000.000', {reverse: true});
-	    		},
-				  showCancelButton: true,
-				  confirmButtonText: 'oke',
-				}).then((result) => {
-				  if (result.isConfirmed) {
-				    $(".new-price-sol[data-value='" + i + "']").val(result.value)
-				  }
-				})
-    	}		
-		})
 
     var i;
     var idExist = []
@@ -2009,6 +1966,30 @@ Detail Lead Register
 	      }
 	    })
     }    
+
+    $(document).on('keypress', '.new-price-sol', function() {
+    	if (isMobile == true) {
+    		console.log('oke')
+			  Swal.fire({
+				  title: 'product price',
+				  input: 'text',
+				  inputAttributes: {
+				    autocapitalize: 'off',
+				    id: 'price'
+				  },
+				  onOpen: function(el) {
+	        	var container = $(el);
+	        	container.find('#price').mask('000.000.000.000', {reverse: true});
+	    		},
+				  showCancelButton: true,
+				  confirmButtonText: 'oke',
+				}).then((result) => {
+				  if (result.isConfirmed) {
+				    $(".new-price-sol[data-value='" + i + "']").val(result.value)
+				  }
+				})
+    	}		
+		})   
 
     function addTaggingNotEmpty(id,id_product,id_tech,price,i){
     	var append = ""
