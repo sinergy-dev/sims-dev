@@ -368,50 +368,44 @@ Presence
 
 		
 		var isOnLocation = function(presenceLocation) {
-			// Swal.hideLoading()
 			return new Promise(function(resolve, reject) {
 				navigator.geolocation.getCurrentPosition(function(position) {
-					console.log(position)
 					var actuals_position = new google.maps.LatLng(
-						position.coords.latitude,
-						position.coords.longitude
+						position.coords.latitude,position.coords.longitude
 					)
 
-					// var actuals_position = new google.maps.LatLng(-6.185084, 106.752010)
-
-					var onLocation = false
-					var locationNow = 0
-					presenceLocation.forEach(function(data){
+					var onLocation = false 
+					var locationNow = 0 
+					presenceLocation.forEach(function(data){ 
 						console.log(data)
 
 						var compare_position = new google.maps.LatLng(
 							data.location_lat,
 							data.location_lng
-						)
-
+						) 
 
 						console.log("Distance now to " + data.location_name+ " : "+ google.maps.geometry.spherical.computeDistanceBetween(actuals_position, compare_position))
 						if(google.maps.geometry.spherical.computeDistanceBetween(actuals_position, compare_position) < (data.location_radius) ){
-							console.log('Raidus : ' + data.location_radius + ' Im in location now')	
-							console.log(onLocation)
-							onLocation = true
-							locationNow = data.location_id
+							console.log('Raidus : ' + data.location_radius + ' Im in location now')	 
+							console.log(onLocation) 
+							onLocation = true 
+							locationNow = data.location_id 
 
 						} else {
 							console.log('Raidus : ' + data.location_radius + ' Im not in location now')
 							console.log(onLocation)
-						}
-					})
-					if (onLocation) {
-						resolve(locationNow);
+						} 
+					}) 
+					if (onLocation) { 
+						resolve(locationNow); 
 					} else {
-						resolve(locationNow);
-					}
-				} , function(error){
-					reject(Error("Location Permission Denied"))
-				});
+						resolve(locationNow); 
+					} 
+				} , function(error){ 
+					reject(Error("Location Permission Denied")) 
+				}); 
 			});
-		}
+		} 
 
 		function isLocationSet(presenceLocation){
 			if(presenceLocation.length == 0){
