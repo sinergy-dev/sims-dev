@@ -314,6 +314,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/report_product_index','ReportController@report_product_index');
 	Route::get('/getreportproduct','ReportController@getreportproduct');
 	Route::get('/getTerritory', 'ReportController@getTerritory');
+	Route::get('/getFilterProduct', 'ReportController@getFilterProduct');
 
 	//route report customer msp
 	Route::get('/getreportcustomermsp','ReportController@getreportcustomermsp');
