@@ -264,6 +264,13 @@ class AssetHRController extends Controller
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
                            ->get();
 
+            $current_borrowed = DB::table('tb_asset_hr_transaction')
+                        ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
+                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction')
+                        ->where('tb_asset_hr_transaction.status','ACCEPT')
+                        ->where('tgl_pengembalian',NULL)
+                        ->get();
+
             $historyCancel  = DB::table('tb_asset_hr_request')
                ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
                ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status')
@@ -274,7 +281,7 @@ class AssetHRController extends Controller
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name')
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name', 'tb_asset_hr_request.nik')
                            ->where('tb_asset_hr_request.nik',Auth::User()->nik)
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
@@ -380,7 +387,11 @@ class AssetHRController extends Controller
     public function getListAsset(Request $request){
     	$category = DB::table('tb_kategori_asset_hr')->where('kategori',$request->category)->first()->id;
 
-        return array("results" => DB::table('tb_asset_hr')->select(DB::raw("`id_barang` AS `id`,`nama_barang` AS `text`"))->where('status','AVAILABLE')->where('kategori',$category)->get());
+        return array("results" => DB::table('tb_asset_hr')->select(
+            DB::raw("CASE WHEN (serial_number is null) THEN CONCAT(`nama_barang`,' - ',`merk`) ELSE CONCAT(`nama_barang`,' - ',`merk`,'(',`serial_number`,')') END AS `text`"),
+            DB::raw("`id_barang` AS `id`"))
+            ->where('status','AVAILABLE')
+            ->where('kategori',$category)->get()); 
     }
 
     public function getCategoryPinjam(Request $request){
@@ -445,6 +456,7 @@ class AssetHRController extends Controller
         $tambah->description    = $request['keterangan'];
         $tambah->note    		= $request['note'];
         $tambah->lokasi         = $request['lokasi'];
+        $tambah->merk           = $request['merk_barang'];
         $tambah->save();
 
         return redirect()->back()->with('success', 'Create New Asset Successfully!');
@@ -929,9 +941,15 @@ class AssetHRController extends Controller
 
     public function acceptPeminjaman(Request $request){   
         $update_accept =  DetailAssetHR::where('id_transaction',$request->id_transaction)
-                ->first();
-        $update_accept->id_barang = $request->id_barang; 
-        if ($request->status == 'PENDING') {
+                ->first();        
+        $update = AssetHR::where('id_barang',$request->id_barang)->first();
+        if ($request->status == 'ACCEPT') {
+            $update->status = 'UNAVAILABLE';
+            $update_accept->id_barang = $request->id_barang; 
+            $update->update(); 
+        }
+
+        if ($request->status == 'ACCEPT') {
             $update_accept->status = "ACCEPT";
             $emailSubject = '[SIMS-APP] Accepting Peminjaman Asset';
 
@@ -940,6 +958,15 @@ class AssetHRController extends Controller
                     ->select('nama_barang','description','name','tb_asset_hr_transaction.created_at','keterangan','tb_asset_hr_transaction.status')
                     ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
                     ->first();
+            $update_accept->save();
+
+            $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
+
+            $to = User::select('email')->where('nik',$update_accept->nik_peminjam)->get();
+
+            $users = User::select('name')->where('nik',$update_accept->nik_peminjam)->first();
+
+            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,$emailSubject));
         }else{
             $update_accept->status = "REJECT";
             $emailSubject = '[SIMS-APP] Rejecting Peminjaman Asset';
@@ -948,16 +975,17 @@ class AssetHRController extends Controller
 	                ->select('name','tb_asset_hr_transaction.created_at','note','tb_asset_hr_transaction.status','keterangan')
 	                ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
 	                ->first();
-        }
-        $update_accept->save();
+            $update_accept->save();
 
-        $update = AssetHR::where('id_barang',$request->id_barang)->first();
-        if ($request->status == 'ACCEPT') {
-            $update->status = 'UNAVAILABLE';
-        }else{
-            $update->status = 'AVAILABLE';
+            $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
+
+            $to = User::select('email')->where('nik',$update_accept->nik_peminjam)->get();
+
+            $users = User::select('name')->where('nik',$update_accept->nik_peminjam)->first();
+
+            Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,$emailSubject));
         }
-        $update->update(); 
+
 
         // $update_rejects = DetailAssetHR::where('id_barang',$request->id_barang)
         //     ->where('nik_peminjam','<>',$request->nik_peminjam)
@@ -981,13 +1009,6 @@ class AssetHRController extends Controller
         //         ->where('tb_asset_hr_transaction.id_transaction',$request->id_transaction)
         //         ->first();
 
-        $req_asset = collect(['asset'=>$asset,'reason'=>$request->reason]);
-
-        $to = User::select('email')->where('nik',$update_accept->nik_peminjam)->get();
-
-        $users = User::select('name')->where('nik',$update_accept->nik_peminjam)->first();
-
-        Mail::to($to)->send(new RequestAssetHr('peminjaman',$users,$req_asset,$emailSubject));
 
         return redirect()->back()->with('alert','Asset Request Accepted!');
         
