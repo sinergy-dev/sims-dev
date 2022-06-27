@@ -29,7 +29,7 @@
 			Hello {{$users->name}},
 		</p>		
 		@if($req_asset['asset']['status'] == 'ACCEPT')
-			<b><i>Accepting Peminjaman Asset</i></b>, berikut rinciannya:
+			<b><i>Peminjaman Asset</i></b>, berikut rinciannya:
 			<table style="text-align: left;margin: 5px;">
 				<tr>
 					<th>Name</th>
@@ -58,7 +58,7 @@
 				</tr>
 			</table>			
 		@else
-			<b><i>Rejecting Peminjaman Asset</i></b>, berikut rinciannya:
+			<b><i>Peminjaman Asset</i></b>, berikut rinciannya:
 			<table style="text-align: left;margin: 5px;">
 				<tr>
 					<th>Reason</th>
