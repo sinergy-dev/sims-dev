@@ -137,7 +137,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-            } else if ($div == 'SALES') {
+            } else if ($div == 'SALES' && $pos == 'MANAGER') {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                         ->where('id_company','1')
                         ->count('lead_id');
@@ -167,6 +167,51 @@ class SalesLeadController extends Controller
                         ->count('lead_id');
 
                 $count_initial = $total_initial->where('users.id_territory',$ter)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+
+                $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+                $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+                $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+                $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+                $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
+
+            } else if ($div == 'SALES' && $pos == 'STAFF') {
+                $count_lead = $total_lead->where('users.nik',$nik)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_open = $total_open->where('users.nik',$nik)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_sd = $total_sd->where('users.nik',$nik)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_tp = $total_tp->where('users.nik',$nik)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_win = $total_win->where('users.nik',$nik)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_lose = $total_lose->where('users.nik',$nik)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_cancel = $total_cancel->where('users.nik',$nik)
+                        ->where('id_company','1')
+                        ->count('lead_id');
+
+                $count_initial = $total_initial->where('users.nik',$nik)
                         ->where('id_company','1')
                         ->count('lead_id');
 
@@ -485,9 +530,11 @@ class SalesLeadController extends Controller
             $leadsnow->where('u_sales.id_company', '1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leadsnow->where('nik_presales', $nik);
-            } else if ($div == 'SALES') {
+            } else if ($div == 'SALES' && $pos == 'MANAGER') {
                 $leadsnow->where('u_sales.id_territory', $ter);
-            }        
+            } else if ($div == 'SALES' && $pos == 'STAFF') {
+                $leadsnow->where('u_sales.nik', $nik);
+            }       
         }  
 
         return array("data"=>$leadsnow->get());
@@ -712,14 +759,25 @@ class SalesLeadController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
                     // ->where('sales_lead_register.result','CANCEL');
 
-        $total_lead->where('sales_lead_register.result',"!=","hmm");
-        $total_open->where('sales_lead_register.result',"");
-        $total_initial->where('sales_lead_register.result',"OPEN");
-        $total_sd->where('sales_lead_register.result',"SD");
-        $total_tp->where('sales_lead_register.result',"TP");
-        $total_win->where('sales_lead_register.result',"WIN");
-        $total_lose->where('sales_lead_register.result',"LOSE");
-        $total_cancel->where('sales_lead_register.result',"CANCEL");
+        if ($div == 'SALES' && $pos == 'STAFF') {
+            $total_lead->where('sales_lead_register.result',"!=","hmm")->where('sales_lead_register.nik',$nik);
+            $total_open->where('sales_lead_register.result',"")->where('sales_lead_register.nik',$nik);
+            $total_initial->where('sales_lead_register.result',"OPEN")->where('sales_lead_register.nik',$nik);
+            $total_sd->where('sales_lead_register.result',"SD")->where('sales_lead_register.nik',$nik);
+            $total_tp->where('sales_lead_register.result',"TP")->where('sales_lead_register.nik',$nik);
+            $total_win->where('sales_lead_register.result',"WIN")->where('sales_lead_register.nik',$nik);
+            $total_lose->where('sales_lead_register.result',"LOSE")->where('sales_lead_register.nik',$nik);
+            $total_cancel->where('sales_lead_register.result',"CANCEL")->where('sales_lead_register.nik',$nik);
+        }else {
+            $total_lead->where('sales_lead_register.result',"!=","hmm");
+            $total_open->where('sales_lead_register.result',"");
+            $total_initial->where('sales_lead_register.result',"OPEN");
+            $total_sd->where('sales_lead_register.result',"SD");
+            $total_tp->where('sales_lead_register.result',"TP");
+            $total_win->where('sales_lead_register.result',"WIN");
+            $total_lose->where('sales_lead_register.result',"LOSE");
+            $total_cancel->where('sales_lead_register.result',"CANCEL");
+        }        
 
         // Year
         if(isset($request->year)){
@@ -1259,8 +1317,10 @@ class SalesLeadController extends Controller
             $leads->where('u_sales.id_company','1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leads = $leads->where('nik_presales', $nik);
-            } else if ($div == 'SALES') {
+            } else if ($div == 'SALES' && $pos == 'MANAGER') {
                 $leads = $leads->where('u_sales.id_territory', $ter);
+            } else if ($div == 'SALES' && $pos == 'STAFF') {
+                $leads = $leads->where('u_sales.nik', $nik);
             }       
         } 
 
