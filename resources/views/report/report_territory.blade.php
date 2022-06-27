@@ -77,8 +77,8 @@ Report Customer
         <div class="box">
           <div class="box-header with-border">
             <div class="row">
-              <div class="col-md-4">
-                <div class="pull-left">
+              <div class="col-md-12">
+                <div class="pull-left" style="margin-right:10px">
                   <div class="input-group" style="float: left">
                     <div class="input-group-addon">
                       <i class="fa fa-calendar"></i>
@@ -87,10 +87,21 @@ Report Customer
                     <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                   </div>
                 </div> 
-              </div>
-              <div class="col-md-2">
-                <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
-              </div>
+                <div class="pull-left" style="margin-right:10px">
+                  <select class="select2 form-control" style="width:100%;" id="select2Customer" name="select2Customer">
+                    
+                  </select>
+                </div>
+                <div class="pull-left">
+                  <select class="select2 form-control" style="width:100%;" id="select2Sales" name="select2Sales">
+                    
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
+                </div>
+              </div>              
+              
             </div>
           </div>   
 
@@ -174,13 +185,37 @@ Report Customer
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <!-- <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.1/js/dataTables.rowGroup.min.js"></script> -->
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.2/js/dataTables.rowGroup.min.js"></script>
 @endsection
 @section('script')  
   <script type="text/javascript">
+    $.ajax({
+      url: "{{url('/project/getSales')}}",
+      type: "GET",
+      success: function(result) {
+        $("#select2Sales").select2({
+          placeholder:"Select Sales",
+          // multiple:true,
+          data:result.data
+        })
+      }
+    })
+
+    $.ajax({
+      url: "{{url('/project/getCustomer')}}",
+      type: "GET",
+      success: function(result) {
+        $("#select2Customer").select2({
+          placeholder:"Select Customer",
+          // multiple:true,
+          data:result.data
+        })
+      }
+    })
+      
     var accesable = @json($feature_item);
       accesable.forEach(function(item,index){
       $("#" + item).show()          
@@ -375,7 +410,6 @@ Report Customer
 
       })
 
-
       $("#data_leadmsp").DataTable({
 	        "ajax":{
 	          "type":"GET",
@@ -561,7 +595,6 @@ Report Customer
 
 	        // }
       })
-
 
       $('.dates').daterangepicker({
         startDate: moment().startOf('year'),
