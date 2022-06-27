@@ -59,7 +59,7 @@ class RequestChangeController extends Controller
         $activityTicketReOpen->date = date("Y-m-d H:i:s.000000");
         $activityTicketReOpen->activity = "ON PROGRESS";
         $activityTicketReOpen->operator = Auth::user()->name;
-        $activityTicketReOpen->note = "Re-Open Ticket";
+        $activityTicketReOpen->note = "Re-Open Ticket - Reason : " . $requestChange->parameter1_before;
 
         $activityTicketReOpen->save();
 
