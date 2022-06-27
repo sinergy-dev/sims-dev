@@ -88,27 +88,6 @@ Report Product
 
       }
 
-  /*  .green1-color {
-        background-color: #c2c3ff !important;
-    }
-    .green2-color {
-        background-color: #d2c2ff !important;
-    }
-    .green3-color {
-        background-color: #dcc2ff !important;
-    }
-    .green4-color {
-        background-color: #e1c2ff!important;
-    }
-    .green5-color {
-        background-color: #e8c2ff !important;
-    }
-    .green6-color {
-        background-color: #f8c2ff !important;
-    }
-    .green7-color {
-        background-color: #dbe2ff !important;
-    }*/
   </style>
 @endsection
 @section('content')
@@ -128,6 +107,32 @@ Report Product
         <div class="box">
           <div class="box-header with-border">
             <h3 class="box-title"><i>Report Products</i></h3>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="pull-left" style="margin-right:10px">
+                  <div class="input-group" style="float: left">
+                    <div class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </div>
+                    <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
+                    <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
+                  </div>
+                </div>  
+                <div class="pull-left" style="margin-right:10px">
+                  <select class="select2 form-control" style="width:100%;" id="select2Territory" name="select2Territory">
+                  </select>
+                </div>
+                <div class="pull-left">
+                  <select class="select2 form-control" style="width:100%;" id="select2Product" name="select2Product">
+                    
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
+                </div>
+              </div>              
+              
+            </div>
           </div>         
 
           <div class="box-body">              
@@ -159,15 +164,69 @@ Report Product
   </section>
 @endsection
 @section('scriptImport')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" src="{{asset('js/sum().js')}}"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.2/js/dataTables.rowGroup.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
   $(document).ready(function (){
+    $.ajax({
+      url: "{{url('/getTerritory')}}",
+      type: "GET",
+      success: function(result) {
+        $("#select2Territory").select2({
+          placeholder:"Select Sales",
+          // multiple:true,
+          data:result.data
+        })
+      }
+    })
+
+    $.ajax({
+      url: "{{url('/project/getProductTag')}}",
+      type: "GET",
+      success: function(result) {
+        $("#select2Product").select2({
+          placeholder:"Select Customer",
+          // multiple:true,
+          data:result.results
+        })
+      }
+    })
+
+    $('.dates').daterangepicker({
+      startDate: moment().startOf('year'),
+      endDate  : moment().endOf('year'),
+      locale: {
+        format: 'DD/MM/YYYY'
+      }
+    },function (start, end) {
+        start: moment();
+        end  : moment();
+
+        start_date  = start.format("YYYY-MM-DD 00:00:00");
+        end_date    = end.format("YYYY-MM-DD 00:00:00");
+
+        // $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+
+        territory = $(".nav-item.active").contents().text().trim();
+        if(territory !== "ALL"){
+          $('#data_lead').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + territory).load();
+        }          
+        $('#data_leadmsp').DataTable().ajax.url("{{url('getfiltercustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+
+
+        // $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
+
+    });
+
   	var tables = $('#data_lead').dataTable({
   		"ajax":{
               "type":"GET",
