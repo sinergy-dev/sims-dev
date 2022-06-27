@@ -93,11 +93,15 @@ Report Customer
                   </select>
                 </div>
                 <div class="pull-left">
-                  <select class="select2 form-control" style="width:100%;" id="select2Sales" name="select2Sales">
+                  <select class="select2 form-control" style="width:100%;display: none;" id="select2Sales" name="select2Sales">
+                    
+                  </select>
+                  <select class="select2 form-control" style="width:100%;display: none;" id="select2Direktor" name="select2SalesDirektor">
                     
                   </select>
                 </div>
                 <div class="col-md-2">
+                  <button class="btn btn-primary btnApply" style="margin-right:10px"><i class="fa fa-refresh"></i> Apply</button>
                   <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
                 </div>
               </div>              
@@ -193,18 +197,6 @@ Report Customer
 @section('script')  
   <script type="text/javascript">
     $.ajax({
-      url: "{{url('/project/getSales')}}",
-      type: "GET",
-      success: function(result) {
-        $("#select2Sales").select2({
-          placeholder:"Select Sales",
-          // multiple:true,
-          data:result.data
-        })
-      }
-    })
-
-    $.ajax({
       url: "{{url('/project/getCustomer')}}",
       type: "GET",
       success: function(result) {
@@ -216,28 +208,84 @@ Report Customer
       }
     })
       
+    var nik_sales,id_customer,start_date,end_date = ''
     var accesable = @json($feature_item);
-      accesable.forEach(function(item,index){
-      $("#" + item).show()          
-    })  
+      console.log(accesable)  
+      console.log("asu")
+
+    accesable.forEach(function(item,index){
+      $("#" + item).show()
+
+      if (accesable.includes('select2Sales')) {
+        $.ajax({
+          url: "{{url('/project/getUserByTerritory')}}",
+          type: "GET",
+          data:{
+            territory:"{{Auth::User()->id_territory}}"
+          },
+          success:function(result){
+
+            $("#select2Sales").select2({
+              placeholder: "Select sales",
+              data:result.data
+            })
+          }
+        })  
+
+  
+      } else if (accesable.includes("select2SalesDirektor")) {
+        $.ajax({
+          url: "{{url('/project/getSalesByTerritory')}}",
+          type: "GET",
+          success: function(result) {
+            $("#select2Sales").select2({
+              placeholder:"Select Sales",
+              // multiple:true,
+              data:result.results
+            })
+          }
+        })
+      }
+             
+    }) 
+
+    var id_territory = $(".nav-item.active").contents().text().trim() 
+    start_date = moment().startOf('year').format("YYYY-MM-DD 00:00:00")
+    end_date = moment().endOf('year').format("YYYY-MM-DD 00:00:00")
+
+    $(".btnApply").click(function(){
+      $(".btnApply").attr("onclick",ApplyFilter())
+    })
+
+    function ApplyFilter(){
+      territory = $(".nav-item.active").contents().text().trim();
+      if(territory !== "ALL"){
+        $('#data_lead').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + territory + "&" + "id_customer=" + $("#select2Customer").val() + "&" + "nik_sales=" + $("#select2Sales").val()).load();
+      } else{
+        $('#data_lead').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + territory + "&" + "id_customer=" + $("#select2Customer").val() + "&" + "nik_sales=" + $("#select2SalesDirektor").val()).load();
+      }         
+      $('#data_leadmsp').DataTable().ajax.url("{{url('getfiltercustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+    }
+
     initReportTerritory();
+
 
     function initReportTerritory(){
       var id_territory = $(".nav-item.active").contents().text().trim()
       console.log($(".nav-item.active").contents().text().trim());
       $("#data_lead").DataTable({
-	        "ajax":{
-	          "type":"GET",
-	          "url":"{{url('getreportterritory')}}?id_territory="+id_territory,
-	        },
-	        "columns": [
-	          // { "data": "name" },
-	          {
-	            render: function ( data, type, row ) {
-	              return '<b>[' + row.brand_name + ']</b>' + '<br>(' + row.name + ')';
-	            }
-	          },
-	          { "data": "id_territory" },
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('getreportterritory')}}?id_territory="+id_territory,
+          },
+          "columns": [
+            // { "data": "name" },
+            {
+              render: function ( data, type, row ) {
+                return '<b>[' + row.brand_name + ']</b>' + '<br>(' + row.name + ')';
+              }
+            },
+            { "data": "id_territory" },
             {
               render: function ( data, type, row ) {
                 if (row.amount_INITIAL == null) {
@@ -300,26 +348,26 @@ Report Customer
                   return '<center><b>[' + row.All + ']</b>' + '<br><p style="text-align:center">' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_All) + '</p></center>';
                 }
               }
-            },	          
-	        ],
-	        "info":false,
-	        "scrollX": false,
-	        "order": [[ 1, "asc" ]],
+            },            
+          ],
+          "info":false,
+          "scrollX": false,
+          "order": [[ 1, "asc" ]],
           "orderFixed": [[1, 'asc']],
-	        "processing": true,
+          "processing": true,
           "paging": false,
-	        "columnDefs": [
-	            { "visible": false, "targets": 1},
-	            { 
-	              "width": "10%", "targets": 0,
-	              "width": "10%", "targets": 3,
-	              "width": "10%", "targets": 4,
-	              "width": "10%", "targets": 5,
-	              "width": "10%", "targets": 6,
-	              "width": "10%", "targets": 7,
-	              "width": "10%", "targets": 8
-	            }
-	        ],
+          "columnDefs": [
+              { "visible": false, "targets": 1},
+              { 
+                "width": "10%", "targets": 0,
+                "width": "10%", "targets": 3,
+                "width": "10%", "targets": 4,
+                "width": "10%", "targets": 5,
+                "width": "10%", "targets": 6,
+                "width": "10%", "targets": 7,
+                "width": "10%", "targets": 8
+              }
+          ],
           rowsGroup:[1],
           "rowGroup" : {
             endRender: function ( rows, group ) {
@@ -387,42 +435,43 @@ Report Customer
                 return $('<tr class="group"><td colspan="8">' + '<b style="color:white;">' + group + '</b>'+'</td></tr>');
             }
           }
-	        // "drawCallback": function ( settings ) {
-	        //   var api = this.api(),data;
-	        //   var rows = api.rows( {page:'current'} ).nodes();
+          // "drawCallback": function ( settings ) {
+          //   var api = this.api(),data;
+          //   var rows = api.rows( {page:'current'} ).nodes();
             
-	        //   var last=null;
-	        //   api.column(1, {page:'current'} ).data().each( function ( group, i, row ) {
+          //   var last=null;
+          //   api.column(1, {page:'current'} ).data().each( function ( group, i, row ) {
          //    var datas = row
          //            .data()
          //            .pluck(9);
 
          //    console.log(datas)
-	        //         if ( last !== group ) {
-	        //             $(rows).eq( i ).before(
-	        //                 '<tr class="group"><td colspan="9">'+'<b style="color:white">'+group+'</b>' + '<p style="text-align:right;color:white">' + "Total Amount : " + datas.amount + '</p>' +'</td></tr>'
-	        //             );
-	        //             last = group;
-	        //         }
-	        //   });
+          //         if ( last !== group ) {
+          //             $(rows).eq( i ).before(
+          //                 '<tr class="group"><td colspan="9">'+'<b style="color:white">'+group+'</b>' + '<p style="text-align:right;color:white">' + "Total Amount : " + datas.amount + '</p>' +'</td></tr>'
+          //             );
+          //             last = group;
+          //         }
+          //   });
 
-	        // }
+          // }
 
       })
 
+
       $("#data_leadmsp").DataTable({
-	        "ajax":{
-	          "type":"GET",
-	          "url":"{{url('getreportcustomermsp')}}",
-	        },
-	        "columns": [
-	          {
-	            render: function ( data, type, row ) {
-	              return row.brand_name;
-	            }
-	          },
-	          { "data": "name" },
-	          {
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('getreportcustomermsp')}}",
+          },
+          "columns": [
+            {
+              render: function ( data, type, row ) {
+                return row.brand_name;
+              }
+            },
+            { "data": "name" },
+            {
               render: function ( data, type, row ) {
                 if (row.amount_INITIAL == null) {
                   return '<center> <b>[' + row.INITIAL + ']</center> </b>';
@@ -485,29 +534,29 @@ Report Customer
                 }
               }
             },  
-	          
-	        ],
-	        // "searching": true,
-	        // "lengthChange": false,
-	        // "paging": false,
-	        "info":false,
-	        "scrollX": false,
-	        "order": [[ 1, "asc" ]],
+            
+          ],
+          // "searching": true,
+          // "lengthChange": false,
+          // "paging": false,
+          "info":false,
+          "scrollX": false,
+          "order": [[ 1, "asc" ]],
           "orderFixed": [[1, 'asc']],
-	        "processing": true,
+          "processing": true,
           "paging": false,
-	        "columnDefs": [
-	            { "visible": false, "targets": 1},
-	            { 
-	              "width": "5%", "targets": 2,
-	              "width": "5%", "targets": 3,
-	              "width": "5%", "targets": 4,
-	              "width": "5%", "targets": 5,
-	              "width": "5%", "targets": 6,
-	              "width": "5%", "targets": 7,
-	              "width": "5%", "targets": 8
-	            }
-	        ],
+          "columnDefs": [
+              { "visible": false, "targets": 1},
+              { 
+                "width": "5%", "targets": 2,
+                "width": "5%", "targets": 3,
+                "width": "5%", "targets": 4,
+                "width": "5%", "targets": 5,
+                "width": "5%", "targets": 6,
+                "width": "5%", "targets": 7,
+                "width": "5%", "targets": 8
+              }
+          ],
           rowsGroup:[1],
           "rowGroup" : {
             endRender: function ( rows, group ) {
@@ -575,26 +624,27 @@ Report Customer
                 return $('<tr class="group"><td colspan="8">' + '<b style="color:white;">' + group + '</b>'+'</td></tr>');
             }
           }
-	        // "drawCallback": function ( settings ) {
+          // "drawCallback": function ( settings ) {
 
-	        //   var api = this.api(),data;
+          //   var api = this.api(),data;
 
-	        //   var rows = api.rows( {page:'current'} ).nodes();
+          //   var rows = api.rows( {page:'current'} ).nodes();
 
-	        //   var last=null;
+          //   var last=null;
 
-	        //   api.column(1, {page:'current'} ).data().each( function ( group, i ) {
-	        //         if ( last !== group ) {
-	        //             $(rows).eq( i ).before(
-	        //                 '<tr class="group"><td colspan="8">'+'<b>'+group+'</b>'+'</td></tr>'
-	        //             );
-	 
-	        //             last = group;
-	        //         }
-	        //   });
+          //   api.column(1, {page:'current'} ).data().each( function ( group, i ) {
+          //         if ( last !== group ) {
+          //             $(rows).eq( i ).before(
+          //                 '<tr class="group"><td colspan="8">'+'<b>'+group+'</b>'+'</td></tr>'
+          //             );
+   
+          //             last = group;
+          //         }
+          //   });
 
-	        // }
+          // }
       })
+
 
       $('.dates').daterangepicker({
         startDate: moment().startOf('year'),
@@ -659,7 +709,8 @@ Report Customer
           
         }
       )
-    }
+      
+    }    
 
     function changeTerritory(id_territory) {
       console.log(id_territory)
