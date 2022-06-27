@@ -11,6 +11,11 @@
 |
 */
 
+Route::get('/authGoogle','TestController@authGoogle');
+Route::get('/testAfterAuth','TestController@testAfterAuth');
+Route::post('/testAfterAuthSave','TestController@testAfterAuthSave');
+
+
 Auth::routes();
 
 Route::post('/update_result', 'SalesController@update_result');
@@ -111,7 +116,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/testNewLead', 'TestController@testNewLead');
 	Route::get('/testAssign', 'TestController@testAssignPresales');
 	Route::get('/testTender', 'TestController@testRaiseToTender');
-
+	
 	Route::get('/testEmailViewSales', 'TestController@view_mail_to_sales');
 	Route::get('/testEmailViewFinance', 'TestController@view_mail_to_finance');
 	Route::get('/testEmailPeminjaman','TestController@testEmailPeminjaman');
@@ -308,6 +313,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/report_product_index','ReportController@report_product_index');
 	Route::get('/getreportproduct','ReportController@getreportproduct');
+	Route::get('/getTerritory', 'ReportController@getTerritory');
 
 	//route report customer msp
 	Route::get('/getreportcustomermsp','ReportController@getreportcustomermsp');
