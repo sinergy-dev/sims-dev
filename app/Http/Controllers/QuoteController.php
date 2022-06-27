@@ -475,7 +475,7 @@ class QuoteController extends Controller
         $tambah->month = 'II';
         $tambah->date = $edate;
         $tambah->created_at = $edate . '00:00:00';
-        $update->project_id = $request['project_id_backdate'];
+        $tambah->project_id = $request['project_id_backdate'];
         $tambah->nik = Auth::User()->nik;
         $tambah->id_customer = '2';
         $tambah->save();
