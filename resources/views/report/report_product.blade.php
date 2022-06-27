@@ -108,8 +108,7 @@ Report Product
           <div class="box-header with-border">
             <h3 class="box-title"><i>Report Products</i></h3>
             <div class="row">
-              <div class="col-md-12">
-                <div class="pull-left" style="margin-right:10px">
+                <div class="col-md-3">
                   <div class="input-group" style="float: left">
                     <div class="input-group-addon">
                       <i class="fa fa-calendar"></i>
@@ -118,26 +117,23 @@ Report Product
                     <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                   </div>
                 </div>  
-                <div class="pull-left" style="margin-right:10px">
-                  <select class="select2 form-control" style="width:100%;" id="select2Territory" name="select2Territory">
-                  </select>
-                </div>
-                <div class="pull-left">
+                <div class="col-md-3">
                   <select class="select2 form-control" style="width:100%;" id="select2Product" name="select2Product">
                     
                   </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                  <button class="btn btn-primary btnApply" style="margin-right:10px"><i class="fa fa-refresh"></i> Apply</button>
+
                   <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
-                </div>
-              </div>              
+                </div>           
               
             </div>
           </div>         
 
           <div class="box-body">              
             <div class="table-responsive">
-              <table class="table table-bordered table-striped" id="data_lead" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped" id="data_product" width="100%" cellspacing="0">
                 <thead>
                   <tr class="header">
                     <th>PRODUCT</th>
@@ -201,34 +197,55 @@ Report Product
       }
     })
 
-    $('.dates').daterangepicker({
-      startDate: moment().startOf('year'),
-      endDate  : moment().endOf('year'),
-      locale: {
-        format: 'DD/MM/YYYY'
-      }
-    },function (start, end) {
-        start: moment();
-        end  : moment();
+    initproduct()
 
-        start_date  = start.format("YYYY-MM-DD 00:00:00");
-        end_date    = end.format("YYYY-MM-DD 00:00:00");
+    function initproduct(){
+      $('.dates').daterangepicker({
+        startDate: moment().startOf('year'),
+        endDate  : moment().endOf('year'),
+        locale: {
+          format: 'DD/MM/YYYY'
+        }
+      },function (start, end) {
+          start: moment();
+          end  : moment();
 
-        // $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+          start_date  = start.format("YYYY-MM-DD 00:00:00");
+          end_date    = end.format("YYYY-MM-DD 00:00:00");
 
-        territory = $(".nav-item.active").contents().text().trim();
-        if(territory !== "ALL"){
-          $('#data_lead').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + territory).load();
-        }          
-        $('#data_leadmsp').DataTable().ajax.url("{{url('getfiltercustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+          // $('#report_territory').DataTable().ajax.url("{{url('getFilterDateTerritory')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+          $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
 
 
-        // $('#data_lead').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
+          // $('#data_product').DataTable().ajax.url("{{url('filter_presales_each_year')}}?nik=" + nik + "&" + "year=" + $('#year_filter').val()).load();
 
-    });
+      });
 
-  	var tables = $('#data_lead').dataTable({
-  		"ajax":{
+      $('#daterange-btn').daterangepicker(
+        {
+          ranges   : {
+            'This Month'   : [moment().startOf('month'), moment().endOf('month')],
+            'Last 3 Month' : [moment().startOf('month').subtract(3, 'months'), moment().endOf('month')],
+            'Last 6 Month' : [moment().startOf('month').subtract(6, 'months'), moment().endOf('month')],
+            'Last Year'    : [moment().startOf('year').subtract(1, 'year'),moment().endOf('year').subtract(1, 'year')],
+            'This Year'    : [moment().startOf('year'),moment().endOf('year')],
+          },
+          locale: {
+            format: 'DD/MM/YYYY'
+          }
+        },
+        function (start, end) {
+          $('#reportrange').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'))
+
+          start_date  = start.format("YYYY-MM-DD 00:00:00");
+          end_date    = end.format("YYYY-MM-DD 00:00:00");
+
+          $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
+        }
+      )
+
+      var tables = $('#data_product').dataTable({
+      "ajax":{
               "type":"GET",
               "url":"{{url('/getreportproduct')}}",
             },
@@ -282,14 +299,14 @@ Report Product
             "processing": true,
             "paging": true,
             "rowCallback": function( row, data ) {
-            	$('td', row).eq(0).addClass('green1-color');
-  		        $('td', row).eq(1).addClass('green2-color');
-  		        $('td', row).eq(2).addClass('green3-color');
-  		        $('td', row).eq(3).addClass('green4-color');
-  		        $('td', row).eq(4).addClass('green5-color');
-  		        $('td', row).eq(5).addClass('green6-color');
-  		        $('td', row).eq(6).addClass('green7-color');
-  		    },
+              $('td', row).eq(0).addClass('green1-color');
+              $('td', row).eq(1).addClass('green2-color');
+              $('td', row).eq(2).addClass('green3-color');
+              $('td', row).eq(3).addClass('green4-color');
+              $('td', row).eq(4).addClass('green5-color');
+              $('td', row).eq(5).addClass('green6-color');
+              $('td', row).eq(6).addClass('green7-color');
+          },
           rowGroup: {
               startRender: null,
               endRender: function ( rows, group ) {
@@ -339,7 +356,25 @@ Report Product
                 return $('<tr><td>'+ '<b>' + 'Total Amount : ' + '</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter1 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter2 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter3 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter4 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter5 ) + '</b></center>' +'</td>' + '</tr>');
               }
           }
-  	});
+      });
+    }
+
+    start_date = moment().startOf('year').format("YYYY-MM-DD 00:00:00")
+    end_date = moment().endOf('year').format("YYYY-MM-DD 00:00:00")
+
+    $(".btnApply").click(function(){
+      $(".btnApply").attr("onclick",ApplyFilter())
+    })
+
+    function ApplyFilter(){
+      $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
+    }
+
+    $(".reload-table").click(function(){
+       $('#data_product').DataTable().ajax.url("{{url('/getreportproduct')}}").load();
+    })
+
+    
   })
 </script>
 @endsection
