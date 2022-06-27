@@ -258,7 +258,7 @@ GA Asset
                         </td>
                         <td>
                         <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
-                        <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{!!$data->keterangan!!}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
+                        <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
                       </tr>
                     @endforeach
                     @foreach($current_request as $datas)
@@ -850,7 +850,7 @@ GA Asset
           <div class="modal-body">
             <form method="POST" action="{{url('penghapusan_hr')}}" name="modalProgress">
               @csrf
-              <input type="text" name="id_barang" id="id_barang_hapus">
+              <input type="text" name="id_barang" id="id_barang_hapus" hidden>
               <div class="form-group">
               <label>Are you sure to delete asset?</label>
               <input name="nama_barang" id="nama_barang_hapus" class="form-control" readonly></input>
@@ -1451,31 +1451,36 @@ GA Asset
             append = append + '<h5>Transaction <b>' + result[0].no_transac + '</b></h5>'
             append = append + '<table style="width:100%;border-collapse:collapse">'
             append = append + '<tr>' 
-            append = append + '<th>Tanggal Pinjam</th>' 
-            append = append + '<td>: '+ result[0].tgl_peminjaman +'</td>'         
+            append = append + '<th>Tanggal Pinjam:</th>' 
+            append = append + '<td>'+ result[0].tgl_peminjaman +'</td>'         
             append = append + '</tr>'
             append = append + '<tr>' 
-            append = append + '<th>Tanggal Kembali</th>'    
+            append = append + '<th>Tanggal Kembali:</th>'    
             if (result[0].tgl_pengembalian == null) {
-              append = append + '<td>: - </td>'  
+              append = append + '<td> - </td>'  
             }else{
-              append = append + '<td>: '+ result[0].tgl_pengembalian +'</td>'  
+              append = append + '<td> '+ result[0].tgl_pengembalian +'</td>'  
             }                
             append = append + '</tr>'
             append = append + '<tr>' 
-            append = append + '<th>Keterangan</th>'  
-            if (result[0].keterangan == null) {
-              append = append + '<td>: - </td>'  
-            }else{
-              append = append + '<td>: '+ result[0].keterangan +'</td>' 
+            append = append + '<th>Keterangan:</th>'  
+            append = append + '<td>'
+            if (result[0].serial_number != null) {
+              append = append + 'Serial Number: '+ result[0].serial_number 
+            }
+            if (result[0].merk != null) {
+              append = append + '<br>Merk:'+ result[0].merk  
+            } 
+            if (result[0].keterangan != null) {
+              append = append + '<br>'+ result[0].keterangan +'</td>' 
             }                   
             append = append + '</tr>' 
             append = append + '<tr>' 
-            append = append + '<th>Note</th>' 
+            append = append + '<th>Note:</th>' 
             if (result[0].note == null) {
-              append = append + '<td>: - </td>'  
+              append = append + '<td> - </td>'  
             }else{
-              append = append + '<td>: '+ result[0].note +'</td>'  
+              append = append + '<td>'+ result[0].note +'</td>'  
             }         
                   
             append = append + '</tr>'   
@@ -1517,7 +1522,7 @@ GA Asset
             append = append + '<ul><li>Nama Barang : '+ result[0].nama +'</li>'
             append = append + '<li>Merk : '+ result[0].merk +'</li>'
             append = append + '<li>Qty : '+ result[0].qty +'</li>'
-            append = append + '<li>Category : '+ result[0].lokasi +'</li>'
+            append = append + '<li>Category : '+ result[0].kategori +'</li>'
             append = append + '<li>Specification : '+ result[0].link +'</li></ul>'
           }
           
@@ -1714,7 +1719,7 @@ GA Asset
                 type:"GET",
                 url:"{{url('acceptPeminjaman')}}",
                 data:{
-                  id_transaction:id_transaction,
+                  id_transaction:id_transac,
                   status:status,
                   id_barang:$('#barang_asset').select2('data')[0].id
                 },
@@ -1767,7 +1772,7 @@ GA Asset
   		        data:{
   		          // id_barang:id_barang,
   		          // nik_peminjam:nik_peminjam,
-  		          id_transaction:id_transaction,
+  		          id_transaction:id_transac,
   		          status:status,
   		          reason:result.value
   		        },
