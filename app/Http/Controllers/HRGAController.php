@@ -1619,6 +1619,7 @@ class HRGAController extends Controller
                 $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
             }else{
                 $kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
+            }
             
         }else{
             if ($div == 'HR') {
@@ -3886,11 +3887,7 @@ class HRGAController extends Controller
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_company', '1')
                     ->whereYear('date_req',date('Y'))
-<<<<<<< HEAD
-                    ->whereRaw("(`users`.`id_division` = 'BCD')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")       
-=======
-                    ->whereRaw("(`users`.`id_division` = 'BCD')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")     
->>>>>>> 962e8acc742d241f04b4a2fb9e852a4437012407
+                    ->whereRaw("(`users`.`id_division` = 'BCD')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
                     ->where('tb_cuti_detail.status','NEW')                  
                     ->groupby('nik')
                     ->get());
@@ -4098,11 +4095,7 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-<<<<<<< HEAD
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
-=======
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at') 
->>>>>>> 962e8acc742d241f04b4a2fb9e852a4437012407
                     ->where('users.id_division','BCD')
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->where('date_off', '>=', $request->start)
