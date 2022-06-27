@@ -983,6 +983,7 @@ class TicketingController extends Controller
 		$requestChange->type = "Re-Open Ticket";
 		$requestChange->requester = Auth::user()->name;
 		$requestChange->object_id = $req->id_ticket;
+		$requestChange->parameter1_before = $req->reason;
 		$requestChange->status = "On-Progress";
 		$requestChange->save();
 
