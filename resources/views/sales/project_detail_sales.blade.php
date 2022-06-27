@@ -875,6 +875,8 @@ Detail Lead Register
 						lead_id:window.location.href.split("/")[5]
 					},
 					success:function(result){
+						showSbe()
+
 						if (result.data[0].result == 'LOSE') {
 							    var i = 0;
 							    $(".dot:eq(0)").first().animate({
@@ -1031,6 +1033,11 @@ Detail Lead Register
 					        width: 110,
 					        height:110
 					      }, 1000 ).text("WIN/LOSE");
+					      accesable.forEach(function(item,index){
+						  		if (item.includes('formSD')) {
+						    		$("#" + item).prop('disabled',false)
+						  		}
+						  	})
 						} else if (result.data[0].result == 'SD') {
 								$(".dot:eq(0)").first().animate({
 					        backgroundColor: "#605ca8!important",
@@ -1111,7 +1118,7 @@ Detail Lead Register
 					        height:110
 					      }, 1000 );
 						    $('#init').addClass('active5');
-						}else if (result.data[0].result == "WIN"){
+						} else if (result.data[0].result == "WIN"){
 								$(".dot:eq(0)").first().animate({
 					        backgroundColor: "#605ca8!important",
 					      	color: "#fff",
@@ -1735,19 +1742,11 @@ Detail Lead Register
 
 		function grandTotal(){
     	var sum = 0
-    	$('.new-price').each(function() {
-          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-          sum += temp;
-      });
       $('.new-price-win').each(function() {
           var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
           sum += temp;
       });
       $('.price_sbe_win').each(function() {
-          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-          sum += temp;
-      });
-      $('.price_sbe').each(function() {
           var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
           sum += temp;
       });
@@ -1817,12 +1816,12 @@ Detail Lead Register
       var append = ""
       append = append + "<tr class='tag-sbe-win'>"
       append = append + " <td><input hidden class='id' name='id_sbe' data-value='"+ i +"' />"
-      append = append + " <select class='form-control select2-customSBE tag_sbe' id='searchSBE' name='tag_sbe_win' data-value='" + i + "' style='width: 100%!important'></select>"
+      append = append + " <select class='form-control select2-customSBE tag_sbe_win' id='searchSBE' name='tag_sbe_win' data-value='" + i + "' style='width: 100%!important'></select>"
       append = append + " </td>"
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' name='price_sbe_win' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input data-value='" + i + "' class='money form-control price_sbe_win' name='price_sbe_win' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
@@ -2175,8 +2174,6 @@ Detail Lead Register
     }
 
     function addSbeResultNotEmpty(id,tag_sbe,price,i){
-	 			$("#tbtagsbe").empty()	 
-
 	    	var append = ""
 	      append = append + "<tr class='exist-sbe-win'>"
 	      append = append + " <td><input id='tagging-sbe-win-status' hidden data-value='"+i+"'/><input hidden class='id_sbe_win' name='id_sbe' data-value='"+ i +"' />"
@@ -2339,7 +2336,7 @@ Detail Lead Register
 
       grandTotal()
 
-      row = $(this).parents("tr").find("input[name='id']").val();
+      row = $(this).parents("tr").find("input[name='id-win']").val();
     	deletedProductWin.push(row)
     });
 
@@ -2441,6 +2438,8 @@ Detail Lead Register
     	$("#btnSubmitSD").prop("disabled",true)
     	$("#btnRaiseTP").prop("disabled",true)
     })
+    
+    var activeBtnEdit = 0 
 
     $(document).on('click', '.btn-edit-taggingWin', function() {
     	$(this).parents("tr").find(".select2-customProduct").prop("disabled",false)
@@ -2456,11 +2455,13 @@ Detail Lead Register
     	var lead_id = window.location.href.split("/")[5]
 
     	id_val = $(this).parents("tr").find("#tagging-win-status").val()
+    	console.log(activeBtnEdit)
+    	$("#nextBtn").prop("disabled",true)
 
     	if (id_val == '') {
     		// $("#tagging-win-status[data-value="+dataValue+"]").val("pencil"+dataValue) 
     		$("#tagging-win-status[data-value='"+dataValue+"']").val("pencil"+dataValue)    		
-
+    		activeBtnEdit++
     	}else if (id_val == "pencil"+dataValue) {
     		if (price == '') {
     			Swal.fire({
@@ -2488,9 +2489,11 @@ Detail Lead Register
     	price = $(this).parents("tr").find(".price_sbe_win").val()
     	dataValue = $(this).parents("tr").find(".price_sbe_win").data("value")
     	id_val = $(this).parents("tr").find("#tagging-sbe-win-status").val()
+    	$("#nextBtn").prop("disabled",true)
 
     	if (id_val == '') {
-    		$("#tagging-sbe-win-status[data-value='"+dataValue+"']").val("pencil"+dataValue)    		
+    		$("#tagging-sbe-win-status[data-value='"+dataValue+"']").val("pencil"+dataValue)  
+    		activeBtnEdit++
     	}else if (id_val == "pencil"+dataValue) {
     		$(this).parents("tr").find(".btn-edit-tagging-sbe-win").attr("onclick",updateTaggingSbeWin(id_exist,tag_sbe,name_sbe,price,dataValue))
     		$("#tagging-sbe-win-status[data-value='"+dataValue+"']").val("")  
@@ -2560,7 +2563,7 @@ Detail Lead Register
 						    	$(".price_sbe[data-value='" + dataValue + "']").prop("disabled",true)
 						    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
 						    	$(".btn-edit-tagging-sbe[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
-						    	$("#btn-addSBE").prop('disabled',false).tooltip('disable')
+						    	// $("#btn-addSBE").prop('disabled',false).tooltip('disable')
     							$("#btnSubmitSD").prop("disabled",false)
                 }
             })
@@ -2592,16 +2595,21 @@ Detail Lead Register
 						    	$(".price_sbe_win[data-value='" + dataValue + "']").prop("disabled",true)
 						    	$(".btn-edit-tagging-sbe-win[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
 						    	$(".btn-edit-tagging-sbe-win[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
-						    	$("#btn-addSBE").prop('disabled',false).tooltip('disable')
+						    	// $("#btn-addSBE").prop('disabled',false).tooltip('disable')
+						    	activeBtnEdit--
+						    	if (activeBtnEdit == 0) {
+    								$("#nextBtn").prop("disabled",false)
+						    	}
                 }
             })
         }
       })
     }
 
-    var id_exist,product,techno,price,dataValue,lead_id = '' 	  
+    var id_exist,product,techno,price,dataValue,lead_id = '' 	 
 
     function updateTaggingWin(id_exist,product,techno,price,dataValue,lead_id){
+    	console.log(activeBtnEdit)
   		$.ajax({
           url: "{{url('/project/updateProductTag')}}",
           type: 'post',
@@ -2627,6 +2635,10 @@ Detail Lead Register
 						    	$(".new-price-win[data-value='" + dataValue + "']").prop("disabled",true)
 						    	$(".btn-edit-taggingWin[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
 						    	$(".btn-edit-taggingWin[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+						    	activeBtnEdit--
+						    	if (activeBtnEdit == 0) {
+    								$("#nextBtn").prop("disabled",false)
+						    	}
                 }
             })
         }
@@ -2770,19 +2782,11 @@ Detail Lead Register
 	    	// }
 	    });
 
-	    $(document).on('input', '.new-price', function() {
-        grandTotal()
-      });
-
       $(document).on('input', '.new-price-win', function() {
         grandTotal()
       });
 
       $(document).on('input', '.price_sbe_win', function() {
-        grandTotal()
-      });
-
-      $(document).on('input', '.price_sbe', function() {
         grandTotal()
       });
 
@@ -2906,9 +2910,11 @@ Detail Lead Register
 				          lead_id: window.location.href.split('/')[5],
 				      },success: function(result){
 				    		i = 0
+				    		console.log("tes"+result)
+	 							$("#tbtagsbe").empty()	 
 				      	$.each(result, function(key,value){
-				      		i++
 				      		addSbeResultNotEmpty(value.id,value.tag_sbe,value.price_sbe,i)
+				      		i++
 				      	})
 				      	grandTotal()
 				      }
@@ -2970,7 +2976,7 @@ Detail Lead Register
             append = append + " <td style='white-space: nowrap'>"
             append = append + " <div class='input-group'>"
             append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-            append = append + " <input data-value='" + i + "' class='money form-control new-price' type='text' placeholder='Enter Product Price' name='project_budget'>"
+            append = append + " <input data-value='" + i + "' class='money form-control new-price-win' type='text' placeholder='Enter Product Price' name='project_budget'>"
             append = append + " </div>"
             append = append + " </td>"
             append = append + " <td class='text-center'>"
@@ -3021,7 +3027,7 @@ Detail Lead Register
 
 		function submitBtnWin(n){  
       var rowCount = $('#tbtagprice tr').length + $('#tbserviceprice tr').length
-
+      console.log(rowCount)
       if (rowCount == 0) {
         Swal.fire({
           title: 'Are you sure?',
@@ -3091,7 +3097,7 @@ Detail Lead Register
         var tagProduct = []
         $('#table-product #tbtagprice .new-product').each(function() {
           tagProduct.push({
-            tag_price:$(this).find(".new-price").val().replace(/\D/g, ""),
+            tag_price:$(this).find(".new-price-win").val().replace(/\D/g, ""),
             tag_product:{
               productTag:$(this).find('.select2-customProduct').select2("data")[0].id.substr(1),
               productTagText:$(this).find('.select2-customProduct').select2("data")[0].text,
@@ -3113,7 +3119,7 @@ Detail Lead Register
         var tagService = []
         $('#table-service #tbserviceprice .new-product').each(function() {
           tagService.push({
-            tag_price:$(this).find(".new-price").val().replace(/\D/g, ""),
+            tag_price:$(this).find(".new-price-win").val().replace(/\D/g, ""),
             // tag_service:$(this).find('.select2-customService').select2("data")[0].id,
             tag_service:1,
           })
