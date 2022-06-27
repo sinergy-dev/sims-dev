@@ -4500,6 +4500,14 @@ class ReportController extends Controller
             $data->where('users.id_territory',Auth::User()->id_territory);
         }
 
+        if (isset($request->id_customer)) {
+            $data->where('sales_lead_register.id_customer', $request->id_customer);
+        }
+
+        if (isset($request->nik_sales)) {
+            $data->where('sales_lead_register.nik', $request->nik_sales);
+        }
+
         return array("data" => $data->get());
     
     }
@@ -5986,34 +5994,58 @@ class ReportController extends Controller
 
     public function getreportproduct(Request $request)
     {
-        $reportproduct = ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+        $reportproduct = array("data" => ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
                     ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_product_tag_relation.lead_id')
                     ->join('users','users.nik','=','sales_lead_register.nik')
                     ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
                     ->select('tb_product_tag.name_product',
-                        DB::raw("SUM(CASE WHEN (price is null) THEN 0 ELSE price END) AS price"),
-                        // DB::raw("SUM(price) as total_price"),
+                        DB::raw("SUM(price) as total_price"),
                         DB::raw("COUNT(tb_product_tag_relation.lead_id) as total_lead"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 1' then 0 end) as countTer1"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 2' then 0 end) as countTer2"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' then 0 end) as countTer3"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' then 0 end) as countTer4"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' then 0 end) as countTer5"),
-                        DB::raw("SUM(CASE WHEN (IF(`users`.`id_territory`='TERRITORY 1',price,0) is null) THEN 0 ELSE price END) AS ter1_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',price,0)) AS ter1_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',price,0)) AS ter2_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',price,0)) AS ter3_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 4',price,0)) AS ter4_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',price,0)) AS ter5_price")
                     )
-                    ->groupBy('tb_product_tag.name_product');
+                    ->groupBy('tb_product_tag.name_product')
+                    // ->groupBy('tb_product_tag_relation.id_product_tag')
+                    ->get());
 
-        if (isset($request->year)) {
-            $reportproduct->whereYear('tb_product_tag_relation.created_at',$request->year);
-        } else {
-            $reportproduct;
-        }
+        return $reportproduct;
+    }
+
+    public function getFilterProduct(Request $request)
+    {
+        $reportproduct = ProductTagRelation::join('tb_product_tag','tb_product_tag.id','=','tb_product_tag_relation.id_product_tag')
+                    ->join('sales_lead_register','sales_lead_register.lead_id','=','tb_product_tag_relation.lead_id')
+                    ->join('users','users.nik','=','sales_lead_register.nik')
+                    ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
+                    ->select('tb_product_tag.name_product',
+                        DB::raw("SUM(price) as total_price"),
+                        DB::raw("COUNT(tb_product_tag_relation.lead_id) as total_lead"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 1' then 0 end) as countTer1"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 2' then 0 end) as countTer2"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' then 0 end) as countTer3"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' then 0 end) as countTer4"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' then 0 end) as countTer5"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',price,0)) AS ter1_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',price,0)) AS ter2_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',price,0)) AS ter3_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 4',price,0)) AS ter4_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',price,0)) AS ter5_price")
+                    )
+                    ->where('sales_lead_register.created_at', '>=', $request->start_date)
+                    ->where('sales_lead_register.created_at', '<=', $request->end_date);
+
+        if (isset($request->name_product)) {
+            $reportproduct->where('tb_product_tag.id',$request->name_product)->groupBy('tb_product_tag.name_product');
+        } 
         
-
         return array("data" => $reportproduct->get());
     }
 }
