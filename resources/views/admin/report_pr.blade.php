@@ -101,6 +101,7 @@ Report Purchase Request
                       <th>Category</th>
                       <th>Total</th>
                       <th>Amount</th>
+                      <th>Amount</th>
                     </tr>
                   </thead>
                   <tbody id="products-list" name="products-list">
@@ -487,7 +488,13 @@ Report Purchase Request
           { 
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.nominal)
-            }
+            },
+            "orderData" : [4],
+          },
+          {
+            "data":"nominal",
+            "targets":[3],
+            "visible":false
           }
         ],
         "order":[],
@@ -510,7 +517,13 @@ Report Purchase Request
           { 
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.nominal)
-            }
+            },
+            "orderData" : [4],
+          },
+          {
+            "data":"nominal",
+            "targets":[3],
+            "visible":false
           }
         ],
         "order":[],
@@ -533,7 +546,13 @@ Report Purchase Request
           { 
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.nominal)
-            }
+            },
+            "orderData" : [4],
+          },
+          {
+            "data":"nominal",
+            "targets":[3],
+            "visible":false
           }
         ],
         "order":[],
@@ -556,7 +575,13 @@ Report Purchase Request
           { 
             render: function ( data, type, row ) {
               return new Intl.NumberFormat('id').format(row.nominal)
-            }
+            },
+            "orderData" : [4],
+          },
+          {
+            "data":"nominal",
+            "targets":[3],
+            "visible":false
           }
         ],
         "order":[],
