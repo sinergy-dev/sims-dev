@@ -12,7 +12,7 @@ Report Log History
 @section('content')
 <section class="content-header">
 	<h1>
-    	Record Auth User
+    	Report Log History
   	</h1>
   	<ol class="breadcrumb">
 	    <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
