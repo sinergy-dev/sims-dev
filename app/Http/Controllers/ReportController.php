@@ -2298,7 +2298,24 @@ class ReportController extends Controller
 
         $presales = '';    
 
-        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`,GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->where('status','closed')->groupBy('lead_id','name_presales');
+        // $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`,GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->where('status','closed')->groupBy('lead_id','name_presales');
+
+        // $leadsnow = DB::table('sales_lead_register')
+        //         ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+        //         ->leftJoinSub($getPresales, 'tb_presales',function($join){
+        //             $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+        //         })
+        //         ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+        //         ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+        //         ->join('tb_territory','tb_territory.id_territory','=','u_sales.id_territory')
+        //         ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
+        //         ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+        //         ->select('sales_tender_process.win_prob','sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales','tb_presales.priority','sales_lead_register.year','tb_territory.name_territory',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"), 'code_company', 'u_sales.id_company')
+        //         ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
+        //         ->where('result','!=','hmm')
+        //         ->orderBy('created_at', 'desc'); 
+
+        $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`, GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->groupBy('lead_id');
 
         $leadsnow = DB::table('sales_lead_register')
                 ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
@@ -2306,20 +2323,31 @@ class ReportController extends Controller
                     $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
                 })
                 ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
-                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
                 ->join('tb_territory','tb_territory.id_territory','=','u_sales.id_territory')
+                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
                 ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
                 ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                ->select('sales_tender_process.win_prob','sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales','tb_presales.priority','sales_lead_register.year','tb_territory.name_territory',DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"), 'code_company', 'u_sales.id_company')
+                ->select('sales_tender_process.win_prob','sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales', 'code_company', 'name_territory', 'tb_presales.priority', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result','!=','hmm')
-                ->orderBy('created_at', 'desc');  
+                // ->whereIn('year',$year)
+                // ->where('year', $year)
+                ->orderBy('created_at', 'desc'); 
 
-        $total_deal_price = Sales::join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
-                                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
-                                ->select(DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'))
-                                ->where('code_company', 'MSP')
-                                ->where('result','!=','hmm'); 
+        // $total_deal_price = Sales::join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+        //                         ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+        //                         ->select(DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'))
+        //                         ->where('code_company', 'MSP')
+        //                         ->where('result','!=','hmm'); 
+
+        $total_deal_price = DB::table('sales_lead_register')
+                ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
+                ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
+                ->leftJoinSub($getPresales, 'tb_presales',function($join){
+                    $join->on("sales_lead_register.lead_id", '=', 'tb_presales.lead_id');
+                })
+                ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
+                ->where('result', '!=', 'hmm');
 
         if($ter != null){
             $leads = $leadsnow->where('u_sales.id_company', '1')->get();
@@ -2337,7 +2365,7 @@ class ReportController extends Controller
         }else{
             $leads = $leadsnow->get();
             
-            $total_deal_price = $total_deal_price->first();
+            $total_deal_price = $total_deal_price->sum('deal_price');
         }  
 
         // count semua lead
@@ -2699,8 +2727,8 @@ class ReportController extends Controller
         }       
 
         if (isset($request->date_start)) {
-            $data->where('sales_lead_register.created_at', '>=', $request->date_start)
-                 ->where('sales_lead_register.created_at', '<=', $request->date_end);   
+            $data->where('sales_lead_register.closing_date', '>=', $request->date_start)
+                 ->where('sales_lead_register.closing_date', '<=', $request->date_end);   
         }
 
         if (isset($request->comp)) {
@@ -4169,12 +4197,12 @@ class ReportController extends Controller
         }
 
         if (isset($request->Tagstechno)) {
-            $query_product->orwhereIn('tb_product_tag_relation_alias.id_technology_tag',$request->Tagstechno);
+            $query_product->whereIn('tb_product_tag_relation_alias.id_technology_tag',$request->Tagstechno);
         }
 
         if (isset($request->TagsPersona)) {
             $query_product->whereIn('sales.nik',$request->TagsPersona)
-            ->orWhereIn('presales.nik',$request->TagsPersona)->get();
+            ->WhereIn('presales.nik',$request->TagsPersona)->get();
         }
 
         $query_all = $query_product->get()->sortBy('lead_id');
