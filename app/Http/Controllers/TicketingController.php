@@ -1883,6 +1883,16 @@ class TicketingController extends Controller
 			->selectRaw('ticketing__activity.id_ticket')
             ->selectRaw("MAX(`id`) AS `latest_activity`")
             ->selectRaw("MIN(`id`) AS `open_activity`")
+            ->selectRaw("MAX(`date`) AS `max_activity`")
+            ->joinSub($ticketing_activity_filtered,'ticketing_activity_filtered',function($join){
+            	$join->on('ticketing_activity_filtered.id_ticket','=','ticketing__activity.id_ticket');
+            })
+            ->where('ticketing__activity.date','<',$request->end)
+            ->groupBy('id_ticket');
+
+        $max_activity_filtered = DB::table('ticketing__activity')
+			->selectRaw('`ticketing__activity`.`id_ticket`')
+            ->selectRaw("MAX(`date`) AS `max_activity`")
             ->joinSub($ticketing_activity_filtered,'ticketing_activity_filtered',function($join){
             	$join->on('ticketing_activity_filtered.id_ticket','=','ticketing__activity.id_ticket');
             })
@@ -1890,6 +1900,7 @@ class TicketingController extends Controller
             ->groupBy('id_ticket');
 
         $latest_activity_filtered = $open_activity_filtered;
+        // $max_activity_filtered = $open_activity_filtered;
 
         $latest_activity_detail = DB::table('ticketing__activity')
         	->select('ticketing__activity.id_ticket')
@@ -1902,6 +1913,22 @@ class TicketingController extends Controller
         	})
         	->orderBy('ticketing__activity.id_ticket','ASC')
         	->limit($limitQuery);
+
+        $max_activity_detail = DB::table('ticketing__activity')
+        	->select('ticketing__activity.id_ticket')
+        	->selectRaw("`ticketing__activity`.`date` AS `max_date`")
+        	->selectRaw("`ticketing__activity`.`operator` AS `max_by`")
+        	->selectRaw("`ticketing__activity`.`activity` AS `max_activity`")
+        	->selectRaw("`ticketing__activity`.`note` AS `max_note`")
+        	->joinSub($max_activity_filtered,'max_activity_filtered',function($join){
+        		$join->on('ticketing__activity.id_ticket','=','max_activity_filtered.id_ticket')
+        			->on('ticketing__activity.date','=','max_activity_filtered.max_activity');
+        	})
+        	->orderBy('ticketing__activity.id_ticket','ASC')
+        	->limit($limitQuery);
+
+        // return $max_activity_detail->get();
+        // return $max_activity_filtered->get();
 
         // return $latest_activity_detail->get();
 
@@ -1940,6 +1967,7 @@ class TicketingController extends Controller
 		    ->selectRaw("DATE_FORMAT(`ticketing__detail`.`reporting_time`,'%c/%e/%Y %k:%i') AS `open_reporting_date`")
 		    ->selectRaw("DATE_FORMAT(`open_activity_detail`.`open_date`,'%c/%e/%Y %k:%i') AS `open_date`")
 		    ->selectRaw("DATE_FORMAT(`latest_activity_detail`.`latest_date`,'%c/%e/%Y %k:%i') AS `latest_date`")
+		    ->selectRaw("DATE_FORMAT(`max_activity_detail`.`max_date`,'%c/%e/%Y %k:%i') AS `max_date`")
 		    ->selectRaw("`ticketing__severity`.`name` AS `severity_name`")
 		    ->selectRaw("IF(`ticketing__detail`.`type_ticket` = 'TT','Trouble Ticket',IF(`ticketing__detail`.`type_ticket` = 'PM','Preventive Maintenance',IF(`ticketing__detail`.`type_ticket` = 'PL','Permintaan Layanan','-'))) AS `ticket_type`")
 		    // ->selectRaw("`ticketing__detail`.`type_ticket` AS `ticket_type`")
@@ -1954,9 +1982,13 @@ class TicketingController extends Controller
 		    ->selectRaw("`ticket_handle`.`hendle_by`")
 		    ->selectRaw("IFNULL(`ticket_escalate`.`escalate_engineer`,'-') AS `escalate_engineer`")
 		    ->selectRaw("REPLACE(TIMEDIFF(`open_activity_detail`.`open_date`,`ticketing__detail`.`reporting_time`),'00000','') AS `responds_time`")
-		    ->selectRaw("IF(IFNULL(`ticketing__resolve`.`root_couse`, '-') = '-',IF(`latest_activity_detail`.`latest_activity` = 'CANCEL',TIMEDIFF(`latest_activity_detail`.`latest_date`,`open_activity_detail`.`open_date`),'-'),TIMEDIFF(`latest_activity_detail`.`latest_date`,`open_activity_detail`.`open_date`)) AS `resolution_time`")
+		    ->selectRaw("IF(IFNULL(`ticketing__resolve`.`root_couse`, '-') = '-',IF(`latest_activity_detail`.`latest_activity` = 'CANCEL',TIMEDIFF(`latest_activity_detail`.`latest_date`,`open_activity_detail`.`open_date`),'-'),TIMEDIFF(`latest_activity_detail`.`latest_date`,`open_activity_detail`.`open_date`)) AS `resolution_time_by_close`")
+		    ->selectRaw("IF(IFNULL(`ticketing__resolve`.`root_couse`, '-') = '-',IF(`latest_activity_detail`.`latest_activity` = 'CANCEL',TIMEDIFF(`max_activity_detail`.`max_date`,`open_activity_detail`.`open_date`),'-'),TIMEDIFF(`max_activity_detail`.`max_date`,`open_activity_detail`.`open_date`)) AS `resolution_time_by_latest_update`")
 			->joinSub($latest_activity_detail,'latest_activity_detail',function($join){
 				$join->on('open_activity_detail.id_ticket','=','latest_activity_detail.id_ticket');
+			})
+			->leftJoinSub($max_activity_detail,'max_activity_detail',function($join){
+				$join->on('open_activity_detail.id_ticket','=','max_activity_detail.id_ticket');
 			})
 			->leftJoinSub($ticket_handle,'ticket_handle',function ($join){
 				$join->on('open_activity_detail.id_ticket','=','ticket_handle.id_ticket');
@@ -1996,11 +2028,11 @@ class TicketingController extends Controller
 	    $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFC9C9C9"]];
 	    $headerStyle['borders'] = ['allBorders' => ['borderStyle' => Border::BORDER_THIN]];
 
-	    $summarySheet->getStyle('A1:R1')->applyFromArray($titleStyle);
-	    $summarySheet->getStyle('A2:R2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-	    $summarySheet->getStyle('A2:R2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-	    $summarySheet->getStyle('C2:R2')->getAlignment()->setWrapText(true);
-	    $summarySheet->getStyle('C2:R2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+	    $summarySheet->getStyle('A1:U1')->applyFromArray($titleStyle);
+	    $summarySheet->getStyle('A2:U2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+	    $summarySheet->getStyle('A2:U2')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+	    $summarySheet->getStyle('C2:U2')->getAlignment()->setWrapText(true);
+	    $summarySheet->getStyle('C2:U2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 	    $summarySheet->setCellValue('B1','Report Bayu');
 	    $summarySheet->setCellValue('D1','Grab per ' . Carbon::now()->format("d M Y"));
 
@@ -2011,6 +2043,7 @@ class TicketingController extends Controller
 			"open_reporting_date",
 			"open_date",
 			"latest_date",
+			"max_date",
 			"severity_name",
 			"ticket_type",
 			"root_couse",
@@ -2024,9 +2057,10 @@ class TicketingController extends Controller
 			"hendle_by",
 			"escalate_engineer",
 			"responds_time",
-			"resolution_time"
+			"resolution_time_by_close",
+			"resolution_time_by_latest_update",
 		];
-	    $summarySheet->getStyle('A2:R2')->applyFromArray($headerStyle);
+	    $summarySheet->getStyle('A2:U2')->applyFromArray($headerStyle);
 	    
 	    $summarySheet->fromArray($headerContent,NULL,'A2');
 
@@ -2059,6 +2093,9 @@ class TicketingController extends Controller
 	    $summarySheet->getColumnDimension('P')->setAutoSize(true);
 	    $summarySheet->getColumnDimension('Q')->setAutoSize(true);
 	    $summarySheet->getColumnDimension('R')->setAutoSize(true);
+	    $summarySheet->getColumnDimension('S')->setAutoSize(true);
+	    $summarySheet->getColumnDimension('T')->setAutoSize(true);
+	    $summarySheet->getColumnDimension('U')->setAutoSize(true);
 
 	    $spreadsheet->setActiveSheetIndex(0);
 
