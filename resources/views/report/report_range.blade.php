@@ -765,7 +765,7 @@ Report Range
                 pageMargins: [0, 0, 0, 0]
             } // try #5 setting margins         
             ,
-            columns: [9, 10, 11, 12, 13,14,15,16] //column id visible in PDF    
+            columns: [10, 11, 12, 13,14,15,16] //column id visible in PDF    
             ,
             format: {
                 body: function ( data, row, column, node ) {
