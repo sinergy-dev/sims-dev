@@ -308,6 +308,10 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getReportExcelReportRange', 'ReportController@downloadExcelReportRange');
 	Route::get('/reportExcelTag', 'ReportController@reportExcelTag');
 	Route::get('/reportPdfTag','TestController@reportPdfTag');
+	Route::get('/get_top_win_sip', 'ReportController@get_top_win_sip');
+	Route::get('/get_top_win_msp', 'ReportController@get_top_win_msp');
+	Route::get('/get_filter_top_win_sip', 'ReportController@get_filter_top_win_sip');
+	Route::get('/get_filter_top_win_msp', 'ReportController@get_filter_top_win_msp');
 	
 
 
