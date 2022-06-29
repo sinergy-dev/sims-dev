@@ -560,15 +560,15 @@ Human Resources
 		  <div class="box-body">
 
 		    <div class="nav-tabs-custom active" id="SIP" role="tabpanel" aria-labelledby="sip-tab">
-		      
-		      <div class="pull-right">
-		      	<!-- <button class="btn btn-sm btn-warning" style="margin-bottom: 5px" id="btnExport" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-download">&nbspExport</i></button>
-		      	<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 43px; right: 32px; transform : translate3d(0px, 37px, 30px); margin-bottom: 5px">
-		          <a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}"> EXCEL </a>
-		        </div> -->
-		        <a href="{{action('HRController@exportExcelEmployee')}}"><button class="btn btn-sm btn-warning" style=" margin-bottom: 5px;" id="btnExport"><i class="fa fa-print"></i> EXCEL </button></a>
-		        <button class="btn btn-sm btn-primary" onclick="showTabAdd(0)" style="margin-bottom: 5px"><i class="fa fa-plus"></i>&nbsp Employee</button>
+		      <div class="row">
+		      	<div class="col-md-12">
+		      		<div class="pull-right" style="margin-right:10px">
+		      			<a href="{{action('HRController@exportExcelEmployee')}}"><button class="btn btn-sm btn-warning" style=" margin-bottom: 5px;" id="btnExport"><i class="fa fa-print"></i> EXCEL </button></a>
+			        	<button class="btn btn-sm btn-primary" onclick="showTabAdd(0)" style="margin-bottom: 5px"><i class="fa fa-plus"></i>&nbsp Employee</button>
+		      		</div>			        
+			    </div>
 		      </div>
+		      
 
 		      <ul class="nav nav-tabs" id="myTab" role="tablist">
 		        <li class="nav-item active">
@@ -593,7 +593,30 @@ Human Resources
 
 		    <div class="tab-content" id="myTabContentSIP">
 		        <div class="tab-pane active" id="all" role="tabpanel" aria-labelledby="all-tab">
-		            <div class="table-responsive">
+			        <div class="row">
+			        	<div class="col-md-12">
+			        		<div class="col-md-4 input-group pull-right">
+			                    <input id="searchBarAll" type="text" class="form-control" onkeyup="searchCustom('data_all','searchBarAll')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowAll" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_all').DataTable().page.len(10).draw();$('#btnShowAll').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_all').DataTable().page.len(25).draw();$('#btnShowAll').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_all').DataTable().page.len(50).draw();$('#btnShowAll').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_all').DataTable().page.len(100).draw();$('#btnShowAll').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_all','searchBarAll')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+			        	</div>			        	
+			        </div>			        	
+		            <div class="table-responsive">		            	
 		                <table class="table table-bordered table-striped dataTable" id="data_all" width="100%" cellspacing="0">
 		                  <thead>
 		                    <tr>
@@ -656,6 +679,29 @@ Human Resources
 		            </div> 
 		        </div>
 		        <div class="tab-pane" id="sales" role="tabpanel" aria-labelledby="sales-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchSales" type="text" class="form-control" onkeyup="searchCustom('data_sales','searchSales')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_sales').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_sales','searchSales')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		             </div>
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_sales" width="100%" cellspacing="0">
 		                  <thead>
@@ -694,6 +740,29 @@ Human Resources
 		            </div>
 		        </div>
 		        <div class="tab-pane" id="finance" role="tabpanel" aria-labelledby="finance-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchFinance" type="text" class="form-control" onkeyup="searchCustom('data_finance','searchFinance')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_finance').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_finance','searchFinance')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_finance" width="100%" cellspacing="0">
 		                  <thead>
@@ -730,6 +799,29 @@ Human Resources
 		            </div>
 		        </div>
 		        <div class="tab-pane" id="operation" role="tabpanel" aria-labelledby="operation-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchTech" type="text" class="form-control" onkeyup="searchCustom('data_tech','searchTech')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_tech').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_tech','searchTech')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+	                  	</div>
+	              	</div>
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_tech" width="100%" cellspacing="0">
 		                  <thead>
@@ -768,6 +860,29 @@ Human Resources
 		            </div>
 		        </div>
 		        <div class="tab-pane" id="hr" role="tabpanel" aria-labelledby="hr-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchOperation" type="text" class="form-control" onkeyup="searchCustom('data_operation','searchOperation')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_operation').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_operation','searchOperation')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_operation" width="100%" cellspacing="0">
 		                  <thead>
@@ -805,6 +920,29 @@ Human Resources
 		            </div>
 		        </div>
 		        <div class="tab-pane" id="resign" role="tabpanel" aria-labelledby="resign-tab">
+		        	<div class="row">
+			        	<div class="col-md-12">
+				        	<div class="col-md-4 input-group pull-right">
+			                    <input id="searchResign" type="text" class="form-control" onkeyup="searchCustom('data_resign','searchResign')" placeholder="Search Anything">
+			                    <div class="input-group-btn">
+			                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			                        Show 10 entries
+			                      </button>
+			                      <ul class="dropdown-menu">
+			                        <li><a href="#" onclick="$('#data_resign').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+			                        <li><a href="#" onclick="$('#data_resign').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+			                        <li><a href="#" onclick="$('#data_resign').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+			                        <li><a href="#" onclick="$('#data_resign').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+			                      </ul>
+			                    </div>
+			                    <span class="input-group-btn">
+			                      <button onclick="searchCustom('data_resign','searchResign')" type="button" class="btn btn-default btn-flat">
+			                        <i class="fa fa-fw fa-search"></i>
+			                      </button>
+			                    </span>
+		                  	</div>
+		                </div>
+		            </div>
 		            <div class="table-responsive">
 		                <table class="table table-bordered table-striped dataTable" id="data_resign" width="100%" cellspacing="0">
 		                  <thead>
@@ -942,6 +1080,29 @@ Human Resources
 
 					    <div class="tab-content" id="myTabContentMSP">
 					    	<div class="tab-pane active" id="all-msp" role="tabpanel" aria-labelledby="all-tab">
+					    		<div class="row">
+			        				<div class="col-md-12">
+							    		<div class="col-md-4 input-group pull-right">
+						                    <input id="searchALLMSP" type="text" class="form-control" onkeyup="searchCustom('data_all_msp','searchALLMSP')" placeholder="Search Anything">
+						                    <div class="input-group-btn">
+						                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+						                        Show 10 entries
+						                      </button>
+						                      <ul class="dropdown-menu">
+						                        <li><a href="#" onclick="$('#data_all_msp').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+						                        <li><a href="#" onclick="$('#data_all_msp').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+						                        <li><a href="#" onclick="$('#data_all_msp').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+						                        <li><a href="#" onclick="$('#data_all_msp').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+						                      </ul>
+						                    </div>
+						                    <span class="input-group-btn">
+						                      <button onclick="searchCustom('data_all_msp','searchALLMSP')" type="button" class="btn btn-default btn-flat">
+						                        <i class="fa fa-fw fa-search"></i>
+						                      </button>
+						                    </span>
+					                  	</div>
+					                </div>
+					            </div>
 					            <div class="table-responsive">
 					                <table class="table table-bordered table-striped dataTable" id="data_all_msp" width="100%" cellspacing="0">
 					                  <thead>
@@ -1005,6 +1166,29 @@ Human Resources
 					            </div> 
 					        </div>
 					        <div class="tab-pane" id="sales-msp" role="tabpanel" aria-labelledby="sales-tab">
+					        	<div class="row">
+			        				<div class="col-md-12">
+							        	<div class="col-md-4 input-group pull-right">
+						                    <input id="searchSalesMSP" type="text" class="form-control" onkeyup="searchCustom('data_sales_msp','searchSalesMSP')" placeholder="Search Anything">
+						                    <div class="input-group-btn">
+						                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+						                        Show 10 entries
+						                      </button>
+						                      <ul class="dropdown-menu">
+						                        <li><a href="#" onclick="$('#data_sales_msp').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+						                        <li><a href="#" onclick="$('#data_sales_msp').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+						                        <li><a href="#" onclick="$('#data_sales_msp').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+						                        <li><a href="#" onclick="$('#data_sales_msp').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+						                      </ul>
+						                    </div>
+						                    <span class="input-group-btn">
+						                      <button onclick="searchCustom('data_sales_msp','searchSalesMSP')" type="button" class="btn btn-default btn-flat">
+						                        <i class="fa fa-fw fa-search"></i>
+						                      </button>
+						                    </span>
+					                  	</div>
+					                </div>
+					            </div>
 					            <div class="table-responsive">
 					                <table class="table table-bordered table-striped dataTable" id="data_sales_msp" width="100%" cellspacing="0">
 					                  <thead>
@@ -1043,6 +1227,29 @@ Human Resources
 					            </div>
 					        </div>
 					        <div class="tab-pane" id="operation-msp" role="tabpanel" aria-labelledby="operation-tab">
+					        	<div class="row">
+			        				<div class="col-md-12">
+							        	<div class="col-md-4 input-group pull-right">
+						                    <input id="searchOPMSP" type="text" class="form-control" onkeyup="searchCustom('data_op_msp','searchOPMSP')" placeholder="Search Anything">
+						                    <div class="input-group-btn">
+						                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+						                        Show 10 entries
+						                      </button>
+						                      <ul class="dropdown-menu">
+						                        <li><a href="#" onclick="$('#data_op_msp').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+						                        <li><a href="#" onclick="$('#data_op_msp').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+						                        <li><a href="#" onclick="$('#data_op_msp').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+						                        <li><a href="#" onclick="$('#data_op_msp').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+						                      </ul>
+						                    </div>
+						                    <span class="input-group-btn">
+						                      <button onclick="searchCustom('data_op_msp','searchOPMSP')" type="button" class="btn btn-default btn-flat">
+						                        <i class="fa fa-fw fa-search"></i>
+						                      </button>
+						                    </span>
+					                  	</div>
+					                </div>
+					            </div>
 					            <div class="table-responsive">
 					                <table class="table table-bordered table-striped dataTable" id="data_op_msp" width="100%" cellspacing="0">
 					                  <thead>
@@ -1081,6 +1288,29 @@ Human Resources
 					            </div>
 					        </div>
 					        <div class="tab-pane" id="warehouse-msp" role="tabpanel" aria-labelledby="warehouse-tab">
+					        	<div class="row">
+			        				<div class="col-md-12">
+							        	<div class="col-md-4 input-group pull-right">
+						                    <input id="searchWarehouseMSP" type="text" class="form-control" onkeyup="searchCustom('data_warehouse_msp','searchWarehouseMSP')" placeholder="Search Anything">
+						                    <div class="input-group-btn">
+						                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+						                        Show 10 entries
+						                      </button>
+						                      <ul class="dropdown-menu">
+						                        <li><a href="#" onclick="$('#data_warehouse_msp').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+						                        <li><a href="#" onclick="$('#data_warehouse_msp').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+						                        <li><a href="#" onclick="$('#data_warehouse_msp').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+						                        <li><a href="#" onclick="$('#data_warehouse_msp').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+						                      </ul>
+						                    </div>
+						                    <span class="input-group-btn">
+						                      <button onclick="searchCustom('data_warehouse_msp','searchWarehouseMSP')" type="button" class="btn btn-default btn-flat">
+						                        <i class="fa fa-fw fa-search"></i>
+						                      </button>
+						                    </span>
+					                  	</div>
+					                </div>
+					            </div>
 					            <div class="table-responsive">
 					                <table class="table table-bordered table-striped dataTable" id="data_warehouse_msp" width="100%" cellspacing="0">
 					                  <thead>
@@ -1121,6 +1351,29 @@ Human Resources
 					            </div>
 					        </div>
 					        <div class="tab-pane" id="resign-msp" role="tabpanel" aria-labelledby="resign-tab">
+						       	<div class="row">
+			        				<div class="col-md-12">
+							        	<div class="col-md-4 input-group pull-right">
+						                    <input id="searchResignMSP" type="text" class="form-control" onkeyup="searchCustom('data_resign_msp','searchResignMSP')" placeholder="Search Anything">
+						                    <div class="input-group-btn">
+						                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+						                        Show 10 entries
+						                      </button>
+						                      <ul class="dropdown-menu">
+						                        <li><a href="#" onclick="$('#data_resign_msp').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+						                        <li><a href="#" onclick="$('#data_resign_msp').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+						                        <li><a href="#" onclick="$('#data_resign_msp').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+						                        <li><a href="#" onclick="$('#data_resign_msp').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+						                      </ul>
+						                    </div>
+						                    <span class="input-group-btn">
+						                      <button onclick="searchCustom('data_resign_msp','searchResignMSP')" type="button" class="btn btn-default btn-flat">
+						                        <i class="fa fa-fw fa-search"></i>
+						                      </button>
+						                    </span>
+					                  	</div>
+					                </div>
+					            </div>
 					            <div class="table-responsive">
 					                <table class="table table-bordered table-striped dataTable" id="data_resign_msp" width="100%" cellspacing="0">
 					                  <thead>
@@ -2215,6 +2468,9 @@ Human Resources
 @endsection
 @section('script')
 <script type="">
+	function searchCustom(id_table,id_seach_bar){
+		$("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
+	}
 	$(document).ready(function(){
         var accesable = @json($feature_item);
         accesable.forEach(function(item,index){
@@ -3618,37 +3874,70 @@ Human Resources
     });
   
 
-    var table1 = $('#data_all').DataTable( {
+    var table1 = $('#data_all').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table2 = $('#data_all_msp').DataTable( {
+  	var table2 = $('#data_all_msp').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table3 = $('#data_tech').DataTable( {
+  	var table3 = $('#data_tech').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table4 = $('#data_finance').DataTable( {
+  	var table4 = $('#data_finance').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table5 = $('#data_sales').DataTable( {
+  	var table5 = $('#data_sales').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table6 = $('#data_operation').DataTable( {
+  	var table6 = $('#data_operation').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-    var table7 = $('#data_resign').DataTable( {
+    var table7 = $('#data_resign').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table9 = $('#data_sales_msp').DataTable( {
+  	var table9 = $('#data_sales_msp').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table10 = $('#data_op_msp').DataTable( {
+  	var table10 = $('#data_op_msp').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-  	var table11 = $('#data_warehouse_msp').DataTable( {
+  	var table11 = $('#data_warehouse_msp').DataTable({
+  		"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
-    var table12 = $('#data_resign_msp').DataTable( {
+    var table12 = $('#data_resign_msp').DataTable({
+    	"lengthChange": false,
+        "paging": true,
+        sDom: 'lrtip',
     });
 
   	$(".Search").keyup(function(){
