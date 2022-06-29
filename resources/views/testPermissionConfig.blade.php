@@ -656,10 +656,16 @@ Permission Config
 			ajax: {
 				url:"{{url('permission/getUserList')}}",
 				dataSrc:function (json){
-					json.forEach(function(data,idex){
-						data.user_id = "<a href='" + '{{url("authentication")}}'+ "/" + data.user_id + "'>" + data.user_id + "</a>"
-						// data.user_id = "a"
-					})
+					if(json.permitted){
+						json.data.forEach(function(value,idex){
+							value.user_id = "<a href='" + '{{url("authentication")}}'+ "/" + value.user_id + "'>" + value.user_id + "</a>"
+						})
+					} else {
+						json.data.forEach(function(value,idex){
+							value.user_id = "<b>" + value.user_id + "</b>"
+						})
+					}
+					json = json.data
 					return json
 				}
 			},
