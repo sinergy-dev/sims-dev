@@ -9,11 +9,11 @@ Tag Customer
 @section('content')
 	<section class="content-header">
 		<h1>
-		  Setting Product & Technology Tag
+		  Category Tagging
 		</h1>
 		<ol class="breadcrumb">
 		  <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
-		  <li class="active">Tag Product & Technology</li>
+		  <li class="active">Tag Brand & Technology</li>
 		</ol>
 	</section>
 
@@ -33,11 +33,11 @@ Tag Customer
 			<div class="col-md-6">
 				<div class="box">
 			  		<div class="box-header">
-			      		<div class="pull-left"><h4><i class="fa fa-table"></i> Product Table</h4></div>
+			      		<div class="pull-left"><h4><i class="fa fa-table"></i> Brand Table</h4></div>
 			  		</div>
 
 			  		<div class="box-body">
-			  			<button class="btn btn-sm btn-primary btn-add-product" style="margin-bottom: 10px"><i class="fa fa-plus"></i>  Product</button>
+			  			<button class="btn btn-sm btn-primary btn-add-product" style="margin-bottom: 10px"><i class="fa fa-plus"></i>  Brand</button>
 			  			<div class="table-responsive">
 			              <table class="table table-bordered table-striped display nowrap" id="dataTableProduct" width="100%" cellspacing="0">
 				              <thead>
