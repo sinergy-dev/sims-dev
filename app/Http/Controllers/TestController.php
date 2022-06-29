@@ -627,7 +627,15 @@ class TestController extends Controller
 	}
 
 	public function getUserList(){
-		return DB::table('role_user')
+
+		$checkForAllFeatureItem = [7,33,17,39];
+
+		$permitted = false;
+		if(in_array(DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id,$checkForAllFeatureItem)){
+			$permitted = true;
+		}
+
+		return collect([ "data" => DB::table('role_user')
 			->select(
 					'role_user.*',
 					DB::raw('`roles`.`group` AS `name_group`'),
@@ -648,7 +656,7 @@ class TestController extends Controller
 			})
 			->where('status_karyawan', '!=', 'dummy')
 			// ->take(1)
-			->get();
+			->get(),"permitted" => $permitted]);
 	}
 
 	public function getParameter(){

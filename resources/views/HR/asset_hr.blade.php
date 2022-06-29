@@ -54,10 +54,10 @@ GA Asset
 @endsection
 @section('content')
 <section class="content-header">
-  <h1>GA Asset</h1>
+  <h1>General Affair - Asset</h1>
     <ol class="breadcrumb">
       <li><a href="{{url('/')}}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-      <li class="active">GA - Asset</li>
+      <li class="active">General Affair - Asset</li>
     </ol>
 </section>
   <section class="content">
