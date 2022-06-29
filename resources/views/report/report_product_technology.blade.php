@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('tittle')
-Report Tag Product & Technology
+Report Tagging
 @endsection
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -48,12 +48,12 @@ Report Tag Product & Technology
 @section('content')
   <section class="content-header">
     <h1>
-      Report Lead Product Technology
+      Report Tagging
     </h1>
     <ol class="breadcrumb">
       <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
       <li class="active">Report</li>
-      <li class="active">Report Lead Product Technology</li>
+      <li class="active">Report Tagging</li>
     </ol>
   </section>
 
@@ -62,18 +62,18 @@ Report Tag Product & Technology
       <div class="col-md-12">
         <div class="box">
           <div class="box-header with-border">
-            <h3 class="box-title"><i class="fa fa-table"></i> Report Lead</h3>
+            <h3 class="box-title"><i class="fa fa-table"></i> Report Tagging</h3>
           </div>
 
           <div class="row">   
             <div class="col-md-12">
               <div class="col-md-4">
-                <label>Filter by Product</label>
-                <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsProduct"></select>
+                <label>Filter by Brand</label>
+                <select class="form-control" style="width: 90%;max-width: 250px" id="searchTagsProduct"></select> <span style="padding:5px;"><b>AND</b></span>
               </div>
               <div class="col-md-4">
                 <label>Filter by Technology</label>
-                <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsTechnology"></select>
+                <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsTechnology"></select> 
               </div>
               <div class="col-md-4">
                 <label>Filter by Person</label>
@@ -123,7 +123,7 @@ Report Tag Product & Technology
                       <th>Customer</th>
                       <th>Opty Name</th>                    
                       <th>Persona</th>
-                      <th>Product/technology</th>
+                      <th>Brand/technology</th>
                       <th>Price</th>
                       <th>Nominal (Deal Price)</th>
                     </tr>
@@ -169,7 +169,7 @@ Report Tag Product & Technology
           })
 
           var TagProduct = $("#searchTagsProduct").select2({
-            placeholder: " Select #Tags#Product",
+            placeholder: " Select #Brand",
             allowClear: true,
             multiple:true,
             data:selectOption,
@@ -245,7 +245,7 @@ Report Tag Product & Technology
           })
 
           var TagTechnology = $("#searchTagsTechnology").select2({
-            placeholder: " Select #Tags#Technology",
+            placeholder: " Select #Technology",
             allowClear: true,
             multiple:true,
             data:selectOption,
@@ -331,7 +331,7 @@ Report Tag Product & Technology
           })
 
           var TagPersona = $("#searchTagsPerson").select2({
-            placeholder: " Select #Tags#Sales#Presales",
+            placeholder: " Select #Sales#Presales",
             allowClear: true,
             multiple:true,
             data:selectOption,
