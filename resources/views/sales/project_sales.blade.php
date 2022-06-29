@@ -1508,12 +1508,12 @@ Lead Register
 	}
 
 	function initRemoveMask(){
-		$("#sum_amount_0").unmask('000.000.000.000.000', {reverse: true})
-		$("#sum_amount_1").unmask('000.000.000.000.000', {reverse: true})
-		$("#sum_amount_2").unmask('000.000.000.000.000', {reverse: true})
-		$("#sum_amount_3").unmask('000.000.000.000.000', {reverse: true})
-		$("#sum_amount_4").unmask('000.000.000.000.000', {reverse: true})
-		$("#sum_amount_5").unmask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_0").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_1").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_2").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_3").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_4").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})
+		$("#sum_amount_5").unmask('000.000.000.000.000', {reverse: true}).mask('000.000.000.000.000', {reverse: true})
 	}
 
 	function dashboardCount(year){	
@@ -1587,7 +1587,6 @@ Lead Register
 	}
 
 	function dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult){	
-		initRemoveMask()
 		Pace.restart();
 		Pace.track(function() {
 			$.ajax({
@@ -1617,9 +1616,7 @@ Lead Register
 						$("#filter_lead_6").next().text("CANCEL (" + result.cancel_unfiltered + ")")	
 
 					})
-
-					initMoneyHeader()
-
+					initRemoveMask()
 					$('.counter').each(function () {
 					    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
 					    $(this).prop('Counter', 0).animate({
