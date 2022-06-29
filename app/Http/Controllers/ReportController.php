@@ -2716,15 +2716,19 @@ class ReportController extends Controller
                 ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
                 ->where('result', '!=', 'hmm');
 
-        if (isset($request->nik)) {
-            if (isset($request->year)) {
-                $data->whereYear('closing_date', $request->year);   
-            }
-        }else{
-             if (isset($request->year)) {
-                $data->where('year', $request->year);   
-            }
-        }       
+        // if (isset($request->nik)) {
+        //     if (isset($request->year)) {
+        //         $data->whereYear('closing_date', $request->year);   
+        //     }
+        // }else{
+        //      if (isset($request->year)) {
+        //         $data->where('year', $request->year);   
+        //     }
+        // }
+
+        if (isset($request->year)) {
+            $data->whereYear('closing_date', $request->year);   
+        }
 
         if (isset($request->date_start)) {
             $data->where('sales_lead_register.closing_date', '>=', $request->date_start)
@@ -2733,6 +2737,8 @@ class ReportController extends Controller
 
         if (isset($request->comp)) {
             $data->where('code_company', $request->comp);
+        } else {
+            $data->where('code_company', "SIP");      
         }
 
         if (isset($request->ter)) {
@@ -2758,6 +2764,8 @@ class ReportController extends Controller
         if (isset($request->status)) {
             $data->where('result', $request->status);
         }
+
+        // return $data->pluck('sales_lead_register.lead_id');
         
         return array($data->sum('deal_price'));
     	
@@ -3178,6 +3186,77 @@ class ReportController extends Controller
 
         return $top_win_msp;
 
+    }
+
+    public function get_top_win_sip(){
+        $top_win_sip =DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik','users.id_territory')
+                        ->where('result', 'WIN')
+                        ->whereYear('closing_date', date('Y'))
+                        ->where('users.id_company', '1')
+                        ->where('users.status_karyawan', '!=', 'dummy')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get();
+
+        return array("data" => $top_win_sip);
+    }
+
+    public function get_top_win_msp()
+    {
+        $top_win_msp = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik')
+                        ->where('result', 'WIN')
+                        ->whereYear('closing_date', date('Y'))
+                        ->where('users.id_company', '2')
+                        ->where('users.status_karyawan', '!=', 'dummy')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get();
+
+        return array("data" => $top_win_msp);
+    }
+
+    public function get_filter_top_win_sip(Request $request)
+    {
+        $top_win_sip = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company')
+                        ->where('result', 'WIN')
+                        ->where('sales_lead_register.closing_date', '>=', $request->start)
+                        ->where('sales_lead_register.closing_date', '<=', $request->end)
+                        ->where('users.id_company', '1')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get();
+
+        return array("data" => $top_win_sip);
+    }
+
+    public function get_filter_top_win_msp(Request $request)
+    {
+        $top_win_msp = DB::table('sales_lead_register')
+                        ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                        ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company')
+                        ->where('result', 'WIN')
+                        ->where('sales_lead_register.closing_date', '>=', $request->start)
+                        ->where('sales_lead_register.closing_date', '<=', $request->end)
+                        ->where('users.id_company', '2')
+                        ->groupBy('sales_lead_register.nik')
+                        ->orderBy('deal_prices', 'desc')
+                        ->take(5)
+                        ->get();
+
+        return array("data" => $top_win_msp);
     }
 
     public function report_sales() {
