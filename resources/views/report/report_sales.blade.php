@@ -173,6 +173,7 @@ Report Sales
                     <th><center>Sales Name</center></th>
                     <th width="15%"><center>Company</center></th>
                     <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>                    
                     <th width="10%"><center>Total</center></th>
                     <th width="10%"><center>Total</center></th>
                   </tr>
@@ -214,6 +215,7 @@ Report Sales
                     <th><center>Sales Name</center></th>
                     <th width="15%"><center>Company</center></th>
                     <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>
                     <th width="10%"><center>Total</center></th>
                     <th width="10%"><center>Total</center></th>
                   </tr>
@@ -258,6 +260,7 @@ Report Sales
                     <th width="20%"><center>Total Amount</center></th>
                     <th width="10%"><center>Total</center></th>
                     <th width="10%"><center>Total</center></th>
+                    <th width="10%"><center>Total</center></th>
                   </tr>
                 </thead>
                 <tbody id="report_win" name="report_win">
@@ -297,6 +300,7 @@ Report Sales
                     <th><center>Sales Name</center></th>
                     <th width="15%"><center>Company</center></th>
                     <th width="20%"><center>Total Amount</center></th>
+                    <th width="10%"><center>Total</center></th>
                     <th width="10%"><center>Total</center></th>
                     <th width="10%"><center>Total</center></th>
                   </tr>
@@ -526,8 +530,15 @@ Report Sales
         data: null,
         className: "sum",
         render: function ( data, type, row ) {
+          // return new Intl.NumberFormat('id').format(row.amounts)
           return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
-        }
+        },
+        "orderData":[4]
+      },
+      {
+        "data":"amounts",
+        "targets":[3],
+        "searchable":true
       },
       {
         className: "sum2",
@@ -546,7 +557,7 @@ Report Sales
     ],
     "columnDefs":[
       {
-        "targets":[5],
+        "targets":[4,5,6],
         "visible":false
       },
       { targets: 'no-sort', orderable: false }
@@ -554,7 +565,7 @@ Report Sales
     "aaSorting": [],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 4, "desc" ]],
+    "order": [[ 3, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -607,7 +618,13 @@ Report Sales
         className: "sum4",
         render: function ( data, type, row ) {
           return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
-        }
+        },
+        "orderData":[4]
+      },
+      {
+        "data":"amounts",
+        "targets":[3],
+        "searchable":true
       },
       {
         className: "sum5",
@@ -626,7 +643,7 @@ Report Sales
     ],
     "columnDefs":[
       {
-        "targets":[5],
+        "targets":[4,5,6],
         "visible":false
       },
       {
@@ -635,7 +652,7 @@ Report Sales
     ],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 4, "desc" ]],
+    "order": [[ 3, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -688,7 +705,13 @@ Report Sales
         className: "sum7",
         render: function ( data, type, row ) {
           return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
-        }
+        },
+        "orderData":[4]
+      },
+      {
+        "data":"amounts",
+        "targets":[3],
+        "searchable":true
       },
       {
         className: "sum8",
@@ -707,7 +730,7 @@ Report Sales
     ],
     "columnDefs":[
       {
-        "targets":[5],
+        "targets":[4,5,6],
         "visible":false
       },
       {
@@ -716,7 +739,7 @@ Report Sales
     ],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 4, "desc" ]],
+    "order": [[ 3, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 
@@ -769,7 +792,13 @@ Report Sales
         className: "sum10",
         render: function ( data, type, row ) {
           return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amounts)
-        }
+        },
+        "orderData":[4]
+      },
+      {
+        "data":"amounts",
+        "targets":[3],
+        "searchable":true
       },
       {
         className: "sum11",
@@ -788,7 +817,7 @@ Report Sales
     ],
     "columnDefs":[
       {
-        "targets":[5],
+        "targets":[4,5,6],
         "visible":false
       },
       {
@@ -797,7 +826,7 @@ Report Sales
     ],
     "scrollX": true,
     "pageLength": 25,
-    "order": [[ 4, "desc" ]],
+    "order": [[ 3, "desc" ]],
     "footerCallback": function(row, data, start, end, display) {
         var api = this.api();
 

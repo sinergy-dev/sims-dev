@@ -80,7 +80,12 @@ Dashboard
               @foreach($top_win_sip as $tops)
                 <tr>
                   <td>{{ $no_sip++ }}</td>
-                  <td>{{ $tops->name }}<a href='{{url("/report_range")}}/{{$tops->nik}}' target="_blank" style="color: black;float: right;"><i class="fa fa-external-link-square" style="text-align:right"></i></a></td>
+                  <td>{{ $tops->name }}
+                    <a href='{{url("/report_range")}}/{{$tops->nik}}' class="linkReportManager" target="_blank" style="color: black;float: right;display: none;"><i class="fa fa-external-link-square" style="text-align:right"></i></a>
+                    @if($tops->id_territory == Auth::User()->id_territory)
+                    <a href='{{url("/report_range")}}/{{$tops->nik}}' target="_blank" style="color: black;float: right;"><i class="fa fa-external-link-square" style="text-align:right"></i></a>
+                    @endif
+                  </td>
                   <td align="right">
                   <i class="money">{{ $tops->deal_prices }}</i>
                   </td>
@@ -380,6 +385,7 @@ Dashboard
 	var accesable = @json($feature_item);
 	accesable.forEach(function(item,index){
   	$("#" + item).show()
+    $("." + item).show()
 	})
 
   $('.money').mask('000,000,000,000,000', {reverse: true});
@@ -475,7 +481,12 @@ Dashboard
 		$.each(top_win_sip_ter, function(key, value){
 			append = append + '<tr>'
 		    append = append + '<td>'+ no++ +'</td>'
-		    append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
+        if ("{{Auth::User()->id_territory}}" == value.id_territory) {
+          append = append + 'woy'
+          append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
+        }else{
+          append = append + '<td>'+value.name+'</td>'
+        }
 		    append = append + '<td align="right">'
 		    append = append + '<i class="money">'+ new Intl.NumberFormat('id').format(value.deal_prices) +'</i>'
 		    append = append + '</td>'
@@ -493,6 +504,7 @@ Dashboard
 		$.each(top_win_sip_ter, function(key, value){
 		  $.each(value, function(key, value){
         console.log(value)
+        console.log(value.id_territory != "TOTAL" )
 		    if(value.id_territory == territory){
 		    	append = append + '<tr>'
 				    append = append + '<td>'+ no++ +'</td>'
@@ -509,6 +521,7 @@ Dashboard
                 append = append + '<td>Rp.<i class="money">'+ new Intl.NumberFormat('id').format(value.sum_total)+'</i></td>'
                 append = append + '<td style="text-align:center;">'+value.leads_total+'</td>'
             append = append + '</tr>'
+          if(value.id_territory != "TOTAL"){
             append = append + '<tr>'
 					    append = append + '<td>'+ no++ +'</td>'
 					    append = append + '<td>'+value.name+' <a href="{{url("/report_range")}}/'+value.nik+'" target="_blank" style="float: right;"><i class="fa fa-external-link-square"></i></a></td>'
@@ -517,6 +530,7 @@ Dashboard
 					    append = append + '</td>'
 					    append = append + '<td><center>('+value.leads+')</center></td>'
 					  append = append + '</tr>'
+          }
 		    }
 		  });
 		});
