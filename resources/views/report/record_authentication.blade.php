@@ -12,12 +12,12 @@ Report Log History
 @section('content')
 <section class="content-header">
 	<h1>
-    	Report Log History
+    	Record Log History
   	</h1>
   	<ol class="breadcrumb">
 	    <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
 	    <li class="active">Report</li>
-	    <li class="active">Record Auth User</li>
+	    <li class="active">Record Log History</li>
   	</ol>
 </section>
 <section class="content">
