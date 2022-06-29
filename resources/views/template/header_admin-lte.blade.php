@@ -699,7 +699,7 @@
       @endif
 
       @if(Auth::User()->id_territory == 'DVG' && Auth::User()->id_position != 'ADMIN')
-      <li class="activeable treeview">
+      <!-- <li class="activeable treeview hidden">
         <a href="#DVGPages" data-parent="#exampleAccordion">
           <i class="fa fa-fw fa-folder-open"></i>
           <span class="nav-link-text" style="font-size: 14px">DVG</span>
@@ -718,7 +718,7 @@
             <a href="{{ url('/app_incident') }}" style="font-size: 14px"><i class="fa fa-fw fa-circle-o"></i>App Incident Management</a>
           </li>
         </ul>
-      </li>
+      </li> -->
       @endif
 
       @if(Auth::User()->id_position != 'STAFF GA')
