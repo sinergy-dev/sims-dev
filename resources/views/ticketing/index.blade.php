@@ -4231,7 +4231,6 @@ Ticketing
 			html: "By re-opening this ticket, an email will be sent to your supervisor as permission for this activity.<br>Then you must write down your reasons why the ticket in must be reopened below.",
 			input: 'text',
 			icon: 'warning',
-			showCancelButton: true,
 			preConfirm: (login) => {
 				reason = login
 			},
@@ -4272,6 +4271,13 @@ Ticketing
 						})
 					}
 				});
+			} else {
+				swalWithCustomClass.fire({
+					title: "Reason must be filled",
+					html: "You must fill in your reason which will be conveyed to the manager for this reopen ticket.",
+					icon: 'error',
+					showCancelButton: true
+				})
 			}
 		})
 		console.log('reOpenTicket' + id_ticket)
