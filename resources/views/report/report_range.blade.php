@@ -143,10 +143,10 @@ Report Range
               <div class="row" style="margin-bottom:10px">
                 <div class="col-md-2 col-xs-12">
                   <label style="margin-top: 5px">Filter Year</label>
-                  <select style="margin-right: 5px;" class="form-control fa" id="year_dif">
+                  <select style="margin-right: 5px;" class="form-control" id="year_dif">
                     <option value="">Select year</option>
                     @foreach($years as $data)
-                    <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
+                    <option value="{{$data->year}}">&nbsp{{$data->year}}</option>
                     @endforeach
                   </select>
                 </div>
