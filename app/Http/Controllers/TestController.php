@@ -646,6 +646,7 @@ class TestController extends Controller
 				->groupBy('roles_feature.role_id'), 'roles_feature_each', function ($join) {
 				$join->on('roles.id', '=', 'roles_feature_each.role_id');
 			})
+			->where('status_karyawan', '!=', 'dummy')
 			// ->take(1)
 			->get();
 	}
