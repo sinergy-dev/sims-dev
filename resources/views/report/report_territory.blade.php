@@ -93,17 +93,17 @@ Report Customer
                   </select>
                 </div>
                 <div class="pull-left">
-                  <select class="select2 form-control" style="width:100%;display: none;" id="select2Sales" name="select2Sales">
+                  <select class="select2 form-control" style="width:150%;display: none;" id="select2Sales" name="select2Sales">
                     
                   </select>
                   <select class="select2 form-control" style="width:100%;display: none;" id="select2Direktor" name="select2SalesDirektor">
                     
                   </select>
                 </div>
-                <div class="col-md-2">
-                  <button class="btn btn-primary btnApply" style="margin-right:10px"><i class="fa fa-refresh"></i> Apply</button>
-                  <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
+                <div class="col-md-2" style="margin-left:60px">
+                  <button class="btn btn-primary btnApply"><i class="fa fa-check-circle"></i> Apply</button>
                 </div>
+                <button class="btn btn-info pull-right reload-table"><i class="fa fa-refresh"></i> Refresh</button>
               </div>              
               
             </div>
@@ -196,59 +196,102 @@ Report Customer
 @endsection
 @section('script')  
   <script type="text/javascript">
-    $.ajax({
-      url: "{{url('/project/getCustomer')}}",
-      type: "GET",
-      success: function(result) {
-        $("#select2Customer").select2({
-          placeholder:"Select Customer",
-          // multiple:true,
-          data:result.data
-        })
-      }
-    })
-      
-    var nik_sales,id_customer,start_date,end_date = ''
-    var accesable = @json($feature_item);
+    function initSelectCustomer(){
+      $.ajax({
+        url: "{{url('/project/getCustomer')}}",
+        type: "GET",
+        success: function(result) {
+          var arr = result.data;
+          var selectOption = [];
+          var otherOption;
+
+          var data = {
+            id: -1,
+            text: 'All Customer'
+          };
+
+          selectOption.push(data)
+          $.each(arr,function(key,value){
+            selectOption.push(value)
+          })
+
+          $("#select2Customer").select2({
+            placeholder:"Select Customer",
+            // multiple:true,
+            data:selectOption
+          })
+        }
+      })
+    }
+
+    function initSelectSales(){
+      var nik_sales,id_customer,start_date,end_date = ''
+      var accesable = @json($feature_item);
       console.log(accesable)  
-      console.log("asu")
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
 
-    accesable.forEach(function(item,index){
-      $("#" + item).show()
+        if (accesable.includes('select2Sales')) {
+          $.ajax({
+            url: "{{url('/project/getUserByTerritory')}}",
+            type: "GET",
+            data:{
+              territory:"{{Auth::User()->id_territory}}"
+            },
+            success:function(result){
+              var arr = result.data;
+              var selectOption = [];
+              var otherOption;
 
-      if (accesable.includes('select2Sales')) {
-        $.ajax({
-          url: "{{url('/project/getUserByTerritory')}}",
-          type: "GET",
-          data:{
-            territory:"{{Auth::User()->id_territory}}"
-          },
-          success:function(result){
+              var data = {
+                id: -1,
+                text: 'All Sales'
+              };
 
-            $("#select2Sales").select2({
-              placeholder: "Select sales",
-              data:result.data
-            })
-          }
-        })  
+              selectOption.push(data)
+              $.each(arr,function(key,value){
+                selectOption.push(value)
+              })
 
-  
-      } else if (accesable.includes("select2SalesDirektor")) {
-        $.ajax({
-          url: "{{url('/project/getSalesByTerritory')}}",
-          type: "GET",
-          success: function(result) {
-            $("#select2Sales").select2({
-              placeholder:"Select Sales",
-              // multiple:true,
-              data:result.results
-            })
-          }
-        })
-      }
-             
-    }) 
+              $("#select2Sales").select2({
+                placeholder: "Select sales",
+                data:selectOption
+              })
+            }
+          })  
 
+    
+        } else if (accesable.includes("select2SalesDirektor")) {
+          $.ajax({
+            url: "{{url('/project/getSalesByTerritory')}}",
+            type: "GET",
+            success: function(result) {
+              var arr = result.results;
+              var selectOption = [];
+              var otherOption;
+
+              var data = {
+                id: -1,
+                text: 'All Sales'
+              };
+
+              selectOption.push(data)
+              $.each(arr,function(key,value){
+                selectOption.push(value)
+              })
+
+              $("#select2Sales").select2({
+                placeholder:"Select Sales",
+                // multiple:true,
+                data:selectOption
+              })
+            }
+          })
+        }
+               
+      }) 
+    }    
+    
     var id_territory = $(".nav-item.active").contents().text().trim() 
     start_date = moment().startOf('year').format("YYYY-MM-DD 00:00:00")
     end_date = moment().endOf('year').format("YYYY-MM-DD 00:00:00")
@@ -268,11 +311,11 @@ Report Customer
     }
 
     initReportTerritory();
-
+    initSelectSales();
+    initSelectCustomer();
 
     function initReportTerritory(){
       var id_territory = $(".nav-item.active").contents().text().trim()
-      console.log($(".nav-item.active").contents().text().trim());
       $("#data_lead").DataTable({
           "ajax":{
             "type":"GET",
@@ -674,6 +717,11 @@ Report Customer
 
       $('.reload-table').click(function(){
         var id_territory = $(".nav-item.active").contents().text().trim()
+        $('#select2Sales').empty();
+        $('#select2SalesDirektor').empty();
+        $('#select2Customer').empty();
+        initSelectCustomer()
+        initSelectSales()
         $('#data_lead').DataTable().ajax.url("{{url('getreportterritory')}}?id_territory="+id_territory).load();
         $('#data_leadmsp').DataTable().ajax.url("{{url('getreportcustomermsp')}}").load();
       })
