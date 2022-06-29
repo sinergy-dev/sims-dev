@@ -34,7 +34,7 @@ Report Purchase Request
               <option value="{{$year}}">&#xf073 &nbsp{{$year}}</option>
               @foreach($year_before as $years)
                 @if($years->year != $year)
-                  <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                  <option value="{{$years->year}}">{{$years->year}}</option>
                 @endif
               @endforeach
             </select>
