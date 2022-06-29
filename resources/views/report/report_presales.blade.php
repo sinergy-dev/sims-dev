@@ -37,7 +37,7 @@ Report Presales
               <label style="margin-top: 5px;margin-right: 5px">Filter Year</label>
               <select style="margin-right: 5px;width: 100px" class="form-control fa" id="year_filter">
                 @foreach($years as $data)
-                  <option value="{{$data->year}}">&#xf073 &nbsp{{$data->year}}</option>
+                  <option value="{{$data->year}}">{{$data->year}}</option>
                 @endforeach
               </select>
             </div>
@@ -218,6 +218,7 @@ Report Presales
                   <tr>
                     <th width="5%"><center>No.</center></th>
                     <th><center>Presales Name</center></th>
+                    <th width="20%"><center>Total Amount</center></th>
                     <th width="10%"><center>Total</center></th>
                   </tr>
                 </thead>
@@ -317,6 +318,7 @@ Report Presales
                           <th><center>Opty Name</center></th>
                           <th><center>Owner</center></th>
                           <th><center>Amount</center></th>
+                          <th><center>Amount</center></th>
                           <th><center>Status</center></th>
                         </tr>
                       </thead>
@@ -372,6 +374,18 @@ Report Presales
 	    });
     });
 
+    $("#data_sd").DataTable({
+    })
+
+    $("#data_tp").DataTable({
+    })
+
+    $("#data_win").DataTable({
+    })
+
+    $("#data_lose").DataTable({
+    })
+
     initLeadTable();
 
     initPresalesTable();
@@ -402,7 +416,11 @@ Report Presales
             "data": "amount_formated",
             "className": "text-right",
             "orderData" : [ 5 ],
-            "targets" : [ 1 ],
+          },
+          { 
+            "data": "amount",
+            "targets":[4],
+            "visible": false,
           },
           /*{ 
             "data": "amount",
