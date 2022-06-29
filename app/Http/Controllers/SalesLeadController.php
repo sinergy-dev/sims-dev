@@ -638,6 +638,7 @@ class SalesLeadController extends Controller
         $pos = $position->id_position;
 
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
+        // return $getPresales->get();
 
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
@@ -768,7 +769,34 @@ class SalesLeadController extends Controller
             $total_win->where('sales_lead_register.result',"WIN")->where('sales_lead_register.nik',$nik);
             $total_lose->where('sales_lead_register.result',"LOSE")->where('sales_lead_register.nik',$nik);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('sales_lead_register.nik',$nik);
-        }else {
+        } elseif ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            $total_lead->where('sales_lead_register.result',"!=","hmm")->where('users.id_company','1');
+            $total_open->where('sales_lead_register.result',"")->where('users.id_company','1');
+            $total_initial->where('sales_lead_register.result',"OPEN")->where('users.id_company','1');
+            $total_sd->where('sales_lead_register.result',"SD")->where('users.id_company','1');
+            $total_tp->where('sales_lead_register.result',"TP")->where('users.id_company','1');
+            $total_win->where('sales_lead_register.result',"WIN")->where('users.id_company','1');
+            $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_company','1');
+            $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_company','1');
+        } elseif ($div == 'SALES' && $pos == 'MANAGER') {
+            $total_lead->where('sales_lead_register.result',"!=","hmm")->where('users.id_territory',$ter);
+            $total_open->where('sales_lead_register.result',"")->where('users.id_territory',$ter);
+            $total_initial->where('sales_lead_register.result',"OPEN")->where('users.id_territory',$ter);
+            $total_sd->where('sales_lead_register.result',"SD")->where('users.id_territory',$ter);
+            $total_tp->where('sales_lead_register.result',"TP")->where('users.id_territory',$ter);
+            $total_win->where('sales_lead_register.result',"WIN")->where('users.id_territory',$ter);
+            $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_territory',$ter);
+            $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_territory',$ter);
+        } elseif ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
+            $total_lead->where('sales_lead_register.result',"!=","hmm")->where('nik_presales',$nik);
+            $total_open->where('sales_lead_register.result',"")->where('nik_presales',$nik);
+            $total_initial->where('sales_lead_register.result',"OPEN")->where('nik_presales',$nik);
+            $total_sd->where('sales_lead_register.result',"SD")->where('nik_presales',$nik);
+            $total_tp->where('sales_lead_register.result',"TP")->where('nik_presales',$nik);
+            $total_win->where('sales_lead_register.result',"WIN")->where('nik_presales',$nik);
+            $total_lose->where('sales_lead_register.result',"LOSE")->where('nik_presales',$nik);
+            $total_cancel->where('sales_lead_register.result',"CANCEL")->where('nik_presales',$nik);
+        } else {
             $total_lead->where('sales_lead_register.result',"!=","hmm");
             $total_open->where('sales_lead_register.result',"");
             $total_initial->where('sales_lead_register.result',"OPEN");
@@ -886,38 +914,38 @@ class SalesLeadController extends Controller
             }
             $total_lead->whereIn('sales_lead_register.result',$request->result);
 
-            $total_lead->where(function ($query) use ($request,$total_initial,$total_open,$total_sd,$total_tp,$total_win,$total_lose){
+            $total_lead->where(function ($query) use ($request,$total_initial,$total_open,$total_sd,$total_tp,$total_win,$total_lose,$ter,$div,$pos){
                 // Init
                 if (!in_array("OPEN", $request->result)) {
                     $total_initial->where('sales_lead_register.result',"hmm");
                 } else {
                     $query->orWhere('sales_lead_register.result',"OPEN");
                 }
+
                 if (!in_array("null", $request->result)) {
                     $total_open->where('sales_lead_register.result',"hmm");
                 } else {
                     $query->where('sales_lead_register.result',"");
-
                 }
+
                 if (!in_array("SD", $request->result)) {
-
                     $total_sd->where('sales_lead_register.result',"hmm");
-
                 } else {
                     $query->orWhere('sales_lead_register.result',"SD");
                 }
+
                 if (!in_array("TP", $request->result)) {
                     $total_tp->where('sales_lead_register.result',"hmm");
-
                 } else {
                     $query->orWhere('sales_lead_register.result',"TP");
                 }
+
                 if (!in_array("WIN", $request->result)) {
                     $total_win->where('sales_lead_register.result',"hmm");
-
                 } else {
                     $query->orWhere('sales_lead_register.result',"WIN");
                 }
+
                 if (!in_array("LOSE", $request->result)) {
                     $total_lose->where('sales_lead_register.result',"hmm");
 
@@ -990,6 +1018,8 @@ class SalesLeadController extends Controller
         $sum_amount_win = $total_win->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_win'))->first();
 
         $sum_amount_lose = $total_lose->select(DB::raw('(CASE WHEN(SUM(amount) is null) THEN "0" ELSE SUM(amount) END) as amount_lose'))->first();
+
+        // return $count_tp;
 
         return collect([
             'lead'=>$count_lead,
