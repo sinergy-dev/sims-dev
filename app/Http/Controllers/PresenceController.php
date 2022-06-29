@@ -223,24 +223,29 @@ class PresenceController extends Controller
         //     $presenceStatus = "libur";
         // } else {
             // code...
-        if($presenceStatus->first()->presence_type == "Check-Out"){
-            $todayPresence = PresenceHistory::where('nik',Auth::User()->nik)
-                ->whereRaw('DATE(`presence_actual`) = "' . now()->toDateString() . '"')
-                ->orderBy('presence_actual','DESC')
-                ->count();
+        if($presenceStatus->count() == 0){
+            $presenceStatus = "not-yet";
+        } else {
+            if($presenceStatus->first()->presence_type == "Check-Out"){
+                $todayPresence = PresenceHistory::where('nik',Auth::User()->nik)
+                    ->whereRaw('DATE(`presence_actual`) = "' . now()->toDateString() . '"')
+                    ->orderBy('presence_actual','DESC')
+                    ->count();
 
-            if($todayPresence > 2){
-                $presenceStatus = "done-checkout";
-            } else {
-                $presenceStatus = "not-yet";
+                if($todayPresence > 2){
+                    $presenceStatus = "done-checkout";
+                } else {
+                    $presenceStatus = "not-yet";
+                }
+
+                // return $todayPresence;
+
+
+            } else if ($presenceStatus->first()->presence_type == "Check-In") {
+                $presenceStatusDetail = $presenceStatus->first()->presence_condition;
+                $presenceStatus = "done-checkin";
             }
-
-            // return $todayPresence;
-
-
-        } else if ($presenceStatus->first()->presence_type == "Check-In") {
-            $presenceStatusDetail = $presenceStatus->first()->presence_condition;
-            $presenceStatus = "done-checkin";
+            
         }
             
         // }
