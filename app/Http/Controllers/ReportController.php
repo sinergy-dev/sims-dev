@@ -6027,18 +6027,18 @@ class ReportController extends Controller
                     ->join('users','users.nik','=','sales_lead_register.nik')
                     ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
                     ->select('tb_product_tag.name_product',
-                        DB::raw("SUM(price) as total_price"),
+                        DB::raw("SUM(CASE WHEN (price is null) THEN 0 ELSE price END) as total_price"),
                         DB::raw("COUNT(tb_product_tag_relation.lead_id) as total_lead"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 1' then 0 end) as countTer1"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 2' then 0 end) as countTer2"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' then 0 end) as countTer3"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' then 0 end) as countTer4"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' then 0 end) as countTer5"),
-                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',price,0)) AS ter1_price"),
-                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',price,0)) AS ter2_price"),
-                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',price,0)) AS ter3_price"),
-                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 4',price,0)) AS ter4_price"),
-                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',price,0)) AS ter5_price")
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter1_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter2_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter3_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 4',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter4_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter5_price")
                     )
                     ->groupBy('tb_product_tag.name_product')
                     // ->groupBy('tb_product_tag_relation.id_product_tag')
