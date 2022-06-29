@@ -93,12 +93,12 @@ Report Product
 @section('content')
   <section class="content-header">
 	<h1>
-	  Report Products
+	  Report Brands
 	</h1>
 	<ol class="breadcrumb">
 	  <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
 	  <li class="active">Report</li>
-	  <li class="active">Report Products</li>
+	  <li class="active">Report Brands</li>
 	</ol>
   </section>
   <section class="content">
@@ -106,7 +106,7 @@ Report Product
       <div class="col-md-12">
         <div class="box">
           <div class="box-header with-border">
-            <h3 class="box-title"><i>Report Products</i></h3>
+            <h3 class="box-title"><i>Report Brands</i></h3>
             <div class="row">
                 <div class="col-md-3">
                   <div class="input-group" style="float: left">
@@ -136,7 +136,7 @@ Report Product
               <table class="table table-bordered table-striped" id="data_product" width="100%" cellspacing="0">
                 <thead>
                   <tr class="header">
-                    <th>PRODUCT</th>
+                    <th>BRANDS</th>
                     @foreach($territory_loop as $data)
                     <th><center>{{$data->id_territory}}</center></th>
                     @endforeach
