@@ -42,7 +42,7 @@ class DASHBOARDController extends Controller
         $top_win_sip = DB::table('sales_lead_register')
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik','users.id_territory')
                         ->where('result', 'WIN')
                         ->whereYear('closing_date', $year_now)
                         ->where('users.id_company', '1')
@@ -70,7 +70,7 @@ class DASHBOARDController extends Controller
                         ->join('users', 'users.nik', '=', 'sales_lead_register.nik')
                         ->join('tb_territory','tb_territory.id_territory','=','users.id_territory')
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik')
+                        ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), DB::raw('SUM(sales_lead_register.deal_price) as deal_prices'), 'users.name', 'tb_company.code_company','users.nik','users.id_territory')
                         ->where('result', 'WIN')
                         ->whereYear('closing_date', $year_now)
                         ->where('users.id_company', '1')
@@ -109,6 +109,22 @@ class DASHBOARDController extends Controller
                         ->groupBy('users.nik')
                         ->orderBy('deal_prices', 'desc')
                         ->get();
+
+           $top_win_sip_ter_ter->push([
+                "leads" => $top_win_sip_ter_ter->sum('leads_total'),
+                "amounts" => (string)$top_win_sip_ter_ter->sum('sum_total'),
+                "deal_prices" => (string)$top_win_sip_ter_ter->sum('sum_total'),
+                "name" => "Total All Teritory",
+                "code_company" => "SIP",
+                "id_territory" => "TOTAL",
+                "nik" => "-",
+                "sum_total" => (string)$top_win_sip_ter_ter->sum('sum_total'),
+                "leads_total" => $top_win_sip_ter_ter->sum('leads_total')
+            ]);
+            // return $top_win_sip_ter_ter->sum('sum_total');
+            // return $deals = $top_win_sip_ter_ter->sum(function ($region) {
+            //     return $region->submits->sum('deals');
+            // });
 
             $groups = collect($top_win_sip_ter_ter)->sortBy('id_territory',SORT_NATURAL)->groupBy('id_territory');
 
