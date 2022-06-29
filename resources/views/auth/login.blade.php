@@ -73,6 +73,7 @@
                           <button type="submit" class="btn btn-primary btn-block">
                             Login
                           </button>
+                          <!-- <div class="g-signin2" data-onsuccess="onSignIn"></div> -->
                       </div>
                       <div class="col-md-12" style="margin-top: 5px">
                         <a class="pull-left" href="{{ route('password.request') }}" target="_blank">
@@ -112,6 +113,14 @@
     </div>
   </div>
   <!-- END WRAPPER -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <div id="g_id_onload"
+         data-client_id="252316539031-kv21d9r60qq7r6okculku9d38vn2rkpb.apps.googleusercontent.com"
+         data-ux_mode="redirect"
+         data-login_uri="https://dev-app.sinergy.co.id/testAfterAuthSave">
+    </div>
+    <!-- <div class="g_id_signin" data-type="standard"></div> -->
+
 </body>
 </html>
 
