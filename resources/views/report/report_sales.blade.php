@@ -404,14 +404,35 @@ Report Sales
 
   });
 
+  var currentYear = moment().year(); // This Year
+
+  var currentYearStart = moment({
+    years: currentYear,
+    months: '0',
+    date: '1'
+  }); // 1st Jan this year
+
+  var currentYearEnd = moment({
+    years: currentYear,
+    months: '11',
+    date: '31'
+  });
+
+  var appendDateRange = ''
+  var dateRange = {};
+  dateRange["Today"] = [moment(), moment()];
+  dateRange["This Month"] = [moment().startOf('month'), moment().endOf('month')];
+  $.each(JSON.parse('@json($years)'), function(key, value){
+    if (value.year == currentYear) {
+      dateRange["<i class='fa fa-calendar'></i> " + value.year] = [moment(currentYearStart), moment(currentYearEnd)];
+    }else{
+      dateRange["<i class='fa fa-calendar'></i> " + value.year] = [moment(currentYearStart.subtract(1, "year")), moment(currentYearEnd.subtract(1, "year"))];
+    }
+  })
+
+
   $('#daterange-btn').daterangepicker({
-    ranges   : {
-      'This Month'   : [moment().startOf('month'), moment().endOf('month')],
-      'Last 3 Month' : [moment().startOf('month').subtract(3, 'months'), moment().endOf('month')],
-      'Last 6 Month' : [moment().startOf('month').subtract(6, 'months'), moment().endOf('month')],
-      'Last Year'    : [moment().startOf('year').subtract(1, 'year'),moment().endOf('year').subtract(1, 'year')],
-      'This Year'    : [moment().startOf('year'),moment().endOf('year')],
-    },
+    ranges : dateRange,
     locale: {
       format: 'DD/MM/YYYY'
     }
@@ -449,6 +470,19 @@ Report Sales
   // })
 
   $('#reload-table').click(function(){
+    $('#reportrange').daterangepicker({
+      startDate: moment().startOf('year'),
+      endDate  : moment().endOf('year'),
+      locale: {
+        format: 'DD/MM/YYYY'
+      }
+    },function (start, end) {
+        start: moment();
+        end  : moment();
+
+        start  = start.format("YYYY-MM-DD 00:00:00");
+        end    = end.format("YYYY-MM-DD 00:00:00");
+    });
     $('#data_sd').DataTable().ajax.url("{{url('get_data_sd_report_sales')}}").load();
     $('#data_tp').DataTable().ajax.url("{{url('get_data_tp_report_sales')}}").load();
     $('#data_win').DataTable().ajax.url("{{url('get_data_win_report_sales')}}").load();
