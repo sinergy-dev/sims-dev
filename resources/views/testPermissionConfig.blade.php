@@ -7,6 +7,9 @@ Permission Config
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 	<!-- DataTables -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+	<!-- Pace Loader -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
+
 	<style type="text/css">
 		.text-lowercase{
 			text-transform: lowercase;
@@ -621,6 +624,7 @@ Permission Config
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 
 @endsection
 @section('script')
@@ -737,75 +741,80 @@ Permission Config
 			]
 		});
 		var dataTableFeatureItem;
+		var firstGroup = ""
 		function getFeatureItemByRoleGroup(group){
-			if(group != "All"){
-				dataTableFeatureItem.destroy();
-				$("#featureItemTable").empty();
-			}
-			$.ajax({
-				type:"GET",
-				url:"{{url('permission/getFeatureItem')}}",
-				data:{
-					group:group
-				},
-				beforeSend: function(){
-					if($.fn.dataTable.isDataTable("#featureItemTable")){
-						dataTableFeatureItem.destroy();
-						$("#featureItemTable").empty();
-					}
-				},
-				success:function(result){
-					dataTableFeatureItem = $("#featureItemTable").DataTable({
-						data: result.data,
-						order: [[ 0, 'asc' ]],
-						columns: result.column,
-						drawCallback: function ( settings ) {
-							var api = this.api();
-							var rows = api.rows( {page:'current'} ).nodes();
-							var last = null;
-
-							console.log(api)
-
-							api.column(0, {page:'current'} ).data().each( function ( group, i ) {
-								if ( last !== group ) {
-									var append = ''
-									append = append + '<tr class="group">'
-									append = append + '	<td colspan="' + (result.column.length + 1) + '">'
-									append = append + '		<b>Feature : <i title="' + group + '">' + group + '</i></b>'
-									append = append + '	</td>'
-									append = append + '</tr>'
-									$(rows).eq( i ).before(
-										append
-									);
-
-									last = group;
-								}
-							});
-						},
-						pageLength:100,
-						fixedHeader: true
-						// columnDefs: [{
-						// 	// The `data` parameter refers to the data for the cell (defined by the
-						// 	// `data` option, which defaults to the column being worked with, in
-						// 	// this case `data: 0`.
-						// 	"render": function ( data, type, row ) {
-						// 		return data +' ('+ row[3]+')';
-						// 	},
-						// 	"targets": 0
-						// }]
-					})
-				},
-				complete:function(){
-					$('.featureItemCheck').click(function() {
-						console.log("heyyyyy")
-						var data = this.id
-						changeFeatureItem(data.split("-")[0],data.split("-")[1])
-					});
+			Pace.restart();
+			Pace.track(function() {
+				if(group != firstGroup){
+					dataTableFeatureItem.destroy();
+					$("#featureItemTable").empty();
 				}
-			})	
+				$.ajax({
+					type:"GET",
+					url:"{{url('permission/getFeatureItem')}}",
+					data:{
+						group:group
+					},
+					beforeSend: function(){
+						if($.fn.dataTable.isDataTable("#featureItemTable")){
+							dataTableFeatureItem.destroy();
+							$("#featureItemTable").empty();
+						}
+					},
+					success:function(result){
+						dataTableFeatureItem = $("#featureItemTable").DataTable({
+							data: result.data,
+							order: [[ 0, 'asc' ]],
+							columns: result.column,
+							paging: false,
+							drawCallback: function ( settings ) {
+								var api = this.api();
+								var rows = api.rows( {page:'current'} ).nodes();
+								var last = null;
+
+								// console.log(api)
+
+								api.column(0, {page:'current'} ).data().each( function ( group, i ) {
+									if ( last !== group ) {
+										var append = ''
+										append = append + '<tr class="group">'
+										append = append + '	<td colspan="' + (result.column.length + 1) + '">'
+										append = append + '		<b>Feature : <i title="' + group + '">' + group + '</i></b>'
+										append = append + '	</td>'
+										append = append + '</tr>'
+										$(rows).eq( i ).before(
+											append
+										);
+
+										last = group;
+									}
+								});
+							},
+							pageLength:100,
+							fixedHeader: true
+							// columnDefs: [{
+							// 	// The `data` parameter refers to the data for the cell (defined by the
+							// 	// `data` option, which defaults to the column being worked with, in
+							// 	// this case `data: 0`.
+							// 	"render": function ( data, type, row ) {
+							// 		return data +' ('+ row[3]+')';
+							// 	},
+							// 	"targets": 0
+							// }]
+						})
+					},
+					complete:function(){
+						$('.featureItemCheck').click(function() {
+							console.log("heyyyyy")
+							var data = this.id
+							changeFeatureItem(data.split("-")[0],data.split("-")[1])
+						});
+					}
+				})	
+			})
 		}
 
-		getFeatureItemByRoleGroup("All")
+		
 
 		function getFeatureItemByFeatureItem(group){
 			if(group == "All"){
@@ -817,16 +826,19 @@ Permission Config
 
 		function changeFeatureItem(role,feature){
 			console.log(feature)
-			$.ajax({
-				type:"GET",
-				url:"permission/changeFeatureItem",
-				data:{
-					role:role,
-					feature:feature
-				},
-				success:function(result){
-					
-				}
+			Pace.restart();
+			Pace.track(function() {
+				$.ajax({
+					type:"GET",
+					url:"permission/changeFeatureItem",
+					data:{
+						role:role,
+						feature:feature
+					},
+					success:function(result){
+						
+					}
+				})
 			})
 		}
 
@@ -836,16 +848,25 @@ Permission Config
 		})
 		
 
+		
+
 		$.ajax({
 			type:"GET",
 			url:"{{url('permission/getFeatureItemParameterByRoleGroup')}}",
 			success:function(result){
+				firstGroup = result[0]
 				$("#filterByRoleGroup").select2({
 					placeholder: "Filter by Position",
 					data:result
 				})
+			},
+			complete:function(){
+				getFeatureItemByRoleGroup(firstGroup)
 			}
+
 		})
+
+		
 
 		$("#filterByFeature").change(function(){
 			console.log($("#filterByFeature").val())
