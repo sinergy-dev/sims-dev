@@ -883,10 +883,10 @@ class TestController extends Controller
 
 
 		// For Production
-		// $checkForAllFeatureItem = [7,33,17,39];
+		$checkForAllFeatureItem = [7,33,17,39];
 
 		// For Development
-		$checkForAllFeatureItem = [7,33,17,28];
+		// $checkForAllFeatureItem = [7,33,17,28];
 
 		if(in_array(DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id,$checkForAllFeatureItem)){
 			$data = DB::table('roles')->where('group','<>','default')->select('group')->groupBy('group')->pluck('group')->toArray();
