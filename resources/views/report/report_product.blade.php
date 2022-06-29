@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('tittle')
-Report Product
+Report Brands
 @endsection
 @section('head_css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
@@ -108,26 +108,54 @@ Report Product
           <div class="box-header with-border">
             <h3 class="box-title"><i>Report Brands</i></h3>
             <div class="row">
-                <div class="col-md-3">
-                  <div class="input-group" style="float: left">
-                    <div class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
+                <div class="col-md-3 form-group">
+                    <label>Date</label>
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </div>
+                      <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
+                      <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                     </div>
-                    <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
-                    <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                   </div>
-                </div>  
-                <div class="col-md-3">
-                  <select class="select2 form-control" style="width:100%;" id="select2Product" name="select2Product">
+                  <div class="col-md-2 form-group">
+                    <label>Brand</label>
+                    <select class="select2 form-control" style="width:100%;" id="select2Product" name="select2Product">                 
+                    </select>
+                  </div>
+                  <div class="col-md-1 form-group" style="margin-top:5px">
+                    <br>
+                    <button class="btn btn-primary btnApply"><i class="fa fa-check-circle"></i> Apply</button> 
+                  </div>
                     
-                  </select>
+                  <div class="col-md-4" style="margin-bottom: 0px; margin-top: 0px;">
+                  <label>Search</label>
+                  <div class="input-group pull-right">
+                    <input id="searchBrand" type="text" class="form-control" onkeyup="searchCustom('data_product','searchBrand')" placeholder="Search Anything">
+                    
+                    <div class="input-group-btn">
+                      <button type="button" id="btnShowEntryRoleUser" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        Show 10 entries
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(10).draw();$('#btnShowEntryRoleUser').html('Show 10 entries')">10</a></li>
+                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(25).draw();$('#btnShowEntryRoleUser').html('Show 25 entries')">25</a></li>
+                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(50).draw();$('#btnShowEntryRoleUser').html('Show 50 entries')">50</a></li>
+                        <li><a href="#" onclick="$('#data_product').DataTable().page.len(100).draw();$('#btnShowEntryRoleUser').html('Show 100 entries')">100</a></li>
+                      </ul>
+                    </div>
+                    <span class="input-group-btn">
+                      <button onclick="searchCustom('data_product','searchBrand')" type="button" class="btn btn-default btn-flat">
+                        <i class="fa fa-fw fa-search"></i>
+                      </button>
+                    </span>
+                  </div>
                 </div>
-                <div class="col-md-3">
-                  <button class="btn btn-primary btnApply" style="margin-right:10px"><i class="fa fa-refresh"></i> Apply</button>
-
-                  <button class="btn btn-info reload-table"><i class="fa fa-refresh"></i> Refresh</button>
-                </div>           
-              
+                <div class="col-md-2" style="margin-top:5px">
+                  <br>
+                  <button class="btn btn-info" onclick="reloadTable()"><i class="fa fa-refresh"></i> Refresh</button>
+                </div>
+                              
             </div>
           </div>         
 
@@ -172,34 +200,7 @@ Report Product
 @endsection
 @section('script')
 <script type="text/javascript">
-  $(document).ready(function (){
-    $.ajax({
-      url: "{{url('/getTerritory')}}",
-      type: "GET",
-      success: function(result) {
-        $("#select2Territory").select2({
-          placeholder:"Select Sales",
-          // multiple:true,
-          data:result.data
-        })
-      }
-    })
-
-    $.ajax({
-      url: "{{url('/project/getProductTag')}}",
-      type: "GET",
-      success: function(result) {
-        $("#select2Product").select2({
-          placeholder:"Select Customer",
-          // multiple:true,
-          data:result.results
-        })
-      }
-    })
-
-    initproduct()
-
-    function initproduct(){
+  function initproduct(){
       $('.dates').daterangepicker({
         startDate: moment().startOf('year'),
         endDate  : moment().endOf('year'),
@@ -297,7 +298,9 @@ Report Product
             "scrollX": false,
             "ordering": false,
             "processing": true,
+            "lengthChange": false,
             "paging": true,
+            sDom: 'lrtip',
             "rowCallback": function( row, data ) {
               $('td', row).eq(0).addClass('green1-color');
               $('td', row).eq(1).addClass('green2-color');
@@ -352,29 +355,84 @@ Report Product
                         return intVal(a) + intVal(b);
                     }, 0 );
 
-                console.log(amount_ter1)
                 return $('<tr><td>'+ '<b>' + 'Total Amount : ' + '</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter1 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter2 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter3 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter4 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter5 ) + '</b></center>' +'</td>' + '</tr>');
               }
           }
       });
-    }
+  }
+  
+  function searchCustom(id_table,id_seach_bar){
+    $("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
+  }
+
+  function reloadTable(){
+    $('#data_product').DataTable().search("").draw()
+    $('#data_product').DataTable().ajax.url("{{url('/getreportproduct')}}").load();
+    $('#select2Product').empty();
+    initSelectCustomer()
+  }
+
+  function initSelectCustomer(){
+    $.ajax({
+      url: "{{url('/project/getProductTag')}}",
+      type: "GET",
+      success: function(result) {
+        var arr = result.results;
+        var selectOption = [];
+        var otherOption;
+
+        var data = {
+          id: -1,
+          text: 'All Brand'
+        };
+
+        selectOption.push(data)
+        $.each(arr,function(key,value){
+          selectOption.push(value)
+        })
+
+        $("#select2Product").select2({
+          placeholder:"Select Customer",
+          // multiple:true,
+          data:selectOption
+        })
+      }
+    })
+  }
+
+  $(document).ready(function (){  
+    initproduct()
+    reloadTable()
+    initSelectCustomer()
+    $.ajax({
+      url: "{{url('/getTerritory')}}",
+      type: "GET",
+      success: function(result) {
+        $("#select2Territory").select2({
+          placeholder:"Select Sales",
+          // multiple:true,
+          data:result.data
+        })
+      }
+    })
+
+     
 
     start_date = moment().startOf('year').format("YYYY-MM-DD 00:00:00")
     end_date = moment().endOf('year').format("YYYY-MM-DD 00:00:00")
 
     $(".btnApply").click(function(){
-      $(".btnApply").attr("onclick",ApplyFilter())
+      $(".btnApply").attr("onclick",ApplyFilter($("#select2Product").val()))
     })
 
-    function ApplyFilter(){
-      $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
-    }
-
-    $(".reload-table").click(function(){
-       $('#data_product').DataTable().ajax.url("{{url('/getreportproduct')}}").load();
-    })
-
-    
+    function ApplyFilter(val){
+      if (val == -1) {
+        $('#data_product').DataTable().ajax.url("{{url('/getreportproduct')}}").load();
+      }else{
+        $('#data_product').DataTable().ajax.url("{{url('/getFilterProduct')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "name_product=" + $("#select2Product").val()).load();
+      }
+      
+    }    
   })
 </script>
 @endsection
