@@ -99,7 +99,7 @@ Permission Config
 @section('content')
 	<section class="content-header">
 		<h1>
-			Privilage Configuration 
+			Permission Configuration 
 		</h1>
 		<ol class="breadcrumb">
 			<li>
