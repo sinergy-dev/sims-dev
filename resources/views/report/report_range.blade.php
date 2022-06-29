@@ -40,11 +40,11 @@ Report Range
 @section('content')
   <section class="content-header">
     <h1>
-      Report Range
+      Report Lead
     </h1>
     <ol class="breadcrumb">
       <li><a href="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-      <li class="active">Report Range</li>
+      <li class="active">Report Lead</li>
     </ol>
   </section>
   <section class="content">
@@ -129,7 +129,7 @@ Report Range
           <div class="box-body">
               <div class="row">
                 <div class="col-md-12">
-                  <div style="border:solid #d4d1cb;width: fit-content;max-width: fit-content;background-color: #d4d1cb;margin-bottom: 10px;border-radius: 5px;float: left;">
+                  <div style="border:solid red;width: fit-content;max-width: fit-content;background-color: red;margin-bottom: 10px;border-radius: 5px;float: left;">
                     <b style="font-size: 20px;padding:15px;color: white;">Total Deal Price : Rp <span id="total_deal_prices" class="money"> </span>,-</b>
                   </div>
                   <div id="coba" style="float:right;">                    
@@ -141,9 +141,6 @@ Report Range
               </div>
              
               <div class="row" style="margin-bottom:10px">
-                <div class="col-md-1 col-xs-12">
-                  <button class="btn btn-md btn-info" style="margin-top:30px" id="btnRefresh"><i class="fa fa-refresh"></i> Refresh</button>
-                </div>
                 <div class="col-md-2 col-xs-12">
                   <label style="margin-top: 5px">Filter Year</label>
                   <select style="margin-right: 5px;" class="form-control fa" id="year_dif">
@@ -153,16 +150,22 @@ Report Range
                     @endforeach
                   </select>
                 </div>
-                <div class="col-md-3 col-xs-12">
+                <div class="col-md-2 col-xs-12">
                   <label style="margin-top: 5px;">Date</label>
-                  <div class="input-group" style="float: left">
-                    <div class="input-group-addon">
+                  <div class="input-group">
+                      <button type="button" style="width:100%" class="btn btn-default dates" id="reportrange">
+                        <span>
+                          <i class="fa fa-calendar"></i> Date range picker
+                        </span>
+                        <i class="fa fa-caret-down"></i>
+                      </button>                
+                    <!-- <div class="input-group-addon">
                       <i class="fa fa-calendar"></i>
                     </div>
-                    <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required />
+                    <input type="text" class="form-control dates" id="reportrange" name="Dates" autocomplete="off" placeholder="Select days" required /> -->
                   </div>
                 </div>
-                <div class="col-md-5 col-xs-12">
+                <div class="col-md-4 col-xs-12">
                   <label style="margin-top: 5px">Search Anything</label>
                   <div class="input-group pull-right">
                     <input id="searchBar" type="text" class="form-control" onkeyup="searchCustom('data_all','searchBar')" placeholder="Search Anything...">
@@ -184,6 +187,9 @@ Report Range
                       </button>
                     </span>
                   </div>
+                </div>
+                <div class="col-md-2 col-xs-12">
+                  <button class="btn btn-md btn-info" style="margin-top:30px" id="btnRefresh"><i class="fa fa-refresh"></i> Refresh</button>
                 </div>                               
               </div>
 
@@ -382,9 +388,9 @@ Report Range
         var evalClosingDate = parseDateValue(aData[15]);
 
           if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
-               ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
-               ( dateStart <= evalDate && isNaN( dateEnd ) ) ||
-               ( dateStart <= evalDate && evalDate <= dateEnd ))
+               ( isNaN( dateStart ) && evalClosingDate <= dateEnd ) ||
+               ( dateStart <= evalClosingDate && isNaN( dateEnd ) ) ||
+               ( dateStart <= evalClosingDate && evalClosingDate <= dateEnd ))
           {
               return true;
           }
@@ -439,8 +445,9 @@ Report Range
       $("#reportrange").val("").daterangepicker("update")
       $("#searchBar").val("")
       $("#year_dif").val(n)
-      location.reload()  
       location.replace('{{url("/report_range")}}')
+      // location.reload()  
+      // location.replace('{{url("/report_range")}}')
     }else{
       $("#reportrange").val("").daterangepicker("update")
       $("#searchBar").val("")
@@ -457,12 +464,13 @@ Report Range
       table.draw()
       
       $("#btnRefresh").click(function(){
-        initRefresh(false)
+        initRefresh()
       })
-      filter_deal_price()
+      filter_deal_price(false)
     }else{
       $("#btnRefresh").click(function(){
         initRefresh(true)
+        console.log("wow")
       })
       table.column(9).search(n).column(8).search(window.location.href.split('/')[4]).column(6).search('WIN').draw();
       $("#year_dif").prop('disabled',true)
@@ -480,7 +488,7 @@ Report Range
           $("#kat_drop_0").append('<option selected>' + result.code_company + '</option>')
           $("#kat_drop_2").append('<option selected>' + result.name + '</option>')
           $("#kat_drop_6").append('<option selected>' + result.result + '</option>')
-          $("#year_dif").append('<option selected>' + result.year.substr(0, 4) + '</option>')
+          $("#year_dif").append('<option selected>' + result.year + '</option>')
         },
         complete:function(){
           filter_deal_price(true)
@@ -491,7 +499,31 @@ Report Range
 
     //konfigurasi daterangepicker pada input dengan id datesearch
       $('#reportrange').daterangepicker({
-        autoUpdateInput: false
+        autoUpdateInput: false,
+        ranges: {
+          'Today'       : [moment(), moment()],
+          'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+          'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        startDate: moment().subtract(29, 'days'),
+        endDate: moment()
+      },
+      function (start, end) {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        // $('#dateFilter').html("")
+        // $('#dateFilter').html('<i class="fa fa-calendar"></i> <span>' + start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY') + '</span>');
+
+        var startDay = start.format('YYYY-MM-DD');
+        var endDay = end.format('YYYY-MM-DD');
+
+        $("#startDateFilter").val(startDay)
+        $("#endDateFilter").val(endDay)
+
+        startDate = start.format('D MMMM YYYY');
+        endDate = end.format('D MMMM YYYY');
       });
 
      //menangani proses saat apply date range
@@ -503,7 +535,7 @@ Report Range
          console.log(start_date)
          table.draw();
           
-         filter_deal_price()
+         filter_deal_price(false)
          $("#year_dif").prop('disabled',true)
       });
 
@@ -533,7 +565,7 @@ Report Range
       }
     );    
     table.draw()
-    filter_deal_price()
+    filter_deal_price(false)
     if (this.value == '') {
       $("#reportrange").prop('disabled',false)
     }else{
@@ -553,28 +585,60 @@ Report Range
       var nik = '&nik=' + "true"
     }
 
-    var tempyear = '&year=' + $("#year_dif").val();
+    if ($("#year_dif").val() == "") {
+      var tempyear = '&year='
+    }else{
+      var tempyear = '&year=' + $("#year_dif").val();
+    }
 
-    var tempcomp = '&comp=' + $("#kat_drop_0").val();
+    if ($("#kat_drop_0").val() == undefined) {
+      var tempcomp = '&comp='
+    }else{
+      var tempcomp = '&comp=' + $("#kat_drop_0").val();
+    }
 
-    var tempSales = '&sales=' + $("#kat_drop_2").val();
+    if($("#kat_drop_2").val() == undefined){
+      var tempSales = '&sales='
+    }else{
+      var tempSales = '&sales=' + $("#kat_drop_2").val();
+    }
 
-    var tempTer = '&ter=' + $("#kat_drop_1").val();
+    if($("#kat_drop_1").val() == undefined){
+      var tempTer = '&ter='
+    }else{
+      var tempTer = '&ter=' + $("#kat_drop_1").val();
+    }
 
-    var tempPresales = '&presales=' + $("#kat_drop_3").val();
+    if($("#kat_drop_3").val() == undefined){
+      var tempPresales = '&presales='
+    }else{
+      var tempPresales = '&presales=' + $("#kat_drop_3").val();
+    }
 
-    var tempPriority = '&priority=' + $("#kat_drop_4").val();
+    if($("#kat_drop_4").val() == undefined){
+      var tempPriority = '&priority='
+    }else{
+      var tempPriority = '&priority=' + $("#kat_drop_4").val();
+    }
 
-    var tempWinProb = '&winProb=' + $("#kat_drop_5").val();
+    if($("#kat_drop_5").val() == undefined){
+      var tempWinProb = '&winProb='
+    }else{
+      var tempWinProb = '&winProb=' + $("#kat_drop_5").val();
+    }
 
-    var tempStatus = '&status=' + $("#kat_drop_6").val();
+    if($("#kat_drop_6").val() == undefined){
+      var tempStatus = '&status='
+    }else{
+      var tempStatus = '&status=' + $("#kat_drop_6").val();
+    }
 
     $.ajax({
       type:"GET",
       url:'/total_deal_price?='+ tempyear + tempcomp + tempSales + tempTer + tempPresales + tempPriority + tempWinProb + tempStatus + tempdateStart + tempdateEnd + nik,
       success: function(result){
         console.log(result)
-        $('#total_deal_prices').text(result.total_deal_price[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g,","));
+        $('#total_deal_prices').text(result.toString().replace(/\B(?=(\d{3})+(?!\d))/g,","));
       }
     });
   }
