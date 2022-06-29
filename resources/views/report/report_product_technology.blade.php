@@ -124,8 +124,10 @@ Report Tagging
                       <th>Opty Name</th>                    
                       <th>Persona</th>
                       <th>Brand/technology</th>
-                      <th>Price</th>
-                      <th>Nominal (Deal Price)</th>
+                      <th width="15%">Price/Set Tagging</th>
+                      <th width="15%">Nominal (Deal Price)</th>
+                      <th>Nominal</th>
+                      <th>Nominal</th>
                     </tr>
                   </thead>
                 </table>
@@ -322,7 +324,7 @@ Report Tagging
           // var otherOption = "All";
           var data = {
               id: 2,
-              text: 'All'
+              text: 'All Person'
           };
 
           selectOption.push(data)
@@ -331,7 +333,7 @@ Report Tagging
           })
 
           var TagPersona = $("#searchTagsPerson").select2({
-            placeholder: " Select #Sales#Presales",
+            placeholder: " Select #Sales #Presales",
             allowClear: true,
             multiple:true,
             data:selectOption,
@@ -375,6 +377,13 @@ Report Tagging
 
     function initTableBefore(){
       $('#data_lead').DataTable({
+        "columnDefs":[
+            {
+              "targets":[7,8],
+              "visible":false
+            },
+            { targets: 'no-sort', orderable: false }
+          ],
         "paging": false
       });
       // $('#data_lead').append( '<tr><td colspan="5">' + '<center>No available data</center>' + '</td></tr>' );
@@ -539,13 +548,31 @@ Report Tagging
                         return "";
                       }
                     }
-                  }
+                  },
+                  "orderData":[7]
                 },
-                // { "data": "amount" },        
+                { 
+                  "data":"amount",
+                  "targets":[6],
+                  "searchable":true 
+                }, 
+                { 
+                  className: "sum3",
+                  data: null,
+                  render: function ( data, type, row ) {
+                     return row.amount
+                  } 
+                }     
               ],
+              "columnDefs":[
+                { orderable: true, targets: [6] },
+                { orderable: false, targets: '_all' },
+                { targets: [7,8], visible: false}
+              ],
+              "order": [[ 6, "desc" ]],
+              "aaSorting": [],
               // "info":false,
               "scrollX": false,
-              "ordering": false,
               "processing": true,
               "paging": false,
           })
@@ -556,6 +583,13 @@ Report Tagging
       location.reload();
       $('#data_lead').DataTable().clear().destroy();
       $('#data_lead').DataTable({
+        "columnDefs":[
+            {
+              "targets":[7,8],
+              "visible":false
+            },
+            { targets: 'no-sort', orderable: false }
+          ],
         "paging": false
       });
       $("#searchTagsProduct").val(null).trigger("change");
