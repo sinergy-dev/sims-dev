@@ -819,12 +819,13 @@ class TestController extends Controller
 			$column2 = $column->where('group','=',$req->group)
 				->get();
 		}
-		
 
 		$column = $column2->map(function ($item, $key) {
-			$item->class = "text-center";
-			return $item;
-		});
+				$item->class = "text-center";
+				return $item;
+		})->filter(function ($item, $key) {
+			return $item->title != "Admin";
+		})->sortBy('title')->values();
 
 		// return $column;
 
@@ -853,6 +854,8 @@ class TestController extends Controller
 		$column->prepend(['title' => "Item",'data' => "item_id"]);
 		$column->prepend(['title' => "Feature",'data' => "group"]);
 
+		// return $return->get();
+
 		return collect(['data' => $return->get(),'column' => $column]);
 
 		// return DB::table('feature_item')
@@ -869,8 +872,30 @@ class TestController extends Controller
 	public function getFeatureItemParameterByRoleGroup(){
 		// return DB::table('roles')->select('group')->groupBy('group')->pluck('group')->toArray();
 		// return gettype(DB::table('roles')->select('group')->groupBy('group')->pluck('group')->toArray());
-		$data = DB::table('roles')->where('group','<>','default')->select('group')->groupBy('group')->pluck('group')->toArray();
-		array_unshift($data, "", "All");
+
+		// dd(DB::table('role_user')->where('user_id',Auth::User()->nik)->first());
+		// return DB::table('roles')->where('id',DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id)->pluck('group')->toArray();
+
+		// $checkForAllFeatureItem = DB::table('roles_feature_item')
+		// 	->where('roles_id',DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id)
+		// 	->where('feature_item_id',124)
+		// 	->first();
+
+
+		// For Production
+		// $checkForAllFeatureItem = [7,33,17,39];
+
+		// For Development
+		$checkForAllFeatureItem = [7,33,17,28];
+
+		if(in_array(DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id,$checkForAllFeatureItem)){
+			$data = DB::table('roles')->where('group','<>','default')->select('group')->groupBy('group')->pluck('group')->toArray();
+			array_unshift($data, "All");
+		} else {
+			$data = DB::table('roles')->where('id',DB::table('role_user')->where('user_id',Auth::User()->nik)->first()->role_id)->pluck('group')->toArray();
+			// array_unshift($data, "");
+		}
+
 		return $data;
 	}
 
@@ -883,6 +908,7 @@ class TestController extends Controller
 	}
 
 	public function changeFeatureItem(Request $req){
+		sleep(1);
 		$roleFeatureItem = DB::table('roles_feature_item')
 			->where('roles_id','=',$req->role)
 			->where('feature_item_id','=',$req->feature);
