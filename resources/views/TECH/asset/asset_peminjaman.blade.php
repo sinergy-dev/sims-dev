@@ -1944,13 +1944,17 @@ Technical Asset
                 $('#no_peminjaman').val(value.no_peminjaman);
                 $('#tgl_pinjam').val(value.tgl_peminjaman);
                 $('#tgl_kembalian').val(value.tgl_pengembalian);
-                if (value.status == 'PENDING' || value.status == 'ACCEPT' || value.status == 'REJECT') {
+                if (value.status == 'PENDING' || value.status == 'ACCEPT') {
                   $('#tgl_kembalian_aktual').val('-');
                 }else if (value.status == 'REJECT') {
+                  $('#tgl_kembalian_aktual').val('-');
                   $("#keterangan_reject").show()
-                  $("#inpKeterangan_reject").val(note)
+                  $("#inpKeterangan_reject").val(value.note)
+                  console.log("okee")
                 }else{
                   $('#tgl_kembalian_aktual').val(value.updated_at.substr(0,10));
+                  $("#keterangan_reject").hide()
+                  $("#inpKeterangan_reject").val("")
                 }
               });              
             },
