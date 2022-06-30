@@ -2762,7 +2762,7 @@ class ReportController extends Controller
         }
 
         if (isset($request->status)) {
-            $data->where('result', $request->status);
+            $data->whereIn('result', $request->status);
         }
 
         // return $data->pluck('sales_lead_register.lead_id');
