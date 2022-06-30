@@ -1358,13 +1358,16 @@ class SalesLeadController extends Controller
             $leads->where('u_sales.id_territory', $ter);
         }
 
-        $leads->where(function($leads) use($request, $searchFields){
-            $searchWildCard = '%'. $request->search . '%';
-            foreach ($searchFields as $data) {
-                $leads->orWhere($data, 'LIKE', $searchWildCard);
-                
+        if(isset($request->year)){
+            if($request->search != ""){
+                $leads->where(function($leads) use($request, $searchFields){
+                    $searchWildCard = '%'. $request->search . '%';
+                    foreach ($searchFields as $data) {
+                        $leads->orWhere($data, 'LIKE', $searchWildCard);
+                    }
+                });
             }
-        });
+        }
 
         if(isset($request->year)){
             $leads->whereIn('year',$request->year);
@@ -1396,16 +1399,22 @@ class SalesLeadController extends Controller
         }
 
         if (isset($request->product_tag)) {
-            $leads->whereIn('id_product_tag',$request->product_tag);
+            foreach ($request->product_tag as $key => $value) {
+                $leads->where('id_product_tag','LIKE',"%" . $value . "%");
+            }
         }
 
         if (isset($request->tech_tag)) {
-            $leads->whereIn('id_tech',$request->tech_tag);
+            foreach ($request->tech_tag as $key => $value) {
+                $leads->where('id_tech','LIKE',"%" . $value . "%");
+            }
         }
 
         if (isset($request->customer)) {
             $leads->whereIn('tb_contact.id_customer',$request->customer);
         }
+
+        // return $leads->get();
 
         return array("data" => $leads->get());
 
