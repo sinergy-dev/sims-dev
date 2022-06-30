@@ -1053,13 +1053,33 @@ class AssetController extends Controller
     }
 
     public function getAssetTransactionModerator(Request $request)
-    {
-        return array("data"=> $assetsd = DB::table('tb_asset_transaction')
+    {   
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+        $ter = $territory->id_territory;
+        $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+        $div = $division->id_division;
+        $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+        $pos = $position->id_position;
+
+        $assetsd = DB::table('tb_asset_transaction')
                     ->join('users','users.nik','=','tb_asset_transaction.nik_peminjam')
                     ->join('tb_kategori_asset','tb_kategori_asset.id_kat','=','tb_asset_transaction.id_kat')
                     ->select('tb_asset_transaction.id_transaction','tb_asset_transaction.id_kat','tb_asset_transaction.qty_akhir','users.name','tb_asset_transaction.nik_peminjam','tb_asset_transaction.status', 'tb_asset_transaction.keterangan', 'tgl_pengembalian', 'tgl_peminjaman', 'tb_asset_transaction.note', 'tb_kategori_asset.kategori', 'keperluan', 'no_peminjaman', 'tb_asset_transaction.updated_at')
-                    ->orderBy('tb_asset_transaction.created_at', 'desc')
-                    ->get());
+                    ->orderBy('tb_asset_transaction.created_at', 'desc');
+
+        if ($div == 'BCD' && $pos == 'MANAGER'|| $div == 'WAREHOUSE') {
+            $assetsd = $assetsd;
+        }else{
+            $assetsd = $assetsd->where('nik_peminjam',$nik);
+        }
+        
+
+        if (isset($request->status)) {
+            return array("data"=> $assetsd->whereIn('status',$request->status)->get());
+        }else{
+            return array("data"=> $assetsd->get());
+        }
     }
 
     public function getAssetTransaction(Request $request)
@@ -1131,7 +1151,7 @@ class AssetController extends Controller
 
         return array(DB::table('tb_asset_transaction')
                 ->join('users','users.nik','=','tb_asset_transaction.nik_peminjam')
-                ->select('no_peminjaman', 'name','tgl_peminjaman','tgl_pengembalian','id_kat','nik_peminjam','qty_akhir','keterangan')
+                ->select('status','no_peminjaman', 'name','tgl_peminjaman','tgl_pengembalian','id_kat','nik_peminjam','qty_akhir','keterangan','tb_asset_transaction.updated_at')
                 ->where('tb_asset_transaction.no_peminjaman',$request->id_transaction)
                 ->get(),$request->id_transaction);
     }
