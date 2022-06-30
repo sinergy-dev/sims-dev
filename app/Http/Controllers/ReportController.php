@@ -6149,7 +6149,11 @@ class ReportController extends Controller
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 4',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter4_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter5_price")
                     )
+                    // ->groupBy('tb_product_tag.name_product')
+                    ->where('sales_lead_register.created_at', '>=', Carbon::now()->startOfYear()->toDateTimeString())
+                    ->where('sales_lead_register.created_at', '<=', Carbon::now()->endOfYear()->toDateTimeString())
                     ->groupBy('tb_product_tag.name_product')
+                    
                     // ->groupBy('tb_product_tag_relation.id_product_tag')
                     ->get());
 
