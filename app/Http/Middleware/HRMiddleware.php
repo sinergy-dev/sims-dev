@@ -31,7 +31,11 @@ class HRMiddleware
         elseif ( Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'MSM' ) 
         {
             return $next($request);  
-        }
+        } 
+        elseif ( Auth::User()->id_position == 'MANAGER' && Auth::User()->id_division == 'BCD' ) 
+        {
+            return $next($request);  
+        } 
 
         return redirect('/');
 
