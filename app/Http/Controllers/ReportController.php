@@ -4240,7 +4240,7 @@ class ReportController extends Controller
                             ->where('status', 'FINANCE')
                             ->get();
         }
-        return view('report/report_product_technology', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'))->with(['initView'=>$this->initMenuBase()]);
+        return view('report/report_product_technology', compact('notif', 'notifOpen', 'notifsd', 'notiftp', 'notifClaim'))->with(['initView'=> $this->initMenuBase()]);
     
     }
 
@@ -4280,14 +4280,44 @@ class ReportController extends Controller
         }
 
         if (isset($request->TagsPersona)) {
-            $query_product->whereIn('sales.nik',$request->TagsPersona)
-            ->WhereIn('presales.nik',$request->TagsPersona)->get();
+            // $query_product->where(function ($query_main) use ($request){
+            //     $query_main->where(function ($query) use ($request){
+            //         foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+            //             $query->orWhere('sales.nik',$value);
+            //         }
+            //     });
+
+            //     $query_main->orWhere(function ($query) use ($request){
+            //         foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+            //             $query->orWhere('presales.nik',$value);
+            //         }
+            //     });
+            // });
+
+            $query_product->where(function ($query) use ($request){
+                foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+                    if(str_contains($value, "-s")) {
+
+                        $query->orWhere('sales.nik',trim($value,'-s'));
+                    }
+                }
+            });
+
+            $query_product->Where(function ($query) use ($request){
+                foreach (explode(",", $request->TagsPersona[0]) as $key => $value) {
+                    if (str_contains($value, "-p")) {
+                        $query->orWhere('presales.nik',trim($value,'-p'));
+
+                    }
+                }
+            });
         }
+
+
 
         $query_all = $query_product->get()->sortBy('lead_id');
 
         $sorted = $query_all->unique("lead_id")->values();
-
 
         $data = DB::table('sales_lead_register')                   
                     ->joinSub(DB::table('tb_contact'), 'tb_contact_alias', function ($join) {
@@ -6108,11 +6138,11 @@ class ReportController extends Controller
                     ->select('tb_product_tag.name_product',
                         DB::raw("SUM(CASE WHEN (price is null) THEN 0 ELSE price END) as total_price"),
                         DB::raw("COUNT(tb_product_tag_relation.lead_id) as total_lead"),
-                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 1' then 0 end) as countTer1"),
-                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 2' then 0 end) as countTer2"),
-                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' then 0 end) as countTer3"),
-                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' then 0 end) as countTer4"),
-                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' then 0 end) as countTer5"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 1' AND price is not null then 0 end) as countTer1"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 2' AND price is not null then 0 end) as countTer2"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' AND price is not null then 0 end) as countTer3"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' AND price is not null then 0 end) as countTer4"),
+                        DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' AND price is not null then 0 end) as countTer5"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter1_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter2_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter3_price"),
