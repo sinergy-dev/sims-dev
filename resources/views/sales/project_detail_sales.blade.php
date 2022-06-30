@@ -23,6 +23,11 @@ Detail Lead Register
 		min-height: calc(100% - (1.75rem * 2));
 	}
 
+	.text-break{
+		word-break: break-all;
+		word-spacing:9999px;
+	}
+
 	/*.modal-changeReq{
 		display: flex;
 		position: fixed;
@@ -179,7 +184,7 @@ Detail Lead Register
 	}
 	.dot:nth-child(1){
 		margin-bottom: 10px;
-		/*background-color: #605ca8;*/
+		/*background-color: #9c97f7;*/
 		vertical-align: middle;
 		padding-top: 45px;
 		text-align: center;
@@ -227,10 +232,7 @@ Detail Lead Register
 		text-align: center;
 		color: #b5b3ac;
 		border-color: #dedbd3;*/
-	}
-
-
-	
+	}	
 </style>
 @endsection
 @section('content')
@@ -251,22 +253,20 @@ Detail Lead Register
 	      		</div>
 	      		<div class="box-body">
 	      			<div style="text-align: center;margin: auto;padding-top: 15%;padding-bottom: 15%;" id="stageID">
-							  <span class="dot">INITIAL</span>
+							  <span class="dot" style="font-weight: bold;">INITIAL</span>
 							  <span class="arrow fa-2x fa fa-arrow-right"></span>
-							  <span class="dot"></span>
+							  <span class="dot" style="font-weight: bold;"></span>
 
 							  <span class="arrow fa-2x fa fa-arrow-right"></span>
-							  <span class="dot"></span>
+							  <span class="dot" style="font-weight: bold;"></span>
 
 							  <span class="arrow fa-2x fa fa-arrow-right"></span>
-							  <span class="dot"></span>
+							  <span class="dot" style="font-weight: bold;"></span>
 
 							  <span class="arrow fa-2x fa fa-arrow-right"></span>
-							  <span class="dot"></span>
+							  <span class="dot" style="font-weight: bold;"></span>
 							</div>
 	      		</div>
-
-	      		
 		          
 		       <!--  <div class="box-body" style="padding:32px">
 		          	<div class='circle-container'>
@@ -880,156 +880,156 @@ Detail Lead Register
 						if (result.data[0].result == 'LOSE') {
 							    var i = 0;
 							    $(".dot:eq(0)").first().animate({
-						        backgroundColor: "#605ca8!important",
-						      	color: "#fff",
+						        backgroundColor: "#9c97f7!important",
+						      	color: "#000000",
 						        width: 110,
 						        height:110
 						      }, 200 ).text('INITIAL');
 							    $(".dot:eq(1)").first().animate({
 						        backgroundColor: "#FF851B!important",
-						      	color: "#fff",
+						      	color: "#000000",
 						        width: 110,
 						        height:110
 						      }, 400 ).text('OPEN');
 								 	$(".dot:eq(2)").first().animate({
 						        backgroundColor: "#04dda3!important",
-						      	color: "#fff",
+						      	color: "#000000",
 						        width: 110,
 						        height:110
 						      }, 600 ).text('SOLUTION DESIGN');
 									$(".dot:eq(3)").first().animate({
 						        backgroundColor: "#f7e127!important",
-						      	color: "#fff",
+						      	color: "#000000",
 						        width: 110,
 						        height:110
-						      }, 800 ).text("TENDER PROCESS");
+						      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 								$(".dot:eq(4)").first().animate({
-						        backgroundColor: "#e5140d!important",
-						      	color: "#fff",
+						        backgroundColor: "#fc322b!important",
+						      	color: "#000000",
 						        width: 110,
 						        height:110
 						      }, 1000 ).text("LOSE");
 						} else if (result.data[0].result == 'HOLD') {
 						    $(".dot:eq(0)").first().animate({
-					        backgroundColor: "#605ca8!important",
-					      	color: "#fff",
+					        backgroundColor: "#9c97f7!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 200 ).text('INITIAL');
 						    $(".dot:eq(1)").first().animate({
 					        backgroundColor: "#FF851B!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 400 ).text('OPEN');
 							 	$(".dot:eq(2)").first().animate({
 					        backgroundColor: "#04dda3!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 600 ).text('SOLUTION DESIGN');
 								$(".dot:eq(3)").first().animate({
 					        backgroundColor: "#f7e127!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
-					      }, 800 ).text("TENDER PROCESS");
+					      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 								$(".dot:eq(4)").first().animate({
 					        backgroundColor: "#dbd5c5!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					    	}, 1000 ).text("HOLD");
 						} else if (result.data[0].result == 'SPECIAL') {
 						    $(".dot:eq(0)").first().animate({
-					        backgroundColor: "#605ca8!important",
-					      	color: "#fff",
+					        backgroundColor: "#9c97f7!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 200 ).text('INITIAL');
 						    $(".dot:eq(1)").first().animate({
 					        backgroundColor: "#FF851B!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 400 ).text('OPEN');
 							 	$(".dot:eq(2)").first().animate({
 					        backgroundColor: "#04dda3!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 600 ).text('SOLUTION DESIGN');
 								$(".dot:eq(3)").first().animate({
 					        backgroundColor: "#f7e127!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
-					      }, 800 ).text("TENDER PROCESS");
+					      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 								$(".dot:eq(4)").first().animate({
 					        backgroundColor: "#dbd5c5!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					    	}, 1000 ).text("SPECIAL");
 						} else if (result.data[0].result == 'CANCEL') {
 						    $(".dot:eq(0)").first().animate({
-					        backgroundColor: "#605ca8!important",
-					      	color: "#fff",
+					        backgroundColor: "#9c97f7!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 200 ).text('INITIAL');
 						    $(".dot:eq(1)").first().animate({
 					        backgroundColor: "#FF851B!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 400 ).text('OPEN');
 							 	$(".dot:eq(2)").first().animate({
 					        backgroundColor: "#04dda3!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 600 ).text('SOLUTION DESIGN');
 								$(".dot:eq(3)").first().animate({
 					        backgroundColor: "#f7e127!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
-					      }, 800 ).text("TENDER PROCESS");
+					      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 								$(".dot:eq(4)").first().animate({
 					        backgroundColor: "#dbd5c5!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					    	}, 1000 ).text("CANCEL");
 						} else if (result.data[0].result == '') {
 						    $(".dot:eq(0)").first().animate({
-					        backgroundColor: "#605ca8!important",
-					      	color: "#fff",
+					        backgroundColor: "#9c97f7!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 200 ).text('INITIAL');
 						    $(".dot:eq(1)").first().animate({
 					        backgroundColor: "#FF851B!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 400 ).text('OPEN');
 							 	$(".dot:eq(2)").first().animate({
 					        backgroundColor: "#c6cccf!important",
-					      	color: "#86898a",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 600 ).text('SOLUTION DESIGN');
 								$(".dot:eq(3)").first().animate({
 					        backgroundColor: "#c6cccf!important",
-					      	color: "#86898a",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
-					      }, 800 ).text('TENDER PROCESS');
+					      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 								$(".dot:eq(4)").first().animate({
 					        backgroundColor: "#c6cccf!important",
-					      	color: "#86898a",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 1000 ).text("WIN/LOSE");
@@ -1040,32 +1040,32 @@ Detail Lead Register
 						  	})
 						} else if (result.data[0].result == 'SD') {
 								$(".dot:eq(0)").first().animate({
-					        backgroundColor: "#605ca8!important",
-					      	color: "#fff",
+					        backgroundColor: "#9c97f7!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 200 ).text('INITIAL');
 						    $(".dot:eq(1)").first().animate({
 					        backgroundColor: "#FF851B!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 400 ).text('OPEN');
 							 	$(".dot:eq(2)").first().animate({
 					        backgroundColor: "#04dda3!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 600 ).text('SOLUTION DESIGN');
 								$(".dot:eq(3)").first().animate({
 					        backgroundColor: "#c6cccf!important",
-					      	color: "#86898a",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
-					      }, 800 ).text("TENDER PROCESS");
+					      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 							$(".dot:eq(4)").first().animate({
 					        backgroundColor: "#c6cccf!important",
-					      	color: "#86898a",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 1000 ).text("WIN/LOSE");
@@ -1081,71 +1081,71 @@ Detail Lead Register
 						  		}
 						  	})
 								$(".dot:eq(0)").first().animate({
-					        backgroundColor: "#605ca8!important",
-					      	color: "#fff",
+					        backgroundColor: "#9c97f7!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 200 ).text('INITIAL');
 						    $(".dot:eq(1)").first().animate({
 					        backgroundColor: "#FF851B!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 400 ).text('OPEN');
 							 	$(".dot:eq(2)").first().animate({
 					        backgroundColor: "#04dda3!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 600 ).text('SOLUTION DESIGN');
 								$(".dot:eq(3)").first().animate({
 					        backgroundColor: "#f7e127!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
-					        height:110
-					      }, 800 ).text("TENDER PROCESS");
+					        height:110,
+					      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 								$(".dot:eq(4)").first().animate({
 					        backgroundColor: "#c6cccf!important",
-					      	color: "#86898a",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 1000 ).text("WIN/LOSE");
 						} else if (result.data[0].result == 'OPEN') {
 								$(".dot:eq(0)").first().animate({
 					        backgroundColor: "#aa0000!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 1000 );
 						    $('#init').addClass('active5');
 						} else if (result.data[0].result == "WIN"){
 								$(".dot:eq(0)").first().animate({
-					        backgroundColor: "#605ca8!important",
-					      	color: "#fff",
+					        backgroundColor: "#9c97f7!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 200 ).text('INITIAL');
 						    $(".dot:eq(1)").first().animate({
 					        backgroundColor: "#FF851B!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 400 ).text('OPEN');
 							 	$(".dot:eq(2)").first().animate({
 					        backgroundColor: "#04dda3!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 600 ).text('SOLUTION DESIGN');
 								$(".dot:eq(3)").first().animate({
 					        backgroundColor: "#f7e127!important",
-					      	color: "#fff",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
-					      }, 800 ).text("TENDER PROCESS");
+					      }, 800 ).html('<p class="text-break">TENDER PROCESS</p>')
 								$(".dot:eq(4)").first().animate({
-					        backgroundColor: "#246d18!important",
-					      	color: "#fff",
+					        backgroundColor: "#33c41b!important",
+					      	color: "#000000",
 					        width: 110,
 					        height:110
 					      }, 1000 ).text("WIN");
@@ -1167,7 +1167,7 @@ Detail Lead Register
 	  					lead_id = '<span class="label" style="background-color: #246d18;color: white">'+result.data[0].lead_id+'</span>'
 
 	  				}else if (result.data[0].result == "LOSE") {
-	  					lead_id = '<span class="label" style="background-color: #e5140d;color: white">'+result.data[0].lead_id+'</span>'
+	  					lead_id = '<span class="label" style="background-color: #fc322b;color: white">'+result.data[0].lead_id+'</span>'
 
 	  				}else if (result.data[0].result == "HOLD") {
 	  					lead_id = '<span class="label" style="background-color: #919e92;color: white">'+result.data[0].lead_id+'</span>'
@@ -1792,7 +1792,7 @@ Detail Lead Register
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' name='price_SBE' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' value='0' name='price_SBE' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
@@ -1821,7 +1821,7 @@ Detail Lead Register
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input data-value='" + i + "' class='money form-control price_sbe_win' name='price_sbe_win' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input data-value='" + i + "' class='money form-control price_sbe_win' value='0' name='price_sbe_win' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
@@ -1939,6 +1939,7 @@ Detail Lead Register
       $("#tbtagging").append(append)
       initmoney();
       $(".btn-edit-tagging").prop("disabled",true)
+      $('.new-price-sol').val(0)
     }
 
     function showSbe(status){
@@ -2003,7 +2004,7 @@ Detail Lead Register
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip'  style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input disabled data-value='" + i + "' class='money form-control col-xs-12 new-price-sol' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input disabled data-value='" + i + "' class='money form-control col-xs-12 new-price-sol' value='0' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
@@ -2081,7 +2082,7 @@ Detail Lead Register
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input disabled data-value='" + i + "' class='money form-control new-price-win' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input disabled data-value='" + i + "' class='money form-control value='0' new-price-win' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
@@ -2153,7 +2154,7 @@ Detail Lead Register
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' disabled name='price_SBE' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input data-value='" + i + "' class='money form-control price_sbe' value='0' disabled name='price_SBE' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
@@ -2182,7 +2183,7 @@ Detail Lead Register
 	      append = append + " <td style='white-space: nowrap'>"
 	      append = append + " <div class='input-group'>"
 	      append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-	      append = append + " <input data-value='" + i + "' class='money form-control price_sbe_win' disabled name='price_sbe_win' type='text' placeholder='Enter Product Price'>"
+	      append = append + " <input data-value='" + i + "' class='money form-control price_sbe_win' disabled name='price_sbe_win' type='text' placeholder='Enter Product Price' value='0'>"
 	      append = append + " </div>"
 	      append = append + " </td>"
 	      append = append + " <td class='text-center'>"
