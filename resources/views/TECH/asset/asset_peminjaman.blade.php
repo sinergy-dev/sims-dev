@@ -162,10 +162,10 @@ Technical Asset
             <a class="nav-link" id="kategori-tab" data-toggle="tab" href="#kategori_tab" role="tab" aria-controls="kategori" aria-selected="false">Kategori</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="list-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="home" aria-selected="true">List Asset</a>
+            <a class="nav-link" id="list-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="home" aria-selected="true">List </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="peminjaman_asset" data-toggle="tab" href="#peminjaman_tab" role="tab" aria-controls="profile" aria-selected="false">Peminjaman Asset</a>
+            <a class="nav-link" id="peminjaman_asset" data-toggle="tab" href="#peminjaman_tab" role="tab" aria-controls="profile" aria-selected="false">Peminjaman</a>
           </li>
           <a href="{{action('AssetController@exportExcelTech')}}"><button id="export-excel" style="margin-left: 5px" class="btn btn-sm btn-success pull-right display-none"><i class="fa fa-cloud-download"></i> Excel</button></a>
         	<button class="btn btn-sm btn-warning pull-right display-none" id="list-asset"  data-toggle="modal" data-target="#add_asset"><i class="fa fa-plus"> </i>&nbspAsset</button>
@@ -274,25 +274,33 @@ Technical Asset
                 </div>
               </div>
               <div class="box-body">
-                <div class="table-responsive" style="margin-top: 15px">
-                  <table class="table table-bordered table-striped DataTable" id="datatable1" width="100%" cellspacing="0">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th>No. Transaksi</th>
-                        <th>Qty</th>
-                        <th>Keterangan</th>
-                        <th>Keperluan</th>
-                        <th>Nama Peminjam</th>
-                        <th>Tgl Peminjaman</th>
-                        <th>Tgl Pengembalian</th>
-                        <th>Tgl Pengembalian(Actual)</th>
-                        <th>Status</th>
-                        <th style="text-align: center;" id="col_action">Action</th>
-                      </tr>
-                    </thead>
-                  </table>
-                </div>
+                <div class="nav-tabs-custom" id="project_tab" role="tabpanel" aria-labelledby="project-tab">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                  <li class="tabs_item active" id="tabs_occurance"><a href="#occurance" id="occurance" data-toggle="tab" onclick="changeTabs('occurance')">Occurance</a></li>
+                  <li class="tabs_item" id="tabs_history"><a href="#history" id="history" data-toggle="tab" onclick="changeTabs('history')">History</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div class="table-responsive" style="margin-top: 15px:">
+                      <table class="table table-bordered table-striped DataTable" id="datatable1" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>No. Transaksi</th>
+                            <th>Kategori</th>
+                            <th>Qty</th>
+                            <th>Keterangan</th>
+                            <th>Keperluan</th>
+                            <th>Nama Peminjam</th>
+                            <th>Tgl Peminjaman</th>
+                            <!-- <th>Tgl Pengembalian</th> -->
+                            <th>Tgl Pengembalian(Aktual)</th>
+                            <th>Status</th>
+                            <th style="text-align: center;" id="col_action">Action</th>
+                          </tr>
+                        </thead>
+                      </table>
+                    </div>
+                </div>                
               </div>
             </div>
           </div>
@@ -311,20 +319,28 @@ Technical Asset
         <div class="modal-body">
           <form method="POST" action="" id="modalProgress" name="modalProgress">
             <div class="form-group inputIconBg" style="padding-left: 10px">
+              <label>No Transaksi</label>
               <input type="text" class="form-control money" name="no_peminjaman" id="no_peminjaman" readonly>
-              <i class="" aria-hidden="true">No Peminjaman</i>
             </div>
             <div class="form-group inputIconBg" style="padding-left: 10px">
+              <label>Nama Peminjam</label>
               <input type="text" class="form-control" name="nama_peminjam" id="nama_peminjam" readonly>
-              <i class="" aria-hidden="true">Nama Peminjam</i>
             </div>
             <div class="form-group modalIcontgl inputIconBg" style="padding-left: 10px">
+              <label>Tanggal Peminjaman</label>
               <input type="text" class="form-control money" name="tgl_pinjam" id="tgl_pinjam" readonly>
-              <i class="" aria-hidden="true">Tgl Pinjam</i>
             </div>
             <div class="form-group modalIcontgl inputIconBg" style="padding-left: 10px">
+              <label>Tanggal Pengembalian(Estimasi)</label>
               <input type="text" class="form-control money" name="tgl_kembali" id="tgl_kembalian" readonly>
-              <i class="" aria-hidden="true">Tgl Kembali</i>
+            </div>
+            <div class="form-group modalIcontgl inputIconBg" style="padding-left: 10px">
+              <label>Tanggal Pengembalian(Aktual)</label>
+              <input type="text" class="form-control money" name="tgl_kembali_aktual" id="tgl_kembalian_aktual" readonly>
+            </div>
+            <div class="form-group modalIcontgl inputIconBg" id="keterangan_reject" style="padding-left: 10px;display: none;">
+              <label>Alasan Reject</label>
+              <input type="text" class="form-control money" name="inpKeterangan_reject" id="inpKeterangan_reject" readonly>
             </div>
             <legend></legend>
             <table style="margin-left:5px" class="table table-bordered table-striped">
@@ -825,38 +841,7 @@ Technical Asset
 @endsection
 @section('script')
   <script type="text/javascript">
-    var text1 = 'avocado'
-
-    console.log(`i want to buy ${text1}`)
-
-    $(document).ready(function(){
-      if (window.location.href.split("/")[3].split("#")[1] == 'list_asset') {
-        $("#list_asset").addClass("active")
-      }else if (window.location.href.split("/")[3].split("#")[1] == 'kategori_tab') {
-        $("#kategori_tab").addClass('active')
-      }else if (window.location.href.split("/")[3].split("#")[1] == 'peminjaman_tab'){
-        $("#peminjaman_tab").addClass('active')
-        $("#peminjaman_asset").closest('li').addClass('active')
-      }else{
-        $("#kategori_tab").addClass('active')
-        $("#kategori-tab").closest('li').addClass('active')
-      }
-
-      var accesable = @json($feature_item);
-      accesable.forEach(function(item,index){
-        $("#" + item).show()
-      })
-
-      if (!(accesable.includes('col_action'))) {
-        // btn action di selain mas franky
-        var column1 = table.column(7);
-        column1.visible(!column1.visible() );
-
-        var column2 = table1.column(10);
-        column2.visible(!column2.visible() );
-      }
-      console.log(accesable)
-    })
+    var accesable = @json($feature_item);
 
     //datatable kategori
     $("#datatable3").DataTable({
@@ -959,11 +944,173 @@ Technical Asset
       }
     })
 
+    function changeTabs(value){
+      if (value == 'occurance') {
+        $('#datatable1').DataTable().destroy();
+        $('#datatable1').empty() 
+        $('#datatable1').DataTable({
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('/getAssetTransactionModerator')}}",
+            "data":{
+              status:['PENDING','ACCEPT']
+            }
+          },
+          "columns": [
+          {
+            render: function ( data, type, row, meta ) {
+               return  meta.row+1;
+            },
+             "title":"No."
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              return  row.no_peminjaman;
+            },
+             "title":"No Transaksi"
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  row.kategori
+              }else {
+                return  row.kategori
+              }
+            },
+             "title":"Kategori"
+          },  
+          { "data": "qty_akhir", "title":"Qty" }, 
+          { "data": "keterangan", "title":"Keterangan" }, 
+          { "data": "keperluan", "title":"Keperluan"}, 
+          { "data": "name","title":"Nama Peminjam"}, 
+          { "data": "tgl_peminjaman","title":"Tgl Peminjaman"}, 
+          // { "data": "tgl_pengembalian" }, 
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status != 'RETURN') {
+                return  " - ";
+              }else{
+                return  row.updated_at.substr(0,10);
+              }
+            },
+            "title":"Tgl Pengembalian (Aktual)"
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  "<span class='label label-warning'>PENDING</span>";
+              }else if (row.status == 'ACCEPT') {
+                return "<span class='label label-success'>SUDAH DIAMBIL</span>"
+              }
+            },
+            "title":"Status"
+          }, 
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  "<button class='btn btn-sm btn-success btn_accept' style='margin-right:5px' value="+row.id_transaction+" id='btn_accept' value=''>ACCEPT</button><button class='btn btn-sm btn-danger btn_reject' id='btn_reject' value="+row.id_transaction+">REJECT</button>";
+              }else if (row.status == 'ACCEPT') {
+                return "<button class='btn btn-sm btn-primary' style='margin-right:5px' onclick='btn_detail("+row.no_peminjaman+")'>INFO</button><button class='btn btn-sm btn-danger btn_kembali' value="+row.id_transaction+" id='btn_kembali'> RETURN</button>"
+              }
+            },
+            "title":"Action"
+          },      
+        ],
+        "scrollX": false,
+        "ordering": false,
+        "processing": true,
+        "paging": true,
+        "pageLength":25,
+        });
+      }else{
+        $('#datatable1').DataTable().destroy();
+        $('#datatable1').empty() 
+        $('#datatable1').DataTable({
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('/getAssetTransactionModerator')}}",
+            "data":{
+              status:['RETURN','REJECT']
+            }
+          },
+          "columns": [
+          {
+            render: function ( data, type, row, meta ) {
+               return  meta.row+1;
+            },
+            "title":"No."
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              return  row.no_peminjaman;
+            },
+            "title":"No. Transaksi"
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  row.kategori
+              }else {
+                return  row.kategori
+              }
+            },
+            "title":"Kategori"
+          },  
+          { "data": "qty_akhir","title":"Qty" }, 
+          { "data": "keterangan", "title":"Keterangan"}, 
+          { "data": "keperluan", "title":"Keperluan"}, 
+          { "data": "name","title":"Nama Peminjam" }, 
+          { "data": "tgl_peminjaman","title":"Tgl Peminjaman"}, 
+          // { "data": "tgl_pengembalian" }, 
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status != 'RETURN') {
+                return  " - ";
+              }else{
+                return  row.updated_at.substr(0,10);
+              }
+            },
+            "title":"Tgl Pengembalian (Aktual)"
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'REJECT') {
+                return "<span class='label label-danger' style='cursor: zoom-in;' data-target='#reject_note_modal' data-toggle='modal'> REJECTED</span>"
+              }else if (row.status == 'RETURN') {
+                return "<span class='label label-success' >RETURNED</span>"
+              }
+            },
+            "title":"Status"
+          }, 
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'KEMBALI') {
+                return "<button class='btn btn-sm btn-primary' style='margin-right:5px' onclick='btn_detail("+row.no_peminjaman+")'>INFO</button><button class='btn btn-sm btn-success disabled'>ACCEPT</button><button class='btn btn-sm btn-danger disabled'>REJECT</button>"
+              }else{
+                return "<button class='btn btn-sm btn-primary' style='margin-right:5px' onclick='btn_detail("+row.no_peminjaman+")'>INFO</button>"
+              }
+
+            },
+            "title":"Action"
+          },      
+        ],
+        "scrollX": false,
+        "ordering": false,
+        "processing": true,
+        "paging": true,
+        "pageLength":25,
+        });
+      }
+    }
+
     //datatble peminjaman moderator
     var table1 = $("#datatable1").DataTable({
         "ajax":{
           "type":"GET",
           "url":"{{url('/getAssetTransactionModerator')}}",
+          "data":{
+            status:['PENDING','ACCEPT']
+          }
         },
         "columns": [
           {
@@ -978,7 +1125,16 @@ Technical Asset
               }else if (row.status == 'REJECT') {
                 return  "<span style='cursor:not-allowed;color:red' id='btn_detail' name='btn_detail'>"+ row.no_peminjaman +"</span>";
               }else{
-                return  "<span class='btn_detail' style='cursor:pointer;color:blue' onclick='btn_detail("+row.no_peminjaman+")' id='btn_detail' name='btn_detail' data-value='"+row.no_peminjaman+"'> "+ row.no_peminjaman +"</span>";
+                return  "<span class='btn_detail' id='btn_detail' name='btn_detail' data-value='"+row.no_peminjaman+"'> "+ row.no_peminjaman +"</span>";
+              }
+            }
+          },
+          {
+            render: function ( data, type, row, meta ) {
+              if (row.status == 'PENDING') {
+                return  row.kategori
+              }else {
+                return  row.kategori
               }
             }
           },  
@@ -987,7 +1143,7 @@ Technical Asset
           { "data": "keperluan" }, 
           { "data": "name" }, 
           { "data": "tgl_peminjaman" }, 
-          { "data": "tgl_pengembalian" }, 
+          // { "data": "tgl_pengembalian" }, 
           {
             render: function ( data, type, row, meta ) {
               if (row.status != 'RETURN') {
@@ -1002,13 +1158,7 @@ Technical Asset
               if (row.status == 'PENDING') {
                 return  "<span class='label label-warning'>PENDING</span>";
               }else if (row.status == 'ACCEPT') {
-                return "<span class='label label-success'>ACCEPTED</span>"
-              }else if (row.status == 'REJECT') {
-                return "<span class='label label-danger' style='cursor: zoom-in;' data-target='#reject_note_modal' data-toggle='modal'> REJECTED</span>"
-              }else if (row.status == 'AMBIL') {
-                return "<span class='label label-success' >SUDAH DI AMBIL</span>"
-              }else if (row.status == 'RETURN') {
-                return "<span class='label label-success' >RETURNED</span>"
+                return "<span class='label label-success'>SUDAH DIAMBIL</span>"
               }
             }
           }, 
@@ -1017,12 +1167,9 @@ Technical Asset
               if (row.status == 'PENDING') {
                 return  "<button class='btn btn-sm btn-success btn_accept' style='margin-right:5px' value="+row.id_transaction+" id='btn_accept' value=''>ACCEPT</button><button class='btn btn-sm btn-danger btn_reject' id='btn_reject' value="+row.id_transaction+">REJECT</button>";
               }else if (row.status == 'ACCEPT') {
-                return "<button class='btn btn-sm btn-danger btn_kembali' value="+row.id_transaction+" id='btn_kembali'> RETURN</button>"
-              }else if (row.status == 'KEMBALI') {
-                return "<button class='btn btn-sm btn-success disabled'>ACCEPT</button><button class='btn btn-sm btn-danger disabled'>REJECT</button>"
-              }else{
-                return ""
+                return "<button class='btn btn-sm btn-primary' style='margin-right:5px' onclick='btn_detail("+row.no_peminjaman+")'>INFO</button><button class='btn btn-sm btn-danger btn_kembali' value="+row.id_transaction+" id='btn_kembali'> RETURN</button>"
               }
+
             }
           },      
         ],
@@ -1031,6 +1178,36 @@ Technical Asset
         "processing": true,
         "paging": true,
         "pageLength":25,    
+      })
+
+      if (!(accesable.includes('col_action'))) {
+        // btn action di selain mas franky
+        var column1 = table.column(7);
+        column1.visible(!column1.visible() );
+
+        var column2 = table1.column(10);
+        column2.visible(!column2.visible() );
+      }
+
+
+    $(document).ready(function(){
+      if (window.location.href.split("/")[3].split("#")[1] == 'list_asset') {
+        $("#list_asset").addClass("active")
+      }else if (window.location.href.split("/")[3].split("#")[1] == 'kategori_tab') {
+        $("#kategori_tab").addClass('active')
+      }else if (window.location.href.split("/")[3].split("#")[1] == 'peminjaman_tab'){
+        $("#peminjaman_tab").addClass('active')
+        $("#peminjaman_asset").closest('li').addClass('active')
+      }else{
+        $("#kategori_tab").addClass('active')
+        $("#kategori-tab").closest('li').addClass('active')
+      }
+
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
+
+      console.log(accesable)
     })
 
     //datatable peminjaman staff
@@ -1767,6 +1944,14 @@ Technical Asset
                 $('#no_peminjaman').val(value.no_peminjaman);
                 $('#tgl_pinjam').val(value.tgl_peminjaman);
                 $('#tgl_kembalian').val(value.tgl_pengembalian);
+                if (value.status == 'PENDING' || value.status == 'ACCEPT' || value.status == 'REJECT') {
+                  $('#tgl_kembalian_aktual').val('-');
+                }else if (value.status == 'REJECT') {
+                  $("#keterangan_reject").show()
+                  $("#inpKeterangan_reject").val(note)
+                }else{
+                  $('#tgl_kembalian_aktual').val(value.updated_at.substr(0,10));
+                }
               });              
             },
         });
