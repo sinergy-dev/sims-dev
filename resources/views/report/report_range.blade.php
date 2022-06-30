@@ -474,7 +474,7 @@ Report Range
       })
 
   
-      if (window.location.href.split('/')[4] == 'All') {
+      if (window.location.href.split('/')[4] == 'ALL') {
         table.column(9).search(new Date().getFullYear()).column(0).search('SIP').draw();
         $("#kat_drop_0").append('<option selected>SIP</option>')
         $("#year_dif").append('<option selected>' + new Date().getFullYear() + '</option>')
@@ -661,12 +661,14 @@ Report Range
     }
 
     if($("#kat_drop_6").val() == undefined){      
-      var tempStatus = tempStatus + '&status=';
+      var tempStatus = '&status=';
     }else{
       if (window.location.href.split('/')[4] == 'OPEN') {
         var tempStatus = tempStatus + '&status[]=SD&status[]=TP&status[]=""';
+      }else if(window.location.href.split('/')[4] == 'ALL'){
+        var tempStatus = tempStatus + '&status='
       }else{
-        var tempStatus = tempStatus + '&status=[' + $("#kat_drop_6").val() + ']';
+        var tempStatus = tempStatus + '&status[]=' + $("#kat_drop_6").val();
       }
     }
 
