@@ -30,8 +30,8 @@ Report Purchase Request
       <div class="col-md-12">
         <div class="box">
           <div class="box-header with-border">
-            <select style="width: 100px; font-size: 14px;" class="form-control btn-primary fa" id="year_filter">
-              <option value="{{$year}}">&#xf073 &nbsp{{$year}}</option>
+            <select style="width: 100px; font-size: 14px;" class="form-control btn-primary" id="year_filter">
+              <option value="{{$year}}"> &nbsp{{$year}}</option>
               @foreach($year_before as $years)
                 @if($years->year != $year)
                   <option value="{{$years->year}}">{{$years->year}}</option>

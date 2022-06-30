@@ -472,28 +472,58 @@ Report Range
         initRefresh(true)
         console.log("wow")
       })
-      table.column(9).search(n).column(8).search(window.location.href.split('/')[4]).column(6).search('WIN').draw();
+
+  
+      if (window.location.href.split('/')[4] == 'All') {
+        table.column(9).search(new Date().getFullYear()).column(0).search('SIP').draw();
+        $("#kat_drop_0").append('<option selected>SIP</option>')
+        $("#year_dif").append('<option selected>' + new Date().getFullYear() + '</option>')
+        filter_deal_price(true)
+
+      } else if (window.location.href.split('/')[4] == 'OPEN') {
+        table.column(9).search(new Date().getFullYear()).column(6).search("OPEN|SD|TP", true,false).column(0).search('SIP').draw();
+        $("#kat_drop_0").append('<option selected>SIP</option>')
+        $("#year_dif").append('<option selected>' + new Date().getFullYear() + '</option>')
+        filter_deal_price(true)
+
+      } else if (window.location.href.split('/')[4] == 'WIN') {
+        table.column(9).search(new Date().getFullYear()).column(6).search('WIN').column(0).search('SIP').draw();
+        $("#kat_drop_0").append('<option selected>SIP</option>')
+        $("#kat_drop_6").append('<option selected>WIN</option>')
+        $("#year_dif").append('<option selected>' + new Date().getFullYear() + '</option>')
+        filter_deal_price(true)
+
+      } else if (window.location.href.split('/')[4] == 'LOSE') {
+        table.column(9).search(new Date().getFullYear()).column(6).search('LOSE').column(0).search('SIP').draw();
+        $("#kat_drop_0").append('<option selected>SIP</option>')
+        $("#kat_drop_6").append('<option selected>LOSE</option>')
+        $("#year_dif").append('<option selected>' + new Date().getFullYear() + '</option>')
+        filter_deal_price(true)
+
+      } else {
+        table.column(9).search(n).column(8).search(window.location.href.split('/')[4]).column(6).search('WIN').draw();
+        $.ajax({
+          type:"get",
+          url:"{{url('/filter_sales_report')}}",
+          data:{
+            nik:window.location.href.split('/')[4]
+          },
+          success:function(result){
+            console.log(result.name)
+            $("#kat_drop_0").append('<option selected>' + result.code_company + '</option>')
+            $("#kat_drop_2").append('<option selected>' + result.name + '</option>')
+            $("#kat_drop_6").append('<option selected>' + result.result + '</option>')
+            $("#year_dif").append('<option selected>' + result.year + '</option>')
+          },
+          complete:function(){
+            filter_deal_price(true)
+          }
+        })
+      }
       $("#year_dif").prop('disabled',true)
       $("#reportrange").prop('disabled',true)
       $("#searchBar").prop('disabled',true)
-      $(".kat_drop").prop('disabled',true)
-      $.ajax({
-        type:"get",
-        url:"{{url('/filter_sales_report')}}",
-        data:{
-          nik:window.location.href.split('/')[4]
-        },
-        success:function(result){
-          console.log(result.name)
-          $("#kat_drop_0").append('<option selected>' + result.code_company + '</option>')
-          $("#kat_drop_2").append('<option selected>' + result.name + '</option>')
-          $("#kat_drop_6").append('<option selected>' + result.result + '</option>')
-          $("#year_dif").append('<option selected>' + result.year + '</option>')
-        },
-        complete:function(){
-          filter_deal_price(true)
-        }
-      })
+      $(".kat_drop").prop('disabled',true)     
 
     }
     
