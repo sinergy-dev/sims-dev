@@ -157,6 +157,11 @@ Report Brands
                 </div>
                               
             </div>
+            <div class="row">
+              <div class="col-md-12 form-group">
+                <label>Note: Untuk total amount dan total perhitungan yang tampil adalah total amount dan total perhitungan pertagging, yang diisi oleh presales atau sales ketika proses SD atau ketika akan submit Result WIN.</label>
+              </div>
+            </div>
           </div>         
 
           <div class="box-body">              
