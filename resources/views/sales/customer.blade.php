@@ -299,7 +299,7 @@ Customer
               <div class="row">
                 <div class="col-md-12">
                   <h5>
-                    Dear all,<br><br>
+                    <span id="nameRequest"></span><br><br>
                     <!-- Terdapat penyesuaian untuk penambahan data customer, untuk penambahan data hanya dapat dilakukan oleh Rizki Nugroho, jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br> -->
                     Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu Rizki Nugroho untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>
                     <ul>
@@ -330,7 +330,7 @@ Customer
               <div class="row">
                 <div class="col-md-12">
                   <h5>
-                    Dear Rizki Nugroho,<br><br>
+                    <span id="nameAcc"></span>,<br><br>
                     Terdapat penyesuaian untuk penambahan data customer, dimohon untuk memeriksa tab Request untuk melakukan <i>ACC</i> Request data customer!<br><br>
                     Terima kasih.
                   </h5>
@@ -354,18 +354,6 @@ Customer
 @endsection
 @section('script')
   <script type="text/javascript">
-    @if (Auth::User()->id_division == 'SALES') 
-      if (sessionStorage.getItem('dontLoad') == null){
-          $("#popUp").modal("show");
-      }
-      sessionStorage.setItem('dontLoad', 'true');
-    @elseif(Auth::User()->id_division == 'BCD')
-      if (sessionStorage.getItem('dontLoad') == null){
-          $("#popUp2").modal("show");
-      }
-      sessionStorage.setItem('dontLoad', 'true');
-    @endif
-
     $(document).keyup(function(e) {
       if (e.keyCode == 27) {
           $('#popUp').modal('hide');
@@ -373,19 +361,19 @@ Customer
     }); 
 
     var accesable = @json($feature_item);
-    $(document).ready(function(){
-        accesable.forEach(function(item,index){
-          $("#" + item).show()     
-        })  
+    
 
-        initTable()
+    if (accesable.includes('popUp')) {
+      $("#popUp").modal("show");
 
-        cRequest =  JSON.parse('@json($count_request)')
+      $("#nameRequest").text("Dear {{Auth::User()->name}}")
+    }
 
-        if (cRequest > 0) {
-          $('#request-tab').append('<span class="badge">'+ cRequest +'</span>')
-        }
-    })
+    if (accesable.includes('popUp2')) {
+      $("#popUp2").modal("show");
+
+      $("#nameAcc").text("Dear {{Auth::User()->name}}")
+    }
 
     function changeTab(val){
       if (val == 'list') {
@@ -496,7 +484,6 @@ Customer
       }
        
     })
-
     $('#data-table').on('click', '.btn-editan', function(e){
         var fd = new FormData()
 
@@ -675,14 +662,28 @@ Customer
       });
 
       if(!accesable.includes('edit_cus')){
-        console.log(accesable)
         var column1 = table.column(3);
         column1.visible(!column1.visible());
       }else{
         var column1 = table.column(3);
         column1.visible(column1.visible());         
       }
-    }
+    }  
+
+    $(document).ready(function(){
+      accesable.forEach(function(item,index){
+        $("#" + item).show()   
+      })
+      
+      initTable()
+      cRequest =  JSON.parse('@json($count_request)')
+
+      if (cRequest > 0) {
+        $('#request-tab').append('<span class="badge">'+ cRequest +'</span>')
+      }
+    })
+
+    
     
 
     function searchCustom(id_table,id_seach_bar){
