@@ -1448,12 +1448,15 @@ Lead Register
 		})
 
 	  $.each($('#searchTags').val(),function(key, value) {
+	  	// console.log(value)
 	    if (value.substr(0,1) == 'p') {
-				tempProduct = tempProduct + '&product_tag[]='+ value.substr(1,1)
+	    	// console.log(value.substr(1,1))
+				tempProduct = tempProduct + '&product_tag[]='+ value.replace("p","")
 	    }
 	    if (value.substr(0,1) == 't') {
-				tempTech = tempTech + '&tech_tag[]='+ value.substr(1,1)
+				tempTech = tempTech + '&tech_tag[]='+ value.replace("t","")
 	    }
+	    // console.log(tempProduct)
 	  });
 
 	  $.each($('#filter_customer').val(),function(key,value){
@@ -1489,7 +1492,7 @@ Lead Register
 			}
 			dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult)
 
-		  console.log('undefin!')
+		  // console.log('undefin!')
 
 		}
 
