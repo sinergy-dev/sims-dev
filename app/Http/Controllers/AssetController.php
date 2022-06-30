@@ -1151,7 +1151,7 @@ class AssetController extends Controller
 
         return array(DB::table('tb_asset_transaction')
                 ->join('users','users.nik','=','tb_asset_transaction.nik_peminjam')
-                ->select('status','no_peminjaman', 'name','tgl_peminjaman','tgl_pengembalian','id_kat','nik_peminjam','qty_akhir','keterangan','tb_asset_transaction.updated_at')
+                ->select('status','no_peminjaman', 'name','tgl_peminjaman','tgl_pengembalian','id_kat','nik_peminjam','qty_akhir','keterangan','tb_asset_transaction.updated_at','note')
                 ->where('tb_asset_transaction.no_peminjaman',$request->id_transaction)
                 ->get(),$request->id_transaction);
     }
