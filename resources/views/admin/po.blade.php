@@ -76,11 +76,11 @@ Purchase Order Number
       <div class="box">
         <div class="box-header with-border">
           <div class="pull-left">
-            <select style="margin-right: 5px;width: 100px" class="form-control btn-primary fa" id="year_filter">
-              <option value="{{$tahun}}">&#xf073 &nbsp{{$tahun}}</option>
+            <select style="margin-right: 5px;width: 100px" class="form-control btn-primary" id="year_filter">
+              <option value="{{$tahun}}">&nbsp{{$tahun}}</option>
               @foreach($year_before as $years)
                 @if($years->year != $tahun)
-                  <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                  <option value="{{$years->year}}">&nbsp{{$years->year}}</option>
                 @endif
               @endforeach
             </select>

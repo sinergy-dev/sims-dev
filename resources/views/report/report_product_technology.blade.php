@@ -76,7 +76,7 @@ Report Tagging
                 <select class="form-control" style="width: 100%;max-width: 250px" id="searchTagsTechnology"></select> 
               </div>
               <div class="col-md-4">
-                <label>Filter by Person</label>
+                <label>Filter by Person <small>(One or More)</small></label>
                 <select class="form-control capitalize" style="width: 100%;max-width: 250px" id="searchTagsPerson"></select>
               </div>
             </div>  
