@@ -427,18 +427,18 @@ Dashboard
     success: function(result){
     	if ("{{Auth::User()->name == 'TECH HEAD'}}") {
 		    	var ArrColors = [
-		    		{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
-		    		{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
-		    		{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
-		    		{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}
+		    		{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"report_range/All"},
+		    		{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"report_range/OPEN"},
+		    		{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"report_range/WIN"},
+		    		{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"report_range/LOSE"}
 		    	]
 		    	colors.push(ArrColors)
 			}else{
 				var ArrColors = [
-					{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"view_lead"},
-					{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"view_open"},
-					{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"view_win"},
-					{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"view_lose"}]
+					{name:'Lead Register',color:'bg-aqua',icon:'fa fa-list',count:result.lead,url:"report_range/ALL"},
+					{name:'Open',color:'bg-orange',icon:'fa fa-book',count:result.open,url:"report_range/OPEN"},
+					{name:'Win',color:'bg-green',icon:'fa fa-calendar-check-o',count:result.win,url:"report_range/WIN"},
+					{name:'Lose',color:'bg-red',icon:"fa fa-calendar-times-o",count:result.lose,url:"report_range/LOSE"}]
 		    	colors.push(ArrColors)
 			}
 

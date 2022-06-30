@@ -67,11 +67,11 @@ HR Number
       <div class="box-header with-border">
 
         <div class="pull-left">
-          <select style="margin-right: 5px;width: 100px" class="form-control btn-primary fa" id="year_filter">
-            <option value="{{$year}}">&#xf073 &nbsp{{$year}}</option>
+          <select style="margin-right: 5px;width: 100px" class="form-control btn-primary" id="year_filter">
+            <option value="{{$year}}">&nbsp{{$year}}</option>
             @foreach($year_before as $years)
               @if($years->year != $year)
-                <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                <option value="{{$years->year}}">&nbsp{{$years->year}}</option>
               @endif
             @endforeach
           </select>
