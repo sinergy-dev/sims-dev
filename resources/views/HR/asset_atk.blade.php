@@ -152,10 +152,10 @@ GA ATK
             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list_asset" role="tab" aria-controls="kategori" aria-selected="false">List Asset</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active home-tab" id="home-tab" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
+            <a class="nav-link active home-tab" id="home-tab" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk" role="tab" aria-controls="home" aria-selected="true">Request ATK - Facilities</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active home-tab-2" id="home-tab-2" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk_2" role="tab" aria-controls="home" aria-selected="true">Request ATK</a>
+            <a class="nav-link active home-tab-2" id="home-tab-2" data-toggle="tab" style="display: none;" href="#peminjaman_asset_atk_2" role="tab" aria-controls="home" aria-selected="true">Request ATK - Requestor</a>
           </li>
           <!-- @if(Auth::User()->id_division == 'HR')
           <li class="nav-item">
