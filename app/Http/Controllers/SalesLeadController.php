@@ -1318,6 +1318,8 @@ class SalesLeadController extends Controller
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
                         ->groupBy('lead_id');
 
+        // return $getListProductLead->get();
+
         $getListTechTag = DB::table('tb_technology_tag')->join('tb_technology_tag_relation', 'tb_technology_tag_relation.id_tech_tag', '=', 'tb_technology_tag.id')
                         ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech`'))
                         ->groupBy('lead_id');
