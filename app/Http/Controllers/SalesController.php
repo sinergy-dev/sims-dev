@@ -4064,7 +4064,12 @@ class SALESController extends Controller{
             $count_request = TB_Contact::where('status', 'New')->count('id_customer');            
         }
 
-        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim', 'count_request'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
+        $roles = DB::table('role_user')->join('roles','role_user.role_id','=','roles.id')
+                ->join('users','role_user.user_id','=','users.nik')
+                ->where('roles.id',29)
+                ->first();
+
+        return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim', 'count_request','roles'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
     }
 
     public function getCustomerData()
