@@ -114,11 +114,11 @@ ID Project
                     <button id="btnExportSip" onclick="exportPID('{{action('SalesController@export')}}')" class="btn btn-warning btn-flat btn-sm pull-left export" style="margin-right: 10px;width: 100px;font-size: 15px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
 
                     <button id="btnExportMsp" onclick="exportPID('{{action('SalesController@export_msp')}}')" class="btn btn-warning btn-flat pull-left export-msp" style="margin-right: 10px;display: none;;width: 100px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-                    <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat fa" id="year_filter">
-                        <option value="{{$year_now}}" selected>&#xf073 &nbsp{{$year_now}}</option>
+                    <select style="margin-right: 5px;width: 100px" class="form-control btn-primary btn-flat" id="year_filter">
+                        <option value="{{$year_now}}" selected> &nbsp{{$year_now}}</option>
                         @foreach($year_before as $years)
                           @if($years->year != $year_now)
-                            <option value="{{$years->year}}">&#xf073 &nbsp{{$years->year}}</option>
+                            <option value="{{$years->year}}"> &nbsp{{$years->year}}</option>
                           @endif
                         @endforeach
                     </select>
@@ -196,7 +196,8 @@ ID Project
 	                      <th>Project</th>
 	                      <th>Sales</th>
 	                      <th>Date</th>
-	                      <th>Amount</th>
+                        <th>Amount</th>
+	                      <!-- <th>Amount</th> -->
 	                      <th>Action</th>
 	                    </tr>
 	                  </thead>
@@ -206,8 +207,9 @@ ID Project
 	                    <th></th>
 	                    <th></th>
 	                    <th></th>
+                      <th></th>
 	                    <th></th>
-	                    <th></th>
+	                    <!-- <th></th> -->
 	                    <th></th>
 	                  </tfoot>
 	              </table>
@@ -463,7 +465,7 @@ ID Project
             <input type="text" placeholder="Enter Note" name="note_edit" id="note_edit" class="form-control">
           </div>
 
-          <label for="">Invoice info</label><a class="check-reset">(<i class="fa  fa-refresh"></i> Reset)</a><br>
+          <!-- <label for="">Invoice info</label><a class="check-reset">(<i class="fa  fa-refresh"></i> Reset)</a><br>
 
           <div style="padding-left: 20px">
             
@@ -478,7 +480,7 @@ ID Project
               <input type="radio" name="invoice" id="invoice_edit_h" value="H">
               <span>Setengah Bayar</span>
             </label>
-          </div>
+          </div> -->
 
           <!-- <div class="form-group modalIcon inputIconBg">
             <label for="">Kurs To Dollar</label>
@@ -771,7 +773,7 @@ ID Project
       },
       {
         render: function ( data, type, row ) {
-          return new Intl.NumberFormat('id').format(row.amount_idr_before_tax)
+          return new Intl.NumberFormat('id').format(row.amount_idr_before_tax).includes(",") ? Intl.NumberFormat('id').format(row.amount_idr_before_tax) : Intl.NumberFormat('id').format(row.amount_idr_before_tax) + ",000"
         }
       },
       // { "data": "amount_idr" },
@@ -857,6 +859,10 @@ ID Project
         targets: [15] ,
         visible: false,
         searchable: false
+      },{
+        targets: [11, 10] ,
+        visible: false,
+        searchable: false
       },
     ]
     });
@@ -868,11 +874,11 @@ ID Project
             var api = this.api(),data;
             // Remove the formatting to get integer data for summation
 
-            var total = api.column(6, {page:'current'}).data().sum();
+            var total = api.column(8, {page:'current'}).data().sum();
 
-            var filtered = api.column(6, {"filter": "applied"} ).data().sum();
+            var filtered = api.column(8, {"filter": "applied"} ).data().sum();
 
-            var totalpage = api.column(6).data().sum();
+            var totalpage = api.column(8).data().sum();
 
             $( api.column( 5 ).footer() ).html("Total Amount");
 
@@ -908,7 +914,12 @@ ID Project
             }
           }
         },
-        { "data": "amount_pid"},
+        {
+          render: function ( data, type, row ) {
+            return $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.amount_pid)
+          }, 
+          "orderData" : [ 8 ],
+        },
         {
           render: function ( data, type, row ) {
           	if (row.status == 'requested') {
@@ -919,6 +930,7 @@ ID Project
           	
           }
         },
+        { "data": "amount_pid"},
       ],
       // "info":false,
       "scrollX": true,
@@ -949,6 +961,13 @@ ID Project
       fixedColumns:   {
         leftColumns: 2,
       },
+      columnDefs: [
+        {
+          targets: [8] ,
+          visible: false,
+          searchable: false
+        },
+      ]
 	  });	
 
 
