@@ -1253,8 +1253,8 @@ class SALESController extends Controller{
 
     public function getPersonaTags(Request $request)
     {
-        $getSales = DB::table('users')->selectRaw('`nik` AS `id`,`name` AS `text`')->where('id_division','sales')->where('id_position','!=','admin')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->get();
-        $getPresales = DB::table('users')->selectRaw('`nik` AS `id`,`name` AS `text`')->where('id_division','TECHNICAL PRESALES')->where('id_company',1)->orderBy('name','asc')->get(); 
+        $getSales = DB::table('users')->selectRaw('CONCAT(`nik`, "-s") AS `id`,`name` AS `text`')->where('id_division','sales')->where('id_position','!=','admin')->where('status_karyawan','!=','dummy')->orderBy('name','asc')->get();
+        $getPresales = DB::table('users')->selectRaw('CONCAT(`nik`, "-p") AS `id`,`name` AS `text`')->where('id_division','TECHNICAL PRESALES')->where('id_company',1)->orderBy('name','asc')->get(); 
 
         return array(
             collect(["id"=>0,"text"=>'Sales',"children"=>$getSales]),
