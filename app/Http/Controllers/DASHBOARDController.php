@@ -84,7 +84,7 @@ class DASHBOARDController extends Controller
             $sum_amounts_ter = DB::table('sales_lead_register')
                             ->join('users','users.nik','=','sales_lead_register.nik')
                             ->select(DB::raw('SUM(sales_lead_register.amount) as sum_amounts'),DB::raw('COUNT(sales_lead_register.lead_id) as leads_total'),'id_territory')
-                            ->where('users.id_territory','!=','OPERATION')
+                            // ->where('users.id_territory','!=','OPERATION')
                             ->whereYear('closing_date', $year_now)
                             ->where('result', 'WIN')
                             ->where('users.status_karyawan', '!=', 'dummy')
@@ -102,7 +102,7 @@ class DASHBOARDController extends Controller
                         ->selectRaw('`sum_amounts_ter`.`sum_amounts` AS `sum_total`')
                         ->selectRaw('`sum_amounts_ter`.`leads_total` AS `leads_total`')
                         ->where('result', 'WIN')
-                        ->where('users.id_territory','!=','OPERATION')
+                        // ->where('users.id_territory','!=','OPERATION')
                         ->whereYear('closing_date', $year_now)
                         ->where('users.status_karyawan', '!=', 'dummy')
                         ->where('users.id_company', '1')
@@ -110,16 +110,18 @@ class DASHBOARDController extends Controller
                         ->orderBy('deal_prices', 'desc')
                         ->get();
 
+            // return $sum_amounts_ter->get();
+
            $top_win_sip_ter_ter->push([
-                "leads" => $top_win_sip_ter_ter->sum('leads_total'),
-                "amounts" => (string)$top_win_sip_ter_ter->sum('sum_total'),
-                "deal_prices" => (string)$top_win_sip_ter_ter->sum('sum_total'),
+                "leads" => $sum_amounts_ter->get()->sum('leads_total'),
+                "amounts" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
+                "deal_prices" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
                 "name" => "Total All Teritory",
                 "code_company" => "SIP",
                 "id_territory" => "TOTAL",
                 "nik" => "-",
-                "sum_total" => (string)$top_win_sip_ter_ter->sum('sum_total'),
-                "leads_total" => $top_win_sip_ter_ter->sum('leads_total')
+                "sum_total" => (string)$sum_amounts_ter->get()->sum('sum_amounts'),
+                "leads_total" => $sum_amounts_ter->get()->sum('leads_total')
             ]);
             // return $top_win_sip_ter_ter->sum('sum_total');
             // return $deals = $top_win_sip_ter_ter->sum(function ($region) {
@@ -132,6 +134,8 @@ class DASHBOARDController extends Controller
 
             $top_win_sip_ter = $groups->toArray();
         }
+
+        // return $top_win_sip_ter;
 
         // count id project
         if($div == 'FINANCE' && $pos == 'MANAGER'){
@@ -1010,19 +1014,28 @@ class DASHBOARDController extends Controller
         $com = $company->id_company;
 
         $year = date('Y');
-        $count_lead = DB::table('sales_lead_register')->join('users','sales_lead_register.nik','=','users.nik')->whereYear('sales_lead_register.closing_date',$year);
+        $count_lead = DB::table('sales_lead_register')
+                    ->join('users','sales_lead_register.nik','=','users.nik')
+                    ->whereYear('sales_lead_register.closing_date',$year)
+                    ->where('users.status_karyawan', '!=', 'dummy');
+
         $count_open = DB::table('sales_lead_register')
                     ->join('users','sales_lead_register.nik','=','users.nik')
                     ->whereRaw('(result = "" || result = "SD" || result = "TP")')
-                    ->whereYear('sales_lead_register.closing_date',$year);
+                    ->whereYear('sales_lead_register.closing_date',$year)
+                    ->where('users.status_karyawan', '!=', 'dummy');
+
         $count_win = DB::table('sales_lead_register')
                     ->join('users','sales_lead_register.nik','=','users.nik')
                     ->where('result','WIN')
-                    ->whereYear('sales_lead_register.closing_date',$year);
+                    ->whereYear('sales_lead_register.closing_date',$year)
+                    ->where('users.status_karyawan', '!=', 'dummy');
+
         $count_lose = DB::table('sales_lead_register')
                     ->join('users','sales_lead_register.nik','=','users.nik')
                     ->where('result','LOSE')
-                    ->whereYear('sales_lead_register.closing_date',$year);
+                    ->whereYear('sales_lead_register.closing_date',$year)
+                    ->where('users.status_karyawan', '!=', 'dummy');
 
         if ($div == 'SALES' && $pos != 'ADMIN') {
             $count_leads = $count_lead->where('id_territory', $ter)
