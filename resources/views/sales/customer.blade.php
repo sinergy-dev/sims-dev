@@ -62,7 +62,7 @@ Customer
       @if (session('success'))
       <div class="alert alert-primary" style="background-color: green;color: white" id="alert">
           {{ session('success') }}
-          Please Waiting for Rizki Nugroho Accept this Request!
+          Please Waiting for <span class="AccName"></span> Accept this Request!
       </div>
       @endif
 
@@ -301,9 +301,9 @@ Customer
                   <h5>
                     <span id="nameRequest"></span><br><br>
                     <!-- Terdapat penyesuaian untuk penambahan data customer, untuk penambahan data hanya dapat dilakukan oleh Rizki Nugroho, jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br> -->
-                    Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu Rizki Nugroho untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>
+                    Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu <span class="AccName"></span> untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>
                     <ul>
-                      <li>Email: nugroho@sinergy.co.id<br></li>
+                      <li>Email: <span class="AccEmail"></span><br></li>
                       <li>Phone: 0812-1860-0150<br><br></li>
                     </ul>
                     Terima kasih.
@@ -361,7 +361,8 @@ Customer
     }); 
 
     var accesable = @json($feature_item);
-    
+    console.log(accesable)
+
 
     if (accesable.includes('popUp')) {
       $("#popUp").modal("show");
@@ -677,6 +678,13 @@ Customer
       
       initTable()
       cRequest =  JSON.parse('@json($count_request)')
+
+      if (accesable.includes('popUp')) {
+        var AccName = JSON.parse('@json($roles)')
+        $('.AccName').text(AccName.name)
+        $('.AccEmail').text(AccName.email)
+
+      }
 
       if (cRequest > 0) {
         $('#request-tab').append('<span class="badge">'+ cRequest +'</span>')
