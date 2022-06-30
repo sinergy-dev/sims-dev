@@ -156,9 +156,9 @@ Leaving Permitte
               <i class="fa fa-file-pdf-o" style="margin-right: 5px"></i>Preview PDF
             </button>
           </a>  -->
-          <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
+          <!-- <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
             <i class="fa fa-wrench" style="margin-right: 5px"></i>Total Cuti
-          </button>
+          </button> -->
           <select class="btn btn-sm bg-blue pull-left" style="width: 70px; margin-right: 10px; display: none;" id="filter_com">
             <option value="all">All</option>
             <option value="1">SIP</option>
@@ -1449,9 +1449,18 @@ Leaving Permitte
             render: function (data, type, row) {
               if({{Auth::User()->nik}} == row.nik){
                 if(row.status == 'n' || row.status == 'R'){
-                  return '<button class="btn btn-sm btn-primary fa fa-edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
-                  '<button class="btn btn-sm btn-danger fa fa-trash btn_delete" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Delete" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>' + ' ' +
-                  '<button class="btn btn-sm btn-success fa fa-paper-plane btn_fu" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" value="'+row.id_cuti+'" type="button"></button>'
+                  return '<button type="button" class="btn btn-sm btn-primary" style="margin-left: 10px;width: 100px" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-edit" style="margin-right: 5px"></i>Edit</button>' 
+                  + ' ' +
+                  // '<button type="button" class="btn btn-sm btn-primary" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-edit" style="margin-right: 5px"> </i>Edit</button>'
+
+                  '<button type="button" class="btn btn-sm btn-danger btn_delete" style="margin-left: 10px;width: 100px" data-toggle="tooltip" title="Delete" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-trash" style="margin-right: 5px"></i>Delete</button>'
+
+                  // '<button type="button" class="btn btn-sm btn-danger" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-trash" style="margin-right: 5px"> </i>Delete</button>'
+                   + ' ' +
+
+                  '<button type="button" class="btn btn-sm btn-success btn_fu" style="margin-left: 10px;width: 100px" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-paper-plane" style="margin-right: 5px"></i>Follow Up</button>'
+
+                  // '<button type="button" class="btn btn-sm btn-success" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-paper-plane" style="margin-right: 5px"> </i>Follow Up</button>'
                 }else{
                   return ''
                 }
