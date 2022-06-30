@@ -118,6 +118,9 @@ class rejectCuti extends Command
 
            
             $decline_id = CutiDetil::where('id_cuti',$data->id_cuti)->get();
+            $update_cuti = Cuti::where('id_cuti',$data->id_cuti)->first();
+            $update_cuti->status = 'd';
+            $update_cuti->update();
 
             foreach ($decline_id as $decline_id) {
                 $udpate_detil = CutiDetil::where('idtb_cuti_detail',$decline_id->idtb_cuti_detail)->update(array('status' => 'REJECT'));            
