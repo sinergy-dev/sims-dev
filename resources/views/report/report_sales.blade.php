@@ -488,7 +488,7 @@ Report Sales
     $('#data_win').DataTable().ajax.url("{{url('get_data_win_report_sales')}}").load();
     $('#data_lose').DataTable().ajax.url("{{url('get_data_lose_report_sales')}}").load();
     $('#data_top_sip').DataTable().ajax.url("{{url('get_top_win_sip')}}").load();
-    $('#data_top_msp').DataTable().ajax.url("{{url('get_top_win_sip')}}").load();
+    $('#data_top_msp').DataTable().ajax.url("{{url('get_top_win_msp')}}").load();
   })
 
   // $('#data_sd').DataTable();
@@ -896,7 +896,7 @@ Report Sales
   var data_top_msp = $('#data_top_msp').DataTable({
     "ajax":{
         "type":"GET",
-        "url":"{{url('get_top_win_sip')}}",
+        "url":"{{url('get_top_win_msp')}}",
     },
     "columns": [
       { "data": "leads" },
