@@ -660,10 +660,14 @@ Report Range
       var tempWinProb = '&winProb=' + $("#kat_drop_5").val();
     }
 
-    if($("#kat_drop_6").val() == undefined){
-      var tempStatus = '&status='
+    if($("#kat_drop_6").val() == undefined){      
+      var tempStatus = tempStatus + '&status=';
     }else{
-      var tempStatus = '&status=' + $("#kat_drop_6").val();
+      if (window.location.href.split('/')[4] == 'OPEN') {
+        var tempStatus = tempStatus + '&status[]=SD&status[]=TP&status[]=""';
+      }else{
+        var tempStatus = tempStatus + '&status=[' + $("#kat_drop_6").val() + ']';
+      }
     }
 
     $.ajax({
