@@ -4066,7 +4066,7 @@ class SALESController extends Controller{
 
         $roles = DB::table('role_user')->join('roles','role_user.role_id','=','roles.id')
                 ->join('users','role_user.user_id','=','users.nik')
-                ->where('roles.id',29)
+                ->where('roles.id',42)
                 ->first();
 
         return view('sales/customer',compact('data', 'notif','notifOpen','notifsd','notiftp','notifClaim', 'count_request','roles'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('customer')]);
