@@ -1606,8 +1606,7 @@ class HRGAController extends Controller
         if ($ter != NULL) {
             if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
                 if ($div == 'PMO' || $div == 'MSM'|| $div == 'BCD') {
-                    $$kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
-
+                    $kirim = DB::table('users')->select('users.email')->where('email','nabil@sinergy.co.id')->where('id_company','1')->first();
                 } else if ($div == 'FINANCE' || $div == 'SALES' || $div == 'OPERATION') {
                     $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
                 }else{
@@ -3430,7 +3429,7 @@ class HRGAController extends Controller
                     })
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','us6ers.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail_filterd`.`id_cuti`) as days'))
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail_filterd`.`id_cuti`) as days'))
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->groupby('id_cuti');
 
