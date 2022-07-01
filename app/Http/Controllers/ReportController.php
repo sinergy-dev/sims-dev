@@ -3917,7 +3917,7 @@ class ReportController extends Controller
         $territory_loop = DB::table("tb_territory")
             ->select("id_territory","code_ter")
             ->where('id_territory','like','TERRITORY%')
-            // ->orWhere('id_territory','=','OPERATION')
+            ->orWhere('id_territory','=','OPERATION')
             ->get();
 
         $notifClaim = '';
@@ -5952,6 +5952,7 @@ class ReportController extends Controller
             ->select("id_territory","code_ter")
             ->where('id_territory','like','TERRITORY%')
             ->where('id_territory','!=','TERRITORY 6')
+            ->orWhere('id_territory','=','OPERATION')
             // ->orWhere('id_territory','=','OPERATION')
             ->get();
 
@@ -6143,11 +6144,14 @@ class ReportController extends Controller
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' AND price is not null then 0 end) as countTer3"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' AND price is not null then 0 end) as countTer4"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' AND price is not null then 0 end) as countTer5"),
+                        DB::raw("count(case when `users`.`id_territory` = 'OPERATION' AND price is not null then 0 end) as countTerOp"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter1_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter2_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter3_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 4',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter4_price"),
-                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter5_price")
+                        DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 5',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS ter5_price"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='OPERATION',CASE WHEN (price is null) THEN 0 ELSE price END,0)) AS operation_price")
+
                     )
                     // ->groupBy('tb_product_tag.name_product')
                     ->where('sales_lead_register.created_at', '>=', Carbon::now()->startOfYear()->toDateTimeString())
