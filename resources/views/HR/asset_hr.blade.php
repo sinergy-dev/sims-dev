@@ -257,18 +257,19 @@ GA Asset
                           <label class="label label-info">Request</label>
                         </td>
                         <td>
-                        <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
-                        <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','REJECT')">Reject</button></td>
+                          <button class="btn btn-primary btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','ACCEPT')">Accept</button>
+                          <button class="btn btn-danger btn-xs" style="width: 50px"  onclick="requestAccept('{{$data->note}}','{{$data->id_transaction}}','REJECT')">Reject</button>
+                        </td>
                       </tr>
                     @endforeach
                     @foreach($current_request as $datas)
                       <tr>
                         <td>{{$datas->id_request}}</td>
                         <td>{{$datas->name}}</td>
-                        <td>{{$data->created_at}}</td>                        
+                        <td>{{$datas->created_at}}</td>                        
                         <td>{{$datas->nama}}</td>
-                        <td><div class="truncate">{{$datas->link}}</div></td> 
-                        <td style="display: none" class="links{{$datas->id_request}}">{{$datas->link}}</td>
+                        <!-- <td><div class="truncate">{{$datas->link}}</div></td>  -->
+                        <td class="links{{$datas->id_request}}">{{$datas->link}}</td>
                         <td>
                           @if($datas->status == 'REQUEST')
                           <label class="label label-info">Request</label>

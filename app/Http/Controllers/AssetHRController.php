@@ -258,7 +258,7 @@ class AssetHRController extends Controller
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','users.name','tb_asset_hr_request.nik','tb_asset_hr_request.status')
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','users.name','tb_asset_hr_request.nik','tb_asset_hr_request.status','tb_asset_hr_request.created_at')
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
                            ->where('tb_asset_hr_request.status','<>','CANCEL')
@@ -281,7 +281,7 @@ class AssetHRController extends Controller
             $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name', 'tb_asset_hr_request.nik')
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','merk','link','id_request','tb_asset_hr_request.status','users.name', 'tb_asset_hr_request.nik','tb_asset_hr_request.created_at')
                            ->where('tb_asset_hr_request.nik',Auth::User()->nik)
                            ->where('tb_asset_hr_request.status','<>','ACCEPT')
                            ->where('tb_asset_hr_request.status','<>','REJECT')
@@ -310,7 +310,7 @@ class AssetHRController extends Controller
 
         $request_asset = DB::table('tb_asset_hr_transaction')
                         ->join('users','users.nik','=','tb_asset_hr_transaction.nik_peminjam')
-                        ->select('tb_asset_hr_transaction.keterangan','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','no_transac','note','tgl_peminjaman','tb_asset_hr_transaction.created_at')
+                        ->select('tb_asset_hr_transaction.keterangan','tb_asset_hr_transaction.nik_peminjam','tb_asset_hr_transaction.id_transaction','users.name','tb_asset_hr_transaction.created_at','tb_asset_hr_transaction.updated_at','no_transac','note','tgl_peminjaman')
                         ->where('tb_asset_hr_transaction.status','PENDING')
                         ->orderBy('tb_asset_hr_transaction.created_at','asc')
                         ->get();
@@ -342,7 +342,7 @@ class AssetHRController extends Controller
     		return $current_request = DB::table('tb_asset_hr_request')
                            ->join('users','users.nik','=','tb_asset_hr_request.nik')
                            ->join('tb_kategori_asset_hr','tb_kategori_asset_hr.id','=','tb_asset_hr_request.kategori_request') 
-                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','tb_kategori_asset_hr.id','merk','link','id_request','users.name','tb_asset_hr_request.nik','tb_asset_hr_request.status','users.id_company','tb_asset_hr_request.qty','tb_asset_hr_request.status')
+                           ->select('nama','tb_kategori_asset_hr.kategori','tb_kategori_asset_hr.code_kat','tb_kategori_asset_hr.id','merk','link','id_request','users.name','tb_asset_hr_request.nik','tb_asset_hr_request.status','users.id_company','tb_asset_hr_request.qty','tb_asset_hr_request.status','tb_asset_hr_request.created_at')
                            ->where('id_request',$request->id)
                            ->get();
     	}
