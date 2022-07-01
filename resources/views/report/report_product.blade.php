@@ -178,6 +178,7 @@ Report Brands
                 </thead>
                 <tfoot>
                 	<th></th>
+                  <th></th>
                 	<th></th>
                 	<th></th>
                 	<th></th>
@@ -262,7 +263,13 @@ Report Brands
                   
                 }
               },  
-              // { "data": "name_product" },  
+              // { "data": "name_product" },
+              {
+                render: function ( data, type, row ) {
+                  return '<center> <b>[' + row.countTerOp + ']</b><br>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.operation_price) + '</p></center>';
+                  
+                }
+              },  
               {
                 render: function ( data, type, row ) {
                   return '<center> <b>[' + row.countTer1 + ']</b><br>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display(row.ter1_price) + '</p></center>';
@@ -325,6 +332,13 @@ Report Brands
                           i : 0;
                 };
 
+                var amount_operation = rows
+                    .data()
+                    .pluck('operation_price')
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
                 var amount_ter1 = rows
                     .data()
                     .pluck('ter1_price')
@@ -360,7 +374,7 @@ Report Brands
                         return intVal(a) + intVal(b);
                     }, 0 );
 
-                return $('<tr><td>'+ '<b>' + 'Total Amount : ' + '</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter1 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter2 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter3 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter4 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter5 ) + '</b></center>' +'</td>' + '</tr>');
+                return $('<tr><td>'+ '<b>' + 'Total Amount : ' + '</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_operation ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter1 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter2 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter3 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter4 ) + '</b></center>' +'</td>' + '<td>' + '<center><b>' + $.fn.dataTable.render.number(',', '.', 0, 'Rp.').display( amount_ter5 ) + '</b></center>' +'</td>' + '</tr>');
               }
           }
       });
