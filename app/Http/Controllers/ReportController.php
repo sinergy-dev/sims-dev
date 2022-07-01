@@ -6157,7 +6157,8 @@ class ReportController extends Controller
                     ->where('sales_lead_register.created_at', '>=', Carbon::now()->startOfYear()->toDateTimeString())
                     ->where('sales_lead_register.created_at', '<=', Carbon::now()->endOfYear()->toDateTimeString())
                     ->groupBy('tb_product_tag.name_product')
-                    
+                    ->orderBy('total_lead', 'desc')
+                    ->orderBy('total_price', 'desc')
                     // ->groupBy('tb_product_tag_relation.id_product_tag')
                     ->get());
 
@@ -6186,6 +6187,7 @@ class ReportController extends Controller
                     )
                     ->where('sales_lead_register.created_at', '>=', $request->start_date)
                     ->where('sales_lead_register.created_at', '<=', $request->end_date);
+                    // ->orderBy('total_lead', 'desc');
 
         if (isset($request->name_product)) {
             $reportproduct->where('tb_product_tag.id',$request->name_product)->groupBy('tb_product_tag.name_product');
