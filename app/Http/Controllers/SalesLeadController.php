@@ -406,7 +406,7 @@ class SalesLeadController extends Controller
 
     public function getSalesByTerritory(Request $request)
     {
-        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','SALES')->where('id_company','1')->where('status_karyawan','!=','dummy')->where('id_position','!=','ADMIN');
+        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','SALES')->orWhere('id_territory', 'OPERATION')->where('id_company','1')->where('status_karyawan','!=','dummy')->where('id_position','!=','ADMIN');
 
         if (isset($request->territory)) {
             $getSales->whereIn('id_territory', $request->territory);
@@ -464,7 +464,7 @@ class SalesLeadController extends Controller
     {
         $getTerritory = DB::table('users')
             ->select('id_territory')
-            ->where('id_division', 'SALES')
+            ->whereRaw("(`id_division` = 'SALES' OR `id_division` = 'BCD' )")
             ->where('status_karyawan', '!=', 'dummy')
             ->where('id_company', '1')
             ->groupBy('id_territory');
@@ -1320,8 +1320,8 @@ class SalesLeadController extends Controller
 
         // return $getListProductLead->get();
 
-        $getListTechTag = DB::table('tb_technology_tag')->join('tb_technology_tag_relation', 'tb_technology_tag_relation.id_tech_tag', '=', 'tb_technology_tag.id')
-                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech`'))
+        $getListTechTag = DB::table('tb_technology_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
+                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech_tag`'))
                         ->groupBy('lead_id');
 
         $leads = DB::table('sales_lead_register')
@@ -1336,9 +1336,26 @@ class SalesLeadController extends Controller
                     $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
                 ->join('users as u_sales', 'u_sales.nik', '=', 'sales_lead_register.nik')
-                ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
-                ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name','tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales', 
-                    DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif", 'id_product_tag', 'id_tech'))
+                ->leftJoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
+                ->select(
+                    'sales_lead_register.lead_id', 
+                    'sales_lead_register.opp_name',
+                    'tb_contact.brand_name', 
+                    'sales_lead_register.created_at', 
+                    'sales_lead_register.amount', 
+                    'u_sales.name as name',
+                    'sales_lead_register.nik',
+                    'sales_lead_register.keterangan',
+                    'sales_lead_register.year', 
+                    'sales_lead_register.closing_date', 
+                    'sales_lead_register.deal_price',
+                    'u_sales.id_territory', 
+                    'tb_pid.status',
+                    'tb_presales.name_presales', 
+                    DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif", 'id_product_tag', 'id_tech')
+                    // DB::raw("`product_lead`.`id_product_tag` AS `id_product_tag_concat`"),
+                    // DB::raw("`tech_tag`.`id_tech_tag` AS `id_tech_tag_concat`")
+                )
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result', '!=', 'hmm')
                 ->orderBy('created_at', 'desc');
@@ -1402,13 +1419,15 @@ class SalesLeadController extends Controller
 
         if (isset($request->product_tag)) {
             foreach ($request->product_tag as $key => $value) {
-                $leads->where('id_product_tag','LIKE',"%" . $value . "%");
+                $leads->selectRaw("FIND_IN_SET('" . $value . "', `product_lead`.`id_product_tag`) AS `found_product" . $key . "`");
+                $leads->havingRaw("`found_product" . $key . "` <> 0");
             }
         }
 
         if (isset($request->tech_tag)) {
             foreach ($request->tech_tag as $key => $value) {
-                $leads->where('id_tech','LIKE',"%" . $value . "%");
+                $leads->selectRaw("FIND_IN_SET('" . $value . "', `tech_tag`.`id_tech_tag`) AS `found_tech" . $key . "`");
+                $leads->havingRaw("`found_tech" . $key . "` <> 0");
             }
         }
 
