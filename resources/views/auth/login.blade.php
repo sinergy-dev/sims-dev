@@ -39,50 +39,61 @@
                 <div class="logo text-center"><img src="{{asset('/img/siplogin.png')}}" width="123" height="60" alt="Klorofil Logo"></div>
                 <p class="lead">Sinergy Integrated Management System</p>
               </div>
-              <form class="form-horizontal" role="form" method="POST" action="{{ route('login') }}">
-                  {{ csrf_field() }}
-                  @if(session()->has('message'))
-                      <div class="alert alert-warning notification-bar" id="alert">
-                          {{ session()->get('message') }}
-                      </div>
-                  @endif
-                  <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                      <label for="email" class="control-label sr-only">Email</label>
-                      <div class="col-md-12">
-                          <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="Email" required>
-                          @if ($errors->has('email'))
-                              <span class="help-block">
-                                  <strong>{{ $errors->first('email') }}</strong>
-                              </span>
-                          @endif
-                      </div>
-                  </div>
-                  <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                      <label for="password" class="control-label sr-only">Password</label>
-                      <div class="col-md-12">
-                          <input id="password" type="password" class="form-control" name="password" placeholder="Password" required>
-                          @if ($errors->has('password'))
-                              <span class="help-block">
-                                  <strong>{{ $errors->first('password') }}</strong>
-                              </span>
-                          @endif
-                      </div>
-                  </div>
-                  <div class="form-group">
-                      <div class="col-md-12">
-                          <button type="submit" class="btn btn-primary btn-block">
-                            Login
-                          </button>
-                          <!-- <div class="g-signin2" data-onsuccess="onSignIn"></div> -->
-                      </div>
-                      <div class="col-md-12" style="margin-top: 5px">
-                        <a class="pull-left" href="{{ route('password.request') }}" target="_blank">
-                          <i class="fa fa-lock"></i>
-                            Forgot Password?
-                        </a>
-                      </div>
-                  </div>
-              </form>
+              <div style="display: {{ $errors->has('email_company') ? 'none' : '' }}">
+                <p>Login With Local Account</p>
+                <form class="form-horizontal" role="form" method="POST" action="{{ route('login') }}">
+                    {{ csrf_field() }}
+                    @if(session()->has('message'))
+                        <div class="alert alert-warning notification-bar" id="alert">
+                            {{ session()->get('message') }}
+                        </div>
+                    @endif
+                    <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                        <label for="email" class="control-label sr-only">Email</label>
+                        <div class="col-md-12">
+                            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="Email" required>
+                            @if ($errors->has('email'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('email') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                        <label for="password" class="control-label sr-only">Password</label>
+                        <div class="col-md-12">
+                            <input id="password" type="password" class="form-control" name="password" placeholder="Password" required>
+                            @if ($errors->has('password'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('password') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary btn-block">
+                              Login
+                            </button>
+                        </div>
+                        
+                        <div class="col-md-12" style="margin-top: 5px">
+                          <a class="pull-left" href="{{ route('password.request') }}" target="_blank">
+                            <i class="fa fa-lock"></i>
+                              Forgot Password?
+                          </a>
+                        </div>
+                    </div>
+                </form>
+              </div>
+              <div class="social-auth-links text-center">
+                <div class="alert alert-danger" style="display: {{ $errors->has('email_company') ? 'block' : 'none' }}">
+                    {{$errors->first('email_company')}}
+                </div>
+                <p style="display: {{ $errors->has('email_company') ? 'none' : 'block' }}">- OR -</p>
+                <a href="{{url('redirect')}}" class="btn btn-block btn-social btn-flat btn-primary"><i class="fa fa-google"></i> - Login using
+                  Google Workspace</a>
+              </div>
             </div>
           </div>
           <div class="right">
@@ -113,13 +124,13 @@
     </div>
   </div>
   <!-- END WRAPPER -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- <script src="https://accounts.google.com/gsi/client" async defer></script>
   <div id="g_id_onload"
          data-client_id="252316539031-kv21d9r60qq7r6okculku9d38vn2rkpb.apps.googleusercontent.com"
          data-ux_mode="redirect"
-         data-login_uri="https://dev-app.sinergy.co.id/testAfterAuthSave">
+         data-login_uri="https://dev-app.sinergy.co.id/callback">
     </div>
-    <!-- <div class="g_id_signin" data-type="standard"></div> -->
+    <div class="g_id_signin" data-type="standard"></div> -->
 
 </body>
 </html>
