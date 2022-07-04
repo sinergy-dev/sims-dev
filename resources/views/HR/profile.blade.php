@@ -224,11 +224,16 @@
       <div class="box box-primary">
         <div class="box-body box-profile">
           <div style="align-items: center;">
-            @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-" || Auth::User()->gambar == "")
-              <img id="tes" class="profile-user-img img-responsive img-circle" src="{{ asset('image/place_profile_3.png')}}" alt="User profile picture">
+            @if(Auth::User()->avatar != NULL)
+              <img id="tes" class="profile-user-img img-responsive img-circle" src="{{Auth::User()->avatar}}" alt="User profile picture">
             @else
-              <img id="tes" class="profile-user-img img-responsive img-circle" src="{{ asset('image/'.$user_profile->gambar)}}" alt="User profile picture" data-toggle="modal" data-target="#pict_profile" onclick="nik_profile('{{$user_profile->nik}}')">
+              @if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-" || Auth::User()->gambar == "")
+                <img id="tes" class="profile-user-img img-responsive img-circle" src="{{ asset('image/place_profile_3.png')}}" alt="User profile picture">
+              @else
+                <img id="tes" class="profile-user-img img-responsive img-circle" src="{{ asset('image/'.$user_profile->gambar)}}" alt="User profile picture" data-toggle="modal" data-target="#pict_profile" onclick="nik_profile('{{$user_profile->nik}}')">
+              @endif
             @endif
+
           </div>
           <h3 class="profile-username text-center" style="padding-left: 5px;font-family: Arial, Helvetica, sans-serif;">{{ucfirst(strtolower($user_profile->name))}}</h3>
           <!-- <p class="text-muted text-center">Software Engineer</p> -->
