@@ -2082,7 +2082,7 @@ Detail Lead Register
       append = append + " <td style='white-space: nowrap'>"
       append = append + " <div class='input-group'>"
       append = append + " <span class='input-group-addon' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
-      append = append + " <input disabled data-value='" + i + "' class='money form-control value='0' new-price-win' type='text' placeholder='Enter Product Price'>"
+      append = append + " <input disabled data-value='" + i + "' class='money form-control new-price-win' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
       append = append + " <td class='text-center'>"
