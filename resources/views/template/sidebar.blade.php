@@ -2,10 +2,14 @@
 	<section class="sidebar">
 		<div class="user-panel">
 			<div class="pull-left image">
-				@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-					<img src="{{asset('image/default-user.png')}}" class="img-circle">
+				@if(Auth::User()->avatar != NULL)
+					<img src="{{Auth::User()->avatar}}" class="img-circle">
 				@else
-					<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="img-circle" alt="User Image">
+					@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
+						<img src="{{asset('image/default-user.png')}}" class="img-circle" alt="User Image">
+					@else
+						<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="img-circle" alt="User Image">
+					@endif
 				@endif
 			</div>
 			<div class="pull-left info" >

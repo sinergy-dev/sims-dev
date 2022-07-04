@@ -11,9 +11,12 @@
 |
 */
 
-Route::get('/authGoogle','TestController@authGoogle');
-Route::get('/testAfterAuth','TestController@testAfterAuth');
-Route::post('/testAfterAuthSave','TestController@testAfterAuthSave');
+// Route::get('/authGoogle','TestController@authGoogle');
+// Route::get('/testAfterAuth','TestController@testAfterAuth');
+// Route::post('/testAfterAuthSave','TestController@testAfterAuthSave');
+
+Route::get('/redirect', 'Auth\LoginController@redirectToProvider');
+Route::get('/callback', 'Auth\LoginController@handleProviderCallback');
 
 
 Auth::routes();

@@ -34,19 +34,27 @@
 				</li>
 				<li class="dropdown user user-menu">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-						@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-							<img src="{{asset('image/default-user.png')}}" class="user-image" alt="small-user-img">
+						@if(Auth::User()->avatar != NULL)
+							<img src="{{Auth::User()->avatar}}" class="user-image" alt="small-user-img">
 						@else
-							<img src="{{asset('image/') . '/' . Auth::User()->gambar}}" class="user-image" alt="small-user-img">
+							@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
+								<img src="{{asset('image/default-user.png')}}" class="user-image" alt="small-user-img">
+							@else
+								<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="user-image" alt="small-user-img">
+							@endif
 						@endif
 						<span class="hidden-xs">{{ Auth::User()->name }}</span>
 					</a>
 					<ul class="dropdown-menu">
 						<li class="user-header">
-							@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
-								<img src="{{asset('image/default-user.png')}}" class="img-circle" alt="big-user-img">
+							@if(Auth::User()->avatar != NULL)
+								<img src="{{Auth::User()->avatar}}" class="img-circle" alt="big-user-img">
 							@else
-								<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="img-circle" alt="big-user-img">
+								@if(Auth::User()->gambar == NULL || Auth::User()->gambar == "-")
+									<img src="{{asset('image/default-user.png')}}" class="img-circle" alt="big-user-img">
+								@else
+									<img src="{{asset('image') . '/' . Auth::User()->gambar}}" class="img-circle" alt="big-user-img">
+								@endif
 							@endif
 							<p>
 								{{ Auth::User()->name }} - {{$initView['userRole']->name}}
