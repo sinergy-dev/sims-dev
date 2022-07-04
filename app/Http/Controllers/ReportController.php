@@ -2296,6 +2296,8 @@ class ReportController extends Controller
                 ->orderBy('year','desc')
                 ->get();
 
+        $currentYear = Date('Y');
+
         $presales = '';    
 
         // $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('`users`.`name` AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`,GROUP_CONCAT(`sales_solution_design`.`priority`) AS `priority`')->selectRaw('lead_id')->where('status','closed')->groupBy('lead_id','name_presales');
@@ -2327,7 +2329,26 @@ class ReportController extends Controller
                 ->join('tb_company', 'tb_company.id_company', '=', 'u_sales.id_company')
                 ->Leftjoin('tb_pid', 'tb_pid.lead_id', '=', 'sales_lead_register.lead_id')
                 ->leftjoin('sales_tender_process','sales_tender_process.lead_id','=','sales_lead_register.lead_id')
-                ->select('sales_tender_process.win_prob','sales_lead_register.lead_id', 'tb_contact.id_customer', 'tb_contact.code', 'sales_lead_register.opp_name','tb_contact.customer_legal_name', 'tb_contact.brand_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'u_sales.name as name','sales_lead_register.nik','sales_lead_register.keterangan','sales_lead_register.year', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price','u_sales.id_territory', 'tb_pid.status','tb_presales.name_presales', 'code_company', 'name_territory', 'tb_presales.priority', DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
+                ->select('sales_tender_process.win_prob',
+                    'sales_lead_register.lead_id', 
+                    'tb_contact.id_customer', 
+                    'tb_contact.code', 
+                    'sales_lead_register.opp_name',
+                    'tb_contact.customer_legal_name', 
+                    'tb_contact.brand_name', 
+                    'sales_lead_register.created_at', 
+                    'sales_lead_register.amount',
+                     'u_sales.name as name','sales_lead_register.nik',
+                     'sales_lead_register.keterangan','sales_lead_register.year', 
+                     'sales_lead_register.closing_date', 
+                     'sales_lead_register.deal_price',
+                     'u_sales.id_territory', 
+                     'tb_pid.status',
+                     'tb_presales.name_presales', 
+                     'code_company',
+                      'name_territory',
+                     'tb_presales.priority', 
+                     DB::raw("(CASE WHEN (result = 'OPEN') THEN 'INITIAL' WHEN (result = '') THEN 'OPEN' WHEN (result = 'SD') THEN 'SD' WHEN (result = 'TP') THEN 'TP' WHEN (result = 'WIN') THEN 'WIN' WHEN( result = 'LOSE') THEN 'LOSE' WHEN( result = 'HOLD') THEN 'HOLD' WHEN( result = 'SPECIAL') THEN 'SPECIAL' WHEN(result = 'CANCEL') THEN 'CANCEL' END) as result_modif"))
                 ->orderByRaw('FIELD(result, "OPEN", "", "SD", "TP", "WIN", "LOSE", "CANCEL", "HOLD")')
                 ->where('result','!=','hmm')
                 // ->whereIn('year',$year)
@@ -2572,7 +2593,7 @@ class ReportController extends Controller
             ->get();
         }
 
-        return view('report/report_range', compact('leads','lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years'))->with(['initView'=> $this->initMenuBase()]);
+        return view('report/report_range', compact('leads','lead', 'notif', 'notifOpen', 'notifsd','notiftp','presales','rk','gp','st','rz','nt', 'total_deal_price','total_lead','total_open','total_sd','total_tp','total_win','total_lose','years','currentYear'))->with(['initView'=> $this->initMenuBase()]);
     }
 
     public function downloadExcelReportRange(Request $request) {
@@ -2731,15 +2752,17 @@ class ReportController extends Controller
         }
 
         if (isset($request->date_start)) {
-            $data->where('sales_lead_register.closing_date', '>=', $request->date_start)
-                 ->where('sales_lead_register.closing_date', '<=', $request->date_end);   
+            $data->where('sales_lead_register.closing_date', '>=', $request->date_start);  
+            $data->where('sales_lead_register.closing_date', '<=', $request->date_end);         
         }
 
         if (isset($request->comp)) {
             $data->where('code_company', $request->comp);
-        } else {
-            $data->where('code_company', "SIP");      
-        }
+        } 
+
+        // else {
+        //     $data->where('code_company', "SIP");      
+        // }
 
         if (isset($request->ter)) {
             $data->where('u_sales.id_territory', $request->ter);
@@ -2754,14 +2777,17 @@ class ReportController extends Controller
         }
         
         if (isset($request->winprob)) {
-            $data->where('win_prob', $request->winProb);
+            if ($request->winprob != undefined) {
+                $data->where('win_prob', $request->winProb);
+
+            }
         }
 
         if (isset($request->priority)) {
             $data->where('priority', $request->priority);
         }
 
-        if (isset($request->status)) {
+        if (!isset($request->status)) {
             $data->whereIn('result', $request->status);
         }
 
@@ -3917,7 +3943,7 @@ class ReportController extends Controller
         $territory_loop = DB::table("tb_territory")
             ->select("id_territory","code_ter")
             ->where('id_territory','like','TERRITORY%')
-            ->orWhere('id_territory','=','OPERATION')
+            // ->orWhere('id_territory','=','OPERATION')
             ->get();
 
         $notifClaim = '';
@@ -4627,22 +4653,26 @@ class ReportController extends Controller
             ->groupBy('sales_lead_register.id_customer');
         
         if(isset($request->id_territory)){
-            if($request->id_territory == "OPERATION"){
-                // $data->where('users.id_territory',$request->id_territory);
-                $data->where('users.nik','=','100000000003');
-            } else {
+            // if($request->id_territory == "OPERATION"){
+            //     // $data->where('users.id_territory',$request->id_territory);
+            //     $data->where('users.nik','=','100000000003');
+            // } else {
                 $data->where('users.id_territory',$request->id_territory);
-            }
+            // }
         } else {
             $data->where('users.id_territory',Auth::User()->id_territory);
         }
 
         if (isset($request->id_customer)) {
-            $data->where('sales_lead_register.id_customer', $request->id_customer);
+            if ($request->id_customer != -1) {
+                $data->where('sales_lead_register.id_customer', $request->id_customer);
+            }
         }
 
         if (isset($request->nik_sales)) {
-            $data->where('sales_lead_register.nik', $request->nik_sales);
+            if ($request->nik_sales != -1) {
+                $data->where('sales_lead_register.nik','like','%'.$request->nik_sales.'%');
+            }
         }
 
         return array("data" => $data->get());
@@ -4707,12 +4737,12 @@ class ReportController extends Controller
             ->groupBy('sales_lead_register.nik')
             ->groupBy('sales_lead_register.id_customer');
 
-        if($request->id_territory == "OPERATION"){
-            // $data->where('users.id_territory',$request->id_territory);
-            $data->where('users.nik','=','100000000003');
-        } else {
-            $data->where('users.id_territory',$request->id_territory);
-        }
+        // if($request->id_territory == "OPERATION"){
+        //     // $data->where('users.id_territory',$request->id_territory);
+        //     $data->where('users.nik','=','100000000003');
+        // } else {
+        //     $data->where('users.id_territory',$request->id_territory);
+        // }
         
         if(isset($request->start_date) && isset($request->end_date)){
             $data->where('sales_lead_register.created_at', '>=', $request->start_date);
@@ -4723,7 +4753,7 @@ class ReportController extends Controller
 
         if($request->id_territory == "OPERATION"){
             // $data->where('users.id_territory',$request->id_territory);
-            $data->where('users.nik','=','100000000003');
+            $data->where('users.nik','=','1100492050');
             $data = $data->get()->map(function ($arr) {
                 $arr['id_territory'] = "OPERATION";
                 return $arr;
@@ -6174,11 +6204,13 @@ class ReportController extends Controller
                     ->select('tb_product_tag.name_product',
                         DB::raw("SUM(price) as total_price"),
                         DB::raw("COUNT(tb_product_tag_relation.lead_id) as total_lead"),
+                        DB::raw("count(case when `users`.`id_territory` = 'OPERATION' then 0 end) as countTerOp"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 1' then 0 end) as countTer1"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 2' then 0 end) as countTer2"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' then 0 end) as countTer3"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' then 0 end) as countTer4"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' then 0 end) as countTer5"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='OPERATION',price,0)) AS operation_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',price,0)) AS ter1_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',price,0)) AS ter2_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',price,0)) AS ter3_price"),
