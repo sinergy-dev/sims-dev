@@ -3575,7 +3575,7 @@ class ReportController extends Controller
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                         ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), 'users.name', 'tb_company.code_company')
                         ->where('result', 'WIN')
-                        ->where('year', date('Y'))
+                        ->whereYear('closing_date', date('Y'))
                         ->groupBy('sales_lead_register.nik')
                         ->orderBy('amounts', 'desc')
                         ->get();
@@ -3917,7 +3917,7 @@ class ReportController extends Controller
         $territory_loop = DB::table("tb_territory")
             ->select("id_territory","code_ter")
             ->where('id_territory','like','TERRITORY%')
-            ->orWhere('id_territory','=','OPERATION')
+            // ->orWhere('id_territory','=','OPERATION')
             ->get();
 
         $notifClaim = '';
@@ -4707,12 +4707,12 @@ class ReportController extends Controller
             ->groupBy('sales_lead_register.nik')
             ->groupBy('sales_lead_register.id_customer');
 
-        if($request->id_territory == "OPERATION"){
-            // $data->where('users.id_territory',$request->id_territory);
-            $data->where('users.nik','=','100000000003');
-        } else {
-            $data->where('users.id_territory',$request->id_territory);
-        }
+        // if($request->id_territory == "OPERATION"){
+        //     // $data->where('users.id_territory',$request->id_territory);
+        //     $data->where('users.nik','=','1100492050');
+        // } else {
+        //     $data->where('users.id_territory',$request->id_territory);
+        // }
         
         if(isset($request->start_date) && isset($request->end_date)){
             $data->where('sales_lead_register.created_at', '>=', $request->start_date);
@@ -4723,7 +4723,7 @@ class ReportController extends Controller
 
         if($request->id_territory == "OPERATION"){
             // $data->where('users.id_territory',$request->id_territory);
-            $data->where('users.nik','=','100000000003');
+            $data->where('users.nik','=','1100492050');
             $data = $data->get()->map(function ($arr) {
                 $arr['id_territory'] = "OPERATION";
                 return $arr;
@@ -6174,11 +6174,13 @@ class ReportController extends Controller
                     ->select('tb_product_tag.name_product',
                         DB::raw("SUM(price) as total_price"),
                         DB::raw("COUNT(tb_product_tag_relation.lead_id) as total_lead"),
+                        DB::raw("count(case when `users`.`id_territory` = 'OPERATION' then 0 end) as countTerOp"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 1' then 0 end) as countTer1"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 2' then 0 end) as countTer2"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 3' then 0 end) as countTer3"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 4' then 0 end) as countTer4"),
                         DB::raw("count(case when `users`.`id_territory` = 'TERRITORY 5' then 0 end) as countTer5"),
+                        DB::raw("SUM(IF(`users`.`id_territory`='OPERATION',price,0)) AS operation_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 1',price,0)) AS ter1_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 2',price,0)) AS ter2_price"),
                         DB::raw("SUM(IF(`users`.`id_territory`='TERRITORY 3',price,0)) AS ter3_price"),
