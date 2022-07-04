@@ -147,7 +147,7 @@ Report Range
                   <select style="margin-right: 5px;" class="form-control" id="year_dif">
                     <option value="">Select year</option>
                     @foreach($years as $data)
-                    <option value="{{$data->year}}">&nbsp{{$data->year}}</option>
+                      <option value="{{$data->year}}">&nbsp{{$data->year}}</option>
                     @endforeach
                   </select>
                 </div>
@@ -466,7 +466,7 @@ Report Range
       $("#btnRefresh").click(function(){
         initRefresh()
       })
-      filter_deal_price(false)
+      filter_deal_price()
     }else{
       $("#btnRefresh").click(function(){
         initRefresh(true)
@@ -598,7 +598,7 @@ Report Range
       }
     );    
     table.draw()
-    filter_deal_price(false)
+    filter_deal_price()
     if (this.value == '') {
       $("#reportrange").prop('disabled',false)
     }else{
@@ -610,9 +610,17 @@ Report Range
     console.log(nik)
     var tempAnything = $('#searchBar').val()
 
-    var tempdateStart = '&date_start=' + $("#reportrange").val().substring(0, 10)
+    if ( $("#reportrange").val() == "") {
+      var tempdateStart = '&date_start='
 
-    var tempdateEnd = '&date_end=' + $("#reportrange").val().substring(13, 23)
+      var tempdateEnd = '&date_end='
+      console.log("kosong")
+    }else{
+      var tempdateStart = '&date_start=' + $("#reportrange").val().substring(0, 10)
+
+      var tempdateEnd = '&date_end=' + $("#reportrange").val().substring(13, 23)
+    }
+    
 
     if (nik == true) {
       var nik = '&nik=' + "true"
@@ -698,9 +706,8 @@ Report Range
 
                     column.search(val ? '^' + val + '$' : '', true, false)
                         .draw();
-
-                    filter_deal_price()
                     console.log("kat_drop"+column.index())
+                    filter_deal_price()
             });
 
             column.data().unique().sort().each(function(d, j) {
