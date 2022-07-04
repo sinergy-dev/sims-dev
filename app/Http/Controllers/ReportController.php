@@ -3601,7 +3601,7 @@ class ReportController extends Controller
                         ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                         ->select(DB::raw('COUNT(sales_lead_register.lead_id) as leads'), DB::raw('SUM(sales_lead_register.amount) as amounts'), 'users.name', 'tb_company.code_company')
                         ->where('result', 'WIN')
-                        ->where('year', date('Y'))
+                        ->whereYear('closing_date', date('Y'))
                         ->groupBy('sales_lead_register.nik')
                         ->orderBy('amounts', 'desc')
                         ->get();
@@ -4739,7 +4739,7 @@ class ReportController extends Controller
 
         // if($request->id_territory == "OPERATION"){
         //     // $data->where('users.id_territory',$request->id_territory);
-        //     $data->where('users.nik','=','100000000003');
+
         // } else {
         //     $data->where('users.id_territory',$request->id_territory);
         // }
