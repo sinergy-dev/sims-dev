@@ -406,7 +406,7 @@ class SalesLeadController extends Controller
 
     public function getSalesByTerritory(Request $request)
     {
-        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','SALES')->orWhereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'BCD' )")->where('id_company','1')->where('status_karyawan','!=','dummy')->where('id_position','!=','ADMIN');
+        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `id_division` = 'SALES' )")->orWhereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'BCD' AND `id_company` = '1')")->where('status_karyawan','!=','dummy')->where('id_position','!=','ADMIN');
 
         if (isset($request->territory)) {
             $getSales->whereIn('id_territory', $request->territory);
