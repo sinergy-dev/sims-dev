@@ -2752,17 +2752,15 @@ class ReportController extends Controller
         }
 
         if (isset($request->date_start)) {
-            $data->where('sales_lead_register.closing_date', '>=', $request->date_start);  
-            $data->where('sales_lead_register.closing_date', '<=', $request->date_end);         
+            $data->where('sales_lead_register.closing_date', '>=', $request->date_start)
+            ->where('sales_lead_register.closing_date', '<=', $request->date_end);         
         }
 
         if (isset($request->comp)) {
             $data->where('code_company', $request->comp);
-        } 
-
-        // else {
-        //     $data->where('code_company', "SIP");      
-        // }
+        } else {
+            $data->where('code_company', "SIP");     
+        }
 
         if (isset($request->ter)) {
             $data->where('u_sales.id_territory', $request->ter);
