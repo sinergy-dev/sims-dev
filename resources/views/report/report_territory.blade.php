@@ -77,8 +77,7 @@ Report Customer
         <div class="box">
           <div class="box-header with-border">
             <div class="row">
-              <div class="col-md-12">
-                <div class="pull-left" style="margin-right:10px">
+                <div class="col-md-3">
                   <div class="input-group" style="float: left">
                     <div class="input-group-addon">
                       <i class="fa fa-calendar"></i>
@@ -87,25 +86,23 @@ Report Customer
                     <span class="input-group-addon" style="cursor: pointer" type="button" id="daterange-btn"><i class="fa fa-caret-down"></i></span>
                   </div>
                 </div> 
-                <div class="pull-left" style="margin-right:10px">
+                <div class="col-md-3">
                   <select class="select2 form-control" style="width:100%;" id="select2Customer" name="select2Customer">
                     
                   </select>
                 </div>
-                <div class="pull-left">
-                  <select class="select2 form-control" style="width:150%;display: none;" id="select2Sales" name="select2Sales">
+                <div class="col-md-3">
+                  <select class="select2 form-control" style="display: none;" id="select2Sales" name="select2Sales">
                     
                   </select>
-                  <select class="select2 form-control" style="width:100%;display: none;" id="select2Direktor" name="select2SalesDirektor">
+                  <select class="select2 form-control" style="display: none;" id="select2Direktor" name="select2SalesDirektor">
                     
                   </select>
                 </div>
-                <div class="col-md-2" style="margin-left:60px">
-                  <button class="btn btn-primary btnApply"><i class="fa fa-check-circle"></i> Apply</button>
-                </div>
-                <button class="btn btn-info pull-right reload-table"><i class="fa fa-refresh"></i> Refresh</button>
-              </div>              
-              
+                <div class="col-md-3">
+                  <button class="btn btn-primary btnApply" style="margin-left:10px"><i class="fa fa-check-circle"></i> Apply</button>
+                  <button class="btn btn-info pull-right reload-table"><i class="fa fa-refresh"></i> Refresh</button>
+                </div>  
             </div>
           </div>   
 
