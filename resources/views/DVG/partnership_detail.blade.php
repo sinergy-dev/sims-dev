@@ -5,7 +5,19 @@ Partnership
 @section('head_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link type="text/css" rel="stylesheet" href="{{asset('css/simplePagination.css')}}"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
 <style type="text/css">
+	.pace .pace-progress {
+			background: #ffffff;
+			position: fixed;
+			z-index: 2000;
+			top: 0;
+			right: 100%;
+			width: 100%;
+			height: 2px;
+	}
+
 	input {
 	  -webkit-user-select: none;
 	  -moz-user-select: none;
@@ -14,18 +26,25 @@ Partnership
 	  user-select: none;          
 	}
 
+	.select2-container--default.select2-container--disabled .select2-selection--multiple{
+		background-color:rgba(0,0,0,0) !important;
+		outline: 0;
+	  border-width: 0 0 1px !important;
+	  /*borde-color:  grey !important;*/
+	}
+
+	.select2-container--default .select2-selection--multiple{
+		outline: 0;
+	  border-width: 0 0 2px!important;
+	  border-color: #00c0ef;
+	}
+
 	input[readonly]{
 		background-color:rgba(0,0,0,0) !important;
     border:none !important;
 	}
 
 	input.transparent-input {
-		outline: 0;
-	  border-width: 0 0 2px;
-	  border-color: #00c0ef
-	}
-
-	input.transparent-input:focus {
 		outline: 0;
 	  border-width: 0 0 2px;
 	  border-color: #00c0ef
@@ -141,7 +160,7 @@ Partnership
 </section>
 <section class="content">
 	<div class="row">
-	  <div class="col-md-3 col-xs-12">
+	  <div class="col-md-4 col-xs-12">
 			<div class="box box-primary">
 				<div class="box-body">
 					<form id="formEdit" enctype="multipart/form-data">
@@ -153,13 +172,13 @@ Partnership
 				            <label for="imageUpload"></label>
 				        </div>
 				        <div class="avatar-preview">
-				          <!--   <div id="imagePreview" name="logo"  style="background-image: url('https://seeklogo.com/images/C/cisco-networking-academy-logo-0B2566178E-seeklogo.com.png');">
-				            </div> -->
-				            <div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/'.$data->logo)}}')">
+				        	@if($data->logo == "")
+				        		<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/logo_placeholder.png')}}')">
 				            </div>
-				            <!-- <img id="imagePreview" name="logo" src="{{ asset('image/logo_partnership/'.$data->logo)}}"> -->
-				          <!--   <div id="imagePreview" name="logo"  style="background-image: url('')">
-				            </div> -->
+				        	@else
+				        		<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/'.$data->logo)}}')">
+				            </div>
+				        	@endif		            
 				        </div>
 				    </div>
           </div>
@@ -185,11 +204,11 @@ Partnership
 		          			<th><input class="form-control transparent-input" readonly type="text" id="type_edit" name="type_edit" value="{{$data->type}}"></th>
 		          		</tr>
 		          		<tr>
-		          			<td style="vertical-align: middle;">Renewal Update</td>
+		          			<td style="vertical-align: middle;">Renewal Date</td>
 		          			<th><input class="form-control transparent-input" readonly type="date" id="renewal_edit" name="renewal_edit" value="{{$data->renewal_date}}"></th>
 		          		</tr>
 		          		<tr>
-		          			<td style="vertical-align: middle;">Annual Fee</td>
+		          			<td style="vertical-align: middle;">Renewal Fee</td>
 		          			<th><input class="form-control transparent-input" readonly type="text" id="annual_edit" name="annual_edit" value="{{$data->annual_fee}}"></th>
 		          		</tr>
 		          		<tr>
@@ -212,22 +231,32 @@ Partnership
 		          			<td style="vertical-align: middle;">ID Mitra</td>
 		          			<th><input class="form-control transparent-input" readonly type="text" id="mitra_edit" name="mitra_edit" value="{{$data->id_mitra}}"></th>
 		          		</tr>
+		          		<tr>
+		          			<td style="vertical-align: middle;">Partner Portal URL</td>
+		          			<th><input class="form-control transparent-input" readonly type="text" id="partner_portal_edit" name="partner_portal_edit" value="{{$data->portal_partner}}"></th>
+		          		</tr>
+		          		<tr>
+		          			<td style="vertical-align: middle;">Technology Tag</td>
+		          			<th>
+                    	<select class="form-control" id="technologyTag_edit" name="technologyTag_edit" style="width: 100%;" disabled></select>
+		          			</th>
+		          		</tr>
 	          	</table>
           	</form>
           	<a class="btn btn-primary btn-block" id="btn-edit" type="button"><b>Edit</b></a>
-        		<a href="{{url('show_cuti')}}" class="btn btn-danger btn-block" id="btn-delete" type="button"><b>Delete</b></a>
+        		<!-- <a href="{{url('show_cuti')}}" class="btn btn-danger btn-block" id="btn-delete" type="button"><b>Delete</b></a> -->
           </div>
     		</div>
  			</div>
  		</div>
-    <div class="col-md-9 col-xs-12">
+    <div class="col-md-8 col-xs-12">
       	<div class="nav-tabs-custom">
 					<ul class="nav nav-tabs">
 						<li class="active">
 							<a href="#tab_1" data-toggle="tab">Certification List</a>
 						</li>
-						<li class=""><a href="#tab_2" data-toggle="tab">Certification Partner</a></li>
-						<li><a href="#tab_3" data-toggle="tab">Sales Target</a></li>
+						<li class=""><a href="#tab_2" data-toggle="tab">Proof of Partnership</a></li>
+						<li><a href="#tab_3" data-toggle="tab">Target</a></li>
 						<li><a href="#tab_4" data-toggle="tab">Log Activity</a></li>
 
 					<!-- 	<li class="pull-right">
@@ -240,7 +269,7 @@ Partnership
 					<div class="tab-content">
 						<div class="tab-pane active" id="tab_1">
 							<div>
-								<a id="btnAddCert" style="cursor:pointer;"><i class="fa fa-plus"></i>&nbspCertification</a>
+								<a id="btnAddCert" style="cursor:pointer;display: none;" class="pull-right"><i class="fa fa-plus"></i> &nbspCertification</a>
 							</div>
 							<div class="col-lg-4 col-xs-6">
 						      
@@ -255,34 +284,28 @@ Partnership
 								<div class="box-header with-border">
 									<i class="fa fa-image"></i>
 										<h3 class="box-title">Certificate Partner</h3>
-										<a id="btnAddCert" class="pull-right" style="cursor:pointer;"><i class="fa fa-plus"></i>&nbspCertificate Partner</a>
+										<a id="btnAddCertPartner" class="pull-right" style="cursor:pointer;"><i class="fa fa-plus"></i>&nbspCertificate Partner</a>
 								</div>
 
 								<div class="box-body">
 									<div class="post">
 										<div class="row margin-bottom">
 												<div class="col-sm-6">
-													<img class="img-responsive" style="border: 1px solid " id="img-preview" src="https://www.tcandc.com/images/CiscoCertificate2.jpg" alt="Photo">
+													<img class="img-responsive" style="border: 1px solid " id="img-preview" src="{{asset('image/logo_partnership/certificate_placeholder.png')}}" alt="Photo">
 												</div>																			
 												<div class="paging col-sm-6">
-														<div class="row">
-															<div class="col-sm-6">																
-																<img class="img-responsive" style="cursor: pointer;" src="https://pegu6.files.wordpress.com/2017/08/td-cisco-certificate-of-completion-us-federal-authorization_pegasus-enterprise-holdings-llc.jpg" alt="Photo">
-															</div>
-														</div>
-														<div id="pagination-container" class="text-center" style="margin-top: 10px;">
-														</div>
+													<div class="row" style="margin-bottom: 10px;" id="idCertList">															
+													</div>
+													<div id="pagination-container" class="text-center" style="margin-top: 10px;">
+													</div>
 												</div>
 										</div>
 										<div class="timeline-item">
-											<span class="time pull-right"><i class="fa fa-clock-o"></i> 27 mins ago</span>
-											<div class="timeline-body">
-												Cisco Partner Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-												Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-												when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+											<!-- <span class="time pull-right"><i class="fa fa-clock-o"></i></span> -->
+											<div class="timeline-body" style="margin-bottom:10px">
 											</div>
 											<div class="timeline-footer">
-												<a class="btn btn-warning btn-flat btn-xs">Update</a>
+												
 											</div>
 										</div>
 									
@@ -290,38 +313,54 @@ Partnership
 								</div>
 							</div>
 						</div>
-
 						<div class="tab-pane" id="tab_3">
-							Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-							Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-							when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-							It has survived not only five centuries, but also the leap into electronic typesetting,
-							remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-							sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-							like Aldus PageMaker including versions of Lorem Ipsum.
+							<div class="row">
+								<div class="col-md-12">
+									<a onclick="btnTarget('{{$data->id_partnership}}')" style="cursor:pointer;float: right;margin-right: 10px;"><i class="fa fa-plus"></i> &nbspTarget</a>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="box-body" id="listTarget">
+										<ul class="todo-list">
+										</ul>
+									</div>
+								</div>
+							</div>
 						</div>
-
 						<div class="tab-pane" id="tab_4">
-							There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
+							<div class="table-responsive">
+								<table class="table table-bordered nowrap table-striped dataTable" id="tbLog" style="width: 100%" cellspacing="0">
+		              <thead>
+		                <tr>
+		                  <th>No</th>
+		                  <th>Activity</th>
+		                  <th>Created at</th>
+		                  <th>PIC</th>
+		                </tr>
+		              </thead>
+		              <tbody>
+		              </tbody>
+		            </table>
+							</div>							
 						</div>
-
 					</div>
 				</div>
     </div>
 	</div>
-	<!--MODAL-->
+	<!--Modal-->
 	<div class="modal fade" id="modalAddCert" role="dialog">
     <div class="modal-dialog modal-lg">
       <div class="modal-content modal-md">
         <div class="modal-header">
             <button type="button" data-dismiss="modal" class="close" aria-label="Close">
             <span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">Add Partnership</h4>
+            <h4 class="modal-title">Add Engineer</h4>
         </div>
         <div class="modal-body">
         	<form id="formAddCert">  
         		@csrf  
-        		<i class="fa fa-table"></i><label>Certificate list</label>    		
+        		<i class="fa fa-table"></i><label>&nbspCertificate list</label>    		
 	        	<table class="table">
 				      <thead>
 				        <tr>
@@ -339,23 +378,6 @@ Partnership
 				      <tbody id="tbListCert">
 				      </tbody>
 				    </table>
-				    <i class="fa fa-table"></i><label>Sales Target</label> 
-				    <table class="table">
-				      <thead>
-				        <tr>
-				          <th>Target</th>
-				          <th>Nominal</th>
-				          <th>Apaya kemarin</th>
-				          <td class="text-center">
-				            <button class="btn btn-xs btn-primary" onclick="addSalesTarget()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
-				              <i class="fa fa-plus"></i>
-				            </button> 
-				          </td>
-				        </tr>
-				      </thead>
-				      <tbody id="tbSalesTarget">
-				      </tbody>
-				    </table>
         	</form>			    
 			    <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -365,25 +387,154 @@ Partnership
       </div>
     </div>
   </div>
+  
+  <!--Modal Cert Partner-->
+	<div class="modal fade" id="modalAddCertPartner" role="dialog">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" data-dismiss="modal" class="close" aria-label="Close">
+            <span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">Add Certificate Partner</h4>
+        </div>
+        <div class="modal-body">
+        	<form id="formAddCertPartner" enctype="multipart/form-data">  
+        		@csrf  
+        		<input type="text" class="form-control" name="idCertPartner" id="idCertPartner" value="{{$data->id_partnership}}" style="display: none;">
+
+        		<div class="form-group">
+        			<label>Title</label>
+        			<input type="text" class="form-control" name="inputTitleCert" id="inputTitleCert" d>
+              <span class="help-block" style="display:none;">Please Fill Title!</span>
+        		</div>
+        		<div class="form-group">
+        			<label>Certificate File (image/jpg/png)</label>
+        			<input type="file" id="imgCertPartner" name="imgCertPartner" accept="image/*">
+              <span class="help-block" style="display:none;">Please Upload File Certificate!</span>
+        		</div>
+        	</form>			    
+			    <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnSubmitCertPartner">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 @endsection
 @section('scriptImport')
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+ <!-- <script type="text/javascript" src="https://adminlte.io/themes/AdminLTE/dist/js/pages/dashboard.js"></script> -->
  <script type="text/javascript" src="{{asset('js/jquery.simplePagination.js')}}"></script>
  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+ <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
-	$(".money").mask('000.000.000.000.000', {reverse: true})
+	// $(".money").mask('000.000.000.000.000', {reverse: true})
 	localStorage.setItem("status","initial")
+	$(document).ready(function(){
+		// getDetail()
+
+		// var list = [
+		// 	{"name" : "Yuni","status":"done","value" : "checked"},
+		// 	{"name" : "Triza","status":"","value" : ""},
+		// 	{"name" : "Dinar","status":"done","value" : "checked"},
+		// 	{"name" : "Faiqoh","status":"","value" : ""},
+		// 	{"name" : "Rama","status":"done","value" : "checked"}
+		// ]
+
+		// var newAppend = ""
+
+		// list = list.sort((a, b) => a.status.localeCompare(b.status))
+		// // console.log(list)
+
+		// list.forEach(function(data,index){
+		// 	newAppend = newAppend + '<li class="' + data.status + '">'
+		// 	newAppend = newAppend + '	<span class="handle">'
+		// 	newAppend = newAppend + '		<i class="fa fa-ellipsis-v"></i>'
+		// 	newAppend = newAppend + '		<i class="fa fa-ellipsis-v"></i>'
+		// 	newAppend = newAppend + '	</span>'
+		// 	newAppend = newAppend + '	<input type="checkbox" class="checked-'+ data.name + '">'
+		// 	newAppend = newAppend + '	<span class="text">' + data.name + '</span>'
+		// 	newAppend = newAppend + '	<small class="label label-danger"><i class="fa fa-clock-o"></i> 2 mins</small>'
+		// 	newAppend = newAppend + '	<div class="tools">'
+		// 	newAppend = newAppend + '		<i class="fa fa-edit"></i>'
+		// 	newAppend = newAppend + '		<i class="fa fa-trash-o"></i>'
+		// 	newAppend = newAppend + '	</div>'
+		// 	newAppend = newAppend + '</li>'
+		// })
+
+		// $('.todo-list').append(newAppend)
+
+		// $('.todo-list').sortable({
+		// 	placeholder         : 'sort-highlight',
+		// 	handle              : '.handle',
+		// 	forcePlaceholderSize: true,
+		// 	zIndex              : 999999
+		// });
+
+		// $('.todo-list').todoList({
+		// 	onCheck  : function () {
+		// 		window.console.log($(this), 'The element has been checked');
+		// 	},
+		// 	onUnCheck: function () {
+		// 		window.console.log($(this), 'The element has been unchecked');
+		// 	}
+		// });
+
+		// list.forEach(function(data,index){
+		// 	if(data.status == "done"){
+		// 		$(".checked-" + data.name).attr("checked","true")
+		// 	}
+		// })
+
+    var accesable = @json($feature_item);
+    accesable.forEach(function(item,index){
+      $("#" + item).show()
+
+    })
+    Pace.restart();
+		Pace.track(function() {
+			showEngCert()
+	    showTargetList()
+	    showCertList()
+			TagTechnology()
+		})
+  })
+
+  $("#tbLog").DataTable({
+		"ajax":{
+      "type":"GET",
+      "url":"{{url('/partnership/getDataLog')}}",
+      "data":{
+      	id_partnership:window.location.href.split("/")[4].split("#")[0]
+      }
+    },
+    "columns": [
+      { 
+      	render: function (data, type, row, meta){
+      		return ++meta.row         		
+      	}
+      },
+      { "data": "description" },
+      { "data": "created_at" },
+      { "data": "name"},
+	  ],
+  })
+
 	$("#btn-edit").click(function(){
-	console.log(localStorage.getItem("status"))
 		if (localStorage.getItem("status") == "initial") {
 			$("#btn-edit").removeClass("btn-primary").addClass("btn-warning").html("Save").css('font-weight', 'bold')
 			localStorage.setItem("status", "update");
 			$(":input[type=date],:input[type=text][readonly='readonly']").attr("readonly", false);
+			$("#technologyTag_edit").attr("disabled", false);
 			$(":input[type=text]").focus()
 			$(".avatar-edit").css("display", "block")
 		} else {
@@ -391,11 +542,47 @@ Partnership
 		}
 	})
 
+	function TagTechnology(){
+		$.ajax({
+      url: "{{url('/project/getTechTag')}}",
+      type: "GET",
+      success: function(result) {
+        console.log(result)
+        var arr = result.results;
+        var selectOption = [];
+        var otherOption;
+
+        var data = {
+          id: '',
+          text: 'Select Technology'
+        };
+
+        selectOption.push(data)
+        $.each(arr,function(key,value){
+          selectOption.push(value)
+        })
+
+        $("#technologyTag_edit").select2({
+           data: selectOption,
+           multiple: true
+        })
+
+        var data = JSON.parse('@json($data)')
+				var array = JSON.parse("[" + data.id_tech + "]");
+
+				$("#technologyTag_edit").val(array).trigger("change")
+      }
+    })
+	}
+
+	
+
 	function btnUpdate(){
+			// console.log($('#imageUpload').prop('files')[0])
 			const fileupload = $('#imageUpload').prop('files')[0];
 
       var nama_file = $('#imageUpload').val();
-			let formData = new FormData();
+			var formData = new FormData();
 
 			if (nama_file!="" && fileupload!="") {
 				formData.append('fileupload', fileupload);
@@ -414,12 +601,16 @@ Partnership
     	formData.append('phone_edit', $("#phone_edit").val())
     	formData.append('email_edit', $("#email_edit").val())
     	formData.append('support_edit', $("#support_edit").val())
-    	formData.append('mitra_edit', $("#mitra_edit").val())      
+    	formData.append('mitra_edit', $("#mitra_edit").val())     
+    	formData.append('partner_portal_edit',$("#partner_portal_edit").val())
+			formData.append('technologyTag_edit',JSON.stringify($("#technologyTag_edit").val())) 
+
+			// console.log($("#technologyTag_edit").val())
 
 			Swal.fire({
         title: 'Update partnership detail',
         text: "Are you sure?",
-        icon: 'warning',
+        icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
@@ -442,7 +633,7 @@ Partnership
           })
           $.ajax({          		
               url: "{{'/update_partnership'}}",
-              type: 'post',
+              type: 'POST',
               processData: false,
 		          contentType: false,
               // dataType: 'application/json',
@@ -457,7 +648,7 @@ Partnership
                     if (result.value) {
                     	localStorage.setItem("status", "initial");
 											$("#btn-edit").removeClass("btn-warning").addClass("btn-primary").html("Edit").css('font-weight', 'bold')
-                      location.reload()
+						          location.reload();
                     }
                 })
             }
@@ -472,10 +663,10 @@ Partnership
     var append = ""
     append = append + "<tr class='new-list'>"
     append = append + " <td>"
-    append = append + " <input data-value='" + i + "' name='cert_type[]' id='cert_type' class='form-control' type='text' placeholder='Enter Certificate Name'>"
+    append = append + " <input data-value='" + i + "' name='cert_type[]' id='cert_type' class='form-control' type='text' placeholder='Ex: Engineer - Profesional'>"
     append = append + " </td>"
     append = append + " <td>"
-    append = append + "<input data-value='" + i + "' name='cert_name[]' id='cert_name' class='form-control' type='text' placeholder='Enter Certificate Type'>"
+    append = append + "<input data-value='" + i + "' name='cert_name[]' id='cert_name' class='form-control' type='text' placeholder='Ex: 350-401 ENCOR'>"
     append = append + " </td>"
     append = append + " <td style='white-space: nowrap'>"
     append = append + " <select class='form-control select2-person' data-value='" + i + "' id='select2-person' style='width: 100%!important' name='cert_person[]'></select> "
@@ -502,59 +693,12 @@ Partnership
     }) 
   }
 
-	$("#btnAddCert").click(function(){
-		$("#modalAddCert").modal("show")
-	})
+  $(document).on('click', '.btn-trash-list', function() {
+    $(this).closest("tr").remove();
+  });
 
-	$("#btnSubmitCert").click(function(){
-			Swal.fire({
-        title: 'Add New Partnership',
-        text: "Are you sure?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.value) {
-          Swal.fire({
-            title: 'Please Wait..!',
-            text: "It's updating..",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            customClass: {
-              popup: 'border-radius-0',
-            },
-            onOpen: () => {
-              Swal.showLoading()
-            }
-          })
-          $.ajax({
-              url: "{{'/partnership/addCertList'}}",
-              type: 'post',
-              // dataType: 'application/json',
-              data: $("#formAddCert").serialize(), // serializes the form's elements.
-            success: function(data)
-            {
-                Swal.showLoading()
-                  Swal.fire(
-                    'Successfully!',
-                    'success'
-                  ).then((result) => {
-                    if (result.value) {
-                      location.reload()
-                    }
-                })
-            }
-          }); 
-        }    
-      })
-	})
-
-	$(document).ready(function(){
-		append = ""
+  function showEngCert(){
+  	append = ""
 		$.ajax({
 		    url: "{{url('/partnership/getCert')}}",
 		    data: {
@@ -572,7 +716,7 @@ Partnership
 			    					append = append + "<div class='col-md-4'>"
 			        			append = append + '<div class="box box-info">'
 									  append = append + '<div class="box-header with-border">'
-										append = append + 	'<h3 class="box-title">'+ data.name_certification+'</h3>'
+										append = append + 	'<h3 class="box-title">'+ data.name_certification +'</h3>'
 										append = append + '</div>'
 										append = append + '<div class="box-body">'
 										append = append +   '<div style="float: left">'
@@ -580,8 +724,8 @@ Partnership
 										append = append +   '</div>'					    
 										append = append +	'</div>'
 										append = append +	'<div class="box-footer">'
-										append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-cert" style="vertical-align: top; width: 60px">Delete</button>'
-										append = append +	' <button class="btn btn-xs btn-primary pull-right btn-edit-cert" value="'+data.id+","+data.nik+","+data.name_certification+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px">Edit</button>'
+										append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none">Delete</button>'
+										append = append +	' <button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none">Edit</button>'
 										append = append +	'</div>'
 										append = append + '</div>'
 			    				append = append + "</div>"
@@ -595,7 +739,12 @@ Partnership
 
         	$("#list-cert").html(append)
 
-        	$(".btn-edit-cert").click(function(){
+        	var accesable = @json($feature_item);
+				    accesable.forEach(function(item,index){
+				      $("." + item).show()
+			    })
+
+        	$(".btn-edit-eng").click(function(){
 						console.log(this.value.split(","))
 						append = append + '			<div class="modal fade" id="myModal" role="dialog">'
     				append = append + '				<div class="modal-dialog">'
@@ -609,11 +758,11 @@ Partnership
 						append = append + '				<tr>'
 						append = append + "					<td>"
 						append = append + "						<label>Certification Name</label>"
-				    append = append + "						<input id='cert_name_edit' class='form-control' type='text' 																	placeholder='Enter Certificate Type' value='"+ this.value.split(",")[2] +"'>"
+				    append = append + "						<input id='cert_name_edit' class='form-control' type='text' placeholder='Enter Certificate Type' value='"+ this.value.split(",")[2] +"'>"
 				    append = append + " 				</td>"
 				    append = append + " 				<td>"
 						append = append + "						<label>Person</label>"
-				    append = append + " 					<select class='form-control select2' id='cert_user_edit' style='width: 																					100%!important'></select> "
+				    append = append + " 					<select class='form-control select2' id='cert_user_edit' style='width:100%!important'></select> "
 				    append = append + " 				</td>"
 				    append = append + '				</tr>'
 						append = append + '				</table>'
@@ -646,7 +795,7 @@ Partnership
 							Swal.fire({
 				        title: 'Update Certification User',
 				        text: "Are you sure?",
-				        icon: 'warning',
+				        icon: 'question',
 				        showCancelButton: true,
 				        confirmButtonColor: '#3085d6',
 				        cancelButtonColor: '#d33',
@@ -694,11 +843,11 @@ Partnership
 						})
 					})
 
-					$(".btn-delete-cert").click(function(){
+					$(".btn-delete-eng").click(function(){
 						Swal.fire({
 			        title: 'Delete Certificate User',
 			        text: "Are you sure?",
-			        icon: 'warning',
+			        icon: 'question',
 			        showCancelButton: true,
 			        confirmButtonColor: '#3085d6',
 			        cancelButtonColor: '#d33',
@@ -744,24 +893,435 @@ Partnership
 					})
 		    }
 		})
-		
-	 	var items = $(".post .row .paging .row");
-    var numItems = items.length;
-    var perPage = 1;
+  }
 
-    items.slice(perPage).hide();
+  function showTargetList(){
+  	var appendList = ""
+  	$.ajax({
+      type:"GET",
+      url:"{{url('/partnership/getTargetPartnership')}}",
+      data:{
+      	id_partnership:window.location.href.split("/")[4].split("#")[0],
+      },
+      success: function(result){
+      	$('.todo-list').empty("")
+    		$.each(result.data, function(key,value){
+    				if(value.status == 'Done'){
+    					status = 'done'
+    				}else{
+    					status = ''
+    				}
 
-    $('#pagination-container').pagination({
-        items: numItems,
-        itemsOnPage: perPage,
-        prevText: "&laquo;",
-        nextText: "&raquo;",
-        onPageClick: function (pageNumber) {
-            var showFrom = perPage * (pageNumber - 1);
-            var showTo = showFrom + perPage;
-            items.hide().slice(showFrom, showTo).show();
-        }
-    });
+    				appendList = appendList + '<li class="' + status + ' delete-'+ key +'">'
+						appendList = appendList + '	<span class="handle">'
+						appendList = appendList + '		<i class="fa fa-ellipsis-v"></i>'
+						appendList = appendList + '		<i class="fa fa-ellipsis-v"></i>'
+						appendList = appendList + '	</span>'
+						appendList = appendList + '	<input type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
+						appendList = appendList + '	<span class="text" id="textList" data-value='+key+'>'+ value.target + ' - ' + value.countable +'</span>'
+						appendList = appendList + ' <small class="label label-warning status-'+ key + '">'+ value.status +'</small>'
+						appendList = appendList + '	<div class="tools activeTrash-'+ key +'" style="display:none">'
+						appendList = appendList + '	<i class="fa fa-edit" onClick="editTarget('+value.id+')"></i>'
+						appendList = appendList + '		<i class="fa fa-trash-o" onClick="deleteTarget('+ key + ',' + value.id + ')"></i>'
+						appendList = appendList + '	</div>'
+						appendList = appendList + '</li>'
+				  // 	appendList = appendList + '<li id="liList" data-value='+key+'>'
+						// appendList = appendList + '<span class="handle ui-sortable-handle">'
+						// appendList = appendList + '<i class="fa fa-ellipsis-v"></i>'
+						// appendList = appendList + '<i class="fa fa-ellipsis-v"></i>'
+						// appendList = appendList + '</span>'
+						// appendList = appendList + '<input type="checkbox" id="cbTarget" data-value='+key+'">'
+						// // appendList = appendList + '<input type="checkbox" id="cbTarget" data-value='+key+' onclick="cbTargetChecked('+key+')">'
+						// appendList = appendList + '<span class="text" id="textList" data-value='+key+'>'+ value.target + ' , ' + value.countable +'</span>'
+						// appendList = appendList + '<small class="label label-warning">'+ value.status +'</small>'
+						// appendList = appendList + '<div class="tools">'
+						// appendList = appendList + '<i class="fa fa-edit"></i>'
+						// appendList = appendList + '<i class="fa fa-trash-o"></i>'
+						// appendList = appendList + '</div>'
+						// appendList = appendList + '</li>'
+    		})         		
+				$('.todo-list').append(appendList)
+
+				$.each(result.data,function(key,value){
+					if(value.status == "Done"){
+						$(".checked-"+key).attr("checked","true")
+						$(".checked-"+key).prop("disabled",true)
+						console.log(i)
+					}else{
+						$(".activeTrash-"+key).show()
+					}
+
+					$('.todo-list').todoList({
+						onCheck  : function () {
+							$.ajax({
+								type:"POST",
+								url:"{{url('/partnership/updateStatusTarget')}}",
+								data:{
+									_token:"{{csrf_token()}}",
+									id:$(this).data('value')
+								}
+							})
+							$(".checked-"+key).prop("disabled",true)
+							$(".activeTrash-"+key).hide()
+							$("small.status-"+key).text("Done")
+
+      	// 			$('.todo-list').empty("")
+							// $('.todo-list').append(appendList)
+							window.console.log($(this), 'The element has been checked');
+
+						},
+						onUnCheck: function () {
+							window.console.log($(this), 'The element has been unchecked');
+						}
+					});
+				})				
+
+				$('.todo-list').sortable({
+					placeholder         : 'sort-highlight',
+					handle              : '.handle',
+					forcePlaceholderSize: true,
+					zIndex              : 999999
+				});
+
+      },
+    }) 
+	}
+
+	function editTarget(id){
+		var id_target = ''
+		var targetValue = []
+  	var targetValue2 = []
+		$.ajax({
+			type:"GET",
+      url:"{{url('/partnership/getTargetById')}}",
+      data:{
+      	id:id,
+      },
+      success: function(result){
+      	id_target = result.data.id
+      	Swal.fire({
+				  title: "Update Target",
+				  html:
+				  	'<h4 style="float:left">Target:</h4><input id="target_sales" value="'+ result.data.target +'" placeholder="[Renewal] Cisco Gold Partner" class="swal2-input">' +
+		    		'<h4 style="float:left">Countable:</h4><input id="countable_target" value="'+ result.data.countable +'" placeholder="USD 2.00 or 4 Specialist" class="swal2-input">',
+				  focusConfirm: false,
+				  showCancelButton: true,
+		      confirmButtonColor: '#3085d6',
+		      cancelButtonColor: '#d33',
+		      confirmButtonText: 'SUBMIT',
+		      cancelButtonText: 'CANCEL',
+				  preConfirm: () => {
+							targetValue.push(document.getElementById('target_sales').value),
+							targetValue2.push(document.getElementById('countable_target').value)		      
+				  },
+				}).then((result) => {
+		      if (result.value) {
+		        Swal.fire({
+		          title: 'Please Wait..!',
+		          text: "It's updating..",
+		          allowOutsideClick: false,
+		          allowEscapeKey: false,
+		          allowEnterKey: false,
+		          customClass: {
+		            popup: 'border-radius-0',
+		          },
+		          onOpen: () => {
+		            Swal.showLoading()
+		          }
+		        })
+		        $.ajax({
+		          type:"POST",
+		          url:"{{url('/partnership/updateTarget')}}",
+		          data:{
+		          	_token:"{{csrf_token()}}",
+		          	id:id_target,
+		            target:targetValue.splice("")[0],
+		        		countable:targetValue2.splice("")[0],
+		          },
+		          success: function(result){
+		            Swal.showLoading()
+		            Swal.fire(
+		              'Successfully!',
+		              'success'
+		            ).then((result) => {
+		            	showTargetList()
+									// $("#listTarget").html(appendList)
+		            })
+		          },
+		        }) 
+		      }        
+		    })
+      }
+			
+		})
+	}
+
+	function deleteTarget(key,id){
+		$.ajax({
+			type:"POST",
+			url:"{{url('/partnership/deleteTarget')}}",
+			data:{
+				_token:"{{csrf_token()}}",
+				id:id
+			},
+			success: function(result){
+				console.log(key)
+				$('.delete-'+key).remove()
+      },
+		})
+	}
+
+  function cbTargetChecked(key){
+  	if ($("#cbTarget[data-value='"+key+"']").is(':checked')) 
+  	{
+  		console.log(key)
+  		console.log("checked")
+  		console.log($(this).closest("span"))
+    	$("#textList[data-value='"+key+"']").css("text-decoration","line-through");
+    	$("#cbTarget[data-value='"+key+"']").prop("disabled",true)
+
+    	// $("#liList[data-value='"+key+"']").prependTo($("#liList[data-value='"+key+"']").parent())
+    	$("#liList[data-value='"+key+"']").appendTo("#listTarget").addClass("todo-list ui-sortable")
+
+  	}else {
+    	$(this).closest("span").css("text-decoration","none");
+
+  	}
+  }
+
+  function showCertList(){
+  	appendCertList = ''
+  	$.ajax({
+      type:"GET",
+      url:"{{url('/partnership/getCertPartnership')}}",
+      data:{
+      	id_partnership:window.location.href.split("/")[4].split("#")[0],
+      },
+      success: function(result){
+      	$.each(result.data, function(key,value){
+      	console.log(value.title)
+    			appendCertList = appendCertList + '<div class="col-sm-6">'																
+						appendCertList = appendCertList + '<img class="imgList" style="cursor: pointer;width:100%;height:200px;border:1px black solid" src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo">'
+							appendCertList = appendCertList + '<small hidden>'+ value.title +'</small>'
+							appendCertList = appendCertList + '<small hidden>'+ value.id +'</small>'
+							if (value.title.length > 20) {
+								appendCertList = appendCertList + '<small>'+ value.title.substr(0, 20) +'...</small>'
+							}else{
+								appendCertList = appendCertList + '<small>'+ value.title +'</small>'	
+							}
+					appendCertList = appendCertList + '</div>'
+      	}) 
+				$("#idCertList").html(appendCertList)
+
+				var items = $(".post .row .paging .row .col-sm-6");
+		    var numItems = items.length;
+		    var perPage = 2;
+
+		    items.slice(perPage).hide();
+
+		    $('#pagination-container').pagination({
+		        items: numItems,
+		        itemsOnPage: perPage,
+		        prevText: "&laquo;",
+		        nextText: "&raquo;",
+		        onPageClick: function (pageNumber) {
+		            var showFrom = perPage * (pageNumber - 1);
+		            var showTo = showFrom + perPage;
+		            items.hide().slice(showFrom, showTo).show();
+		        }
+		    });
+      },
+    }) 
+  }
+
+  $("#btnAddCertPartner").click(function(){
+  	$("#modalAddCertPartner").modal("show")
+  })
+
+  function btnTarget(id_partnership){
+  	var titleStatus = 'Next Target'
+  	targetValue = []
+  	targetValue2 = []
+  	targetStatus = "Not-Done"
+    Swal.fire({
+		  title: titleStatus,
+		  html:
+		    '<h4 style="float:left">Target:</h4><input id="target_sales" placeholder="[Renewal] Cisco Gold Partner" class="swal2-input">' +
+		    '<h4 style="float:left">Countable:</h4><input id="countable_target" placeholder="USD 2.00 or 4 Specialist" class="swal2-input">',
+		  focusConfirm: false,
+		  showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'SUBMIT',
+      cancelButtonText: 'CANCEL',
+		  preConfirm: () => {
+					targetValue.push(document.getElementById('target_sales').value),
+					targetValue2.push(document.getElementById('countable_target').value)		      
+		  },
+		}).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Please Wait..!',
+          text: "It's updating..",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          customClass: {
+            popup: 'border-radius-0',
+          },
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+        $.ajax({
+          type:"POST",
+          url:"{{url('/partnership/store_target')}}",
+          data:{
+          	_token:"{{csrf_token()}}",
+          	id_partnership:id_partnership,
+            target:targetValue.splice("")[0],
+        		countable:targetValue2.splice("")[0],
+        		status:targetStatus,
+          },
+          success: function(result){
+            Swal.showLoading()
+            Swal.fire(
+              'Successfully!',
+              'success'
+            ).then((result) => {
+            	showTargetList()
+							// $("#listTarget").html(appendList)
+            })
+          },
+        }) 
+      }        
+    })	
+  }
+
+  $(".cbTarget").click(function(){
+
+  })
+
+	$("#btnAddCert").click(function(){
+		$("#modalAddCert").modal("show")
+	})
+
+	$("#btnSubmitCert").click(function(){
+			Swal.fire({
+        title: 'Add New Engineer',
+        text: "Are you sure?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's updating..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+              popup: 'border-radius-0',
+            },
+            onOpen: () => {
+              Swal.showLoading()
+            }
+          })
+          $.ajax({
+              url: "{{'/partnership/addCertList'}}",
+              type: 'post',
+              data: $("#formAddCert").serialize(), // serializes the form's elements.
+            success: function(data)
+            {
+                Swal.showLoading()
+                  Swal.fire(
+                    'Successfully!',
+                    'success'
+                  ).then((result) => {
+                    if (result.value) {
+                      location.reload()
+                    }
+                })
+            }
+          }); 
+        }    
+      })
+	})
+
+	$("#btnSubmitCertPartner").click(function(){
+			const fileupload = $('#imgCertPartner').prop('files')[0];
+
+      var nama_file = $('#imgCertPartner').val();
+			let formData = new FormData();
+
+			if (nama_file!="" && fileupload!="") {
+				formData.append('imgCertPartner', fileupload);
+      	formData.append('nama_file', nama_file);
+			}
+
+			if ($("#inputTitleCert").val() == "") {
+				$("#inputTitleCert").closest('.form-group').addClass('has-error')
+        $("#inputTitleCert").closest('input').next('span').show();
+        $("#inputTitleCert").prev('.input-group-addon').css("background-color","red");
+			} else if($("#imgCertPartner").val() == "") {
+				$("#imgCertPartner").closest('.form-group').addClass('has-error')
+        $("#imgCertPartner").closest('input').next('span').show();
+        $("#imgCertPartner").prev('.input-group-addon').css("background-color","red");
+			} else {
+				formData.append('_token',"{{csrf_token()}}")
+				formData.append('idCertPartner', $("#idCertPartner").val())
+				formData.append('inputTitleCert', $("#inputTitleCert").val())
+
+				Swal.fire({
+	        title: 'Add Certificate',
+	        text: "Are you sure?",
+	        icon: 'question',
+	        showCancelButton: true,
+	        confirmButtonColor: '#3085d6',
+	        cancelButtonColor: '#d33',
+	        confirmButtonText: 'Yes',
+	        cancelButtonText: 'No',
+	      }).then((result) => {
+	        if (result.value) {
+	          Swal.fire({
+	            title: 'Please Wait..!',
+	            text: "It's updating..",
+	            allowOutsideClick: false,
+	            allowEscapeKey: false,
+	            allowEnterKey: false,
+	            customClass: {
+	              popup: 'border-radius-0',
+	            },
+	            onOpen: () => {
+	              Swal.showLoading()
+	            }
+	          })
+	          $.ajax({
+	              url: "{{'/partnership/addCert'}}",
+	              type: 'post',
+	              processData: false,
+			          contentType: false,
+	              data:formData, // serializes the form's elements.
+	            success: function(data)
+	            {
+	                Swal.showLoading()
+	                  Swal.fire(
+	                    'Successfully!',
+	                    'success'
+	                  ).then((result) => {
+	                    if (result.value) {
+	                      location.reload()
+	                    }
+	                })
+	            }
+	          }); 
+	        }    
+	      })
+			}
 	})
 
 	function readURL(input) {
@@ -775,20 +1335,118 @@ Partnership
 	        reader.readAsDataURL(input.files[0]);
 	    }
 	}
+
 	$("#imageUpload").change(function() {
 	    readURL(this);
-	    $("#imageUpload").val(this.value)
+	    $("#imageUpload").val()
 	});
 
-	$('body').on('click','img',function(){
+	$('body').on('click','.imgList',function(){
 		var imgs = $(this).attr('src');
-		console.log(imgs)
 		$("#img-preview").attr("src",imgs);
-	})
-	$(".image-responsive").click(function(){
-		
+    $(".timeline-body").html("<div class='row'><div class='col-md-6'><textarea id='txEditTitle' class='form-control'>"+  $(this).next("small").text() +"</textarea></div></div>")
+    $(".timeline-footer").html("<a class='btn btn-warning btn-flat btn-xs' onClick='btnUpdateCert("+ $(this).next("small").next("small").text() +")'>Update</a> <a class='btn btn-danger btn-flat btn-xs' onClick='btnDelCert("+ $(this).next("small").next("small").text()+")'>Delete</a>")
+
 	})
 
+	function btnUpdateCert(id){
+		Swal.fire({
+      title: 'Update Certificate Title',
+      text: "Are you sure?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Please Wait..!',
+          text: "It's updating..",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          customClass: {
+            popup: 'border-radius-0',
+          },
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+       	$.ajax({          		
+          type:"POST",
+					url:"{{url('/partnership/updateTitleCert')}}",
+					data:{
+						_token:"{{csrf_token()}}",
+						id:id,
+						title:$("#txEditTitle").val()
+					},
+          success: function(data)
+          {
+              Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                  }
+              })
+          }
+        }); 
+      }    
+    })		
+	}
+
+	function btnDelCert(id){
+		Swal.fire({
+      title: 'Delete Certificate',
+      text: "Are you sure?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Please Wait..!',
+          text: "It's updating..",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          customClass: {
+            popup: 'border-radius-0',
+          },
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+       	$.ajax({          		
+          type:"POST",
+					url:"{{url('/partnership/deleteCertPartner')}}",
+					data:{
+						_token:"{{csrf_token()}}",
+						id:id
+					},
+          success: function(data)
+          {
+              Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                  }
+              })
+          }
+        }); 
+      }    
+    })
+	}
 
 </script>
 @endsection
