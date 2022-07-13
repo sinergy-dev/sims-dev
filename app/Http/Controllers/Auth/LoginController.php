@@ -109,14 +109,14 @@ class LoginController extends Controller
                     'email_company' => ['Google services are currently unreachable, please use your local account or try again later.'],
                     'email_google_eror' => ['Google services are currently unreachable, please use your local account or try again later.']
                 ]);
-        }        
-
+        }    
+        
         if(explode("@", $user->email)[1] !== env('COMPANY_EMAIL_PREFIX')){
             return redirect()
-                ->to('/login')
-                ->withErrors([
-                    'email_company' => ['You must enter your ' . env('COMPANY_EMAIL_PREFIX') . ' email to be able to login with your Google Account']
-                ]);
+            ->to('/login')
+            ->withErrors([
+                'email_company' => ['You must enter your ' . env('COMPANY_EMAIL_PREFIX') . ' email to be able to login with your Google Account']
+            ]);
         }
 
         // dd($user);
