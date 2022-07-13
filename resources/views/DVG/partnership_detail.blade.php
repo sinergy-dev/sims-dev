@@ -44,7 +44,18 @@ Partnership
     border:none !important;
 	}
 
+	select[readonly]{
+		background-color:rgba(0,0,0,0) !important;
+    border:none !important;
+	}
+
 	input.transparent-input {
+		outline: 0;
+	  border-width: 0 0 2px;
+	  border-color: #00c0ef
+	}
+
+	select.transparent-input {
 		outline: 0;
 	  border-width: 0 0 2px;
 	  border-color: #00c0ef
@@ -201,7 +212,13 @@ Partnership
 		          		</tr>		          		
 		          		<tr>
 		          			<td style="vertical-align: middle;">Type</td>
-		          			<th><input class="form-control transparent-input" readonly type="text" id="type_edit" name="type_edit" value="{{$data->type}}"></th>
+		          			<th>
+		          				<select class="form-control transparent-input" id="type_edit" name="type_edit" readonly>
+                        <option value="">Select Type</option>
+                        <option value="Distributor"  @if($data->type == 'Distributor') selected @endif>Distributor</option>
+                        <option value="Principal" @if($data->type == 'Principal') selected @endif>Principal</option>
+                      </select>
+		          			</th>
 		          		</tr>
 		          		<tr>
 		          			<td style="vertical-align: middle;">Renewal Date</td>
