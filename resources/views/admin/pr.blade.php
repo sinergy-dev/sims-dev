@@ -129,7 +129,7 @@
               <th><div class="truncate">Description</div></th>
               <th>From</th>
               <th></th>
-              <th>Issuance</th>
+              <th>Issued By</th>
               <th>Project ID</th>
               <th>Amount</th>
               <th>Status</th>
