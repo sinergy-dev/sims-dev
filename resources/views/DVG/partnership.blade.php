@@ -485,12 +485,11 @@ Partnership
 @section('script')  
   <script type="text/javascript">
     $(document).ready(function(){
+      var accesable = @json($feature_item);
       Pace.restart();
       Pace.track(function() {
-          showTablePartnership()
-        })
-
-      
+          showTablePartnership(accesable)
+      })
     })
 
     function searchCustom(id_table,id_seach_bar){
@@ -553,7 +552,7 @@ Partnership
       })
     }
 
-    function showTablePartnership(){
+    function showTablePartnership(accesable){
       var table = $('#tablePartnerhip').DataTable({
         "ajax":{
           "type":"GET",
@@ -581,10 +580,15 @@ Partnership
           },//number of certification
           { 
             render: function (data, type, row, meta){
-              return "<td><a href='{{url('/partnership_detail')}}/"+row.id_partnership+"'><button class='btn btn-primary btn-xs'><i class='fa fa-search-plus'></i> Detail</button></a>&nbsp<button class='btn btn-xs btn-danger' style=vertical-align: top;width: 60px' onclick='deletePartnership("+ row.id_partnership +")'><i class='fa fa-trash'></i>&nbspDelete</button></td>"            
+              return "<td><a href='{{url('/partnership_detail')}}/"+row.id_partnership+"'><button class='btn btn-primary btn-xs'><i class='fa fa-search-plus'></i> Detail</button></a>&nbsp<button class='btn btn-xs btn-danger btnDeletePartnership' style='vertical-align: top;width: 60px;display:none' onclick='deletePartnership("+ row.id_partnership +")'><i class='fa fa-trash'></i>&nbspDelete</button></td>"            
             }
           },//action  
         ],
+        "initComplete": function () {
+          accesable.forEach(function(item,index){
+            $("." + item).show()
+          })                    
+        },
         columnDefs: [
             { className: "dt-aligment-middle", targets: [1,2,3,4,5,6] },
         ],
@@ -597,12 +601,6 @@ Partnership
         "bFilter": true,
         "bInfo": false,
         "fixedHeader": true
-      });
-
-      var accesable = @json($feature_item);
-      accesable.forEach(function(item,index){
-        $("#" + item).show()
-
       })
 
       if (!(accesable.includes('th-action'))) {
