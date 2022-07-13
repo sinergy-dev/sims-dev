@@ -271,9 +271,9 @@ Partnership
 							<div>
 								<a id="btnAddCert" style="cursor:pointer;display: none;" class="pull-right"><i class="fa fa-plus"></i> &nbspCertification</a>
 							</div>
-							<div class="col-lg-4 col-xs-6">
+							<!-- <div class="col-lg-4 col-xs-6">
 						      
-					    </div>
+					    </div> -->
 							<div id="list-cert">
 								
 							</div>
@@ -573,9 +573,7 @@ Partnership
 				$("#technologyTag_edit").val(array).trigger("change")
       }
     })
-	}
-
-	
+	}	
 
 	function btnUpdate(){
 			// console.log($('#imageUpload').prop('files')[0])
@@ -706,94 +704,110 @@ Partnership
 		    },
 		    type: "GET",
 		    success: function(result) {
-		    			append = append + "<div class='row'>"
-		    				append = append + "<div class='col-md-12'>"
-		        	$.each(result.data.cert_user,function(key,value){
-		    				append = append + "<h3>" + key +"</h3>"
+    		$('#list-cert').empty("")
+  	    		append = append + "<div class='row'>"
+	    				append = append + "<div class='col-md-12'>"
+	        	$.each(result.data.cert_user,function(key,value){
+	    				append = append + "<h3><i><b>" + key +"</b></i></h3>"
 
-		    				append = append + "<div class='row'>"
-		        		$.each(value,function(key,data){
-			    					append = append + "<div class='col-md-4'>"
-			        			append = append + '<div class="box box-info">'
-									  append = append + '<div class="box-header with-border">'
-										append = append + 	'<h3 class="box-title">'+ data.name_certification +'</h3>'
-										append = append + '</div>'
-										append = append + '<div class="box-body">'
-										append = append +   '<div style="float: left">'
-										append = append + '<span><b>'+ data.name +'</b></span>'
-										append = append +   '</div>'					    
-										append = append +	'</div>'
-										append = append +	'<div class="box-footer">'
-										append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none">Delete</button>'
-										append = append +	' <button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none">Edit</button>'
-										append = append +	'</div>'
-										append = append + '</div>'
-			    				append = append + "</div>"
-
-		        		})
+	    				append = append + "<div class='row'>"
+	        		$.each(value,function(key,data){
+		    					append = append + "<div class='col-md-4'>"
+		        			append = append + '<div class="box box-info">'
+								  append = append + '<div class="box-header with-border">'
+									append = append + 	'<h3 class="box-title">'+ data.name_certification +'</h3>'
+									append = append + '</div>'
+									append = append + '<div class="box-body">'
+									append = append +   '<div style="float: left">'
+									append = append + '<span><b>'+ data.name +'</b></span>'
+									append = append +   '</div>'	
+									append = append + '<div style="float: right;">'
+									if(data.avatar != null){
+										append = append + ' <img class="profile-user img-responsive img-circle" src="'+data.avatar+'" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+									}else if (data.gambar != null && data.gambar != "-") {
+										append = append + ' <img class="profile-user img-responsive img-circle" src="{{ asset("image")}}/'+data.gambar+'" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+									}else{
+										append = append + ' <img class="profile-user img-responsive" src="https://www.mycustomer.com/sites/all/modules/custom/sm_pp_user_profile/img/default-user.png" alt="Yuki" style="width: 100px;height:100px;position: relative;">'
+									}
+									append = append + '</div>'			    
+									append = append +	'</div>'									
+									append = append +	'<div class="box-footer">'
+									append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none">Delete</button>'
+									append = append +	' <button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none">Edit</button>'
+									append = append +	'</div>'
+									append = append + '</div>'
 		    				append = append + "</div>"
 
-		        	})
-		    			append = append + "</div>"
+	        		})
+	    				append = append + "</div>"
+
+	        	})
+	    			append = append + "</div>"
 		    		append = append + "</div>"
 
-        	$("#list-cert").html(append)
+        		$("#list-cert").append(append)
 
-        	var accesable = @json($feature_item);
-				    accesable.forEach(function(item,index){
+        		var accesable = @json($feature_item);
+			    	accesable.forEach(function(item,index){
 				      $("." + item).show()
-			    })
-
-        	$(".btn-edit-eng").click(function(){
-						console.log(this.value.split(","))
-						append = append + '			<div class="modal fade" id="myModal" role="dialog">'
-    				append = append + '				<div class="modal-dialog">'
-      			append = append + '					<div class="modal-content">'
-        		append = append + '				<div class="modal-header">'
-						append = append + '          <h4>Edit Partnership Certificate</h4>'
-						append = append + '       </div>'
-						append = append + '   		<div class="modal-body">'
-						append = append + '    		<input hidden id="id_cert_edit" value="'+ this.value.split(",")[0] +'">'
-						append = append + '				<table class="table table-bordered">'
-						append = append + '				<tr>'
-						append = append + "					<td>"
-						append = append + "						<label>Certification Name</label>"
-				    append = append + "						<input id='cert_name_edit' class='form-control' type='text' placeholder='Enter Certificate Type' value='"+ this.value.split(",")[2] +"'>"
-				    append = append + " 				</td>"
-				    append = append + " 				<td>"
-						append = append + "						<label>Person</label>"
-				    append = append + " 					<select class='form-control select2' id='cert_user_edit' style='width:100%!important'></select> "
-				    append = append + " 				</td>"
-				    append = append + '				</tr>'
-						append = append + '				</table>'
-						append = append + '			<div class="modal-footer">'
-						append = append + '		<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
-						append = append + '		<button type="button" class="btn btn-primary" id="btnEditCert">Submit</button>'
-						append = append + '	</div>'
-						append = append + '        </div>'
-						append = append + '       </div>'
-						append = append + '   </div>'
-						append = append + '</div>'
-						$("body").append(append);
-						//here you force modal to be open
-        		$("#myModal").modal('show')
-        		$("#cert_user_edit").val(this.value.split(",")[1]).trigger("change")
-
-        		$.ajax({
-				      url: "{{url('/partnership/getUser')}}",
-				      type: "GET",
-				      success: function(result) {
-				        $("#cert_user_edit").select2({
-			            dropdownParent: $('#myModal'),
-			            placeholder: "Select Person",
-			            data: result.data
-				        })
-				      }
 				    })
-				    
-				    $("#btnEditCert").click(function(){
+
+				    console.log(accesable)
+
+	        	$(".btn-edit-eng").click(function(){
+	        			var name = this.value.split(",")[1]
+	        			appendModal = ""
+								console.log(this.value.split(","))
+								appendModal = appendModal + '			<div class="modal fade" id="myModal" role="dialog">'
+			  				appendModal = appendModal + '				<div class="modal-dialog">'
+			    			appendModal = appendModal + '					<div class="modal-content">'
+			      		appendModal = appendModal + '				<div class="modal-header">'
+								appendModal = appendModal + '          <h4>Edit Partnership Certificate</h4>'
+								appendModal = appendModal + '       </div>'
+								appendModal = appendModal + '   		<div class="modal-body">'
+								appendModal = appendModal + '    		<input hidden id="id_cert_edit" value="'+ this.value.split(",")[0] +'">'
+								appendModal = appendModal + '				<table class="table table-bordered">'
+								appendModal = appendModal + '				<tr>'
+								appendModal = appendModal + "					<td>"
+								appendModal = appendModal + "						<label>Certification Name</label>"
+						    appendModal = appendModal + "						<input id='cert_name_edit' class='form-control' type='text' placeholder='Enter Certificate Type' value='"+ this.value.split(",")[2] +"'>"
+						    appendModal = appendModal + " 				</td>"
+						    appendModal = appendModal + " 				<td>"
+								appendModal = appendModal + "						<label>Person</label>"
+						    appendModal = appendModal + " 					<select class='form-control select2' id='cert_user_edit' style='width:100%!important'></select> "
+						    appendModal = appendModal + " 				</td>"
+						    appendModal = appendModal + '				</tr>'
+								appendModal = appendModal + '				</table>'
+								appendModal = appendModal + '			<div class="modal-footer">'
+								appendModal = appendModal + '		<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'
+								appendModal = appendModal + '		<button type="button" class="btn btn-primary" onClick="btnEditcert()">Submit</button>'
+								appendModal = appendModal + '	</div>'
+								appendModal = appendModal + '        </div>'
+								appendModal = appendModal + '       </div>'
+								appendModal = appendModal + '   </div>'
+								appendModal = appendModal + '</div>'
+								//here you force modal to be open
+			      		
+								$("body").append(appendModal);
+								$.ajax({
+						      url: "{{url('/partnership/getUser')}}",
+						      type: "GET",
+						      success: function(result) {
+						        $("#cert_user_edit").select2({
+					            dropdownParent: $('#myModal'),
+					            placeholder: "Select Person",
+					            data: result.data
+						        })
+
+			      				$("#cert_user_edit").val(name).trigger("change")
+						      }
+						    })
+			      		$("#myModal").modal('show')			      		
+						})
+
+						$(".btn-delete-eng").click(function(){
 							Swal.fire({
-				        title: 'Update Certification User',
+				        title: 'Delete Certificate User',
 				        text: "Are you sure?",
 				        icon: 'question',
 				        showCancelButton: true,
@@ -817,13 +831,11 @@ Partnership
 				            }
 				          })
 				          $.ajax({
-				              url: "{{'/partnership/updateCertPerson'}}",
+				              url: "{{url('/partnership/deleteCertPerson')}}",
 				              type: 'post',
 				              data:{
-		        						"_token": "{{ csrf_token() }}",
-				              	id_cert_edit:$("#id_cert_edit").val(),
-				              	cert_name_edit:$("#cert_name_edit").val(),
-				              	cert_user_edit:$("#cert_user_edit").val(),
+			        					"_token": "{{ csrf_token() }}",
+				              	id:this.value
 				              },
 				            success: function(data)
 				            {
@@ -841,59 +853,61 @@ Partnership
 				        }    
 				      })
 						})
-					})
-
-					$(".btn-delete-eng").click(function(){
-						Swal.fire({
-			        title: 'Delete Certificate User',
-			        text: "Are you sure?",
-			        icon: 'question',
-			        showCancelButton: true,
-			        confirmButtonColor: '#3085d6',
-			        cancelButtonColor: '#d33',
-			        confirmButtonText: 'Yes',
-			        cancelButtonText: 'No',
-			      }).then((result) => {
-			        if (result.value) {
-			          Swal.fire({
-			            title: 'Please Wait..!',
-			            text: "It's updating..",
-			            allowOutsideClick: false,
-			            allowEscapeKey: false,
-			            allowEnterKey: false,
-			            customClass: {
-			              popup: 'border-radius-0',
-			            },
-			            onOpen: () => {
-			              Swal.showLoading()
-			            }
-			          })
-			          $.ajax({
-			              url: "{{url('/partnership/deleteCertPerson')}}",
-			              type: 'post',
-			              data:{
-		        					"_token": "{{ csrf_token() }}",
-			              	id:this.value
-			              },
-			            success: function(data)
-			            {
-			                Swal.showLoading()
-			                  Swal.fire(
-			                    'Successfully!',
-			                    'success'
-			                  ).then((result) => {
-			                    if (result.value) {
-			                      location.reload()
-			                    }
-			                })
-			            }
-			          }); 
-			        }    
-			      })
-					})
-		    }
+		    }      	
 		})
   }
+
+  function btnEditcert(){
+  	console.log("huha")
+		Swal.fire({
+      title: 'Update Certification User',
+      text: "Are you sure?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Please Wait..!',
+          text: "It's updating..",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          customClass: {
+            popup: 'border-radius-0',
+          },
+          onOpen: () => {
+            Swal.showLoading()
+          }
+        })
+        $.ajax({
+            url: "{{'/partnership/updateCertPerson'}}",
+            type: 'post',
+            data:{
+  						"_token": "{{ csrf_token() }}",
+            	id_cert_edit:$("#id_cert_edit").val(),
+            	cert_name_edit:$("#cert_name_edit").val(),
+            	cert_user_edit:$("#cert_user_edit").val(),
+            },
+          success: function(data)
+          {
+              Swal.showLoading()
+                Swal.fire(
+                  'Successfully!',
+                  'success'
+                ).then((result) => {
+                  if (result.value) {
+                    location.reload()
+                  }
+              })
+          }
+        }); 
+      }    
+    })
+	}
 
   function showTargetList(){
   	var appendList = ""
