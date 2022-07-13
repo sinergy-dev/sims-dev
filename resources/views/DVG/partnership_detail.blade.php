@@ -55,7 +55,7 @@ Partnership
 	  border-color: #00c0ef
 	}
 
-	.select.transparent-input{
+	select.transparent-input{
 		outline: 0;
 	  border-width: 0 0 2px;
 	  border-color: #00c0ef;
@@ -556,7 +556,7 @@ Partnership
 			$("#btn-edit").removeClass("btn-primary").addClass("btn-warning").html("Save").css('font-weight', 'bold')
 			localStorage.setItem("status", "update");
 			$(":input[type=date],:input[type=text][readonly='readonly']").attr("readonly", false)
-			$(":select[disabled='disabled']").attr("disabled", false)
+			$("#type_edit").attr("disabled", false)
 			$("#technologyTag_edit").attr("disabled", false);
 			$(":input[type=text]").focus()
 			$(".avatar-edit").css("display", "block")
