@@ -522,7 +522,6 @@ Partnership
       	$("#listTarget").attr("disabled",true)
       }
     })
-    console.log(accesable)
     Pace.restart();
 		Pace.track(function() {
 			showEngCert()
@@ -571,7 +570,6 @@ Partnership
       url: "{{url('/project/getTechTag')}}",
       type: "GET",
       success: function(result) {
-        console.log(result)
         var arr = result.results;
         var selectOption = [];
         var otherOption;
@@ -600,7 +598,6 @@ Partnership
 	}	
 
 	function btnUpdate(){
-			// console.log($('#imageUpload').prop('files')[0])
 			const fileupload = $('#imageUpload').prop('files')[0];
 
       var nama_file = $('#imageUpload').val();
@@ -626,8 +623,6 @@ Partnership
     	formData.append('mitra_edit', $("#mitra_edit").val())     
     	formData.append('partner_portal_edit',$("#partner_portal_edit").val())
 			formData.append('technologyTag_edit',JSON.stringify($("#technologyTag_edit").val())) 
-
-			// console.log($("#technologyTag_edit").val())
 
 			Swal.fire({
         title: 'Update partnership detail',
@@ -705,7 +700,6 @@ Partnership
       url: "{{url('/partnership/getUser')}}",
       type: "GET",
       success: function(result) {
-        console.log(result)
         $("#select2-person[data-value='" + i + "']").select2({
             dropdownParent: $('#modalAddCert'),
             placeholder: "Select Person",
@@ -776,12 +770,9 @@ Partnership
 				      $("." + item).show()
 				    })
 
-				    console.log(accesable)
-
 	        	$(".btn-edit-eng").click(function(){
 	        			var name = this.value.split(",")[1]
 	        			appendModal = ""
-								console.log(this.value.split(","))
 								appendModal = appendModal + '			<div class="modal fade" id="myModal" role="dialog">'
 			  				appendModal = appendModal + '				<div class="modal-dialog">'
 			    			appendModal = appendModal + '					<div class="modal-content">'
@@ -882,7 +873,6 @@ Partnership
   }
 
   function btnEditcert(){
-  	console.log("huha")
 		Swal.fire({
       title: 'Update Certification User',
       text: "Are you sure?",
@@ -984,7 +974,6 @@ Partnership
 					if(value.status == "Done"){
 						$(".checked-"+key).attr("checked","true")
 						$(".checked-"+key).prop("disabled",true)
-						console.log(i)
 						$(".activeTrash-"+key).hide()
 					}else{
 						if (accesable.includes('targetTools')) {
@@ -1106,7 +1095,6 @@ Partnership
 				id:id
 			},
 			success: function(result){
-				console.log(key)
 				$('.delete-'+key).remove()
       },
 		})
@@ -1115,9 +1103,6 @@ Partnership
   function cbTargetChecked(key){
   	if ($("#cbTarget[data-value='"+key+"']").is(':checked')) 
   	{
-  		console.log(key)
-  		console.log("checked")
-  		console.log($(this).closest("span"))
     	$("#textList[data-value='"+key+"']").css("text-decoration","line-through");
     	$("#cbTarget[data-value='"+key+"']").prop("disabled",true)
 
@@ -1140,7 +1125,6 @@ Partnership
       },
       success: function(result){
       	$.each(result.data, function(key,value){
-      	console.log(value.title)
     			appendCertList = appendCertList + '<div class="col-sm-6">'																
 						appendCertList = appendCertList + '<img class="imgList" style="cursor: pointer;width:100%;height:200px;border:1px black solid" src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo">'
 							appendCertList = appendCertList + '<small hidden>'+ value.title +'</small>'
