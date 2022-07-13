@@ -719,7 +719,7 @@ td .form-control-small{
  .degTP
  {
   transform:  translate(-4em, 6.4em);
-  color:  #1b3868;  
+  color:  #1b3868;
  }
  .degSD
  {
