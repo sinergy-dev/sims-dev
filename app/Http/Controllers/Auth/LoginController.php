@@ -11,6 +11,10 @@ use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Http\Request;
 use Auth;
 use Socialite;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ConnectException;
+use Log;
 
 class LoginController extends Controller
 {
@@ -81,14 +85,30 @@ class LoginController extends Controller
     }
 
     public function redirectToProvider() {
-        return Socialite::driver('google')->redirect();
+            $user = Socialite::driver('google')->user();
+        // try {
+        // } catch (\Exception $e) {
+        //     Log::error($e);
+        //     return redirect()
+        //         ->to('/login')
+        //         ->withErrors([
+        //             'email_company' => ['Google services are currently unreachable, please use your local account or try again later.'],
+        //             'email_google_eror' => ['Google services are currently unreachable, please use your local account or try again later.']
+        //         ]);;
+        // } 
     }
 
     public function handleProviderCallback() {
         try {
             $user = Socialite::driver('google')->user();
         } catch (\Exception $e) {
-            return redirect('/login');
+            Log::error($e);
+            return redirect()
+                ->to('/login')
+                ->withErrors([
+                    'email_company' => ['Google services are currently unreachable, please use your local account or try again later.'],
+                    'email_google_eror' => ['Google services are currently unreachable, please use your local account or try again later.']
+                ]);
         }        
 
         if(explode("@", $user->email)[1] !== env('COMPANY_EMAIL_PREFIX')){
