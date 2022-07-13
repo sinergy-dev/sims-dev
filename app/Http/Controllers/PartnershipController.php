@@ -12,6 +12,9 @@ use File;
 use App\User;
 use App\PartnershipCertification;
 use App\PartnershipImageCertificate;
+use App\PartnershipTarget;
+use App\PartnershipTechnology;
+use App\PartnershipLog;
 
 use Intervention\Image\ImageManagerStatic as Image;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -20,6 +23,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PartnershipController extends Controller
 {
@@ -219,9 +223,40 @@ class PartnershipController extends Controller
         return view('DVG.partnership', compact('notif','notifOpen','notifsd','notiftp', 'datas', 'notifClaim', 'notifc'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('partnership')]);
     }
 
+    public function getDataPartnership()
+    {
+        $data = Partnership::get();
+
+        return array("data" => $data);
+    }
+
+    public function getSearchDataPartnership()
+    {
+        $data = Partnership::select('id_partnership', 'partner' , 'level', 'renewal_date', 'annual_fee', 'type', 'doc');
+
+        $searchFields = ['id_partnership', 'partner' , 'level', 'renewal_date', 'annual_fee', 'type', 'doc'];
+        if($request->search != ""){
+            $data->where(function($data) use($request, $searchFields){
+                $searchWildCard = '%'. $request->search . '%';
+                foreach ($searchFields as $data) {
+                    $data->orWhere($data, 'LIKE', $searchWildCard);
+                }
+            });
+        }
+
+        return array("data" => $data->get());
+    }
+
     public function detail($id)
     {
-        $data = Partnership::select('id_partnership', 'partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo')->where('id_partnership', $id)->first();
+        $getListTech = DB::table('tb_partnership_technology')->join('tb_technology_tag', 'tb_partnership_technology.technology', '=', 'tb_technology_tag.id')
+                        ->select('id_partnership', DB::raw('GROUP_CONCAT(`tb_partnership_technology`.`technology`) AS `id_tech`'), DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
+                        ->groupBy('id_partnership');
+
+        $data = Partnership::leftJoinSub($getListTech, 'tech_tag', function($join){
+                    $join->on('tb_partnership.id_partnership', '=', 'tech_tag.id_partnership');
+                })
+                ->select('tb_partnership.id_partnership', 'partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo', 'id_tech', 'portal_partner', 'name_tech')->where('tb_partnership.id_partnership', $id)->first();
 
         $sidebar_collapse = true;
 
@@ -232,7 +267,7 @@ class PartnershipController extends Controller
     {
         $getUser = collect(User::join('role_user','role_user.user_id','=','users.nik')
             ->join('roles','role_user.role_id','=','roles.id')
-            ->select(DB::raw('`users`.`nik` AS `id`,`users`.`name` AS `text`'))
+            ->select(DB::raw('`users`.`name` AS `id`,`users`.`name` AS `text`'))
             ->whereRaw("(`roles`.`group` = 'msm' OR `roles`.`group` = 'pmo' OR `roles`.`group` = 'sales' OR `roles`.`group` = 'presales' OR `roles`.`group` = 'DVG' OR `roles`.`group` = 'DPG')")
             ->where('status_karyawan', '!=', 'dummy')
             ->get());
@@ -257,29 +292,89 @@ class PartnershipController extends Controller
         $tambah->cam_phone              = $request['cam_phone'];
         $tambah->email_support          = $request['email_support'];
         $tambah->id_mitra               = $request['id_mitra'];
+        $tambah->portal_partner         = $request['portal_partner'];
     	$tambah->save();
 
         $lastid = Partnership::select('id_partnership')->orderBy('created_at', 'desc')->first();
 
-        $count = count($request['cert_name']);
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $lastid->id_partnership;
+        $tambah_log->description = 'Create New Partnership ' . $tambah->partner;
+        $tambah_log->save();
 
-        for($i = 0; $i < $count; $i++){
-            $data = array(
-                'id_partnership'       => $lastid->id_partnership,
-                'nik'                  => $request['cert_person'][$i],
-                'level_certification'  => $request['cert_type'][$i],
-                'name_certification'   => $request['cert_name'][$i],
-            );
-            $insertData[] = $data;
+        if(isset($request->tagData["tagCertList"])){
+            foreach ($request->tagData["tagCertList"] as $key => $value) {
+                $store = new PartnershipCertification;
+                $store->id_partnership = $lastid->id_partnership;
+                $store->name = $value['cert_person'];
+                $store->level_certification = $value['cert_type'];
+                $store->name_certification = $value['cert_name'];
+                $store->save(); 
+
+                $tambah_log = new PartnershipLog;
+                $tambah_log->nik = Auth::User()->nik;
+                $tambah_log->id_partnership = $lastid->id_partnership;
+                $tambah_log->description = 'Create New Partnership with Certification '. $value['cert_type'] . ' ' . $value['cert_name'] . ' and Name ' . $value['cert_person'];
+                $tambah_log->save();
+            }
         }
-        PartnershipCertification::insert($insertData);
 
-        return redirect('/partnership')->with('success', 'Created Partnership Successfully!');
+        if(isset($request->tagData["tagSalesTarget"])){
+            foreach ($request->tagData["tagSalesTarget"] as $key => $value) {
+                $store = new PartnershipTarget;
+                $store->id_partnership = $lastid->id_partnership;
+                $store->target = $value['sales_target'];
+                // $store->description = $value['description'];
+                $store->countable = $value['countable'];
+                $store->save(); 
+
+                $tambah_log = new PartnershipLog;
+                $tambah_log->nik = Auth::User()->nik;
+                $tambah_log->id_partnership = $lastid->id_partnership;
+                $tambah_log->description = 'Create New Partnership with Target ' . $value['sales_target'] . ' and ' . $value['countable'];
+                $tambah_log->save();
+            }
+        }
+
+        if(isset($request['id_technology'])){
+            foreach ($request['id_technology'] as $key => $value) {
+                $store = new PartnershipTechnology;
+                $store->id_partnership = $lastid->id_partnership;
+                $store->technology = $value;
+                $store->save(); 
+            }
+        }
+
+        $id = $lastid->id_partnership;
+        return $id;
+        // return redirect('/partnership')->with('success', 'Created Partnership Successfully!');
+        // return redirect('/partnership')->with('success', $id);
+    }
+
+    public function getDataLog(Request $request)
+    {
+        $data = PartnershipLog::join('users', 'users.nik', '=', 'tb_partnership_log.nik')->select('description', 'tb_partnership_log.created_at', 'name')->where('id_partnership', $request->id_partnership)->orderby('id', 'desc')->get();
+        return array("data" => $data);
     }
 
     public function getDetailPartnership(Request $request)
     {
-        $data = Partnership::select('partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra')->where('id_partnership', $request->id)->first();
+        // $string = "satu, dua, tiga";
+        // $explode = explode(',', $string);
+        // return $explode;
+        $getListTech = DB::table('tb_partnership_technology')->join('tb_technology_tag', 'tb_partnership_technology.technology', '=', 'tb_technology_tag.id')
+                        ->select('id_partnership', DB::raw('GROUP_CONCAT(`tb_partnership_technology`.`technology`) AS `id_tech`'),  DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
+                        ->groupBy('id_partnership');
+
+        // $getListTech = DB::table('tb_partnership_technology')->join('tb_technology_tag', 'tb_partnership_technology.technology', '=', 'tb_technology_tag.id')
+        //                 ->select('id_partnership', 'technology', 'name_tech')
+        //                 ->groupBy('id_partnership');
+
+        $data = Partnership::leftJoinSub($getListTech, 'tech_tag', function($join){
+                    $join->on('tb_partnership.id_partnership', '=', 'tech_tag.id_partnership');
+                })
+                ->select('partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'portal_partner', 'id_tech', 'name_tech')->where('tb_partnership.id_partnership', $request->id)->get();
 
         return array("data" => $data);
     }
@@ -291,60 +386,202 @@ class PartnershipController extends Controller
         for($i = 0; $i < $count; $i++){
             $data = array(
                 'id_partnership'       => $request['id_partnership'],
-                'nik'                  => $request['cert_person'][$i],
+                'name'                  => $request['cert_person'][$i],
                 'level_certification'  => $request['cert_type'][$i],
                 'name_certification'   => $request['cert_name'][$i],
             );
             $insertData[] = $data;
+
+            $log = array(
+                'id_partnership'    => $request['id_partnership'],
+                'nik'               => Auth::User()->nik,
+                'description'       => 'Create New Partnership with Certification '. $request['cert_type'][$i] . ' ' . $request['cert_name'][$i] . ' and Name ' . $request['cert_person'][$i]
+            );
+            $insertDatalog[] = $log;
         }
         PartnershipCertification::insert($insertData);
+        PartnershipLog::insert($insertDatalog);
 
         return redirect()->back();
     }
 
     public function addCert(Request $request)
     {
-        $id = Partnership::where('id_partnership', $request['id_partnership'])->first();
 
         $tambah = new PartnershipImageCertificate();
-        $tambah->id_partnership = $id;
-        $tambah->nik = Auth::User()->nik;
+        $tambah->id_partnership = $request['idCertPartner'];
+        $tambah->title = $request['inputTitleCert'];
 
-        $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
-        $file                   = $request->file('cert');
-        $fileName               = $file->getClientOriginalName();
-        $imageName              = $id.'_'.$fileName;
-        $extension              = $file->getClientOriginalExtension();
-        $check                  = in_array($extension,$allowedfileExtension);
+        // return $request->file('imgCertPartner');
 
-        if ($check) {
-            Image::make($file->getRealPath())->save('image/partnerCertificate/'.$imageName);
+        if ($request->file('imgCertPartner') === null) {
+            // $update->logo = $update->logo;  
+        }else{
 
-            $tambah->certificate = $fileName;
-        } else {
-            return redirect()->back()->with('alert','Oops! Only jpg, png');
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $file                   = $request->file('imgCertPartner');
+            $fileName               = $file->getClientOriginalName();
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                // Image::make($file->getRealPath())->save('image/logo_partnership/'.$fileName);
+                $request->file('imgCertPartner')->move("image/cert_partnership/", $fileName);
+                $tambah->certificate = $fileName;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png');
+            }
         }
 
         $tambah->save();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $request['idCertPartner'];
+        $tambah_log->description = 'Add New Certificate with Title ' . $request['inputTitleCert'];
+        $tambah_log->save();
+
         return redirect()->back();
+    }
+
+    public function getTargetPartnership(Request $request)
+    {
+        $data = PartnershipTarget::select('target', 'countable', 'description', 'status', 'id_partnership', 'id')->where('id_partnership', $request->id_partnership)->orderby('status', 'desc')->get();
+
+        return array("data" => $data);
+    }
+
+    public function getTargetById(Request $request)
+    {
+        $data = PartnershipTarget::select('target', 'countable', 'description', 'status', 'id_partnership', 'id')->where('id', $request->id)->first();
+
+        return array("data" => $data);   
+    }
+
+    public function getCertPartner(Request $request)
+    {
+        $data = PartnershipImageCertificate::select('title', 'certificate', 'id')->where('id_partnership', $request->id_partnership)->get();
+        return array("data" => $data);
+    }
+
+    public function store_target(Request $request)
+    {
+        $store = new PartnershipTarget;
+        $store->id_partnership = $request->id_partnership;
+        $store->target = $request->target;
+        $store->countable = $request->countable;
+        $store->status = $request->status;
+        $store->save();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $request->id_partnership;
+        $tambah_log->description = 'Add new Target '  . $request['target'] . ' with ' . $request['countable'];
+        $tambah_log->save();
+    }
+
+    public function updateTarget(Request $request)
+    {
+        $update = PartnershipTarget::where('id', $request->id)->first();
+        $update->target = $request->target;
+        $update->countable = $request->countable;
+        $update->update();
+
+        $select_id = PartnershipTarget::where('id', $request->id)->first();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $select_id->id_partnership;
+        $tambah_log->description = 'Update Target '  . $request['target'] . ' with ' . $request['countable'];
+        $tambah_log->save();
     }
 
     public function updateCertPerson(Request $request)
     {
         $update = PartnershipCertification::where('id', $request->id_cert_edit)->first();
-        $update->nik = $request['cert_user_edit'];
+        $update->name = $request['cert_user_edit'];
         $update->name_certification = $request['cert_name_edit'];
         $update->update();
 
-        return redirect()->back();
+        $select_id = PartnershipCertification::where('id', $request->id_cert_edit)->first();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $select_id->id_partnership;
+        $tambah_log->description = 'Update Certificate ' . $request['cert_name_edit'] . ' with Name ' . $request['cert_user_edit'];
+        $tambah_log->save();
     }
 
     public function deleteCertPerson(Request $request)
     {
+        $select_id = PartnershipCertification::where('id', $request->id)->first();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $select_id->id_partnership;
+        $tambah_log->description = 'Delete Certificate ' . $select_id->name_certification . ' with Name ' . $select_id->name;
+        $tambah_log->save();
+
         $delete = PartnershipCertification::where('id', $request->id);
         $delete->delete();
+    }
 
-        return redirect()->back()->with('alert', 'Deleted!');
+    public function updateStatusTarget(Request $request)
+    {
+        $update = PartnershipTarget::where('id', $request->id)->first();
+        $update->status = 'Done';
+        $update->update();
+
+        $select_id = PartnershipTarget::where('id', $request->id)->first();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $select_id->id_partnership;
+        $tambah_log->description = 'Target ' . $select_id->target . ' with ' . $select_id->countable . ' Done';
+        $tambah_log->save();
+    }
+
+    public function deleteTarget(Request $request)
+    {
+        $select_id = PartnershipTarget::where('id', $request->id)->first();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $select_id->id_partnership;
+        $tambah_log->description = 'Delete Target ' . $select_id->target . ' with ' . $select_id->countable;
+        $tambah_log->save();
+
+        $delete = PartnershipTarget::where('id', $request->id);
+        $delete->delete();
+    }
+
+    public function deleteCertPartner(Request $request)
+    {
+        $select_id = PartnershipImageCertificate::where('id', $request->id)->first();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $select_id->id_partnership;
+        $tambah_log->description = 'Delete Image with Title ' . $select_id->title;
+        $tambah_log->save();
+
+        $delete = PartnershipImageCertificate::where('id', $request->id);
+        $delete->delete();
+    }
+
+    public function updateTitleCert(Request $request)
+    {
+        $update = PartnershipImageCertificate::where('id', $request->id)->first();
+        $update->title = $request->title;
+        $update->update();
+
+        $select_id = PartnershipImageCertificate::where('id', $request->id)->first();
+
+        $tambah_log = new PartnershipLog;
+        $tambah_log->nik = Auth::User()->nik;
+        $tambah_log->id_partnership = $select_id->id_partnership;
+        $tambah_log->description = 'Update Title Certificate ' . $request->title;
+        $tambah_log->save();
     }
 
     public function getListCert(Request $request)
@@ -392,7 +629,6 @@ class PartnershipController extends Controller
 
     public function update(Request $request)
     {
-        // return $request['id_edit'];
     	$update                    = Partnership::where('id_partnership', $request['id_edit'])->first();
     	$update->type              = $request['type_edit'];
     	$update->partner           = $request['partner_edit'];
@@ -405,6 +641,7 @@ class PartnershipController extends Controller
         $update->cam_email         = $request['email_edit'];
         $update->email_support     = $request['support_edit'];
     	$update->id_mitra          = $request['mitra_edit'];
+        $update->portal_partner    = $request['partner_portal_edit'];
 
         // return $request->file('imageUpload') != null ? 'true' : 'false';
 
@@ -425,6 +662,27 @@ class PartnershipController extends Controller
             } else {
                 return redirect()->back()->with('alert','Oops! Only jpg, png');
             }
+        }
+
+        if(isset($request['technologyTag_edit'])){
+
+            $id_tech = PartnershipTechnology::where('id_partnership',$request['id_edit'])->get();
+            foreach ($id_tech as $data) {
+                if ($data != NULL) {
+                    $delete_product = PartnershipTechnology::where('id_partnership',$request['id_edit'])->delete();
+                }
+            }
+
+            // return $techTag;
+            // if (is_array($request['technologyTag_edit']) || is_object($request['technologyTag_edit'])) {
+                // return 'abc';
+                foreach (json_decode($request['technologyTag_edit']) as $data) {
+                    $technology = new PartnershipTechnology();
+                    $technology->id_partnership = $request['id_edit'];
+                    $technology->technology = $data;
+                    $technology->save();
+                }
+            // }
         }
 
     	$update->update();
@@ -458,7 +716,7 @@ class PartnershipController extends Controller
         $spreadsheet->addSheet(new Worksheet($spreadsheet,'SIP Partnership Summary'));
         $summarySheet = $spreadsheet->setActiveSheetIndex(0);
 
-        $summarySheet->mergeCells('A1:I1');
+        $summarySheet->mergeCells('A1:J1');
         $normalStyle = [
             'font' => [
                 'name' => 'Calibri',
@@ -475,19 +733,46 @@ class PartnershipController extends Controller
         $headerStyle = $normalStyle;
         $headerStyle['font']['bold'] = true;
 
-        $summarySheet->getStyle('A1:I1')->applyFromArray($titleStyle);
+        $summarySheet->getStyle('A1:J1')->applyFromArray($titleStyle);
         $summarySheet->setCellValue('A1','SIP Partnership Summary');
 
-        $headerContent = ["No", "Type", "Partner", "Level", "Renewal Date", "Annual Fee",  "Sales Target", "Sales Certification", "Engineer Certification"];
-        $summarySheet->getStyle('A2:I2')->applyFromArray($headerStyle);
+        $headerContent = ["Type", "Partner", "Level", "Levelling", "Renewal Date", "Number of Certification", "CAM Name", "CAM Email", "CAM Phone", "Email Support"];
+        $summarySheet->getStyle('A2:J2')->applyFromArray($headerStyle);
         $summarySheet->fromArray($headerContent,NULL,'A2');
 
-        $dataPartnership = Partnership::select('type', 'partner', 'level',  'renewal_date', 'annual_fee', 'sales_target', 'sales_certification', 'engineer_certification')
-            ->get();
+        // $dataPartnership = DB::table('tb_partnership')->select('type','partner','level','levelling','renewal_date','sales_target','cam_name','cam_email','cam_phone','email_support')->get();
+        // $dataPartnership = DB::table('tb_partnership')->select('type','partner','level','levelling','renewal_date','renewal_date','cam_name','cam_email','cam_phone','email_support')->get();
+        $dataPartnership = Partnership::get();
 
-        $dataPartnership->map(function($item,$key) use ($summarySheet){
-            $summarySheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+        $dataPartnership = $dataPartnership->map(function($item,$key){
+
+            $total_cert = $item->total_cert;
+
+            $return = collect([
+                "type" => $item->type,
+                "partner" => $item->partner,
+                "level" => $item->level,
+                "levelling" => $item->levelling,
+                "renewal_date" => $item->renewal_date,
+                "total_cert" => str_replace("<br>", "", implode("\n", $total_cert->pluck('combine')->toArray())),
+                "cam_name" => $item->cam_name,
+                "cam_email" => $item->cam_email,
+                "cam_phone" => $item->cam_phone,
+                "email_support" => $item->email_support
+            ]);
+
+            return $return;
         });
+        // return $dataPartnership;
+
+        foreach ($dataPartnership as $key => $data) {
+            $summarySheet->fromArray(
+                array_values((array)$data),
+                NULL,
+                'A' . ($key + 3)
+            );
+            $summarySheet->getStyle('A' . ($key + 3) . ':' . 'J' . ($key + 3))->getAlignment()->setWrapText(true);
+        }
 
         $summarySheet->getColumnDimension('A')->setAutoSize(true);
         $summarySheet->getColumnDimension('B')->setAutoSize(true);
@@ -498,13 +783,18 @@ class PartnershipController extends Controller
         $summarySheet->getColumnDimension('G')->setAutoSize(true);
         $summarySheet->getColumnDimension('H')->setAutoSize(true);
         $summarySheet->getColumnDimension('I')->setAutoSize(true);
+        $summarySheet->getColumnDimension('J')->setAutoSize(true);
 
         $fileName = 'SIP Partnership Summary ' . date("Y") . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
         header('Cache-Control: max-age=0');
         
-        $writer = new Xlsx($spreadsheet);
-        return $writer->save("php://output");
-    }
+        // $writer = new Xlsx($spreadsheet);
+        // return $writer->save("php://output");
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $location = public_path() . '/report/partnership/' . $fileName;
+        $writer->save($location);
+        return $fileName;
+}
 }
