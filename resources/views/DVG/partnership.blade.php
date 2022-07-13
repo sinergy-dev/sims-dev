@@ -170,7 +170,7 @@ Partnership
                     </div>  
                   </div>
                   <div class="table-responsive">
-                    <table class="table table-bordered nowrap table-striped dataTable" id="tablePartnerhip" style="width: 100%" cellspacing="0">
+                    <table class="table table-bordered table-striped dataTable" id="tablePartnerhip" style="width: 100%;" cellspacing="0">
                       <thead>
                         <tr>
                           <th>No</th>
@@ -492,8 +492,12 @@ Partnership
       })
     })
 
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+       $($.fn.dataTable.tables(true)).DataTable()
+          .columns.adjust();
+    });
+
     function searchCustom(id_table,id_seach_bar){
-      console.log($('#' + id_seach_bar).val())
       $("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
     }
 
@@ -592,7 +596,7 @@ Partnership
         columnDefs: [
             { className: "dt-aligment-middle", targets: [1,2,3,4,5,6] },
         ],
-        "scrollX": 200,
+        "scrollX": true,
         "pageLength":25,
         "visible":false,
         "searchable":true,
@@ -710,7 +714,6 @@ Partnership
         url: "{{url('/partnership/getUser')}}",
         type: "GET",
         success: function(result) {
-          console.log(result)
           var arr = result.data;
           var selectOption = [];
           var otherOption;
@@ -737,7 +740,6 @@ Partnership
       url: "{{url('/project/getTechTag')}}",
       type: "GET",
       success: function(result) {
-        console.log(result)
         $("#id_technology").select2({
             dropdownParent: $('#modalAddPartnership'),
             placeholder: "Select Technology",
@@ -786,7 +788,6 @@ Partnership
     });
 
     function showTabAdd(n){
-      console.log(n)
       if (n == 0) {
         document.getElementById("prevBtn").style.display = "none";
       } else {
@@ -800,14 +801,12 @@ Partnership
 
 
       if (n == (x.length - 1)) {
-        console.log(n)
         document.getElementById("nextBtn").innerHTML = "Submit";  
         $("#nextBtn").attr('onclick','submitBtnAdd()');
         for (var i = 0; i < x.length; i++){
           x[n].style.display = "inline";
         }       
       } else {
-        console.log(n)
         $("#nextBtn").attr('onclick','nextPrev(1)');
         $("#prevBtn").attr('onclick','nextPrev(-1)')
         document.getElementById("nextBtn").innerHTML = "Next";
