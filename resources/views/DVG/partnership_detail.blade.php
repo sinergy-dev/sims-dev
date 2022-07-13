@@ -44,7 +44,7 @@ Partnership
     border:none !important;
 	}
 
-	select[readonly]{
+	.form-control[disabled]{
 		background-color:rgba(0,0,0,0) !important;
     border:none !important;
 	}
@@ -55,10 +55,10 @@ Partnership
 	  border-color: #00c0ef
 	}
 
-	select.transparent-input {
+	.select.transparent-input{
 		outline: 0;
 	  border-width: 0 0 2px;
-	  border-color: #00c0ef
+	  border-color: #00c0ef;
 	}
 
 	table#table-detail td
@@ -213,7 +213,7 @@ Partnership
 		          		<tr>
 		          			<td style="vertical-align: middle;">Type</td>
 		          			<th>
-		          				<select class="form-control transparent-input" id="type_edit" name="type_edit" readonly>
+		          				<select class="form-control transparent-input" id="type_edit" name="type_edit" disabled>
                         <option value="">Select Type</option>
                         <option value="Distributor"  @if($data->type == 'Distributor') selected @endif>Distributor</option>
                         <option value="Principal" @if($data->type == 'Principal') selected @endif>Principal</option>
@@ -260,7 +260,7 @@ Partnership
 		          		</tr>
 	          	</table>
           	</form>
-          	<a class="btn btn-primary btn-block" id="btn-edit" type="button"><b>Edit</b></a>
+          	<a class="btn btn-primary btn-block" id="btn-edit" style="display: none;" type="button"><b>Edit</b></a>
         		<!-- <a href="{{url('show_cuti')}}" class="btn btn-danger btn-block" id="btn-delete" type="button"><b>Delete</b></a> -->
           </div>
     		</div>
@@ -301,7 +301,7 @@ Partnership
 								<div class="box-header with-border">
 									<i class="fa fa-image"></i>
 										<h3 class="box-title">Certificate Partner</h3>
-										<a id="btnAddCertPartner" class="pull-right" style="cursor:pointer;"><i class="fa fa-plus"></i>&nbspCertificate Partner</a>
+										<a id="btnAddCertPartner" class="pull-right" style="cursor:pointer;display: none;"><i class="fa fa-plus"></i>&nbspCertificate Partner</a>
 								</div>
 
 								<div class="box-body">
@@ -333,15 +333,17 @@ Partnership
 						<div class="tab-pane" id="tab_3">
 							<div class="row">
 								<div class="col-md-12">
-									<a onclick="btnTarget('{{$data->id_partnership}}')" style="cursor:pointer;float: right;margin-right: 10px;"><i class="fa fa-plus"></i> &nbspTarget</a>
+									<a onclick="btnTarget('{{$data->id_partnership}}')" id="btnAddTarget" style="display: none;cursor:pointer;float: right;margin-right: 10px;"><i class="fa fa-plus"></i> &nbspTarget</a>
 								</div>
 							</div>
 							<div class="row">
 								<div class="col-md-12">
-									<div class="box-body" id="listTarget">
-										<ul class="todo-list">
-										</ul>
-									</div>
+									<fieldset id="listTarget">
+										<div class="box-body">
+											<ul class="todo-list">
+											</ul>
+										</div>
+									</fieldset>									
 								</div>
 							</div>
 						</div>
@@ -516,11 +518,15 @@ Partnership
     accesable.forEach(function(item,index){
       $("#" + item).show()
 
+      if (!accesable.includes('listTarget')) {
+      	$("#listTarget").attr("disabled",true)
+      }
     })
+    console.log(accesable)
     Pace.restart();
 		Pace.track(function() {
 			showEngCert()
-	    showTargetList()
+	    showTargetList(accesable)
 	    showCertList()
 			TagTechnology()
 		})
@@ -550,7 +556,8 @@ Partnership
 		if (localStorage.getItem("status") == "initial") {
 			$("#btn-edit").removeClass("btn-primary").addClass("btn-warning").html("Save").css('font-weight', 'bold')
 			localStorage.setItem("status", "update");
-			$(":input[type=date],:input[type=text][readonly='readonly']").attr("readonly", false);
+			$(":input[type=date],:input[type=text][readonly='readonly']").attr("readonly", false)
+			$(":select[disabled='disabled']").attr("disabled", false)
 			$("#technologyTag_edit").attr("disabled", false);
 			$(":input[type=text]").focus()
 			$(".avatar-edit").css("display", "block")
@@ -926,7 +933,7 @@ Partnership
     })
 	}
 
-  function showTargetList(){
+  function showTargetList(accesable){
   	var appendList = ""
   	$.ajax({
       type:"GET",
@@ -951,7 +958,7 @@ Partnership
 						appendList = appendList + '	<input type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
 						appendList = appendList + '	<span class="text" id="textList" data-value='+key+'>'+ value.target + ' - ' + value.countable +'</span>'
 						appendList = appendList + ' <small class="label label-warning status-'+ key + '">'+ value.status +'</small>'
-						appendList = appendList + '	<div class="tools activeTrash-'+ key +'" style="display:none">'
+						appendList = appendList + '	<div id="targetTools" class="tools activeTrash-'+ key +'" style="display:none">'
 						appendList = appendList + '	<i class="fa fa-edit" onClick="editTarget('+value.id+')"></i>'
 						appendList = appendList + '		<i class="fa fa-trash-o" onClick="deleteTarget('+ key + ',' + value.id + ')"></i>'
 						appendList = appendList + '	</div>'
@@ -978,8 +985,11 @@ Partnership
 						$(".checked-"+key).attr("checked","true")
 						$(".checked-"+key).prop("disabled",true)
 						console.log(i)
+						$(".activeTrash-"+key).hide()
 					}else{
-						$(".activeTrash-"+key).show()
+						if (accesable.includes('targetTools')) {
+							$(".activeTrash-"+key).show()
+						}
 					}
 
 					$('.todo-list').todoList({
@@ -1375,9 +1385,16 @@ Partnership
 	$('body').on('click','.imgList',function(){
 		var imgs = $(this).attr('src');
 		$("#img-preview").attr("src",imgs);
-    $(".timeline-body").html("<div class='row'><div class='col-md-6'><textarea id='txEditTitle' class='form-control'>"+  $(this).next("small").text() +"</textarea></div></div>")
-    $(".timeline-footer").html("<a class='btn btn-warning btn-flat btn-xs' onClick='btnUpdateCert("+ $(this).next("small").next("small").text() +")'>Update</a> <a class='btn btn-danger btn-flat btn-xs' onClick='btnDelCert("+ $(this).next("small").next("small").text()+")'>Delete</a>")
+    $(".timeline-body").html("<div class='row'><div class='col-md-6'><textarea id='txEditTitle' disabled class='form-control'>"+  $(this).next("small").text() +"</textarea></div></div>")
+    $(".timeline-footer").html("<a class='btn btn-warning btn-flat btn-xs' style='display:none' id='btnUpdateCert' onClick='btnUpdateCert("+ $(this).next("small").next("small").text() +")'>Update</a> <a class='btn btn-danger btn-flat btn-xs' style='display:none' id='btnDeleteCert' onClick='btnDelCert("+ $(this).next("small").next("small").text()+")'>Delete</a>")
+    var accesable = @json($feature_item);
+    accesable.forEach(function(item,index){
+      $("#" + item).show()
 
+      if (accesable.includes("txEditTitle")) {
+      	$("#txEditTitle").prop("disabled",false)
+      }
+    })
 	})
 
 	function btnUpdateCert(id){
