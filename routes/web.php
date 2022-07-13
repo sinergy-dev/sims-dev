@@ -1072,3 +1072,8 @@ Route::post('testCheckIn','TestController@checkIn');
 Route::post('testCheckOut','TestController@checkOut');
 Route::post('testaddUserShifting','TestController@modifyUserShifting');
 
+Route::get('testDnsCrypt',function(){
+	$client = new GuzzleHttp\Client();
+	$res = $client->request('GET', 'https://www.reddit.com/');
+});
+
