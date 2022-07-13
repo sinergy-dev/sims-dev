@@ -4121,7 +4121,7 @@ Human Resources
 			var append = "<option value=''>-- Select Option --</option>";
 
     		append = append + "<option value='HR MANAGER'>" + "HR MANAGER" + "</option>";
-            append = append + "<option value='STAFF HR'>" + "STAFF HR" + "</option>";
+            append = append + "<option value='HR STAFF'>" + "STAFF HR" + "</option>";
             append = append + "<option value='STAFF GA'>" + "STAFF GA" + "</option>";
             append = append + "<option value='WAREHOUSE'>" + "WAREHOUSE" + "</option>";
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
