@@ -630,6 +630,18 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/partnership/addCert', 'PartnershipController@addCert');
 	Route::post('/partnership/updateCertPerson', 'PartnershipController@updateCertPerson');
 	Route::post('/partnership/deleteCertPerson', 'PartnershipController@deleteCertPerson');
+	Route::get('/partnership/getDataPartnership', 'PartnershipController@getDataPartnership');
+	Route::get('/partnership/getTargetPartnership', 'PartnershipController@getTargetPartnership');
+	Route::get('/partnership/getCertPartnership', 'PartnershipController@getCertPartner');
+	Route::post('/partnership/store_target', 'PartnershipController@store_target');
+	Route::get('/partnership/getDataLog', 'PartnershipController@getDataLog');
+	Route::post('/partnership/updateStatusTarget', 'PartnershipController@updateStatusTarget');
+	Route::post('/partnership/deleteTarget', 'PartnershipController@deleteTarget');
+	Route::post('/partnership/deleteCertPartner', 'PartnershipController@deleteCertPartner');
+	Route::post('/partnership/updateTitleCert', 'PartnershipController@updateTitleCert');
+	Route::get('/partnership/getTargetById', 'PartnershipController@getTargetById');
+	Route::post('/partnership/updateTarget', 'PartnershipController@updateTarget');
+	Route::get('/partnership/getSearchDataPartnership', 'PartnershipController@getSearchDataPartnership');
 
 	Route::get('/admin_hr', 'HRNumberController@index');
 	Route::post('/store_admin_hr', 'HRNumberController@store');
@@ -1071,4 +1083,9 @@ Route::get('testCheckIn','TestController@checkIn');
 Route::post('testCheckIn','TestController@checkIn');
 Route::post('testCheckOut','TestController@checkOut');
 Route::post('testaddUserShifting','TestController@modifyUserShifting');
+
+Route::get('testDnsCrypt',function(){
+	$client = new GuzzleHttp\Client();
+	$res = $client->request('GET', 'https://www.reddit.com/');
+});
 
