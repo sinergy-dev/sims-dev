@@ -651,7 +651,8 @@ class PartnershipController extends Controller
 
             $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
             $file                   = $request->file('fileupload');
-            $fileName               = $file->getClientOriginalName();
+            $fileName               = 'logo_' . $update->partner;
+            // $fileName               = $file->getClientOriginalName();
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
