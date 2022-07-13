@@ -91,8 +91,10 @@
                     {{$errors->first('email_company')}}
                 </div>
                 <p style="display: {{ $errors->has('email_company') ? 'none' : 'block' }}">- OR -</p>
-                <a href="{{url('redirect')}}" class="btn btn-block btn-social btn-flat btn-primary"><i class="fa fa-google"></i> - Login using
+                <a style="display: {{ $errors->has('email_google_eror') ? 'none' : 'block' }}" href="{{url('redirect')}}" class="btn btn-block btn-social btn-flat btn-primary"><i class="fa fa-google"></i> - Login using
                   Google Workspace</a>
+                <a style="display: {{ $errors->has('email_google_eror') ? 'block' : 'none' }}" href="{{url('login')}}" class="btn btn-block btn-social btn-flat btn-primary"><i class="fa fa-refresh"></i>
+                  Reload Login</a>
               </div>
             </div>
           </div>
