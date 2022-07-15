@@ -1939,7 +1939,6 @@ Detail Lead Register
       $("#tbtagging").append(append)
       initmoney();
       $(".btn-edit-tagging").prop("disabled",true)
-      $('.new-price-sol').val(0)
     }
 
     function showSbe(status){
