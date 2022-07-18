@@ -486,6 +486,9 @@ Partnership
   <script type="text/javascript">
     $(document).ready(function(){
       var accesable = @json($feature_item);
+      accesable.forEach(function(item,index){
+        $("#" + item).show()
+      })
       Pace.restart();
       Pace.track(function() {
           showTablePartnership(accesable)
