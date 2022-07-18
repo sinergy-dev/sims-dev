@@ -180,6 +180,7 @@ Partnership
                           <th>Renewal Date</th>
                           <th>Target Progress</th>
                           <th>Number of Certification</th>
+                          <th hidden>Number of Certification</th>
                           <th id="th-action">Action</th>
                         </tr>
                       </thead>
@@ -580,7 +581,14 @@ Partnership
                 append += "<span>"+row.total_cert[key].combine+"</span>"
               })
               return append;         
-            }
+            },
+            "orderData":[7]
+          },
+          {
+            "data":"total_cert_integer",
+            "targets":[6],
+            "visible":false,
+            "searchable":true
           },//number of certification
           { 
             render: function (data, type, row, meta){
