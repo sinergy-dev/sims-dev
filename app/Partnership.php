@@ -46,8 +46,11 @@ class Partnership extends Model
 
     public function getTotalCertIntegerAttribute()
     {
-        $total = PartnershipCertification::selectRaw("COUNT(`level_certification`) as `total_cert`")->where('id_partnership', $this->id_partnership)->groupby('id_partnership')->get();
-        return $total;
+        $total = PartnershipCertification::selectRaw("COUNT(CASE WHEN (`level_certification` is null) THEN 0 ELSE `level_certification` END) as `total_cert`")
+            ->where('id_partnership', $this->id_partnership)
+            ->groupby('id_partnership')
+            ->get();
+        return $total->isEmpty() ? collect(["total_cert" => 0]) : $total->values()->first();
     }
 
     public function getTargetAttribute()
