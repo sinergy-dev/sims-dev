@@ -1020,7 +1020,7 @@ Partnership
 		formData.append("cert_name_edit",$("#cert_name_edit").val())
 		formData.append("cert_user_edit",$("#cert_user_edit").val())
 		if (lifetimaDate == true) {
-			formData.append("cert_exp_date","Lifetime Date")
+			formData.append("cert_exp_date","Lifetime")
 		}else{
 			formData.append("cert_exp_date",$("#exp_date_edit").val())
 		}
