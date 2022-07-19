@@ -12,7 +12,7 @@ class Partnership extends Model
 {
     protected $table = 'tb_partnership';
     protected $primaryKey = 'id_partnership';
-    protected $fillable = ['id_partnership', 'partner', 'level', 'renewal_date', 'annual_fee', 'sales_target', 'sales_certification', 'engineer_certification', 'type', 'levelling', 'cam', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo'];
+    protected $fillable = ['id_partnership', 'partner', 'level', 'renewal_date', 'annual_fee', 'sales_target', 'sales_certification', 'engineer_certification', 'type', 'levelling', 'cam', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo', 'badge'];
 
     protected $appends = ['cert_user', 'target', 'target_count', 'total_cert', 'total_cert_integer'];
 

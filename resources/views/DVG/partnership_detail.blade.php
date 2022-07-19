@@ -67,9 +67,11 @@ Partnership
 	}
 
 	.avatar-upload {
+		display: inline-block;
 	  position: relative;
 	  max-width: 205px;
 	  margin: 20px auto;
+	  margin-right: 10px;
 	}
 	.avatar-upload .avatar-edit {
 	  position: absolute;
@@ -117,6 +119,66 @@ Partnership
 	  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
 	}
 	.avatar-upload .avatar-preview > div {
+	  width: 100%;
+	  height: 100%;
+	  border-radius: 100%;
+	  background-size: cover;
+	  background-repeat: no-repeat;
+	  background-position: center;
+	}
+
+	.avatar-upload-mini {
+		display: inline-block;
+	  position: relative;
+	  /*max-width: 105px;*/
+	  margin: 20px auto;
+	}
+	.avatar-upload-mini .avatar-edit {
+	  position: absolute;
+	  right: 0px;
+	  z-index: 1;
+	  top: -10px;
+	}
+	.avatar-upload-mini .avatar-edit input {
+	  display: none;
+	}
+	.avatar-upload-mini .avatar-edit input + label {
+	  display: inline-block;
+	  width: 34px;
+	  height: 34px;
+	  margin-bottom: 0;
+	  border-radius: 100%;
+	  background: #FFFFFF;
+	  border: 1px solid transparent;
+	  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+	  cursor: pointer;
+	  font-weight: normal;
+	  transition: all 0.2s ease-in-out;
+	}
+	.avatar-upload-mini .avatar-edit input + label:hover {
+	  background: #f1f1f1;
+	  border-color: #d6d6d6;
+	}
+	.avatar-upload-mini .avatar-edit input + label:after {
+	  content: "\f040";
+	  font-family: 'FontAwesome';
+	  color: #757575;
+	  position: absolute;
+	  top: 10px;
+	  left: 0;
+	  right: 0;
+	  text-align: center;
+	  margin: auto;
+	}
+	.avatar-upload-mini .avatar-preview {
+	  width: 92px;
+	  height: 92px;
+	  position: relative;
+	  border-radius: 100%;
+	  border: 6px solid #F8F8F8;
+	  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+	}
+	.avatar-upload-mini .avatar-preview > div {
 	  width: 100%;
 	  height: 100%;
 	  border-radius: 100%;
@@ -176,22 +238,39 @@ Partnership
 				<div class="box-body">
 					<form id="formEdit" enctype="multipart/form-data">
             	@csrf
-          <div style="align-items: center;" class="mb-3">
-          	<div class="avatar-upload">
+          <div style="align-items: center" class="mb-3">
+          	<div style="margin: auto;display:table;">
+          		<div class="avatar-upload">
 				        <div class="avatar-edit" style="display:none">
 				            <input type='file' id="imageUpload" name="logo" accept=".png, .jpg, .jpeg" />
 				            <label for="imageUpload"></label>
 				        </div>
-				        <div class="avatar-preview">
-				        	@if($data->logo == "")
+			        	<div class="avatar-preview">
+			        	@if($data->logo == "")
 				        		<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/logo_placeholder.png')}}')">
 				            </div>
 				        	@else
 				        		<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/'.$data->logo)}}')">
 				            </div>
 				        	@endif		            
+				        </div>				        
+				    	</div>
+					    <div class="avatar-upload-mini">
+				        <div class="avatar-edit" style="display:none">
+				            <input type='file' id="imageBadge" name="logo" accept=".png, .jpg, .jpeg" />
+				            <label for="imageBadge"></label>
 				        </div>
-				    </div>
+			        	<div class="avatar-preview">
+			        	@if($data->badge == "")
+				        		<div id="badgePreview" name="logo" style="background-image: url('{{ asset('image/badge_partnership/badge_placeholder.png')}}')">
+				            </div>
+				        	@else
+				        		<div id="badgePreview" name="logo" style="background-image: url('{{ asset('image/badge_partnership/'.$data->badge)}}')">
+				            </div>
+				        	@endif		            
+				        </div>				        
+					    </div>
+          	</div>
           </div>
           <div style="padding-top:10px">
 	          	<table class="table" id="table-detail">
@@ -308,7 +387,10 @@ Partnership
 									<div class="post">
 										<div class="row margin-bottom">
 												<div class="col-sm-6">
-													<img class="img-responsive" style="border: 1px solid " id="img-preview" src="{{asset('image/logo_partnership/certificate_placeholder.png')}}" alt="Photo">
+													<div class="img-preview">
+														
+													</div>
+													<!-- <img class="img-responsive" style="border: 1px solid " id="img-preview" src="{{asset('image/logo_partnership/certificate_placeholder.png')}}" alt="Photo"> -->
 												</div>																			
 												<div class="paging col-sm-6">
 													<div class="row" style="margin-bottom: 10px;" id="idCertList">															
@@ -386,6 +468,8 @@ Partnership
 				        	<input hidden type="" name="id_partnership" value="{{$data->id_partnership}}">
 				          <th>Certificate Level</th>
 				          <th>Certificate Name</th>
+				          <th>Expired Date</th>
+				          <th>Certificate</th>
 				          <th>Person</th>
 				          <td class="text-center">
 				            <button class="btn btn-xs btn-primary" onclick="addListCert()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
@@ -428,7 +512,8 @@ Partnership
         		</div>
         		<div class="form-group">
         			<label>Certificate File (image/jpg/png)</label>
-        			<input type="file" id="imgCertPartner" name="imgCertPartner" accept="image/*">
+        			<!-- <input type="file" id="imgCertPartner" name="imgCertPartner" accept="image/*"> -->
+        			<input type="file" id="imgCertPartner" name="imgCertPartner">
               <span class="help-block" style="display:none;">Please Upload File Certificate!</span>
         		</div>
         	</form>			    
@@ -453,6 +538,8 @@ Partnership
  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
  <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -608,6 +695,14 @@ Partnership
       	formData.append('nama_file', nama_file);
 			}
 
+			const badgeupload = $('#imageBadge').prop('files')[0];
+
+      var nama_badge = $('#imageBadge').val();
+			if (nama_badge!="" && badgeupload!="") {
+				formData.append('badgeupload', badgeupload);
+      	formData.append('nama_badge', nama_badge);
+			}
+
 			formData.append('_token',"{{csrf_token()}}")
 			formData.append('id_edit', $("#id_edit").val())
 			formData.append('partner_edit', $("#partner_edit").val())
@@ -685,6 +780,12 @@ Partnership
     append = append + " <td>"
     append = append + "<input data-value='" + i + "' name='cert_name[]' id='cert_name' class='form-control' type='text' placeholder='Ex: 350-401 ENCOR'>"
     append = append + " </td>"
+    append = append + " <td>"
+    append = append + "<input data-value='" + i + "' name='expired_date[]' id='expired_date' class='form-control' type='date'>"
+    append = append + " </td>"
+    append = append + " <td>"
+    append = append + "<input data-value='" + i + "' name='certificate_eng[]' id='certificate_eng' class='form-control' type='file'>"
+    append = append + " </td>"
     append = append + " <td style='white-space: nowrap'>"
     append = append + " <select class='form-control select2-person' data-value='" + i + "' id='select2-person' style='width: 100%!important' name='cert_person[]'></select> "
     append = append + " </td>"
@@ -732,12 +833,14 @@ Partnership
 	        		$.each(value,function(key,data){
 		    					append = append + "<div class='col-md-4'>"
 		        			append = append + '<div class="box box-info">'
-								  append = append + '<div class="box-header with-border">'
+								  append = append + '<div class="box-header with-border" style="height:100px">'
 									append = append + 	'<h3 class="box-title">'+ data.name_certification +'</h3>'
 									append = append + '</div>'
 									append = append + '<div class="box-body">'
-									append = append +   '<div style="float: left">'
-									append = append + '<span><b>'+ data.name +'</b></span>'
+									append = append +   '<div style="float: left;width:150px">'
+									append = append + '<span><b>'+ data.name +'</b></span><br>'
+									append = append + '<span><i>Exp date</i>:<br>'+ data.expired_date +'</span>'
+									// append = append + ''
 									append = append +   '</div>'	
 									append = append + '<div style="float: right;">'
 									if(data.avatar != null){
@@ -750,8 +853,8 @@ Partnership
 									append = append + '</div>'			    
 									append = append +	'</div>'									
 									append = append +	'<div class="box-footer">'
-									append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none">Delete</button>'
-									append = append +	' <button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none">Edit</button>'
+									append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none"><i class="fa fa-trash"></i> Delete</button>'
+									append = append +	'<a target="_blank" href="{{url("image/certificate_engineer/")}}/'+data.certificate+'"><button class="btn btn-xs btn-info pull-left"><i class="fa fa-download"></i> Download</button></a> <button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+","+data.expired_date+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none"><i class="fa fa-pencil"></i> Edit</button>'
 									append = append +	'</div>'
 									append = append + '</div>'
 		    				append = append + "</div>"
@@ -777,7 +880,7 @@ Partnership
 			  				appendModal = appendModal + '				<div class="modal-dialog">'
 			    			appendModal = appendModal + '					<div class="modal-content">'
 			      		appendModal = appendModal + '				<div class="modal-header">'
-								appendModal = appendModal + '          <h4>Edit Partnership Certificate</h4>'
+								appendModal = appendModal + '          <h4>Edit Engineer Certificate</h4>'
 								appendModal = appendModal + '       </div>'
 								appendModal = appendModal + '   		<div class="modal-body">'
 								appendModal = appendModal + '    		<input hidden id="id_cert_edit" value="'+ this.value.split(",")[0] +'">'
@@ -790,6 +893,14 @@ Partnership
 						    appendModal = appendModal + " 				<td>"
 								appendModal = appendModal + "						<label>Person</label>"
 						    appendModal = appendModal + " 					<select class='form-control select2' id='cert_user_edit' style='width:100%!important'></select> "
+						    appendModal = appendModal + " 				</td>"
+						    appendModal = appendModal + " 				<td>"
+								appendModal = appendModal + "						<label>Expired Date</label>"
+								if (this.value.split(",")[3] == "null") {
+									appendModal = appendModal + "<input class='form-control' type='date' id='exp_date_edit' />"
+								} else{
+									appendModal = appendModal + "<input class='form-control' value='"+ moment(this.value.split(",")[3]).format("YYYY-MM-DD") +"' type='date' id='exp_date_edit' />"
+								}
 						    appendModal = appendModal + " 				</td>"
 						    appendModal = appendModal + '				</tr>'
 								appendModal = appendModal + '				</table>'
@@ -905,6 +1016,7 @@ Partnership
             	id_cert_edit:$("#id_cert_edit").val(),
             	cert_name_edit:$("#cert_name_edit").val(),
             	cert_user_edit:$("#cert_user_edit").val(),
+            	cert_exp_date:$("#exp_date_edit").val()
             },
           success: function(data)
           {
@@ -1116,6 +1228,7 @@ Partnership
   }
 
   function showCertList(){
+  	$(".img-preview").html("<iframe class='img-responsive' style='border: 1px solid;width:100%;height:310px' id='img-preview' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}'></iframe>")
   	appendCertList = ''
   	$.ajax({
       type:"GET",
@@ -1125,18 +1238,26 @@ Partnership
       },
       success: function(result){
       	$.each(result.data, function(key,value){
-    			appendCertList = appendCertList + '<div class="col-sm-6">'																
-						appendCertList = appendCertList + '<img class="imgList" style="cursor: pointer;width:100%;height:200px;border:1px black solid" src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo">'
-							appendCertList = appendCertList + '<small hidden>'+ value.title +'</small>'
-							appendCertList = appendCertList + '<small hidden>'+ value.id +'</small>'
-							if (value.title.length > 20) {
-								appendCertList = appendCertList + '<small>'+ value.title.substr(0, 20) +'...</small>'
-							}else{
-								appendCertList = appendCertList + '<small>'+ value.title +'</small>'	
-							}
+    			appendCertList = appendCertList + '<div class="col-sm-6">'	
+    			pdf = value.certificate
+    			if (pdf.split(".").lastIndexOf('pdf') != -1) {
+    				appendCertList = appendCertList + '<iframe style="cursor: pointer;width:100%;height:200px;border:1px black solid" src="{{url("pdfpart/4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf")}}"></iframe><button style="margin-right:5px" value="4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'		
+    			}else{
+    				appendCertList = appendCertList + '<img style="cursor: pointer;width:100%;height:200px;border:1px black solid" src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo"><button value="'+value.certificate+'" style="margin-top:5px;margin-right:5px" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'
+    			}  			
+
+					appendCertList = appendCertList + '<small hidden>'+ value.title +'</small>'
+					appendCertList = appendCertList + '<small hidden>'+ value.id +'</small>'
+					if (value.title.length > 20) {
+						appendCertList = appendCertList + '<small>'+ value.title.substr(0, 20) +'...</small>'
+					}else{
+						appendCertList = appendCertList + '<small>'+ value.title +'</small>'	
+					}
 					appendCertList = appendCertList + '</div>'
-      	}) 
-				$("#idCertList").html(appendCertList)
+      	})       	
+				$("#idCertList").append(appendCertList)
+
+
 
 				var items = $(".post .row .paging .row .col-sm-6");
 		    var numItems = items.length;
@@ -1158,6 +1279,28 @@ Partnership
       },
     }) 
   }
+
+  $('body').on('click','#btnPreview',function(){
+  	src = this.value
+  	console.log(src)
+  	if (src.split(".").lastIndexOf('pdf') != -1) {
+			$("#img-preview").attr("src","{{asset('pdfpart')}}/"+src);
+  	}else{
+			$("#img-preview").attr("src","{{asset('image/cert_partnership')}}/"+src);
+  	}
+		// $("#img-preview").attr("src",imgs);
+
+    $(".timeline-body").html("<div class='row'><div class='col-md-6'><textarea id='txEditTitle' disabled class='form-control'>"+  $(this).next("small").text() +"</textarea></div></div>")
+    $(".timeline-footer").html("<a class='btn btn-warning btn-flat btn-xs' style='display:none' id='btnUpdateCert' onClick='btnUpdateCert("+ $(this).next("small").next("small").text() +")'>Update</a> <a class='btn btn-danger btn-flat btn-xs' style='display:none' id='btnDeleteCert' onClick='btnDelCert("+ $(this).next("small").next("small").text()+")'>Delete</a>")
+    var accesable = @json($feature_item);
+    accesable.forEach(function(item,index){
+      $("#" + item).show()
+
+      if (accesable.includes("txEditTitle")) {
+      	$("#txEditTitle").prop("disabled",false)
+      }
+    })
+	})
 
   $("#btnAddCertPartner").click(function(){
   	$("#modalAddCertPartner").modal("show")
@@ -1232,6 +1375,47 @@ Partnership
 	})
 
 	$("#btnSubmitCert").click(function(){
+			// const fileupload = $('#certificate_eng').prop('files')[0];
+
+      // var nama_file = $('#certificate_eng').val();
+			let formData = new FormData();
+
+			// if (nama_file!="" && fileupload!="") {
+			// 	formData.append('certificate_eng', fileupload);
+   //    	formData.append('nama_file', nama_file);
+			// }
+
+			var cert_eng = []
+      $('#tbListCert .new-list').each(function() {
+				// console.log(fileupload)
+        cert_eng.push({
+          cert_type:$(this).find("#cert_type").val(),
+          cert_name:$(this).find('#cert_name').val(),
+          expired_date:$(this).find('#expired_date').val(),
+          nama_file:$(this).find('#certificate_eng').val(),
+          cert_person:$(this).find('#select2-person').val(),
+          // certificate_eng:$(this).find('#certificate_eng').prop('files')[0],
+        })
+      });
+
+      $('#tbListCert .new-list').each(function() {
+				// console.log(fileupload)
+      	formData.append('imageData',$(this).find('#certificate_eng').prop('files')[0])
+      });
+
+      // var engData = {
+      //   cert_eng:JSON.stringify(cert_eng),
+      //   cert_image:cert_image
+      // }
+
+      formData.append('engData',JSON.stringify(cert_eng))
+      // formData.append('cert_type', $("#cert_type").val());
+      // formData.append('cert_name', $("#cert_name").val());
+      // formData.append('expired_date', $("#expired_date").val());
+			formData.append('_token',"{{csrf_token()}}")
+			formData.append('id_partnership',window.location.href.split("/")[4].split("#")[0])    
+			// formData.append('cert_person',JSON.stringify($('#select2-person').val()))  
+
 			Swal.fire({
         title: 'Add New Engineer',
         text: "Are you sure?",
@@ -1257,9 +1441,11 @@ Partnership
             }
           })
           $.ajax({
-              url: "{{'/partnership/addCertList'}}",
-              type: 'post',
-              data: $("#formAddCert").serialize(), // serializes the form's elements.
+            url: "{{'/partnership/addCertList'}}",
+            type: 'post',
+            processData: false,
+	          contentType: false,
+            data:formData, // serializes the form's elements.
             success: function(data)
             {
                 Swal.showLoading()
@@ -1287,6 +1473,7 @@ Partnership
 				formData.append('imgCertPartner', fileupload);
       	formData.append('nama_file', nama_file);
 			}
+
 
 			if ($("#inputTitleCert").val() == "") {
 				$("#inputTitleCert").closest('.form-group').addClass('has-error')
@@ -1366,20 +1553,42 @@ Partnership
 	    $("#imageUpload").val()
 	});
 
-	$('body').on('click','.imgList',function(){
-		var imgs = $(this).attr('src');
-		$("#img-preview").attr("src",imgs);
-    $(".timeline-body").html("<div class='row'><div class='col-md-6'><textarea id='txEditTitle' disabled class='form-control'>"+  $(this).next("small").text() +"</textarea></div></div>")
-    $(".timeline-footer").html("<a class='btn btn-warning btn-flat btn-xs' style='display:none' id='btnUpdateCert' onClick='btnUpdateCert("+ $(this).next("small").next("small").text() +")'>Update</a> <a class='btn btn-danger btn-flat btn-xs' style='display:none' id='btnDeleteCert' onClick='btnDelCert("+ $(this).next("small").next("small").text()+")'>Delete</a>")
-    var accesable = @json($feature_item);
-    accesable.forEach(function(item,index){
-      $("#" + item).show()
+	function readBadgeURL(input) {
+    if (input.files && input.files[0]) {
+	        var reader = new FileReader();
+	        reader.onload = function(e) {
+	            $('#badgePreview').css('background-image', 'url('+e.target.result +')');
+	            $('#badgePreview').hide();
+	            $('#badgePreview').fadeIn(650);
+	        }
+	        reader.readAsDataURL(input.files[0]);
+	    }
+	}
 
-      if (accesable.includes("txEditTitle")) {
-      	$("#txEditTitle").prop("disabled",false)
-      }
-    })
-	})
+	$("#imageBadge").change(function() {
+	    readBadgeURL(this);
+	    $("#imageBadge").val()
+	});
+
+	// $('body').on('click','.imgList',function(){
+	// 	console.log("iframe")
+	// 	var imgs = $(this).attr('src');
+ //    var height = $(this).attr('height',$(this).height());
+ //    var width = $(this).attr('width',$(this).width());
+ //    $("#img-preview").attr({'src':imgs,'height': height,'width': width});
+	// 	// $("#img-preview").attr("src",imgs);
+
+ //    $(".timeline-body").html("<div class='row'><div class='col-md-6'><textarea id='txEditTitle' disabled class='form-control'>"+  $(this).next("small").text() +"</textarea></div></div>")
+ //    $(".timeline-footer").html("<a class='btn btn-warning btn-flat btn-xs' style='display:none' id='btnUpdateCert' onClick='btnUpdateCert("+ $(this).next("small").next("small").text() +")'>Update</a> <a class='btn btn-danger btn-flat btn-xs' style='display:none' id='btnDeleteCert' onClick='btnDelCert("+ $(this).next("small").next("small").text()+")'>Delete</a>")
+ //    var accesable = @json($feature_item);
+ //    accesable.forEach(function(item,index){
+ //      $("#" + item).show()
+
+ //      if (accesable.includes("txEditTitle")) {
+ //      	$("#txEditTitle").prop("disabled",false)
+ //      }
+ //    })
+	// })
 
 	function btnUpdateCert(id){
 		Swal.fire({
