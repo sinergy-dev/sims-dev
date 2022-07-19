@@ -180,7 +180,7 @@ Partnership
                           <th>Renewal Date</th>
                           <th>Target Progress</th>
                           <th>Number of Certification</th>
-                          <th hidden>Number of Certification</th>
+                          <th hidden></th>
                           <th id="th-action">Action</th>
                         </tr>
                       </thead>
