@@ -256,7 +256,7 @@ class PartnershipController extends Controller
         $data = Partnership::leftJoinSub($getListTech, 'tech_tag', function($join){
                     $join->on('tb_partnership.id_partnership', '=', 'tech_tag.id_partnership');
                 })
-                ->select('tb_partnership.id_partnership', 'partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo', 'id_tech', 'portal_partner', 'name_tech')->where('tb_partnership.id_partnership', $id)->first();
+                ->select('tb_partnership.id_partnership', 'partner', 'level', 'levelling', 'type', 'renewal_date', 'annual_fee', 'cam_name', 'cam_email', 'cam_phone', 'email_support', 'id_mitra', 'logo', 'id_tech', 'portal_partner', 'name_tech', 'badge')->where('tb_partnership.id_partnership', $id)->first();
 
         $sidebar_collapse = true;
 
@@ -352,6 +352,7 @@ class PartnershipController extends Controller
         // return redirect('/partnership')->with('success', $id);
     }
 
+
     public function getDataLog(Request $request)
     {
         $data = PartnershipLog::join('users', 'users.nik', '=', 'tb_partnership_log.nik')->select('description', 'tb_partnership_log.created_at', 'name')->where('id_partnership', $request->id_partnership)->orderby('id', 'desc')->get();
@@ -360,16 +361,9 @@ class PartnershipController extends Controller
 
     public function getDetailPartnership(Request $request)
     {
-        // $string = "satu, dua, tiga";
-        // $explode = explode(',', $string);
-        // return $explode;
         $getListTech = DB::table('tb_partnership_technology')->join('tb_technology_tag', 'tb_partnership_technology.technology', '=', 'tb_technology_tag.id')
                         ->select('id_partnership', DB::raw('GROUP_CONCAT(`tb_partnership_technology`.`technology`) AS `id_tech`'),  DB::raw('GROUP_CONCAT(`tb_technology_tag`.`name_tech`) AS `name_tech`'))
                         ->groupBy('id_partnership');
-
-        // $getListTech = DB::table('tb_partnership_technology')->join('tb_technology_tag', 'tb_partnership_technology.technology', '=', 'tb_technology_tag.id')
-        //                 ->select('id_partnership', 'technology', 'name_tech')
-        //                 ->groupBy('id_partnership');
 
         $data = Partnership::leftJoinSub($getListTech, 'tech_tag', function($join){
                     $join->on('tb_partnership.id_partnership', '=', 'tech_tag.id_partnership');
@@ -381,27 +375,42 @@ class PartnershipController extends Controller
 
     public function addCertList(Request $request)
     {
-        $count = count($request['cert_name']);
+        $id_partnership = $request['id_partnership'];
+        $count = count(json_decode($request->engData,true));
+        if(isset($request->engData)){
+            $dataAll = json_decode($request->engData,true);
+            foreach ($dataAll as $data) {
+                $store = new PartnershipCertification;
+                $store->id_partnership      = $id_partnership;
+                $store->name                = $data['cert_person'];
+                $store->level_certification = $data['cert_type'];
+                $store->name_certification  = $data['cert_name'];
+                $store->expired_date        = $data['expired_date'];
+                if ($request->file('imageData') === null) {
+                }else{
+                    $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                    $file                   = $request->file('imageData');
+                    $fileName               = $file->getClientOriginalName();
+                    $nameDoc                = 'certificate_engineer_' . $id_partnership . '_' . $fileName;
+                    $extension              = $file->getClientOriginalExtension();
+                    $check                  = in_array($extension,$allowedfileExtension);
 
-        for($i = 0; $i < $count; $i++){
-            $data = array(
-                'id_partnership'       => $request['id_partnership'],
-                'name'                  => $request['cert_person'][$i],
-                'level_certification'  => $request['cert_type'][$i],
-                'name_certification'   => $request['cert_name'][$i],
-            );
-            $insertData[] = $data;
-
-            $log = array(
-                'id_partnership'    => $request['id_partnership'],
-                'nik'               => Auth::User()->nik,
-                'description'       => 'Create New Partnership with Certification '. $request['cert_type'][$i] . ' ' . $request['cert_name'][$i] . ' and Name ' . $request['cert_person'][$i]
-            );
-            $insertDatalog[] = $log;
+                    if ($check) {
+                        $request->file('imageData')->move("image/certificate_engineer/", $nameDoc);
+                        $store->certificate         = $nameDoc;
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only jpg, png, pdf');
+                    }
+                }
+                $store->save();
+                
+                $tambah_log = new PartnershipLog;
+                $tambah_log->nik = Auth::User()->nik;
+                $tambah_log->id_partnership = $id_partnership;
+                $tambah_log->description = 'Create New Partnership with Certification '. $data['cert_type'] . ' ' . $data['cert_name'] . ' and Name ' . $data['cert_person'];
+                $tambah_log->save();
+            }
         }
-        PartnershipCertification::insert($insertData);
-        PartnershipLog::insert($insertDatalog);
-
         return redirect()->back();
     }
 
@@ -418,7 +427,7 @@ class PartnershipController extends Controller
             // $update->logo = $update->logo;  
         }else{
 
-            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('imgCertPartner');
             $fileName               = $file->getClientOriginalName();
             $extension              = $file->getClientOriginalExtension();
@@ -501,6 +510,7 @@ class PartnershipController extends Controller
         $update = PartnershipCertification::where('id', $request->id_cert_edit)->first();
         $update->name = $request['cert_user_edit'];
         $update->name_certification = $request['cert_name_edit'];
+        $update->expired_date = $request['cert_exp_date'];
         $update->update();
 
         $select_id = PartnershipCertification::where('id', $request->id_cert_edit)->first();
@@ -508,7 +518,7 @@ class PartnershipController extends Controller
         $tambah_log = new PartnershipLog;
         $tambah_log->nik = Auth::User()->nik;
         $tambah_log->id_partnership = $select_id->id_partnership;
-        $tambah_log->description = 'Update Certificate ' . $request['cert_name_edit'] . ' with Name ' . $request['cert_user_edit'];
+        $tambah_log->description = 'Update Certificate ' . $request['cert_name_edit'] . ' with Name ' . $request['cert_user_edit'] . ' & Exp Date ' . $request['cert_exp_date'];
         $tambah_log->save();
     }
 
@@ -646,24 +656,38 @@ class PartnershipController extends Controller
         // return $request->file('imageUpload') != null ? 'true' : 'false';
 
         if ($request->file('fileupload') === null) {
-            // $update->logo = $update->logo;  
-        }else{
-
-            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+        }else if($request->file('fileupload') != null){
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('fileupload');
-            $fileName               = 'logo_' . $update->partner;
-            // $fileName               = $file->getClientOriginalName();
+            $fileName               = $file->getClientOriginalName();
+            $nameDoc                = 'logo_' . $request['id_edit'] . '_' . $fileName;
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
             if ($check) {
-                // Image::make($file->getRealPath())->save('image/logo_partnership/'.$fileName);
-                $request->file('fileupload')->move("image/logo_partnership/", $fileName);
-                $update->logo = $fileName;
+                $request->file('fileupload')->move("image/logo_partnership/", $nameDoc);
+                $update->logo = $nameDoc;
             } else {
-                return redirect()->back()->with('alert','Oops! Only jpg, png');
+                return redirect()->back()->with('alert','Oops! Only jpg, png, pdf');
             }
         }
+
+        if ($request->file('badgeupload' === null)) {
+        } else if($request->file('badgeupload') != null){
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+            $file                   = $request->file('badgeupload');
+            $fileName               = $file->getClientOriginalName();
+            $nameDoc                = 'badge_' . $request['id_edit'] . '_' . $fileName;
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                $request->file('badgeupload')->move("image/badge_partnership/", $nameDoc);
+                $update->badge = $nameDoc;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png, pdf');
+            }
+        } 
 
         if(isset($request['technologyTag_edit'])){
 
@@ -674,16 +698,12 @@ class PartnershipController extends Controller
                 }
             }
 
-            // return $techTag;
-            // if (is_array($request['technologyTag_edit']) || is_object($request['technologyTag_edit'])) {
-                // return 'abc';
-                foreach (json_decode($request['technologyTag_edit']) as $data) {
-                    $technology = new PartnershipTechnology();
-                    $technology->id_partnership = $request['id_edit'];
-                    $technology->technology = $data;
-                    $technology->save();
-                }
-            // }
+            foreach (json_decode($request['technologyTag_edit']) as $data) {
+                $technology = new PartnershipTechnology();
+                $technology->id_partnership = $request['id_edit'];
+                $technology->technology = $data;
+                $technology->save();
+            }
         }
 
     	$update->update();
