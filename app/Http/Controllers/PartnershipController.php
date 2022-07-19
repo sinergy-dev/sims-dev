@@ -376,7 +376,7 @@ class PartnershipController extends Controller
     public function addCertList(Request $request)
     {
         $id_partnership = $request['id_partnership'];
-        $count = count(json_decode($request->engData,true));
+        $get_partner = Partnership::select('partner')->where('id_partnership', $id_partnership)->first();
         if(isset($request->engData)){
             $dataAll = json_decode($request->engData,true);
             foreach ($dataAll as $data) {
@@ -385,13 +385,19 @@ class PartnershipController extends Controller
                 $store->name                = $data['cert_person'];
                 $store->level_certification = $data['cert_type'];
                 $store->name_certification  = $data['cert_name'];
-                $store->expired_date        = $data['expired_date'];
+                if ($data['expired_date'] == 'Lifetime') {
+                    $store->expired_date        = 'Lifetime';
+                } else {
+                    $edate                      = strtotime($data['expired_date']); 
+                    $edate                      = date("Y-m-d",$edate);
+                    $store->expired_date        = $edate;
+                }
                 if ($request->file('imageData') === null) {
                 }else{
                     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
                     $file                   = $request->file('imageData');
                     $fileName               = $file->getClientOriginalName();
-                    $nameDoc                = 'certificate_engineer_' . $id_partnership . '_' . $fileName;
+                    $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $data['cert_name'] . '_' . $data['cert_person'] . '.' . explode('.', $fileName)[1];
                     $extension              = $file->getClientOriginalExtension();
                     $check                  = in_array($extension,$allowedfileExtension);
 
@@ -416,27 +422,24 @@ class PartnershipController extends Controller
 
     public function addCert(Request $request)
     {
-
+        $get_partner = Partnership::select('partner')->where('id_partnership', $request['idCertPartner'])->first();
         $tambah = new PartnershipImageCertificate();
         $tambah->id_partnership = $request['idCertPartner'];
         $tambah->title = $request['inputTitleCert'];
 
-        // return $request->file('imgCertPartner');
-
         if ($request->file('imgCertPartner') === null) {
-            // $update->logo = $update->logo;  
         }else{
 
             $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('imgCertPartner');
             $fileName               = $file->getClientOriginalName();
+            $nameDoc                = 'certificate_partner_' . $get_partner->partner . '_' . $request['inputTitleCert'] . '.' . explode('.', $fileName)[1];
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
             if ($check) {
-                // Image::make($file->getRealPath())->save('image/logo_partnership/'.$fileName);
-                $request->file('imgCertPartner')->move("image/cert_partnership/", $fileName);
-                $tambah->certificate = $fileName;
+                $request->file('imgCertPartner')->move("image/cert_partnership/", $nameDoc);
+                $tambah->certificate = $nameDoc;
             } else {
                 return redirect()->back()->with('alert','Oops! Only jpg, png');
             }
@@ -507,16 +510,25 @@ class PartnershipController extends Controller
 
     public function updateCertPerson(Request $request)
     {
+        $get_id_partner = PartnershipCertification::select('id_partnership')->where('id',$request->id_cert_edit)->first();
+        $get_partner = Partnership::select('partner')->where('id_partnership', $get_id_partner->id_partnership)->first();
+
         $update = PartnershipCertification::where('id', $request->id_cert_edit)->first();
         $update->name = $request['cert_user_edit'];
         $update->name_certification = $request['cert_name_edit'];
-        $update->expired_date = $request['cert_exp_date'];
+        if ($request['cert_exp_date'] == 'Lifetime') {
+            $update->expired_date = 'Lifetime';
+        } else {
+            $edate = strtotime($_POST['cert_exp_date']); 
+            $edate = date("Y-m-d",$edate);
+            $update->expired_date = $edate;
+        }
         if ($request->file('cert_eng_edit') === null) {
         }else{
             $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('cert_eng_edit');
             $fileName               = $file->getClientOriginalName();
-            $nameDoc                = 'certificate_engineer_' . $request->id_cert_edit . '_' . $fileName;
+            $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $request['cert_name_edit'] . '_' . $request['cert_user_edit'] . '.' . explode('.', $fileName)[1];
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
