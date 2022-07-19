@@ -114,7 +114,7 @@ Partnership
       </div>
 
       <div class="box-body">
-  <!--       <div class="row">
+<!--         <div class="row">
           <div class="col-md-12">
             <div class="nav-tabs-custom">
               <ul class="nav nav-tabs">
@@ -123,16 +123,85 @@ Partnership
               </ul>
               <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
-                  <b>How to use:</b>
-                  <p>Exactly like the original bootstrap tabs except you should use
-                  the custom wrapper <code>.nav-tabs-custom</code> to achieve this style.</p>
-                  A wonderful serenity has taken possession of my entire soul,
-                  like these sweet mornings of spring which I enjoy with my whole heart.
-                  I am alone, and feel the charm of existence in this spot,
-                  which was created for the bliss of souls like mine. I am so happy,
-                  my dear friend, so absorbed in the exquisite sense of mere tranquil existence,
-                  that I neglect my talents. I should be incapable of drawing a single stroke
-                  at the present moment; and yet I feel that I never was a greater artist than now.
+                  <div class="row">
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-aqua">90</span>
+                        <div class="info-box-content">
+                          <span class="info-box-text">Partner</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-yellow">50</span>
+                        <div class="info-box-content">
+                          <span class="info-box-text">Sales Certification</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-red">70</span>
+                        <div class="info-box-content">
+                          <span class="info-box-text">Engineer Certification</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                      <div class="info-box">
+                        <span class="info-box-icon bg-green">60</span>
+                        <div class="info-box-content">
+                          <span class="info-box-text">Partner</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="box box-default">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">Browser Usage</h3>
+
+                          <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                          </div>
+                        </div>
+                        <div class="box-body">
+                          <div class="row">
+                            <div class="col-md-8">
+                              <div class="chart-responsive">
+                                <canvas id="pieChart" height="150"></canvas>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <ul class="chart-legend clearfix">
+                                <li><i class="fa fa-circle-o text-red"></i> Chrome</li>
+                                <li><i class="fa fa-circle-o text-green"></i> IE</li>
+                                <li><i class="fa fa-circle-o text-yellow"></i> FireFox</li>
+                                <li><i class="fa fa-circle-o text-aqua"></i> Safari</li>
+                                <li><i class="fa fa-circle-o text-light-blue"></i> Opera</li>
+                                <li><i class="fa fa-circle-o text-gray"></i> Navigator</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="box-footer no-padding">
+                          <ul class="nav nav-pills nav-stacked">
+                            <li><a href="#">United States of America
+                              <span class="pull-right text-red"><i class="fa fa-angle-down"></i> 12%</span></a></li>
+                            <li><a href="#">India <span class="pull-right text-green"><i class="fa fa-angle-up"></i> 4%</span></a>
+                            </li>
+                            <li><a href="#">China
+                              <span class="pull-right text-yellow"><i class="fa fa-angle-left"></i> 0%</span></a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    
+                  </div>
                 </div>
                 <div class="tab-pane" id="tab_2"> -->
                   <div class="row">
@@ -188,8 +257,8 @@ Partnership
                       </tbody>
                     </table>
                   </div>
-    <!--             </div>
-              </div>
+                </div>
+     <!--          </div>
             </div>
           </div>
         </div>
