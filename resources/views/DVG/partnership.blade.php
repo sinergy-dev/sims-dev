@@ -114,8 +114,8 @@ Partnership
       </div>
 
       <div class="box-body">
-        <!-- <div class="row"> -->
-        <!--   <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12">
             <div class="nav-tabs-custom">
               <ul class="nav nav-tabs">
                 <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Dashboard</a></li>
@@ -134,7 +134,7 @@ Partnership
                   that I neglect my talents. I should be incapable of drawing a single stroke
                   at the present moment; and yet I feel that I never was a greater artist than now.
                 </div>
-                <div class="tab-pane" id="tab_2"> -->
+                <div class="tab-pane" id="tab_2">
                   <div class="row">
                     <div class="col-md-8 pull-left" style="margin-bottom: 0px; margin-top: 0px;"> 
                       <button type="button" class="btn btn-primary margin-left-custom" id="btnAdd" onclick="showTabAdd(0)" style="display: none;" style="width: 120px;"><i class="fa fa-plus"> </i> &nbspPartnership
@@ -188,11 +188,11 @@ Partnership
                       </tbody>
                     </table>
                   </div>
-         <!--        </div>
+                </div>
               </div>
             </div>
-          </div> -->
-        <!-- </div> -->
+          </div>
+        </div>
       </div>
     </div>      
 
