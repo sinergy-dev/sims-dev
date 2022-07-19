@@ -511,6 +511,22 @@ class PartnershipController extends Controller
         $update->name = $request['cert_user_edit'];
         $update->name_certification = $request['cert_name_edit'];
         $update->expired_date = $request['cert_exp_date'];
+        if ($request->file('cert_eng_edit') === null) {
+        }else{
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+            $file                   = $request->file('cert_eng_edit');
+            $fileName               = $file->getClientOriginalName();
+            $nameDoc                = 'certificate_engineer_' . $request->id_cert_edit . '_' . $fileName;
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                $request->file('cert_eng_edit')->move("image/certificate_engineer/", $nameDoc);
+                $update->certificate         = $nameDoc;
+            } else {
+                return redirect()->back()->with('alert','Oops! Only jpg, png, pdf');
+            }
+        }
         $update->update();
 
         $select_id = PartnershipCertification::where('id', $request->id_cert_edit)->first();

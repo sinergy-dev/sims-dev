@@ -854,7 +854,12 @@ Partnership
 									append = append +	'</div>'									
 									append = append +	'<div class="box-footer">'
 									append = append +	'<button value="'+data.id+'" class="btn btn-xs btn-danger pull-right margin-left btn-delete-eng" style="vertical-align: top; width: 60px;display:none"><i class="fa fa-trash"></i> Delete</button>'
-									append = append +	'<a target="_blank" href="{{url("image/certificate_engineer/")}}/'+data.certificate+'"><button class="btn btn-xs btn-info pull-left"><i class="fa fa-download"></i> Download</button></a> <button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+","+data.expired_date+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none"><i class="fa fa-pencil"></i> Edit</button>'
+									if (data.certificate != null) {
+										append = append +	'<a target="_blank" href="{{url("image/certificate_engineer/")}}/'+data.certificate+'"><button class="btn btn-xs btn-info pull-left"><i class="fa fa-download"></i> Download</button></a>'
+									} else {
+										append = append +	'<button class="btn btn-xs btn-default pull-left disabled" title="Certificate is Empty!"><i class="fa fa-download"></i> Download</button>'
+									}									
+									append = append + '<button class="btn btn-xs btn-primary pull-right btn-edit-eng" value="'+data.id+","+data.name+","+data.name_certification+","+data.expired_date+'" name="edit_hurec" style="vertical-align: top; width: 60px;margin-right:10px;display:none"><i class="fa fa-pencil"></i> Edit</button>'
 									append = append +	'</div>'
 									append = append + '</div>'
 		    				append = append + "</div>"
@@ -877,7 +882,7 @@ Partnership
 	        			var name = this.value.split(",")[1]
 	        			appendModal = ""
 								appendModal = appendModal + '			<div class="modal fade" id="myModal" role="dialog">'
-			  				appendModal = appendModal + '				<div class="modal-dialog">'
+			  				appendModal = appendModal + '				<div class="modal-dialog modal-lg">'
 			    			appendModal = appendModal + '					<div class="modal-content">'
 			      		appendModal = appendModal + '				<div class="modal-header">'
 								appendModal = appendModal + '          <h4>Edit Engineer Certificate</h4>'
@@ -898,10 +903,16 @@ Partnership
 								appendModal = appendModal + "						<label>Expired Date</label>"
 								if (this.value.split(",")[3] == "null") {
 									appendModal = appendModal + "<input class='form-control' type='date' id='exp_date_edit' />"
+									appendModal = appendModal + "<div class='checkbox'><label><input id='cbLifetime' type='checkbox'>Check for Lifetime Date</label></div>"
 								} else{
 									appendModal = appendModal + "<input class='form-control' value='"+ moment(this.value.split(",")[3]).format("YYYY-MM-DD") +"' type='date' id='exp_date_edit' />"
+									appendModal = appendModal + "<div class='checkbox'><label><input id='cbLifetime' type='checkbox'>Check for Lifetime Date</label></div>"
 								}
-						    appendModal = appendModal + " 				</td>"
+						    appendModal = appendModal + " 	</td>"
+						    appendModal = appendModal + " 	<td>"
+								appendModal = appendModal + "		<label>Certificate</label>"
+						    appendModal = appendModal + " 	<input data-value='" + i + "' id='cert_eng_edit' class='form-control' type='file'>"
+						    appendModal = appendModal + " 	</td>"
 						    appendModal = appendModal + '				</tr>'
 								appendModal = appendModal + '				</table>'
 								appendModal = appendModal + '			<div class="modal-footer">'
@@ -983,7 +994,37 @@ Partnership
 		})
   }
 
+  var lifetimaDate = ''
+  $('body').on('click','#cbLifetime',function(){
+		if ($('#cbLifetime').is(':checked')) {
+			$("#exp_date_edit").prop("disabled",true)
+			lifetimaDate = true
+		}else{
+			$("#exp_date_edit").prop("disabled",false)
+			lifetimaDate = false
+		}
+	})
+
   function btnEditcert(){
+		let formData = new FormData();
+
+  	const fileupload = $('#cert_eng_edit').prop('files')[0];
+    var nama_file = $('#cert_eng_edit').val();
+		if (nama_file!="" && fileupload!="") {
+			formData.append('cert_eng_edit', fileupload);
+    	formData.append('nama_file', nama_file);
+		}
+
+		formData.append("_token", "{{ csrf_token() }}")
+		formData.append("id_cert_edit",$("#id_cert_edit").val())
+		formData.append("cert_name_edit",$("#cert_name_edit").val())
+		formData.append("cert_user_edit",$("#cert_user_edit").val())
+		if (lifetimaDate == true) {
+			formData.append("cert_exp_date","Lifetime Date")
+		}else{
+			formData.append("cert_exp_date",$("#exp_date_edit").val())
+		}
+
 		Swal.fire({
       title: 'Update Certification User',
       text: "Are you sure?",
@@ -1009,26 +1050,22 @@ Partnership
           }
         })
         $.ajax({
-            url: "{{'/partnership/updateCertPerson'}}",
-            type: 'post',
-            data:{
-  						"_token": "{{ csrf_token() }}",
-            	id_cert_edit:$("#id_cert_edit").val(),
-            	cert_name_edit:$("#cert_name_edit").val(),
-            	cert_user_edit:$("#cert_user_edit").val(),
-            	cert_exp_date:$("#exp_date_edit").val()
-            },
+          url: "{{'/partnership/updateCertPerson'}}",
+          type: 'post',
+          data:formData,
+          processData: false,
+  				contentType: false,
           success: function(data)
           {
-              Swal.showLoading()
-                Swal.fire(
-                  'Successfully!',
-                  'success'
-                ).then((result) => {
-                  if (result.value) {
-                    location.reload()
-                  }
-              })
+            Swal.showLoading()
+              Swal.fire(
+                'Successfully!',
+                'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                }
+            })
           }
         }); 
       }    
