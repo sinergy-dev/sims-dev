@@ -1119,10 +1119,12 @@ class PresenceController extends Controller
             $presenceHistoryTemp = PresenceHistory::select(
                 DB::raw("presence__history.*"),
                 DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),
-                DB::raw('`presence__location`.`location_name`')
-            )->whereRaw('`nik` = ' . $value->nik)
+                DB::raw('`presence__location`.`location_name`'),
+                DB::raw('`presence__shifting`.`title`')
+            )->whereRaw('`presence__history`.`nik` = ' . $value->nik)
             ->whereRaw('`presence_actual` BETWEEN "' . $startDate . ' 00:00:00" AND "' . $endDate . ' 23:59:59"')
             ->leftJoin('presence__location','presence__location.id','=','presence__history.presence_location')
+            ->leftJoin('presence__shifting','presence__shifting.id','=','presence__history.presence_setting')
             ->orderBy('presence_actual_date','ASC')
             ->orderBy('presence_type','ASC');
 
@@ -1151,7 +1153,8 @@ class PresenceController extends Controller
                         "schedule" => $eachPresenceHistory->presence_schedule,
                         "checkin" =>  $eachPresenceHistory->presence_actual,
                         "checkout" =>  "Uncheckout",
-                        "condition" => $eachPresenceHistory->presence_condition
+                        "condition" => $eachPresenceHistory->presence_condition,
+                        "shifting" => $eachPresenceHistory->title
                     ]);
                 }
             }
@@ -1173,34 +1176,53 @@ class PresenceController extends Controller
                     ->where('className','<>','Libur')
                     ->whereBetween('tanggal_shift',[$startDate . ' 00:00:00',$endDate . ' 23:59:59'])
                     // ->select('tanggal_shift','className');
-                    ->orderBy('tanggal_shift','ASC')
-                    ->pluck('tanggal_shift');
+                    ->orderBy('tanggal_shift','ASC');
                 // return $workDays;
 
-                $presenceHistoryAbsent = $workDays->diff($presenceHistory->pluck('date')->values())->values();
+                $presenceHistoryAbsent = $workDays->pluck('tanggal_shift')->diff($presenceHistory->pluck('date')->values())->values();
+
+                $presenceHistoryAbsentTemp = collect();
+                foreach ($presenceHistoryAbsent as $key => $absentDate) {
+                    // echo $value . "<br>";
+                    // $presenceHistoryAbsentTemp
+                    $presenceHistoryAll->push((object) [
+                        "nik" => $value->nik,
+                        "name" => $value->name,
+                        "date" => $absentDate,
+                        "location" => "-",
+                        "schedule" => "08:00:00",
+                        "checkin" =>  "00:00:00",
+                        "checkout" =>  "00:00:00",
+                        "condition" => "Absent",
+                        "shifting" => $workDays->get()->where('tanggal_shift',$absentDate)->first()->title
+                    ]);
+                }
             } else {
                 $presenceHistoryAbsent = $workDays->diff($presenceHistory->pluck('date')->values())->values();
+
+                $presenceHistoryAbsentTemp = collect();
+                foreach ($presenceHistoryAbsent as $key => $absentDate) {
+                    // echo $value . "<br>";
+                    // $presenceHistoryAbsentTemp
+                    $presenceHistoryAll->push((object) [
+                        "nik" => $value->nik,
+                        "name" => $value->name,
+                        "date" => $absentDate,
+                        "location" => "-",
+                        "schedule" => "08:00:00",
+                        "checkin" =>  "00:00:00",
+                        "checkout" =>  "00:00:00",
+                        "condition" => "Absent",
+                        "shifting" => "-"
+                    ]);
+                }
             }
 
-            // return $workDays;
+            // return $workDays->get()->where('tanggal_shift','2022-05-01')->first();
             // return $presenceHistory->get()->pluck('date')->values();
             // return $presenceHistoryAbsent;
 
-            $presenceHistoryAbsentTemp = collect();
-            foreach ($presenceHistoryAbsent as $key => $absentDate) {
-                // echo $value . "<br>";
-                // $presenceHistoryAbsentTemp
-                $presenceHistoryAll->push((object) [
-                    "nik" => $value->nik,
-                    "name" => $value->name,
-                    "date" => $absentDate,
-                    "location" => "-",
-                    "schedule" => "08:00:00",
-                    "checkin" =>  "00:00:00",
-                    "checkout" =>  "00:00:00",
-                    "condition" => "Absent"
-                ]);
-            }
+            
 
             // dd($presenceHistoryAll->sortBy('date')->values());
         }
@@ -1524,7 +1546,7 @@ class PresenceController extends Controller
         $summarySheet->getStyle('A1:J1')->applyFromArray($titleStyle);
         $summarySheet->setCellValue('A1','All Presence');
 
-        $headerContent = ["No", "Nik", "Name", "Date","Location","Schedule","Check-In","Check-Out","Condition","Valid"];
+        $headerContent = ["No", "Nik", "Name", "Date","Location","Schedule","Check-In","Check-Out","Condition","Shifting"];
         $summarySheet->getStyle('A2:J2')->applyFromArray($headerStyle);
         $summarySheet->fromArray($headerContent,NULL,'A2');
         // return $req->nik;
@@ -1593,6 +1615,7 @@ class PresenceController extends Controller
         $summarySheet->getColumnDimension('H')->setAutoSize(true);
         $summarySheet->getColumnDimension('I')->setAutoSize(true);
         $summarySheet->getColumnDimension('J')->setAutoSize(true);
+        $summarySheet->getColumnDimension('K')->setAutoSize(true);
 
         $dataPresenceIndividual = $dataPresence["data"]->sortBy('name')->groupBy('name');
 
@@ -1604,12 +1627,12 @@ class PresenceController extends Controller
             // $spreadsheet->addSheet(new Worksheet($spreadsheet,$key));
             $detailSheet = $spreadsheet->setActiveSheetIndex($indexSheet + 1);
 
-            $detailSheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+            $detailSheet->getStyle('A1:K1')->applyFromArray($titleStyle);
             $detailSheet->setCellValue('A1','Presence Report ' . $key);
-            $detailSheet->mergeCells('A1:J1');
+            $detailSheet->mergeCells('A1:K1');
 
             $headerContent = ["No", "Nik", "Name", "Date","Location","Schedule","Check-In","Check-Out","Condition","Valid"];
-            $detailSheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+            $detailSheet->getStyle('A2:K2')->applyFromArray($headerStyle);
             $detailSheet->fromArray($headerContent,NULL,'A2');
 
             foreach ($item->sortBy('date')->values() as $key => $eachPresence) {
@@ -1638,6 +1661,7 @@ class PresenceController extends Controller
             $detailSheet->getColumnDimension('H')->setAutoSize(true);
             $detailSheet->getColumnDimension('I')->setAutoSize(true);
             $detailSheet->getColumnDimension('J')->setAutoSize(true);
+            $detailSheet->getColumnDimension('K')->setAutoSize(true);
             $indexSheet = $indexSheet + 1;
         }
 
