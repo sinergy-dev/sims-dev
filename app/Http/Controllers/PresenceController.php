@@ -630,6 +630,8 @@ class PresenceController extends Controller
         $notifsd = $notifAll["notifsd"];
         $notiftp = $notifAll["notiftp"];
         $notifClaim = $notifAll["notifClaim"];
+
+        // return $this->getOptionGrouped();
         
         return view('presence.shifting', compact('notif','notifOpen','notifsd','notiftp', 'notifClaim'))
             ->with([
@@ -683,6 +685,12 @@ class PresenceController extends Controller
         return $this->getSchedule($req)
             ->orderBy('start','DESC')
             ->get()
+            ->map(function($data){
+                if(!in_array($data->className,["Libur","Pagi","Sore","Malam","HO","Helpdesk"])){
+                    $data->className = "Custom";
+                }
+                return $data;
+            })
             ->toArray();
     }
 
@@ -769,6 +777,12 @@ class PresenceController extends Controller
         return $this->getSchedule($req)
             ->orderBy('start','DESC')
             ->get()
+            ->map(function($data){
+                if(!in_array($data->className,["Libur","Pagi","Sore","Malam","HO","Helpdesk"])){
+                    $data->className = "Custom";
+                }
+                return $data;
+            })
             ->toArray();
     }
 
@@ -1023,6 +1037,18 @@ class PresenceController extends Controller
     }
 
     public function modifyOptionShifting(Request $req){
+
+        if($req->new_label != ""){
+            $option = new PresenceShiftingOption();
+            $option->name_option = $req->new_label;
+            $option->start_shifting = $req->new_checkin;
+            $option->end_shifting = $req->new_checkout;
+            $option->id_project = $req->new_id_project;
+            $option->class_shifting = $req->new_class_shifting;
+            $option->status = $req->new_value;
+            $option->save();
+        }
+
         foreach($req->option_id as $option_key => $option_id){
             $option = PresenceShiftingOption::find($option_id);
             $option->name_option = $req->option_label[$option_key];
