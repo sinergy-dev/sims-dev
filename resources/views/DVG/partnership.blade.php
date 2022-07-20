@@ -242,7 +242,7 @@ Partnership
                     <table class="table table-bordered table-striped dataTable" id="tablePartnerhip" style="width: 100%;" cellspacing="0">
                       <thead>
                         <tr>
-                          <th>No</th>
+                          <th hidden>No</th>
                           <th>Partnership Name</th>
                           <th>Type (Distributor or Principal)</th>
                           <th>Level</th>
@@ -639,7 +639,8 @@ Partnership
           { 
             render: function (data, type, row, meta){
               return ++meta.row             
-            }
+            },
+            "visible":false
           },
           { "data": "partner" },
           { "data": "type" },
@@ -657,7 +658,7 @@ Partnership
             "orderData":[7]
           },
           {
-            "data":"total_cert_integer",
+            "data":"total_cert_integer.total_cert",
             "targets":[6],
             "visible":false,
             "searchable":true
@@ -674,8 +675,11 @@ Partnership
           })                    
         },
         columnDefs: [
-            { className: "dt-aligment-middle", targets: [1,2,3,4,5,6] },
+          { 
+            className: "dt-aligment-middle", targets: [1,2,3,4,5,6] 
+          }
         ],
+        "order": [7, 'desc'],
         "scrollX": true,
         "pageLength":25,
         "visible":false,
