@@ -1154,7 +1154,7 @@ class PresenceController extends Controller
                         "checkin" =>  $eachPresenceHistory->presence_actual,
                         "checkout" =>  "Uncheckout",
                         "condition" => $eachPresenceHistory->presence_condition,
-                        "shifting" => $eachPresenceHistory->title
+                        "shifting" => explode(" - ",$eachPresenceHistory->title)[0]
                     ]);
                 }
             }
@@ -1194,7 +1194,7 @@ class PresenceController extends Controller
                         "checkin" =>  "00:00:00",
                         "checkout" =>  "00:00:00",
                         "condition" => "Absent",
-                        "shifting" => $workDays->get()->where('tanggal_shift',$absentDate)->first()->title
+                        "shifting" => explode(" - ",$workDays->get()->where('tanggal_shift',$absentDate)->first()->title)[0]
                     ]);
                 }
             } else {
