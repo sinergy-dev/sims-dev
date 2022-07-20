@@ -61,6 +61,12 @@ Presence Shifting
 			color: #fff !important;
 		}
 
+		.custom, .Custom {
+			background-color: #b5bbc8 !important;
+			border-color: #b5bbc8 !important;
+			color: #000 !important;
+		}
+
 		.libur, .Libur {
 			background-color: #00a65a !important;
 			border-color: #00a65a !important;
@@ -405,6 +411,25 @@ Presence Shifting
 												</div>
 											</div>
 											@endforeach
+											<div class="form-group new-form-{{$shiftingOptionValues[0]['id_project']}}" style="display:none">
+												<div class="col-sm-3 div-input-new-{{$shiftingOptionValues[0]['id_project']}}">
+													<input type="text" class="form-control input-new-{{$shiftingOptionValues[0]['id_project']}}" placeholder="Input New Option Here">
+												</div>
+
+												<div class="col-sm-3">
+													<input type="text" class="form-control checkin-input-new-{{$shiftingOptionValues[0]['id_project']}} option-new-{{$shiftingOptionValues[0]['id_project']}}" placeholder="Start">
+												</div>
+												<div class="col-sm-3">
+													<input type="text" class="form-control checkout-input-new-{{$shiftingOptionValues[0]['id_project']}} option-new-{{$shiftingOptionValues[0]['id_project']}}" placeholder="End">
+												</div>
+
+												<div class="col-sm-3 text-center">
+													<label class="switch">
+														<input class="featureItemCheck checkbox-new-{{$shiftingOptionValues[0]['id_project']}} option-new-{{$shiftingOptionValues[0]['id_project']}}" type="checkbox" {{ $shiftingOptionValue['status'] == 'ACTIVE' ? 'checked' : '' }}>
+														<span class="slider round"></span>
+													</label>
+												</div>
+											</div>
 										</div>
 										<div class="box-footer">
 											<button type="button" class="btn btn-info pull-right" onclick="saveChangeShiftingOption({{$shiftingOptionValue['id_project']}})">Save Change</button>
@@ -593,7 +618,7 @@ Presence Shifting
 		url:"{{url('presence/shifting/getOptionGrouped')}}",
 		success:function(result){
 			for(var key in result){
-				console.log(key)
+				// console.log(key)
 				result[key].forEach( function ( data, key ) {
 
 				})
@@ -773,7 +798,7 @@ Presence Shifting
 						append = append + '		</a>';
 						append = append + '	</li>';
 					})
-					console.log(append)
+					// console.log(append)
 					$("#ulUser").append(append);
 					$("." + globalProject).show();
 				},
@@ -871,6 +896,7 @@ Presence Shifting
 		var checkInValue = []
 		var checkOutValue = []
 		var optionStatus = []
+		var optionStatusNew = []
 
 		$(".input-" + id_project).each(function(index){
 			// optionId.push($(this).attr('class').split(" option-")[1])
@@ -892,6 +918,14 @@ Presence Shifting
 			}
 		})
 
+		// New Option
+
+		if($(".checkbox-new-" + id_project).is(":checked")){
+			optionStatusNew = "ACTIVE"
+		} else {
+			optionStatusNew = "NON-ACTIVE"
+		}
+
 		swalWithCustomClass.fire({
 			title: 'Are you sure?',
 			text: "To Save this shifting option change?",
@@ -907,6 +941,13 @@ Presence Shifting
 					checkin_value:checkInValue,
 					checkout_value:checkOutValue,
 					status_value:optionStatus,
+
+					new_label:$(".input-new-" + id_project).val(),
+					new_checkin:$(".checkin-input-new-" + id_project).val(),
+					new_checkout:$(".checkout-input-new-" + id_project).val(),
+					new_value:optionStatusNew,
+					new_id_project:id_project,
+					new_class_shifting:"gray-active"
 				},
 				beforeSend: function(){
 					Swal.fire({
@@ -1072,6 +1113,8 @@ Presence Shifting
 	function editShifting(id_project){
 		$(".label-input-" + id_project).toggle()
 		$(".div-input-" + id_project).toggle()
+
+		$(".new-form-" + id_project).toggle()
 	}
 
 	
