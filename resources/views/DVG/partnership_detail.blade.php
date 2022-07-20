@@ -18,6 +18,24 @@ Partnership
 			height: 2px;
 	}
 
+	.iframe-cont {
+	  position: relative;
+	  width: 100%;
+	  overflow: hidden;
+	  padding-top: 66.66%; /* 3:2 Aspect Ratio */
+	}
+
+	.responsive-iframe {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  bottom: 0;
+	  right: 0;
+	  width: 100%;
+	  height: 100%;
+	  border: none;
+	}
+
 	input {
 	  -webkit-user-select: none;
 	  -moz-user-select: none;
@@ -233,7 +251,7 @@ Partnership
 </section>
 <section class="content">
 	<div class="row">
-	  <div class="col-md-4 col-xs-12">
+	  <div class="col-md-3 col-xs-12">
 			<div class="box box-primary">
 				<div class="box-body">
 					<form id="formEdit" enctype="multipart/form-data">
@@ -345,7 +363,7 @@ Partnership
     		</div>
  			</div>
  		</div>
-    <div class="col-md-8 col-xs-12">
+    <div class="col-md-9 col-xs-12">
       	<div class="nav-tabs-custom">
 					<ul class="nav nav-tabs">
 						<li class="active">
@@ -879,6 +897,7 @@ Partnership
 				    })
 
 	        	$(".btn-edit-eng").click(function(){
+	        			console.log(this.value.split(",")[2])
 	        			var name = this.value.split(",")[1]
 	        			appendModal = ""
 								appendModal = appendModal + '			<div class="modal fade" id="myModal" role="dialog">'
@@ -893,7 +912,7 @@ Partnership
 								appendModal = appendModal + '				<tr>'
 								appendModal = appendModal + "					<td>"
 								appendModal = appendModal + "						<label>Certification Name</label>"
-						    appendModal = appendModal + "						<input id='cert_name_edit' class='form-control' type='text' placeholder='Enter Certificate Type' value='"+ this.value.split(",")[2] +"'>"
+						    appendModal = appendModal + "						<textarea id='cert_name_edit' cols='50' rows='3' class='form-control' style='resize:horizontal;overflow:hidden' type='text' placeholder='Enter Certificate Type'></textarea>"
 						    appendModal = appendModal + " 				</td>"
 						    appendModal = appendModal + " 				<td>"
 								appendModal = appendModal + "						<label>Person</label>"
@@ -901,13 +920,8 @@ Partnership
 						    appendModal = appendModal + " 				</td>"
 						    appendModal = appendModal + " 				<td>"
 								appendModal = appendModal + "						<label>Expired Date</label>"
-								if (this.value.split(",")[3] == "null") {
-									appendModal = appendModal + "<input class='form-control' type='date' id='exp_date_edit' />"
-									appendModal = appendModal + "<div class='checkbox'><label><input id='cbLifetime' type='checkbox'>Check for Lifetime Date</label></div>"
-								} else{
-									appendModal = appendModal + "<input class='form-control' value='"+ moment(this.value.split(",")[3]).format("YYYY-MM-DD") +"' type='date' id='exp_date_edit' />"
-									appendModal = appendModal + "<div class='checkbox'><label><input id='cbLifetime' type='checkbox'>Check for Lifetime Date</label></div>"
-								}
+								appendModal = appendModal + "<input class='form-control' type='date' id='exp_date_edit' />"
+								appendModal = appendModal + "<div class='checkbox'><label><input id='cbLifetime' type='checkbox'>Check for Lifetime Date</label></div>"
 						    appendModal = appendModal + " 	</td>"
 						    appendModal = appendModal + " 	<td>"
 								appendModal = appendModal + "		<label>Certificate</label>"
@@ -926,6 +940,15 @@ Partnership
 								//here you force modal to be open
 			      		
 								$("body").append(appendModal);
+								if (this.value.split(",")[3] == 'Lifetime') {
+									$("#exp_date_edit").prop("disabled",true)
+									$("#exp_date_edit").val("")
+									$("#cbLifetime").prop("checked",true)
+								}else{
+									$("#exp_date_edit").prop("disabled",false)
+									$("#cbLifetime").prop("checked",false)
+									$("#exp_date_edit").val(moment(this.value.split(",")[3]).format("YYYY-MM-DD"))
+								}
 								$.ajax({
 						      url: "{{url('/partnership/getUser')}}",
 						      type: "GET",
@@ -939,7 +962,13 @@ Partnership
 			      				$("#cert_user_edit").val(name).trigger("change")
 						      }
 						    })
-			      		$("#myModal").modal('show')			      		
+						    $("#cert_name_edit").val(this.value.split(",")[2])
+			      		$("#myModal").modal('show')			     		
+						})
+
+						$('body').on('keyup','#cert_name_edit',function(){
+							  this.style.height = "1px";
+  							this.style.height = (25+this.scrollHeight)+"px";
 						})
 
 						$(".btn-delete-eng").click(function(){
@@ -1265,7 +1294,7 @@ Partnership
   }
 
   function showCertList(){
-  	$(".img-preview").html("<iframe class='img-responsive' style='border: 1px solid;width:100%;height:310px' id='img-preview' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}'></iframe>")
+  	$(".img-preview").html("<div class='iframe-cont'><iframe frameborder='0' class='img-responsive responsive-iframe' style='border: 1px solid;' id='img-preview' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}'></iframe></div>")
   	appendCertList = ''
   	$.ajax({
       type:"GET",
@@ -1317,13 +1346,15 @@ Partnership
     }) 
   }
 
+  
+
   $('body').on('click','#btnPreview',function(){
   	src = this.value
   	console.log(src)
   	if (src.split(".").lastIndexOf('pdf') != -1) {
 			$("#img-preview").attr("src","{{asset('pdfpart')}}/"+src);
   	}else{
-			$("#img-preview").attr("src","{{asset('image/cert_partnership')}}/"+src);
+			$("#img-preview").attr("src","{{asset('image/cert_partnership')}}/"+src)
   	}
 		// $("#img-preview").attr("src",imgs);
 
