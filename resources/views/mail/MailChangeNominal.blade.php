@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
+	<title></title>
 	<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
 	<style type="text/css">
 		table {
@@ -9,6 +11,7 @@
 
 		table, th, td {
 		  border: 0px solid grey;
+		  padding-top: 14px;
 		}
 
 		table, th {
@@ -51,7 +54,7 @@
 </head>
 <body style="display:block;width:600px;margin-left:auto;margin-right:auto;color: #000000">
 	<div style="line-height: 1.5em">
-		<center><img src="{{ asset('image/weekly1.png')}}" style="width: 50%; height: 50%"></center>
+		<center><img src="{{ asset('image/nominal_change.png')}}" style="width: 50%; height: 50%"></center>
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
@@ -90,7 +93,7 @@
 			<p style="font-size: 16px">
 				Condition before change :
 			</p>
-			<div id="bg_ket2" style="background-color: #B0DEB2; padding: 10px">
+			<div id="bg_ket2" style="background-color: #EDBABA; padding: 10px">
 				<ul>
 					<li>
 						@if($data["type"] == "Change Customer")
@@ -105,7 +108,7 @@
 			<p style="font-size: 16px">
 				Conditions requested to be changed :
 			</p>
-			<div id="bg_ket2" style="background-color: #EDBABA; padding: 10px">
+			<div id="bg_ket2" style="background-color: #B0DEB2; padding: 10px">
 				<ul>
 					<li>
 						@if($data["type"] == "Change Customer")
