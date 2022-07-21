@@ -22,6 +22,27 @@ Partnership
      display: none;
     }
 
+    .small-box h2 {
+      font-size: 50px;
+      font-weight: bold;
+      margin: 20px 0 0 0;
+      /*white-space: nowrap;*/
+      padding: 0;
+    }
+
+    .small-box h4 {
+      word-break: break-all;
+      word-spacing: 999px;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .vcenter {
+      display: flex;
+      vertical-align: middle;
+      float: right;
+    }
+
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
       -webkit-appearance: none; 
@@ -100,7 +121,7 @@ Partnership
     <div class="box">
       <div class="box-header">
         <h3 class="box-title"><i class="fa fa-table"></i> Partnership</h3>
-         <!--  <div class="pull-left">
+<!--           <div class="pull-left">
             <button type="button" class="btn btn-primary pull-right float-right margin-left-custom" id="btnAdd" onclick="showTabAdd(0)" style="display: none;" style="width: 120px;"><i class="fa fa-plus"> </i> &nbspPartnership
               </button>  
             <div class="pull-right dropdown" style="margin-right: 5px;display: none;" id="divExport">
@@ -114,7 +135,7 @@ Partnership
       </div>
 
       <div class="box-body">
-<!--         <div class="row">
+        <div class="row">
           <div class="col-md-12">
             <div class="nav-tabs-custom">
               <ul class="nav nav-tabs">
@@ -123,87 +144,62 @@ Partnership
               </ul>
               <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
+                  <div class="row" id="BoxId">
+                  </div>
                   <div class="row">
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                      <div class="info-box">
-                        <span class="info-box-icon bg-aqua">90</span>
-                        <div class="info-box-content">
-                          <span class="info-box-text">Partner</span>
+                    <div class="col-md-6">
+                      <div class="box box-primary">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">Total Certificate per Partner</h3>
+                        </div>
+                        <div class="chart-container" style="position: relative;padding: 20px;border-radius: 5px;">
+                          <canvas id="brandPieChart"></canvas>
                         </div>
                       </div>
+                      
                     </div>
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                      <div class="info-box">
-                        <span class="info-box-icon bg-yellow">50</span>
-                        <div class="info-box-content">
-                          <span class="info-box-text">Sales Certification</span>
+                    <div class="col-md-6">
+                      <div class="box box-primary">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">Total Sales/Engineer Certification</h3>
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                      <div class="info-box">
-                        <span class="info-box-icon bg-red">70</span>
-                        <div class="info-box-content">
-                          <span class="info-box-text">Engineer Certification</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6 col-xs-12">
-                      <div class="info-box">
-                        <span class="info-box-icon bg-green">60</span>
-                        <div class="info-box-content">
-                          <span class="info-box-text">Partner</span>
+                        <div class="chart-container" style="position: relative;padding: 20px;border-radius: 5px;">
+                          <canvas id="certPieChart"></canvas>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-md-6">
-                      <div class="box box-default">
+                    <div class="col-md-12">                     
+                      <div class="box box-primary">
                         <div class="box-header with-border">
-                          <h3 class="box-title">Browser Usage</h3>
-
-                          <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                            </button>
-                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                          </div>
+                          <i class="ion ion-arrow-graph-up-right"></i> 
+                          <h3 class="box-title">Need Attention</h3>
                         </div>
                         <div class="box-body">
-                          <div class="row">
-                            <div class="col-md-8">
-                              <div class="chart-responsive">
-                                <canvas id="pieChart" height="150"></canvas>
-                              </div>
-                            </div>
-                            <div class="col-md-4">
-                              <ul class="chart-legend clearfix">
-                                <li><i class="fa fa-circle-o text-red"></i> Chrome</li>
-                                <li><i class="fa fa-circle-o text-green"></i> IE</li>
-                                <li><i class="fa fa-circle-o text-yellow"></i> FireFox</li>
-                                <li><i class="fa fa-circle-o text-aqua"></i> Safari</li>
-                                <li><i class="fa fa-circle-o text-light-blue"></i> Opera</li>
-                                <li><i class="fa fa-circle-o text-gray"></i> Navigator</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="box-footer no-padding">
-                          <ul class="nav nav-pills nav-stacked">
-                            <li><a href="#">United States of America
-                              <span class="pull-right text-red"><i class="fa fa-angle-down"></i> 12%</span></a></li>
-                            <li><a href="#">India <span class="pull-right text-green"><i class="fa fa-angle-up"></i> 4%</span></a>
-                            </li>
-                            <li><a href="#">China
-                              <span class="pull-right text-yellow"><i class="fa fa-angle-left"></i> 0%</span></a></li>
+                          <ul class="attention-list products-list product-list-in-box">
                           </ul>
                         </div>
                       </div>
                     </div>
-                    
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">                      
+                      <div class="box box-primary">
+                        <div class="box-header">
+                          <i class="ion ion-clipboard"></i>
+
+                          <h3 class="box-title">To Do List</h3>
+                        </div>
+                        <div class="box-body">
+                          <ul class="todo-list">
+                          </ul>
+                        </div>
+                      </div> 
+                    </div>
                   </div>
                 </div>
-                <div class="tab-pane" id="tab_2"> -->
+                <div class="tab-pane" id="tab_2">
                   <div class="row">
                     <div class="col-md-8 pull-left" style="margin-bottom: 0px; margin-top: 0px;"> 
                       <button type="button" class="btn btn-primary margin-left-custom" id="btnAdd" onclick="showTabAdd(0)" style="display: none;" style="width: 120px;"><i class="fa fa-plus"> </i> &nbspPartnership
@@ -258,11 +254,11 @@ Partnership
                     </table>
                   </div>
                 </div>
-     <!--          </div>
+              </div>
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>      
 
     <!--MODAL-->
@@ -544,13 +540,16 @@ Partnership
 @endsection
 
 @section('scriptImport')
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-  <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
-  <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+ <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
+ <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+ <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 @endsection
 @section('script')  
   <script type="text/javascript">
@@ -563,7 +562,224 @@ Partnership
       Pace.track(function() {
           showTablePartnership(accesable)
       })
+      chart()
+      box()
+      showTodo()
+      showAttention()
     })
+
+    function chart(){
+      var pieBrand = document.getElementById("brandPieChart");
+      var pieCertificate = document.getElementById("certPieChart");
+
+    
+      $.ajax({
+        type:"GET",
+        url:"{{url('/partnership/getCertByBrand')}}",
+        success:function(result){
+          var totalCertBrand = new Chart(pieBrand, {
+            type: 'pie',
+            data: {
+              labels: result.label,
+              indexLabel: "#percent%",
+              percentFormatString: "#0.##",
+              toolTipContent: "{y} (#percent%)",
+              datasets: [{
+                data: result.percentage,
+                backgroundColor: ["#4589ff","#a56eff","#002d9c","#009d9a","#fa4d56","#9f1853","#f1c21b","#ff832b","#570408","#8a3800"],
+              }],
+            },
+            options: {
+              legend: {
+                display: true
+              },
+              tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                  label: function(tooltipItem, data) {
+                    var percent = data['datasets'][0]['data'][tooltipItem['index']]
+                    return percent + "%"
+                    // return console.log(tooltipItem)
+                  },
+                },
+              },
+            },
+          });
+        }
+      }) 
+
+      $.ajax({
+        type:"GET",
+        url:"{{url('/partnership/getCertByCategory')}}",
+        success:function(result){
+          var totalCertBrand = new Chart(pieCertificate, {
+            type: 'pie',
+            data: {
+              labels: result.label,
+              indexLabel: "#percent%",
+              percentFormatString: "#0.##",
+              toolTipContent: "{y} (#percent%)",
+              datasets: [{
+                data: result.percentage,
+                backgroundColor: ["#4589ff","#a56eff","#002d9c","#009d9a","#fa4d56","#9f1853","#f1c21b","#ff832b","#570408","#8a3800"],
+              }],
+            },
+            options: {
+              legend: {
+                display: true
+              },
+              tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                  label: function(tooltipItem, data) {
+                    var percent = data['datasets'][0]['data'][tooltipItem['index']]
+                    return percent + "%"
+                    // return console.log(tooltipItem)
+                  },
+                },
+              },
+            },
+          });
+        }
+      })
+    }
+
+    function box(){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/partnership/getCountDashboard')}}",
+        success: function(result){
+          // console.log(colors)
+          var prepend = ''
+          $.each(result, function(key, value){
+            console.log(value)
+            prepend = prepend + '<div class="col-lg-4 col-xs-6">'
+              prepend = prepend + '<div class="small-box '+ value.color +'" style="height: 100px;border-radius: 5px;">'
+                prepend = prepend + '<div class="row">'
+                  prepend = prepend + '<div class="col-md-7">'
+                  prepend = prepend + '<h4 style="margin-left: 20px;font-size: x-large;font-weight: 700;">'+ value.title +'</h4>'
+                  prepend = prepend + '</div>'
+                  prepend = prepend + '<div class="col-md-5 vcenter">'
+                  prepend = prepend + '<h2 style="font-size: xxx-large;font-weight: bold;">'+ value.count+'</h2>'
+                  prepend = prepend + '</div>'
+                prepend = prepend + '</div>'
+              prepend = prepend + '</div>'
+            prepend = prepend + '</div>'
+          })
+
+          $("#BoxId").prepend(prepend)
+
+          // $('.counter').each(function () {
+          //   var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
+          //   $(this).prop('Counter', 0).animate({
+          //     Counter: $(this).text()
+          //   }, {
+          //     duration: 5000,
+          //     step: function (func) {
+          //        $(this).text(parseFloat(func).toFixed(size));
+          //     }
+          //   });
+          // });
+        }
+      })
+    }
+
+    function showTodo(){
+      var appendList = ""
+      $.ajax({
+        type:"GET",
+        url:"{{url('/partnership/getToDoList')}}",
+        success: function(result){
+          $('.todo-list').empty("")
+          $.each(result.data, function(key,value){
+              if(value.status == 'Done'){
+                status = 'done'
+              }else{
+                status = ''
+              }
+
+              appendList = appendList + '<li class="' + status + ' ">'
+                appendList = appendList + ' <span class="handle">'
+                  appendList = appendList + '   <i class="fa fa-ellipsis-v"></i>'
+                    appendList = appendList + '   <i class="fa fa-ellipsis-v"></i>'
+                    appendList = appendList + ' </span>'
+                    appendList = appendList + ' <input type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
+                    appendList = appendList + ' <span class="text" id="textList" data-value='+key+'>' + '<b>[' + value.partner + ']</b> - ' + value.target + ' - ' + value.countable +'</span>'
+                  appendList = appendList + ' <small class="label label-warning status-'+ key + '">'+ value.status +'</small>'
+              appendList = appendList + '</li>'
+          })            
+          $('.todo-list').append(appendList)
+
+          $.each(result.data,function(key,value){
+            if(value.status == "Done"){
+              $(".checked-"+key).attr("checked","true")
+              $(".checked-"+key).prop("disabled",true)
+            }
+
+            $('.todo-list').todoList({
+              onCheck  : function () {
+                $.ajax({
+                  type:"POST",
+                  url:"{{url('/partnership/updateStatusTarget')}}",
+                  data:{
+                    _token:"{{csrf_token()}}",
+                    id:$(this).data('value')
+                  }
+                })
+                $(".checked-"+key).prop("disabled",true)
+                $("small.status-"+key).text("Done")
+
+                window.console.log($(this), 'The element has been checked');
+
+              },
+              onUnCheck: function () {
+                window.console.log($(this), 'The element has been unchecked');
+              }
+            });
+          })        
+
+          $('.todo-list').sortable({
+            placeholder         : 'sort-highlight',
+            handle              : '.handle',
+            forcePlaceholderSize: true,
+            zIndex              : 999999
+          });
+
+        },
+      }) 
+    }
+
+    function showAttention(){
+      $.ajax({
+        type:"GET",
+        url:"{{url('/partnership/getNeedAttention')}}",
+        success: function(result){
+          // console.log(colors)
+          var prepend = ''
+          $.each(result.data, function(key, value){
+            console.log(value)
+            prepend = prepend + '<li class="item">'
+              prepend = prepend + ' <div class="product-img">'
+                prepend = prepend + '<img class="img-responsive img-circle" style="border:solid #3c8dbc 1.5px" src="{{asset("image/logo_partnership")}}/'+ value.logo+'" alt="Yuki" style="width: 50px;height:50px;position: relative;">'
+                  prepend = prepend + '</div>'
+                  prepend = prepend + '<div class="product-info">'
+                  prepend = prepend + '<a href="{{url("partnership_detail/")}}/'+ value.id_partnership +'" class="product-title">' + value.partner 
+                  prepend = prepend + '<h4>'
+                  prepend = prepend + '<span class="label label-warning pull-right">'+ value.level +'</span></a>'
+                  prepend = prepend + '</h4>'
+                  prepend = prepend + '<span class="product-description">'
+                  prepend = prepend + moment(value.renewal_date).format("Do MMMM YYYY")
+                prepend = prepend + '</span>'
+              prepend = prepend + '</div>'
+            prepend = prepend + '</li>'
+          })
+
+          $(".attention-list").prepend(prepend)
+        }
+      })
+    }
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
        $($.fn.dataTable.tables(true)).DataTable()
