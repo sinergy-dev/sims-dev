@@ -642,6 +642,11 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/partnership/getTargetById', 'PartnershipController@getTargetById');
 	Route::post('/partnership/updateTarget', 'PartnershipController@updateTarget');
 	Route::get('/partnership/getSearchDataPartnership', 'PartnershipController@getSearchDataPartnership');
+	Route::get('/partnership/getCountDashboard', 'PartnershipController@getCountDashboard');
+	Route::get('/partnership/getCertByBrand', 'PartnershipController@getCertByPartner');
+	Route::get('/partnership/getCertByCategory', 'PartnershipController@getCertByCategory');
+	Route::get('/partnership/getToDoList', 'PartnershipController@getToDoList');
+	Route::get('/partnership/getNeedAttention', 'PartnershipController@getNeedAttention');
 
 	Route::get('/admin_hr', 'HRNumberController@index');
 	Route::post('/store_admin_hr', 'HRNumberController@store');
