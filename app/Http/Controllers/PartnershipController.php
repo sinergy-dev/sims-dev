@@ -15,6 +15,7 @@ use App\PartnershipImageCertificate;
 use App\PartnershipTarget;
 use App\PartnershipTechnology;
 use App\PartnershipLog;
+use Carbon\Carbon;
 
 use Intervention\Image\ImageManagerStatic as Image;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -845,5 +846,82 @@ class PartnershipController extends Controller
         $location = public_path() . '/report/partnership/' . $fileName;
         $writer->save($location);
         return $fileName;
-}
+    }
+
+    public function getCountDashboard(Request $request)
+    {
+        $count_partner = Partnership::count('id_partnership');
+        $eng_certification = DB::table('tb_partnership')->join('tb_partnership_certification', 'tb_partnership_certification.id_partnership', '=', 'tb_partnership.id_partnership')->select('level_certification')->where('level_certification','like','Engineer%')->count();
+        $sales_certification = DB::table('tb_partnership')->join('tb_partnership_certification', 'tb_partnership_certification.id_partnership', '=', 'tb_partnership.id_partnership')->select('level_certification')->where('level_certification','like','Sales%')->count();
+
+        return collect([
+            ['title' => 'Total Partner' ,'count' => $count_partner, 'color' => 'bg-aqua'],
+            ['title' => 'Engineer Certification' ,'count' => $eng_certification, 'color' => 'bg-orange'],
+            ['title' => 'Sales Certification' ,'count' => $sales_certification, 'color' => 'bg-green'],
+        ]);
+    }
+
+    public function getCertByPartner(Request $request)
+    {
+        $count_all = PartnershipCertification::join('tb_partnership', 'tb_partnership_certification.id_partnership', '=', 'tb_partnership.id_partnership')->selectRaw('COUNT(`level_certification`) as `count_all`')->first();
+
+        $count_by_partner = PartnershipCertification::join('tb_partnership', 'tb_partnership_certification.id_partnership', '=', 'tb_partnership.id_partnership')
+            ->select('partner', 'tb_partnership.id_partnership')
+            ->selectRaw('COUNT(`level_certification`)/' . $count_all->count_all . '*100 as `percentage`')
+            ->orderBy('percentage', 'DESC')
+            ->groupby('id_partnership')
+            ->take(9)
+            ->get();
+
+        $get_percentage = $count_by_partner->map(function($data){
+            $data->percentage_rounded = number_format((float)$data->percentage, 2, '.', '');
+            return $data;
+        });
+
+        return array("label"=>$count_by_partner->pluck('partner'), "percentage"=>$get_percentage->pluck('percentage_rounded'));
+    }
+
+    public function getCertByCategory()
+    {
+        $count_all = PartnershipCertification::join('tb_partnership', 'tb_partnership_certification.id_partnership', '=', 'tb_partnership.id_partnership')->selectRaw('COUNT(`level_certification`) as `count_all`')->first();
+
+        $get_cert = PartnershipCertification::join('tb_partnership', 'tb_partnership_certification.id_partnership', '=', 'tb_partnership.id_partnership')
+            ->select('level_certification')
+            ->selectRaw('COUNT(`level_certification`)/' . $count_all->count_all . '*100 as `percentage`')
+            ->orderBy('percentage', 'DESC')
+            ->groupby('level_certification')
+            ->get();
+
+        $get_percentage = $get_cert->map(function($data){
+            $data->percentage_rounded = number_format((float)$data->percentage, 2, '.', '');
+            return $data;
+        });
+
+        return array("label"=>$get_cert->pluck('level_certification'), "percentage"=>$get_cert->pluck('percentage_rounded'));
+    }
+
+    public function getToDoList(Request $request)
+    {
+        $data = PartnershipTarget::join('tb_partnership', 'tb_partnership.id_partnership', 'tb_partnership_target.id_partnership')
+            ->select('target', 'countable', 'description', 'status', 'tb_partnership_target.id_partnership', 'partner', 'id', 'tb_partnership_target.created_at')
+            ->where('status', 'Not-Done')
+            ->orderby('tb_partnership_target.updated_at', 'asc')
+            ->get();
+
+        return array("data" => $data);
+    }
+
+    public function getNeedAttention(Request $request)
+    {
+        $end_date = Carbon::now()->addDays(90)->format('Y-m-d');
+        $now = Carbon::now()->format('Y-m-d');
+
+        $data = DB::table('tb_partnership')->select(DB::raw('MAX(renewal_date) as renewal_date'), 'partner', 'id_partnership', 'logo', 'level')
+            ->whereBetween('renewal_date', [$now, $end_date])
+            ->orderby('renewal_date', 'asc')
+            ->groupby('id_partnership')
+            ->get();
+
+        return array("data" => $data);
+    }
 }
