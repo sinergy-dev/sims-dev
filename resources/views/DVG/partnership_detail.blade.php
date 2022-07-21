@@ -1126,7 +1126,7 @@ Partnership
 						appendList = appendList + '	<input type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
 						appendList = appendList + '	<span class="text" id="textList" data-value='+key+'>'+ value.target + ' - ' + value.countable +'</span>'
 						appendList = appendList + ' <small class="label label-warning status-'+ key + '">'+ value.status +'</small>'
-						appendList = appendList + '	<div id="targetTools" class="tools activeTrash-'+ key +'" style="display:none">'
+						appendList = appendList + '	<div id="targetTools" class="tools activeTrash-'+ key +'">'
 						appendList = appendList + '	<i class="fa fa-edit" onClick="editTarget('+value.id+')"></i>'
 						appendList = appendList + '		<i class="fa fa-trash-o" onClick="deleteTarget('+ key + ',' + value.id + ')"></i>'
 						appendList = appendList + '	</div>'
@@ -1156,6 +1156,8 @@ Partnership
 					}else{
 						if (accesable.includes('targetTools')) {
 							$(".activeTrash-"+key).show()
+						}else{
+							$(".activeTrash-"+key).hide()
 						}
 					}
 
