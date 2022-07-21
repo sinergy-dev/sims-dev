@@ -706,7 +706,7 @@ Partnership
                     appendList = appendList + '   <i class="fa fa-ellipsis-v"></i>'
                     appendList = appendList + ' </span>'
                     appendList = appendList + ' <input type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
-                    appendList = appendList + ' <span class="text" id="textList" data-value='+key+'>' + '<b>[' + value.partner + ']</b> - ' + value.target + ' - ' + value.countable +'</span>'
+                    appendList = appendList + ' <span class="text" id="textList" data-value='+key+'>' + '<b>[' + value.partner + ']</b> - ' + value.target + ' - ' + value.countable + ' created at ' + value.created_at +'</span>'
                   appendList = appendList + ' <small class="label label-warning status-'+ key + '">'+ value.status +'</small>'
               appendList = appendList + '</li>'
           })            
