@@ -36,6 +36,16 @@ Partnership
 	  border: none;
 	}
 
+	.image-preview {
+	  max-width: 576px;
+	}
+
+	iframe {
+	  max-width: 100vw;
+	  max-height: 56.25vw;
+	  /* 315/560 = .5625 */
+	}
+
 	input {
 	  -webkit-user-select: none;
 	  -moz-user-select: none;
@@ -93,9 +103,9 @@ Partnership
 	}
 	.avatar-upload .avatar-edit {
 	  position: absolute;
-	  right: 12px;
-	  z-index: 1;
-	  top: 10px;
+		right: -5px;
+		z-index: 1;
+		top: -10px;
 	}
 	.avatar-upload .avatar-edit input {
 	  display: none;
@@ -132,7 +142,7 @@ Partnership
 	  width: 192px;
 	  height: 192px;
 	  position: relative;
-	  border-radius: 100%;
+	  border-radius: 10%;
 	  border: 6px solid #F8F8F8;
 	  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
 	}
@@ -153,9 +163,9 @@ Partnership
 	}
 	.avatar-upload-mini .avatar-edit {
 	  position: absolute;
-	  right: 0px;
-	  z-index: 1;
-	  top: -10px;
+		right: -5px;
+		z-index: 1;
+		top: -10px;
 	}
 	.avatar-upload-mini .avatar-edit input {
 	  display: none;
@@ -192,7 +202,7 @@ Partnership
 	  width: 92px;
 	  height: 92px;
 	  position: relative;
-	  border-radius: 100%;
+	  border-radius: 10%;
 	  border: 6px solid #F8F8F8;
 	  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
 	}
@@ -1131,20 +1141,6 @@ Partnership
 						appendList = appendList + '		<i class="fa fa-trash-o" onClick="deleteTarget('+ key + ',' + value.id + ')"></i>'
 						appendList = appendList + '	</div>'
 						appendList = appendList + '</li>'
-				  // 	appendList = appendList + '<li id="liList" data-value='+key+'>'
-						// appendList = appendList + '<span class="handle ui-sortable-handle">'
-						// appendList = appendList + '<i class="fa fa-ellipsis-v"></i>'
-						// appendList = appendList + '<i class="fa fa-ellipsis-v"></i>'
-						// appendList = appendList + '</span>'
-						// appendList = appendList + '<input type="checkbox" id="cbTarget" data-value='+key+'">'
-						// // appendList = appendList + '<input type="checkbox" id="cbTarget" data-value='+key+' onclick="cbTargetChecked('+key+')">'
-						// appendList = appendList + '<span class="text" id="textList" data-value='+key+'>'+ value.target + ' , ' + value.countable +'</span>'
-						// appendList = appendList + '<small class="label label-warning">'+ value.status +'</small>'
-						// appendList = appendList + '<div class="tools">'
-						// appendList = appendList + '<i class="fa fa-edit"></i>'
-						// appendList = appendList + '<i class="fa fa-trash-o"></i>'
-						// appendList = appendList + '</div>'
-						// appendList = appendList + '</li>'
     		})         		
 				$('.todo-list').append(appendList)
 
@@ -1175,8 +1171,6 @@ Partnership
 							$(".activeTrash-"+key).hide()
 							$("small.status-"+key).text("Done")
 
-      	// 			$('.todo-list').empty("")
-							// $('.todo-list').append(appendList)
 							window.console.log($(this), 'The element has been checked');
 
 						},
@@ -1296,7 +1290,8 @@ Partnership
   }
 
   function showCertList(){
-  	$(".img-preview").html("<div class='iframe-cont'><iframe frameborder='0' class='img-responsive responsive-iframe' style='border: 1px solid;' id='img-preview' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}'></iframe></div>")
+  	// $(".img-preview").html("<iframe frameborder='0' class='frame' style='border: 1px solid;' id='img-preview' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}'></iframe>")
+  	$(".img-preview").html("<div class='image-preview'><iframe id='img-preview' width='566' height='376' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}' frameborder='0' allowfullscreen></iframe></div>")
   	appendCertList = ''
   	$.ajax({
       type:"GET",
@@ -1309,9 +1304,9 @@ Partnership
     			appendCertList = appendCertList + '<div class="col-sm-6">'	
     			pdf = value.certificate
     			if (pdf.split(".").lastIndexOf('pdf') != -1) {
-    				appendCertList = appendCertList + '<iframe style="cursor: pointer;width:100%;height:200px;border:1px black solid" src="{{url("pdfpart/4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf")}}"></iframe><button style="margin-right:5px" value="4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'		
+    				appendCertList = appendCertList + '<iframe style="cursor: pointer;width:100%;height:200px" src="{{url("pdfpart/4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf")}}"></iframe><button style="margin-right:5px" value="4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'		
     			}else{
-    				appendCertList = appendCertList + '<img style="cursor: pointer;width:100%;height:200px;border:1px black solid" src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo"><button value="'+value.certificate+'" style="margin-top:5px;margin-right:5px" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'
+    				appendCertList = appendCertList + '<img style="cursor: pointer;width:100%;height:200px;" src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo"><button value="'+value.certificate+'" style="margin-top:5px;margin-right:5px" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'
     			}  			
 
 					appendCertList = appendCertList + '<small hidden>'+ value.title +'</small>'
@@ -1352,12 +1347,7 @@ Partnership
 
   $('body').on('click','#btnPreview',function(){
   	src = this.value
-  	console.log(src)
-  	if (src.split(".").lastIndexOf('pdf') != -1) {
-			$("#img-preview").attr("src","{{asset('pdfpart')}}/"+src);
-  	}else{
-			$("#img-preview").attr("src","{{asset('image/cert_partnership')}}/"+src)
-  	}
+		$("#img-preview").attr("src","{{asset('image/cert_partnership')}}/"+src)
 		// $("#img-preview").attr("src",imgs);
 
     $(".timeline-body").html("<div class='row'><div class='col-md-6'><textarea id='txEditTitle' disabled class='form-control'>"+  $(this).next("small").text() +"</textarea></div></div>")
