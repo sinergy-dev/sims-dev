@@ -566,6 +566,9 @@ Partnership
       box()
       showTodo()
       showAttention()
+
+      $('.nav-tabs a[href="#tab_2"]').tab('show');
+
     })
 
     function chart(){
