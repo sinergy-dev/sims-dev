@@ -21,8 +21,7 @@ Partnership
 	.iframe-cont {
 	  position: relative;
 	  width: 100%;
-	  overflow: hidden;
-	  padding-top: 66.66%; /* 3:2 Aspect Ratio */
+	  overflow: hidden;; /* 3:2 Aspect Ratio */
 	}
 
 	.responsive-iframe {
@@ -38,6 +37,11 @@ Partnership
 
 	.image-preview {
 	  max-width: 576px;
+	}
+
+	@media only screen and (max-width: 600px) {
+	  .image-preview {width:100%; display:block;}
+	  margin:20px auto; 
 	}
 
 	iframe {
@@ -149,7 +153,7 @@ Partnership
 	.avatar-upload .avatar-preview > div {
 	  width: 100%;
 	  height: 100%;
-	  border-radius: 100%;
+	  border-radius: 10%;
 	  background-size: cover;
 	  background-repeat: no-repeat;
 	  background-position: center;
@@ -209,7 +213,7 @@ Partnership
 	.avatar-upload-mini .avatar-preview > div {
 	  width: 100%;
 	  height: 100%;
-	  border-radius: 100%;
+	  border-radius: 10%;
 	  background-size: cover;
 	  background-repeat: no-repeat;
 	  background-position: center;
@@ -273,15 +277,15 @@ Partnership
 				            <input type='file' id="imageUpload" name="logo" accept=".png, .jpg, .jpeg" />
 				            <label for="imageUpload"></label>
 				        </div>
-			        	<div class="avatar-preview">
+			        <div class="avatar-preview">
 			        	@if($data->logo == "")
-				        		<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/logo_placeholder.png')}}')">
-				            </div>
-				        	@else
-				        		<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/'.$data->logo)}}')">
-				            </div>
-				        	@endif		            
-				        </div>				        
+				        	<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/logo_placeholder.png')}}')">
+				          </div>
+			        	@else
+			        		<div id="imagePreview" name="logo" style="background-image: url('{{ asset('image/logo_partnership/'.$data->logo)}}')">
+			      	  	</div>			        		
+			        	@endif	
+				      </div>				        
 				    	</div>
 					    <div class="avatar-upload-mini">
 				        <div class="avatar-edit" style="display:none">
@@ -414,13 +418,13 @@ Partnership
 								<div class="box-body">
 									<div class="post">
 										<div class="row margin-bottom">
-												<div class="col-sm-6">
+												<div class="col-md-6">
 													<div class="img-preview">
 														
 													</div>
 													<!-- <img class="img-responsive" style="border: 1px solid " id="img-preview" src="{{asset('image/logo_partnership/certificate_placeholder.png')}}" alt="Photo"> -->
 												</div>																			
-												<div class="paging col-sm-6">
+												<div class="paging col-md-6">
 													<div class="row" style="margin-bottom: 10px;" id="idCertList">															
 													</div>
 													<div id="pagination-container" class="text-center" style="margin-top: 10px;">
@@ -1291,7 +1295,7 @@ Partnership
 
   function showCertList(){
   	// $(".img-preview").html("<iframe frameborder='0' class='frame' style='border: 1px solid;' id='img-preview' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}'></iframe>")
-  	$(".img-preview").html("<div class='image-preview'><iframe id='img-preview' width='566' height='376' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}' frameborder='0' allowfullscreen></iframe></div>")
+  	$(".img-preview").html("<div class='iframe-cont'><iframe id='img-preview' width='566' height='376' src='{{asset('image/logo_partnership/certificate_placeholder.png')}}' frameborder='0' allowfullscreen></iframe></div>")
   	appendCertList = ''
   	$.ajax({
       type:"GET",
@@ -1303,12 +1307,13 @@ Partnership
       	$.each(result.data, function(key,value){
     			appendCertList = appendCertList + '<div class="col-sm-6">'	
     			pdf = value.certificate
-    			if (pdf.split(".").lastIndexOf('pdf') != -1) {
-    				appendCertList = appendCertList + '<iframe style="cursor: pointer;width:100%;height:200px" src="{{url("pdfpart/4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf")}}"></iframe><button style="margin-right:5px" value="4_HP Certificate of Partnership - PT. SINERGY INFORMASI PRATAMA.pdf" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'		
+    			console.log(pdf)
+    			if (pdf.split(".").pop() == "pdf") {
+    				console.log("yes pdf")
+    			appendCertList = appendCertList + '<iframe style="cursor: pointer;" width="265" height="200"  src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo"><button value="'+value.certificate+'"></iframe><button style="margin-right:5px" value="'+value.certificate+'" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'		
     			}else{
     				appendCertList = appendCertList + '<img style="cursor: pointer;width:100%;height:200px;" src="{{asset("image/cert_partnership")}}/'+value.certificate+'" alt="Photo"><button value="'+value.certificate+'" style="margin-top:5px;margin-right:5px" class="btn btn-xs btn-info" id="btnPreview"><i class="fa fa-search"></i> zoom</button>'
     			}  			
-
 					appendCertList = appendCertList + '<small hidden>'+ value.title +'</small>'
 					appendCertList = appendCertList + '<small hidden>'+ value.id +'</small>'
 					if (value.title.length > 20) {
