@@ -414,6 +414,28 @@ Lead Register
 	                    </div>
 
 	                    <div class="form-group">
+	                    	<div class="table-responsive">
+			              			<table class="table" id="table-tagging">
+				                    <thead>
+				                      <tr>
+				                      	<th hidden></th>
+				                        <th title="Product Tagging is Required!">Brand Tag</th>
+				                        <th>Technology Tag</th>
+				                        <th>Price</th>
+				                        <td class="text-center">
+				                          <button class="btn btn-xs btn-primary" id="btn-addTagging" type="button" style="border-radius:50%;width: 25px;height: 25px;">
+										              	<i class="fa fa-plus"></i>
+										              </button> 
+				                        </td>
+				                      </tr>
+					                  </thead>
+					                  <tbody id="tbtagging">
+					                  </tbody>
+					                </table>
+			              		</div>
+	                    </div>
+
+	          <!--           <div class="form-group">
 	                        <label>Product Tag</label>
 	                        <select class="js-product-multiple select2" style="width:100%" name="product_edit[]" id="product_edit" multiple="multiple">
 
@@ -425,7 +447,7 @@ Lead Register
 	                        <select class="js-technology-multiple select" style="width:100%" name="technology_edit[]" id="technology_edit" multiple="multiple">
 
 	                        </select>
-	                    </div>
+	                    </div> -->
 
 	                    <div class="modal-footer">
 	                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
@@ -920,7 +942,8 @@ Lead Register
 		    }
 		})
 	}
-
+	
+	var i
 	table.on('click', '#btnEdit', function () {
     var tr = $(this).closest('tr');
     var value = $(tr).find('td').eq(0)[0].innerHTML;
@@ -931,7 +954,6 @@ Lead Register
     	value = $(value).text()
     }
      
-    $('#edit_lead_register').modal('show')
 		$.ajax({
 			type:"GET",
 			url:"{{url('/project/showEditLead')}}",
@@ -950,16 +972,286 @@ Lead Register
 				$("#amount_edit").mask('000.000.000.000', {reverse: true})
 				$("#amount_edit").val(result.data[0].amount.toString()).trigger("input")
 				$("#note_edit").val(result.data[0].keterangan)
-				$("#product_edit").select2().val("");
-				$('#product_edit').val(result.data[0].id_product_tag).trigger('change')
-				$("#technology_edit").select2().val("");
-				$("#technology_edit").val(result.data[0].id_tech).trigger("change")
+				// $("#product_edit").select2().val("");
+				// if (result.data[0].id_product_tag != null) {
+				// 	let id_product_tag = result.data[0].id_product_tag.split(",")
+				// 	var productArr = []
+				// 	productArr.push(id_product_tag)
+				// 	console.log(productArr)
+				// 	$('#product_edit').val(productArr[0]).trigger('change').on("select2:select", function (evt) {
+				// 	  var element = evt.params.data.element;
+				// 	  var $element = $(element);
 
-			}
+				// 	  $element.detach();
+				// 	  $(this).append($element);
+				// 	  $(this).trigger("change");
+				// 	});
+				// }
+				// $("#technology_edit").select2().val("");
+				// if (result.data[0].id_tech != null) {
+				// 	let id_tech_tag = result.data[0].id_tech.split(",")
+				// 	var angkaArr = []
+				// 	angkaArr.push(id_tech_tag)
+				// 	$("#technology_edit").val(angkaArr[0]).trigger("change").on("select2:select", function (evt) {
+				// 	  var element = evt.params.data.element;
+				// 	  var $element = $(element);
+
+				// 	  $element.detach();
+				// 	  $(this).append($element);
+				// 	  $(this).trigger("change");
+				// 	});
+				// }
+
+				$("#tbtagging").empty()
+
+		    var idExist = []
+  			$.ajax({
+		    	url: "{{url('/project/showTagging')}}",
+		      type: "GET",
+		      data: {
+		          lead_id: value,
+		      },success: function(result){
+	    		var i = 0;
+	      	$.each(result, function(key,value){
+	      		addTaggingNotEmpty(value.id,value.id_product_tag,value.id_technology_tag,value.price,i++)
+	    			idExist.push(value.id)
+	      	}) 	 	
+
+		      }
+		    })
+ 			}
 		})
+
+		// $("#btn-addTagging").click(function(){
+		// 	var append = ""
+		// 	showTagging(append)
+		// })
+    $('#edit_lead_register').modal('show')
 	});
 
+	$("#btn-addTagging").click(function(){
+			var append = ""
+			// loadSelect(i,value)    
+	    append = append + "<tr class='new-tagging'>"
+	    append = append + " <td><input hidden class='id' name='id' data-value='"+i+"'/>"
+	    append = append + " <select class='form-control product_edit' data-value='" + i + "' id='product_edit' name='product_edit' style='width: 100%!important' required></select>"
+	    append = append + " </td>"
+	    append = append + " <td>"
+	    append = append + " <select class='form-control technology_edit' data-value='" + i + "' id='technology_edit' name='technology_edit' style='width: 100%!important' required></select>"
+	    append = append + " </td>"
+	    append = append + " <td style='white-space: nowrap'>"
+	    append = append + " <div class='input-group'>"
+	    append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip' title='50000' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+	    append = append + " <input data-value='" + i + "' class='form-control new-price-sol' name='new-price-sol' type='text' placeholder='Enter Price'>"
+	    append = append + " </div>"
+	    append = append + " </td>"
+	    append = append + " <td class='text-center' style='display:flex'>"
+	    append = append + " <button type='button' data-value='"+i+"' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging' value='"+i+"'><i class='fa fa-trash'></i></button><br><button type='button' data-value='"+i+"' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat disabled'><i class='fa fa-pencil'></i></button>"
+	    append = append + " </td>"
+	    append = append + "</tr>"
+	  	$("#tbtagging").append(append)
+
+	  	$.ajax({
+		      url: "{{url('/project/getProductTechTag')}}",
+		      type: "GET",
+		      success: function(result) {
+		          $("#product_edit[data-value='" + i + "']").empty("");
+		          $("#technology_edit[data-value='" + i + "']").empty("");
+		          var product_tag = result.product_tag;
+		          var product_tag_selectOption = [];
+
+		          var technology_tag = result.technology_tag;
+		          var technology_tag_selectOption = [];
+
+		          $.each(product_tag, function(key, value) {
+		              product_tag_selectOption.push(value)
+		          })
+
+		          $.each(technology_tag, function(key, value) {
+		              technology_tag_selectOption.push(value)
+		          })
+
+		          $("#product_edit[data-value='" + i + "']").select2({
+		              dropdownParent: $('#edit_lead_register'),
+		              placeholder: "Select Brand",
+		              data: product_tag_selectOption,
+		              templateSelection: function(selection, container) {
+		                  return $.parseHTML('<span>' + selection.text + '</span>');
+		              }
+		          })
+		          
+		          $("#technology_edit[data-value='" + i + "']").select2({
+		              dropdownParent: $('#edit_lead_register'),
+		              placeholder: "Select Tech",
+		              data: technology_tag_selectOption,
+		              templateSelection: function(selection, container) {
+		                  return $.parseHTML('<span>' + selection.text + '</span>');
+		              }
+		          })
+		      }
+		  })
+
+	  	// $('#tbtagging tr:last').after('<tr><td>tess</td></tr>');
+	    $(".btn-edit-tagging").prop("disabled",true)
+	    $(".new-price-sol").mask('000.000.000.000', {reverse: true})
+	})
+
+	function addTaggingNotEmpty(id,id_product,id_tech,price,i){
+    	var append = ""
+      append = append + "<tr class='exist-tagging'>"
+      append = append + "<td hidden><input id='tagging_status' data-value='"+ i +"'/><input class='id' name='id' data-value='"+i+"'/></td>"
+      append = append + " <td>"
+      append = append + " <select disabled class='form-control product_edit' data-value='" + i + "' id='product_edit' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td>"
+      append = append + " <select disabled class='form-control technology_edit' data-value='" + i + "' id='technology_edit' style='width: 100%!important'></select>"
+      append = append + " </td>"
+      append = append + " <td style='white-space: nowrap'>"
+      append = append + " <div class='input-group'>"
+      append = append + " <span class='input-group-addon price-tooltip' data-toggle='tooltip'  style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+      append = append + " <input disabled data-value='" + i + "' class='form-control col-xs-12 new-price-sol' type='text' placeholder='Enter Price'>"
+      append = append + " </div>"
+      append = append + " </td>"
+      append = append + " <td class='text-center' style='display:flex'>"
+      append = append + " <button type='button' style='width: auto !important;float:left' class='btn btn-sm btn-danger btn-flat btn-trash-tagging'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;float:right;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging'><i class='fa fa-pencil'></i></button>"
+      append = append + " </td>"
+      append = append + "</tr>"
+
+      $("#tbtagging").append(append)	      
+
+  		$.ajax({
+        url: "{{url('/project/getProductTechTagDetail')}}",
+        type: "GET",
+        success: function(result) {
+            $("#product_edit[data-value='" + i + "']").empty("");
+            $("#technology_edit[data-value='" + i + "']").empty("");
+            var product_tag = result.product_tag;
+            var product_tag_selectOption = [];
+
+            var technology_tag = result.technology_tag;
+            var technology_tag_selectOption = [];
+
+            $.each(product_tag, function(key, value) {
+
+            	if (value.id == "p"+id_product) {
+            		value.selected = true
+            	}
+                product_tag_selectOption.push(value)
+            })
+            $.each(technology_tag, function(key, value) {
+            	if (value.id == "t"+id_tech) {
+            		value.selected = true
+            	}
+                technology_tag_selectOption.push(value)
+            })
+
+            var TagProduct = $("#product_edit[data-value='" + i + "']").select2({
+                dropdownParent: $('#edit_lead_register'),
+                data: product_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+            
+            var TagProduct = $("#technology_edit[data-value='" + i + "']").select2({
+                dropdownParent: $('#edit_lead_register'),
+                data: technology_tag_selectOption,
+                templateSelection: function(selection, container) {
+                    return $.parseHTML('<span>' + selection.text + '</span>');
+                }
+            })
+        }
+    	})
+
+  		$("[data-toggle=tooltip][data-value='" + i + "']").mouseenter(function(){
+    		var $this = $(this);
+        $this.attr('title', 'uang');
+    	})  
+    	$(".id[data-value='" + i + "']").val(id) 
+  		$(".new-price-sol[data-value='" + i + "']").val(price).mask('000.000.000.000', {reverse: true})  
+  }
+
+  $(document).on('click', '.btn-edit-tagging', function() {
+    	$(this).parents("tr").find(".product_edit").prop("disabled",false)
+    	$(this).parents("tr").find(".technology_edit").prop("disabled",false)
+    	$(this).parents("tr").find(".new-price-sol").prop("disabled",false)
+    	$(this).parents("tr").find(".btn-edit-tagging").removeClass('btn-primary').addClass('btn-warning')
+    	$(this).parents("tr").find(".btn-edit-tagging").find('i').removeClass('fa-pencil').addClass('fa-check')
+		  id_exist = $(this).parents("tr").find("input[name='id']").val()
+    	product = $(this).parents("tr").find(".product_edit").val().substr(1)
+    	techno = $(this).parents("tr").find(".technology_edit").val().substr(1)
+    	price = $(this).parents("tr").find(".new-price-sol").val()
+    	dataValue = $(this).parents("tr").find(".new-price-sol").data("value")
+    	id_val = $(this).parents("tr").find("#tagging_status").val()
+    	
+    	if (id_val == '') {
+    		$("#tagging_status[data-value='"+ dataValue +"']").val("pencil"+dataValue)
+    	}else if (id_val == "pencil"+dataValue) {
+	  		$(this).parents("tr").find(".btn-edit-tagging").attr("onclick",updateTagging(id_exist,product,techno,price,dataValue))
+    		$("#tagging_status[data-value='"+ dataValue +"']").val('')
+    	}
+
+    	$("#btn-addTagging").prop("disabled",true).attr("data-toggle", "tooltip").attr('title', "You in edit mode!").show()
+
+    	$("#btnSubmitSD").prop("disabled",true)
+    	$("#btnRaiseTP").prop("disabled",true)
+  })
+
+  var deletedProduct = []
+
+  $(document).on('click', '.btn-trash-tagging', function() {
+    $(this).closest("tr").remove();
+	  row = $(this).parents("tr").find("input[name='id']").val();
+  	deletedProduct.push(row)
+
+  	$(".btn-edit-tagging").prop("disabled",false)
+  });
+
+  function updateTagging(id_exist,product,techno,price,dataValue){
+  		$.ajax({
+        url: "{{url('/project/updateProductTag')}}",
+        type: 'post',
+        data: {
+        	_token:"{{ csrf_token() }}",
+        	id_exist:id_exist,
+        	id_product:product,
+        	id_techno:techno,
+        	price:price,
+        	lead_id:$("#lead_id_edit").val()
+        },
+      success: function()
+      {
+          Swal.showLoading()
+            Swal.fire(
+              'Successfully!',
+              'success'
+            ).then((result) => {
+              if (result.value) {
+              	localStorage.setItem("status_tagging", "pencil");
+              	$(".product_edit[data-value='" + dataValue + "']").prop("disabled",true)
+					    	$(".technology_edit[data-value='" + dataValue + "']").prop("disabled",true)
+					    	$(".new-price-sol[data-value='" + dataValue + "']").prop("disabled",true)
+					    	$(".btn-edit-tagging[data-value='" + dataValue + "']").removeClass('btn-warning').addClass('btn-primary')
+					    	$(".btn-edit-tagging[data-value='" + dataValue + "']").find("i").removeClass('fa-check').addClass('fa-pencil')
+					    	$("#btn-addTagging").prop('disabled',false).tooltip('disable')
+              }
+          })
+      }
+    })
+  }
+
 	function editLeadRegister(){
+		var tagProduct = []
+    $('#table-tagging #tbtagging .new-tagging').each(function() {
+      tagProduct.push({
+        price:$(this).find(".new-price-sol").val().replace(/\D/g, ""),
+        productTag:$(this).find('#product_edit').select2("data")[0].id,
+        productTagText:$(this).find('#product_edit').select2("data")[0].text,
+        technologyTag:$(this).find('#technology_edit').select2("data")[0].id,
+        technologyTagText:$(this).find('#technology_edit').select2("data")[0].text
+
+      })
+    });
 		Swal.fire({
 		    title: 'Are you sure?',  
 		    text: "Update this Lead",
@@ -984,33 +1276,35 @@ Lead Register
 	                Swal.showLoading()
 	            }
 	        })
-		        $.ajax({
-		            type: "POST",
-		            url: "{{url('/project/update_lead_register')}}",
-		            data: {
-		              _token: "{{ csrf_token() }}",
-		              lead_id_edit:$("#lead_id_edit").val(),
-									opp_name_edit:$("#opp_name_edit").val(),
-									closing_date_edit:$("#closing_date_edit").val(),
-									amount_edit:$("#amount_edit").val(),
-									note_edit:$("#note_edit").val(),
-									product_edit:$("#product_edit").val(),
-									technology_edit:$("#technology_edit").val(),
-		            },
-		            success: function(result) {
-		                Swal.showLoading()
-		                Swal.fire(
-		                    'Successfully!',
-		                   	'Lead Register Updated.',
-		                    'success'
-		                ).then((result) => {
-		                    if (result.value) {
-		                    	location.reload()
-		                    	$("#edit_lead_register").modal('hide')
-		                    }
-		                })
-		            }
-		        })		      
+
+	       
+	        $.ajax({
+	            type: "POST",
+	            url: "{{url('/project/update_lead_register')}}",
+	            data: {
+	              _token: "{{ csrf_token() }}",
+	              lead_id_edit:$("#lead_id_edit").val(),
+								opp_name_edit:$("#opp_name_edit").val(),
+								closing_date_edit:$("#closing_date_edit").val(),
+								amount_edit:$("#amount_edit").val(),
+								note_edit:$("#note_edit").val(),
+								tagProduct:tagProduct,
+	      				id:deletedProduct
+	            },
+	            success: function(result) {
+	                Swal.showLoading()
+	                Swal.fire(
+	                    'Successfully!',
+	                   	'Lead Register Updated.',
+	                    'success'
+	                ).then((result) => {
+	                    if (result.value) {
+	                    	location.reload()
+	                    	$("#edit_lead_register").modal('hide')
+	                    }
+	                })
+	            }
+	        })		      
 		  }
 		})
 	}
@@ -1152,7 +1446,6 @@ Lead Register
 		  }
 		})
 	}
-
 	$.ajax({
     url:"{{url('/project/getProductTag')}}",
     type:"GET",
@@ -1172,7 +1465,14 @@ Lead Register
       $("#product_edit").select2({
         multiple:true,
         data:selectOption
-      })
+      }).on("select2:select", function (evt) {
+			  var element = evt.params.data.element;
+			  var $element = $(element);
+
+			  $element.detach();
+			  $(this).append($element);
+			  $(this).trigger("change");
+			});
     }
   })
 
@@ -1195,7 +1495,14 @@ Lead Register
       $("#technology_edit").select2({
         multiple:true,
         data:selectOption
-      })
+      }).on("select2:select", function (evt) {
+			  var element = evt.params.data.element;
+			  var $element = $(element);
+
+			  $element.detach();
+			  $(this).append($element);
+			  $(this).trigger("change");
+			});
     }
   })
 
@@ -1482,13 +1789,11 @@ Lead Register
 
 		  	dashboardCount(temp)
 		  }, 800);
-		  console.log('undefinde!')
 		}else{
 			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
 			if (checklist == false) {
 				dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult)
 			} else {
-				console.log("result yet")
 			}
 			dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult)
 
@@ -1530,7 +1835,6 @@ Lead Register
 					year:year,
 				},
 				success:function(result){
-					 console.log(result)
 						// Buat Mas ganjar total lead di ganti jadi Lead - Unassigned
 						if(result.presales){
 							$("#"+countLead[0]).prev().html("<b>Lead - Unassigned </b>")
@@ -1575,8 +1879,6 @@ Lead Register
 					});
 				},
 				complete:function(){
-					console.log("result complete")
-					console.log(resultComplete)
 					$("#filter_lead_0").next().text("INITIAL (" + resultComplete.initial + ")")
 					$("#filter_lead_1").next().text("OPEN (" + resultComplete.open + ")")
 					$("#filter_lead_2").next().text("SD (" + resultComplete.sd + ")")
