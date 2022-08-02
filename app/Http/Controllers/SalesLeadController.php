@@ -417,20 +417,18 @@ class SalesLeadController extends Controller
 
     public function showEditLead(Request $request)
     {
-        $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
-                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'))
+        $getListProductLead = DB::table('tb_product_tag_relation')->join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+                        ->join('tb_technology_tag', 'tb_technology_tag.id', '=', 'tb_product_tag_relation.id_technology_tag')
+                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_product_tag`.`id`) as `id_product_tag`'), DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech`'))
                         ->groupBy('lead_id');
 
-        $getListTechTag = DB::table('tb_technology_tag')->join('tb_technology_tag_relation', 'tb_technology_tag_relation.id_tech_tag', '=', 'tb_technology_tag.id')
-                        ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech`'))
-                        ->groupBy('lead_id');
+        // $getListTechTag = DB::table('tb_technology_tag')->join('tb_technology_tag_relation', 'tb_technology_tag_relation.id_tech_tag', '=', 'tb_technology_tag.id')
+        //                 ->select('lead_id', DB::raw('GROUP_CONCAT(`tb_technology_tag`.`id`) AS `id_tech`'))
+        //                 ->groupBy('lead_id');
 
         $lead = DB::table('sales_lead_register')
                 ->leftJoinSub($getListProductLead, 'product_lead', function($join){
                     $join->on('sales_lead_register.lead_id', '=', 'product_lead.lead_id');
-                })
-                ->leftJoinSub($getListTechTag, 'tech_tag', function($join){
-                    $join->on('sales_lead_register.lead_id', '=', 'tech_tag.lead_id');
                 })
                 ->select('sales_lead_register.lead_id', 'sales_lead_register.opp_name', 'sales_lead_register.created_at', 'sales_lead_register.amount', 'sales_lead_register.result','sales_lead_register.keterangan', 'sales_lead_register.closing_date', 'sales_lead_register.deal_price', 'id_product_tag', 'id_tech')
                 ->where('sales_lead_register.lead_id',$request->lead_id)
@@ -1074,45 +1072,43 @@ class SalesLeadController extends Controller
         $tambah_log->submit_price  = $amount;
         $tambah_log->save();
 
-        if ($request->product_edit != "") {
-            $leadProduct = ProductTagRelation::where('lead_id',$lead_id)->get();
-            foreach ($leadProduct as $data) {
-               $delete_product = ProductTagRelation::where('lead_id',$lead_id)->delete();
+        if (isset($request->id)) {
+            $name_tagging = ProductTagRelation::join('tb_product_tag', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
+                    ->join('tb_technology_tag', 'tb_product_tag_relation.id_technology_tag', '=', 'tb_technology_tag.id')
+                    ->select('name_product', 'name_tech', 'price', 'tb_product_tag_relation.id')
+                    ->whereIn('tb_product_tag_relation.id', $request->id)->get();
+
+            if(isset($name_tagging)){
+                foreach($name_tagging as $data){
+                    $add_changelog = new SalesChangeLog();
+                    $add_changelog->lead_id = $lead_id;
+                    $add_changelog->nik = Auth::User()->nik;
+                    $add_changelog->status = 'Delete Tagging Product ' .  $data['name_product'] . ', Technology ' .  $data['name_tech'] . ', with Price ' . str_replace('.', '', $data['price']);
+                    $add_changelog->save();
+                }    
             }
-        
-            $productTag = $request->product_edit;
-            foreach ($productTag as $data) {
-                $productRelation = new ProductTagRelation();
-                $productRelation->lead_id = $lead_id;
-                $productRelation->id_product_tag = $data;
-                $productRelation->save();
-            }
-        }else{
-            $leadProduct = ProductTagRelation::where('lead_id',$lead_id)->get();
-            foreach ($leadProduct as $data) {
-               $delete_product = ProductTagRelation::where('lead_id',$lead_id)->delete();
-            }
+
+            if (isset($name_tagging)) {
+                foreach ($name_tagging as $key => $value) {
+                    ProductTagRelation::where('id',$value->id)->delete(); 
+                }
+            } 
         }
 
-        if ($request->technology_edit != "") {
-            $leadtech = TechnologyTagRelation::where('lead_id',$lead_id)->get();
-               foreach ($leadtech as $data) {
-                    if ($data != NULL) {
-                        $delete_product = TechnologyTagRelation::where('lead_id',$lead_id)->delete();
-                    }
-                }
+        if(isset($request->tagProduct)){
+            foreach ($request->tagProduct as $key => $value) {
+                $store = new ProductTagRelation;
+                $store->lead_id = $lead_id;
+                $store->id_product_tag = $value['productTag'];
+                $store->id_technology_tag = $value['technologyTag'];
+                $store->price = $value['price'];
+                $store->save(); 
 
-            $techTag = $request->technology_edit;
-            foreach ($techTag as $data) {
-                $productRelation = new TechnologyTagRelation();
-                $productRelation->lead_id = $lead_id;
-                $productRelation->id_tech_tag = $data;
-                $productRelation->save();
-            }
-        }else{
-            $leadtech = TechnologyTagRelation::where('lead_id',$lead_id)->get();
-            foreach ($leadtech as $data) {
-               $delete_product = TechnologyTagRelation::where('lead_id',$lead_id)->delete();
+                $add_changelog = new SalesChangeLog();
+                $add_changelog->lead_id = $lead_id;
+                $add_changelog->nik = Auth::User()->nik;
+                $add_changelog->status = 'Add Tagging Product ' .  $value['productTagText'] . ', Technology ' .  $value['technologyTagText'] . ', with Price ' . str_replace('.', '', $value['price']);
+                $add_changelog->save();
             }
         }
 
@@ -1247,13 +1243,12 @@ class SalesLeadController extends Controller
 
     public function getProductTechTag(Request $request)
     {
-        $getListProductLead = DB::table('tb_product_tag')->selectRaw('CONCAT("p",`id`) AS `id`,`name_product` AS `text`')->get(); 
-        $getListTechTag = DB::table('tb_technology_tag')->selectRaw('CONCAT("t",`id`) AS `id`,`name_tech` AS `text`')->get(); 
 
-        return array(
-            collect(["id"=>0,"text"=>'Product',"children"=>$getListProductLead]),
-            collect(["id"=>1,"text"=>'Technology',"children"=>$getListTechTag])
-        );
+        $getListProductLead = DB::table('tb_product_tag')->selectRaw('`id` AS `id`,`name_product` AS `text`')->get(); 
+
+        $getListTechTag = DB::table('tb_technology_tag')->selectRaw('`id` AS `id`,`name_tech` AS `text`')->get(); 
+
+        return array("product_tag"=>$getListProductLead,"technology_tag"=>$getListTechTag);
     }
 
     public function getLeadTp(Request $request)
@@ -2192,25 +2187,61 @@ class SalesLeadController extends Controller
         $tambah->keterangan = $request['note'];
         $tambah->save();
 
-        if ($request->product != "") {
-            $productTag = $request->product;
-            foreach ($productTag as $data) {
-                $productRelation = new ProductTagRelation();
-                $productRelation->lead_id = $lead;
-                $productRelation->id_product_tag = $data;
-                $productRelation->save();
-            }
-        }
+        // if ($request->product != "") {
+        //     $productTag = $request->product;
+        //     $count = count($productTag);
+        //     $techTag = $request->technology;
+        //     if ($count == '1') {
+        //         foreach ($productTag as $product) {
+        //             foreach ($techTag as $data) {
+        //                 $productRelation = new ProductTagRelation();
+        //                 $productRelation->lead_id = $lead_id;
+        //                 $productRelation->id_product_tag = $product;
+        //                 $productRelation->id_technology_tag = $data;
+        //                 $productRelation->price = '0';
+        //                 $productRelation->save();
+        //             }
+        //         }
+        //     } 
+        //     else {
+        //         foreach ($productTag as $product) {
+        //             $productRelation = new ProductTagRelation();
+        //             $productRelation->lead_id = $lead_id;
+        //             $productRelation->id_product_tag = $product;
+        //             $productRelation->price = '0';
+        //             $productRelation->save();
+        //         } 
+        //         $get_id = ProductTagRelation::select('id')->orderBy('updated_at', 'desc')->take($count)->get();
+        //         foreach ($techTag as $data) {
+        //             $update = ProductTagRelation::whereIn('id', $get_id)
+        //                     ->update([
+        //                         'id_technology_tag' => $data,
+        //                     ]);
+        //         }
+        //     }
+        // }
+
+       
+
+        // if ($request->product != "") {
+        //     $productTag = $request->product;
+        //     foreach ($productTag as $data) {
+        //         $productRelation = new ProductTagRelation();
+        //         $productRelation->lead_id = $lead;
+        //         $productRelation->id_product_tag = $data;
+        //         $productRelation->save();
+        //     }
+        // }
         
-        if ($request->technology != "") {
-            $techTag = $request->technology;
-            foreach ($techTag as $data) {
-                $productRelation = new TechnologyTagRelation();
-                $productRelation->lead_id = $lead;
-                $productRelation->id_tech_tag = $data;
-                $productRelation->save();
-            }
-        }
+        // if ($request->technology != "") {
+        //     $techTag = $request->technology;
+        //     foreach ($techTag as $data) {
+        //         $productRelation = new TechnologyTagRelation();
+        //         $productRelation->lead_id = $lead;
+        //         $productRelation->id_tech_tag = $data;
+        //         $productRelation->save();
+        //     }
+        // }
         
 
         $lead_change_log = $name->code . date('y') . date('m') . $nomor;
