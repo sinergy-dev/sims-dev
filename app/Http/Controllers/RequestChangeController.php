@@ -11,6 +11,7 @@ use App\Sales;
 use App\SalesChangeLog;
 use App\TB_Contact;
 use App\PIDRequest;
+use App\SalesProject;
 
 use Auth;
 use Carbon\Carbon;
@@ -89,6 +90,13 @@ class RequestChangeController extends Controller
         $update->deal_price = $nominal;
         $update->amount = $nominal;
         $update->update();
+
+        $cek = SalesProject::where('lead_id', $lead_id)->count();
+        if ($cek != 0) {
+            $update_pid = SalesProject::where('lead_id', $lead_id)->first();
+            $update_pid->amount_idr = $nominal;
+            $update_pid->update();
+        }
 
         $add_changelog = new SalesChangeLog();
         $add_changelog->lead_id = $lead_id;
