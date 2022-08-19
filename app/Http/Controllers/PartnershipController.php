@@ -398,7 +398,9 @@ class PartnershipController extends Controller
                     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
                     $file                   = $request->file('imageData');
                     $fileName               = $file->getClientOriginalName();
-                    $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $data['cert_name'] . '_' . $data['cert_person'] . '.' . explode('.', $fileName)[1];
+                    $strfileName            = explode('.', $fileName);
+                    $lastElement            = end($strfileName);
+                    $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $data['cert_name'] . '_' . $data['cert_person'] . '.' . $lastElement;
                     $extension              = $file->getClientOriginalExtension();
                     $check                  = in_array($extension,$allowedfileExtension);
 
@@ -434,7 +436,9 @@ class PartnershipController extends Controller
             $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('imgCertPartner');
             $fileName               = $file->getClientOriginalName();
-            $nameDoc                = 'certificate_partner_' . $get_partner->partner . '_' . $request['inputTitleCert'] . '.' . explode('.', $fileName)[1];
+            $strfileName            = explode('.', $fileName);
+            $lastElement            = end($strfileName);
+            $nameDoc                = 'certificate_partner_' . $get_partner->partner . '_' . $request['inputTitleCert'] . '.' . $lastElement;
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
@@ -474,6 +478,7 @@ class PartnershipController extends Controller
     public function getCertPartner(Request $request)
     {
         $data = PartnershipImageCertificate::select('title', 'certificate', 'id')->where('id_partnership', $request->id_partnership)->get();
+        // $extension = explode('.', $data->certificate)[1];
         return array("data" => $data);
     }
 
@@ -529,7 +534,9 @@ class PartnershipController extends Controller
             $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('cert_eng_edit');
             $fileName               = $file->getClientOriginalName();
-            $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $request['cert_name_edit'] . '_' . $request['cert_user_edit'] . '.' . explode('.', $fileName)[1];
+            $strfileName            = explode('.', $fileName);
+            $lastElement            = end($strfileName);
+            $nameDoc                = 'certificate_engineer_' . $get_partner->partner . '_' . $request['cert_name_edit'] . '_' . $request['cert_user_edit'] . '.' . $lastElement;
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
@@ -689,7 +696,7 @@ class PartnershipController extends Controller
             $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('fileupload');
             $fileName               = $file->getClientOriginalName();
-            $nameDoc                = 'logo_' . $request['id_edit'] . '_' . $fileName;
+            $nameDoc                = 'logo_' . $request['partner_edit'] . '_' . $fileName;
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
@@ -706,7 +713,7 @@ class PartnershipController extends Controller
             $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
             $file                   = $request->file('badgeupload');
             $fileName               = $file->getClientOriginalName();
-            $nameDoc                = 'badge_' . $request['id_edit'] . '_' . $fileName;
+            $nameDoc                = 'badge_' . $request['partner_edit'] . '_' . $fileName;
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
