@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use DB;
 use Auth;
 
-class Cuti extends Notification
+class NotifCuti extends Notification
 {
     use Queueable;
 
