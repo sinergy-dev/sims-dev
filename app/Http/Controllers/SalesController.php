@@ -63,7 +63,7 @@ use Google\Auth\CredentialsLoader;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
-class SALESController extends Controller{
+class SalesController extends Controller{
     /**
      * Display a listing of the resource.
      *
