@@ -23,9 +23,13 @@
 
     .user-panel>.image>img {
 	    width: 100%;
-	    max-width: 45px;
+	    max-width: 100px;
 	    max-height: 45px;
 	    object-fit: cover;
+  	}
+
+  	.user-name {
+  		font-size: 10px;
   	}
 
   	.navbar-nav>.user-menu .user-image {
@@ -36,6 +40,10 @@
       border-radius: 50%;
       margin-right: 10px;
       margin-top: -2px;
+  	}
+
+  	.main-sidebar {
+  		min-width: 200px;
   	}
 
   	li div a.btn{
@@ -618,7 +626,7 @@
         @endif
       </div>
       <div class="pull-left info" >
-        <p>{{ Auth::User()->name }}</p>
+        <p class="user-name">{{ Auth::User()->name }}</p>
         <a href="#"><i class="fa fa-circle text-success"></i>
         	@if(Auth::user()->nik == 100000000003)
         	SALES OPERATIONAL 
