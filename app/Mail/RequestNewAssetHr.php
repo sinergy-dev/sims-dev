@@ -7,7 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class RequestAssetHr extends Mailable
+class RequestNewAssetHr extends Mailable
 {
     use Queueable, SerializesModels;
     public $users,$req_asset,$subject;
