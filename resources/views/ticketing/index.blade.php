@@ -448,6 +448,7 @@ Ticketing
 										<select class="form-control select2" id="inputATM" style="width: 100%" required></select>
 										<span class="help-block" style="margin-bottom: 0px; display: none;">ATM must be select!</span>
 									</div>
+									<input type="hidden" id="inputATMAddres">
 								</div>
 								<div class="form-group" id="locationDiv" style="display: none;">
 									<label for="inputEmail" class="col-sm-2 control-label">Location*</label>
@@ -3242,6 +3243,7 @@ Ticketing
 	$("#inputATM").change(function(){
 		if(this.value === "Select One"){
 			$("#inputLocation").val("");
+			$("#inputATMAddres").val("");
 			$("#inputSerial").val("");
 			$("#inputType").val("");
 		} else {
@@ -3262,6 +3264,7 @@ Ticketing
 						$("#inputLocation").val("[" + result.type + "] " + result.atm.location);
 						$("#inputSerial").val(result.serial_number);
 						$("#inputType").val(result.machine_type);
+						$("#inputATMAddres").val(result.address);
 					}
 				});
 			} else {
@@ -3275,6 +3278,8 @@ Ticketing
 						$("#inputLocation").val(result.location);
 						$("#inputSerial").val(result.serial_number);
 						$("#inputType").val(result.machine_type);
+						$("#inputATMAddres").val(result.address);
+
 					}
 				});
 			}
@@ -3357,6 +3362,7 @@ Ticketing
 							client:$("#inputClient").val()
 						},
 						success: function(result){
+							console.log(result.open_to)
 							if($("#inputTemplateEmail").val() != "Wincor Template"){
 								if($("#inputClient option:selected").text().includes("Absensi")){
 									var subject = "Open Tiket " + $("#inputAbsenLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
@@ -3364,6 +3370,9 @@ Ticketing
 									var subject = "Open Tiket " + $("#inputSwitchLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
 								} else if ($("#inputTemplateEmail").val() == "ATM Template"){
 									var subject = "Permohonan Open Tiket " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " " + result.client_name.split(' - ')[0] + " " + $("#inputLocation").val()
+								} else if ($("#inputTemplateEmail").val() == "PTT Template"){
+									
+									var subject = "Request Support - " + $("#inputATM").select2('data')[0].text.split(' -')[0] + " - " + $("#inputProblem").val() + " (" + moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("DD/MM/YYYY") + ")"
 								} else {
 									var subject = "Open Tiket " + $("#inputLocation").val() + " [" + $("#inputProblem").val() +"]"
 								}
@@ -3495,6 +3504,10 @@ Ticketing
 
 						$(".holderActivity").html($("#inputProblem").val())
 						$(".holderEngineer").html($("#inputEngineerOpen").val())
+					} else if($("#inputTemplateEmail").val() == "PTT Template"){
+						$(".holderDate").html("<b>" + moment(($("#inputDate").val()), "DD-MMM-YY HH:mm").format("DD/MM/YY - hh:mm:ss") + "</b>");
+						$(".holderAddress").html(($("#inputATMAddres").val() == "" ? "-" : $("#inputATMAddres").val()))
+						
 					}
 				}
 			})
