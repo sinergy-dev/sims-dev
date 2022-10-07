@@ -387,8 +387,129 @@
                     <input type="text" class="form-control" id="name" name="name" placeholder="Type Name" value="{{$user_profile->name}}">
                   </div>
                 </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="box box-primary" style="background-color: #F7F7F7;">
+                      <div class="box-header">
+                        <h3 class="box-title">NPWP File</h3>
+                      </div>
+                      <div class="box-body">
+                        @if($user_profile->npwp_file == "-" )
+                        <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarnpwp" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @else
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->npwp_file}}" id="showgambarnpwp" style="max-width: 300px;max-height: 400px;float: left;"/>
+                        @endif
+                      </div>
+                      <div class="box-footer">
+                          <input type="file" id="inputgambarnpwp" name="npwp_file" value="{{$user_profile->npwp_file}}">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="box box-primary" style="background-color: #F7F7F7;">
+                      <div class="box-header">
+                        <h3 class="box-title">KTP File</h3>
+                      </div>
+                      <div class="box-body">
+                        @if($user_profile->ktp_file == "-" || $user_profile->ktp_file == null || $user_profile->ktp_file == "")
+                          <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarktp" style="max-width: 200px;max-height: 200px; align-items: center;"/>
+                        @else
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->ktp_file}}" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                        @endif
+                      </div>
+                      <div class="box-footer">
+                          <input type="file" id="inputgambarktp" name="ktp_file" value="{{$user_profile->ktp_file}}">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="box box-primary" style="background-color: #F7F7F7;">
+                      <div class="box-header">
+                        <h3 class="box-title">BPJS Ketenagakerjaan File</h3>
+                      </div>
+                      <div class="box-body">
+                        @if($user_profile->bpjs_ket == "-")
+                          <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @else
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_ket}}" id="showgambarbpjs_ket" style="max-width: 400px;max-height: 400px;float: left;"/>
+                        @endif
+                      </div>
+                      <div class="box-footer">
+                          <input type="file" id="inputgambarbpjs_ket" name="bpjs_ket" value="{{$user_profile->bpjs_ket}}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="box box-primary" style="background-color: #F7F7F7;">
+                      <div class="box-header">
+                        <h3 class="box-title">BPJS Kesehatan File</h3>
+                      </div>
+                      <div class="box-body">
+                        @if($user_profile->bpjs_kes == "-")
+                          <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_kes" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @else
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_kes}}" id="showgambarbpjs_kes" style="max-width: 400px;max-height: 400px;float: left;"/>
+                        @endif
+                      </div>
+                      <div class="box-footer">
+                          <input type="file" id="inputgambarbpjs_kes" name="bpjs_kes" value="{{$user_profile->bpjs_kes}}">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="box box-primary" style="background-color: #F7F7F7;">
+                      <div class="box-header">
+                        <h3 class="box-title">Sign File</h3>
+                      </div>
+                      <div class="box-body">
+                        @if($user_profile->ttd == null)
+                          <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @else
+                          <img class="entry" src="{{url($user_profile->ttd)}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @endif
+                      </div>
+                      <div class="box-footer">
+                          <input type="file" id="inputSign" name="inputSign" value="{{$user_profile->ttd}}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+
+                <!-- <div class="form-group row">
+                  <div class="col-md-6">
+                    <div>
+                      @if($user_profile->ttd == null)
+                        <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 300px;max-height: 300px;float: left;"/>
+                      @else
+                        <img class="entry" src="{{url($user_profile->ttd)}}" id="showgambarbpjs_ket" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @endif
+                    </div>
+                    <div>
+                      <div style="position: absolute; bottom: 8px; left: 16px;">
+                        <label>Sign File</label>
+                      </div>
+                      <div style="position: absolute; bottom: 8px; right: 2px;">
+                        <input type="file" id="inputSign" name="inputSign" value="{{$user_profile->ttd}}">
+                      </div>
+                    </div>
+                  </div>
+
+                </div> -->
+
+
+
+
+
                 <div class="box-body">
-                  <div class="form-group row">
+                  <!-- <div class="form-group row">
                     <div class="col-md-8">
                       @if($user_profile->npwp_file == "-" || $user_profile->npwp_file == null || $user_profile->npwp_file == "")
                         <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarnpwp" style="max-width: 300px;max-height: 300px;float: left;"/>
@@ -398,7 +519,6 @@
                       </div>
                   </div>
 
-                  <center>
                   <div class="form-group row">
                       <div class="col-md-2">
                         <label style="margin: 12px">NPWP File</label>
@@ -408,10 +528,9 @@
                           <input type="file" id="inputgambarnpwp" name="npwp_file" value="{{$user_profile->npwp_file}}">
                         </div>
                       </div>
-                  </div>
-                  </center>
-
-                  <div class="form-group row">
+                  </div> -->
+                  
+                  <!-- <div class="form-group row">
                     <div class="col-md-8">
                       @if($user_profile->ktp_file == "-" || $user_profile->ktp_file == null || $user_profile->ktp_file == "")
                         <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarktp" style="max-width: 300px;max-height: 300px;float: left;"/>
@@ -478,7 +597,30 @@
                       </div>
                     </div>
                   </div>
-                  </center>
+                  </center> -->
+
+                  <!-- <div class="form-group row">
+                    <div class="col-md-8">
+                      @if($user_profile->bpjs_ket == "-" || $user_profile->bpjs_ket == null || $user_profile->bpjs_ket == "")
+                        <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 300px;max-height: 300px;float: left;"/>
+                      @else
+                        <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_ket}}" id="showgambarbpjs_ket" style="max-width: 400px;max-height: 400px;float: left;"/>
+                      @endif
+                    </div>
+                  </div>
+
+                  <center>
+                    <div class="form-group row">
+                      <div class="col-md-2">
+                        <label style="margin: 12px">Sign</label>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="col-md-4">
+                          <input type="file" id="inputgambarbpjs_ket" name="bpjs_ket" value="{{$user_profile->bpjs_ket}}">
+                        </div>
+                      </div>
+                    </div>
+                  </center> -->
 
                           <!-- <div class="form-group row">
                             <div class="col-md-6">
