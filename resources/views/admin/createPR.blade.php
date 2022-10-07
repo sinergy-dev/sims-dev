@@ -90,7 +90,7 @@
           </div>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2" id="filterUser" style="display:none">
           <b>Filter by User : </b>
           <div>
             <select class="form-control select2" id="inputFilterUser" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
@@ -246,17 +246,16 @@
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
+                  <label for="">Attention*</label>
+                  <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
+                  <span class="help-block" style="display:none;">Please fill Attention!</span>
+                </div>
+                <!-- <div class="form-group">
                   <label for="">Fax</label>
                   <input type="" id="inputFax" class="form-control" name="inputFax">
-                </div>
+                </div> -->
               </div>
-            </div>
-
-            <div class="form-group">
-              <label for="">Attention*</label>
-              <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
-              <span class="help-block" style="display:none;">Please fill Attention!</span>
-            </div> 
+            </div>           
 
             <div class="form-group">
               <label for="">Subject*</label>
@@ -380,38 +379,40 @@
         <div class="tab-add" style="display:none">
           <div class="tabGroup">
             <div id="formForPrExternal" style="display:none">
-              <div class="form-group">
                 <div class="row">
                   <div class="col-md-6">
-                    <label>Lead Register*</label>
-                    <select id="selectLeadId" style="width:100%" class="select2 form-control" >
-                      
-                    </select>
-                    <span class="help-block" style="display:none;">Please fill Lead Register!</span>
+                    <div class="form-group">
+                      <label>Lead Register*</label>
+                      <select id="selectLeadId" style="width:100%" class="select2 form-control" >
+                        
+                      </select>
+                      <span class="help-block" style="display:none;">Please fill Lead Register!</span>
+                    </div>
                   </div>
                   <div class="col-md-6">
-                    <label>PID*</label>
-                    <select id="selectPid" style="width: 100%;" class="select2 form-control" >
-                      
-                    </select>
-                    <span class="help-block" style="display:none;">Please fill PID!</span>
-                    <span id="makeId" style="cursor: pointer;">other?</span>
-                    <div class="form-group" id="project_idNew" style="display: none;">
-                      <div class="input-group">
-                        <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
-                        <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
-                      </div>
-                    </div> 
+                    <div class="form-group">
+                      <label>PID*</label>
+                      <select id="selectPid" style="width: 100%;" class="select2 form-control" >
+                        
+                      </select>
+                      <span class="help-block" style="display:none;">Please fill PID!</span>
+                      <span id="makeId" style="cursor: pointer;">other?</span>
+                      <div class="form-group" id="project_idNew" style="display: none;">
+                        <div class="input-group">
+                          <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                          <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
+                        </div>
+                      </div> 
+                    </div>
                   </div>
-                </div>
-              </div>                
+                </div>               
               
               <div class="form-group">
                 <label>SPK/Kontrak*</label>
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSPK" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;" type="file" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" accept="image/*,.pdf" >
+                    <input style="display: inline;" type="file" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
@@ -423,7 +424,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSBE" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;" type="file" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" accept="image/*,.pdf" >
+                    <input style="display: inline;" type="file" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
@@ -431,30 +432,25 @@
               </div>
               
               <div class="form-group">
-                <div class="row">
-                  <div class="col-md-6">
-                    <label>Quote Supplier*</label>
-                    <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
-                      <!-- <i class="icon" style="display:inline"></i> -->
-                      <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
-                        <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                        <input style="display: inline;" type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" accept="image/*,.pdf" >
-                      </label>
-                      
-                    </div>
-                    <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
-                    <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
-                  </div>
-                  <div class="col-md-6">
-                    <label>Quote Number*</label>
-                    <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
-                      
-                    </select>
-                    <!-- <input type="file" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
-                    <span class="help-block" style="display:none;">Please fill Quote Number!</span>
-                  </div>
+                <label>Quote Supplier*</label>
+                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                  <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
+                    <span class="fa fa-cloud-upload" style="display:inline;"></span>
+                    <input style="display: inline;" type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
+                  </label>
                 </div>
-              </div>    
+                <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
+                <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
+              </div> 
+
+              <div class="form-group">
+                <label>Quote Number*</label>
+                <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
+                  
+                </select>
+                <!-- <input type="file" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
+                <span class="help-block" style="display:none;">Please fill Quote Number!</span>
+              </div>   
             </div>
               
             <div id="formForPrInternal" style="display:none;">
@@ -521,15 +517,7 @@
                 
               </div>
             </div> 
-          </div>
-       <!--    <div class="form-group divReasonRejectRevision has-error" style="display:none">
-            <label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i> Note Reject PR</label>
-            <span class="help-block reason_reject_revision">Help block with error</span>
-          </div> -->
-         <!--  <div class="form-group divReasonRejectRevision" style="display:none">
-            <label for="" class="bg-red">Note Reject PR</label>
-            <div class="reason_reject_revision" id="reason_reject_revision" name="reason_reject_revision"></div>
-          </div>   -->         	
+          </div>      	
         </div>     
         <div class="modal-footer">
           	<button type="button" class="btn btn-secondary" id="prevBtnAdd">Back</button>
@@ -635,20 +623,19 @@
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
+                  <label for="">Attention*</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttentionCek" id="inputAttentionCek" readonly>
+                    <div class="input-group-addon">
+                      <input onchange="checkBoxCek('attention_cek')" id="attention_cek" name="chk[]" type="checkbox" class="minimal" style="position: absolute; opacity: 0;">
+                    </div>
+                  </div>
+                </div>
+               <!--  <div class="form-group">
                   <label for="">fax</label>
               	  <input type="" id="inputFaxCek" class="form-control" name="inputFaxCek" readonly>
-                </div>
+                </div> -->
               </div>
-            </div>
-
-            <div class="form-group">
-              <label for="">Attention*</label>
-              <div class="input-group">
-              	<input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttentionCek" id="inputAttentionCek" readonly>
-            		<div class="input-group-addon">
-              		<input onchange="checkBoxCek('attention_cek')" id="attention_cek" name="chk[]" type="checkbox" class="minimal" style="position: absolute; opacity: 0;">
-            		</div>
-            	</div>
             </div> 
 
             <div class="form-group">
@@ -896,6 +883,10 @@
   <script type="text/javascript">
     $(".money").mask('000,000,000,000,000', {reverse: true})
 
+    // function removeVatValue(){
+    //   $("#inputGrandTotalProductFinal").val(0)
+    // }
+
     $(document).ready(function(){   
       currentTab = 0     
       $('input[type="file"]').change(function(){
@@ -947,7 +938,7 @@
       var append = ""
       var colors = []
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:red', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
         },
         {
             name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',index: 1
@@ -1136,7 +1127,11 @@
         { "data": "to"},
         { 
           render: function (data, type, row, meta){
-            return formatter.format(row.nominal)          
+            if (isNaN(row.nominal) == true) {
+              return '-'          
+            }else{
+              return formatter.format(row.nominal)          
+            }
           }
         },
         { 
@@ -1450,7 +1445,7 @@
       endDate: moment()
     },function (start, end) {
       $('#inputRangeDate').html("")
-      $('#inputRangeDate').html('<i class="fa fa-calendar"></i> <span>' + start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY') + '</span>');
+      $('#inputRangeDate').html('<i class="fa fa-calendar"></i> <span>' + start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY') + '</span>&nbsp<i class="fa fa-caret-down"></i>');
 
       var startDay = start.format('YYYY-MM-DD');
       var endDay = end.format('YYYY-MM-DD');
@@ -1590,14 +1585,40 @@
             appendBottom = ""
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<div class="form-group">'
-              appendBottom = appendBottom + '<div class="row">'
-                appendBottom = appendBottom + '<div class="col-md-12">'
-                  appendBottom = appendBottom + '<div class="pull-right">'
-                    appendBottom = appendBottom + '<span style="display: inline;margin-right: 10px;">Grand Price</span>'
-                    appendBottom = appendBottom + '<input readonly type="text" style="width:150px;margin-right:10px;display: inline;" class="form-control inputFinalPageTotalPrice" id="inputFinalPageGrandPrice" name="inputFinalPageTotalPrice">'
-                  appendBottom = appendBottom + '</div>'
-                appendBottom = appendBottom + '</div>'
-              appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '  <div class="row">'
+            appendBottom = appendBottom + '    <div class="col-md-12">'
+            appendBottom = appendBottom + '      <div class="pull-right">'
+            appendBottom = appendBottom + '        <span style="display: inline;margin-right: 15px;">Total</span>'
+            appendBottom = appendBottom + '        <input readonly="" type="text" style="width:250px;display: inline;" id="inputGrandTotalProduct_unfinishPreview" class="form-control inputGrandTotalProduct_unfinishPreview">'
+            appendBottom = appendBottom + '      </div>'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+            appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + ' <div class="col-md-12">'
+            appendBottom = appendBottom + '   <div class="pull-right">'
+              appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
+              appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+                appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
+                  if(btnVatStatus) {
+                    appendBottom = appendBottom + '            <button type="button" class="btn btn-flat btn-default" disabled="true" id="btn-vat2">✓</button>'
+                  }
+                  else {
+                    appendBottom = appendBottom + '            <button type="button" class="btn btn-flat btn-danger" disabled="true" id="btn-vat2">✖</button>'
+                  }
+                appendBottom = appendBottom + ' </span>'
+              appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_unfinishPreview" name="vat_tax_unfinishPreview" style="width:215px;">'
+              appendBottom = appendBottom + ' </div>'
+            appendBottom = appendBottom + ' </div>'
+            appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '  <div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + '    <div class="col-md-12">'
+            appendBottom = appendBottom + '      <div class="pull-right">'
+            appendBottom = appendBottom + '        <span style="display: inline;margin-right: 15px;">Grand Price</span>'
+            appendBottom = appendBottom + '        <input readonly type="text" style="width:250px;display: inline;" class="form-control inputFinalPageGrandPrice_unfinishPreview" id="inputFinalPageGrandPrice" name="inputFinalPageGrandPrice_unfinishPreview">'
+            appendBottom = appendBottom + '      </div>'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
@@ -1670,13 +1691,35 @@
 
             $("#termPreview").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
 
+            var tempVat = 0
+            var finalVat = 0
+            var tempGrand = 0
+            var finalGrand = 0
+            var tempTotal = 0
             var sum = 0
+
             $('.grandTotalPreview').each(function() {
                 var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                 sum += temp;
             });
-           
-            $("#inputFinalPageGrandPrice").val(formatter.format(sum))   
+
+            if (result.pr.status_tax == 'True') {
+              tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+              tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+            }else{
+              tempVat = tempVat
+              tempGrand = parseInt(sum)
+            }
+
+            finalVat = tempVat
+
+            finalGrand = tempGrand
+
+            tempTotal = sum    
+
+            $("#vat_tax_unfinishPreview").val(tempVat)
+            $("#inputGrandTotalProduct_unfinishPreview").val(formatter.format(sum))
+            $("#inputFinalPageGrandPrice").val(formatter.format(finalGrand))
 
             if (status == 'reject' || status == 'revision') {
               reasonReject(result.activity.reason,"block")
@@ -1698,7 +1741,7 @@
               $("#selectType").val("")
               $("#inputEmail").val("")
               $("#inputPhone").val("")
-              $("#inputFax").val("")
+              // $("#inputFax").val("")
               $("#inputAttention").val("")
               $("#inputSubject").val("")
               $("#inputAddress").val("")
@@ -1707,7 +1750,7 @@
               $("#selectType").val(result.pr.type_of_letter)
               $("#inputEmail").val(result.pr.email)
               $("#inputPhone").val(result.pr.phone)
-              $("#inputFax").val(result.pr.fax)
+              // $("#inputFax").val(result.pr.fax)
               $("#inputAttention").val(result.pr.attention)
               $("#inputSubject").val(result.pr.title)
               $("#inputAddress").val(result.pr.address)
@@ -1829,6 +1872,10 @@
                       url: "{{url('/admin/getLead')}}",
                       type: "GET",
                       success: function(result) {
+                        console.log(result.data)
+
+                        result.data.unshift({"id" : "-","text" : "Select Lead Register"})
+
                         $("#selectLeadId").select2({
                             data: result.data
                         }).on('change', function() {
@@ -1841,6 +1888,10 @@
                               lead_id:data
                             },
                             success: function(result) {
+                              if (selectedLead == '-') {
+                                result.data.unshift({"id" : "-","text" : "Select PID"})
+                              }
+
                               $("#selectPid").select2({
                                   data: result.data
                               })
@@ -1854,6 +1905,9 @@
                               lead_id:data
                             },
                             success: function(result) {
+                              if (selectedLead == '-') {
+                                result.data.unshift({"id" : "-","text" : "Select Quote Number"})
+                              }
                               $("#selectQuoteNumber").select2({
                                   data: result.data
                               })
@@ -1861,7 +1915,7 @@
                           }) 
                         })
 
-                        if (status == 'reject' || status == 'revision') {
+                        if (status == 'reject' || status == 'revision' || status == 'saved') {
                           $("#selectLeadId").val(selectedLead).trigger("change")
                         }
                       }
@@ -1887,7 +1941,6 @@
                     } 
 
                     if (result.dokumen.length > 0) {
-                      console.log(result.dokumen[1])
                       let formData = new FormData();
 
                       if (result.dokumen[0] !== undefined) {
@@ -1909,10 +1962,9 @@
 
                       if (result.dokumen[1] !== undefined) {
                         const myFileSbe = new File(['{{asset("/")}}"'+ result.dokumen[1].dokumen_location +'"'], '/'+ result.dokumen[1].dokumen_location,{
-                            type: 'text/plain',
-                            lastModified: new Date(),
+                          type: 'text/plain',
+                          lastModified: new Date(),
                         });
-
                         // Now let's create a DataTransfer to get a FileList
                         const dataTransferSbe = new DataTransfer();
                         dataTransferSbe.items.add(myFileSbe);
@@ -1939,8 +1991,7 @@
                           $("#span_link_drive_quoteSup").show()
                           $("#link_quoteSup").attr("href",result.dokumen[2].link_drive) 
                         }
-                      }
-                          
+                      }  
                     }
                   }
                 })
@@ -1995,7 +2046,6 @@
                                   appendDocPendukung = appendDocPendukung + "<input type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"'>"
                                  appendDocPendukung = appendDocPendukung + '</div>'
                                  appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
-                            // appendDocPendukung = appendDocPendukung + "<input style='display:inline' class='pull-right inputDocPendukung_"+value+"' type='file' name='inputDocPendukung[]' id='inputDocPendukung' data-value=''+ item.id_dokumen +''><br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
                           appendDocPendukung = appendDocPendukung + "</td>"
                           appendDocPendukung = appendDocPendukung + "<td>"
                             appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" id="inputNameDocPendukung"><br>'
@@ -2236,12 +2286,30 @@
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<div class="form-group">'
               appendBottom = appendBottom + '<div class="row">'
-                appendBottom = appendBottom + '<div class="col-md-12">'
-                  appendBottom = appendBottom + '<div class="pull-right">'
-                    appendBottom = appendBottom + '<span style="display: inline;margin-right: 10px;">Grand Price</span>'
-                    appendBottom = appendBottom + '<input readonly type="text" style="width:150px;margin-right:10px;display: inline;" class="form-control" id="inputFinalPageGrandPrice" name="inputFinalPageTotalPrice">'
-                  appendBottom = appendBottom + '</div>'
-                appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '    <div class="pull-right">'
+              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
+              appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputTotalPriceFinal" id="inputTotalPriceFinal" name="inputTotalPriceFinal">'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
+              appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + ' <div class="col-md-12">'
+              appendBottom = appendBottom + '   <div class="pull-right">'
+                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+                appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+                appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_final" name="vat_tax_final" style="width:150px;">'
+                appendBottom = appendBottom + '     </div>'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + ' </div>'
+              appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '    <div class="pull-right">'
+              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+              appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageGrandPrice" id="inputFinalPageGrandPrice" name="inputFinalPageGrandPrice">'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
@@ -2316,13 +2384,34 @@
 
             $("#termPreview").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
 
+            var tempVat = 0
+            var finalVat = 0
+            var tempGrand = 0
+            var finalGrand = 0
+            var tempTotal = 0
             var sum = 0
+
             $('.grandTotalPreviewFinalPage').each(function() {
                 var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                 sum += temp;
             });
-           
-            $("#inputFinalPageGrandPrice").val(formatter.format(sum))
+
+            if (result.pr.status_tax == 'True') {
+              tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+              tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+            }else{
+              tempVat = tempVat
+              tempGrand = parseInt(sum)
+            }
+
+            finalVat = tempVat
+
+            finalGrand = tempGrand
+
+            tempTotal = sum
+            $("#vat_tax_final").val(tempVat)
+            $("#inputTotalPriceFinal").val(formatter.format(sum))
+            $("#inputFinalPageGrandPrice").val(formatter.format(tempGrand))
           }
         })
   										
@@ -2385,6 +2474,7 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
+              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
                   data: result.data
               }).on('change', function() {
@@ -2433,6 +2523,7 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
+              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
                   data: result.data
               })
@@ -2797,6 +2888,7 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
+              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
                   data: result.data
               }).on('change', function() {
@@ -2907,7 +2999,7 @@
   						$("#selectTypeCek").val(result.pr.type_of_letter)
   						$("#inputEmailCek").val(result.pr.email)
   						$("#inputPhoneCek").val(result.pr.phone)
-  						$("#inputFax").val(result.pr.fax)
+  						// $("#inputFax").val(result.pr.fax)
   						$("#inputAttentionCek").val(result.pr.attention)
   						$("#inputSubjectCek").val(result.pr.title)
   						$("#inputAddressCek").val(result.pr.address)
@@ -2984,15 +3076,41 @@
   						$("#bottomProductsCek").empty()
   						var appendBottom = ""
   						appendBottom = appendBottom + '<hr>'
-  				  	appendBottom = appendBottom + '<div class="form-group">'
-  				  		appendBottom = appendBottom + '<div class="row">'
-  				    		appendBottom = appendBottom + '<div class="col-md-12">'
-  				    			appendBottom = appendBottom + '<div class="pull-right">'
-		    				  appendBottom = appendBottom + '<span style="display: inline;margin-right: 10px;">Grand Total</span>'
-		        		appendBottom = appendBottom + '<input readonly type="text" style="width:150px;display: inline;" class="form-control" id="inputGrandTotalProductCek" name="inputGrandTotalProductCek">'
-		    			appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row">'
+              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '    <div class="pull-right">'
+              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
+              appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductCek" id="inputGrandTotalProductCek" name="inputGrandTotalProductCek">'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
+              appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + ' <div class="col-md-12">'
+              appendBottom = appendBottom + '   <div class="pull-right">'
+                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+                appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+                appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax_cek pull-right" id="vat_tax_cek" name="vat_tax_cek" style="width:250px;">'
+                appendBottom = appendBottom + '     </div>'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + ' </div>'
+              appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '    <div class="pull-right">'
+              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+              appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinalCek" id="inputGrandTotalProductFinalCek" name="inputGrandTotalProductFinalCek">'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
+              appendBottom = appendBottom + '</div>'
 
   				    $("#bottomProductsCek").append(appendBottom)	
+
+              var tempVat = 0
+              var finalVat = 0
+              var tempGrand = 0
+              var finalGrand = 0
+              var tempTotal = 0
+              var btnVatStatus = true
 
   				    var sum = 0
   			      $('.inputTotalPriceEditCek').each(function() {
@@ -3000,7 +3118,23 @@
   			          sum += temp;
   			      });
 
+              finalVat = tempVat
+
+              finalGrand = tempGrand
+
+              tempTotal = sum
+
+              if (result.pr.status_tax == 'True') {
+                tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+                tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+              }else{
+                tempVat = tempVat
+                tempGrand = parseInt(sum)
+              }
+              $("#vat_tax_cek").val(tempVat)
         			$("#inputGrandTotalProductCek").val(formatter.format(sum))
+              $("#inputGrandTotalProductFinalCek").val(formatter.format(tempGrand))
+
   					}else if (n == 2) {
   						$(".modal-dialog").removeClass('modal-lg')
   						if ($("#selectTypeCek").val() == 'EPR') {
@@ -3224,14 +3358,32 @@
               appendBottom = ""
               appendBottom = appendBottom + '<hr>'
               appendBottom = appendBottom + '<div class="form-group">'
-                appendBottom = appendBottom + '<div class="row">'
-                  appendBottom = appendBottom + '<div class="col-md-12">'
-                    appendBottom = appendBottom + '<div class="pull-right">'
-                      appendBottom = appendBottom + '<span style="display: inline;margin-right: 10px;">Grand Price</span>'
-                      appendBottom = appendBottom + '<input readonly type="text" style="width:150px;margin-right:10px;display: inline;" class="form-control " id="inputFinalPageGrandPriceCek" name="inputFinalPageTotalPriceCek">'
-                    appendBottom = appendBottom + '</div>'
-                  appendBottom = appendBottom + '</div>'
-                appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row">'
+              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '    <div class="pull-right">'
+              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
+              appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPreviewCek" id="inputGrandTotalProductPreviewCek" name="inputGrandTotalProductPreviewCek">'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
+              appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + ' <div class="col-md-12">'
+              appendBottom = appendBottom + '   <div class="pull-right">'
+                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+                appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+                appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_PreviewCek" name="vat_tax_PreviewCek" style="width:150px;">'
+                appendBottom = appendBottom + '     </div>'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + ' </div>'
+              appendBottom = appendBottom + '</div>'
+              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '    <div class="pull-right">'
+              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+              appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageGrandPricePreviewCek" id="inputFinalPageGrandPricePreviewCek" name="inputFinalPageGrandPricePreviewCek">'
+              appendBottom = appendBottom + '    </div>'
+              appendBottom = appendBottom + '  </div>'
+              appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<hr>'
               appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
@@ -3300,18 +3452,37 @@
               } 
 
               $("#bottomPreviewFinalCek").append(appendBottom)
-                              
-
 
               $("#termPreviewCek").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
 
+              var tempVat = 0
+              var finalVat = 0
+              var tempGrand = 0
+              var finalGrand = 0
+              var tempTotal = 0
               var sum = 0
+
               $('.grandTotalCek').each(function() {
                   var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                   sum += temp;
               });
 
-              $("#inputFinalPageGrandPriceCek").val(formatter.format(sum))  
+              if (result.pr.status_tax == 'True') {
+                tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+                tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+              }else{
+                tempVat = tempVat
+                tempGrand = parseInt(sum)
+              }
+
+              finalVat = tempVat
+
+              finalGrand = tempGrand
+
+              tempTotal = sum
+              $("#vat_tax_PreviewCek").val(tempVat)
+              $("#inputGrandTotalProductPreviewCek").val(formatter.format(sum))
+              $("#inputFinalPageGrandPricePreviewCek").val(formatter.format(tempGrand))
             }
   					document.getElementById("nextBtnAddAdmin").innerHTML = "Next"
   					$("#nextBtnAddAdmin").prop("disabled",false)
@@ -3576,6 +3747,39 @@
     // 	}
     // }
 
+    var tempVat = 0
+    var finalVat = 0
+    var tempGrand = 0
+    var finalGrand = 0
+    var tempTotal = 0
+    var btnVatStatus = true
+    localStorage.setItem('status_tax','True')
+
+    function changeVatValue(){
+      if($("#btn-vat").hasClass('btn-default')){
+        btnVatStatus = false
+        finalVat = 0
+        finalGrand = tempTotal
+        $("#btn-vat").removeClass('btn-default')
+        $("#btn-vat").addClass('btn-danger')
+        $("#btn-vat").text('✖')
+        $("#vat_tax").val(0)
+        $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
+        localStorage.setItem('status_tax','False')
+
+      } else {
+        btnVatStatus = true
+        finalVat = tempVat
+        finalGrand = tempGrand
+        $("#btn-vat").addClass('btn-default')
+        $("#btn-vat").removeClass('btn-danger')
+        $("#btn-vat").text('✓')
+        $("#vat_tax").val(formatter.format(tempVat))
+        $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+        localStorage.setItem('status_tax','True')
+      }
+    }
+
   	function addTable(n){ 
       if (window.location.href.split("/")[6] == undefined) {
         url = "{{url('/admin/getProductPr')}}"
@@ -3642,15 +3846,41 @@
 
           var appendBottom = ""
           appendBottom = appendBottom + '<hr>'
-          appendBottom = appendBottom + '<div class="form-group">'
-            appendBottom = appendBottom + '<div class="row">'
-              appendBottom = appendBottom + '<div class="col-md-12">'
-                appendBottom = appendBottom + '<div class="pull-right">'
-                  appendBottom = appendBottom + '<span style="display: inline;margin-right: 10px;">Grand Total</span>'
-                  appendBottom = appendBottom + '<input readonly type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
-                appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '<div class="row">'
+          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '    <div class="pull-right">'
+          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
+          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
+          appendBottom = appendBottom + '    </div>'
+          appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+          appendBottom = appendBottom + ' <div class="col-md-12">'
+          appendBottom = appendBottom + '   <div class="pull-right">'
+            appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
+            appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+              appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
+                appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
+              appendBottom = appendBottom + ' </span>'
+            appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
+            appendBottom = appendBottom + ' </div>'
+          appendBottom = appendBottom + ' </div>'
+          appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '</div>'
+          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '    <div class="pull-right">'
+          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+          appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
+          appendBottom = appendBottom + '    </div>'
+          appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
 
-          $("#bottomProducts").append(appendBottom) 
+          $("#bottomProducts").append(appendBottom)
+
+          $('input[type="checkbox"].minimal').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+          })
 
           var sum = 0
           $('.inputTotalPriceEdit').each(function() {
@@ -3658,9 +3888,23 @@
               sum += temp;
           });
 
-          $("#inputGrandTotalProduct").val(formatter.format(sum)) 
+          $("#inputGrandTotalProduct").val(formatter.format(sum))
+
+          tempVat = (parseFloat(sum) * 11) / 100
+
+          finalVat = tempVat
+
+          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+
+          finalGrand = tempGrand
+
+          tempTotal = sum
+          $("#vat_tax").val(formatter.format(tempVat))
+
+          $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
 
           $(".fa-edit[data-value='"+ value +"']").click(function(){
+
             $("#prevBtnAdd").css("display", "none");
             nextPrevUnFinished(-1)
             localStorage.setItem('isEditProduct',true)
@@ -3678,6 +3922,8 @@
   			}
       })
   	}
+
+
 
     function nextPrevUnFinished(n){
       console.log("value", n)
@@ -3737,7 +3983,7 @@
               selectType:$("#selectType").val(),
               inputEmail:$("#inputEmail").val(),
               inputPhone:$("#inputPhone").val(),
-              inputFax:$("#inputFax").val(),
+              // inputFax:$("#inputFax").val(),
               inputAttention:$("#inputAttention").val(),
               inputSubject:$("#inputSubject").val(),
               inputAddress:$("#inputAddress").val(),
@@ -3927,6 +4173,8 @@
               success:function(result){
                 let formData = new FormData();
                 const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
+                var arrInputDocPendukung = []
+
                 if (result.dokumen.length > 0) {
                   console.log(result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1])
                   if ($('#inputPenawaranHarga').prop('files')[0].name.replace("/","") != result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1]) {
@@ -3934,18 +4182,45 @@
                   } else {
                     formData.append('inputPenawaranHarga', '-')
                   }
+
+                  if (result.dokumen[1] != undefined) {
+                   $.each(result.dokumen,function(item,value){
+                      if (item != 0) {
+                        $('#tableDocPendukung .trDocPendukung').each(function() {
+                          if ($(this).find('#inputDocPendukung').prop('files')[0].name.replace("/","") != value.dokumen_location.substring(0,15) + '....'+ value.dokumen_location.split(".")[0].substring(value.dokumen_location.length -10) + "." + value.dokumen_location.split(".")[1]) {
+                            formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                            arrInputDocPendukung.push({
+                              nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                              no_pr:localStorage.getItem('no_pr')
+                            })
+                          }else{
+                            formData.append('inputDocPendukung[]','-')
+                          }
+                        });
+                      }
+                    })  
+                 }else{
+                  $('#tableDocPendukung .trDocPendukung').each(function() {
+                    formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                    arrInputDocPendukung.push({
+                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                      no_pr:localStorage.getItem('no_pr')
+                    })
+                  });
+                  
+                }
+                                  
                 }else{
                   formData.append('inputPenawaranHarga', filepenawaranHarga);
-                }
-
-                var arrInputDocPendukung = []
-                $('#tableDocPendukung .trDocPendukung').each(function() {
+                  $('#tableDocPendukung .trDocPendukung').each(function() {
                   formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                  arrInputDocPendukung.push({
-                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                    no_pr:localStorage.getItem('no_pr')
-                  })
-                });
+                    arrInputDocPendukung.push({
+                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                      no_pr:localStorage.getItem('no_pr')
+                    }) 
+                  });
+                  
+                }               
 
                 formData.append('_token',"{{csrf_token()}}")
                 formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
@@ -4001,12 +4276,12 @@
           }
           
         }else{
-          if ($("#selectLeadId").val() == "") {
-            $("#selectLeadId").closest('.col-md-6').addClass('has-error')
-            $("#selectLeadId").closest('select').next('span help-block').show();
+          if ($("#selectLeadId").val() == "-") {
+            $("#selectLeadId").closest('.form-group').addClass('has-error')
+            $("#selectLeadId").closest('select').siblings('span.help-block').show();
             $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-          }else if ($("#selectPid").val() == "") {
-            $("#selectPid").closest('.col-md-6').addClass('has-error')
+          }else if ($("#selectPid").val() == "-") {
+            $("#selectPid").closest('.form-group').addClass('has-error')
             $("#selectPid").closest('select').next('span help-block').show();
             $("#selectPid").prev('.col-md-6').css("background-color","red");
           }else if ($("#inputSPK").val() == "") {
@@ -4021,7 +4296,7 @@
             $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
             $("#inputQuoteSupplier").closest('div').next('span').show();
             $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputQuoteNumber").val() == "") {
+          }else if ($("#inputQuoteNumber").val() == "-") {
             $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
             $("#inputQuoteNumber").closest('input').next('span').show();
             $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
@@ -4046,7 +4321,7 @@
 
                 if (result.dokumen.length > 0) {
                   if (result.dokumen[0] !== undefined) {
-                    if (result.dokumen[0].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","")) {
+                    if (result.dokumen[0].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","") || $('#inputSPK').prop('files').length == 0) {
                       formData.append('inputSPK', fileSpk);
                     } else {
                       formData.append('inputSPK', "-");
@@ -4056,7 +4331,7 @@
                   }                  
 
                   if (result.dokumen[1] !== undefined) {
-                    if (result.dokumen[1].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","")) {
+                    if (result.dokumen[1].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","") || $('#inputSBE').prop('files').length == 0) {
                       formData.append('inputSBE', fileSbe);
                     } else {
                       formData.append('inputSBE', "-");
@@ -4066,7 +4341,7 @@
                   }
 
                   if (result.dokumen[2] !== undefined) {
-                    if (result.dokumen[2].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","")) {
+                    if (result.dokumen[2].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","") || $('#inputQuoteSupplier').prop('files').length == 0) {
                       formData.append('inputQuoteSupplier', fileQuoteSupplier);
                     } else {
                       formData.append('inputQuoteSupplier', "-");
@@ -4151,7 +4426,8 @@
           data:{
             no_pr:localStorage.getItem('no_pr'),
             _token:"{{csrf_token()}}",
-            textAreaTOP:$("#textAreaTOP").val()
+            textAreaTOP:$("#textAreaTOP").val(),
+            status_tax:localStorage.getItem('status_tax')
           },
           success: function(data)
           {
@@ -4176,6 +4452,14 @@
         unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
       }
     }
+
+    var isFilledPenawaranHarga = true
+    var isFilledDocPendukung = true
+    var arrInputDocPendukung = []
+
+    var nama_file_sbe = ""
+    var nama_file_spk = ""
+    var nama_file_quote_supplier = ""
 
   	function nextPrevAdd(n,value) {
       console.log("value",value)
@@ -4250,7 +4534,7 @@
                           selectType:$("#selectType").val(),
                           inputEmail:$("#inputEmail").val(),
                           inputPhone:$("#inputPhone").val(),
-                          inputFax:$("#inputFax").val(),
+                          // inputFax:$("#inputFax").val(),
                           inputAttention:$("#inputAttention").val(),
                           inputSubject:$("#inputSubject").val(),
                           inputAddress:$("#inputAddress").val(),
@@ -4316,23 +4600,23 @@
           $("#inputNameProduct").closest('.form-group').addClass('has-error')
           $("#inputNameProduct").closest('input').next('span').show();
           $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputDescProduct").val() == "") {
+        } else if ($("#inputDescProduct").val() == "") {
           $("#inputDescProduct").closest('.form-group').addClass('has-error')
           $("#inputDescProduct").closest('textarea').next('span').show();
           $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputQtyProduct").val() == "") {
+        } else if ($("#inputQtyProduct").val() == "") {
           $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
           $("#inputQtyProduct").closest('input').next('span').show();
           $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#selectTypeProduct").val() == "" || $("#selectTypeProduct").val() == null) {
+        } else if ($("#selectTypeProduct").val() == "" || $("#selectTypeProduct").val() == null) {
           $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
           $("#selectTypeProduct").closest('select').next('span').show();
           $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputPriceProduct").val() == "") {
+        } else if ($("#inputPriceProduct").val() == "") {
           $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
           $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
           $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
-        }else{
+        } else {
           if (n == '1') {
             $.ajax({
               url: "{{url('/admin/storeProductPr')}}",
@@ -4392,7 +4676,7 @@
               currentTab = 0;
             }
             addDraftPr(currentTab);
-            unfinishedDraft(currentTab);
+            unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
             addTable()
           }                
         } 			
@@ -4405,23 +4689,52 @@
   				}else{
             let formData = new FormData();
             const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
-            if (filepenawaranHarga != "") {
+            if (isFilledPenawaranHarga) {
               formData.append('inputPenawaranHarga', filepenawaranHarga);
+              isFilledPenawaranHarga = false
               // formData.append('nama_file_penawaranHarga', nama_file_penawaranHarga);
+            } else {
+              formData.append('inputPenawaranHarga', "-");
             }
 
             $(".tableDocPendukung").empty()
 
-            var arrInputDocPendukung = []
-            $('#tableDocPendukung .trDocPendukung').each(function() {
-              // formData.append('no_pr',localStorage.getItem('no_pr'))
-              formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-              // formData.append('inputNameDocPendukung',$(this).find('#inputNameDocPendukung').val())
-              arrInputDocPendukung.push({
-                nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                no_pr:localStorage.getItem('no_pr')
-              })
-            });
+
+            if($('#tableDocPendukung .trDocPendukung').length != arrInputDocPendukung.length){
+              if(arrInputDocPendukung.length != 0){
+                var lengthArrInputDocPendukung = $('#tableDocPendukung .trDocPendukung').length
+                arrInputDocPendukung = []
+                var i = 1;
+                console.log(lengthArrInputDocPendukung)
+                $('#tableDocPendukung .trDocPendukung').each(function() {
+                  if(i >= lengthArrInputDocPendukung){
+
+                    formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                    arrInputDocPendukung.push({
+                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                      no_pr:localStorage.getItem('no_pr')
+                    })
+                  }
+                  i++
+                });
+              } else {
+                $('#tableDocPendukung .trDocPendukung').each(function() {
+
+                  formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                  arrInputDocPendukung.push({
+                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                    no_pr:localStorage.getItem('no_pr')
+                  })
+                });
+              }
+            } else {
+              formData.append('inputDocPendukung[]',"-")
+            }
+            
+
+            isFilledDocPendukung = false
 
             formData.append('_token',"{{csrf_token()}}")
             formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
@@ -4463,11 +4776,11 @@
             });           
   				}  				
   			}else{
-  				if ($("#selectLeadId").val() == "") {
+  				if ($("#selectLeadId").val() == "-") {
   		      $("#selectLeadId").closest('.col-md-6').addClass('has-error')
-  		      $("#selectLeadId").closest('select').next('span help-block').show();
+  		      $("#selectLeadId").closest('select').siblings('span.help-block').show();
   		      $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-  		    }else if ($("#selectPid").val() == "") {
+  		    }else if ($("#selectPid").val() == "-") {
   		      $("#selectPid").closest('.col-md-6').addClass('has-error')
   		      $("#selectPid").closest('select').next('span help-block').show();
   		      $("#selectPid").prev('.col-md-6').css("background-color","red");
@@ -4483,38 +4796,43 @@
   		      $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
   		      $("#inputQuoteSupplier").closest('div').next('span').show();
   		      $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-  		    }else if ($("#inputQuoteNumber").val() == "") {
+  		    }else if ($("#inputQuoteNumber").val() == "-") {
   		      $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
   		      $("#inputQuoteNumber").closest('input').next('span').show();
   		      $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
   		    }else{
-            const fileSpk = $('#inputSPK').prop('files')[0];
-            var nama_file_spk = $('#inputSPK').val();
             let formData = new FormData();
-            if (nama_file_spk!="" && fileSpk!="") {
-              formData.append('inputSPK', fileSpk);
-            }
 
+            const fileSpk = $('#inputSPK').prop('files')[0];
+            
+            if ($('#inputSPK').val() !="") {
+              if(nama_file_spk == ""){
+                nama_file_spk = $('#inputSPK').val();
+                formData.append('inputSPK', fileSpk);
+              } else if (nama_file_spk == $('#inputSPK').val()){
+                formData.append('inputSPK', "-");
+              }
+            }
             const fileSbe = $('#inputSBE').prop('files')[0];
-            var nama_file_sbe = $('#inputSBE').val();
-            if (nama_file_sbe!="" && fileSbe!="") {
-              formData.append('inputSBE', fileSbe);
+            
+            if ($('#inputSBE').val() !="") {
+              if(nama_file_sbe == ""){
+                nama_file_sbe = $('#inputSBE').val();
+                formData.append('inputSBE', fileSbe);
+              } else if (nama_file_sbe == $('#inputSBE').val()){
+                formData.append('inputSBE', "-");
+              }
             }
-
             const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
-            var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
-            if (nama_file_quote_supplier!="" && fileQuoteSupplier!="") {
-              formData.append('inputQuoteSupplier', fileQuoteSupplier);
+            
+            if ($('#inputQuoteSupplier').val() !="") {
+              if(nama_file_quote_supplier == ""){
+                nama_file_quote_supplier = $('#inputQuoteSupplier').val();
+                formData.append('inputQuoteSupplier', fileQuoteSupplier);
+              } else if (nama_file_quote_supplier == $('#inputQuoteSupplier').val()){
+                formData.append('inputQuoteSupplier', "-");
+              }
             }
-
-            // const nama_file_quote_number = $('#inputQuoteNumber').prop('files')[0];
-            // var nama_file_quote_number = $('#inputQuoteNumber').val();
-            // let formData = new FormData();
-            // if (nama_file_quote_number!="" && fileQuoteNumber!="") {
-            //   formData.append('inputQuoteNumber', fileQuotenumber);
-            //   formData.append('nama_file_quote_number', nama_file_quote_number);
-            // }
-
             formData.append('_token',"{{csrf_token()}}")
             formData.append('no_pr', localStorage.getItem('no_pr'))
             formData.append('selectLeadId', $("#selectLeadId").val())
@@ -4572,7 +4890,8 @@
           data:{
             no_pr:localStorage.getItem('no_pr'),
             _token:"{{csrf_token()}}",
-            textAreaTOP:$("#textAreaTOP").val()
+            textAreaTOP:$("#textAreaTOP").val(),
+            status_tax:localStorage.getItem('status_tax')
           },
           success: function(data)
           {
@@ -4662,7 +4981,7 @@
                           selectType:$("#selectType").val(),
                           inputEmail:$("#inputEmail").val(),
                           inputPhone:$("#inputPhone").val(),
-                          inputFax:$("#inputFax").val(),
+                          // inputFax:$("#inputFax").val(),
                           inputAttention:$("#inputAttention").val(),
                           inputSubject:$("#inputSubject").val(),
                           inputAddress:$("#inputAddress").val(),
@@ -4865,11 +5184,11 @@
                 }); 
               }
             }else{
-              if ($("#selectLeadId").val() == "") {
+              if ($("#selectLeadId").val() == "-") {
                 $("#selectLeadId").closest('.col-md-6').addClass('has-error')
-                $("#selectLeadId").closest('select').next('span help-block').show();
+                $("#selectLeadId").closest('select').siblings('span.help-block').show();
                 $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-              }else if ($("#selectPid").val() == "") {
+              }else if ($("#selectPid").val() == "-") {
                 $("#selectPid").closest('.col-md-6').addClass('has-error')
                 $("#selectPid").closest('select').next('span help-block').show();
                 $("#selectPid").prev('.col-md-6').css("background-color","red");
@@ -4877,7 +5196,7 @@
                 $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
                 $("#inputQuoteSupplier").closest('input').next('span').show();
                 $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-              }else if ($("#inputQuoteNumber").val() == "") {
+              }else if ($("#inputQuoteNumber").val() == "-") {
                 $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
                 $("#inputQuoteNumber").closest('input').next('span').show();
                 $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
@@ -5020,20 +5339,6 @@
         append = append + "</tr>"
     	$("#tableDocPendukung").append(append) 
       incrementDoc++
-
-      // $("input[name='inputDocPendukung']").each(function(){
-      //   $('.inputDocPendukung_'+ $(this).data("value") +'').on('input', this, function(){
-      //   console.log(this.value)
-
-      //     if (this.value != "") {
-      //       $("#inputDocPendukung[data-value='"+ $(this).data("value") +"']").removeClass("hidden")
-      //       $("#inputDocPendukung[data-value='"+ $(this).data("value") +"']").closest("input").next("label").hide()
-      //     }else{
-      //       $("#inputDocPendukung[data-value='"+ $(this).data("value") +"']").addClass("hidden")
-      //       $("#inputDocPendukung[data-value='"+ $(this).data("value") +"']").closest("input").next("label").show()
-      //     }
-      //   });
-      // });
     }
 
     $(document).on('click', '.btnRemoveAddDocPendukung', function() {
