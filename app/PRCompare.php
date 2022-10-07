@@ -7,6 +7,7 @@ use App\PrProduct;
 use App\PRProductCompare;
 use App\PrDokumen;
 use App\PRDocumentCompare;
+use DB;
 
 class PRCompare extends Model
 {
@@ -29,9 +30,9 @@ class PRCompare extends Model
 		'note_pembanding'
 	];
 
-	public function product(){
-        return $this->hasMany('App\PRProductCompare','id_compare_pr','id')->orderBy('id');
-    }
+	// public function product(){
+ //        return $this->hasMany('App\PRProductCompare','id_compare_pr','id')->orderBy('id');
+ //    }
 
     public function getProductDetailAttribute()
     {
@@ -44,19 +45,43 @@ class PRCompare extends Model
         return $data;
     }
 
-    public function document()
-    {
-    	return $this->hasMany('App\PRDocumentCompare','id_compare_pr','id')->orderBy('id');
-    }
+    // public function document()
+    // {
+    // 	return $this->hasMany('App\PRDocumentCompare','id_compare_pr','id')->orderBy('id');
+    // }
 
     public function getDocumentDetailAttribute()
     {
+    	$getIdDraft = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_compare.id_draft_pr')->select('id_draft_pr', 'type_of_letter')->where('tb_pr_compare.id', $this->id)->first();
+
     	$data = PRCompare::join('tb_pr_document_compare', 'tb_pr_document_compare.id_compare_pr', '=', 'tb_pr_compare.id')
     			->join('tb_pr_document', 'tb_pr_document.id', '=', 'tb_pr_document_compare.id_document')
-    			->select('dokumen_name', 'dokumen_location', 'tb_pr_compare.id', 'link_drive')
+    			->select('dokumen_name', 'dokumen_location',  'tb_pr_compare.id', 'link_drive')
     			->where('tb_pr_compare.id', $this->id)
     			->get();
 
-    	return $data;
+        $dokumen = PRCompare::join('tb_pr_document_compare', 'tb_pr_document_compare.id_compare_pr', '=', 'tb_pr_compare.id')
+                ->join('tb_pr_document', 'tb_pr_document.id', '=', 'tb_pr_document_compare.id_document')
+                ->select('dokumen_name', 'dokumen_location', 'tb_pr_document.id as id_dokumen', 'tb_pr_compare.id', 'link_drive')->where('tb_pr_compare.id', $this->id);
+
+        if ($getIdDraft->type_of_letter == 'IPR') {
+            $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+            $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
+        } else {
+            $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+            $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderByRaw('FIELD(dokumen_name, "SPK", "SBE", "Quote Supplier")')->get();
+        }
+
+    	$getDokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+    			->select('dokumen_name', 'dokumen_location', 'link_drive')
+    			->where('tb_pr_document_draft.id_draft_pr', $getIdDraft->id_draft_pr)
+    			->where(function($query){
+		            $query->where('dokumen_name', 'SBE')
+		                ->orWhere('dokumen_name', 'SPK');
+		        })
+		        ->get();
+
+		return array_merge($getAll->toArray(),$getDokumen->toArray());
     }
 }
