@@ -2348,7 +2348,7 @@
                 append = append + '<input class="form-control" name="emailTo" id="emailOpenTo">'
               append = append + '</div>'
               append = append + '<div class="col-sm-11 col-sm-offset-1 help-block" style="margin-bottom: 0px;">'
-                append = append + 'Enter the recipient of this open email!'
+                // append = append + 'Enter the recipient of this open email!'
               append = append + '</div>'
             append = append + '</div>'
             append = append + '<div class="form-group">'
