@@ -54,7 +54,7 @@ class PrDraftController extends Controller
 
             $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR' OR `status` = 'SAVED'  OR `status` = 'DRAFT')")->count();
 
-            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->count();
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED' OR `status` = 'SENDED')")->count();
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
 
@@ -889,7 +889,7 @@ class PrDraftController extends Controller
             if ($request['selectLeadId'] == null) {
                 $update->lead_id = '-';
             } else {
-                $update->quote_number = $request['selectLeadId'];
+                $update->lead_id = $request['selectLeadId'];
             }     
             if ($request['selectPid'] == null) {
 	            $update->pid = $request['inputPid'];
