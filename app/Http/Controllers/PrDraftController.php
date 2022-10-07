@@ -2397,6 +2397,7 @@ class PrDraftController extends Controller
         }
 
         $email_cc = $email_cc->push(new User(['email' => 'bcd@sinergy.co.id']));
+        $email_cc = $email_cc->push(new User(['email' => 'bcd@sinergy.co.id']));
 
         $subject = 'Permohonan Pembuatan PO - ' . $get_type->type_of_letter . ' ' . $get_type->title;
 
