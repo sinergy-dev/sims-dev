@@ -1,0 +1,2787 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Auth;
+use DB;
+use App\PR;
+use App\SalesProject;
+use App\User;
+use App\Sales2;
+use App\Sales;
+use App\PrProduct;
+use App\PrDokumen;
+use App\Quote;
+use App\PRDraft;
+use App\PRActivity;
+use App\PRCompare;
+use App\PRDocumentCompare;
+use App\PRDocumentDraft;
+use App\PRDraftVerify;
+use App\PRProductCompare;
+use App\PRProductDraft;
+use Google_Client;
+use Google_Service_Drive;
+use Google_Service_Drive_DriveFile;
+use PDF;
+use Mail;
+use App\Mail\DraftPR;
+
+
+use setasign\Fpdf\Fpdf;
+use setasign\Fpdi\Fpdi;
+use setasign\FpdiProtection\FpdiProtection;
+use setasign\Fpdi\PdfParser\StreamReader;
+
+use Carbon\Carbon;
+
+class PrDraftController extends Controller
+{
+    public function getCount(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
+            $count_all = PRDraft::count();
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->count();
+        } else if ($cek_role->name == 'Sales Manager'){
+            $listTerritory = User::where('id_territory',$territory)->pluck('nik');
+
+            $count_all = PRDraft::whereIn('issuance',$listTerritory)->count();
+
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listTerritory)->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listTerritory)->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listTerritory)->count();
+
+        } else if ($cek_role->name == 'PMO Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+
+            $count_all = PRDraft::whereIn('issuance',$listGroup)->count();
+
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup)->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup)->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup)->count();
+
+        } else if ($cek_role->name == 'MSM Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+
+            $count_all = PRDraft::whereIn('issuance',$listGroup)->count();
+
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup)->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup)->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup)->count();
+
+        } else if ($cek_role->name == 'HR Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+
+            $count_all = PRDraft::whereIn('issuance',$listGroup)->count();
+
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup)->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup)->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup)->count();
+
+        } else if ($cek_role->name == 'SOL Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+
+            $count_all = PRDraft::whereIn('issuance',$listGroup)->count();
+
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup)->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup)->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup)->count();
+
+        } else if ($cek_role->name == 'SID Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
+
+            $count_all = PRDraft::whereIn('issuance',$listGroup)->count();
+
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup)->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup)->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup)->count();
+        } else {
+            $count_all = PRDraft::where('issuance',$nik)->count();
+
+            $count_need_attention = PRDraft::whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->where('issuance',$nik)->count();
+
+            $count_ongoing = PRDraft::whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->where('issuance',$nik)->count();
+
+            $count_done = PRDraft::whereRaw("(`status` = 'FINALIZED')")->where('issuance',$nik)->count();
+        }
+        
+        return collect([
+            "count_all" => $count_all,
+            "count_need_attention" => $count_need_attention,
+            "count_ongoing" => $count_ongoing,
+            "count_done" => $count_done,
+        ]);
+    }
+
+    public function getFilterDraft(Request $request)
+    {
+        $getData = PRDraft::leftJoin('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance');
+
+        if (!in_array(null, $request->type_of_letter)) {
+            $getData->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+        }
+
+        if (!in_array(null, $request->status)) {
+            if (in_array("NA", $request->status)) {
+                $getData->where(function($query){
+                    $query->where('tb_pr_draft.status', 'REJECT')
+                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                });
+            } elseif (in_array("OG", $request->status)) {
+                $getData->where(function($query){
+                    $query->where('tb_pr_draft.status', 'VERIFIED')
+                        ->orWhere('tb_pr_draft.status', 'COMPARING')
+                        ->orWhere('tb_pr_draft.status', 'CIRCULAR');
+                });
+            } elseif (in_array("DO", $request->status)) {
+                $getData->where(function($query){
+                    $query->where('tb_pr_draft.status', 'FINALIZED');
+                });
+            } else {
+                $getData->whereIn('tb_pr_draft.status', $request->status);
+                
+            }
+        }
+
+        if (!in_array(null, $request->user)) {
+            $getData->whereIn('users.name', $request->user);
+        }
+
+        if($request->startDate != "" && $request->endDate != ""){
+            $getData->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+        }
+
+        // $date = ;
+        // $get_date_max = $getData->orderBy('tb_pr_draft.created_at','ASC')->first()->created_at;
+        // $get_date_min = $getData->orderBy('tb_pr_draft.created_at','DESC')->first()->created_at;
+        // $get_date_min = DB::table($date, 'temp')->selectRaw("SUBSTR(MIN(`temp`.`created_at`),1,10) AS `startDate`")->get();
+        // echo "<pre>";
+        // print_r($getData->orderBy('tb_pr_draft.created_at','ASC')->pluck('tb_pr_draft.created_at'));
+        // print_r($getData->orderBy('tb_pr_draft.created_at','ASC')->pluck('tb_pr_draft.created_at')->first());
+        // echo "<br>";
+        // print_r($getData->orderBy('tb_pr_draft.created_at','ASC')->pluck('tb_pr_draft.created_at')->last());
+        // echo "</pre>";
+        // return "-";
+        // return [$get_date_max,$get_date_max];
+
+        $searchFields = ['tb_pr.no_pr', 'tb_pr_draft.status', 'tb_pr_draft.to', 'tb_pr.to', 'tb_pr_draft.title', 'tb_pr.title', 'name', 'tb_pr_draft.status'];
+
+        if($request->search != ""){
+            $getData->where(function($getData) use($request, $searchFields){
+                $searchWildCard = '%'. $request->search . '%';
+                foreach ($searchFields as $data) {
+                    $getData->orWhere($data, 'LIKE', $searchWildCard);
+                }
+            });
+        }
+
+        $date = $getData->pluck('tb_pr_draft.created_at')->toArray();
+        sort($date);
+        
+        return collect([
+            "data" => $getData->get(),
+            "data_type_letter" => $getData->pluck('tb_pr_draft.type_of_letter')->unique()->values()->map(function ($item, $key){
+                return array("id" => $item, "text" => $item);
+            }),
+            "dataStatus" => $getData->orderByRaw('FIELD(tb_pr_draft.status, "SAVED", "DRAFT", "VERIFIED","COMPARING", "CIRCULAR", "FINALIZED", "SENDED", "REJECT", "UNAPPROVED")')->pluck('tb_pr_draft.status')->unique()->values()->map(function ($item, $key){
+                return array("id" => $item, "text" => $item);
+            }),
+            "dataUser" => $getData->pluck('users.name')->unique()->values()->map(function ($item, $key){
+                return array("id" => $item, "text" => $item);
+            }),
+            "startDate" => current($date),
+            "endDate" => end($date)
+        ]);
+    }
+
+    public function getFilterCount(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        $count = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance');
+        // return $count;
+
+        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
+            $count_all = DB::table('tb_pr_draft')->join('users','users.nik', '=', 'tb_pr_draft.issuance');
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')");
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')");
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED')");
+        } else if ($cek_role->name == 'Sales Manager'){
+            $listTerritory = User::where('id_territory',$territory)->pluck('nik');
+
+            $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listTerritory);
+
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listTerritory);
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listTerritory);
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listTerritory);
+
+        } else if ($cek_role->name == 'PMO Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+
+            $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listGroup);
+
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup);
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup);
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup);
+
+        } else if ($cek_role->name == 'MSM Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+
+            $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listGroup);
+
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup);
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup);
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup);
+
+        } else if ($cek_role->name == 'HR Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+
+            $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listGroup);
+
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup);
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup);
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup);
+
+        } else if ($cek_role->name == 'SOL Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+
+            $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listGroup);
+
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup);
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup);
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup);
+
+        } else if ($cek_role->name == 'SID Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
+
+            $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereIn('issuance',$listGroup);
+
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->whereIn('issuance',$listGroup);
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->whereIn('issuance',$listGroup);
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALIZED')")->whereIn('issuance',$listGroup);
+        } else {
+            $count_all = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->where('issuance',$nik);
+
+            $count_need_attention = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'REJECT' OR `status` = 'UNAPPROVED')")->where('issuance',$nik);
+
+            $count_ongoing = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'VERIFIED' OR `status` = 'COMPARING' OR `status` = 'CIRCULAR')")->where('issuance',$nik);
+
+            $count_done = PRDraft::join('users','users.nik', '=', 'tb_pr_draft.issuance')->whereRaw("(`status` = 'FINALSIZED')")->where('issuance',$nik);
+        }
+
+        if (!in_array(null, $request->type_of_letter)) {
+            $count_all->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+            $count_need_attention->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+            $count_ongoing->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+            $count_done->whereIn('tb_pr_draft.type_of_letter', $request->type_of_letter);
+        }
+
+        if (!in_array(null, $request->user)) {
+            $count_all->whereIn('users.name', $request->user);
+            $count_need_attention->whereIn('users.name', $request->user);
+            $count_ongoing->whereIn('users.name', $request->user);
+            $count_done->whereIn('users.name', $request->user);
+        }
+
+        if (!in_array(null, $request->status)) {
+            if (in_array("NA", $request->status)) {
+                $count_all->where(function($query){
+                    $query->where('tb_pr_draft.status', 'REJECT')
+                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                });
+                $count_need_attention->where(function($query){
+                    $query->where('tb_pr_draft.status', 'REJECT')
+                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                });
+                $count_ongoing->where(function($query){
+                    $query->where('tb_pr_draft.status', 'REJECT')
+                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                });
+                $count_done->where(function($query){
+                    $query->where('tb_pr_draft.status', 'REJECT')
+                        ->orWhere('tb_pr_draft.status', 'UNAPPROVED');
+                });
+            } elseif (in_array("OG", $request->status)) {
+                $count_all->where(function($query){
+                    $query->where('tb_pr_draft.status', 'VERIFIED')
+                        ->orWhere('tb_pr_draft.status', 'COMPARING')
+                        ->orWhere('tb_pr_draft.status', 'CIRCULAR');
+                });
+                $count_need_attention->where(function($query){
+                    $query->where('tb_pr_draft.status', 'VERIFIED')
+                        ->orWhere('tb_pr_draft.status', 'COMPARING')
+                        ->orWhere('tb_pr_draft.status', 'CIRCULAR');
+                });
+                $count_ongoing->where(function($query){
+                    $query->where('tb_pr_draft.status', 'VERIFIED')
+                        ->orWhere('tb_pr_draft.status', 'COMPARING')
+                        ->orWhere('tb_pr_draft.status', 'CIRCULAR');
+                });
+                $count_done->where(function($query){
+                    $query->where('tb_pr_draft.status', 'VERIFIED')
+                        ->orWhere('tb_pr_draft.status', 'COMPARING')
+                        ->orWhere('tb_pr_draft.status', 'CIRCULAR');
+                });
+            } elseif (in_array("DO", $request->status)) {
+                $count_all->where(function($query){
+                    $query->where('tb_pr_draft.status', 'FINALIZED');
+                });
+                $count_need_attention->where(function($query){
+                    $query->where('tb_pr_draft.status', 'FINALIZED');
+                });
+                $count_ongoing->where(function($query){
+                    $query->where('tb_pr_draft.status', 'FINALIZED');
+                });
+                $count_done->where(function($query){
+                    $query->where('tb_pr_draft.status', 'FINALIZED');
+                });
+            } else {
+                $count_all->whereIn('tb_pr_draft.status', $request->status);
+                $count_need_attention->whereIn('tb_pr_draft.status', $request->status);
+                $count_ongoing->whereIn('tb_pr_draft.status', $request->status);
+                $count_done->whereIn('tb_pr_draft.status', $request->status);
+                
+            }
+        }
+
+        if($request->startDate != "" && $request->endDate != ""){
+            $count_all->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+            $count_need_attention->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+            $count_ongoing->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+            $count_done->whereBetween('tb_pr_draft.created_at', [$request->startDate . " 00:00:00", $request->endDate . " 23:59:59"]);
+        }
+
+        return collect([
+            "count_all" => $count_all->count(),
+            "count_need_attention" => $count_need_attention->count(),
+            "count_ongoing" => $count_ongoing->count(),
+            "count_done" => $count_done->count()
+        ]);
+    }
+
+    public function getFilterStatus(Request $request)
+    {
+        $getData = DB::table('tb_pr_draft')->select('status')->where('type_of_letter', $request->type_of_letter)->groupBy('status')->get();
+        return array("data"=>$getData);
+    }
+
+    public function getFilterUser(Request $request)
+    {
+        $getData = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('name', 'nik')->where('type_of_letter', $request->type_of_letter)->groupBy('nik')->get();
+        return array("data"=>$getData);
+    }
+
+    public function draftPR(){
+        return view('/admin/createPR')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('draft_pr'), 'sidebar_collapse' => 'true']);
+    }
+
+    public function detailDraftPR(){
+        return view('/admin/detailDraftPR')->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('draft_pr'), 'sidebar_collapse' => 'true'  ]);
+    }
+
+    public function getClient()
+    {
+        $client = new Google_Client();
+        $client->setApplicationName('Google Drive API PHP Quickstart');
+        $client->setAuthConfig(env('AUTH_CONFIG'));
+        $client->setAccessType('offline');
+        $client->setPrompt('select_account consent');
+        $client->setScopes("https://www.googleapis.com/auth/drive");
+        
+        $tokenPath = env('TOKEN_PATH');
+        if (file_exists($tokenPath)) {
+            $accessToken = json_decode(file_get_contents($tokenPath), true);
+            if($accessToken != null){
+                $client->setAccessToken($accessToken);
+            }
+        }
+
+        if ($client->isAccessTokenExpired()) {
+            if ($client->getRefreshToken()) {
+                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            } else {
+                $authUrl = $client->createAuthUrl();
+
+                if(isset($_GET['code'])){
+                    $authCode = trim($_GET['code']);
+                    $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
+                    $client->setAccessToken($accessToken);
+
+                    echo "Access Token = " . json_encode($client->getAccessToken());
+
+                    if (array_key_exists('error', $accessToken)) {
+                        throw new Exception(join(', ', $accessToken));
+                    }
+                } else {
+                    echo "Open the following link in your browser :<br>";
+                    echo "<a href='" . $authUrl . "'>google drive create token</a>";
+                }
+
+                
+            }
+            // if (!file_exists(dirname($tokenPath))) {
+            //     mkdir(dirname($tokenPath), 0700, true);
+            // }
+            file_put_contents($tokenPath, json_encode($client->getAccessToken()));
+        }
+        return $client;
+    }
+
+    public function getDraftPr(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+
+        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'PMO Manager' || $cek_role->name == 'SOL Manager') {
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->get();
+        } else if ($cek_role->name == 'Sales Manager'){
+            $listTerritory = User::where('id_territory',$territory)->pluck('nik');
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->get();
+        } else {
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->get();
+        }
+
+        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
+            $getData = PRDraft::where('type_of_letter', 'IPR')->get();
+        } else if ($cek_role->name == 'Sales Manager'){
+            $listTerritory = User::where('id_territory',$territory)->pluck('nik');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->get();
+        } else if ($cek_role->name == 'PMO Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+        } else if ($cek_role->name == 'MSM Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+        } else if ($cek_role->name == 'HR Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+        } else if ($cek_role->name == 'SOL Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+        } else if ($cek_role->name == 'SID Manager'){
+            $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+        } else {
+            $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->get();
+        }
+
+        return array("data"=>$getData->merge($getDataEPR));
+        
+    }
+
+    public function getPid(Request $request)
+    {
+        $data = collect(SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->join('users', 'users.nik', '=', 'sales_lead_register.nik')->select(DB::raw('`tb_id_project`.`id_project` AS `id`,`tb_id_project`.`id_project` AS `text`'))->where('sales_lead_register.lead_id', $request->lead_id)->get());
+
+        return array("data" => $data);
+    }
+
+    public function getQuote(Request $request)
+    {
+        $data = collect(Quote::join('sales_tender_process', 'sales_tender_process.quote_number2', '=', 'tb_quote.quote_number')->select(DB::raw('`tb_quote`.`quote_number` AS `text`, `tb_quote`.`quote_number` AS `id`'))->where('sales_tender_process.lead_id', $request->lead_id)->get());
+
+        return array("data" => $data);
+    }
+
+    public function getLeadRegister(Request $request)
+    {
+        $lead  =  collect(Sales::join('users', 'users.nik', '=', 'sales_lead_register.nik')
+                    ->join('tb_contact', 'sales_lead_register.id_customer', '=', 'tb_contact.id_customer')
+                    ->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,`sales_lead_register`.`lead_id` AS `text`'))
+                    ->where('id_company', '1')
+                    ->where('sales_lead_register.result','WIN')
+                    ->get());
+
+        return array("data" => $lead);
+    }
+
+    public function getProductPr(Request $request)
+    {
+        $getProductPr = PrProduct::join('tb_pr_product_draft', 'tb_pr_product.id', '=', 'tb_pr_product_draft.id_product')
+        				->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+        				->where('id_draft_pr', $request->no_pr)->get();
+
+        return array("data"=>$getProductPr);
+    }
+
+    public function storeSupplierPr(Request $request)
+    {
+        $tambah = new PRDraft();
+        $tambah->type_of_letter = $request['selectType'];
+        $tambah->to = $request['inputTo'];
+        $tambah->attention = $request['inputAttention'];
+        $tambah->title = $request['inputSubject'];
+        $tambah->email = $request['inputEmail'];
+        $tambah->phone = $request['inputPhone'];
+        $tambah->address = $request['inputAddress'];
+        $tambah->fax = $request['inputFax'];
+        $tambah->issuance = Auth::User()->nik;
+        $tambah->category = $request['selectCategory'];
+        if ($request['selectMethode'] == 'purchase_order') {
+        	$tambah->request_method = 'Purchase Order';
+        } elseif ($request['selectMethode'] == 'payment') {
+        	$tambah->request_method = 'Payment';
+        } elseif ($request['selectMethode'] = 'reimbursement') {
+        	$tambah->request_method = 'Reimbursement';
+        }
+        $tambah->status = 'SAVED';
+        $tambah->status_used = 'Selected';
+        $tambah->isCircular = 'False';
+        $tambah->save();
+
+        $no_akhir = $tambah->id;
+
+        $activity = new PRActivity();
+        $activity->id_draft_pr = $tambah->id;
+        $activity->date_time = Carbon::now()->toDateTimeString();
+        $activity->status = 'SAVED';
+        $activity->operator = Auth::User()->name;
+        $activity->activity = 'Create Supplier';
+        $activity->save();
+
+        return $no_akhir;
+    }
+
+    public function updateSupplierPr(Request $request)
+    {
+        $update = PRDraft::where('id', $request->no_pr)->first();
+        $update->type_of_letter = $request['selectType'];
+        $update->to = $request['inputTo'];
+        $update->attention = $request['inputAttention'];
+        $update->title = $request['inputSubject'];
+        $update->email = $request['inputEmail'];
+        $update->phone = $request['inputPhone'];
+        $update->address = $request['inputAddress'];
+        $update->fax = $request['inputFax'];
+        // $update->issuance = Auth::User()->nik;
+        $update->category = $request['selectCategory'];
+        if ($request['selectMethode'] == 'purchase_order') {
+            $update->request_method = 'Purchase Order';
+        } elseif ($request['selectMethode'] == 'payment') {
+            $update->request_method = 'Payment';
+        } elseif ($request['selectMethode'] = 'reimbursement') {
+            $update->request_method = 'Reimbursement';
+        }
+        $update->save();
+
+        $no_akhir = $update->id;
+
+        return $no_akhir;
+    }
+
+    public function storeProductPr(Request $request)
+    {
+        $tambah = new PrProduct();
+        $tambah->name_product = $request['inputNameProduct'];
+        $tambah->description = $request['inputDescProduct'];
+        $tambah->nominal_product = str_replace(',', '', $request['inputPriceProduct']);
+        $tambah->qty = $request['inputQtyProduct'];
+        $tambah->unit = $request['selectTypeProduct'];
+        $tambah->grand_total = str_replace(',', '', $request['inputTotalPrice']);
+        $tambah->save();
+
+        $tambah_product = new PRProductDraft();
+        $tambah_product->id_draft_pr = $request['no_pr'];
+        $tambah_product->id_product = $tambah->id;
+        $tambah_product->added = Carbon::now()->toDateTimeString();
+        $tambah_product->save();
+    }
+
+    public function updateProductPr(Request $request)
+    {
+        $update = PrProduct::where('id', $request->id_product)->first();
+        $update->name_product = $request['inputNameProduct'];
+        $update->description = $request['inputDescProduct'];
+        $update->nominal_product = str_replace(',', '', $request['inputPriceProduct']);
+        $update->qty = $request['inputQtyProduct'];
+        $update->unit = $request['selectTypeProduct'];
+        $update->grand_total = str_replace(',', '', $request['inputTotalPrice']);
+        $update->save();
+    }
+
+    public function storeDokumen(Request $request)
+    {
+        $get_pr = PRDraft::select('type_of_letter', 'parent_id_drive')->where('id', $request['no_pr'])->first();
+        $count = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')->where('tb_pr_document_draft.id_draft_pr')->count();
+        $directory = "draft_pr/";
+
+        // Eksternal Purchase Request
+        if ($get_pr->type_of_letter == 'EPR') {
+            if ($request->inputSBE != '-') {
+                $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                $file                   = $request->file('inputSBE');
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $request['no_pr'] . '_sbe.' . $lastElement;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
+                $tambah_sbe = new PrDokumen();
+                if ($check) {
+                    // $request->file('inputSBE')->move("draft_pr/", $nameDoc);
+                    $this->uploadToLocal($request->file('inputSBE'),$directory,$nameDoc);
+                    $tambah_sbe->dokumen_name             = "SBE";
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                if ($get_pr->parent_id_drive == null) {
+                    $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+                } else {
+                    $parentID = [];
+                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+
+                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    if (empty($data)) {
+                        $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                            ->where("tb_pr_document.dokumen_name","=","SBE")
+                            ->orderBy('tb_pr_document_draft.id','desc')
+                            ->first();
+
+                        if (!empty($data_dokumen)) {
+                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                $pdf_name = explode('/', $pdf_name)[1];
+                            } else {
+                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                            }
+                        }
+                    } else{
+                        if (strpos($data->title, 'Revisi')) {
+                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                        } else {
+                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        }
+                    }
+        
+                }
+
+                $tambah_sbe->dokumen_location         = "draft_pr/" . $pdf_name;
+                $tambah_sbe->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah_sbe->save();
+
+                $tambah_sbe_draft = new PRDocumentDraft();
+                $tambah_sbe_draft->id_draft_pr = $request['no_pr'];
+                $tambah_sbe_draft->id_document = $tambah_sbe->id;
+                $tambah_sbe_draft->added = Carbon::now()->toDateTimeString();
+                $tambah_sbe_draft->save();
+
+                $update_parent = PRDraft::where('id', $request['no_pr'])->first();
+                $update_parent->parent_id_drive = $parentID;
+                $update_parent->save();
+            }
+
+            $get_pr = PRDraft::select('type_of_letter', 'parent_id_drive')->where('id', $request['no_pr'])->first();
+
+            //tambah quote supplier
+            if ($request->inputQuoteSupplier != '-') {
+                $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                $file                   = $request->file('inputQuoteSupplier');
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $request['no_pr'] . '_quote_supplier.' . $lastElement;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
+                $tambah_quote = new PrDokumen();
+                if ($check) {
+                    // $request->file('inputQuoteSupplier')->move("draft_pr/", $nameDoc);
+                    $this->uploadToLocal($request->file('inputQuoteSupplier'),$directory,$nameDoc);
+                    $tambah_quote->dokumen_name             = "Quote Supplier";
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                $parentID = [];
+                $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                array_push($parentID,$parent_id);
+
+                $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                if (empty($data)) {
+                    $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                            ->where("tb_pr_document.dokumen_name","=","Quote Supplier")
+                            ->orderBy('tb_pr_document_draft.id','desc')
+                            ->first();
+
+                    if (!empty($data_dokumen)) {
+                        if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                            $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                            $pdf_name = explode('/', $pdf_name)[1];
+                        } else {
+                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        }
+                    }
+                } else{
+                    if (strpos($data->title, 'Revisi')) {
+                        $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                    } else {
+                        $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                    }
+                }
+
+                $tambah_quote->dokumen_location         = "draft_pr/" . $pdf_name;
+                $tambah_quote->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah_quote->save();
+
+                $tambah_quote_draft = new PRDocumentDraft();
+                $tambah_quote_draft->id_draft_pr = $request['no_pr'];
+                $tambah_quote_draft->id_document = $tambah_quote->id;
+                $tambah_quote_draft->added = Carbon::now()->toDateTimeString();
+                $tambah_quote_draft->save();
+            }
+
+
+            //tambah spk
+            if ($request->inputSPK != '-') {
+                $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                $file                   = $request->file('inputSPK');
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $request['no_pr'] . '_spk.' . $lastElement;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
+                $tambah_spk = new PrDokumen();
+                if ($check) {
+                    // $request->file('inputSPK')->move("draft_pr/", $nameDoc);
+                    $this->uploadToLocal($request->file('inputSPK'),$directory,$nameDoc);
+                    $tambah_spk->dokumen_name             = "SPK";
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                $parentID = [];
+                $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                array_push($parentID,$parent_id);
+
+                $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                if (empty($data)) {
+                    $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                            ->where("tb_pr_document.dokumen_name","=","SPK")
+                            ->orderBy('tb_pr_document_draft.id','desc')
+                            ->first();
+
+                    if (!empty($data_dokumen)) {
+                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                $pdf_name = explode('/', $pdf_name)[1];
+                            } else {
+                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                            }
+                        }
+                } else{
+                    
+                    if (strpos($data->title, 'Revisi')) {
+                        $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                    } else {
+                        $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                    }
+                }
+
+                $tambah_spk->dokumen_location         = "draft_pr/" . $pdf_name;
+                $tambah_spk->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah_spk->save();
+
+                $tambah_spk_draft = new PRDocumentDraft();
+                $tambah_spk_draft->id_draft_pr = $request['no_pr'];
+                $tambah_spk_draft->id_document = $tambah_spk->id;
+                $tambah_spk_draft->added = Carbon::now()->toDateTimeString();
+                $tambah_spk_draft->save();
+            } 
+
+            $update = PRDraft::where('id', $request['no_pr'])->first();
+            $update->lead_id = $request['selectLeadId'];
+            if ($request['selectPid'] == null) {
+	            $update->pid = $request['inputPid'];
+	        }else{
+	            $update->pid = $request['selectPid'];
+	        }
+
+            if ($request['selectQuoteNumber'] == null) {
+                $update->quote_number = '-';
+            } else {
+                $update->quote_number = $request['selectQuoteNumber'];
+            }     
+            $update->save();
+        }
+
+        //Internal Purchase Request
+        if ($get_pr->type_of_letter == 'IPR') {
+
+            if ($get_pr->parent_id_drive == null) {
+                $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+            } else {
+                $parentID = [];
+                $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                array_push($parentID,$parent_id);
+            }
+
+            $update_parent = PRDraft::where('id', $request['no_pr'])->first();
+            $update_parent->parent_id_drive = $parentID;
+            $update_parent->save();
+
+            if ($request->inputPenawaranHarga != '-') {
+                $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                $file                   = $request->file('inputPenawaranHarga');
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $request['no_pr'] . '_penawaran_harga.' . $lastElement;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
+                $tambah = new PrDokumen();
+                if ($check) {
+                    // $request->file('inputPenawaranHarga')->move("draft_pr/", $nameDoc);
+                  $this->uploadToLocal($request->file('inputPenawaranHarga'),$directory,$nameDoc);
+                    $tambah->dokumen_name             = "Penawaran Harga";
+
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                if (empty($data)) {
+                    $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                            ->where("tb_pr_document.dokumen_name","=","Penawaran Harga")
+                            ->orderBy('tb_pr_document_draft.id','desc')
+                            ->first();
+                    if (!empty($data_dokumen)) {
+                        if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                            $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                            $pdf_name = explode('/', $pdf_name)[1];
+                        } else {
+                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        }
+                    }
+                } else{
+                    
+                    if (strpos($data->title, 'Revisi')) {
+                        $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                    } else {
+                        $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                    }
+                }
+
+                $tambah->dokumen_location         = "draft_pr/".$pdf_name;
+                $tambah->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah->save();
+
+                $tambah_draft = new PRDocumentDraft();
+                $tambah_draft->id_draft_pr = $request['no_pr'];
+                $tambah_draft->id_document = $tambah->id;
+                $tambah_draft->added = Carbon::now()->toDateTimeString();
+                $tambah_draft->save();
+            }
+
+            $dataAll = json_decode($request->arrInputDocPendukung,true);
+            foreach ($dataAll as $key => $data) {
+
+                if ($request->inputDocPendukung != '-') {
+                    $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                    $file                   = $request->file('inputDocPendukung')[$key];
+                    $fileName               = $file->getClientOriginalName();
+                    $strfileName            = explode('.', $fileName);
+                    $lastElement            = end($strfileName);
+                    $nameDoc                = $data['no_pr'] . '_' . $data['nameDocPendukung'] . '.' . $lastElement;
+                    $extension              = $file->getClientOriginalExtension();
+                    $check                  = in_array($extension,$allowedfileExtension);
+                    $tambah_dok = new PrDokumen();
+                    if ($check) {
+                        $this->uploadToLocal($request->file('inputDocPendukung')[$key],$directory,$nameDoc);
+                        $tambah_dok->dokumen_name             = $data['nameDocPendukung'];
+
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    if (empty($data)) {
+                        $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                            ->where('dokumen_name', '=', $tambah_dok->dokumen_name )
+                            ->orderBy('tb_pr_document_draft.id','desc')
+                            ->first();
+
+                        if (!empty($data_dokumen)) {
+                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                $pdf_name = explode('/', $pdf_name)[1];
+                            } else {
+                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                            }
+                        }
+                    } else{
+                        if (strpos($data->title, 'Revisi')) {
+                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                        } else {
+                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        }
+                    }
+
+                    $tambah_dok->dokumen_location         = "draft_pr/".$pdf_name;
+                    $tambah_dok->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $tambah_dok->save();
+
+                    $tambah_dok_draft = new PRDocumentDraft();
+                    $tambah_dok_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_dok_draft->id_document = $tambah_dok->id;
+                    $tambah_dok_draft->added = Carbon::now()->toDateTimeString();
+                    $tambah_dok_draft->save();
+                }
+            }
+        }
+    }
+
+    public function uploadToLocal($file,$directory,$nameFile){
+        $file->move($directory,$nameFile);
+    }
+
+    public function googleDriveMakeFolder($nameFolder,$no_pr){
+        $client_folder = $this->getClient();
+        $service_folder = new Google_Service_Drive($client_folder);
+
+        $get_pr = PRDraft::select('type_of_letter', 'parent_id_drive')->where('id', $no_pr)->first();
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($nameFolder);
+        $file->setMimeType('application/vnd.google-apps.folder');
+        $file->setDriveId(env('GOOGLE_DRIVE_DRIVE_ID'));
+        if ($get_pr->type_of_letter == 'EPR') {
+            $file->setParents([env('GOOGLE_DRIVE_PARENT_ID_EKSTERNAL')]);
+        } else {
+            $file->setParents([env('GOOGLE_DRIVE_PARENT_ID_INTERNAL')]);
+        }
+
+        $result = $service_folder->files->create(
+            $file, 
+            array(
+                'mimeType' => 'application/octet-stream',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );
+
+        return array($result->id);
+    }
+
+    public function googleDriveUploadCustom($fileName,$locationFile,$parentID){
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($fileName);
+        $file->setParents($parentID);
+
+        $result = $service->files->create(
+            $file, 
+            array(
+                'data' => file_get_contents($locationFile, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'mimeType' => 'application/octet-stream',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );
+
+        $optParams = array(
+          'fields' => 'files(webViewLink)',
+          'q' => 'name="'.$fileName.'"',
+          'supportsAllDrives' => true,
+          'includeItemsFromAllDrives' => true
+        );
+
+        unlink($locationFile);
+        $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
+        return $link;
+    }
+
+    public function deleteDokumen(Request $request)
+    {
+        PRDocumentDraft::where('id_document',$request->id)->delete(); 
+        PrDokumen::where('id',$request->id)->delete();
+    }
+
+    public function storeLastStepDraftPr(Request $request)
+    {
+        if ($request->status_revision == 'revision') {
+            $update = PRDraft::where('id', $request->no_pr)->first();
+            $update->status = 'COMPARING';
+            $update->nominal = str_replace(',', '', $request['inputGrandTotalProduct']);
+            $update->save();
+
+            $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
+            if (strpos($update_pr->title, 'Revisi')) {
+                $update_pr->title = substr_replace($update_pr->title,"(Revisi " . ((int)substr($update_pr->title,strpos($update_pr->title,"Revisi ") + 7,1)+1) . ")",strpos($update_pr->title,"Revisi") - 1);
+            } else {
+                $update_pr->title = $update_pr->title . ' (Revisi 1)';
+            }
+            $update_pr->save();
+
+            $activity = new PRActivity();
+            $activity->id_draft_pr = $request['no_pr'];
+            $activity->date_time = Carbon::now()->toDateTimeString();
+            $activity->status = 'COMPARING';
+            $activity->operator = Auth::User()->name;
+            $activity->activity = 'Updating';
+            $activity->save();
+        } else {
+            $update = PRDraft::where('id', $request->no_pr)->first();
+            $update->nominal = str_replace(',', '', $request['inputGrandTotalProduct']);
+            if (strpos($update->title, 'Revisi')) {
+                $update->title = substr_replace($update->title,"(Revisi " . ((int)substr($update->title,strpos($update->title,"Revisi ") + 7,1)+1) . ")",strpos($update->title,"Revisi") - 1);
+            } else {
+                if(PRActivity::where('status',"REJECT")->where('id_draft_pr', $request->no_pr)->exists()){
+                    $update->title = $update->title . ' (Revisi 1)';
+                }
+            }
+            $update->status = 'DRAFT';
+            $update->save();
+
+            $activity = new PRActivity();
+            $activity->id_draft_pr = $request['no_pr'];
+            $activity->date_time = Carbon::now()->toDateTimeString();
+            $activity->status = 'DRAFT';
+            $activity->operator = Auth::User()->name;
+            $activity->activity = 'Add Draft PR';
+            $activity->save();
+        }
+
+        if ($request->status_revision == 'saved') {
+            $tambah = new PRDraftVerify();
+            $tambah->id_draft_pr = $request['no_pr'];
+            $tambah->verify_type_of_letter = 'False';
+            $tambah->verify_category = 'False';
+            $tambah->verify_to = 'False';
+            $tambah->verify_email = 'False';
+            $tambah->verify_phone = 'False';
+            $tambah->verify_attention = 'False';
+            $tambah->verify_title = 'False';
+            $tambah->verify_address = 'False';
+            $tambah->verify_request_method = 'False';
+            $tambah->verify_pid = 'False';
+            $tambah->verify_lead_id = 'False';
+            $tambah->verify_quote_number = 'False';
+            $tambah->verify_term_payment = 'False';
+            $tambah->save();
+        }
+
+        $detail = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('users.name as name_issuance', 'tb_pr_draft.to', 'tb_pr_draft.attention', 'tb_pr_draft.title', 'tb_pr_draft.nominal', 'tb_pr_draft.id', 'tb_pr_draft.issuance', 'status')->where('tb_pr_draft.id', $request->no_pr)->first();
+
+        $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver');
+
+        $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->first();
+
+        $email_cc = User::select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+                ->get()->pluck('email');
+
+        Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR Submitted and Ready to Verify', 'detail_approver', 'next_approver'));
+    }
+
+    public function sendMailDraft(Request $request)
+    {
+        $activity = PRActivity::select('activity','operator','id_draft_pr')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->where('status', 'UNAPPROVED')->orderBy('date_time', 'desc')->take(1);
+
+        $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
+                ->joinSub($activity,'temp_tb_pr_activity',function($join){
+                    $join->on("temp_tb_pr_activity.id_draft_pr","tb_pr_draft.id");
+                })
+                ->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount', 'tb_pr_draft.status', 'tb_pr.issuance', 'activity', 'no_pr')
+                ->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        return $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+
+        $email_cc = User::select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+                ->get()->pluck('email');
+
+        Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Reject By ' . Auth::User()->name,'detail_approver', $next_approver));
+    }
+
+    public function storeTermPayment(Request $request)
+    {
+        $update = PRDraft::where('id', $request->no_pr)->first();
+        $update->term_payment = $request['textAreaTOP'];
+        $update->save();
+    }
+
+    public function verifyDraft(Request $request)
+    {	
+        if (isset($request['valuesChecked'])) {
+            foreach ($request['valuesChecked'] as $key => $value) {
+                if ($value == 'type_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_type_of_letter = 'True';
+                    $update->update();
+                } 
+
+                if ($value == 'to_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_to = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'email_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_email = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'category_Cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_category = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'phone_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_phone = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'attention_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_attention = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'subject_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_title = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'address_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_address = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'methode_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_request_method = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'lead_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_lead_id = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'pid_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_pid = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'quoNum_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_quote_number = 'True';
+                    $update->update();
+                }
+
+                if ($value == 'textarea_top_cek') {
+                    $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
+                    $update->verify_term_payment = 'True';
+                    $update->update();
+                }
+            }
+        }
+
+    	$activity = new PRActivity();
+        $activity->id_draft_pr = $request['no_pr'];
+        $activity->date_time = Carbon::now()->toDateTimeString();
+        if ($request['radioConfirm']  == 'reject') {
+        	$activity->status = 'REJECT';
+            $activity->activity = $request['rejectReason'];
+        } else {
+        	$activity->status = 'VERIFIED';
+            $activity->activity = 'Verify Draft PR';
+        } 
+        $activity->operator = Auth::User()->name;
+        $activity->save();
+
+    	if ($request['radioConfirm']  == 'reject') {
+    		$update = PRDraft::where('id', $request['no_pr'])->first();
+	    	$update->status = 'REJECT';
+	    	$update->save();
+
+            $activity = PRActivity::select('activity','operator','id_draft_pr')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->where('status', 'REJECT')->orderBy('date_time', 'desc')->take(1);
+
+            $detail = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
+                    ->joinSub($activity,'temp_tb_pr_activity',function($join){
+                        $join->on("temp_tb_pr_activity.id_draft_pr","tb_pr_draft.id");
+                    })
+                    ->select('users.name as name_issuance', 'tb_pr_draft.to', 'tb_pr_draft.attention', 'tb_pr_draft.title', 'tb_pr_draft.nominal', 'tb_pr_draft.id', 'status', 'issuance', 'activity')
+                    ->where('tb_pr_draft.id', $request->no_pr)->first();
+
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
+
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                    ->get()->pluck('email');
+
+            Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR '.$detail->id.' Rejected', 'detail_approver', 'next_approver'));
+
+    	} else {
+            // return 'verify';
+    		$update = PRDraft::where('id', $request['no_pr'])->first();
+	    	$update->status = 'VERIFIED';
+	    	$update->save();
+
+            //Store Nomor PR
+            $get_draft_pr = PRDraft::where('id', $request['no_pr'])->first();
+            $tahun = date("Y");
+            $cek = DB::table('tb_pr')
+                    ->where('date','like',$tahun."%")
+                    ->count('no');
+
+            $type = $get_draft_pr->type_of_letter;
+
+            $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group')->where('tb_pr_draft.id', $request['no_pr'])->first();
+
+            if ($cek_group->name == 'PMO') {
+                $posti = 'PMO';
+            } elseif ($cek_group->name == 'MSM') {
+                $posti = 'MSM';
+            } elseif ($cek_group->group == 'hr') {
+                $posti = 'HRD';
+            } elseif ($cek_group->group == 'sales') {
+                $posti = 'SAL';
+            } else {
+                $posti = 'HRD';
+            }
+            
+            $edate = date("Y-m-d");
+
+            $month_pr = substr($edate,5,2);
+            $year_pr = substr($edate,0,4);
+
+            $array_bln = array('01' => "I",
+                        '02' => "II",
+                        '03' => "III",
+                        '04' => "IV",
+                        '05' => "V",
+                        '06' => "VI",
+                        '07' => "VII",
+                        '08' => "VIII",
+                        '09' => "IX",
+                        '10' => "X",
+                        '11' => "XI",
+                        '12' => "XII");
+            $bln = $array_bln[$month_pr];
+
+            $getnumber = PR::orderBy('no', 'desc')->where('date','like',$tahun."%")->count();
+
+            if($getnumber == NULL){
+                $getlastnumber = 1;
+                $lastnumber = $getlastnumber;
+            } else{
+                $lastnumber = $getnumber+1;
+            }
+
+            if($lastnumber < 10){
+               $akhirnomor = '000' . $lastnumber;
+            }elseif($lastnumber > 9 && $lastnumber < 100){
+               $akhirnomor = '00' . $lastnumber;
+            }elseif($lastnumber >= 100 && $lastnumber < 1000){
+               $akhirnomor = '0' . $lastnumber;
+            } elseif ($lastnumber >= 1000) {
+                $akhirnomor = $lastnumber;
+            }
+
+            $no = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
+            $nom = PR::select('no')->orderBy('no','desc')->first();
+
+            $tambah = new PR();
+            $tambah->no = $nom->no+1;
+            $tambah->no_pr = $no;
+            $tambah->position = $posti;
+            $tambah->type_of_letter = $type;
+            $tambah->month = $bln;
+            $tambah->date = $edate;
+            $tambah->to = $get_draft_pr->to;
+            $tambah->attention = $get_draft_pr->attention;
+            $tambah->title = $get_draft_pr->title;
+            $tambah->division = 'PMO';
+            $tambah->issuance = $get_draft_pr->issuance;
+            $tambah->amount = $get_draft_pr->nominal;
+            $tambah->project_id = $get_draft_pr->pid;
+            $tambah->category = $get_draft_pr->category;
+            $tambah->result = 'T';
+            $tambah->status = 'On Progress';
+            $tambah->quote_number = $get_draft_pr->quote_number;
+            $tambah->lead_id = $get_draft_pr->lead_id;
+            $tambah->request_method = $get_draft_pr->request_method;
+            $tambah->term_payment = $get_draft_pr->term_payment;
+            $tambah->email = $get_draft_pr->email;
+            $tambah->phone = $get_draft_pr->phone;
+            $tambah->address = $get_draft_pr->address;
+            $tambah->fax = $get_draft_pr->fax;
+            $tambah->id_draft_pr = $request['no_pr'];
+            $tambah->status_draft_pr = 'draft';
+            $tambah->save(); 
+
+            $detail = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('users.name as name_issuance', 'tb_pr_draft.to', 'tb_pr_draft.attention', 'tb_pr_draft.title', 'tb_pr_draft.nominal', 'tb_pr_draft.id', 'status', 'issuance')->where('tb_pr_draft.id', $request->no_pr)->first();
+
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
+
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                    ->get()->pluck('email');
+
+            Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR ' .$detail->id. ' Verified and Ready to Get Compare and Circulate', 'detail_approver', 'next_approver'));
+
+            $approver = '';
+
+            $this->uploadPdfMerge($request->no_pr,$approver);
+            // $this->mergePdf($request->no_pr);
+    	}
+    }
+
+    public function getPreviewPr(Request $request)
+    {
+        $data = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
+                // ->leftJoin('tb_pr_draft_verify', 'tb_pr_draft_verify.id_draft_pr', '=', 'tb_pr_draft.id')
+                ->join('tb_pr_activity', 'tb_pr_activity.id_draft_pr', '=', 'tb_pr_draft.id')
+                ->select('tb_pr_draft.to','tb_pr_draft.email', 'tb_pr_draft.phone', 'attention', 'title', 'tb_pr_draft.address', 'request_method', 'tb_pr_draft.created_at', 'lead_id', 'quote_number', 'term_payment','type_of_letter', 'users.name','tb_pr_draft.id', DB::raw("(CASE WHEN (fax is null) THEN '-' ELSE fax END) as fax"), 'pid', 'category','status_used')
+                ->where('tb_pr_draft.id', $request->no_pr)
+                ->first();
+
+        $verify = PRDraftVerify::select('verify_type_of_letter', 'verify_category', 'verify_to', 'verify_email', 'verify_phone', 'verify_attention', 'verify_title', 'verify_address', 'verify_request_method', 'verify_pid', 'verify_lead_id', 'verify_quote_number', 'verify_term_payment')->where('id_draft_pr', $request->no_pr)->orderBy('id', 'desc')->first();
+
+        $activity = DB::table('tb_pr_activity')
+            ->select('activity as reason')
+            ->where('tb_pr_activity.id_draft_pr', $request->no_pr)
+            ->where(function($query){
+                $query->where('tb_pr_activity.status', 'REJECT')
+                    ->orWhere('tb_pr_activity.status', 'UNAPPROVED');
+            })
+            ->orderBy('date_time', 'desc')->take(1)->first();
+
+        $activity_unapproved = DB::table('tb_pr_activity')->select('activity as reason')->where('tb_pr_activity.status', 'UNAPPROVED')->where('id_draft_pr', $request->no_pr)->orderBy('date_time', 'desc')->take(1)->first();
+
+        // $activity_all = array_merge($activity,$ activity_unapproved);
+
+        $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+        		->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total', 'tb_pr_product.id as id_product')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+
+        $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+        		->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+        		->select('dokumen_name', 'dokumen_location', 'tb_pr_document.id as id_dokumen', 'tb_pr_document_draft.id as id_dokumen_draft', 'link_drive')->where('tb_pr_document_draft.id_draft_pr', $request->no_pr);
+
+        if ($data->type_of_letter == 'IPR') {
+            $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+            $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
+        } else {
+            $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+            $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderByRaw('FIELD(dokumen_name, "SPK", "SBE", "Quote Supplier")')->get();
+        }
+
+        return collect([
+            'pr' => $data,
+            'product' => $product,
+            'dokumen' => $getAll,
+            'activity' => $activity,
+            'verify' => $verify,
+            // 'activity' =>$activity_unapproved
+        ]);
+    }
+
+    public function getDetailPr(Request $request)
+    {
+        $getActivityComparing = PRActivity::select('activity', 'id_draft_pr')->where('id_draft_pr', $request->no_pr)->where('activity', 'Updating')->orderBy('date_time', 'desc')->take(1);
+
+        // return $getActivityComparing->first();
+
+        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')
+            ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')
+            ->leftJoinSub($getActivityComparing,'temp_tb_pr_activity',function($join){
+                $join->on("temp_tb_pr_activity.id_draft_pr","tb_pr_draft.id");
+            })
+            ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', 'tb_pr.quote_number', 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr_draft.status', 'activity', 'tb_pr.no_pr')
+            ->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+
+        $activity = DB::table('tb_pr_activity')
+            ->select('activity as reason')
+            ->where('tb_pr_activity.id_draft_pr', $request->no_pr)
+            ->where(function($query){
+                $query->where('tb_pr_activity.status', 'REJECT')
+                    ->orWhere('tb_pr_activity.status', 'UNAPPROVED');
+            })
+            ->orderBy('date_time', 'desc')->take(1)->first();
+
+        if ($data->status_draft_pr == 'draft') {
+        	$product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+        		->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+
+            $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive', 'tb_pr_document.id as id_dokumen')
+                ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr);
+                // ->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+
+            if ($data->type_of_letter == 'IPR') {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
+            } else {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+            }
+        } else if ($data->status_draft_pr == 'pembanding'){
+        	$product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
+        		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->get();
+
+            $dokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', 'tb_pr_document_compare.id_compare_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive', 'tb_pr_document.id as id_dokumen')
+                ->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected');
+                // ->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+
+            if ($data->type_of_letter == 'IPR') {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
+            } else {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+            }
+        }
+        $show_ttd = 'abc';
+
+        $cek_type = PR::select('type_of_letter', 'issuance')->where('id_draft_pr', $request['no_pr'])->first();
+
+        $territory = DB::table('users')->select('id_territory')->where('nik', $cek_type->issuance)->first()->id_territory;
+
+        $cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
+
+        $unapproved = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $request->no_pr)
+            ->where('tb_pr_activity.status', "UNAPPROVED")
+            ->orderBy('tb_pr_activity.id',"DESC")
+            ->get();
+
+        $tb_pr_activity = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $request->no_pr);
+
+        if(count($unapproved) != 0){
+            $tb_pr_activity->where('tb_pr_activity.id','>',$unapproved->first()->id);
+        }
+            
+        $tb_pr_activity->where(function($query){
+            $query->where('tb_pr_activity.status', 'CIRCULAR')
+                ->orWhere('tb_pr_activity.status', 'FINALIZED');
+        });
+
+        $show_ttd = User::leftJoinSub($tb_pr_activity,'temp_tb_pr_activity',function($join){
+                $join->on("temp_tb_pr_activity.operator","=","users.name");
+            })
+            ->select('ttd', 'users.name')->where('activity', 'Approval')->orderBy('date_time','asc')->get();
+
+        if ($data->status == 'CIRCULAR') {
+            $get_ttd = $this->getSignStatusPR($request->no_pr, 'detail');
+        } else {
+            $get_ttd = $this->getSignStatusPR($request->no_pr, 'circular');
+        }
+
+        return collect([
+            'pr' => $data,
+            'product' => $product,
+            'dokumen' => $getAll,
+            'show_ttd' => $show_ttd,
+            'getSign' => $get_ttd,
+            'activity' => $activity
+        ]);
+    }
+
+    public function storePembandingSupplier(Request $request)
+    {
+    	$tambah = new PRCompare();
+    	$tambah->id_draft_pr = $request['no_pr'];
+        $tambah->to = $request['inputTo'];
+        $tambah->attention = $request['inputAttention'];
+        $tambah->title = $request['inputSubject'];
+        $tambah->email = $request['inputEmail'];
+        $tambah->phone = $request['inputPhone'];
+        $tambah->address = $request['inputAddress'];
+        $tambah->fax = $request['inputFax'];
+        $tambah->note_pembanding = $request['note_pembanding'];
+        $tambah->status = 'Un-Select';
+        $tambah->save();
+
+        $update = PRDraft::where('id', $request['no_pr'])->first();
+        $update->status = 'COMPARING';
+        $update->save();
+
+        $count_comparison = DB::table('tb_pr_activity')->where('activity', 'LIKE', 'Add Comparison%')->where('id_draft_pr', $request->no_pr)->count()+1;
+
+        $activity = new PRActivity();
+        $activity->id_draft_pr = $request['no_pr'];
+        $activity->date_time = Carbon::now()->toDateTimeString();
+        $activity->status = 'COMPARING';
+        $activity->operator = Auth::User()->name;
+        $activity->activity = 'Add Comparison ' . $count_comparison;
+        $activity->save();
+
+        $no_akhir = $tambah->id;
+        return $no_akhir;
+    }
+
+    public function storePembandingProduct(Request $request)
+    {
+    	// return $request['no_pr'];
+    	$tambah = new PrProduct();
+        $tambah->name_product = $request['inputNameProduct'];
+        $tambah->description = $request['inputDescProduct'];
+        $tambah->nominal_product = str_replace(',', '', $request['inputPriceProduct']);
+        $tambah->qty = $request['inputQtyProduct'];
+        $tambah->unit = $request['selectTypeProduct'];
+        $tambah->grand_total = str_replace(',', '', $request['inputTotalPrice']);
+        $tambah->save();
+
+        $tambah_product = new PRProductCompare();
+        $tambah_product->id_compare_pr = $request['no_pr'];
+        $tambah_product->id_product = $tambah->id;
+        $tambah_product->added = Carbon::now()->toDateTimeString();
+        $tambah_product->save();
+    }
+
+    public function storePembandingDokumen(Request $request)
+    {
+        $get_pr = PRDraft::join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('type_of_letter', 'id_draft_pr', 'tb_pr_compare.to as to_compare', 'parent_id_drive')->where('tb_pr_compare.id', $request['no_pr'])->first();
+        $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+        $directory = "draft_pr/";
+
+        // Eksternal Purchase Request
+        if ($get_pr->type_of_letter == 'EPR') {
+            
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+            $file                   = $request->file('inputQuoteSupplier');
+            $fileName               = $file->getClientOriginalName();
+            $strfileName            = explode('.', $fileName);
+            $lastElement            = end($strfileName);
+            $nameDoc                = $request['no_pr'] . '_quote_supplier_pembanding_' . $get_pr->to_compare . '.' . $lastElement;
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+            $tambah_quote = new PrDokumen();
+            if ($check) {
+                $this->uploadToLocal($request->file('inputQuoteSupplier'),$directory,$nameDoc);
+                $tambah_quote->dokumen_name             = "Quote Supplier";
+            } else {
+                return redirect()->back()->with('alert','Oops! Only pdf');
+            }
+
+            if(isset($fileName)){
+                $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                $pdf_name = $nameDoc;
+            } else {
+                $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                $pdf_name = 'pdf_lampiran';
+            }
+
+            // return $pdf_url;
+
+            $parentID = [];
+            array_push($parentID,$parent_id);
+
+            $tambah_quote->dokumen_location     = "draft_pr/" . $nameDoc;
+            $tambah_quote->link_drive           = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+            $tambah_quote->save();
+
+            $tambah_quote_draft = new PRDocumentCompare();
+            $tambah_quote_draft->id_compare_pr = $request['no_pr'];
+            $tambah_quote_draft->id_document = $tambah_quote->id;
+            $tambah_quote_draft->added = Carbon::now()->toDateTimeString();
+            $tambah_quote_draft->save();
+        }
+
+
+        //Internal Purchase Request
+        if ($get_pr->type_of_letter == 'IPR') {
+            $tambah = new PrDokumen();
+
+            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+            $file                   = $request->file('inputPenawaranHarga');
+            $fileName               = $file->getClientOriginalName();
+            $strfileName            = explode('.', $fileName);
+            $lastElement            = end($strfileName);
+            $nameDoc                = $request['no_pr'] . '_penawaran_harga_pembanding_' . $get_pr->to_compare . '.' . $lastElement;
+            $extension              = $file->getClientOriginalExtension();
+            $check                  = in_array($extension,$allowedfileExtension);
+
+            if ($check) {
+                $this->uploadToLocal($request->file('inputPenawaranHarga'),$directory,$nameDoc);
+                $tambah->dokumen_location         = "draft_pr/" . $nameDoc;
+                $tambah->dokumen_name             = "Penawaran Harga";
+            } else {
+                return redirect()->back()->with('alert','Oops! Only pdf');
+            }
+            $tambah->save();
+
+            $tambah_draft = new PRDocumentCompare();
+            $tambah_draft->id_compare_pr = $request['no_pr'];
+            $tambah_draft->id_document = $tambah->id;
+            $tambah_draft->added = Carbon::now()->toDateTimeString();
+            $tambah_draft->save();
+
+            if(isset($fileName)){
+                $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                $pdf_name = $nameDoc;
+            } else {
+                $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                $pdf_name = 'pdf_lampiran';
+            }
+
+            $parentID = [];
+            array_push($parentID,$parent_id);
+
+            $update = PrDokumen::where('id', $tambah->id)->first();
+            $update->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+            $update->save();
+
+
+
+            $dataAll = json_decode($request->arrInputDocPendukung,true);
+            foreach ($dataAll as $key => $data) {
+                $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                $file                   = $request->file('inputDocPendukung')[$key];
+                $fileName               = $file->getClientOriginalName();
+                $strfileName            = explode('.', $fileName);
+                $lastElement            = end($strfileName);
+                $nameDoc                = $data['no_pr'] . '_' . $data['nameDocPendukung'] . '_pembanding_' . $get_pr->to_compare . '.' . $lastElement;
+                $extension              = $file->getClientOriginalExtension();
+                $check                  = in_array($extension,$allowedfileExtension);
+                $tambah_dok = new PrDokumen();
+                if ($check) {
+                    $this->uploadToLocal($request->file('inputDocPendukung')[$key],$directory,$nameDoc);
+                    $tambah_dok->dokumen_name             = $data['nameDocPendukung'];
+                } else {
+                    return redirect()->back()->with('alert','Oops! Only pdf');
+                }
+
+                if(isset($fileName)){
+                    $pdf_url = urldecode('https://dev-app.sifoma.id/'. $tambah_dok->dokumen_location);
+                    $pdf_name = $nameDoc;
+                } else {
+                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                    $pdf_name = 'pdf_lampiran';
+                }
+
+                $tambah_dok->dokumen_location   = "draft_pr/" . $nameDoc;
+                $tambah_dok->link_drive         = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                $tambah_dok->save();
+
+                $tambah_dok_draft = new PRDocumentCompare();
+                $tambah_dok_draft->id_compare_pr = $data['no_pr'];
+                $tambah_dok_draft->id_document = $tambah_dok->id;
+                $tambah_dok_draft->added = Carbon::now()->toDateTimeString();
+                $tambah_dok_draft->save();
+            }
+        }
+    }
+
+    public function storePembandingTermPayment(Request $request)
+    {
+        $update = PRCompare::where('id', $request->no_pr)->first();
+        $update->term_payment = $request['textAreaTOP'];
+        $update->save();
+    }
+
+    public function storeLastStepPembanding(Request $request)
+    {
+        $update = PRCompare::where('id', $request->no_pr)->first();
+        $update->nominal = str_replace(',', '', $request['inputGrandTotalProduct']);
+        $update->save();
+    }
+
+    public function getPembanding(Request $request)
+    {
+    	$getPembanding = PRDraft::where('id', $request->no_pr)->get();
+    	return $getPembanding;
+    }
+
+    public function getTypePr(Request $request)
+    {
+    	// $data = DB::table('tb_pr_draft')->select('type_of_letter')->where('id', $request->no_pr)->first()->type_of_letter;
+        $data = DB::table('tb_pr_draft')->select('type_of_letter')->where('id', $request->no_pr)->get();
+    	return $data;
+    }
+
+    public function getProductPembanding(Request $request)
+    {
+        $getProductPr = PrProduct::join('tb_pr_product_compare', 'tb_pr_product.id', '=', 'tb_pr_product_compare.id_product')
+        				->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
+        				->select('tb_pr_product.name_product', 'tb_pr_product.description', 'tb_pr_product.qty', 'tb_pr_product.unit', 'tb_pr_product.nominal_product', 'tb_pr_product.grand_total')
+        				->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->get();
+
+        return array("data"=>$getProductPr);
+    }
+
+    public function getPreviewPembanding(Request $request)
+    {
+        $data = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', 'lead_id', 'quote_number', 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category')->where('tb_pr_compare.id', $request->no_pr)->first();
+
+        $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
+        		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total')->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->get();
+
+        $dokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
+        		->join('tb_pr_compare', 'tb_pr_compare.id', 'tb_pr_document_compare.id_compare_pr')
+        		->select('dokumen_name', 'dokumen_location', 'link_drive')->where('tb_pr_document_compare.id_compare_pr', $request->no_pr)
+        		->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+
+        return collect([
+            'pr' => $data,
+            'product' => $product,
+            'dokumen' => $dokumen
+        ]);
+    }
+
+    public function choosedComparison(Request $request)
+    {
+    	$select_nopr = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')
+                        // ->join('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id')
+    					->select('tb_pr_compare.id as id_compare', 'tb_pr_compare.to as to_compare', 'tb_pr_compare.email as email_compare', 'tb_pr_compare.phone as phone_compare', 'tb_pr_compare.fax as fax_compare', 'tb_pr_compare.attention as attention_compare', 'tb_pr_compare.title as title_compare', 'tb_pr_compare.address as address_compare', 'tb_pr_compare.term_payment as term_payment_compare', 'tb_pr_compare.nominal as nominal_compare', 'tb_pr_compare.note_pembanding')
+    					->where('tb_pr_compare.id', $request->no_pr)
+    					->first();
+        // return $select_nopr->id;
+
+        $select_draft = DB::table('tb_pr_draft')->select('tb_pr_draft.to as to_draft', 'tb_pr_draft.email as email_draft', 'tb_pr_draft.phone as phone_draft', 'tb_pr_draft.fax as fax_draft', 'tb_pr_draft.attention as attention_draft', 'tb_pr_draft.title as title_draft', 'tb_pr_draft.address as address_draft', 'tb_pr_draft.term_payment as term_payment_draft', 'tb_pr_draft.id as id_draft_pr', 'tb_pr_draft.nominal as nominal_draft', 'status_used')->where('id', $request->id_draft_pr)->first();
+
+        // return $select_nopr->id_draft_pr;
+
+    	if ($request->status == 'pembanding'){
+            // return 'pembanding';
+    		$get_id_compare = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')->select('tb_pr_compare.id')->where('tb_pr_compare.id_draft_pr', $request->id_draft_pr)->get();
+
+    		foreach ($get_id_compare as $data) {
+    			$update = PRCompare::where('id', $data->id)->first();
+		    	$update->status = 'Un-Select';
+		    	$update->save();
+    		}
+	    	  
+    		$update = PRCompare::where('id', $request->no_pr)->first();
+	    	$update->status = 'Selected';
+	    	$update->save();
+
+	    	$update_pr = PR::where('id_draft_pr', $request->id_draft_pr)->first();
+	    	$update_pr->to = $select_nopr->to_compare;
+	    	$update_pr->attention = $select_nopr->attention_compare;
+            if (strpos($update_pr->title, 'Revisi')) {
+                $update_pr->title = substr_replace($update_pr->title,"(Revisi " . ((int)substr($update_pr->title,strpos($update_pr->title,"Revisi ") + 7,1)+1) . ")",strpos($update_pr->title,"Revisi") - 1);
+            } else {
+                $update_pr->title = $update_pr->title . ' (Revisi 1)';
+            }
+	    	$update_pr->phone = $select_nopr->phone_compare;
+	    	$update_pr->email = $select_nopr->email_compare;
+	    	$update_pr->address = $select_nopr->address_compare;
+	    	$update_pr->fax = $select_nopr->fax_compare;
+	    	$update_pr->term_payment = $select_nopr->term_payment_compare;
+	    	$update_pr->amount = $select_nopr->nominal_compare;
+	    	$update_pr->status_draft_pr = 'pembanding';
+	    	$update_pr->save();
+
+            $update_draft = PRDraft::where('id', $request->id_draft_pr)->first();
+            $update_draft->status_used = 'Un-Select';
+            $update_draft->save();
+
+            $tambah = new PRActivity();
+            $tambah->operator = Auth::User()->name;
+            $tambah->id_draft_pr = $request->id_draft_pr;
+            $tambah->status = 'COMPARING';
+            $tambah->date_time = Carbon::now()->toDateTimeString();
+            $tambah->activity = 'Comparison choosed with ' . $select_nopr->note_pembanding;
+            $tambah->save();
+
+            // return 'pr activity';
+
+    	} else if($request->status == 'draft'){
+    		$update_pr = PR::where('id_draft_pr', $request->id_draft_pr)->first();
+	    	$update_pr->to = $select_draft->to_draft;
+	    	$update_pr->attention = $select_draft->attention_draft;
+	    	$update_pr->title = $select_draft->title_draft;
+	    	$update_pr->phone = $select_draft->phone_draft;
+	    	$update_pr->email = $select_draft->email_draft;
+	    	$update_pr->address = $select_draft->address_draft;
+	    	$update_pr->fax = $select_draft->fax_draft;
+	    	$update_pr->term_payment = $select_draft->term_payment_draft;
+	    	$update_pr->status_draft_pr = 'draft';
+	    	$update_pr->amount = $select_draft->nominal_draft;
+	    	$update_pr->save();
+
+            // return $request->id_draft_pr;
+            $update_draft = PRDraft::where('id', $request->id_draft_pr)->first();
+            $update_draft->status_used = 'Selected';
+            $update_draft->save();
+    	}
+    	
+    }
+
+    public function getActivity(Request $request)
+    {
+    	$getActivity = PRActivity::select('activity', 'operator', 'status', 'date_time')
+    			->selectRaw("SUBSTR(`tb_pr_activity`.`date_time`,1,10) AS `date_format`")->where('id_draft_pr', $request->no_pr)->orderBy('date_time', 'desc')->get();
+
+        $lastActivity = PRActivity::join('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_activity.id_draft_pr')->select('tb_pr_activity.status')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->orderBy('date_time', 'desc')->take(1)->get();
+
+        $isCircular = DB::table('tb_pr_draft')->select('isCircular')->where('id', $request->no_pr)->first();
+
+        // return collect([
+        //     'activity_group' => $getActivity->groupBy('date_format'),
+        //     'last_activity' =>$lastActivity
+        // ]);
+
+        return [$getActivity->groupBy('date_format'), $lastActivity, $isCircular];
+
+    	// return $getActivity->groupBy('date_format');
+    }
+
+    public function getCountComparing(Request $request)
+    {
+    	$cek = PRDraft::join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')
+    			->where('tb_pr_draft.id', $request->no_pr)
+    			->count();
+
+    	return $cek;
+    }
+
+    public function cekTTD(Request $request)
+    {
+    	return $cek = User::select('ttd')->where('nik', Auth::User()->nik)->first();
+    }
+
+    public function uploadTTD(Request $request)
+    {
+    	$update                 = User::where('nik', Auth::User()->nik)->first();
+        $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+        $file                   = $request->file('inputTTD');
+        $fileName               = $file->getClientOriginalName();
+        $strfileName            = explode('.', $fileName);
+        $lastElement            = end($strfileName);
+        $nameDoc                = 'image/tanda_tangan/Tanda_tangan_' . Auth::User()->nik . '.' . $lastElement;
+        $extension              = $file->getClientOriginalExtension();
+        $check                  = in_array($extension,$allowedfileExtension);
+
+        if ($check) {
+            $request->file('inputTTD')->move("image/tanda_tangan/", $nameDoc);
+            $update->ttd        = $nameDoc;
+        } else {
+            return redirect()->back()->with('alert','Oops! Only jpg, png');
+        }
+        $update->save();
+
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name')->where('user_id', $nik)->first(); 
+
+        $tambah = new PRActivity();
+        $tambah->operator = Auth::User()->name;
+        $tambah->id_draft_pr = $request['no_pr'];
+        if ($cek_role->name == 'Operations Director') {
+            $tambah->status = 'FINALIZED';
+        } else {
+            $tambah->status = 'CIRCULAR';
+        }
+        $tambah->date_time = Carbon::now()->toDateTimeString();
+        $tambah->activity = 'Approval';
+        $tambah->save();
+
+        if ($tambah->status == 'FINALIZED') {
+            $update = PRDraft::where('id', $request->no_pr)->first();
+            $update->status = 'FINALIZED';
+            $update->save();
+
+            $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+            // $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr))->first();
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+            $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
+
+            $email_cc = User::select('email')
+                    ->where('nik',$detail->issuance)
+                    ->get()->pluck('email');
+
+            Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name . ' And Ready To Finalized', 'detail_approver', $next_approver));
+
+        } else {
+            $update = PRDraft::where('id', $request->no_pr)->first();
+            $update->status = 'CIRCULAR';
+            $update->save();
+
+            $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+            $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr, 'detail'))->first();
+            $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+            $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
+
+            $email_cc = User::select('email')
+                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+                    ->get()->pluck('email');
+
+            Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name, $detail_approver, $next_approver));
+        }
+        $approver = 'Signed by '.Auth::User()->name;
+
+        $this->uploadPdfMerge($request->no_pr, $approver);
+        // $this->mergePdf($request->no_pr);
+    }
+
+    public function showTTD(Request $request)
+    {
+    	$cek_type = PR::select('type_of_letter', 'issuance')->where('id_draft_pr', $request['no_pr'])->first();
+
+    	$territory = DB::table('users')->select('id_territory')->where('nik', $cek_type->issuance)->first()->id_territory;
+        // return $territory;
+
+    	$cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
+
+    	if ($cek_type->type_of_letter == 'EPR') {
+    		$show = User::select('ttd', 'name')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+
+    		return $show;
+
+    	} else {
+    		if ($cek_group->name == 'pmo') {
+
+	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`division` = 'BCD')")->first();
+
+    			return $show;
+
+	        } elseif ($cek_group->name == 'msm') {
+	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+    			return $show;
+
+	        } elseif ($cek_group->name == 'bcd') {
+	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'BCD' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+    			return $show;
+
+	        } elseif ($cek_group->name == 'DPG') {
+	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+    			return $show;
+
+	        } elseif ($cek_group->name == 'presales') {
+	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+    			return $show;
+
+	        } elseif ($cek_group->group == 'hr') {
+	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'HR MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+    			return $show;
+
+	        } elseif ($cek_group->group == 'sales') {
+	        	$show = User::select('ttd', 'name')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+    			return $show;
+	        }
+    	}
+    }
+
+    public function circulerPrTanpaPembanding(Request $request)
+    {
+    	$tambah = new PRActivity();
+    	$tambah->operator = Auth::User()->name;
+    	$tambah->id_draft_pr = $request['no_pr'];
+    	$tambah->status = 'CIRCULAR';
+        $tambah->date_time = Carbon::now()->toDateTimeString();
+    	$tambah->activity = 'The comparison process is skipped for the following reasons: ' . $request['reason'];
+    	$tambah->save();
+
+        $update = PRDraft::where('id', $request->no_pr)->first();
+        $update->status = 'CIRCULAR';
+        $update->isCircular = 'True';
+        $update->save();     
+
+        $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+        $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
+        $kirim_user = $detail_approver->pluck('email');
+
+        $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement')")
+                ->get()->pluck('email');
+
+        Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
+    }
+
+    public function circulerPr(Request $request)
+    {
+        $tambah = new PRActivity();
+        $tambah->operator = Auth::User()->name;
+        $tambah->id_draft_pr = $request['no_pr'];
+        $tambah->status = 'CIRCULAR';
+        $tambah->date_time = Carbon::now()->toDateTimeString();
+        $tambah->activity = 'Start Circuler';
+        $tambah->save();
+
+        $update = PRDraft::where('id', $request->no_pr)->first();
+        $update->isCircular = 'True';
+        $update->status = 'CIRCULAR';
+        $update->save();
+
+        $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+        $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
+        $kirim_user = $detail_approver->pluck('email');
+
+        $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement')")
+                ->get()->pluck('email');
+
+        Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
+    }
+
+    public function submitTtdApprovePR(Request $request)
+    {
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name')->where('user_id', $nik)->first(); 
+
+    	$tambah = new PRActivity();
+    	$tambah->operator = Auth::User()->name;
+    	$tambah->id_draft_pr = $request['no_pr'];
+        if ($cek_role->name == 'Operations Director') {
+            $tambah->status = 'FINALIZED';
+        } else {
+            $tambah->status = 'CIRCULAR';
+        }
+        $tambah->date_time = Carbon::now()->toDateTimeString();
+    	$tambah->activity = 'Approval';
+    	$tambah->save();
+
+        if ($tambah->status == 'FINALIZED') {
+            $update = PRDraft::where('id', $request->no_pr)->first();
+            $update->status = 'FINALIZED';
+            $update->save();
+
+            $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+            // $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr))->first();
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+
+            $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
+
+            $email_cc = User::select('email')
+                    ->where('nik',$detail->issuance)
+                    ->get()->pluck('email');
+
+            Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name . ' And Ready To Finalized', 'detail_approver', $next_approver));
+
+        } else {
+            $update = PRDraft::where('id', $request->no_pr)->first();
+            $update->status = 'CIRCULAR';
+            $update->save();
+
+            $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+            $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr, 'detail'))->first();
+            $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+            $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
+
+            $email_cc = User::select('email')
+                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+                    ->get()->pluck('email');
+
+            Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name, $detail_approver, $next_approver));
+        }
+        $approver = 'Signed by '.Auth::User()->name;
+
+        $this->uploadPdfMerge($request->no_pr, $approver);
+        // $this->mergePdf($request->no_pr);
+
+    }
+
+    public function rejectCirculerPR(Request $request)
+    {
+    	$tambah = new PRActivity();
+    	$tambah->operator = Auth::User()->name;
+    	$tambah->id_draft_pr = $request['no_pr'];
+    	$tambah->status = 'UNAPPROVED';
+        $tambah->date_time = Carbon::now()->toDateTimeString();
+    	$tambah->activity = 'The circulation process was stopped because it was rejected for the following reasons: ' . $request['reasonRejectSirkular'];
+    	$tambah->save();
+
+        $update = PRDraft::where('id', $request->no_pr)->first();
+        $update->isCircular = 'False';
+        $update->status = 'UNAPPROVED';
+        $update->save();
+
+        $activity = PRActivity::select('activity','operator','id_draft_pr')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->where('status', 'UNAPPROVED')->orderBy('date_time', 'desc')->take(1);
+
+        $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
+                ->joinSub($activity,'temp_tb_pr_activity',function($join){
+                    $join->on("temp_tb_pr_activity.id_draft_pr","tb_pr_draft.id");
+                })
+                ->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount', 'tb_pr_draft.status', 'tb_pr.issuance', 'activity', 'no_pr')
+                ->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+
+        $email_cc = User::select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+                ->get()->pluck('email');
+
+        Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Reject By ' . Auth::User()->name,'detail_approver', $next_approver));
+    }
+
+    public function getDataSendEmail(Request $request)
+    {
+        $get_type = PR::where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $territory = DB::table('users')->select('id_territory')->where('nik', $get_type->issuance)->first()->id_territory;
+
+        $cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group', 'role_user.user_id')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
+
+        $email_to = User::select('users.email as email_to')
+                ->where('email', 'felicia@sinergy.co.id')
+                ->first()->email_to;
+
+        if ($get_type->type_of_letter == 'IPR') {
+            if ($cek_group->name == 'pmo') {
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            } elseif ($cek_group->name == 'msm') {
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            } elseif ($cek_group->name == 'bcd') {
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            } elseif ($cek_group->name == 'DPG') {
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            } elseif ($cek_group->name == 'presales') {
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR  `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            } elseif ($cek_group->group == 'hr') {
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'HR MANAGER' OR `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            } elseif ($cek_group->group == 'sales') {
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+            }
+        } else {
+            $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+        }
+
+        $email_cc = $email_cc->push(new User(['email' => 'bcd@sinergy.co.id']));
+
+        $subject = 'Permohonan Pembuatan PO - ' . $get_type->type_of_letter . ' ' . $get_type->title;
+
+        return ['to' => $email_to, 'cc' => $email_cc, 'subject'=>$subject];
+    }
+
+    public function getPdfPr(Request $request)
+    {
+        // return view('pdf_pr_unheader');
+        $pdf = PDF::loadView('pdf_pr_unheader');
+        return $pdf;
+    }
+
+    public function getEmailTemplate(Request $request){
+        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', 'tb_pr.quote_number', 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        if ($data->status_draft_pr == 'draft') {
+            $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+
+            $sum_nominal = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+                ->select('grand_total')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->sum('grand_total');
+
+            $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive')
+                ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
+                ->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+        } else if ($data->status_draft_pr == 'pembanding'){
+            $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->get();
+
+            $sum_nominal = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
+                ->select('grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->sum('grand_total');
+
+            $dokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', 'tb_pr_document_compare.id_compare_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive')
+                ->where('tb_pr_compare.id_draft_pr', $request->no_pr)
+                ->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+        }
+
+        $amount_tax = $sum_nominal * 11/100;
+
+        $amount_tax_project = $data->amount_idr_before_tax * 11/100;
+
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $optParams = array(
+            'fields' => 'files(webViewLink)',
+            'q' => 'name="'. $request->no_pr .' Draft PR"',
+            'supportsAllDrives' => true,
+            'includeItemsFromAllDrives' => true
+        );
+
+        $linkDrive = collect([
+            "folder" => "SIMS Apps > Purchase Request > " . ($data->type_of_letter == "EPR" ? "External" : "Internal"). " > " . $request->no_pr .' Draft PR',
+            "link" => $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink()
+        ]);
+
+        // return $linkDrive;
+
+        // return collect([
+        //     'pr' => $data,
+        //     'product' => $product,
+        //     'dokumen' => $dokumen
+        // ]);
+
+        // return $sum_nominal;
+        // echo "<pre>";
+        // return $data;
+        // return $product;
+        // return $dokumen;
+        // return $sum_nominal;
+        // return $amount_tax;
+
+        // return "</pre>endd---";
+
+        return view('pr_pdf', compact('data','product','dokumen', 'sum_nominal', 'amount_tax','amount_tax_project','linkDrive'));
+    }
+
+    public function sendMailtoFinance(Request $request)
+    {
+        $tambah = new PRActivity();
+        $tambah->operator = Auth::User()->name;
+        $tambah->id_draft_pr = $request['no_pr'];
+        $tambah->status = 'SENDED';
+        $tambah->date_time = Carbon::now()->toDateTimeString();
+        $tambah->activity = 'PR has been sent to the Finance Division';
+        $tambah->save();
+
+        $update = PRDraft::where('id', $request->no_pr)->first();
+        $update->status = 'SENDED';
+        $update->save();
+
+        $this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
+    }
+
+    public function sendEmail($to, $cc, $subject, $body){
+        Mail::html($body, function ($message) use ($to, $cc, $subject) {
+            $message
+                ->to(explode(";", $to))
+                ->subject($subject);
+
+            if($cc != ""){
+                $message->cc(explode(";", $cc));
+            }
+        });
+    }
+
+    public function getPdf(Request $request)
+    {
+        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', 'tb_pr.quote_number', 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr',
+            DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', 'tb_pr.issuance', 'parent_id_drive', 'status_draft_pr',
+            DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $parent_id = explode('"', $data->parent_id_drive)[1];
+
+        if ($data->status_draft_pr == 'pembanding') {
+            $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->get();
+
+            $sum_nominal = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
+                ->select('grand_total')->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->sum('grand_total');
+
+        } else if($data->status_draft_pr == 'draft'){
+            $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+            ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+            ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+
+            $sum_nominal = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+                ->select('grand_total')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->sum('grand_total');
+        }
+
+        $amount_tax = $sum_nominal * 11/100;
+
+        $territory = DB::table('users')
+            ->select('id_territory')
+            ->where('nik', $data->issuance)
+            ->first()
+            ->id_territory;
+
+        $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')
+            ->join('roles', 'roles.id', '=', 'role_user.role_id')
+            ->select('roles.name', 'roles.group')
+            ->where('tb_pr_draft.id', $request->no_pr)
+            ->first();
+
+        $unapproved = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $request->no_pr)
+            ->where('tb_pr_activity.status', "UNAPPROVED")
+            ->orderBy('tb_pr_activity.id',"DESC")
+            ->get();
+
+        $tb_pr_activity = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $request->no_pr);
+
+        if(count($unapproved) != 0){
+            $tb_pr_activity->where('tb_pr_activity.id','>',$unapproved->first()->id);
+        }
+            
+        $tb_pr_activity->where(function($query){
+            $query->where('tb_pr_activity.status', 'CIRCULAR')
+                ->orWhere('tb_pr_activity.status', 'FINALIZED');
+        });
+
+        $sign = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->select(
+                    'users.name', 
+                    'roles.name as position', 
+                    'ttd',
+                    DB::raw('IF(ISNULL(`temp_tb_pr_activity`.`date_time`),"false","true") AS `signed`')
+                )
+                ->leftJoinSub($tb_pr_activity,'temp_tb_pr_activity',function($join){
+                    $join->on("temp_tb_pr_activity.operator","=","users.name");
+                })
+                ->where('id_company', '1')
+                ->where('status_karyawan', '!=', 'dummy');
+
+        if ($data->type_of_letter == 'EPR') {
+            $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
+            ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
+
+        } else {
+            if ($cek_group->name == 'pmo') {
+                $sign->whereRaw("(`users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'msm') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "MSM Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'bcd') {
+                $sign->whereRaw("( `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'DPG') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SID Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'presales') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'hr') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'HR MANAGER' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'sales') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+            }
+        }
+
+        $sign = $sign->get();
+
+        $pdf = PDF::loadView('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax'));
+        $fileName =   $data->no_pr  . ' ' . $data->title  . '.pdf';
+        $nameFileFix = str_replace(' ', '_', $fileName);
+
+        return $pdf->stream($nameFileFix);
+        // return view('pdf_pr_unheader', compact('data', 'product','sign', 'sum_nominal', 'amount_tax'));
+    }
+
+    public function uploadPdf($no_pr,$approver)
+    {
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $data = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->select('parent_id_drive', 'no_pr', 'tb_pr.title as title')->where('tb_pr.id_draft_pr', $no_pr)->first();
+
+        $parent_id = explode('"', $data->parent_id_drive)[1];
+        $fileName =   $data->no_pr . ' ' . $data->title . ' ' . $approver . '.pdf';
+        $nameFileFix = str_replace(' ', '_', $fileName);
+
+        if(isset($fileName)){
+            $pdf_url = urldecode(url("/admin/getPdf?no_pr=" . $no_pr));
+            $pdf_name = $nameFileFix;
+        } else {
+            $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+            $pdf_name = 'pdf_lampiran';
+        }
+
+        $parent = [];
+        array_push($parent,$parent_id);
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($pdf_name);
+        $file->setParents($parent);
+
+        $result = $service->files->create(
+            $file, 
+            array(
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'mimeType' => 'application/octet-stream',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );
+    }
+
+    public function uploadPdfMerge($no_pr,$approver)
+    {
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $data = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->select('parent_id_drive', 'no_pr', 'tb_pr.title as title')->where('tb_pr.id_draft_pr', $no_pr)->first();
+
+        $parent_id = explode('"', $data->parent_id_drive)[1];
+        $fileName =   $data->no_pr . ' ' . $data->title . ' ' . $approver . '.pdf';
+        $nameFileFix = str_replace(' ', '_', $fileName);
+
+        if(isset($fileName)){
+            $pdf_url = urldecode(url("/admin/mergePdf?no_pr=" . $no_pr));
+            $pdf_name = $nameFileFix;
+        } else {
+            $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+            $pdf_name = 'pdf_lampiran';
+        }
+
+        $parent = [];
+        array_push($parent,$parent_id);
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($pdf_name);
+        $file->setParents($parent);
+
+        $result = $service->files->create(
+            $file, 
+            array(
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'mimeType' => 'application/octet-stream',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );
+    }
+
+    public function getPdfPRFromLink(Request $req){
+
+        $draft = PRDraft::where('id',$req->no_pr)->first();
+
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $optParams = array(
+            'fields' => 'files(webViewLink)',
+            'q' => 'mimeType="application/pdf" and "' . explode('"',$draft->parent_id_drive)[1] . '" in parents',
+            'supportsAllDrives' => true,
+            'includeItemsFromAllDrives' => true
+        );
+        // print_r($service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink());
+
+
+        $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
+        return redirect($link);
+    }
+
+    public function getSignStatusPR($no_pr,$status){
+        $data = PRDraft::where('id',$no_pr)->first();
+
+        $territory = DB::table('users')
+            ->select('id_territory')
+            ->where('nik', $data->issuance)
+            ->first()
+            ->id_territory;
+
+        $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')
+            ->join('roles', 'roles.id', '=', 'role_user.role_id')
+            ->select('roles.name', 'roles.group')->where('tb_pr_draft.id', $no_pr)
+            ->first();
+
+        $unapproved = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $no_pr)
+            ->where('tb_pr_activity.status', "UNAPPROVED")
+            ->orderBy('tb_pr_activity.id',"DESC")
+            ->get();
+
+        $tb_pr_activity = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $no_pr);
+
+        if(count($unapproved) != 0){
+            $tb_pr_activity->where('tb_pr_activity.id','>',$unapproved->first()->id);
+        }
+            
+        $tb_pr_activity->where(function($query){
+            $query->where('tb_pr_activity.status', 'CIRCULAR')
+                ->orWhere('tb_pr_activity.status', 'FINALIZED');
+        });
+
+        $sign = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->select(
+                    'users.name', 
+                    'roles.name as position', 
+                    'ttd',
+                    'email',
+                    DB::raw("IFNULL(SUBSTR(`temp_tb_pr_activity`.`date_time`,1,10),'-') AS `date_sign`"),
+                    DB::raw('IF(ISNULL(`temp_tb_pr_activity`.`date_time`),"false","true") AS `signed`')
+                )
+            ->leftJoinSub($tb_pr_activity,'temp_tb_pr_activity',function($join){
+                $join->on("temp_tb_pr_activity.operator","=","users.name");
+            })
+            ->where('id_company', '1')
+            ->where('status_karyawan', '!=', 'dummy');
+
+        if ($data->type_of_letter == 'EPR') {
+            $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
+        } else {
+            if ($cek_group->name == 'pmo') {
+
+                $sign->whereRaw("(`users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'msm') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "MSM Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'bcd') {
+                $sign->whereRaw("( `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'DPG') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SID Manager", "Operations Director")');
+
+            } elseif ($cek_group->name == 'presales') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'hr') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'HR MANAGER' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'sales') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+            }
+        }
+
+        if ($status == 'circular') {
+            return $sign->get();
+        } else{
+            return $sign->get()->where('signed','false')->first()->name;
+        }
+    }
+
+    public function mergePdf(Request $request)
+    {
+        $images = PRDocumentDraft::join('tb_pr_document', 'tb_pr_document.id', '=', 'tb_pr_document_draft.id_document')
+            ->select('dokumen_location')
+            ->where('id_draft_pr', $request->no_pr)
+            ->where(function($query){
+                $query->where('dokumen_location', 'like' , '%png')
+                    ->orWhere('dokumen_location', 'like', '%PNG')
+                    ->orWhere('dokumen_location', 'like', '%jpg')
+                    ->orWhere('dokumen_location', 'like', '%JPG')
+                    ->orWhere('dokumen_location', 'like', '%jpeg');
+            })->get()->pluck('dokumen_location');
+
+        $draft = PRDraft::where('id',$request->no_pr)->first();    
+
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $pdf_url = urldecode(url("/admin/getPdf?no_pr=" . $request->no_pr));
+        $pdf_file = file_get_contents($pdf_url, 'rb', stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]]));
+
+        $data = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')
+            ->select('status_draft_pr', 'no_pr', 'tb_pr.title')
+            ->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        if ($data->status_draft_pr == 'draft') {
+            $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive', 'tb_pr_document.id as id_dokumen')
+                ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr);
+
+            if ($data->type_of_letter == 'IPR') {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('id','desc')->get();
+            } else {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+            }
+        } else if ($data->status_draft_pr == 'pembanding'){
+            $dokumen = PrDokumen::join('tb_pr_document_compare', 'tb_pr_document_compare.id_document', '=', 'tb_pr_document.id')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', 'tb_pr_document_compare.id_compare_pr')
+                ->select('dokumen_name', 'dokumen_location', 'link_drive', 'tb_pr_document.id as id_dokumen')
+                ->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected');
+
+            if ($data->type_of_letter == 'IPR') {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('id','desc')->get();
+            } else {
+                $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
+            }
+        }
+
+        // return $getAll;
+
+        $pdf = new Fpdi();
+
+        // $pageCount =  $pdf->setSourceFile(StreamReader::createByString(file_get_contents($pdf_file,'rb')));
+        $pageCount =  $pdf->setSourceFile(StreamReader::createByString($pdf_file));
+
+        for ($i=0; $i < $pageCount; $i++) { 
+            //create a page
+            $pdf->AddPage();
+
+            // //import a page then get the id and will be used in the template
+            $tplId = $pdf->importPage($i+1, '/MediaBox');
+            // //use the template of the imporated page
+            $pdf->useTemplate($tplId, 0, 0, 200);
+        }
+
+        if ($getAll != null) {
+            foreach ($getAll as $dokumen) {
+
+                $optParams = array(
+                    'fields' => 'files(name,webViewLink,webContentLink,mimeType,modifiedTime)',
+                    'q' => 'name="'.explode("/", $dokumen->dokumen_location)[1].'" and "' . explode('"',$draft->parent_id_drive)[1] . '" in parents',
+                    'supportsAllDrives' => true,
+                    'includeItemsFromAllDrives' => true
+                );
+                
+                $dokumen_file = $service->files->listFiles($optParams)->getFiles()[0]->getWebContentLink();
+
+                if (explode(".", $dokumen->dokumen_location)[1] == 'pdf') {
+                    $page =  $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_file)));
+
+                    for ($i=0; $i < $page; $i++) { 
+                        // import a page then get the id and will be used in the template
+                        $tplId = $pdf->importPage($i+1, '/MediaBox');
+
+                        $size = $pdf->getTemplateSize($tplId);
+
+                        if ($size['width'] > $size['height']) {
+                            $pdf->AddPage('L', array($size['width'], $size['height']));
+                        } else {
+                            $pdf->AddPage('P', array($size['width'], $size['height']));
+                        }
+                        // use the template of the imporated page
+                        $pdf->useTemplate($tplId);
+                    }
+                } else{
+                    // echo $dokumen_file . '<br>';
+
+                    list($width,$height) = getimagesize($dokumen_file);
+                    if ($width > $height) {
+                        $pdf->AddPage('L');
+                        $pdf->MemImage(file_get_contents($dokumen_file),5,5,-300);
+                    } else {
+                        $pdf->AddPage('P');
+                        $pdf->MemImage(file_get_contents($dokumen_file),5,5,-300);
+                    }
+                }
+            }
+        }
+ 
+        //return the generated PDF
+        // return $pdf->Output();
+        $fileName =   $data->no_pr  . ' ' . $data->title  . '.pdf';
+        $nameFileFix = str_replace(' ', '_', $fileName);
+        return $pdf->Output("D");
+    }
+}
