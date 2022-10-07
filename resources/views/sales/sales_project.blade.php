@@ -9,9 +9,6 @@ ID Project
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
-  <?php
-  header('Set-Cookie: cross-site-cookie=bar; SameSite=None; Secure');
-  ?>
 
   <style type="text/css">
       div.dataTables_processing { z-index: 1; }
