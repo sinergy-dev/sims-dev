@@ -834,7 +834,7 @@ Human Resources
 		                  </thead>
 		                  <tbody>
 		                    @foreach($hr as $data)
-			                    @if($data->group == 'pmo' || $data->group == 'msm' || $data->group == 'presales' || $data->group == 'DVG' || $data->group == 'DPG' || $data->roles == 'Operations Director')
+			                    @if($data->group == 'pmo' || $data->group == 'msm' || $data->group == 'presales' || $data->group == 'DVG' || $data->group == 'DPG' || $data->roles == 'Operations Director' || $data->group == 'bcd')
 			                    <tr>
 			                      <td><?=str_replace('/', '', $data->nik)?></td>
 			                      <td>{{ucwords(strtolower($data->name))}}</td>
