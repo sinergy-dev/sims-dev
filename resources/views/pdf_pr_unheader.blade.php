@@ -37,6 +37,7 @@
 
 		table {
 			border-collapse: collapse;
+			page-break-inside:auto 
 		}
 
 		.table_supplier_content th, .table_supplier_content td {
@@ -49,6 +50,8 @@
 			border-collapse: collapse;
 			border: 1px solid;
 		}
+
+   		tr{page-break-inside:avoid;page-break-after: auto;}
 
 	</style>
 </head>
@@ -141,7 +144,7 @@
 	
 	<div>
 		<b style="font-size:small;">SUPPLIER</b>
-		<table class="table_supplier" style="width:100%;page-break-inside: avoid;">
+		<table class="table_supplier" style="width:100%;">
 			<tr style="vertical-align: top;">
 				<td style="width:60%; border: solid black;">
 					<table class="table_supplier_content" style="width: 100%;">
@@ -211,11 +214,15 @@
 			</tr>
 		</table>
 		<br>
-		<table class="table_item_content" style="width:100%;page-break-inside: avoid;">
+		<table class="table_item_content" style="width:100%;border-spacing: 0">
 			<thead>
-				<tr style="background-color:#c0c0c0">
+				<tr style="background-color:#c0c0c0;">
 					<th>No</th>
 					<th>Product</th>
+					@if($data->type_of_letter == 'EPR')
+					<th>Part Number</th>
+					<th>Serial Number</th>
+					@endif
 					<th>Description</th>
 					<th>Qty</th>
 					<th>Unit</th>
@@ -228,6 +235,10 @@
 					<tr>
 						<td style="text-align:center">{{++$key}}</td>
 						<td>{{$eachProduct->name_product}}</td>
+						@if($data->type_of_letter == 'EPR')
+						<td>{{$eachProduct->part_number}}</td>
+						<td>{{$eachProduct->serial_number}}</td>
+						@endif
 						<td>{!! trans($eachProduct->description) !!}</td>
 						<td style="text-align:center">{{$eachProduct->qty}}</td>
 						<td style="text-align:center">{{$eachProduct->unit}}</td>
@@ -236,10 +247,14 @@
 					</tr>
 				@endforeach
 			</tbody>
-			<tfoot>
+			<tfoot style="">
 				<tr>
 					<th>-</th>
 					<th></th>
+					@if($data->type_of_letter == 'EPR')
+					<th></th>
+					<th></th>
+					@endif
 					<th></th>
 					<th></th>
 					<th></th>
@@ -249,6 +264,10 @@
 				<tr>
 					<th></th>
 					<th></th>
+					@if($data->type_of_letter == 'EPR')
+					<th></th>
+					<th></th>
+					@endif
 					<th style="text-align:right">Total</th>
 					<th></th>
 					<th></th>
@@ -259,6 +278,10 @@
 				<tr>
 					<th></th>
 					<th></th>
+					@if($data->type_of_letter == 'EPR')
+					<th></th>
+					<th></th>
+					@endif
 					<th style="text-align:right" 11%>VAT 11%</th>
 					<th></th>
 					<th></th>
@@ -268,6 +291,10 @@
 				<tr style="background-color:#c0c0c0">
 					<th></th>
 					<th></th>
+					@if($data->type_of_letter == 'EPR')
+					<th></th>
+					<th></th>
+					@endif
 					<th style="text-align:right" >Grand Total</th>
 					<th></th>
 					<th></th>
@@ -278,6 +305,10 @@
 				<tr style="background-color:#c0c0c0">
 					<th></th>
 					<th></th>
+					@if($data->type_of_letter == 'EPR')
+					<th></th>
+					<th></th>
+					@endif
 					<th style="text-align:right" >Grand Total</th>
 					<th></th>
 					<th></th>
@@ -459,12 +490,16 @@
 						@endif
 							@if($eachSign["signed"] == 'true')
 							<div>
-								@if($key == 1)
-								Request By:
-								@elseif($key == 3)
-								Approve By:
+								@if(count($sign) == 2)
+									Acknowledge By:
 								@else
-								Acknowledge By:
+									@if($key == 1)
+									Request By:
+									@elseif($key == 3)
+									Approve By:
+									@else
+									Acknowledge By:
+									@endif
 								@endif
 							</div>
 							<div style="margin-top:5px;margin-bottom: 5px;">
@@ -475,12 +510,16 @@
 							</div>
 							@else
 							<div>
-								@if($key == 1)
-								Request By:
-								@elseif($key == 3)
-								Approve By:
+								@if(count($sign) == 2)
+									Acknowledge By:
 								@else
-								Acknowledge By:
+									@if($key == 1)
+									Request By:
+									@elseif($key == 3)
+									Approve By:
+									@else
+									Acknowledge By:
+									@endif
 								@endif
 							</div>
 							<div style="margin-top:5px;margin-bottom: 5px;">
@@ -497,17 +536,54 @@
 							</i>
 							
 						</td>
+					@else
+						@if($cek_role == 'bcd')
+							<td style="width: 50%">
+								@if($eachSign["signed"] == 'true')
+									<div>
+										@if($eachSign["position"] == "BCD Manager")
+										Request By
+										@endif
+									</div>
+									<div style="margin-top:5px;margin-bottom: 5px;">
+										<img src="{{ $eachSign['ttd'] }}" style="height:50px;">
+									</div>
+									<div>
+										<small>{{ $eachSign['date_sign'] }}</small>
+									</div>
+								@else
+									<div>
+										@if($eachSign["position"] == "BCD Manager")
+										Request By
+										@endif
+									</div>
+									<div style="margin-top:5px;margin-bottom: 5px;">
+										<img src="image/placeholder-sign-3.png" style="height:50px;">
+									</div>
+									<div>
+										<small style="color:#a6a6a6;">(Date Sign)</small>
+									</div>
+								@endif
+								<u>{{ $eachSign['name'] }}</u>
+								<br>
+								<i>
+									<b>{{ $eachSign['position'] }}</b>
+								</i>
+							</td>
+						@endif
 					@endif
 				@endforeach
 			</tr>
-			@if($sign[0]["signed"] == "true")
-				<tr>
-					<td colspan="{{count($sign) - 1}}">
-						<div style="text-align:right;">
-							<img src="{{ $sign[0]['ttd'] }}" style="width:40px;height:40px;">
-						</div>
-					</td>
-				</tr>
+			@if(count($sign) != 2)
+				@if($sign[0]["signed"] == "true")
+					<tr>
+						<td colspan="{{count($sign) - 1}}">
+							<div style="text-align:right;">
+								<img src="{{ $sign[0]['ttd'] }}" style="width:40px;height:40px;">
+							</div>
+						</td>
+					</tr>
+				@endif
 			@endif
 		</table>
 	</div>
