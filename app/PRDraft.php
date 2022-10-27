@@ -36,7 +36,14 @@ class PRDraft extends Model
         'created_at'
 	];
 
-	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal'];
+	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to'];
+
+    public function getToAttribute()
+    {
+        $data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.to')->where('tb_pr_draft.id', $this->id)->first();
+
+        return empty($data->to)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->to) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->to):$data->to;
+    }
 
     public function getComparisonAttribute()
     {
@@ -85,9 +92,7 @@ class PRDraft extends Model
 
     public function getTypeOfLetterAttribute()
     {
-        // $data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.type_of_letter as type_of_letter')->where('tb_pr_draft.id', $this->id)->first();
         $data = DB::table('tb_pr_draft')->select('type_of_letter')->where('tb_pr_draft.id', $this->id)->first();
-        // return $data->type_of_letter;
         return empty($data->type_of_letter)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->type_of_letter) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->type_of_letter):$data->type_of_letter;
     }
 
@@ -100,8 +105,6 @@ class PRDraft extends Model
     public function getDateAttribute()
 	{
 		$data = DB::table('tb_pr_draft')->select('created_at')->where('id', $this->id)->first();
-
-		// return $data->created_at;
 		return empty($data->created_at)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->created_at) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->created_at):$data->created_at;
 	}
 
@@ -110,6 +113,88 @@ class PRDraft extends Model
 		$data = DB::table('tb_pr_draft')->select('status_tax')->where('id', $this->id)->first();
 
 		return empty($data->status_tax)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->status_tax) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->status_tax):$data->status_tax;
-		// return $data->status_tax;
 	}
+
+    public function getCircularByAttribute()
+    {
+        $data = PRDraft::where('id',$this->id)->first();
+
+        $territory = DB::table('users')
+            ->select('id_territory')
+            ->where('nik', $data->issuance)
+            ->first()
+            ->id_territory;
+
+        $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')
+            ->join('roles', 'roles.id', '=', 'role_user.role_id')
+            ->select('roles.name', 'roles.group')->where('tb_pr_draft.id', $this->id)
+            ->first();
+
+        $unapproved = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $this->id)
+            ->where('tb_pr_activity.status', "UNAPPROVED")
+            ->orderBy('tb_pr_activity.id',"DESC")
+            ->get();
+
+        $tb_pr_activity = DB::table('tb_pr_activity')
+            ->where('tb_pr_activity.id_draft_pr', $this->id);
+
+        if(count($unapproved) != 0){
+            $tb_pr_activity->where('tb_pr_activity.id','>',$unapproved->first()->id);
+        }
+            
+        $tb_pr_activity->where(function($query){
+            $query->where('tb_pr_activity.status', 'CIRCULAR')
+                ->orWhere('tb_pr_activity.status', 'FINALIZED');
+        });
+
+        $sign = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
+                ->join('roles', 'roles.id', '=', 'role_user.role_id')
+                ->select(
+                    'users.name', 
+                    'roles.name as position', 
+                    DB::raw('IF(ISNULL(`temp_tb_pr_activity`.`date_time`),"false","true") AS `signed`')
+                )
+                ->leftJoinSub($tb_pr_activity,'temp_tb_pr_activity',function($join){
+                    $join->on("temp_tb_pr_activity.operator","=","users.name");
+                })
+                ->where('id_company', '1')
+                ->where('status_karyawan', '!=', 'dummy');
+
+        if ($data->type_of_letter == 'EPR') {
+            $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
+        } else {
+            if ($cek_group->group == 'pmo') {
+                $sign->whereRaw("(`users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'msm') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "MSM Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'bcd') {
+                $sign->whereRaw("( `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'DPG') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SID Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'presales') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'hr') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'HR MANAGER' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
+
+            } elseif ($cek_group->group == 'sales') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+            }
+        }
+
+        return empty($sign->get()->where('signed','false')->first()->name)?'-':$sign->get()->where('signed','false')->first()->name;
+    }
 }
