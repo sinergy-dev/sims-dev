@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <style type="text/css">
+  .modal { overflow: auto !important; }
 	.textarea-scrollbar {
 	    /*overflow:scroll !important;*/    
 	    overflow-y: scroll !important;
@@ -153,21 +154,21 @@
             
       </div>
     	<div class="table-responsive">
-	        <table class="table table-bordered table-striped dataTable nowrap" id="draftPr" width="100%" cellspacing="0">
-	          <thead>
-	            <tr style="text-align: center;">
-	              <th>No. PR</th>
-                <th>Created at</th>
-	              <th>Subject</th>
-	              <th>Supplier</th>
-	              <th>Total Price</th>
-	              <th style="text-align: center;vertical-align: middle;">Status</th>
-	              <th style="text-align: center;vertical-align: middle;">Action</th>
-	            </tr>
-	          </thead>
-	          <tbody id="tbodyDraft" name="tbodyDraft">
-	          </tbody>
-	        </table>
+        <table class="table table-bordered table-striped dataTable nowrap" id="draftPr" width="100%" cellspacing="0">
+          <thead>
+            <tr style="text-align: center;">
+              <th>No. PR</th>
+              <th>Created at</th>
+              <th>Subject</th>
+              <th>Supplier</th>
+              <th>Total Price</th>
+              <th style="text-align: center;vertical-align: middle;">Status</th>
+              <th style="text-align: center;vertical-align: middle;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyDraft" name="tbodyDraft">
+          </tbody>
+        </table>
 	   	</div>
     </div>
 	</div>
@@ -181,6 +182,8 @@
       <div class="modal-body">
         <form method="POST" action="" id="modal_pr" name="modal_pr">
         @csrf
+        <!--lagi ngedit-->
+
         <div class="tab-add" style="display:none;">
           <div class="tabGroup">
             <div class="form-group">
@@ -193,7 +196,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Type*</label>
-                  <select type="text" class="form-control" name="type" placeholder="ex. Internal Purchase Request" id="selectType" required>
+                  <select type="text" class="form-control" name="type" onchange="fillInput('selectType')" placeholder="ex. Internal Purchase Request" id="selectType" required>
                       <option selected value="">Select Type</option>
                       <option value="IPR">IPR (Internal Purchase Request)</option>
                       <option value="EPR">EPR (Eksternal Purchase Request)</option>
@@ -213,7 +216,7 @@
 
             <div class="form-group">
               <label for="">Category</label>
-              <select type="text" class="form-control select2" name="selectCategory" id="selectCategory" style="width: 100%">
+              <select type="text" class="form-control select2" onchange="fillInput('selectCategory')" name="selectCategory" id="selectCategory" style="width: 100%">
                   <option value="">Select Category</option>
                   <option value="Barang dan Jasa">Barang dan Jasa</option>
                   <option value="Barang">Barang</option>
@@ -234,6 +237,7 @@
                   <option value="Legal">Legal</option>
                   <option value="Other">Other</option>
               </select>
+              <span class="help-block" style="display:none;">Please fill Category!</span>
             </div>
 
             <div class="row">
@@ -250,10 +254,6 @@
                   <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
                   <span class="help-block" style="display:none;">Please fill Attention!</span>
                 </div>
-                <!-- <div class="form-group">
-                  <label for="">Fax</label>
-                  <input type="" id="inputFax" class="form-control" name="inputFax">
-                </div> -->
               </div>
             </div>           
 
@@ -288,7 +288,37 @@
           </div>
         </div>
         <div class="tab-add" style="display:none">
-          <div class="tabGroup">
+          <div class="tabGroupInitiateAdd">
+            <div class="form-group" style="display:flex">
+              <button class="btn btn-primary" id="btnInitiateAddProduct" type="button" style="margin:0 auto;"><i class="fa fa-plus"></i>&nbspAdd Product</button>
+            </div>
+            <div class="form-group" style="display:flex;">
+              <span style="margin:0 auto;">OR</span>
+            </div>
+            <div class="form-group" style="display: flex;">
+              <div style="padding: 7px;
+                          width: 20%;
+                          border: 1px solid #dee2e6 !important;
+                          color: #337ab7;
+                          height: 35px;
+                          background-color: #eee;
+                          display: inline;
+                          margin: 0 auto;">
+                <i class="fa fa-cloud-upload" style="margin-left:5px"></i>
+                <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
+                <label for="uploadCsv">Upload CSV</label>
+                <i class="fa fa-times hidden" onclick="cancelUploadCsv()" style="display:inline;color: red;"></i>
+                <!-- <span class="help-block" style="display:none;">Please Upload File or Add Product!</span> -->
+              </div>
+            </div>         
+            <div style="display: flex;">
+              <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('draft_pr/Import_product_sample.csv')}}" style="cursor:pointer;">link</a></span>
+            </div>
+            <div style="display: flex;">
+              <span style="margin: 0 auto;">And make sure, the change of template only at row 2, any change on row 1 (header) will be reject</span>
+            </div>
+          </div>
+          <div class="tabGroup" style="display:none">
             <div class="form-group">
               <label>Product*</label>
               <input type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
@@ -350,7 +380,7 @@
           </div>
         </div> 
         <div class="tab-add" style="display:none">
-          <div class="tabGroup">
+          <div class="tabGroup table-responsive">
             <table class="table no-wrap">
               <thead>
                 <th>No</th>
@@ -366,14 +396,14 @@
                 
               </tbody>
             </table>
-            <div class="row">
-              <div class="col-md-12" id="bottomProducts">
-                
-              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12" id="bottomProducts">
+              
             </div>
-            <div class="form-group" style="display:flex;">
-              <button class="btn btn-sm btn-primary" style="margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
-            </div>
+          </div>
+          <div class="form-group" style="display:flex;">
+            <button class="btn btn-sm btn-primary" style="margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
           </div>
         </div>
         <div class="tab-add" style="display:none">
@@ -412,7 +442,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSPK" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;" type="file" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" >
+                    <input style="display: inline;" type="file" class="files" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
@@ -424,7 +454,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSBE" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;" type="file" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" >
+                    <input style="display: inline;" type="file" class="files" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
@@ -436,7 +466,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;" type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
+                    <input style="display: inline;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
@@ -448,7 +478,7 @@
                 <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
                   
                 </select>
-                <!-- <input type="file" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
+                <!-- <input type="file" class="files" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
                 <span class="help-block" style="display:none;">Please fill Quote Number!</span>
               </div>   
             </div>
@@ -459,7 +489,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputPenawaranHarga" style="margin-bottom:0px">
                     <i class="fa fa-cloud-upload" style="display:inline"></i>
-                    <input style="display: inline;" type="file" name="inputPenawaranHarga" id="inputPenawaranHarga" onchange="fillInput('penawaranHarga')">
+                    <input style="display: inline;" type="file" class="files" name="inputPenawaranHarga" id="inputPenawaranHarga" onchange="fillInput('penawaranHarga')">
                   </label>                  
                 </div>
                 <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
@@ -675,20 +705,22 @@
             </div>
           </div>
           <div class="tab-cek" style="display:none;">
-          	<table class="table no-wrap">
-          		<thead>
-          			<th>No</th>
-          			<th>Product</th>
-          			<th>Description</th>
-          			<th>Qty</th>
-          			<th>Type</th>
-          			<th>Price</th>
-          			<th>Total Price</th>
-          		</thead>
-          		<tbody id="tbodyProductsCek">
-          			
-          		</tbody>
-          	</table>
+            <div class="table-responsive">
+              <table class="table no-wrap">
+                <thead>
+                  <th>No</th>
+                  <th>Product</th>
+                  <th>Description</th>
+                  <th>Qty</th>
+                  <th>Type</th>
+                  <th>Price</th>
+                  <th>Total Price</th>
+                  <th><a class="pull-right" id="refreshTableCek"><i class="fa fa-refresh"></i>&nbsp</a></th>
+                </thead>
+                <tbody id="tbodyProductsCek"> 
+                </tbody>
+              </table>
+            </div>          	
           	<div class="row">
           		<div class="col-md-12" id="bottomProductsCek">
           			
@@ -889,7 +921,7 @@
 
     $(document).ready(function(){   
       currentTab = 0     
-      $('input[type="file"]').change(function(){
+      $('input[class="files"]').change(function(){
         console.log(this.files[0])
         var f=this.files[0]
         var filePath = f;
@@ -918,16 +950,52 @@
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Invalid file type, just allow png/jpg/pdf',
+            text: 'Invalid file type, just allow png/jpg/pdf file',
           }).then((result) => {
             this.value = ''
           })
         }
       }) 
+
+      $('input[type="file"][name="uploadCsv"]').change(function(){
+        var f=this.files[0]
+        var filePath = f;
+
+        var ext = filePath.name.split(".");
+        ext = ext[ext.length-1].toLowerCase();      
+        var arrayExtensions = ["csv"];
+
+        console.log(ext)
+
+        if (arrayExtensions.lastIndexOf(ext) == -1) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Invalid file type, just allow csv file',
+          }).then((result) => {
+            this.value = ''
+          })
+        }else{
+          $("#uploadCsv").next('label').hide()
+          $("input[type='file'][name='uploadCsv']").removeClass('hidden')
+          $("input[type='file'][name='uploadCsv']").prev('i').hide()
+          $("#uploadCsv").next('label').next('i').removeClass('hidden') 
+          $("#btnInitiateAddProduct").prop("disabled",true)
+        }
+      })
       //box id
       DashboardCounter()
       InitiateFilterParam()
     })
+
+    function cancelUploadCsv(){
+      $("input[type='file'][name='uploadCsv']").val('')
+      $("#uploadCsv").next('label').show()
+      $("input[type='file'][name='uploadCsv']").addClass('hidden')
+      $("input[type='file'][name='uploadCsv']").prev('i').show()
+      $("#uploadCsv").next('label').next('i').addClass('hidden') 
+      $("#btnInitiateAddProduct").prop("disabled",false)
+    }
 
     function DashboardCounter(){
       $("#BoxId").empty()
@@ -1148,7 +1216,11 @@
             }else if (row.status == 'COMPARING') {
               return '<span class="label bg-purple">'+row.status+'</span>'
             }else if (row.status == 'CIRCULAR') {
-              return '<span class="label label-warning">'+row.status+'</span>'
+              if (row.circularby == "-") {
+                return '<span class="label label-warning">'+row.status+'</span><br><small>On Procurement<small>'
+              }else{
+                return '<span class="label label-warning">'+row.status+'</span><br><small>On '+ row.circularby +'<small>'
+              }
             }else if (row.status == 'FINALIZED') {
               return '<span class="label label-success">'+row.status+'</span>'           
             }else if (row.status == 'SENDED') {
@@ -1260,7 +1332,7 @@
           ]
           $("#inputFilterStatus").select2({
             placeholder: " Select Status",
-            // allowClear: true,
+            allowClear: true,
             multiple:true,
             data:selectOptionStatus,
           })
@@ -1269,14 +1341,14 @@
           var arrUser = result.dataUser
           $("#inputFilterUser").select2({
             placeholder: " Select User",
-            // allowClear: true,
+            allowClear: true,
             multiple:true,
             data:arrUser,
           })
 
           $("#inputFilterTypePr").select2({
             placeholder: "Select a Type",
-            // allowClear: true,
+            allowClear: true,
             data:result.data_type_letter,
             multiple:true
           })
@@ -1353,7 +1425,6 @@
             })
           }
           
-
         }
       })
     }  
@@ -1464,18 +1535,29 @@
     localStorage.setItem('firstLaunch', true);
     localStorage.setItem('isStoreSupplier',false);
 
-    function reasonReject(item,display){
+    function reasonReject(item,display,nameClass){
       $(".divReasonRejectRevision").remove()
+
+      var textTitle = ""
+      var className = ""
+
+      if (nameClass == 'tabGroup') {
+        textTitle = "Note Reject PR"
+        className = "tabGroup"
+      }else{
+        textTitle = "Alert Error!"
+        className = nameClass
+      }
       
       console.log(display)
       var append = ""
 
       append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
-        append = append + '<h4><i class="icon fa fa-cross"></i>Note Reject PR</h4>'
+        append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
         append = append + '<p class="reason_reject_revision">'+item.replaceAll("\n","<br>")+'</p>'
       append = append + '</div>'
 
-      $(".tabGroup").prepend(append)
+      $("." + nameClass).prepend(append)
 
       if (display == "block") {
         $(".divReasonRejectRevision").show()
@@ -1486,14 +1568,25 @@
       localStorage.setItem('firstLaunch', false);
       localStorage.setItem('no_pr',id_draft)
       localStorage.setItem('status_unfinished',status)
+      console.log(status)
+      if (status == 'revision') {
+        url = "{{url('/admin/getDetailPr')}}"
+      }else{
+        url = "{{url('/admin/getPreviewPr')}}"
+      }
       $.ajax({
         type: "GET",
-        url: "{{url('/admin/getPreviewPr')}}",
+        url: url,
         data: {
           no_pr:id_draft,
         },
         success: function(result) {
-          console.log("current_tab",n)
+          if (status == 'revision') {
+            localStorage.setItem("id_compare_pr",result.id_compare_pr)
+          }else{
+            localStorage.setItem('no_pr',id_draft)
+          }
+
           var x = document.getElementsByClassName("tab-add");
           x[n].style.display = "inline";
           if (n == (x.length - 1)) {
@@ -1503,7 +1596,6 @@
             $(".modal-title").text('')
             document.getElementById("prevBtnAdd").style.display = "inline";
             $("#headerPreviewFinal").empty()
-            console.log(n)
             document.getElementById("nextBtnAdd").innerHTML = "Create";
             $("#nextBtnAdd").attr('onclick','createPR("'+ status +'")');  
 
@@ -1554,7 +1646,7 @@
                   append = append + '<input readonly class="form-control" style="font-size: 12px; important" type="" name="" value="'+ item.name_product +'">'
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
@@ -1732,10 +1824,7 @@
             }
             
           } else {
-            console.log(n)
             if (n == 0) {
-              console.log(status)
-
               //reinitiate
               $("#inputTo").val("")
               $("#selectType").val("")
@@ -1769,7 +1858,6 @@
               $(".modal-dialog").removeClass('modal-lg')
  
               localStorage.setItem('no_pr',id_draft)
-              console.log(status)
               if (status == 'reject') {
                 if (result.verify.verify_type_of_letter == 'True'){
                   console.log(result.verify.verify_type_of_letter)
@@ -1802,26 +1890,46 @@
 
                 reasonReject(result.activity.reason,"block")
 
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,'+ firstLaunch +')')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
               } else if (status == 'revision') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
 
                 reasonReject(result.activity.reason,"block")
 
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,'+ firstLaunch +')')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
               } else {
                 if (firstLaunch == 'true') {
-                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,'+ firstLaunch +')')
+                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
                 }else{
-                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,'+ firstLaunch +')')
+                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
                 } 
               }
             } else if (n == 1) {
               $(".modal-title").text('Information Product')
               $(".modal-dialog").removeClass('modal-lg')  
-              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
-              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')     
+
+              //button add initiate product show form-group
+              $("#btnInitiateAddProduct").click(function(){
+                console.log(x[n].children[0].children[0].style.display = 'inline')
+                $(".tabGroupInitiateAdd").hide()
+                x[n].children[1].style.display = 'inline'
+                $("#inputNameProduct").val('')
+                $("#inputDescProduct").val('')
+                $("#inputQtyProduct").val('')
+                $("#selectTypeProduct").val('')
+                $("#inputPriceProduct").val('')
+                $("#inputSerialNumber").val('')
+                $("#inputPartNumber").val('')
+                $("#inputTotalPrice").val('')
+              })
+
+              if (status == 'admin') {
+                $("#nextBtnAdd").attr('onclick','nextPrevAddAdmin(1,'+ id_draft +')')
+              }else{
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')     
+              }
               if (localStorage.getItem('isEditProduct') == 'true') {
                 document.getElementById("prevBtnAdd").style.display = "none";
               } else {
@@ -1833,6 +1941,7 @@
               $("#nextBtnAdd").removeAttr('onclick')
               $(".modal-dialog").addClass('modal-lg')
               localStorage.setItem('firstLaunch',false)
+              addTable(0)
               if (localStorage.getItem('firstLaunch') == 'false') {
                 $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-2)')
                 $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
@@ -1842,6 +1951,7 @@
               document.getElementById("prevBtnAdd").style.display = "inline";
               localStorage.setItem('no_pr',id_draft)
             } else if (n == 3) {
+              localStorage.setItem('status_draft_pr',result.pr.status_draft_pr)
               $(".modal-dialog").removeClass('modal-lg')
               if ($("#selectType").val() == 'EPR') {
                 $(".modal-title").text('External Purchase Request')
@@ -1859,11 +1969,16 @@
                 const fileQuote = document.querySelector('input[type="file"][name="inputQuoteSupplier"]');
 
                 // Create a new File object
+                if (status == 'revision') {
+                  url = "{{url('/admin/getDetailPr')}}"                  
+                }else{
+                  url = "{{url('/admin/getPreviewPr')}}"
+                }
                 $.ajax({
                   type: "GET",
-                  url: "{{url('/admin/getPreviewPr')}}",
+                  url: url,
                   data: {
-                    no_pr:localStorage.getItem("no_pr"),
+                    no_pr:localStorage.getItem('no_pr'),
                   },
                   success:function(result){
                     var selectedLead = result.pr.lead_id
@@ -2004,10 +2119,14 @@
 
                 // Get a reference to our file input
                 const fileInput = document.querySelector('input[type="file"][name="inputPenawaranHarga"]');
-
+                if (status == 'revision') {
+                  url = "{{url('/admin/getDetailPr')}}"
+                }else{
+                  url = "{{url('/admin/getPreviewPr')}}"
+                }
                 $.ajax({
                   type: "GET",
-                  url: "{{url('/admin/getPreviewPr')}}",
+                  url: url,
                   data: {
                     no_pr:localStorage.getItem("no_pr"),
                   },
@@ -2135,10 +2254,9 @@
               $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
               $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
               document.getElementById("prevBtnAdd").style.display = "inline";
-              localStorage.setItem('no_pr',id_draft)
             } else if (n == 4) {
               $(".modal-dialog").removeClass('modal-lg')
-              // $('.wysihtml5-toolbar').remove();
+              $('.wysihtml5-toolbar').remove();
               if (status == 'reject') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").val(result.activity.reason.replaceAll("\n","<br>"))
@@ -2148,14 +2266,12 @@
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
                 reasonReject(result.activity.reason,"block")
-
               }
               $(".modal-title").text('Term Of Payment')   
               $(".modal-dialog").removeClass('modal-lg')   
               $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
               $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
               document.getElementById("prevBtnAdd").style.display = "inline";
-              localStorage.setItem('no_pr',id_draft)
 
               if ($('.wysihtml5-toolbar').length == 0) {
                 $("#textAreaTOP").html(result.pr.term_payment)
@@ -2186,7 +2302,9 @@
       $("#ModalDraftPr").modal('show') 
     }
 
+    localStorage.setItem('status_pr','')
   	function addDraftPr(n){
+      localStorage.setItem('status_pr','')
   		console.log("current_tab",n)
   		var x = document.getElementsByClassName("tab-add");
   		x[n].style.display = "inline";
@@ -2251,16 +2369,22 @@
                   append = append + '<span>'+ i +'</span>'
                 append = append + '</td>'
                 append = append + '<td width="20%">'
-                  append = append + '<input readonly class="form-control" style="font-size: 12px; important" type="" name="" value="'+ item.name_product +'">'
+                  append = append + '<input readonly class="form-control" style="font-size: 12px;" type="" name="" value="'+ item.name_product +'">'
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
-                  append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
+                  append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
-                  append = append + '<select readonly style="width:75px;font-size: 12px; important" class="form-control">'
+                  append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.part_number +'" style="width:100px;font-size: 12px;">'
+                append = append + '</td>'
+                append = append + '<td width="10%">'
+                  append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px;">'
+                append = append + '</td>'
+                append = append + '<td width="10%">'
+                  append = append + '<select readonly style="width:75px;font-size: 12px;" class="form-control">'
                   if (item.unit == 'Pcs') {
                     append = append + '<option selected>Pcs</option>'
                     append = append + '<option>Unit</option>'
@@ -2271,10 +2395,10 @@
                   append = append + '</select>'
                 append = append + '</td>'
                 append = append + '<td width="15%">'
-                  append = append + '<input readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px;font-size: 12px; important">'
+                  append = append + '<input readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px;font-size: 12px;">'
                 append = append + '</td>'
                 append = append + '<td width="15%">'
-                  append = append + '<input readonly id="grandTotalPreviewFinalPage" class="form-control grandTotalPreviewFinalPage" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size: 12px; important">'
+                  append = append + '<input readonly id="grandTotalPreviewFinalPage" class="form-control grandTotalPreviewFinalPage" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size: 12px;">'
                 append = append + '</td>'
               append = append + '</tr>'
             })
@@ -2434,6 +2558,14 @@
   				$("#nextBtnAdd").attr('onclick','nextPrevAdd(1)')
   				$("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')				
   				document.getElementById("prevBtnAdd").style.display = "inline";
+
+          //button add initiate product show form-group
+          $("#btnInitiateAddProduct").click(function(){
+            console.log(x[n].children[0].children[0].style.display = 'inline')
+            $(".tabGroupInitiateAdd").hide()
+            x[n].children[1].style.display = 'inline'
+          })
+          
   			} 
   			else if(n == 2){
   				$(".modal-title").text('')
@@ -2589,12 +2721,15 @@
       $("#span_link_drive_spk").hide()
       $("#span_link_drive_sbe").hide()
       $("#span_link_drive_quoteSup").hide()
+      localStorage.setItem('isEditProduct',false)
+      localStorage.setItem('status_pr','') 
     }) 
 
     $('#ModalDraftPrAdmin').on('hidden.bs.modal', function () {
-      if (window.location.href.split("/")[5] != undefined) {
+      if (window.location.href.split("/")[4] != undefined) {
         location.replace("{{url('/admin/draftPR')}}/")
       }
+      // localStorage.setItem('isEditProduct',false)
       $(".tab-cek").css('display','none')
       currentTab = 0
       n = 0
@@ -2666,6 +2801,12 @@
                 append = append + '</td>'
                 append = append + '<td width="35%">'
                   append = append + '<textarea style="font-size: 12px; important;height:250px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                append = append + '</td>'
+                append = append + '<td width="10%">'
+                  append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
+                append = append + '</td>'
+                append = append + '<td width="10%">'
+                  append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.part_number +'" style="width:100px;font-size: 12px;">'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
@@ -2928,11 +3069,6 @@
         }else if (n == 4) {
           $(".modal-title").text('Term Of Payment')   
           $(".modal-dialog").removeClass('modal-lg')   
-          // if(localStorage.getItem('isPembandingEPR') == 'true'){
-          //   $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-2)')
-          // }else{
-          //   $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
-          // }       
           $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
           document.getElementById("prevBtnAdd").style.display = "inline";
@@ -2944,11 +3080,11 @@
       $("#ModalDraftPr").modal({backdrop: 'static', keyboard: false})  
     }
 
-    if (window.location.href.split("/")[5] != undefined) {
-      if (window.location.href.split("/")[5].split("?")[1].split("=")[1] == 'saved') {
-        cekByAdmin(0,window.location.href.split("/")[5],window.location.href.split("/")[5].split("?")[1].split("=")[1])
-      }else if (window.location.href.split("/")[5].split("?")[1].split("=")[1] == 'reject' || window.location.href.split("/")[5].split("?")[1].split("=")[1] == 'revision') {
-        unfinishedDraft(0,window.location.href.split("/")[5].split("?")[0],window.location.href.split("/")[5].split("?")[1].split("=")[1])
+    if (window.location.href.split("/")[4].split("?")[1] != undefined) {
+      if (window.location.href.split("/")[4].split("?")[1].split("&")[0].split("=")[1]  == 'draft') {
+        cekByAdmin(0,window.location.href.split("/")[4].split("?")[1].split("&")[1].split("=")[1])
+      }else if (window.location.href.split("/")[4].split("?")[1].split("&")[0].split("=")[1]  == 'reject' || window.location.href.split("/")[4].split("?")[1].split("&")[0].split("=")[1]  == 'revision') {
+        unfinishedDraft(0,window.location.href.split("/")[4].split("?")[1].split("&")[1].split("=")[1],window.location.href.split("/")[4].split("?")[1].split("&")[0].split("=")[1])
       }
     }
 
@@ -2971,7 +3107,6 @@
             if ($('input[name="chk[]"]:checked').length < countCheck) {
               $("input[type='radio'][name='radioConfirm']").click(function(){
                 if ($("input[type='radio'][name='radioConfirm']:checked").val() == 'reject' ) {
-                  console.log("reject")
                   $("#divReasonReject").show()
                   $("#nextBtnAddAdmin").attr('onclick','ConfirmDraftPr(' +no_pr+', "reject")')
                 }else{
@@ -2993,7 +3128,6 @@
             $(".modal-dialog").removeClass('modal-lg')
             document.getElementById("nextBtnAddAdmin").innerHTML = "Verify"
   				} else {
-  					console.log(n)
   					if (n == 0) {
   						$("#inputToCek").val(result.pr.to)
   						$("#selectTypeCek").val(result.pr.type_of_letter)
@@ -3025,49 +3159,11 @@
   						$("#nextBtnAddAdmin").attr('onclick','nextPrevAddAdmin(1,'+ result.pr.id +')')
   						$("#prevBtnAddAdmin").attr('onclick','nextPrevAddAdmin(-1,'+ result.pr.id +')')
   						document.getElementById("prevBtnAddAdmin").style.display = "inline";
+              cekTable(no_pr)
 
-  						var append = ""
-  						var i = 0
-  						$("#tbodyProductsCek").empty()
-  						$.each(result.product,function(value,item){
-  							i++
-  		           append = append + '<tr>'
-  								append = append + '<td>'
-  									append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
-  								append = append + '</td>'
-  								append = append + '<td width="20%">'
-  									append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.name_product +'">'
-  								append = append + '</td>'
-  								append = append + '<td width="30%">'
-  									append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;important" class="form-control">'+ item.description.replaceAll("<br>","\n") +''
-  									append = append + '</textarea>'
-  								append = append + '</td>'
-  								append = append + '<td width="7%">'
-  									append = append + '<input id="inputQtyEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.qty +'">'
-  								append = append + '</td>'
-  								append = append + '<td width="10%">'
-  								append = append + '<select id="inputTypeEdit" readonly data-value="" style="font-size: 12px; important" class="form-control">'
-  								if (item.unit == 'Pcs') {
-  									append = append + '<option selected>Pcs</option>'
-  									append = append + '<option>Unit</option>'
-  								}else{
-  									append = append + '<option>Pcs</option>'
-  									append = append + '<option selected>Unit</option>'
-  								}
-  								append = append + '</select>'	
-  								append = append + '</td>'
-  								append = append + '<td width="15%">'
-  									append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px; important" class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
-  								append = append + '</td>'
-  								append = append + '<td width="15%">'
-  									append = append + '<input id="inputTotalPriceEditCek" readonly data-value="" style="font-size: 12px; important" class="form-control inputTotalPriceEditCek" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
-  								append = append + '</td>'
-                  append = append + '<td width="5%">'
-                    append = append + '<input type="checkbox" id="product_'+i+'_cek" name="chk[]" class="minimal">'
-                  append = append + '</td>'
-  							append = append + '</tr>'	
-  						})
-  						$("#tbodyProductsCek").append(append)
+              $("#refreshTableCek").click(function(){
+                cekTable(no_pr)
+              })
 
               $('input[type="checkbox"].minimal').iCheck({
                 checkboxClass: 'icheckbox_minimal-blue',
@@ -3076,65 +3172,100 @@
   						$("#bottomProductsCek").empty()
   						var appendBottom = ""
   						appendBottom = appendBottom + '<hr>'
-              appendBottom = appendBottom + '<div class="row">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
-              appendBottom = appendBottom + '    <div class="pull-right">'
-              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-              appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductCek" id="inputGrandTotalProductCek" name="inputGrandTotalProductCek">'
-              appendBottom = appendBottom + '    </div>'
-              appendBottom = appendBottom + '  </div>'
-              appendBottom = appendBottom + '</div>'
-              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + ' <div class="col-md-12">'
-              appendBottom = appendBottom + '   <div class="pull-right">'
-                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
-                appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-                appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax_cek pull-right" id="vat_tax_cek" name="vat_tax_cek" style="width:250px;">'
-                appendBottom = appendBottom + '     </div>'
-              appendBottom = appendBottom + '    </div>'
-              appendBottom = appendBottom + ' </div>'
-              appendBottom = appendBottom + '</div>'
-              appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
-              appendBottom = appendBottom + '    <div class="pull-right">'
-              appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
-              appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinalCek" id="inputGrandTotalProductFinalCek" name="inputGrandTotalProductFinalCek">'
-              appendBottom = appendBottom + '    </div>'
-              appendBottom = appendBottom + '  </div>'
+                appendBottom = appendBottom + '<div class="row">'
+                appendBottom = appendBottom + '  <div class="col-md-12">'
+                appendBottom = appendBottom + '    <div class="pull-right">'
+                appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
+                appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductCek" id="inputGrandTotalProductCek" name="inputGrandTotalProductCek">'
+                appendBottom = appendBottom + '    </div>'
+                appendBottom = appendBottom + '  </div>'
+                appendBottom = appendBottom + '</div>'
+                appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                appendBottom = appendBottom + ' <div class="col-md-12">'
+                appendBottom = appendBottom + '   <div class="pull-right">'
+                  appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+                  appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+                  appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax_cek pull-right" id="vat_tax_cek" name="vat_tax_cek" style="width:250px;">'
+                  appendBottom = appendBottom + '     </div>'
+                appendBottom = appendBottom + '    </div>'
+                appendBottom = appendBottom + ' </div>'
+                appendBottom = appendBottom + '</div>'
+                appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+                appendBottom = appendBottom + '  <div class="col-md-12">'
+                appendBottom = appendBottom + '    <div class="pull-right">'
+                appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+                appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinalCek" id="inputGrandTotalProductFinalCek" name="inputGrandTotalProductFinalCek">'
+                appendBottom = appendBottom + '    </div>'
+                appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
 
   				    $("#bottomProductsCek").append(appendBottom)	
 
-              var tempVat = 0
-              var finalVat = 0
-              var tempGrand = 0
-              var finalGrand = 0
-              var tempTotal = 0
-              var btnVatStatus = true
+              $(document).on("click", "#btnEditProdukCek", function() {
+                $("#ModalDraftPrAdmin").modal('hide')
+                currentTab = 1
+                unfinishedDraft(currentTab,no_pr,"admin")
+                $(".tabGroupInitiateAdd").hide()
+                $(".tab-add")[1].children[1].style.display = 'inline'
+                localStorage.setItem('isEditProduct',true)
+                localStorage.setItem('id_product',result.product[$(this).data("value")].id_product)
+                nominal = result.product[$(this).data("value")].nominal_product
+                $("#inputNameProduct").val(result.product[$(this).data("value")].name_product)
+                $("#inputDescProduct").val(result.product[$(this).data("value")].description.replaceAll("<br>","\n"))
+                $("#inputQtyProduct").val(result.product[$(this).data("value")].qty)
+                $("#selectTypeProduct").val(result.product[$(this).data("value")].unit)
+                $("#inputPriceProduct").val(formatter.format(nominal))
+                $("#inputSerialNumber").val(result.product[$(this).data("value")].serial_number)
+                $("#inputPartNumber").val(result.product[$(this).data("value")].part_number)
+                $("#inputTotalPrice").val(formatter.format(result.product[$(this).data("value")].grand_total))
+              })
 
-  				    var sum = 0
-  			      $('.inputTotalPriceEditCek').each(function() {
-  			          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-  			          sum += temp;
-  			      });
-
-              finalVat = tempVat
-
-              finalGrand = tempGrand
-
-              tempTotal = sum
-
-              if (result.pr.status_tax == 'True') {
-                tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-                tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
-              }else{
-                tempVat = tempVat
-                tempGrand = parseInt(sum)
-              }
-              $("#vat_tax_cek").val(tempVat)
-        			$("#inputGrandTotalProductCek").val(formatter.format(sum))
-              $("#inputGrandTotalProductFinalCek").val(formatter.format(tempGrand))
-
+              $(document).on("click", "#btnDeleteProdukCek", function() {
+                Swal.fire({
+                  title: 'Are you sure?',  
+                  text: "Deleting Product",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Yes',
+                  cancelButtonText: 'No',
+                }).then((result) => {
+                  if (result.value) {
+                    $.ajax({
+                      type: "POST",
+                      url: "{{url('/admin/deleteProduct')}}",
+                      data:{
+                        _token:'{{ csrf_token() }}',
+                        id:$(this).data("id")
+                      },
+                      beforeSend:function(){
+                        Swal.fire({
+                            title: 'Please Wait..!',
+                            text: "It's sending..",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            customClass: {
+                                popup: 'border-radius-0',
+                            },
+                        })
+                        Swal.showLoading()
+                      },
+                      success: function(result) {
+                        Swal.fire(
+                            'Successfully!',
+                            'Delete Product.',
+                            'success'
+                        ).then((result) => {
+                          // $("#tbodyProductsCek").empty()
+                          cekTable(no_pr)
+                        })
+                      }
+                    })          
+                  }
+                })
+              })
   					}else if (n == 2) {
   						$(".modal-dialog").removeClass('modal-lg')
   						if ($("#selectTypeCek").val() == 'EPR') {
@@ -3195,7 +3326,6 @@
                 var appendDokumen = ""
                 $("#docPendukungContainerCek").empty()
                 $.each(result.dokumen,function(value,item){
-                  console.log(item)
                   var pdf = "fa fa-fw fa-file-pdf-o"
                   var image = "fa fa-fw fa-file-image-o"
                   if (item.dokumen_location.split(".")[1] == 'pdf') {
@@ -3279,7 +3409,6 @@
               $("#nextBtnAddAdmin").attr('onclick','nextPrevAddAdmin(1,'+ result.pr.id +')')
               $(".modal-title").text('')
               document.getElementById("prevBtnAddAdmin").style.display = "inline";
-              console.log(n)
               document.getElementById("nextBtnAddAdmin").innerHTML = "Create";
 
               if ($("#selectTypeCek").val() == 'IPR') {
@@ -3324,16 +3453,16 @@
                     append = append + '<span>'+ i +'</span>'
                   append = append + '</td>'
                   append = append + '<td width="20%">'
-                    append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
+                    append = append + '<input style="font-size: 12px;" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
                   append = append + '</td>'
                   append = append + '<td width="35%">'
-                    append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                    append = append + '<textarea style="font-size: 12px;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
                   append = append + '</td>'
                   append = append + '<td width="10%">'
-                    append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
+                    append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px;">'
                   append = append + '</td>'
                   append = append + '<td width="10%">'
-                    append = append + '<select readonly style="width:70px;font-size: 12px; important" class="form-control">'
+                    append = append + '<select readonly style="width:70px;font-size: 12px;" class="form-control">'
                     if (item.unit == 'Pcs') {
                       append = append + '<option selected>Pcs</option>'
                       append = append + '<option>Unit</option>'
@@ -3344,10 +3473,10 @@
                     append = append + '</select>'
                   append = append + '</td>'
                   append = append + '<td width="15%">'
-                    append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px">'
+                    append = append + '<input style="font-size: 12px;" readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px">'
                   append = append + '</td>'
                   append = append + '<td width="15%">'
-                    append = append + '<input readonly class="form-control grandTotalCek" id="grandTotalCek" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size: 12px; important">'
+                    append = append + '<input readonly class="form-control grandTotalCek" id="grandTotalCek" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size: 12px;">'
                   append = append + '</td>'
                 append = append + '</tr>'
               })
@@ -3494,6 +3623,104 @@
   		$("#ModalDraftPrAdmin").modal('show')  
   	}
 
+    function cekTable(no_pr){
+      $.ajax({
+        type: "GET",
+        url: "{{url('/admin/getPreviewPr')}}",
+        data: {
+          no_pr:no_pr,
+        },
+        success: function(result) {
+          var append = ""
+          var i = 0
+          var value = 0
+          $("#tbodyProductsCek").empty()
+
+          $.each(result.product,function(item,value){
+            i++
+            append = append + '<tr>'
+              append = append + '<td>'
+                append = append + '<span style="font-size: 12px;">'+ i +'</span>'
+              append = append + '</td>'
+              append = append + '<td width="20%">'
+                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px;" class="form-control" type="" name="" value="'+ value.name_product +'">'
+              append = append + '</td>'
+              append = append + '<td width="30%">'
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;width:200px" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
+                append = append + '</textarea>'
+              append = append + '</td>'
+              append = append + '<td width="7%">'
+                append = append + '<input id="inputQtyEdit" data-value="" readonly style="font-size: 12px;" class="form-control" type="" name="" value="'+ value.qty +'">'
+              append = append + '</td>'
+              append = append + '<td width="10%">'
+              append = append + '<select id="inputTypeEdit" readonly data-value="" style="font-size: 12px;" class="form-control">'
+              if (value.unit == 'Pcs') {
+                append = append + '<option selected>Pcs</option>'
+                append = append + '<option>Unit</option>'
+              }else{
+                append = append + '<option>Pcs</option>'
+                append = append + '<option selected>Unit</option>'
+              }
+              append = append + '</select>' 
+              append = append + '</td>'
+              append = append + '<td width="15%">'
+                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control" type="" name="" value="'+ formatter.format(value.nominal_product) +'">'
+              append = append + '</td>'
+              append = append + '<td width="15%">'
+                append = append + '<input id="inputTotalPriceEditCek" readonly data-value="" style="font-size: 12px;width:100px" class="form-control inputTotalPriceEditCek" type="" name="" value="'+ formatter.format(value.grand_total) +'">'
+              append = append + '</td>'
+              append = append + '<td width="8%">'
+                append = append + '<button type="button" id="btnEditProdukCek" data-value="'+ item +'" class="btn btn-xs btn-warning fa fa-edit fa-2xs" style="width:25px;height:25px;margin-bottom:5px"></button>'
+                append = append + '<button type="button" id="btnDeleteProdukCek" data-id="'+ value.id_product +'" data-value="'+ item +'" class="btn btn-xs btn-danger fa fa-trash fa-2xs" style="width:25px;height:25px;"></button>'
+              append = append + '</td>'
+              append = append + '<td width="5%">'
+                append = append + '<input type="checkbox" id="product_'+i+'_cek" name="chk[]" class="minimal">'
+              append = append + '</td>'
+            append = append + '</tr>' 
+
+          })
+
+          $("#tbodyProductsCek").append(append)
+
+          $('input[type="checkbox"].minimal').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+          })
+
+          var tempVat = 0
+          var finalVat = 0
+          var tempGrand = 0
+          var finalGrand = 0
+          var tempTotal = 0
+          var btnVatStatus = true
+
+          var sum = 0
+          $('.inputTotalPriceEditCek').each(function() {
+              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+              sum += temp;
+          });
+
+          finalVat = tempVat
+
+          finalGrand = tempGrand
+
+          tempTotal = sum
+
+          if (result.pr.status_tax == 'True') {
+            tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          }else{
+            tempVat = tempVat
+            tempGrand = parseInt(sum)
+          }
+          $("#vat_tax_cek").val(tempVat)
+          $("#inputGrandTotalProductCek").val(formatter.format(sum))
+          $("#inputGrandTotalProductFinalCek").val(formatter.format(tempGrand))
+
+        }
+      })
+      
+    }
+
     function ConfirmDraftPr(no_pr,status){
       var arrCheck = [];
       $('input[name="chk[]"]:checked').each(function () {
@@ -3639,6 +3866,18 @@
         $("#inputAddress").prev('.input-group-addon').css("background-color","red");  
     	}
 
+      if (val == "selectType") {
+        $("#selectType").closest('.form-group').removeClass('has-error')
+        $("#selectType").closest('select').next('span').hide();
+        $("#selectType").prev('.input-group-addon').css("background-color","red");
+      }
+
+      if (val == "selectCategory") {
+        $("#selectCategory").closest('.form-group').removeClass('has-error')
+        $("#selectCategory").closest('select').next('span').hide();
+        $("#selectCategory").prev('.input-group-addon').css("background-color","red");
+      }
+
     	if (val == "name_product") {
     		$("#inputNameProduct").closest('.form-group').removeClass('has-error')
         $("#inputNameProduct").closest('input').next('span').hide();
@@ -3706,47 +3945,6 @@
     	}
     }
 
-    // function checkType(val){
-    // 	console.log(val)
-    // 	if (val != "") {
-    // 		$("#selectType").closest('.form-group').removeClass('has-error')
-    //     $("#selectType").closest('select').next('span').hide();
-    //     $("#selectType").prev('.input-group-addon').css("background-color","red");
-
-    //     $("#selectCategory").closest('.form-group').removeClass('has-error')
-    //     $("#selectCategory").closest('select').next('span').hide();
-    //     $("#selectCategory").prev('.input-group-addon').css("background-color","red");
-
-    //     $("#selectPosition").closest('.form-group').removeClass('has-error')
-    //     $("#selectPosition").closest('select').next('span').hide();
-    //     $("#selectPosition").prev('.input-group-addon').css("background-color","red");
-
-    //     if (val == 'lead_id') {
-    //       $("#selectLeadId").closest('.form-group').removeClass('has-error')
-    //       $("#selectLeadId").closest('select').next('span help-block').hide();
-    //       $("#selectLeadId").prev('.input-group-addon').css("background-color","red");
-    //     }
-
-    //     if (val == 'pid') {
-    //       $("#selectPid").closest('.form-group').removeClass('has-error')
-    //       $("#selectPid").closest('select').next('span help-block').hide();
-    //       $("#selectPid").prev('.input-group-addon').css("background-color","red");
-    //     }
-
-    //     if (val == 'quoteNumber') {
-    //       $("#selectQuoteNumber").closest('.form-group').removeClass('has-error')
-    //       $("#selectQuoteNumber").closest('select').next('span help-block').hide();
-    //       $("#selectQuoteNumber").prev('.input-group-addon').css("background-color","red");
-    //     }     
-
-    //     if (val == 'penawaran_harga') {
-    //       $("#inputPenawaranHarga").closest('.form-group').removeClass('has-error')
-    //       $("#inputPenawaranHarga").closest('input').next('span').hide();
-    //       $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red");
-    //     }
-    // 	}
-    // }
-
     var tempVat = 0
     var finalVat = 0
     var tempGrand = 0
@@ -3780,155 +3978,64 @@
       }
     }
 
-  	function addTable(n){ 
-      if (window.location.href.split("/")[6] == undefined) {
-        url = "{{url('/admin/getProductPr')}}"
-        no_pr = localStorage.getItem('no_pr')
+    currentTab = 0
+    function nextPrevUnFinished(n,valueEdit){
+      if(localStorage.getItem('status_draft_pr') == 'pembanding'){
+        url = "{{url('/admin/getDetailPr')}}"
+        urlDokumen = "{{url('/admin/storePembandingDokumen')}}"
+        urlProduct = "{{url('/admin/storePembandingProduct')}}"
+        urlGetProduct = "{{url('/admin/getProductPembanding')}}"
+        no_pr = localStorage.getItem("id_compare_pr")
       }else{
-        url = "{{url('/admin/getProductPembanding')}}"
-        no_pr = localStorage.getItem('no_pembanding')
+        url = "{{url('/admin/getPreviewPr')}}"
+        urlDokumen = "{{url('/admin/storeDokumen')}}"
+        urlProduct = "{{url('/admin/storeProductPr')}}"
+        urlGetProduct = "{{url('/admin/getProductPr')}}"
+        no_pr = localStorage.getItem("no_pr")
       }
-  		$.ajax({
+      if (valueEdit == undefined) {
+        if (valueEdit == 0) {
+          $(".tabGroupInitiateAdd").hide()
+          $(".tab-add")[1].children[1].style.display = 'inline'
+        }
+      }else{
+        valueEdit = valueEdit
+        $(".tabGroupInitiateAdd").hide()
+        $(".tab-add")[1].children[1].style.display = 'inline'
+        $.ajax({
           type: "GET",
-          url: url,
+          url: urlGetProduct,
           data: {
-          	no_pr:no_pr,
+            no_pr:no_pr,
           },
           success: function(result) {
-          	$("#tbodyProducts").empty()
-  					var append = ""
-  					var i = 0
-            var value = 0
-  					$.each(result.data,function(value,item){
-  					 i++
-             value = value
-             append = append + '<tr>'
-  						append = append + '<td>'
-  							append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
-  						append = append + '</td>'
-  						append = append + '<td width="20%">'
-  							append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.name_product +'">'
-  						append = append + '</td>'
-  						append = append + '<td width="30%">'
-  							append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px" class="form-control">'+ item.description.replaceAll("<br>","\n") +''
-  							append = append + '</textarea>'
-  						append = append + '</td>'
-  						append = append + '<td width="7%">'
-  							append = append + '<input id="inputQtyEdit" data-value="" readonly style="font-size: 12px; important;width:70px" class="form-control" type="number" name="" value="'+ item.qty +'">'
-  						append = append + '</td>'
-  						append = append + '<td width="10%">'
-  						append = append + '<select id="inputTypeEdit" readonly data-value="" style="font-size: 12px; important;width:70px" class="form-control">'
-  						if (item.unit == 'Pcs') {
-  							append = append + '<option selected>Pcs</option>'
-  							append = append + '<option>Unit</option>'
-  						}else{
-  							append = append + '<option>Pcs</option>'
-  							append = append + '<option selected>Unit</option>'
-  						}
-  						append = append + '</select>'	
-  						append = append + '</td>'
-  						append = append + '<td width="15%">'
-  							append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px; important" class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
-  						append = append + '</td>'
-  						append = append + '<td width="15%">'
-  							append = append + '<input id="inputTotalPriceEdit" readonly data-value="" style="font-size: 12px; important" class="form-control inputTotalPriceEdit" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
-  						append = append + '</td>'
-  						append = append + '<td width="8%">'
-  							append = append + '<button type="button" data-value="'+ value +'" class="btn btn-xs btn-warning fa fa-edit" style="width:25px;height:25px;margin-right:5px"></button>'
-  							// append = append + '<button type="button" data-value="'+ value +'" class="btn btn-xs btn-danger fa fa-trash" style="width:25px;height:25px"></button>'
-  						append = append + '</td>'
-  					append = append + '</tr>'		
-  				})		
-
-  				$("#tbodyProducts").append(append)
-
-          $("#bottomProducts").empty()
-
-          var appendBottom = ""
-          appendBottom = appendBottom + '<hr>'
-          appendBottom = appendBottom + '<div class="row">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
-          appendBottom = appendBottom + '    <div class="pull-right">'
-          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
-          appendBottom = appendBottom + '    </div>'
-          appendBottom = appendBottom + '  </div>'
-          appendBottom = appendBottom + '</div>'
-          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + ' <div class="col-md-12">'
-          appendBottom = appendBottom + '   <div class="pull-right">'
-            appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
-            appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-              appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
-                appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
-              appendBottom = appendBottom + ' </span>'
-            appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
-            appendBottom = appendBottom + ' </div>'
-          appendBottom = appendBottom + ' </div>'
-          appendBottom = appendBottom + '</div>'
-          appendBottom = appendBottom + '</div>'
-          appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
-          appendBottom = appendBottom + '    <div class="pull-right">'
-          appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
-          appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
-          appendBottom = appendBottom + '    </div>'
-          appendBottom = appendBottom + '  </div>'
-          appendBottom = appendBottom + '</div>'
-
-          $("#bottomProducts").append(appendBottom)
-
-          $('input[type="checkbox"].minimal').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-          })
-
-          var sum = 0
-          $('.inputTotalPriceEdit').each(function() {
-              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-              sum += temp;
-          });
-
-          $("#inputGrandTotalProduct").val(formatter.format(sum))
-
-          tempVat = (parseFloat(sum) * 11) / 100
-
-          finalVat = tempVat
-
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
-
-          finalGrand = tempGrand
-
-          tempTotal = sum
-          $("#vat_tax").val(formatter.format(tempVat))
-
-          $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
-
-          $(".fa-edit[data-value='"+ value +"']").click(function(){
-
-            $("#prevBtnAdd").css("display", "none");
-            nextPrevUnFinished(-1)
-            localStorage.setItem('isEditProduct',true)
-            localStorage.setItem('id_product',result.data[value].id_product)
-            nominal = result.data[value].nominal_product
-            $("#inputNameProduct").val(result.data[value].name_product)
-            $("#inputDescProduct").val(result.data[value].description.replaceAll("<br>","\n"))
-            $("#inputQtyProduct").val(result.data[value].qty)
-            $("#selectTypeProduct").val(result.data[value].unit)
-            $("#inputPriceProduct").val(formatter.format(nominal))
-            $("#inputSerialNumber").val(result.data[value].serial_number)
-            $("#inputPartNumber").val(result.data[value].part_number)
-            $("#inputTotalPrice").val(formatter.format(result.data[value].grand_total))
-          })
-  			}
-      })
-  	}
-
-
-
-    function nextPrevUnFinished(n){
+            $.each(result.data,function(value,item){
+              $("#prevBtnAdd").css("display", "none");
+              localStorage.setItem('isEditProduct',true)
+              localStorage.setItem('id_product',result.data[valueEdit].id_product)
+              nominal = result.data[valueEdit].nominal_product
+              $("#inputNameProduct").val(result.data[valueEdit].name_product)
+              $("#inputDescProduct").val(result.data[valueEdit].description.replaceAll("<br>","\n"))
+              $("#inputQtyProduct").val(result.data[valueEdit].qty)
+              $("#selectTypeProduct").val(result.data[valueEdit].unit)
+              $("#inputPriceProduct").val(formatter.format(nominal))
+              $("#inputSerialNumber").val(result.data[valueEdit].serial_number)
+              $("#inputPartNumber").val(result.data[valueEdit].part_number)
+              $("#inputTotalPrice").val(formatter.format(result.data[valueEdit].grand_total))
+            })
+          }
+        })
+      }
       console.log("value", n)
       console.log("current_tab_next",currentTab)
+      console.log('edit ' + valueEdit)
       if (currentTab == 0) {
+        const validateEmail = (email) => {
+          return email.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+        };
+
         if ($("#inputTo").val() == "") {
           $("#inputTo").closest('.form-group').addClass('has-error')
           $("#inputTo").closest('input').next('span').show();
@@ -3941,6 +4048,12 @@
           $("#inputEmail").closest('.form-group').addClass('has-error')
           $("#inputEmail").closest('input').next('span').show();
           $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+          $("#inputEmail").closest('input').next('span').text("Please fill an Email!")
+        }else if(validateEmail($("#inputEmail").val()) == null){
+          $("#inputEmail").closest('.form-group').addClass('has-error')
+          $("#inputEmail").closest('input').next('span').show();
+          $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+          $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
         }else if ($("#selectCategory").val() == "") {
           $("#selectCategory").closest('.form-group').addClass('has-error')
           $("#selectCategory").closest('select').next('span').show();
@@ -4021,29 +4134,30 @@
           })          
         }
       }else if (currentTab == 1) {
-        if ($("#inputNameProduct").val() == "") {
-          $("#inputNameProduct").closest('.form-group').addClass('has-error')
-          $("#inputNameProduct").closest('input').next('span').show();
-          $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputDescProduct").val() == "") {
-          $("#inputDescProduct").closest('.form-group').addClass('has-error')
-          $("#inputDescProduct").closest('textarea').next('span').show();
-          $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputQtyProduct").val() == "") {
-          $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
-          $("#inputQtyProduct").closest('input').next('span').show();
-          $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#selectTypeProduct").val() == "") {
-          $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
-          $("#selectTypeProduct").closest('select').next('span').show();
-          $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputPriceProduct").val() == "") {
-          $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
-          $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
-          $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
-        }else{
-          if (n == '1') {
+        if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
+          if ($("#inputNameProduct").val() == "") {
+            $("#inputNameProduct").closest('.form-group').addClass('has-error')
+            $("#inputNameProduct").closest('input').next('span').show();
+            $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#inputDescProduct").val() == "") {
+            $("#inputDescProduct").closest('.form-group').addClass('has-error')
+            $("#inputDescProduct").closest('textarea').next('span').show();
+            $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#inputQtyProduct").val() == "") {
+            $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
+            $("#inputQtyProduct").closest('input').next('span').show();
+            $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#selectTypeProduct").val() == "") {
+            $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
+            $("#selectTypeProduct").closest('select').next('span').show();
+            $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#inputPriceProduct").val() == "") {
+            $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
+            $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
+            $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
+          }else{
             if (localStorage.getItem('isEditProduct') == 'true') {
+              console.log(localStorage.getItem('id_product'))
               $.ajax({
                 url: "{{url('/admin/updateProductPr')}}",
                 type: 'post',
@@ -4083,8 +4197,9 @@
                   }
                   unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
                   localStorage.setItem('isEditProduct',false)
-                  
-                  addTable(0)
+                  $(".tabGroupInitiateAdd").show()
+                  $(".tab-add")[1].children[1].style.display = 'none'
+                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
                   $("#inputNameProduct").val('')
                   $("#inputDescProduct").val('')
                   $("#inputPriceProduct").val('')
@@ -4096,15 +4211,17 @@
               })
             }else{
               $.ajax({
-                url: "{{url('/admin/storeProductPr')}}",
+                url: urlProduct,
                 type: 'post',
                 data: {
                  _token:"{{ csrf_token() }}",
-                 no_pr:localStorage.getItem('no_pr'),
+                 no_pr:no_pr,
                  inputNameProduct:$("#inputNameProduct").val(),
                  inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
                  inputQtyProduct:$("#inputQtyProduct").val(),
                  selectTypeProduct:$("#selectTypeProduct").val(),
+                 inputSerialNumber:$("#inputSerialNumber").val(),
+                 inputPartNumber:$("#inputPartNumber").val(),
                  inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
                  inputTotalPrice:$("#inputTotalPrice").val(),
                  inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
@@ -4133,8 +4250,9 @@
                     currentTab = 0;
                   }
                   unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                  
-                  addTable(0)
+                  $(".tabGroupInitiateAdd").show()
+                  $(".tab-add")[1].children[1].style.display = 'none'
+                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
                   $("#inputNameProduct").val('')
                   $("#inputDescProduct").val('')
                   $("#inputPriceProduct").val('')
@@ -4144,8 +4262,12 @@
                   $("#inputTotalPrice").val('')
                 }
               })
-            }
-          }else{
+            }               
+          }  
+        }else{
+          console.log('lakukan baru')
+
+          if ($('#uploadCsv').val() == "") {
             var x = document.getElementsByClassName("tab-add");
             x[currentTab].style.display = "none";
             currentTab = currentTab + n;
@@ -4154,9 +4276,55 @@
               currentTab = 0;
             }
             unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-            addTable()
-          }                
-        }       
+          }else{
+            var dataForm = new FormData();
+            dataForm.append('csv_file',$('#uploadCsv').prop('files')[0]);
+            dataForm.append('_token','{{ csrf_token() }}');
+            dataForm.append('no_pr',localStorage.getItem('no_pr'));
+
+            $.ajax({
+              processData: false,
+              contentType: false,
+              url: "{{url('/admin/uploadCSV')}}",
+              type: 'POST',
+              data: dataForm,
+              beforeSend:function(){
+                Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                    popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                    Swal.showLoading()
+                  }
+                })
+              },success:function(result){
+                Swal.close()
+                cancelUploadCsv()
+
+                if (result.status == "Error") {
+                  reasonReject(result.text,"block","tabGroupInitiateAdd")
+                }else{
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                  $(".divReasonRejectRevision").remove()
+                  //nge reset upload csv
+                  // cancelUploadCsv()
+                }
+              }
+            })
+          }
+        }             
       }else if (currentTab == 3) {
         if ($("#selectType").val() == 'IPR') {
           if ($("#inputPenawaranHarga").val() == "") {
@@ -4166,9 +4334,9 @@
           }else{
             $.ajax({
               type: "GET",
-              url: "{{url('/admin/getPreviewPr')}}",
+              url: url,
               data: {
-                no_pr:localStorage.getItem("no_pr"),
+                no_pr:localStorage.getItem('no_pr'),
               },
               success:function(result){
                 let formData = new FormData();
@@ -4191,7 +4359,7 @@
                             formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                             arrInputDocPendukung.push({
                               nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                              no_pr:localStorage.getItem('no_pr')
+                              no_pr:no_pr
                             })
                           }else{
                             formData.append('inputDocPendukung[]','-')
@@ -4204,7 +4372,7 @@
                     formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                     arrInputDocPendukung.push({
                       nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                      no_pr:localStorage.getItem('no_pr')
+                      no_pr:no_pr
                     })
                   });
                   
@@ -4216,7 +4384,7 @@
                   formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                     arrInputDocPendukung.push({
                       nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                      no_pr:localStorage.getItem('no_pr')
+                      no_pr:no_pr
                     }) 
                   });
                   
@@ -4224,11 +4392,11 @@
 
                 formData.append('_token',"{{csrf_token()}}")
                 formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-                formData.append('no_pr',localStorage.getItem('no_pr'))
+                formData.append('no_pr',no_pr)
 
                 if (n == 1) {
                   $.ajax({
-                    url: "{{'/admin/storeDokumen'}}",
+                    url: urlDokumen,
                     type: 'post',
                     data:formData,
                     processData: false,
@@ -4303,9 +4471,9 @@
           }else{
             $.ajax({
               type: "GET",
-              url: "{{url('/admin/getPreviewPr')}}",
+              url: url,
               data: {
-                no_pr:localStorage.getItem("no_pr"),
+                no_pr:localStorage.getItem('no_pr'),
               },
               success:function(result){
                 let formData = new FormData();
@@ -4358,7 +4526,7 @@
                 
 
                 formData.append('_token',"{{csrf_token()}}")
-                formData.append('no_pr', localStorage.getItem('no_pr'))
+                formData.append('no_pr',no_pr)
                 formData.append('selectLeadId', $("#selectLeadId").val())
                 formData.append('selectPid', $("#selectPid").val())
                 formData.append('inputPid',$("#projectIdInputNew").val())
@@ -4367,7 +4535,7 @@
                 if(n == 1){
                   $.ajax({
                     type:"POST",
-                    url:"{{url('/admin/storeDokumen')}}",
+                    url:urlDokumen,
                     processData: false,
                     contentType: false,
                     data:formData,
@@ -4442,6 +4610,8 @@
           }
         }); 
       }else{
+        $(".divReasonRejectRevision").remove()
+
         var x = document.getElementsByClassName("tab-add");
         x[currentTab].style.display = "none";
         currentTab = currentTab + n;
@@ -4453,6 +4623,225 @@
       }
     }
 
+  	function addTable(n){ 
+      if (window.location.href.split("/")[6] == undefined) {
+        if (localStorage.getItem('status_pr') == 'revision') {
+          url = "{{url('/admin/getProductPembanding')}}"
+          no_pr = localStorage.getItem('id_compare_pr')
+        }else{
+          url = "{{url('/admin/getProductPr')}}"
+          no_pr = localStorage.getItem('no_pr')
+        }
+      }else{
+        url = "{{url('/admin/getProductPembanding')}}"
+        no_pr = localStorage.getItem('no_pembanding')
+        // if (localStorage.getItem('status_pr') == 'revision') {
+        //   url = "{{url('/admin/getProductPembanding')}}"
+        //   no_pr = localStorage.getItem('no_pembanding')
+        // }else{
+        //   url = "{{url('/admin/getProductPr')}}"
+        //   no_pr = localStorage.getItem('no_pr')
+        // }
+      }
+
+      console.log("status_pr"+localStorage.getItem('status_pr'))
+
+      console.log("onclick"+onclick)
+  		$.ajax({
+        type: "GET",
+        url: url,
+        data: {
+        	no_pr:no_pr,
+        },
+        success: function(result) {
+					var i = 0
+          var valueEdit = 0
+          var append = ""
+          $("#tbodyProducts").empty()
+					$.each(result.data,function(value,item){
+  					 i++;
+             valueEdit++;
+             append = append + '<tr>'
+  						append = append + '<td>'
+  							append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
+  						append = append + '</td>'
+  						append = append + '<td width="20%">'
+  							append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.name_product +'">'
+  						append = append + '</td>'
+  						append = append + '<td width="30%">'
+  							append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:200px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
+  							append = append + '</textarea>'
+  						append = append + '</td>'
+  						append = append + '<td width="7%">'
+  							append = append + '<input id="inputQtyEdit" data-value="" readonly style="font-size: 12px; important;width:70px" class="form-control" type="number" name="" value="'+ item.qty +'">'
+  						append = append + '</td>'
+  						append = append + '<td width="10%">'
+  						append = append + '<select id="inputTypeEdit" readonly data-value="" style="font-size: 12px; important;width:70px" class="form-control">'
+  						if (item.unit == 'Pcs') {
+  							append = append + '<option selected>Pcs</option>'
+  							append = append + '<option>Unit</option>'
+  						}else{
+  							append = append + '<option>Pcs</option>'
+  							append = append + '<option selected>Unit</option>'
+  						}
+  						append = append + '</select>'	
+  						append = append + '</td>'
+  						append = append + '<td width="15%">'
+  							append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
+  						append = append + '</td>'
+  						append = append + '<td width="15%">'
+  							append = append + '<input id="inputTotalPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control inputTotalPriceEdit" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
+  						append = append + '</td>'
+  						append = append + '<td width="8%">'
+                if (localStorage.getItem('status_pr') == 'draft') {
+                  btnNext = 'nextPrevAdd(-1,'+ item.id_product +')'
+                }else{
+                  btnNext = 'nextPrevUnFinished(-1,'+ value +')'
+                }
+                console.log(btnNext)
+  							append = append + '<button type="button" onclick="'+ btnNext +'" id="btnEditProduk" data-id="'+ value +'" data-value="'+ valueEdit +'" class="btn btn-xs btn-warning fa fa-edit btnEditProduk" style="width:25px;height:25px;margin-bottom:5px"></button>'
+  							append = append + '<button id="btnDeleteProduk" type="button" data-id="'+ item.id_product +'" data-value="'+ value +'" class="btn btn-xs btn-danger fa fa-trash" style="width:25px;height:25px"></button>'
+  						append = append + '</td>'
+  					append = append + '</tr>'		
+  				})		
+
+  				$("#tbodyProducts").append(append)
+
+          $("#bottomProducts").empty()
+
+          var appendBottom = ""
+          appendBottom = appendBottom + '<hr>'
+          appendBottom = appendBottom + '<div class="row">'
+            appendBottom = appendBottom + '  <div class="col-md-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
+            appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+            appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + ' <div class="col-md-12">'
+            appendBottom = appendBottom + '   <div class="pull-right">'
+              appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
+              appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+                appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
+                  appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
+                appendBottom = appendBottom + ' </span>'
+              appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
+              appendBottom = appendBottom + ' </div>'
+            appendBottom = appendBottom + ' </div>'
+            appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '</div>'
+            appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
+            appendBottom = appendBottom + '  <div class="col-md-12">'
+            appendBottom = appendBottom + '    <div class="pull-right">'
+            appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
+            appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+          appendBottom = appendBottom + '</div>'
+
+          $("#bottomProducts").append(appendBottom)
+
+          $(document).on("click", "#btnDeleteProduk", function() {
+            console.log($(this).data("value"))
+
+            Swal.fire({
+              title: 'Are you sure?',  
+              text: "Deleting Product",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }).then((result) => {
+              if (result.value) {
+                $.ajax({
+                  type: "POST",
+                  url: "{{url('/admin/deleteProduct')}}",
+                  data:{
+                    _token:'{{ csrf_token() }}',
+                    id:$(this).data("id")
+                  },
+                  beforeSend:function(){
+                    Swal.fire({
+                        title: 'Please Wait..!',
+                        text: "It's sending..",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        customClass: {
+                            popup: 'border-radius-0',
+                        },
+                    })
+                    Swal.showLoading()
+                  },
+                  success: function(result) {
+                    Swal.fire(
+                        'Successfully!',
+                        'Delete Product.',
+                        'success'
+                    ).then((result) => {
+                      refreshTable()
+                    })
+                  }
+                })          
+              }
+            })
+          })
+
+          // $(document).on("click", "#btnEditProduk", function() {
+          //   nextPrevUnFinished(-1)
+          //   console.log($(this).data("id"))
+          //   valueEdit = $(this).data("id")
+          //   $(".tabGroupInitiateAdd").hide()
+          //   $(".tab-add")[1].children[1].style.display = 'inline'
+          //   $.each(result.data,function(value,item){
+          //     $("#prevBtnAdd").css("display", "none");
+          //     localStorage.setItem('isEditProduct',true)
+          //     localStorage.setItem('id_product',result.data[valueEdit].id_product)
+          //     nominal = result.data[valueEdit].nominal_product
+          //     console.log(result.data[valueEdit].nominal_product)
+          //     $("#inputNameProduct").val(result.data[valueEdit].name_product)
+          //     $("#inputDescProduct").val(result.data[valueEdit].description.replaceAll("<br>","\n"))
+          //     $("#inputQtyProduct").val(result.data[valueEdit].qty)
+          //     $("#selectTypeProduct").val(result.data[valueEdit].unit)
+          //     $("#inputPriceProduct").val(formatter.format(nominal))
+          //     $("#inputSerialNumber").val(result.data[valueEdit].serial_number)
+          //     $("#inputPartNumber").val(result.data[valueEdit].part_number)
+          //     $("#inputTotalPrice").val(formatter.format(result.data[valueEdit].grand_total))
+          //   })
+          // })
+
+          $('input[type="checkbox"].minimal').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+          })
+
+          var sum = 0
+          $('.inputTotalPriceEdit').each(function() {
+              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+              sum += temp;
+          });
+
+          $("#inputGrandTotalProduct").val(formatter.format(sum))
+
+          tempVat = (parseFloat(sum) * 11) / 100
+
+          finalVat = tempVat
+
+          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+
+          finalGrand = tempGrand
+
+          tempTotal = sum
+          $("#vat_tax").val(formatter.format(tempVat))
+
+          $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+			  }
+      })
+  	}
+
     var isFilledPenawaranHarga = true
     var isFilledDocPendukung = true
     var arrInputDocPendukung = []
@@ -4462,8 +4851,53 @@
     var nama_file_quote_supplier = ""
 
   	function nextPrevAdd(n,value) {
-      console.log("value",value)
+      valueEdit = value
+      if (valueEdit == undefined) {
+        if (valueEdit == 0) {
+          $(".tabGroupInitiateAdd").hide()
+          $(".tab-add")[1].children[1].style.display = 'inline'
+        }
+      }else{
+        valueEdit = valueEdit
+        if (valueEdit == true) {
+          valueEdit = 'true'
+        }
+        if (isNaN(valueEdit) === false) {
+          $(".tabGroupInitiateAdd").hide()
+          $(".tab-add")[1].children[1].style.display = 'inline'
+          $.ajax({
+            type: "GET",
+            url: "{{url('/admin/getProductById')}}",
+            data: {
+              id_product:valueEdit,
+            },
+            success: function(result) {
+              $.each(result,function(value,item){
+                $("#prevBtnAdd").css("display", "none");
+                localStorage.setItem('isEditProduct',true)
+                localStorage.setItem('id_product',item.id_product)
+                nominal = item.nominal_product
+                console.log(nominal)
+                $("#inputNameProduct").val(item.name_product)
+                $("#inputDescProduct").val(item.description.replaceAll("<br>","\n"))
+                $("#inputQtyProduct").val(item.qty)
+                $("#selectTypeProduct").val(item.unit)
+                $("#inputPriceProduct").val(formatter.format(nominal))
+                $("#inputSerialNumber").val(item.serial_number)
+                $("#inputPartNumber").val(item.part_number)
+                $("#inputTotalPrice").val(formatter.format(item.grand_total))
+              })
+            }
+          })          
+        }
+      }
   		if (currentTab == 0) {
+        const validateEmail = (email) => {
+          return email.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+        };
+
   			if ($("#inputTo").val() == "") {
   	      $("#inputTo").closest('.form-group').addClass('has-error')
   	      $("#inputTo").closest('input').next('span').show();
@@ -4476,7 +4910,13 @@
   	      $("#inputEmail").closest('.form-group').addClass('has-error')
   	      $("#inputEmail").closest('input').next('span').show();
   	      $("#inputEmail").prev('.input-group-addon').css("background-color","red");
-  	    }else if ($("#selectCategory").val() == "") {
+          $("#inputEmail").closest('input').next('span').text("Please fill an Email!")
+  	    }else if(validateEmail($("#inputEmail").val()) == null){
+          $("#inputEmail").closest('.form-group').addClass('has-error')
+          $("#inputEmail").closest('input').next('span').show();
+          $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+          $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
+        }else if ($("#selectCategory").val() == "") {
   	      $("#selectCategory").closest('.form-group').addClass('has-error')
   	      $("#selectCategory").closest('select').next('span').show();
   	      $("#selectCategory").prev('.input-group-addon').css("background-color","red");
@@ -4596,58 +5036,59 @@
           }
   	    }
   		}else if (currentTab == 1) {
-        if ($("#inputNameProduct").val() == "") {
-          $("#inputNameProduct").closest('.form-group').addClass('has-error')
-          $("#inputNameProduct").closest('input').next('span').show();
-          $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
-        } else if ($("#inputDescProduct").val() == "") {
-          $("#inputDescProduct").closest('.form-group').addClass('has-error')
-          $("#inputDescProduct").closest('textarea').next('span').show();
-          $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
-        } else if ($("#inputQtyProduct").val() == "") {
-          $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
-          $("#inputQtyProduct").closest('input').next('span').show();
-          $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
-        } else if ($("#selectTypeProduct").val() == "" || $("#selectTypeProduct").val() == null) {
-          $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
-          $("#selectTypeProduct").closest('select').next('span').show();
-          $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
-        } else if ($("#inputPriceProduct").val() == "") {
-          $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
-          $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
-          $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
-        } else {
-          if (n == '1') {
-            $.ajax({
-              url: "{{url('/admin/storeProductPr')}}",
-              type: 'post',
-              data: {
-               _token:"{{ csrf_token() }}",
-               no_pr:localStorage.getItem('no_pr'),
-               inputNameProduct:$("#inputNameProduct").val(),
-               inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
-               inputQtyProduct:$("#inputQtyProduct").val(),
-               selectTypeProduct:$("#selectTypeProduct").val(),
-               inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-               inputTotalPrice:$("#inputTotalPrice").val(),
-               inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
-              },
-              beforeSend:function(){
-                Swal.fire({
+        if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
+          if ($("#inputNameProduct").val() == "") {
+            $("#inputNameProduct").closest('.form-group').addClass('has-error')
+            $("#inputNameProduct").closest('input').next('span').show();
+            $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
+          } else if ($("#inputDescProduct").val() == "") {
+            $("#inputDescProduct").closest('.form-group').addClass('has-error')
+            $("#inputDescProduct").closest('textarea').next('span').show();
+            $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
+          } else if ($("#inputQtyProduct").val() == "") {
+            $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
+            $("#inputQtyProduct").closest('input').next('span').show();
+            $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
+          } else if ($("#selectTypeProduct").val() == "" || $("#selectTypeProduct").val() == null) {
+            $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
+            $("#selectTypeProduct").closest('select').next('span').show();
+            $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
+          } else if ($("#inputPriceProduct").val() == "") {
+            $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
+            $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
+            $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
+          } else{
+            if (localStorage.getItem('isEditProduct') == 'true') {
+              $.ajax({
+                url: "{{url('/admin/updateProductPr')}}",
+                type: 'post',
+                data: {
+                 _token:"{{ csrf_token() }}",
+                 id_product:localStorage.getItem('id_product'),
+                 inputNameProduct:$("#inputNameProduct").val(),
+                 inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+                 inputQtyProduct:$("#inputQtyProduct").val(),
+                 selectTypeProduct:$("#selectTypeProduct").val(),
+                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                 inputTotalPrice:$("#inputTotalPrice").val(),
+                 inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
+                },beforeSend:function(){
+                  Swal.fire({
                     title: 'Please Wait..!',
                     text: "It's sending..",
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     allowEnterKey: false,
                     customClass: {
-                        popup: 'border-radius-0',
+                      popup: 'border-radius-0',
                     },
                     didOpen: () => {
-                        Swal.showLoading()
+                      Swal.showLoading()
                     }
-                })
-              },success:function(){
+                  })
+                },success:function(){
                   Swal.close()
+
                   var x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
                   currentTab = currentTab + n;
@@ -4656,8 +5097,12 @@
                     currentTab = 0;
                   }
                   addDraftPr(currentTab);
-                  
-                  addTable(0)
+                  addTable()
+                  localStorage.setItem('isEditProduct',false)
+                  localStorage.setItem('status_pr','draft')
+                  $(".tabGroupInitiateAdd").show()
+                  $(".tab-add")[1].children[1].style.display = 'none'
+                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
                   $("#inputNameProduct").val('')
                   $("#inputDescProduct").val('')
                   $("#inputPriceProduct").val('')
@@ -4667,7 +5112,134 @@
                   $("#inputTotalPrice").val('')
                 }
               })
-          }else{
+            }else{
+              $.ajax({
+                url: "{{url('/admin/storeProductPr')}}",
+                type: 'post',
+                data: {
+                 _token:"{{ csrf_token() }}",
+                 no_pr:localStorage.getItem('no_pr'),
+                 inputNameProduct:$("#inputNameProduct").val(),
+                 inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+                 inputSerialNumber:$("#inputSerialNumber").val(),
+                 inputPartNumber:$("#inputPartNumber").val(),
+                 inputQtyProduct:$("#inputQtyProduct").val(),
+                 selectTypeProduct:$("#selectTypeProduct").val(),
+                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                 inputTotalPrice:$("#inputTotalPrice").val(),
+                 inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
+                },
+                beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                },success:function(){
+                    Swal.close()
+                    var x = document.getElementsByClassName("tab-add");
+                    x[currentTab].style.display = "none";
+                    currentTab = currentTab + n;
+                    if (currentTab >= x.length) {
+                      x[n].style.display = "none";
+                      currentTab = 0;
+                    }
+                    addDraftPr(currentTab);
+                    localStorage.setItem('status_pr','draft')
+                    addTable(0)
+                    $("#inputNameProduct").val('')
+                    $("#inputDescProduct").val('')
+                    $("#inputPriceProduct").val('')
+                    $("#inputQtyProduct").val('')
+                    $("#inputSerialNumber").val('')
+                    $("#inputPartNumber").val('')
+                    $("#inputTotalPrice").val('')
+
+                    $(".tabGroupInitiateAdd").show()
+                    x[n].children[1].style.display = 'none'
+                    document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
+                  }
+              })
+            } 
+            // if (n == '1') {
+            //   $.ajax({
+            //     url: "{{url('/admin/storeProductPr')}}",
+            //     type: 'post',
+            //     data: {
+            //      _token:"{{ csrf_token() }}",
+            //      no_pr:localStorage.getItem('no_pr'),
+            //      inputNameProduct:$("#inputNameProduct").val(),
+            //      inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+            //      inputSerialNumber:$("#inputSerialNumber").val(),
+            //      inputPartNumber:$("#inputPartNumber").val(),
+            //      inputQtyProduct:$("#inputQtyProduct").val(),
+            //      selectTypeProduct:$("#selectTypeProduct").val(),
+            //      inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+            //      inputTotalPrice:$("#inputTotalPrice").val(),
+            //      inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
+            //     },
+            //     beforeSend:function(){
+            //       Swal.fire({
+            //           title: 'Please Wait..!',
+            //           text: "It's sending..",
+            //           allowOutsideClick: false,
+            //           allowEscapeKey: false,
+            //           allowEnterKey: false,
+            //           customClass: {
+            //               popup: 'border-radius-0',
+            //           },
+            //           didOpen: () => {
+            //               Swal.showLoading()
+            //           }
+            //       })
+            //     },success:function(){
+            //         Swal.close()
+            //         var x = document.getElementsByClassName("tab-add");
+            //         x[currentTab].style.display = "none";
+            //         currentTab = currentTab + n;
+            //         if (currentTab >= x.length) {
+            //           x[n].style.display = "none";
+            //           currentTab = 0;
+            //         }
+            //         addDraftPr(currentTab);
+            //         localStorage.setItem('status_pr','draft')
+            //         addTable(0)
+            //         $("#inputNameProduct").val('')
+            //         $("#inputDescProduct").val('')
+            //         $("#inputPriceProduct").val('')
+            //         $("#inputQtyProduct").val('')
+            //         $("#inputSerialNumber").val('')
+            //         $("#inputPartNumber").val('')
+            //         $("#inputTotalPrice").val('')
+
+            //         $(".tabGroupInitiateAdd").style.display == 'inline'
+            //         x[n].children[1].style.display = 'none'
+            //       }
+            //   })
+            // }else{
+            //   var x = document.getElementsByClassName("tab-add");
+            //   x[currentTab].style.display = "none";
+            //   currentTab = currentTab + n;
+            //   if (currentTab >= x.length) {
+            //     x[n].style.display = "none";
+            //     currentTab = 0;
+            //   }
+            //   addDraftPr(currentTab);
+            //   addTable()
+            // }              
+          }  
+        }else{
+          console.log('lakukan baru')
+
+          if ($('#uploadCsv').val() == "") {
             var x = document.getElementsByClassName("tab-add");
             x[currentTab].style.display = "none";
             currentTab = currentTab + n;
@@ -4676,9 +5248,53 @@
               currentTab = 0;
             }
             addDraftPr(currentTab);
-            unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-            addTable()
-          }                
+          }else{
+            var dataForm = new FormData();
+            dataForm.append('csv_file',$('#uploadCsv').prop('files')[0]);
+            dataForm.append('_token','{{ csrf_token() }}');
+            dataForm.append('no_pr',localStorage.getItem('no_pr'));
+
+            $.ajax({
+              processData: false,
+              contentType: false,
+              url: "{{url('/admin/uploadCSV')}}",
+              type: 'POST',
+              data: dataForm,
+              beforeSend:function(){
+                Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                    popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                    Swal.showLoading()
+                  }
+                })
+              },success:function(result){
+                Swal.close()
+                //nge reset upload csv
+                cancelUploadCsv()
+                if (result.status == "Error") {
+                  reasonReject(result.text,"block","tabGroupInitiateAdd")
+                }else{
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  addDraftPr(currentTab);
+                  addTable()
+                  localStorage.setItem('status_pr','draft')
+                }
+              }
+            })
+          }
         } 			
   		}else if (currentTab == 3) {
   			if ($("#selectType").val() == 'IPR') {
@@ -4906,6 +5522,8 @@
           }
         }); 
   		}else{
+        $(".divReasonRejectRevision").remove()
+
   			var x = document.getElementsByClassName("tab-add");
   	    x[currentTab].style.display = "none";
   			currentTab = currentTab + n;
@@ -4914,6 +5532,7 @@
   				currentTab = 0;
   			}
   			addDraftPr(currentTab);
+        localStorage.setItem('status_pr','draft')
   		}
   		
   		console.log("value", n)
@@ -5305,8 +5924,54 @@
       console.log("value", n)
       console.log("current_tab_next",currentTab)
     } 
-
+    
+    localStorage.setItem('isEditProduct',false)
     function nextPrevAddAdmin(n,no_pr) {
+      if (localStorage.getItem('isEditProduct') == 'true') {
+        $.ajax({
+          url: "{{url('/admin/updateProductPr')}}",
+          type: 'post',
+          data: {
+           _token:"{{ csrf_token() }}",
+           id_product:localStorage.getItem('id_product'),
+           inputNameProduct:$("#inputNameProduct").val(),
+           inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+           inputQtyProduct:$("#inputQtyProduct").val(),
+           selectTypeProduct:$("#selectTypeProduct").val(),
+           inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+           inputTotalPrice:$("#inputTotalPrice").val(),
+           inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
+          },beforeSend:function(){
+            Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                Swal.showLoading()
+              }
+            })
+          },success:function(){
+            localStorage.setItem('isEditProduct',false)
+            cekByAdmin(currentTab,no_pr);
+            $("#ModalDraftPr").modal("hide")
+            Swal.close()
+            currentTab = 1
+
+            $("#inputNameProduct").val('')
+            $("#inputDescProduct").val('')
+            $("#inputPriceProduct").val('')
+            $("#inputQtyProduct").val('')
+            $("#inputSerialNumber").val('')
+            $("#inputPartNumber").val('')
+            $("#inputTotalPrice").val('')
+          }
+        })
+      }
   		var x = document.getElementsByClassName("tab-cek");
       x[currentTab].style.display = "none";
   		currentTab = currentTab + n;
@@ -5319,7 +5984,6 @@
   		console.log("current_tab_next",currentTab)
     }
 
-
     var incrementDoc = 0
     function addDocPendukung(){
       console.log("inputDocPendukung_" + incrementDoc)
@@ -5330,7 +5994,7 @@
             append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
             append = append + '<label for="inputDocPendukung" style="margin-bottom:0px">'
             append = append + '<span class="fa fa-cloud-upload" style="display:inline"></span>'
-            append = append + '<input style="display:inline" class=" inputDocPendukung_'+ incrementDoc +'" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
+            append = append + '<input style="display:inline" class=" inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
             append = append + '</label>'
           append = append + "</td>"
           append = append + "<td>"
@@ -5391,6 +6055,7 @@
                     type: 'success',
                     confirmButtonText: 'Reload',
                   }).then((result) => {
+                    localStorage.setItem('status_pr','') 
                     if (status == 'revision') {
                       location.replace("{{url('/admin/detail/draftPR')}}/"+ localStorage.getItem('no_pr'))
                     }else{
