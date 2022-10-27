@@ -134,6 +134,9 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/testJson','TestController@testJson');	
 	Route::get('/oauth2callback','TestController@oauth2callback');
 
+	//coba calendar team up
+	Route::get('/indexCalendar','TestController@indexCalendar');
+
 	Route::get('permission/changeFeatureItem','TestController@changeFeatureItem');
 	Route::get('permission/getUserList','TestController@getUserList');
 	Route::get('permission/getParameter','TestController@getParameter');
@@ -316,6 +319,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/admin/getPdfPRFromLink', 'PrDraftController@getPdfPRFromLink');
 	Route::post('/admin/sendMailtoFinance', 'PrDraftController@sendMailtoFinance');
 	Route::post('/admin/deleteDokumen', 'PrDraftController@deleteDokumen');
+	Route::post('/admin/deleteProduct', 'PrDraftController@deleteProduct');
 	Route::post('/admin/updateSupplier', 'PrDraftController@updateSupplierPr');
 	Route::post('/admin/updateProductPr', 'PrDraftController@updateProductPr');
 	Route::get('/admin/sendMailDraft', 'PrDraftController@sendMailDraft');
@@ -329,6 +333,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/admin/storeReply', 'PrDraftController@storeReply');
 	Route::post('/admin/storeResolveNotes', 'PrDraftController@storeResolveNotes');
 	Route::get('/admin/getNotes', 'PrDraftController@getNotes');
+	Route::get('/admin/getProductById', 'PrDraftController@getProductById');
+	Route::post('/admin/uploadCSV','PrDraftController@uploadCSV');
 
 
 	Route::get('/po', 'PONumberController@index');
@@ -1176,3 +1182,11 @@ Route::get('testUploadPDF',function(){
 	$pr = new App\Http\Controllers\PrDraftController();
 	$pr->uploadPdf(52,"Faiqoh Cantik");
 });
+
+Route::get('testCSVUpload','TestController@testCSVUpload');
+Route::post('testCSVUploadPost','TestController@testCSVUploadPost');
+
+Route::get('testCSVUploadGetFile','TestController@testCSVUploadGetFile');
+
+
+
