@@ -113,6 +113,10 @@
 		<tr style="background-color:#c0c0c0">
 			<th style="border-collapse: collapse;border: 1px solid;">No</th>
 			<th style="border-collapse: collapse;border: 1px solid;">Product</th>
+			@if($data->type_of_letter == 'EPR')
+			<th style="border-collapse: collapse;border: 1px solid;">Part Number</th>
+			<th style="border-collapse: collapse;border: 1px solid;">Serial Number</th>
+			@endif
 			<th style="border-collapse: collapse;border: 1px solid;">Description</th>
 			<th style="border-collapse: collapse;border: 1px solid;">Qty</th>
 			<th style="border-collapse: collapse;border: 1px solid;">Unit</th>
@@ -125,6 +129,10 @@
 			<tr>
 				<td style="text-align:center">{{++$key}}</td>
 				<td>{{$eachProduct->name_product}}</td>
+				@if($data->type_of_letter == 'EPR')
+				<td style="text-align:center;">{{$eachProduct->part_number}}</td>
+				<td style="text-align:center;">{{$eachProduct->serial_number}}</td>
+				@endif
 				<td>{!! nl2br($eachProduct->description) !!}</td>
 				<td style="text-align:center">{{$eachProduct->qty}}</td>
 				<td style="text-align:center">{{$eachProduct->unit}}</td>
@@ -137,6 +145,10 @@
 		<tr>
 			<th>-</th>
 			<th></th>
+			@if($data->type_of_letter == 'EPR')
+			<th></th>
+			<th></th>
+			@endif
 			<th></th>
 			<th></th>
 			<th></th>
@@ -146,6 +158,10 @@
 		<tr>
 			<th></th>
 			<th></th>
+			@if($data->type_of_letter == 'EPR')
+			<th></th>
+			<th></th>
+			@endif
 			<th style="text-align:right">Total</th>
 			<th></th>
 			<th></th>
@@ -156,6 +172,10 @@
 		<tr>
 			<th></th>
 			<th></th>
+			@if($data->type_of_letter == 'EPR')
+			<th></th>
+			<th></th>
+			@endif
 			<th style="text-align:right" 11%>VAT 11%</th>
 			<th></th>
 			<th></th>
@@ -165,6 +185,10 @@
 		<tr style="background-color:#c0c0c0">
 			<th></th>
 			<th></th>
+			@if($data->type_of_letter == 'EPR')
+			<th></th>
+			<th></th>
+			@endif
 			<th style="text-align:right" >Grand Total</th>
 			<th></th>
 			<th></th>
@@ -175,6 +199,10 @@
 		<tr style="background-color:#c0c0c0">
 			<th></th>
 			<th></th>
+			@if($data->type_of_letter == 'EPR')
+			<th></th>
+			<th></th>
+			@endif
 			<th style="text-align:right" >Grand Total</th>
 			<th></th>
 			<th></th>
