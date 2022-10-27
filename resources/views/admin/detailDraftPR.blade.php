@@ -212,7 +212,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Type*</label>
-                  <select type="text" class="form-control" name="type" placeholder="ex. Internal Purchase Request" id="selectType" required >
+                  <select type="text" class="form-control" name="type" placeholder="ex. Internal Purchase Request" onchange="fillInput('selectType')" id="selectType" required >
                       <option selected value="">Select Type</option>
                       <option value="IPR">IPR (Internal Purchase Request)</option>
                       <option value="EPR">EPR (Eksternal Purchase Request)</option>
@@ -232,7 +232,7 @@
 
             <div class="form-group">
               <label for="">Category</label>
-              <select type="text" class="form-control select2" name="selectCategory" id="selectCategory" style="width: 100%">
+              <select type="text" class="form-control select2" name="selectCategory" id="selectCategory" style="width: 100%" onchange="fillInput('selectCategory')">
                   <option value="">Select Category</option>
                   <option value="Barang dan Jasa">Barang dan Jasa</option>
                   <option value="Barang">Barang</option>
@@ -253,6 +253,7 @@
                   <option value="Legal">Legal</option>
                   <option value="Other">Other</option>
               </select>
+              <span class="help-block" style="display:none;">Please fill Category!</span>
             </div>
 
             <div class="row">
@@ -306,66 +307,99 @@
             </div>
           </div>
           <div class="tab-add" style="display:none">
-            <div class="form-group">
-              <label>Product*</label>
-              <input type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
-              <span class="help-block" style="display:none;">Please fill Name Product!</span>
-            </div>
-            <div class="form-group">
-              <label>Description*</label> 
-              <textarea onkeyup="fillInput('desc_product')" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control" style="resize: vertical;height: 150px;"></textarea>
-              <span class="help-block" style="display:none;">Please fill Description!</span>
-            </div>
-            <div class="form-group">
-              <div class="row">
-                <div class="col-md-6"> 
-                  <label>Serial Number</label>
-                  <input type="text" name="" class="form-control" id="inputSerialNumber">
+            <div class="tabGroupInitiateAdd">
+              <div class="form-group" style="display:flex">
+                <button class="btn btn-primary" id="btnInitiateAddProduct" type="button" style="margin:0 auto;"><i class="fa fa-plus"></i>&nbspAdd Product</button>
+              </div>
+              <div class="form-group" style="display:flex;">
+                <span style="margin:0 auto;">OR</span>
+              </div>
+              <div class="form-group" style="display: flex;">
+                <div style="padding: 7px;
+                            width: 20%;
+                            border: 1px solid #dee2e6 !important;
+                            color: #337ab7;
+                            height: 35px;
+                            background-color: #eee;
+                            display: inline;
+                            margin: 0 auto;">
+                  <i class="fa fa-cloud-upload" style="margin-left:5px"></i>
+                  <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
+                  <label for="uploadCsv">Upload CSV</label>
+                  <i class="fa fa-times hidden" onclick="cancelUploadCsv()" style="display:inline;color: red;"></i>
+                  <!-- <span class="help-block" style="display:none;">Please Upload File or Add Product!</span> -->
                 </div>
-                <div class="col-md-6"> 
-                  <label>Part Number</label>
-                  <input type="text" name="" class="form-control" id="inputPartNumber">
-                </div>
+              </div>         
+              <div style="display: flex;">
+                <span style="margin: 0 auto;">You can get format of CSV from this <a href="{{url('draft_pr/Import_product_sample.csv')}}" style="cursor:pointer;">link</a></span>
+              </div>
+              <div style="display: flex;">
+                <span style="margin: 0 auto;">And make sure, the change of template only at row 2, any change on row 1 (header) will be reject</span>
               </div>
             </div>
-            <div class="form-group">
-              <div class="row">
-                <div class="col-md-4"> 
-                  <label>Qty*</label>
-                  <input type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
-                  <span class="help-block" style="display:none;">Please fill Qty!</span>
-                </div>
-                <div class="col-md-4"> 
-                  <label>Type*</label>
-                  <select class="form-control" id="selectTypeProduct" placeholder="ex. Unit" >
-                    <option value="pcs">Pcs</option>
-                    <option selected value="unit">Unit</option>                   
-                  </select>
-                  <span class="help-block" style="display:none;">Please fill Unit!</span>
-                </div>
-                <div class="col-md-4"> 
-                  <label>Price*</label>
-                  <div class="input-group">
-                    <div class="input-group-addon">
-                    Rp.
-                    </div>
-                    <input type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+            <div class="tabGroup" style="display:none">
+              <div class="form-group">
+                <label>Product*</label>
+                <input type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
+                <span class="help-block" style="display:none;">Please fill Name Product!</span>
+              </div>
+              <div class="form-group">
+                <label>Description*</label> 
+                <textarea onkeyup="fillInput('desc_product')" style="resize:vertical;height:150px" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control"></textarea>
+                <span class="help-block" style="display:none;">Please fill Description!</span>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-6"> 
+                    <label>Serial Number</label>
+                    <input type="text" name="" class="form-control" id="inputSerialNumber">
                   </div>
-                  <span class="help-block" style="display:none;">Please fill Price!</span>
+                  <div class="col-md-6"> 
+                    <label>Part Number</label>
+                    <input type="text" name="" class="form-control" id="inputPartNumber">
+                  </div>
                 </div>
               </div>
-            </div>              
-            <div class="form-group">
-              <label>Total Price</label>
-              <div class="input-group">
-                <div class="input-group-addon">
-                Rp.
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-4"> 
+                    <label>Qty*</label>
+                    <input type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
+                    <span class="help-block" style="display:none;">Please fill Qty!</span>
+                  </div>
+                  <div class="col-md-4"> 
+                    <label>Type*</label>
+                    <select class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
+                      <option value="pcs">Pcs</option>
+                      <option selected value="unit">Unit</option>                   
+                    </select>
+                    <span class="help-block" style="display:none;">Please fill Unit!</span>
+                  </div>
+                  <div class="col-md-4"> 
+                    <label>Price*</label>
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                      Rp.
+                      </div>
+                      <input type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+                    </div>
+                    <span class="help-block" style="display:none;">Please fill Price!</span>
+                  </div>
                 </div>
-                  <input readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
+              </div>              
+              <div class="form-group">
+                <label>Total Price</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                  Rp.
+                  </div>
+                    <input readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
+                </div>
               </div>
             </div>
           </div> 
           <div class="tab-add" style="display:none">
+            <div class="table-responsive">
               <table class="table no-wrap">
                 <thead>
                   <th>No</th>
@@ -374,18 +408,19 @@
                   <th>Qty</th>
                   <th>Type</th>
                   <th>Price</th>
-                  <th>Total Price <a class="pull-right" onclick="refreshTable()"><i class="fa fa-refresh"></i>&nbsp</a></th>
-                  <!-- <th></th> -->
+                  <th>Total Price</th>
+                  <th><a class="pull-right" onclick="refreshTable()"><i class="fa fa-refresh"></i>&nbsp</a></th>
                 </thead>
                 <tbody id="tbodyProducts">
                   
                 </tbody>
               </table>
-              <div class="row">
-                <div class="col-md-12" id="bottomProducts">
-                  
-                </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12" id="bottomProducts">
+                
               </div>
+            </div>
             <div class="form-group">
               <button class="btn btn-sm btn-primary" style="display:flex;margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
             </div>
@@ -421,7 +456,7 @@
               <div class="form-group">
                 <label>SPK/Kontrak*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;">
+                  <input type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
                 <span style="display:none;" id="span_link_drive_spk"><a id="link_spk" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -430,7 +465,7 @@
               <div class="form-group">
                 <label>SBE*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;">
+                  <input type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
                 <span style="display:none;" id="span_link_drive_sbe"><a id="link_sbe" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -441,7 +476,7 @@
                   <div class="col-md-6">
                     <label>Quote Supplier*</label>
                     <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;">
-                      <input type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" class="fa fa-cloud-upload" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;">
+                      <input type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" class="fa fa-cloud-upload files" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;">
                     </div>
                     <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
                     <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -464,7 +499,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputPenawaranHarga" style="margin-bottom:0px">
                     <span class="fa fa-cloud-upload" style="display:inline"></span>
-                    <input style="display: inline;" type="file" name="inputPenawaranHarga" id="inputPenawaranHarga">
+                    <input style="display: inline;" type="file" name="inputPenawaranHarga" class="files" id="inputPenawaranHarga">
                   </label>
                 </div>
                 <!-- <input type="file" name="inputPenawaranHarga" id="inputPenawaranHarga" class="form-control"> -->
@@ -497,7 +532,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 table-responsive">
                 <table class="table" style="white-space: nowrap;">
                   <thead>
                     <tr>
@@ -578,7 +613,7 @@
       } 
     })
 
-    $('input[type="file"]').change(function(){
+    $('input[class="files"]').change(function(){
       
       var f=this.files[0]
       var filePath = f;
@@ -607,13 +642,50 @@
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Invalid file type, just allow png/jpg/pdf',
+          text: 'Invalid file type, just allow png/jpg/pdf file',
         }).then((result) => {
           this.value = ''
         })
       }
     })
+
+    $('input[type="file"][name="uploadCsv"]').change(function(){
+      var f=this.files[0]
+      var filePath = f;
+
+      var ext = filePath.name.split(".");
+      ext = ext[ext.length-1].toLowerCase();      
+      var arrayExtensions = ["csv"];
+
+      console.log(ext)
+
+      if (arrayExtensions.lastIndexOf(ext) == -1) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Invalid file type, just allow csv file',
+        }).then((result) => {
+          this.value = ''
+        })
+      }else{
+        localStorage.setItem('isProductInline',false)
+        $("#uploadCsv").next('label').hide()
+        $("input[type='file'][name='uploadCsv']").removeClass('hidden')
+        $("input[type='file'][name='uploadCsv']").prev('i').hide()
+        $("#uploadCsv").next('label').next('i').removeClass('hidden') 
+        $("#btnInitiateAddProduct").prop("disabled",true)
+      }
+    })
   })
+
+  function cancelUploadCsv(){
+    $("input[type='file'][name='uploadCsv']").val('')
+    $("#uploadCsv").next('label').show()
+    $("input[type='file'][name='uploadCsv']").addClass('hidden')
+    $("input[type='file'][name='uploadCsv']").prev('i').show()
+    $("#uploadCsv").next('label').next('i').addClass('hidden') 
+    $("#btnInitiateAddProduct").prop("disabled",false)
+  }
 
   isPembanding = localStorage.getItem('isPembanding')
   $("#BtnBack").click(function(){
@@ -633,15 +705,29 @@
     }
   })
 
-  function reasonReject(item,display){
+  function reasonReject(item,display,nameClass){
+    $(".divReasonRejectRevision").remove()
+
+    var textTitle = ""
+    var className = ""
+
+    if (nameClass == 'tabGroup') {
+      textTitle = "Note Reject PR"
+      className = "tabGroup"
+    }else{
+      textTitle = "Alert Error!"
+      className = nameClass
+    }
+    
+    console.log(display)
     var append = ""
 
     append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
-      append = append + '<h4><i class="icon fa fa-cross"></i>Note Reject PR</h4>'
-      append = append + '<p class="reason_reject_revision">'+ item.replaceAll("\n","<br>") +'</p>'
+      append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
+      append = append + '<p class="reason_reject_revision">'+item.replaceAll("\n","<br>")+'</p>'
     append = append + '</div>'
 
-    $(".tabGroup").prepend(append)
+    $("." + nameClass).prepend(append)
 
     if (display == "block") {
       $(".divReasonRejectRevision").show()
@@ -1102,7 +1188,7 @@
           append = append + '<div class="box-body">'
               append = append + '<div id="headerPreview">'
               append = append + '</div>'
-              append = append + '<hr>'
+              append = append + '<br><hr>'
               append = append + '<div id="table-produk" class="table-responsive">'
                 append = append + '<table class="table no-wrap">'
                   append = append + '<thead>'
@@ -1160,8 +1246,8 @@
         if (!accesable.includes('cbPriority')) {
           $(".cbDraft").prop('disabled',true)
           $(".cbPriority").prop('disabled',true)
-          // $(".cbPriority").closest('div').addClass('disabled',true)
-          // $(".cbDraft").closest('div').addClass('disabled',true)         
+          $(".cbPriority").closest('div').css('cursor','not-allowed')
+          $(".cbDraft").closest('div').css('cursor','not-allowed')        
           // $(".cbDraft").closest('div').css("display","none")
           // $(".cbPriority").closest('div').css("display","none")
         }
@@ -1223,7 +1309,7 @@
               append = append + '<input style="width:200px;font-size:12px;" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<textarea style="width:250px;font-size:12px;resize:none;height:150px" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '</textarea>'
+              append = append + '<textarea style="width:250px;font-size:12px;resize:none;height:150px" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px">'
@@ -1501,7 +1587,7 @@
               append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '</textarea>'
+              append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px">'
@@ -1766,8 +1852,8 @@
       append = append + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ item.address +'</span></span><br><br>'
     }
     append = append + '</div>'
+    append = append + '<hr id="hr_pembanding" data-value="'+i+'" style="display:none">'
     append = append + '<div id="bodyPreviewPembanding" data-value="'+i+'" style="display:none;overflow:auto" class="table-responsive">'
-    append = append + '<hr>'
       append = append + '<table class="table no-wrap">'
         append = append + '<thead>'
           append = append + '<th>No</th>'
@@ -1790,7 +1876,7 @@
                 append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
               append = append + '</td>'
               append = append + '<td>'
-                append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
               append = append + '</td>'
               append = append + '<td>'
                 append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;;font-size:12px">'
@@ -2105,11 +2191,13 @@
       $("#bottomPreviewPembanding[data-value='" + i + "']").hide('slow')
       $("#bodyPreviewPembanding[data-value='" + i + "']").hide('slow')
       $("#bodyCollapse[data-value='" + i + "']").hide("slow")
+      $("#hr_pembanding[data-value='" + i + "']").hide('slow')
       $(".btnMinus[data-value='pembanding_" + i + "']").find('span').removeClass("fa-angle-down").addClass("fa-angle-right")
     }
     if ($("#bottomPreviewPembanding[data-value='" + i + "']").is(':hidden') == true){
       $("#bottomPreviewPembanding[data-value='" + i + "']").show('slow')
       $("#bodyPreviewPembanding[data-value='" + i + "']").show('slow')
+      $("#hr_pembanding[data-value='" + i + "']").show('slow')
       $(".btnMinus[data-value='pembanding_" + i + "']").find('span').removeClass("fa-angle-right").addClass("fa-angle-down")
     }
   }  
@@ -2278,7 +2366,7 @@
                 append = append + '<input style="font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
               append = append + '</td>'
               append = append + '<td width="35%">'
-                append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="10%">'
                 append = append + '<input class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px" readonly>'
@@ -2640,6 +2728,8 @@
   }
 
   function addDraftPrPembanding(n){
+    console.log("current_tab",n)
+
     const firstLaunch = localStorage.setItem('firstLaunch',true)
     localStorage.setItem('isStoreSupplier',false)
 
@@ -2707,7 +2797,7 @@
                 append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
               append = append + '</td>'
               append = append + '<td width="35%">'
-                append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="10%">'
                 append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
@@ -2905,6 +2995,21 @@
         $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
         $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
         document.getElementById("prevBtnAdd").style.display = "inline";
+        $("#btnInitiateAddProduct").click(function(){
+          console.log(x[n].children[0].children[0].style.display = 'inline')
+          $(".tabGroupInitiateAdd").hide()
+          x[n].children[1].style.display = 'inline'
+
+          localStorage.setItem('isProductInline',true)
+          $("#inputNameProduct").val('')
+          $("#inputDescProduct").val('')
+          $("#inputQtyProduct").val('')
+          $("#selectTypeProduct").val('')
+          $("#inputPriceProduct").val('')
+          $("#inputSerialNumber").val('')
+          $("#inputPartNumber").val('')
+          $("#inputTotalPrice").val('')
+        })
       }else if(n == 2){
         $(".modal-title").text('')
         $("#nextBtnAdd").removeAttr('onclick')
@@ -3079,6 +3184,18 @@
       $("#inputAddress").prev('.input-group-addon').css("background-color","red");  
     }
 
+    if (val == "selectType") {
+      $("#selectType").closest('.form-group').removeClass('has-error')
+      $("#selectType").closest('select').next('span').hide();
+      $("#selectType").prev('.input-group-addon').css("background-color","red");
+    }
+
+    if (val == "selectCategory") {
+      $("#selectCategory").closest('.form-group').removeClass('has-error')
+      $("#selectCategory").closest('select').next('span').hide();
+      $("#selectCategory").prev('.input-group-addon').css("background-color","red");
+    }
+
     if (val == "name_product") {
       $("#inputNameProduct").closest('.form-group').removeClass('has-error')
       $("#inputNameProduct").closest('input').next('span').hide();
@@ -3133,8 +3250,85 @@
     }
   }
 
+  localStorage.setItem('isEditProduct',false)
   function nextPrevAddPembanding(n,value) {
+    // if (isNaN(value) == false && value != true) {
+    //   console.log('whats my value '+isNaN('value'))
+    //   // $(".tabGroupInitiateAdd").hide()
+    //   // $(".tab-add")[1].children[1].style.display = 'inline'
+    //   $.ajax({
+    //     type: "GET",
+    //     url: "{{url('/admin/getProductPembanding')}}",
+    //     data: {
+    //       no_pr:localStorage.getItem("no_pembanding"),
+    //     },
+    //     success: function(result) {
+    //       $.each(result.data,function(value,item){
+    //         $("#prevBtnAdd").css("display", "none");
+    //         localStorage.setItem('isEditProduct',true)
+    //         localStorage.setItem('id_product',result.data[value].id_product)
+    //         nominal = result.data[value].nominal_product
+    //         $("#inputNameProduct").val(result.data[value].name_product)
+    //         $("#inputDescProduct").val(result.data[value].description.replaceAll("<br>","\n"))
+    //         $("#inputQtyProduct").val(result.data[value].qty)
+    //         $("#selectTypeProduct").val(result.data[value].unit)
+    //         $("#inputPriceProduct").val(formatter.format(nominal))
+    //         $("#inputSerialNumber").val(result.data[value].serial_number)
+    //         $("#inputPartNumber").val(result.data[value].part_number)
+    //         $("#inputTotalPrice").val(formatter.format(result.data[value].grand_total))
+    //       })
+    //     }
+    //   })
+    // }else{
+    //   $(".tabGroupInitiateAdd").show()
+    //   $(".tab-add")[1].children[1].style.display = 'none'
+    // }
+
+    if (value == undefined) {
+      if (value == 0) {
+        $(".tabGroupInitiateAdd").hide()
+        $(".tab-add")[1].children[1].style.display = 'inline'
+      }
+    }else{
+      value = value
+      if (value == true) {
+        value = 'true'
+      }
+      if (value == false || isNaN(value) == false) {
+        $(".tabGroupInitiateAdd").hide()
+        $(".tab-add")[1].children[1].style.display = 'inline'
+        $.ajax({
+          type: "GET",
+          url: "{{url('/admin/getProductPembanding')}}",
+          data: {
+            no_pr:localStorage.getItem("no_pembanding"),
+          },
+          success: function(result) {
+            $.each(result.data,function(value,item){
+              $("#prevBtnAdd").css("display", "none");
+              localStorage.setItem('isEditProduct',true)
+              localStorage.setItem('id_product',result.data[value].id_product)
+              nominal = result.data[value].nominal_product
+              $("#inputNameProduct").val(result.data[value].name_product)
+              $("#inputDescProduct").val(result.data[value].description.replaceAll("<br>","\n"))
+              $("#inputQtyProduct").val(result.data[value].qty)
+              $("#selectTypeProduct").val(result.data[value].unit)
+              $("#inputPriceProduct").val(formatter.format(nominal))
+              $("#inputSerialNumber").val(result.data[value].serial_number)
+              $("#inputPartNumber").val(result.data[value].part_number)
+              $("#inputTotalPrice").val(formatter.format(result.data[value].grand_total))
+            })
+          }
+        })
+      }
+    }
     if (currentTab == 0) {
+      const validateEmail = (email) => {
+        return email.match(
+          /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+      };
+
       if ($("#inputTo").val() == "") {
         $("#inputTo").closest('.form-group').addClass('has-error')
         $("#inputTo").closest('input').next('span').show();
@@ -3143,6 +3337,12 @@
         $("#inputEmail").closest('.form-group').addClass('has-error')
         $("#inputEmail").closest('input').next('span').show();
         $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+        $("#inputEmail").closest('input').next('span').text("Please fill an Email!")
+      }else if(validateEmail($("#inputEmail").val()) == null){
+        $("#inputEmail").closest('.form-group').addClass('has-error')
+        $("#inputEmail").closest('input').next('span').show();
+        $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+        $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
       }else if ($("#selectPosition").val() == "") {
         $("#selectPosition").closest('.form-group').addClass('has-error')
         $("#selectPosition").closest('select').next('span').show();
@@ -3168,10 +3368,9 @@
         $("#inputAddress").closest('textarea').next('span').show();
         $("#inputAddress").prev('.input-group-addon').css("background-color","red");
       }else{
-        if (value == true) {
+        if (value == 'true') {
           isStoreSupplier = localStorage.getItem('isStoreSupplier')
-          if (isStoreSupplier == 'false') {
-            
+          if (isStoreSupplier == 'false') {            
             Swal.fire({
                 title: 'Are you sure?',
                 text: "Save info Supplier",
@@ -3258,29 +3457,83 @@
         }
       }
     }else if (currentTab == 1) {
-      if ($("#inputNameProduct").val() == "") {
-        $("#inputNameProduct").closest('.form-group').addClass('has-error')
-        $("#inputNameProduct").closest('input').next('span').show();
-        $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
-      }else if ($("#inputDescProduct").val() == "") {
-        $("#inputDescProduct").closest('.form-group').addClass('has-error')
-        $("#inputDescProduct").closest('textarea').next('span').show();
-        $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
-      }else if ($("#inputQtyProduct").val() == "") {
-        $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
-        $("#inputQtyProduct").closest('input').next('span').show();
-        $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
-      }else if ($("#selectTypeProduct").val() == "") {
-        $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
-        $("#selectTypeProduct").closest('select').next('span').show();
-        $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
-      }else if ($("#inputPriceProduct").val() == "") {
-        $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
-        $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
-        $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
-      }else{
-        if (n == '1') {
-          $.ajax({
+      if (($(".tab-add")[1].children[1].style.display == 'inline') == true) {
+        if ($("#inputNameProduct").val() == "") {
+          $("#inputNameProduct").closest('.form-group').addClass('has-error')
+          $("#inputNameProduct").closest('input').next('span').show();
+          $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
+        }else if ($("#inputDescProduct").val() == "") {
+          $("#inputDescProduct").closest('.form-group').addClass('has-error')
+          $("#inputDescProduct").closest('textarea').next('span').show();
+          $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
+        }else if ($("#inputQtyProduct").val() == "") {
+          $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
+          $("#inputQtyProduct").closest('input').next('span').show();
+          $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
+        }else if ($("#selectTypeProduct").val() == "") {
+          $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
+          $("#selectTypeProduct").closest('select').next('span').show();
+          $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
+        }else if ($("#inputPriceProduct").val() == "") {
+          $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
+          $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
+          $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
+        }else{
+          if (localStorage.getItem('isEditProduct') == true) {
+            $.ajax({
+              url: "{{url('/admin/updateProductPr')}}",
+              type: 'post',
+              data: {
+               _token:"{{ csrf_token() }}",
+               id_product:localStorage.getItem('id_product'),
+               inputNameProduct:$("#inputNameProduct").val(),
+               inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+               inputQtyProduct:$("#inputQtyProduct").val(),
+               selectTypeProduct:$("#selectTypeProduct").val(),
+               inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+               inputTotalPrice:$("#inputTotalPrice").val(),
+               inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
+              },beforeSend:function(){
+                Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                    popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                    Swal.showLoading()
+                  }
+                })
+              },success:function(){
+                Swal.close()
+
+                var x = document.getElementsByClassName("tab-add");
+                x[currentTab].style.display = "none";
+                currentTab = currentTab + n;
+                if (currentTab >= x.length) {
+                  x[n].style.display = "none";
+                  currentTab = 0;
+                }
+                addDraftPrPembanding(currentTab);
+                addTable()
+                localStorage.setItem('isEditProduct',false)
+                $(".tabGroupInitiateAdd").show()
+                $(".tab-add")[1].children[1].style.display = 'none'
+                document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
+                $("#inputNameProduct").val('')
+                $("#inputDescProduct").val('')
+                $("#inputPriceProduct").val('')
+                $("#inputQtyProduct").val('')
+                $("#inputSerialNumber").val('')
+                $("#inputPartNumber").val('')
+                $("#inputTotalPrice").val('')
+              }
+            })
+          }else{
+            $.ajax({
               url: "{{url('/admin/storePembandingProduct')}}",
               type: 'post',
               data: {
@@ -3288,6 +3541,8 @@
                no_pr:localStorage.getItem('no_pembanding'),
                inputNameProduct:$("#inputNameProduct").val(),
                inputDescProduct:$("#inputDescProduct").val(),
+               inputSerialNumber:$("#inputSerialNumber").val(),
+               inputPartNumber:$("#inputPartNumber").val(),
                inputQtyProduct:$("#inputQtyProduct").val(),
                selectTypeProduct:$("#selectTypeProduct").val(),
                inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
@@ -3317,19 +3572,24 @@
                   currentTab = 0;
                 }
                 addDraftPrPembanding(currentTab);
-
-                addTable(0)
+                $(".tabGroupInitiateAdd").show()
+                $(".tab-add")[1].children[1].style.display = 'none'
+                document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
+                addTable()
+                
                 $("#inputNameProduct").val('')
                 $("#inputDescProduct").val('')
                 $("#inputPriceProduct").val('')
                 $("#inputQtyProduct").val('')
-                // $("#selectTypeProduct").val('')
                 $("#inputSerialNumber").val('')
                 $("#inputPartNumber").val('')
                 $("#inputTotalPrice").val('')
               }
-          })
-        }else{
+            })
+          }            
+        }  
+      }else{
+        if ($('#uploadCsv').val() == "") {
           var x = document.getElementsByClassName("tab-add");
           x[currentTab].style.display = "none";
           currentTab = currentTab + n;
@@ -3337,8 +3597,55 @@
             x[n].style.display = "none";
             currentTab = 0;
           }
-          addDraftPrPembanding(currentTab);
-        }                
+          addDraftPrPembanding(currentTab)
+        }else{
+          var dataForm = new FormData()
+          dataForm.append('csv_file',$('#uploadCsv').prop('files')[0]);
+          dataForm.append('_token','{{ csrf_token() }}');
+          dataForm.append('no_pr',localStorage.getItem('no_pembanding'));
+          dataForm.append('status','pembanding');
+
+          $.ajax({
+            processData: false,
+            contentType: false,
+            url: "{{url('/admin/uploadCSV')}}",
+            type: 'POST',
+            data: dataForm,
+            beforeSend:function(){
+              Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                  popup: 'border-radius-0',
+                },
+                didOpen: () => {
+                  Swal.showLoading()
+                }
+              })
+            },success:function(result){
+              Swal.close()
+              //nge reset upload csv
+              cancelUploadCsv()
+
+              if (result.status == "Error") {
+                reasonReject(result.text,"block","tabGroupInitiateAdd")
+              }else{
+                var x = document.getElementsByClassName("tab-add");
+                x[currentTab].style.display = "none";
+                currentTab = currentTab + n;
+                if (currentTab >= x.length) {
+                  x[n].style.display = "none";
+                  currentTab = 0;
+                }
+                addDraftPrPembanding(currentTab)
+                addTable()
+              }
+            }
+          })
+        }
       }       
     }else if (currentTab == 3) {
       $.ajax({
@@ -3534,6 +3841,8 @@
         }
       }); 
     }else{
+      $(".divReasonRejectRevision").remove()
+      
       var x = document.getElementsByClassName("tab-add");
       x[currentTab].style.display = "none";
       currentTab = currentTab + n;
@@ -3543,6 +3852,9 @@
       }
       addDraftPrPembanding(currentTab);
     }
+
+    console.log("value", n)
+    console.log("current_tab_next",currentTab)
   }  
   
   function createPRPembanding(){
@@ -3642,40 +3954,46 @@
           $("#tbodyProducts").empty()
           var append = ""
           var i = 0
+          var valueEdit = 0
           $.each(result.data,function(value,item){
             i++
-           append = append + '<tr>'
-            append = append + '<td>'
-              append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
-            append = append + '</td>'
-            append = append + '<td width="20%">'
-              append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.name_product +'">'
-            append = append + '</td>'
-            append = append + '<td width="30%">'
-              append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px" class="form-control">'+ item.description.replaceAll("<br>","\n") +''
-              append = append + '</textarea>'
-            append = append + '</td>'
-            append = append + '<td width="7%">'
-              append = append + '<input id="inputQtyEdit" data-value="" readonly style="font-size: 12px; important;width:70px" class="form-control" type="number" name="" value="'+ item.qty +'">'
-            append = append + '</td>'
-            append = append + '<td width="10%">'
-            append = append + '<select id="inputTypeEdit" readonly data-value="" style="font-size: 12px; important;width:70px" class="form-control">'
-            if (item.unit == 'Pcs') {
-              append = append + '<option selected>Pcs</option>'
-              append = append + '<option>Unit</option>'
-            }else{
-              append = append + '<option>Pcs</option>'
-              append = append + '<option selected>Unit</option>'
-            }
-            append = append + '</select>' 
-            append = append + '</td>'
-            append = append + '<td width="15%">'
-              append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px; important" class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
-            append = append + '</td>'
-            append = append + '<td width="15%">'
-              append = append + '<input id="inputTotalPriceEdit" readonly data-value="" style="font-size: 12px; important" class="form-control inputTotalPriceEdit" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
-            append = append + '</td>'
-          append = append + '</tr>'   
+            valueEdit++
+            append = append + '<tr>'
+              append = append + '<td>'
+                append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
+              append = append + '</td>'
+              append = append + '<td width="20%">'
+                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px;width:200px" class="form-control" type="" name="" value="'+ item.name_product +'">'
+              append = append + '</td>'
+              append = append + '<td width="30%">'
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:200px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number
+                append = append + '</textarea>'
+              append = append + '</td>'
+              append = append + '<td width="7%">'
+                append = append + '<input id="inputQtyEdit" data-value="" readonly style="font-size: 12px; important;width:70px" class="form-control" type="number" name="" value="'+ item.qty +'">'
+              append = append + '</td>'
+              append = append + '<td width="10%">'
+              append = append + '<select id="inputTypeEdit" readonly data-value="" style="font-size: 12px; important;width:70px" class="form-control">'
+              if (item.unit == 'Pcs') {
+                append = append + '<option selected>Pcs</option>'
+                append = append + '<option>Unit</option>'
+              }else{
+                append = append + '<option>Pcs</option>'
+                append = append + '<option selected>Unit</option>'
+              }
+              append = append + '</select>' 
+              append = append + '</td>'
+              append = append + '<td width="15%">'
+                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
+              append = append + '</td>'
+              append = append + '<td width="15%">'
+                append = append + '<input id="inputTotalPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control inputTotalPriceEdit" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
+              append = append + '</td>'
+              append = append + '<td width="8%">'
+                append = append + '<button type="button" onclick="nextPrevAddPembanding(-1,'+ value +')" id="btnEditProduk" data-id="'+ value +'" data-value="'+ valueEdit +'" class="btn btn-xs btn-warning fa fa-edit btnEditProduk" style="width:25px;height:25px;margin-bottom:5px"></button>'
+                append = append + '<button id="btnDeleteProduk" type="button" data-id="'+ item.id_product +'" data-value="'+ value +'" class="btn btn-xs btn-danger fa fa-trash" style="width:25px;height:25px"></button>'
+              append = append + '</td>'
+            append = append + '</tr>'   
         })    
 
         $("#tbodyProducts").append(append)
@@ -3741,6 +4059,52 @@
     })
   }
 
+  $(document).on("click", "#btnDeleteProduk", function() {
+    Swal.fire({
+      title: 'Are you sure?',  
+      text: "Deleting Product",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        $.ajax({
+          type: "POST",
+          url: "{{url('/admin/deleteProduct')}}",
+          data:{
+            _token:'{{ csrf_token() }}',
+            id:$(this).data("id")
+          },
+          beforeSend:function(){
+            Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
+            })
+            Swal.showLoading()
+          },
+          success: function(result) {
+            Swal.fire(
+                'Successfully!',
+                'Delete Product.',
+                'success'
+            ).then((result) => {
+              refreshTable()
+            })
+          }
+        })          
+      }
+    })
+  })
+
   var incrementDoc = 0
   function addDocPendukung(i){
     incrementDoc++
@@ -3749,7 +4113,7 @@
       append = append + "<tr style='height:10px' class='trDocPendukung'>"
         append = append + "<td>"
           append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
-          append = append + '<i class="fa fa-cloud-upload"></i>&nbsp<input style="display:inline" class="pull-right inputDocPendukung_'+incrementDoc+'" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+          append = append + '<i class="fa fa-cloud-upload"></i>&nbsp<input style="display:inline" class="pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
         append = append + "</td>"
         append = append + "<td>"
           append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
