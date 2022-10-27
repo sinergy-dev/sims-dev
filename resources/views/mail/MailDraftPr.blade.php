@@ -90,7 +90,7 @@
 				@elseif($detail->status == 'FINALIZED')
 					Proses sirkulasi PR sudah selesai dilakukan, kemudian PR sudah siap untuk di Finalisasi oleh BCD Procurement.
 				@elseif($detail->status == 'UNAPPROVED')
-					Untuk Draft PR anda sudah terverifikasi dan ada beberapa perbaikan yang perlu dilakukan sebelum peroses dapat dilanjutkan. Untuk perbaikan bisa dilihat pada note perbaikan dibawah ini.
+					Untuk proses sirkulasi PR Anda terhenti dengan alasan sebagai berikut:
 				@endif
 			</p>
 			@if($detail->status == 'CIRCULAR')
@@ -176,16 +176,15 @@
 				@elseif($detail->status == 'CIRCULAR')
 					<b>Dimohon untuk Approver selanjutnya untuk memeriksa serta memastikan PR sudah sesuai. Jika dirasa tidak ada kesalahan dimohon untuk segera Approve PR tersebut.</b>
 				@elseif($detail->status == 'FINALIZED')
-					Dimohon untuk menantikan email finalisasi yang dikirim oleh BCD Procruement kepada Finance dengan lampiran yang sudah disiapkan.
+					Dimohon untuk menantikan email finalisasi yang dikirim oleh BCD Procurement kepada Finance dengan lampiran yang sudah disiapkan.
 				@endif
-				
 			</p>
 			@if($detail->status == 'DRAFT')
-				<center><a href="{{url('/admin/draftPR',$detail->id)}}?status=saved" target="_blank"><button class="button"> Detail Draft PR </button></a></center>
+				<center><a href="{{url('/admin/draftPR')}}?status=draft&no_pr={{$detail->id}}" target="_blank"><button class="button"> Detail Draft PR </button></a></center>
 			@elseif($detail->status == 'REJECT')
-				<center><a href="{{url('/admin/draftPR',$detail->id)}}?status=reject" target="_blank"><button class="button"> Detail Draft PR </button></a></center>
+				<center><a href="{{url('/admin/draftPR')}}?status=reject&no_pr={{$detail->id}}" target="_blank"><button class="button"> Detail Draft PR </button></a></center>
 			@elseif($detail->status == 'UNAPPROVED')
-				<center><a href="{{url('/admin/draftPR',$detail->id)}}?status=revision" target="_blank"><button class="button"> Detail Draft PR </button></a></center>
+				<center><a href="{{url('/admin/draftPR')}}?status=revision&no_pr={{$detail->id}}" target="_blank"><button class="button"> Detail Draft PR </button></a></center>
 			@elseif($detail->status == 'CIRCULAR')
 				<center><a href="{{url('/admin/detail/draftPR',$detail->id)}}" target="_blank"><button class="button"> Detail Draft PR </button></a></center>
 			@endif
