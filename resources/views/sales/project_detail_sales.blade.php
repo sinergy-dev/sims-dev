@@ -28,6 +28,26 @@ Detail Lead Register
 		word-spacing:9999px;
 	}
 
+	.box.box-solid.box-info>.box-header {
+    color: #fff;
+    background: rgb(4, 221, 163)!important;
+    background-color: rgb(4, 221, 163)!important;
+	}
+
+	.box.box-solid.box-info {
+	  border: 1px solid rgb(4, 221, 163)!important;
+	}
+
+	.box.box-solid.box-warning>.box-header {
+    color: #fff;
+    background: rgb(247, 225, 39)!important;
+    background-color: rgb(247, 225, 39)!important;
+	}
+
+	.box.box-solid.box-warning {
+	  border: 1px solid rgb(247, 225, 39)!important;
+	}
+	
 	/*.modal-changeReq{
 		display: flex;
 		position: fixed;
@@ -821,7 +841,7 @@ Detail Lead Register
 @endsection
 @section('scriptImport')
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
-<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
