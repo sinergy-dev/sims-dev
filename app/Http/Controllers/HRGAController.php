@@ -3549,7 +3549,7 @@ class HRGAController extends Controller
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
                     ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail_filterd`.`id_cuti`) as days'))
-                    ->orderByRaw('FIELD(tb_cuti.status, "n", "v", "d")')               
+                    ->orderByRaw('FIELD(tb_cuti.status, "n", "v", "c", "d")')               
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->where('users.id_company',$com)
                     ->groupby('id_cuti');
