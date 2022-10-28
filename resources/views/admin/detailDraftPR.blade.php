@@ -657,8 +657,6 @@
       ext = ext[ext.length-1].toLowerCase();      
       var arrayExtensions = ["csv"];
 
-      console.log(ext)
-
       if (arrayExtensions.lastIndexOf(ext) == -1) {
         Swal.fire({
           icon: 'error',
@@ -719,7 +717,6 @@
       className = nameClass
     }
     
-    console.log(display)
     var append = ""
 
     append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
@@ -839,7 +836,6 @@
       },
       success:function(result){
         $("#showResolve").empty("")
-        console.log(result)
         $.each(result,function(item,value){
           no++
 
@@ -1255,7 +1251,6 @@
     })   
 
     accesable.forEach(function(item,index){
-      console.log(item)
       $("#" + item).show()
     })
   }
@@ -1969,12 +1964,14 @@
     append = append + '<span><b>Attached Files</b></span>'
     var pdf = "fa fa-fw fa-file-pdf-o"
     var image = "fa fa-fw fa-file-image-o"
-    if (item.document[0].dokumen_location.split(".")[1] == 'pdf') {
-      var fa_doc = pdf
-    }else{
-      var fa_doc = image
-    }
+    
     if (item.document.length > 0) {
+      if (item.document[0].dokumen_location.split(".")[1] == 'pdf') {
+        var fa_doc = pdf
+      }else{
+        var fa_doc = image
+      }
+
       if (type_of_letter == 'IPR') {
         append = append + '<div class="form-group" style="font-size: reguler;">'
           append = append + '<div class="row">'
@@ -2047,7 +2044,6 @@
       },
       success: function(result) {
         if (result[2].isCircular == 'True') {
-          console.log("true circular")
           //btn pembanding di procurement disabled
           $("#btnAddPembanding").prop('disabled',true)
           $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
@@ -2061,7 +2057,6 @@
     })
 
     if (item.status == 'Selected') {
-      console.log(i)
       $(".statusComparison[data-value='" + i + "']").text(item.status)
       $(".statusComparison[data-value='" + i + "']").show()
       $(".statusComparisonSubmit").text("Unselect")
@@ -2728,7 +2723,6 @@
   }
 
   function addDraftPrPembanding(n){
-    console.log("current_tab",n)
 
     const firstLaunch = localStorage.setItem('firstLaunch',true)
     localStorage.setItem('isStoreSupplier',false)
@@ -2996,7 +2990,6 @@
         $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
         document.getElementById("prevBtnAdd").style.display = "inline";
         $("#btnInitiateAddProduct").click(function(){
-          console.log(x[n].children[0].children[0].style.display = 'inline')
           $(".tabGroupInitiateAdd").hide()
           x[n].children[1].style.display = 'inline'
 
@@ -3267,27 +3260,27 @@
         $(".tab-add")[1].children[1].style.display = 'inline'
         $.ajax({
           type: "GET",
-          url: "{{url('/admin/getProductPembanding')}}",
+          url: "{{url('/admin/getProductById')}}",
           data: {
-            no_pr:localStorage.getItem("no_pembanding"),
+            id_product:value,
           },
           success: function(result) {
-            $.each(result.data,function(value,item){
+            $.each(result,function(value,item){
               $("#prevBtnAdd").css("display", "none");
               localStorage.setItem('isEditProduct',true)
-              localStorage.setItem('id_product',result.data[value].id_product)
-              nominal = result.data[value].nominal_product
-              $("#inputNameProduct").val(result.data[value].name_product)
-              $("#inputDescProduct").val(result.data[value].description.replaceAll("<br>","\n"))
-              $("#inputQtyProduct").val(result.data[value].qty)
-              $("#selectTypeProduct").val(result.data[value].unit)
+              localStorage.setItem('id_product',item.id_product)
+              nominal = item.nominal_product
+              $("#inputNameProduct").val(item.name_product)
+              $("#inputDescProduct").val(item.description.replaceAll("<br>","\n"))
+              $("#inputQtyProduct").val(item.qty)
+              $("#selectTypeProduct").val(item.unit)
               $("#inputPriceProduct").val(formatter.format(nominal))
-              $("#inputSerialNumber").val(result.data[value].serial_number)
-              $("#inputPartNumber").val(result.data[value].part_number)
-              $("#inputTotalPrice").val(formatter.format(result.data[value].grand_total))
+              $("#inputSerialNumber").val(item.serial_number)
+              $("#inputPartNumber").val(item.part_number)
+              $("#inputTotalPrice").val(formatter.format(item.grand_total))
             })
           }
-        })
+        }) 
       }
     }
     if (currentTab == 0) {
@@ -3448,7 +3441,7 @@
             $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
             $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
           }else{
-            if (localStorage.getItem('isEditProduct') == true) {
+            if (localStorage.getItem('isEditProduct') == 'true') {
               $.ajax({
                 url: "{{url('/admin/updateProductPr')}}",
                 type: 'post',
@@ -3831,8 +3824,6 @@
       addDraftPrPembanding(currentTab);
     }
 
-    console.log("value", n)
-    console.log("current_tab_next",currentTab)
   }  
   
   function createPRPembanding(){
@@ -3968,7 +3959,7 @@
                 append = append + '<input id="inputTotalPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control inputTotalPriceEdit" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
               append = append + '</td>'
               append = append + '<td width="8%">'
-                append = append + '<button type="button" onclick="nextPrevAddPembanding(-1,'+ value +')" id="btnEditProduk" data-id="'+ value +'" data-value="'+ valueEdit +'" class="btn btn-xs btn-warning fa fa-edit btnEditProduk" style="width:25px;height:25px;margin-bottom:5px"></button>'
+                append = append + '<button type="button" onclick="nextPrevAddPembanding(-1,'+ item.id_product +')" id="btnEditProduk" data-id="'+ value +'" data-value="'+ valueEdit +'" class="btn btn-xs btn-warning fa fa-edit btnEditProduk" style="width:25px;height:25px;margin-bottom:5px"></button>'
                 append = append + '<button id="btnDeleteProduk" type="button" data-id="'+ item.id_product +'" data-value="'+ value +'" class="btn btn-xs btn-danger fa fa-trash" style="width:25px;height:25px"></button>'
               append = append + '</td>'
             append = append + '</tr>'   
@@ -4091,23 +4082,13 @@
       append = append + "<tr style='height:10px' class='trDocPendukung'>"
         append = append + "<td>"
           append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
-          append = append + '<i class="fa fa-cloud-upload"></i>&nbsp<input style="display:inline" class="pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+          append = append + '<input style="display:inline" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
         append = append + "</td>"
         append = append + "<td>"
           append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
         append = append + "</td>"
       append = append + "</tr>"
     $("#tableDocPendukung").append(append)
-
-    // $(".inputDocPendukung_"+incrementDoc).change(function() {
-    // if (this.value != "") {
-    //     $(".inputDocPendukung_"+incrementDoc).removeClass("hidden")
-    //     $(".inputDocPendukung_"+incrementDoc).closest("input").next("label").hide()
-    //   }else{
-    //     $(".inputDocPendukung_"+incrementDoc).addClass("hidden")
-    //     $(".inputDocPendukung_"+incrementDoc).closest("input").next("label").show()
-    //   }
-    // });
   }  
 
   $(document).on('click', '.btnRemoveAddDocPendukung', function() {
