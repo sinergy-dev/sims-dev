@@ -553,7 +553,7 @@ Human Resources
 			        </div>
 
 		  		</div>
-		  		<div id="pagination" class="col-md-12 margin-left">tes</div>
+		  		<!-- <div id="pagination" class="col-md-12 margin-left">tes</div> -->
 		  	</div>
 		  @endif
 
@@ -2849,14 +2849,14 @@ Human Resources
 				   if (!localStorage.getItem("email_personal_update")) {
 	               	$("#email_personal_update").val(value.email_pribadi);
 				   }
-				   localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
-				   if (!localStorage.getItem("bpjs_ket_update")) {
+				   // localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
+				   // if (!localStorage.getItem("bpjs_ket_update")) {
 	               	$("#bpjs_ket_update").val(value.bpjs_ket);
-				   }
-				   localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
-				   if (!localStorage.getItem("bpjs_kes_update")) {
+				   // }
+				   // localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
+				   // if (!localStorage.getItem("bpjs_kes_update")) {
 	               	$("#bpjs_kes_update").val(value.bpjs_kes);
-				   }
+				   // }
 				   localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
 				   if (!localStorage.getItem("address_ktp_update")) {
 	               	$("#address_ktp_update").val(value.alamat_ktp);
@@ -3042,8 +3042,8 @@ Human Resources
 	        		pend_terakhir_update:localStorage.getItem("pend_terakhir_update"),
 	        		tempat_lahir_update:localStorage.getItem("tempat_lahir_update"),
 	        		email_personal_update:localStorage.getItem("email_personal_update"),
-	        		bpjs_ket_update:localStorage.getItem("bpjs_ket_update"),
-	        		bpjs_kes_update:localStorage.getItem("bpjs_kes_update"),
+	        		bpjs_ket_update:$("#bpjs_ket_update").val(),
+	        		bpjs_kes_update:$("#bpjs_kes_update").val(),
 	        		address_ktp_update:localStorage.getItem("address_ktp_update"),
 	        		company_update:$("#company_update").val(),
 	        		divisi_update:localStorage.getItem("divisi_update"),//$("#divisi_update").val(),
