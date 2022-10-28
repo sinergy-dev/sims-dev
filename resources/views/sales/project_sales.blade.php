@@ -20,6 +20,27 @@ Lead Register
 		height: 2px;
 	}
 
+	.bg-orange-custom {
+	  background-color: #f2562b!important;
+	  color: white;
+	}
+	.bg-aqua-custom{
+		background-color:#04dda3!important;
+		color: white;
+	}
+	.bg-yellow-custom{
+		background-color:#f7e127!important;
+		color: white;
+	}
+	.bg-green-custom{
+		background-color:#246d18!important;
+		color: white;
+	}
+	.bg-red-custom{
+		background-color:#e5140d!important;
+		color: white;
+	}
+
 	input[type=text]:focus{
 	    border-color:dodgerBlue;
 	    box-shadow:0 0 8px 0 dodgerBlue;
@@ -532,7 +553,7 @@ Lead Register
 	</div>
 @endsection
 @section('scriptImport')
-<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
@@ -1530,23 +1551,26 @@ Lead Register
     var i = 0
 		var colors = []
 		var prepend = ""
+		// var bg-orange = "#f2562b"
+		// var bg-aqua = "#04dda3"
+		// var bg-yellow = "#f7e127"
   	var ArrColors = [{
 	        name: 'Lead Register', color: 'bg-purple', icon: 'fa fa-list',index: 0, url: "view_lead"
 	    },
 	    {
-	        name: 'Open', color: 'bg-orange', icon: 'fa fa-briefcase',index: 1, url: "view_open"
+	        name: 'Open', color: 'bg-orange-custom', icon: 'fa fa-briefcase',index: 1, url: "view_open"
 	    },
 	    {
-	        name: 'Solution Design', color: 'bg-aqua', icon: 'fa fa-file-text-o',index: 2, url: "view_open"
+	        name: 'Solution Design', color: 'bg-aqua-custom', icon: 'fa fa-file-text-o',index: 2, url: "view_open"
 	    },
 	    {
-	        name: 'Tender Process', color: 'bg-yellow', icon: 'fa fa-file-text-o',index: 3, url: "view_open"
+	        name: 'Tender Process', color: 'bg-yellow-custom', icon: 'fa fa-file-text-o',index: 3, url: "view_open"
 	    },
 	    {
-	        name: 'Win', color: 'bg-green', icon: 'fa fa-calendar-check-o',index: 4, url: "view_win"
+	        name: 'Win', color: 'bg-green-custom', icon: 'fa fa-calendar-check-o',index: 4, url: "view_win"
 	    },
 	    {
-	        name: 'Lose', color: 'bg-red', icon: "fa fa-calendar-times-o",index: 5, url: "view_lose"
+	        name: 'Lose', color: 'bg-red-custom', icon: "fa fa-calendar-times-o",index: 5, url: "view_lose"
 	    }
 		]
 
@@ -1554,7 +1578,7 @@ Lead Register
 
 		$.each(colors[0], function(key, value){
 			prepend = prepend + '<div class="col-lg-2 col-xs-12">'
-			    prepend = prepend + '<div class="small-box ' + value.color + '">'
+			    prepend = prepend + '<div class="small-box ' + value.color + '" id="'+ value.color +'">'
 			        prepend = prepend + '<div class="inner">'
 			            prepend = prepend + '<div class="txt_serif stats_item_number">'
 			                prepend = prepend + '<center>'
@@ -1579,10 +1603,29 @@ Lead Register
 			countLead.push(id)
 			sumAmount.push(sumAm)
 			initMoney()
-
 		})
 
 		$("#BoxId").prepend(prepend)
+
+		if (!document.getElementById("bg-orange") == false) {
+			console.log('orange')
+			// document.getElementById("bg-orange").style.backgroundColor  = "#f2562b!important";
+			$(".bg-orange").addClass('bg-orange')
+		}
+
+		if (!document.getElementById("bg-aqua") == false) {
+			console.log('aqua')
+
+			document.getElementById("bg-aqua").style.backgroundColor  = "#04dda3!important";
+			// $(".bg-aqua").css('background-color','#04dda3')
+		}
+
+		if (!document.getElementById("bg-yellow") == false) {
+			console.log('yellow')
+
+			document.getElementById("bg-yellow").style.backgroundColor  = "#f7e127!important";
+			// $(".bg-yellow").css('background-color','#f7e127')
+		}
 
 		if (accesable.includes('searchTags')) {
 			$.ajax({
@@ -1591,8 +1634,12 @@ Lead Register
 			    success: function(result) {
 			        $("#searchTags").select2().val("");
 			        var arr = result;
+			        // var arrTech = result.technology_tag;
+
 			        var selectOption = [];
 			        var otherOption;
+			        var otherTechOption;
+
 			        $.each(arr, function(key, value) {
 			            if (value.text != "Others") {
 			                selectOption.push(value)
@@ -1601,7 +1648,16 @@ Lead Register
 			            }
 			        })
 
+			        // $.each(arrTech, function(key, value) {
+			        //     if (value.text != "Others") {
+			        //         selectOption.push(value)
+			        //     } else {
+			        //         otherTechOption = value
+			        //     }
+			        // })
+
 			        selectOption.push(otherOption)
+			        selectOption.push(otherTechOption)
 			        var TagProduct = $("#searchTags").select2({
 			            placeholder: " Select Tags",
 			            allowClear: true,
@@ -1609,6 +1665,7 @@ Lead Register
 			            data: selectOption,
 			            templateSelection: function(selection, container) {
 			                var selectedOption = selection.id.slice(0, 1);
+			                console.log(selection.id)
 			                if (selectedOption == 'p') {
 			                    $(container).css("background-color", "#32a852");
 			                    $(container).css("border-color", "#32a852");
