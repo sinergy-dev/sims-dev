@@ -1283,7 +1283,7 @@ class PrDraftController extends Controller
 
         $kirim = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver');
 
-        $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->first();
+        $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $email_cc = User::select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
@@ -1306,7 +1306,7 @@ class PrDraftController extends Controller
 
         return $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
 
-        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $email_cc = User::select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
@@ -1437,6 +1437,7 @@ class PrDraftController extends Controller
             $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
 
             $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                    ->where('status_karyawan', '!=', 'dummy')
                     ->get()->pluck('email');
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR '.$detail->id.' Rejected', 'detail_approver', 'next_approver'));
@@ -1547,6 +1548,7 @@ class PrDraftController extends Controller
             $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
 
             $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                    ->where('status_karyawan', '!=', 'dummy')
                     ->get()->pluck('email');
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR ' .$detail->id. ' Verified and Ready to Get Compare and Circulate', 'detail_approver', 'next_approver'));
@@ -2169,7 +2171,7 @@ class PrDraftController extends Controller
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
             // $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr))->first();
-            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
             $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
             $email_cc = User::select('email')
@@ -2272,6 +2274,7 @@ class PrDraftController extends Controller
 
         $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement')")
+                ->where('status_karyawan', '!=', 'dummy')
                 ->get()->pluck('email');
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
@@ -2300,6 +2303,7 @@ class PrDraftController extends Controller
 
         $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement')")
+                ->where('status_karyawan', '!=', 'dummy')
                 ->get()->pluck('email');
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
@@ -2331,7 +2335,7 @@ class PrDraftController extends Controller
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
             // $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr))->first();
-            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+            $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
             $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
@@ -2402,7 +2406,7 @@ class PrDraftController extends Controller
 
         $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
 
-        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->first();
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $email_cc = User::select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
