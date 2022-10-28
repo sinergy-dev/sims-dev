@@ -312,6 +312,7 @@ class TicketingController extends Controller
 	}
 
 	public function getEmailData(Request $req){
+		// return $req->id_ticket;
 		if(isset($req->client)){
 			return TicketingClient::where('id',$req->client)
 				->first();
@@ -1502,6 +1503,7 @@ class TicketingController extends Controller
 			}
 		} else {
 			foreach ($value1 as $key => $value) {
+				// echo $value->id_ticket . '\n';
 				$spreadsheet->getActiveSheet()->getStyle('A' . (5 + $key))->applyFromArray($Colom_Header);
 				$spreadsheet->getActiveSheet()->getStyle('B' . (5 + $key) .  ':R' . (5 + $key))->applyFromArray($border);
 				$spreadsheet->getActiveSheet()->setCellValue('A' . (5 + $key),$key + 1);
