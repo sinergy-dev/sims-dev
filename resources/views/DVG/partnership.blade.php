@@ -22,6 +22,13 @@ Partnership
      display: none;
     }
 
+    .nav-tabs .badge{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
+    }
+
     .small-box h2 {
       font-size: 50px;
       font-weight: bold;
@@ -139,8 +146,8 @@ Partnership
           <div class="col-md-12">
             <div class="nav-tabs-custom">
               <ul class="nav nav-tabs">
-                <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Dashboard</a></li>
-                <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">List Partnership</a></li>
+                <li class="active"><a href="#tab_1" id="tabDashboard" data-toggle="tab" aria-expanded="true">Dashboard</a></li>
+                <li class=""><a href="#tab_2" data-toggle="tab" id="tabList_partnership" aria-expanded="false">List Partnership</a></li>
               </ul>
               <div class="tab-content">
                 <div class="tab-pane active" id="tab_1">
@@ -708,9 +715,10 @@ Partnership
                   appendList = appendList + '   <i class="fa fa-ellipsis-v"></i>'
                     appendList = appendList + '   <i class="fa fa-ellipsis-v"></i>'
                     appendList = appendList + ' </span>'
-                    appendList = appendList + ' <input type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
-                    appendList = appendList + ' <span class="text" id="textList" data-value='+key+'>' + '<b>[' + value.partner + ']</b> - ' + value.target + ' - ' + value.countable + ' created at ' + value.created_at +'</span>'
-                  appendList = appendList + ' <small class="label label-warning status-'+ key + '">'+ value.status +'</small>'
+                    appendList = appendList + ' <input style="display:inline" type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
+                    appendList = appendList + ' <span style="display:inline-block;word-wrap:break-word;width:1060px" class="text" id="textList" data-value='+key+'>' + '<b>[' + value.partner + ']</b> - ' + value.target + ' - ' + value.countable + '</span>'
+                    appendList = appendList + ' <br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span > '+ ' created at ' + value.created_at +' </span> '
+                  appendList = appendList + ' <small class="label label-warning status-'+ key + ' pull-right">'+ value.status +'</small>'
               appendList = appendList + '</li>'
           })            
           $('.todo-list').append(appendList)
@@ -780,6 +788,10 @@ Partnership
           })
 
           $(".attention-list").prepend(prepend)
+
+          if (result.data.length > 0) {
+            $("#tabDashboard").append('<span class="badge">'+ result.data.length +'</span>')
+          }
         }
       })
     }
@@ -906,7 +918,7 @@ Partnership
         // "bPaginate": false,
         "bLengthChange": false,
         "bFilter": true,
-        "bInfo": false,
+        // "bInfo": false,
         "fixedHeader": true
       })
 
