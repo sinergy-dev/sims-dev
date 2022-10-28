@@ -2241,7 +2241,7 @@ class PrDraftController extends Controller
     			return $show;
 
 	        } elseif ($cek_group->group == 'hr') {
-	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'HR MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
+	        	$show = User::select('ttd')->where('id_company', '1')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `roles`.`name` = 'HR Manager' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")->get();
     			return $show;
 
 	        } elseif ($cek_group->group == 'sales') {
@@ -2506,7 +2506,7 @@ class PrDraftController extends Controller
             } elseif ($cek_group->group == 'presales') {
                 $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR  `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             } elseif ($cek_group->group == 'hr') {
-                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'HR MANAGER' OR `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
+                $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `roles`.`name` = 'HR Manager' OR `users`.`id_division` = 'BCD' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             } elseif ($cek_group->group == 'sales') {
                 $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             }
@@ -2734,7 +2734,7 @@ class PrDraftController extends Controller
                 ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'hr') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'HR MANAGER' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'sales') {
@@ -2933,7 +2933,7 @@ class PrDraftController extends Controller
                 ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'hr') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'HR MANAGER' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'sales') {
