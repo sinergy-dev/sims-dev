@@ -154,7 +154,7 @@ Partnership
 	  width: 100%;
 	  height: 100%;
 	  border-radius: 10%;
-	  background-size: cover;
+	  background-size: contain;
 	  background-repeat: no-repeat;
 	  background-position: center;
 	}
@@ -164,6 +164,17 @@ Partnership
 	  position: relative;
 	  /*max-width: 105px;*/
 	  margin: 20px auto;
+	}
+
+	.avatar-upload-mini span{ 
+		position:absolute;
+		visibility:hidden;
+	}
+	.avatar-upload-mini :hover span { 
+		visibility:visible;
+		top:0;
+		left:100px; 
+		z-index:1;
 	}
 	.avatar-upload-mini .avatar-edit {
 	  position: absolute;
@@ -214,7 +225,7 @@ Partnership
 	  width: 100%;
 	  height: 100%;
 	  border-radius: 10%;
-	  background-size: cover;
+	  background-size: contain;
 	  background-repeat: no-repeat;
 	  background-position: center;
 	}
@@ -299,6 +310,7 @@ Partnership
 				        	@else
 				        		<div id="badgePreview" name="logo" style="background-image: url('{{ asset('image/badge_partnership/'.$data->badge)}}')">
 				            </div>
+				            <span><img width="250px" src="{{asset('image/badge_partnership/'.$data->badge)}}" alt=""></span></a>
 				        	@endif		            
 				        </div>				        
 					    </div>
