@@ -132,7 +132,7 @@ Leaving Permitte
                 <button class="btn btn-sm bg-maroon show-sisa-cuti" style="width: 100px">
                   Show Sisa Cuti
                 </button>
-	            @elseif($cek_cuti->status == 'v' || $cek_cuti->status == 'd')
+	            @elseif($cek_cuti->status == 'v' || $cek_cuti->status == 'd' || $cek_cuti->status == 'c')
     	          <button type="button" class="btn btn-sm bg-navy pull-right add_cuti" value="{{Auth::User()->nik}}" style="margin-left: 10px;width: 100px">
                   <i class="fa fa-plus" style="margin-right: 5px"> </i> Permission
                 </button>
@@ -1440,8 +1440,10 @@ Leaving Permitte
                return '<span class="label label-success">Approved</span>'
               }else if(row.status == 'd'){
                return '<span class="label label-danger" onclick="decline('+ row.id_cuti +')">Declined</span>'
-              }else{
+              }else if(row.status == 'n'){
                return '<span class="label label-warning">Pending</span>'
+              } else {
+                return '<span class="label label-danger">Cancel</span>'
               }
             } 
           },
@@ -1534,8 +1536,10 @@ Leaving Permitte
                return '<span class="label label-success">Approved</span>'
               }else if(row.status == 'd'){
                return '<span class="label label-danger" onclick="decline('+ row.id_cuti +')">Declined</span>'
-              }else{
+              }else if(row.status == 'n'){
                return '<span class="label label-warning">Pending</span>'
+              } else {
+                return '<span class="label label-danger">Cancel</span>'
               }
             } 
           },
