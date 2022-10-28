@@ -510,8 +510,8 @@
         <div class="tab-add" style="display:none">
           <div class="tabGroup">
             <div class="box-body pad">
-                <textarea onkeyup="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. term of payment"></textarea>
-                <span class="help-block" style="display:none;">Please fill Top of Payment!</span>
+              <textarea onkeydown="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. term of payment"></textarea>
+              <span class="help-block" style="display:none;">Please fill Top of Payment!</span>
             </div>
           </div>
         </div>  
@@ -1535,6 +1535,7 @@
     localStorage.setItem('firstLaunch', true);
     localStorage.setItem('isStoreSupplier',false);
 
+    //ini buat alert diatas
     function reasonReject(item,display,nameClass){
       $(".divReasonRejectRevision").remove()
 
@@ -2721,6 +2722,8 @@
       $("#span_link_drive_spk").hide()
       $("#span_link_drive_sbe").hide()
       $("#span_link_drive_quoteSup").hide()
+      $("#span_link_drive_penawaranHarga").hide()
+      $("#tableDocPendukung").remove()
       localStorage.setItem('isEditProduct',false)
       localStorage.setItem('status_pr','') 
     }) 
@@ -3939,9 +3942,9 @@
       }
 
     	if (val == "textArea_TOP") {
-    		$("#textAreaTOP").closest('.form-group').removeClass('has-error')
-        $("#textAreaTOP").closest('textarea').next('span').hide();
-        $("#textAreaTOP").prev('.input-group-addon').css("background-color","red");	
+        $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+        $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+        // $("#textAreaTOP").prev('.input-group-addon').css("background-color","red");	
     	}
     }
 
@@ -4135,135 +4138,145 @@
         }
       }else if (currentTab == 1) {
         if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
-          if ($("#inputNameProduct").val() == "") {
-            $("#inputNameProduct").closest('.form-group').addClass('has-error')
-            $("#inputNameProduct").closest('input').next('span').show();
-            $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputDescProduct").val() == "") {
-            $("#inputDescProduct").closest('.form-group').addClass('has-error')
-            $("#inputDescProduct").closest('textarea').next('span').show();
-            $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputQtyProduct").val() == "") {
-            $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
-            $("#inputQtyProduct").closest('input').next('span').show();
-            $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#selectTypeProduct").val() == "") {
-            $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
-            $("#selectTypeProduct").closest('select').next('span').show();
-            $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputPriceProduct").val() == "") {
-            $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
-            $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
-            $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
-          }else{
-            if (localStorage.getItem('isEditProduct') == 'true') {
-              console.log(localStorage.getItem('id_product'))
-              $.ajax({
-                url: "{{url('/admin/updateProductPr')}}",
-                type: 'post',
-                data: {
-                 _token:"{{ csrf_token() }}",
-                 id_product:localStorage.getItem('id_product'),
-                 inputNameProduct:$("#inputNameProduct").val(),
-                 inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
-                 inputQtyProduct:$("#inputQtyProduct").val(),
-                 selectTypeProduct:$("#selectTypeProduct").val(),
-                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                 inputTotalPrice:$("#inputTotalPrice").val(),
-                 inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
-                },beforeSend:function(){
-                  Swal.fire({
-                    title: 'Please Wait..!',
-                    text: "It's sending..",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    allowEnterKey: false,
-                    customClass: {
-                      popup: 'border-radius-0',
-                    },
-                    didOpen: () => {
-                      Swal.showLoading()
-                    }
-                  })
-                },success:function(){
-                  Swal.close()
-
-                  var x = document.getElementsByClassName("tab-add");
-                  x[currentTab].style.display = "none";
-                  currentTab = currentTab + n;
-                  if (currentTab >= x.length) {
-                    x[n].style.display = "none";
-                    currentTab = 0;
-                  }
-                  unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                  localStorage.setItem('isEditProduct',false)
-                  $(".tabGroupInitiateAdd").show()
-                  $(".tab-add")[1].children[1].style.display = 'none'
-                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
-                  $("#inputNameProduct").val('')
-                  $("#inputDescProduct").val('')
-                  $("#inputPriceProduct").val('')
-                  $("#inputQtyProduct").val('')
-                  $("#inputSerialNumber").val('')
-                  $("#inputPartNumber").val('')
-                  $("#inputTotalPrice").val('')
-                }
-              })
+          if (n == 1) {
+            console.log("nku =" + n)
+            if ($("#inputNameProduct").val() == "") {
+              $("#inputNameProduct").closest('.form-group').addClass('has-error')
+              $("#inputNameProduct").closest('input').next('span').show();
+              $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputDescProduct").val() == "") {
+              $("#inputDescProduct").closest('.form-group').addClass('has-error')
+              $("#inputDescProduct").closest('textarea').next('span').show();
+              $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputQtyProduct").val() == "") {
+              $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
+              $("#inputQtyProduct").closest('input').next('span').show();
+              $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#selectTypeProduct").val() == "") {
+              $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
+              $("#selectTypeProduct").closest('select').next('span').show();
+              $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputPriceProduct").val() == "") {
+              $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
+              $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
+              $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
             }else{
-              $.ajax({
-                url: urlProduct,
-                type: 'post',
-                data: {
-                 _token:"{{ csrf_token() }}",
-                 no_pr:no_pr,
-                 inputNameProduct:$("#inputNameProduct").val(),
-                 inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
-                 inputQtyProduct:$("#inputQtyProduct").val(),
-                 selectTypeProduct:$("#selectTypeProduct").val(),
-                 inputSerialNumber:$("#inputSerialNumber").val(),
-                 inputPartNumber:$("#inputPartNumber").val(),
-                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                 inputTotalPrice:$("#inputTotalPrice").val(),
-                 inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
-                },beforeSend:function(){
-                  Swal.fire({
-                    title: 'Please Wait..!',
-                    text: "It's sending..",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    allowEnterKey: false,
-                    customClass: {
-                      popup: 'border-radius-0',
-                    },
-                    didOpen: () => {
-                      Swal.showLoading()
-                    }
-                  })
-                },success:function(){
-                  Swal.close()
+              if (localStorage.getItem('isEditProduct') == 'true') {
+                console.log(localStorage.getItem('id_product'))
+                $.ajax({
+                  url: "{{url('/admin/updateProductPr')}}",
+                  type: 'post',
+                  data: {
+                   _token:"{{ csrf_token() }}",
+                   id_product:localStorage.getItem('id_product'),
+                   inputNameProduct:$("#inputNameProduct").val(),
+                   inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+                   inputQtyProduct:$("#inputQtyProduct").val(),
+                   selectTypeProduct:$("#selectTypeProduct").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputSerialNumber:$("#inputSerialNumber").val(),
+                   inputPartNumber:$("#inputPartNumber").val(),
+                   inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
+                  },beforeSend:function(){
+                    Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                        popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                        Swal.showLoading()
+                      }
+                    })
+                  },success:function(){
+                    Swal.close()
 
-                  var x = document.getElementsByClassName("tab-add");
-                  x[currentTab].style.display = "none";
-                  currentTab = currentTab + n;
-                  if (currentTab >= x.length) {
-                    x[n].style.display = "none";
-                    currentTab = 0;
+                    var x = document.getElementsByClassName("tab-add");
+                    x[currentTab].style.display = "none";
+                    currentTab = currentTab + n;
+                    if (currentTab >= x.length) {
+                      x[n].style.display = "none";
+                      currentTab = 0;
+                    }
+                    unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                    localStorage.setItem('isEditProduct',false)
+                    $(".tabGroupInitiateAdd").show()
+                    $(".tab-add")[1].children[1].style.display = 'none'
+                    document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
+                    $("#inputNameProduct").val('')
+                    $("#inputDescProduct").val('')
+                    $("#inputPriceProduct").val('')
+                    $("#inputQtyProduct").val('')
+                    $("#inputSerialNumber").val('')
+                    $("#inputPartNumber").val('')
+                    $("#inputTotalPrice").val('')
                   }
-                  unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                  $(".tabGroupInitiateAdd").show()
-                  $(".tab-add")[1].children[1].style.display = 'none'
-                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
-                  $("#inputNameProduct").val('')
-                  $("#inputDescProduct").val('')
-                  $("#inputPriceProduct").val('')
-                  $("#inputQtyProduct").val('')
-                  $("#inputSerialNumber").val('')
-                  $("#inputPartNumber").val('')
-                  $("#inputTotalPrice").val('')
-                }
-              })
-            }               
-          }  
+                })
+              }else{
+                $.ajax({
+                  url: urlProduct,
+                  type: 'post',
+                  data: {
+                   _token:"{{ csrf_token() }}",
+                   no_pr:no_pr,
+                   inputNameProduct:$("#inputNameProduct").val(),
+                   inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+                   inputQtyProduct:$("#inputQtyProduct").val(),
+                   selectTypeProduct:$("#selectTypeProduct").val(),
+                   inputSerialNumber:$("#inputSerialNumber").val(),
+                   inputPartNumber:$("#inputPartNumber").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
+                  },beforeSend:function(){
+                    Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                        popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                        Swal.showLoading()
+                      }
+                    })
+                  },success:function(){
+                    Swal.close()
+
+                    var x = document.getElementsByClassName("tab-add");
+                    x[currentTab].style.display = "none";
+                    currentTab = currentTab + n;
+                    if (currentTab >= x.length) {
+                      x[n].style.display = "none";
+                      currentTab = 0;
+                    }
+                    unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                    $(".tabGroupInitiateAdd").show()
+                    $(".tab-add")[1].children[1].style.display = 'none'
+                    document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
+                    $("#inputNameProduct").val('')
+                    $("#inputDescProduct").val('')
+                    $("#inputPriceProduct").val('')
+                    $("#inputQtyProduct").val('')
+                    $("#inputSerialNumber").val('')
+                    $("#inputPartNumber").val('')
+                    $("#inputTotalPrice").val('')
+                  }
+                })
+              }               
+            } 
+          }else{
+            $(".tabGroupInitiateAdd").show()
+            $(".tab-add")[1].children[1].style.display = 'none'
+            document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
+          }
+           
         }else{
           console.log('lakukan baru')
 
@@ -4583,32 +4596,35 @@
         }
       }else if (currentTab == 4) {
         if ($("#textAreaTOP").val() == "") {
-          $("#textAreaTOP").closest('.form').addClass('has-error')
-          $("#textAreaTOP").closest('textarea').next('span').show();
-          $("#textAreaTOP").prev('.form').css("background-color","red");
-        }
+          $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+          // $("#textAreaTOP").prev('.form').css("background-color","red");
+        }else{
+          $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
 
-        $.ajax({
-          url: "{{'/admin/storeTermPayment'}}",
-          type: 'post',
-          data:{
-            no_pr:localStorage.getItem('no_pr'),
-            _token:"{{csrf_token()}}",
-            textAreaTOP:$("#textAreaTOP").val(),
-            status_tax:localStorage.getItem('status_tax')
-          },
-          success: function(data)
-          {
-            var x = document.getElementsByClassName("tab-add");
-            x[currentTab].style.display = "none";
-            currentTab = currentTab + n;
-            if (currentTab >= x.length) {
-              x[n].style.display = "none";
-              currentTab = 0;
+          $.ajax({
+            url: "{{'/admin/storeTermPayment'}}",
+            type: 'post',
+            data:{
+              no_pr:localStorage.getItem('no_pr'),
+              _token:"{{csrf_token()}}",
+              textAreaTOP:$("#textAreaTOP").val(),
+              status_tax:localStorage.getItem('status_tax')
+            },
+            success: function(data)
+            {
+              var x = document.getElementsByClassName("tab-add");
+              x[currentTab].style.display = "none";
+              currentTab = currentTab + n;
+              if (currentTab >= x.length) {
+                x[n].style.display = "none";
+                currentTab = 0;
+              }
+              unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
             }
-            unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-          }
-        }); 
+          }); 
+        }        
       }else{
         $(".divReasonRejectRevision").remove()
 
@@ -5037,114 +5053,61 @@
   	    }
   		}else if (currentTab == 1) {
         if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
-          if ($("#inputNameProduct").val() == "") {
-            $("#inputNameProduct").closest('.form-group').addClass('has-error')
-            $("#inputNameProduct").closest('input').next('span').show();
-            $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
-          } else if ($("#inputDescProduct").val() == "") {
-            $("#inputDescProduct").closest('.form-group').addClass('has-error')
-            $("#inputDescProduct").closest('textarea').next('span').show();
-            $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
-          } else if ($("#inputQtyProduct").val() == "") {
-            $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
-            $("#inputQtyProduct").closest('input').next('span').show();
-            $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
-          } else if ($("#selectTypeProduct").val() == "" || $("#selectTypeProduct").val() == null) {
-            $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
-            $("#selectTypeProduct").closest('select').next('span').show();
-            $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
-          } else if ($("#inputPriceProduct").val() == "") {
-            $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
-            $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
-            $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
-          } else{
-            if (localStorage.getItem('isEditProduct') == 'true') {
-              $.ajax({
-                url: "{{url('/admin/updateProductPr')}}",
-                type: 'post',
-                data: {
-                 _token:"{{ csrf_token() }}",
-                 id_product:localStorage.getItem('id_product'),
-                 inputNameProduct:$("#inputNameProduct").val(),
-                 inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
-                 inputQtyProduct:$("#inputQtyProduct").val(),
-                 selectTypeProduct:$("#selectTypeProduct").val(),
-                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                 inputTotalPrice:$("#inputTotalPrice").val(),
-                 inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
-                },beforeSend:function(){
-                  Swal.fire({
-                    title: 'Please Wait..!',
-                    text: "It's sending..",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    allowEnterKey: false,
-                    customClass: {
-                      popup: 'border-radius-0',
-                    },
-                    didOpen: () => {
-                      Swal.showLoading()
-                    }
-                  })
-                },success:function(){
-                  Swal.close()
-
-                  var x = document.getElementsByClassName("tab-add");
-                  x[currentTab].style.display = "none";
-                  currentTab = currentTab + n;
-                  if (currentTab >= x.length) {
-                    x[n].style.display = "none";
-                    currentTab = 0;
-                  }
-                  addDraftPr(currentTab);
-                  addTable()
-                  localStorage.setItem('isEditProduct',false)
-                  localStorage.setItem('status_pr','draft')
-                  $(".tabGroupInitiateAdd").show()
-                  $(".tab-add")[1].children[1].style.display = 'none'
-                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
-                  $("#inputNameProduct").val('')
-                  $("#inputDescProduct").val('')
-                  $("#inputPriceProduct").val('')
-                  $("#inputQtyProduct").val('')
-                  $("#inputSerialNumber").val('')
-                  $("#inputPartNumber").val('')
-                  $("#inputTotalPrice").val('')
-                }
-              })
-            }else{
-              $.ajax({
-                url: "{{url('/admin/storeProductPr')}}",
-                type: 'post',
-                data: {
-                 _token:"{{ csrf_token() }}",
-                 no_pr:localStorage.getItem('no_pr'),
-                 inputNameProduct:$("#inputNameProduct").val(),
-                 inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
-                 inputSerialNumber:$("#inputSerialNumber").val(),
-                 inputPartNumber:$("#inputPartNumber").val(),
-                 inputQtyProduct:$("#inputQtyProduct").val(),
-                 selectTypeProduct:$("#selectTypeProduct").val(),
-                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                 inputTotalPrice:$("#inputTotalPrice").val(),
-                 inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
-                },
-                beforeSend:function(){
-                  Swal.fire({
+          if (n == 1) {
+            if ($("#inputNameProduct").val() == "") {
+              $("#inputNameProduct").closest('.form-group').addClass('has-error')
+              $("#inputNameProduct").closest('input').next('span').show();
+              $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
+            } else if ($("#inputDescProduct").val() == "") {
+              $("#inputDescProduct").closest('.form-group').addClass('has-error')
+              $("#inputDescProduct").closest('textarea').next('span').show();
+              $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
+            } else if ($("#inputQtyProduct").val() == "") {
+              $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
+              $("#inputQtyProduct").closest('input').next('span').show();
+              $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
+            } else if ($("#selectTypeProduct").val() == "" || $("#selectTypeProduct").val() == null) {
+              $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
+              $("#selectTypeProduct").closest('select').next('span').show();
+              $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
+            } else if ($("#inputPriceProduct").val() == "") {
+              $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
+              $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
+              $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
+            } else{
+              if (localStorage.getItem('isEditProduct') == 'true') {
+                $.ajax({
+                  url: "{{url('/admin/updateProductPr')}}",
+                  type: 'post',
+                  data: {
+                   _token:"{{ csrf_token() }}",
+                   id_product:localStorage.getItem('id_product'),
+                   inputNameProduct:$("#inputNameProduct").val(),
+                   inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+                   inputQtyProduct:$("#inputQtyProduct").val(),
+                   selectTypeProduct:$("#selectTypeProduct").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputSerialNumber:$("#inputSerialNumber").val(),
+                   inputPartNumber:$("#inputPartNumber").val(),
+                   inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
+                  },beforeSend:function(){
+                    Swal.fire({
                       title: 'Please Wait..!',
                       text: "It's sending..",
                       allowOutsideClick: false,
                       allowEscapeKey: false,
                       allowEnterKey: false,
                       customClass: {
-                          popup: 'border-radius-0',
+                        popup: 'border-radius-0',
                       },
                       didOpen: () => {
-                          Swal.showLoading()
+                        Swal.showLoading()
                       }
-                  })
-                },success:function(){
+                    })
+                  },success:function(){
                     Swal.close()
+
                     var x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
@@ -5153,8 +5116,12 @@
                       currentTab = 0;
                     }
                     addDraftPr(currentTab);
+                    addTable()
+                    localStorage.setItem('isEditProduct',false)
                     localStorage.setItem('status_pr','draft')
-                    addTable(0)
+                    $(".tabGroupInitiateAdd").show()
+                    $(".tab-add")[1].children[1].style.display = 'none'
+                    document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
                     $("#inputNameProduct").val('')
                     $("#inputDescProduct").val('')
                     $("#inputPriceProduct").val('')
@@ -5162,80 +5129,71 @@
                     $("#inputSerialNumber").val('')
                     $("#inputPartNumber").val('')
                     $("#inputTotalPrice").val('')
-
-                    $(".tabGroupInitiateAdd").show()
-                    x[n].children[1].style.display = 'none'
-                    document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
                   }
-              })
-            } 
-            // if (n == '1') {
-            //   $.ajax({
-            //     url: "{{url('/admin/storeProductPr')}}",
-            //     type: 'post',
-            //     data: {
-            //      _token:"{{ csrf_token() }}",
-            //      no_pr:localStorage.getItem('no_pr'),
-            //      inputNameProduct:$("#inputNameProduct").val(),
-            //      inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
-            //      inputSerialNumber:$("#inputSerialNumber").val(),
-            //      inputPartNumber:$("#inputPartNumber").val(),
-            //      inputQtyProduct:$("#inputQtyProduct").val(),
-            //      selectTypeProduct:$("#selectTypeProduct").val(),
-            //      inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-            //      inputTotalPrice:$("#inputTotalPrice").val(),
-            //      inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
-            //     },
-            //     beforeSend:function(){
-            //       Swal.fire({
-            //           title: 'Please Wait..!',
-            //           text: "It's sending..",
-            //           allowOutsideClick: false,
-            //           allowEscapeKey: false,
-            //           allowEnterKey: false,
-            //           customClass: {
-            //               popup: 'border-radius-0',
-            //           },
-            //           didOpen: () => {
-            //               Swal.showLoading()
-            //           }
-            //       })
-            //     },success:function(){
-            //         Swal.close()
-            //         var x = document.getElementsByClassName("tab-add");
-            //         x[currentTab].style.display = "none";
-            //         currentTab = currentTab + n;
-            //         if (currentTab >= x.length) {
-            //           x[n].style.display = "none";
-            //           currentTab = 0;
-            //         }
-            //         addDraftPr(currentTab);
-            //         localStorage.setItem('status_pr','draft')
-            //         addTable(0)
-            //         $("#inputNameProduct").val('')
-            //         $("#inputDescProduct").val('')
-            //         $("#inputPriceProduct").val('')
-            //         $("#inputQtyProduct").val('')
-            //         $("#inputSerialNumber").val('')
-            //         $("#inputPartNumber").val('')
-            //         $("#inputTotalPrice").val('')
+                })
+              }else{
+                $.ajax({
+                  url: "{{url('/admin/storeProductPr')}}",
+                  type: 'post',
+                  data: {
+                   _token:"{{ csrf_token() }}",
+                   no_pr:localStorage.getItem('no_pr'),
+                   inputNameProduct:$("#inputNameProduct").val(),
+                   inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+                   inputSerialNumber:$("#inputSerialNumber").val(),
+                   inputPartNumber:$("#inputPartNumber").val(),
+                   inputQtyProduct:$("#inputQtyProduct").val(),
+                   selectTypeProduct:$("#selectTypeProduct").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
+                  },
+                  beforeSend:function(){
+                    Swal.fire({
+                        title: 'Please Wait..!',
+                        text: "It's sending..",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        customClass: {
+                            popup: 'border-radius-0',
+                        },
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    })
+                  },success:function(){
+                      Swal.close()
+                      var x = document.getElementsByClassName("tab-add");
+                      x[currentTab].style.display = "none";
+                      currentTab = currentTab + n;
+                      if (currentTab >= x.length) {
+                        x[n].style.display = "none";
+                        currentTab = 0;
+                      }
+                      addDraftPr(currentTab);
+                      localStorage.setItem('status_pr','draft')
+                      addTable(0)
+                      $("#inputNameProduct").val('')
+                      $("#inputDescProduct").val('')
+                      $("#inputPriceProduct").val('')
+                      $("#inputQtyProduct").val('')
+                      $("#inputSerialNumber").val('')
+                      $("#inputPartNumber").val('')
+                      $("#inputTotalPrice").val('')
 
-            //         $(".tabGroupInitiateAdd").style.display == 'inline'
-            //         x[n].children[1].style.display = 'none'
-            //       }
-            //   })
-            // }else{
-            //   var x = document.getElementsByClassName("tab-add");
-            //   x[currentTab].style.display = "none";
-            //   currentTab = currentTab + n;
-            //   if (currentTab >= x.length) {
-            //     x[n].style.display = "none";
-            //     currentTab = 0;
-            //   }
-            //   addDraftPr(currentTab);
-            //   addTable()
-            // }              
-          }  
+                      $(".tabGroupInitiateAdd").show()
+                      x[n].children[1].style.display = 'none'
+                      document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
+                    }
+                })
+              } 
+            }
+          }else{
+            $(".tabGroupInitiateAdd").show()
+            x[n].children[1].style.display = 'none'
+            document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
+          }
         }else{
           console.log('lakukan baru')
 
@@ -5495,32 +5453,34 @@
   			}
   		}else if (currentTab == 4) {
   			if ($("#textAreaTOP").val() == "") {
-  				$("#textAreaTOP").closest('.form').addClass('has-error')
-  	      $("#textAreaTOP").closest('textarea').next('span').show();
-  	      $("#textAreaTOP").prev('.form').css("background-color","red");
-  			}
-
-        $.ajax({
-          url: "{{'/admin/storeTermPayment'}}",
-          type: 'post',
-          data:{
-            no_pr:localStorage.getItem('no_pr'),
-            _token:"{{csrf_token()}}",
-            textAreaTOP:$("#textAreaTOP").val(),
-            status_tax:localStorage.getItem('status_tax')
-          },
-          success: function(data)
-          {
-            var x = document.getElementsByClassName("tab-add");
-            x[currentTab].style.display = "none";
-            currentTab = currentTab + n;
-            if (currentTab >= x.length) {
-              x[n].style.display = "none";
-              currentTab = 0;
+  				$("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+  			}else{
+          $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+          
+          $.ajax({
+            url: "{{'/admin/storeTermPayment'}}",
+            type: 'post',
+            data:{
+              no_pr:localStorage.getItem('no_pr'),
+              _token:"{{csrf_token()}}",
+              textAreaTOP:$("#textAreaTOP").val(),
+              status_tax:localStorage.getItem('status_tax')
+            },
+            success: function(data)
+            {
+              var x = document.getElementsByClassName("tab-add");
+              x[currentTab].style.display = "none";
+              currentTab = currentTab + n;
+              if (currentTab >= x.length) {
+                x[n].style.display = "none";
+                currentTab = 0;
+              }
+              addDraftPr(currentTab);
             }
-            addDraftPr(currentTab);
-          }
-        }); 
+          });
+        }        
   		}else{
         $(".divReasonRejectRevision").remove()
 
@@ -5940,6 +5900,8 @@
            selectTypeProduct:$("#selectTypeProduct").val(),
            inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
            inputTotalPrice:$("#inputTotalPrice").val(),
+           inputSerialNumber:$("#inputSerialNumber").val(),
+           inputPartNumber:$("#inputPartNumber").val(),
            inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
           },beforeSend:function(){
             Swal.fire({
