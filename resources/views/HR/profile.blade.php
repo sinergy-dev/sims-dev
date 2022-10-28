@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('head_css')
-  <style type="text/css">
+<style type="text/css">
     #tes {
     width: 200px;
     height: 200px;
@@ -21,174 +21,173 @@
         -webkit-transform: scale(1.5); /* Safari 3-8 */
         transform: scale(1.5); 
     }
-     .alert-box {
+    
+    .alert-box {
       color:#555;
       border-radius:10px;
       font-family:Tahoma,Geneva,Arial,sans-serif;font-size:14px;
       padding:10px 36px;
       margin:10px;
-  }
+    }
 
-  .success {
-      background:#e9ffd9 ;
-      border:1px solid #a6ca8a;
-  }
+    .success {
+        background:#e9ffd9 ;
+        border:1px solid #a6ca8a;
+    }
 
-  .notice {
-      background:#e3f7fc;
-      border:1px solid #8ed9f6;
-  }
+    .notice {
+        background:#e3f7fc;
+        border:1px solid #8ed9f6;
+    }
 
-  .photos {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 300px;
-    margin: auto;
-    text-align: left;
-    font-family: arial; 
-    border-radius: 0%;
-  }
+    .photos {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      max-width: 300px;
+      margin: auto;
+      text-align: left;
+      font-family: arial; 
+      border-radius: 0%;
+    }
 
-  .photos-profile{
-    position: relative;
-    width: 250px;
-    height: 250px;
-    overflow: hidden;
-    border-radius: 50%;
-    border: solid white 9px;
-  }
-
-  .photos-profile img{
-    width: 50%;
-    height: auto;
-
-  }
-
-
-  .margin-top-profile{
-    margin-top: 5%;
-  }
-
-  .fa-twitter.icon {
-  /*  background: #55ACEE;*/
-    color: #55ACEE;
-  }
-  .fa-linkedin.icon {
-    /*background: #007bb5;*/
-    color: #007bb5;
-  }
-  .fa-instagram.icon {
-    /*background: #e6005c;*/
-    color: #e6005c;
-  }
-  .fa-facebook.icon {
- /*   background: #3333ff;*/
-    color: #3333ff;
-  }
-  .icon {
-    padding: 20px;
-    font-size: 25px;
-    width: 60px;
-    height: 60px;
-    text-align: center;
-    text-decoration: none;
-    margin: 5px 2px;
-    border-radius: 50%;
-  }
-  .profile h6{
+    .photos-profile{
       position: relative;
-      padding: 6px 12px 6px 0px;
-      font-size: 16px;
-      
-  }
-  .profile h6:nth-child(odd){
-   
-  }
-  div div ol li a{
-    font-size: 14px;
-  }
+      width: 250px;
+      height: 250px;
+      overflow: hidden;
+      border-radius: 50%;
+      border: solid white 9px;
+    }
 
-  div div i{
-    font-size: 14px;
-  }
+    .photos-profile img{
+      width: 50%;
+      height: auto;
+    }
 
-  .profileInput input[type=number]{
-    padding-left:45px;
-  }
+    .margin-top-profile{
+      margin-top: 5%;
+    }
 
-  input[type=number]:focus{
-    border-color:dodgerBlue;
-    box-shadow:0 0 8px 0 dodgerBlue;
-  }
+    .fa-twitter.icon {
+    /*  background: #55ACEE;*/
+      color: #55ACEE;
+    }
+    .fa-linkedin.icon {
+      /*background: #007bb5;*/
+      color: #007bb5;
+    }
+    .fa-instagram.icon {
+      /*background: #e6005c;*/
+      color: #e6005c;
+    }
+    .fa-facebook.icon {
+   /*   background: #3333ff;*/
+      color: #3333ff;
+    }
+    .icon {
+      padding: 20px;
+      font-size: 25px;
+      width: 60px;
+      height: 60px;
+      text-align: center;
+      text-decoration: none;
+      margin: 5px 2px;
+      border-radius: 50%;
+    }
+    .profile h6{
+        position: relative;
+        padding: 6px 12px 6px 0px;
+        font-size: 16px;
+        
+    }
+    .profile h6:nth-child(odd){
+     
+    }
+    div div ol li a{
+      font-size: 14px;
+    }
 
- .profileInput.inputIconBg input[type=number]:focus + i{
-    color:#fff;
-    background-color:dodgerBlue;
-  }
+    div div i{
+      font-size: 14px;
+    }
 
- .profileInput.inputIconBg i{
-    background-color:#aaa;
-    color:#fff;
-    padding:8px 7px;
-    border-radius:4px 0 0 4px;
-  }
+    .profileInput input[type=number]{
+      padding-left:45px;
+    }
 
- .profileInput{
-    position:relative;
-  }
+    input[type=number]:focus{
+      border-color:dodgerBlue;
+      box-shadow:0 0 8px 0 dodgerBlue;
+    }
 
- .profileInput i{
-    position:absolute;
-    left:0;
-    top:12px;
-    padding:8px 12px;
-    color:#aaa;
-    transition:.3s;
-  }
-  .shape {
-    stroke-dasharray: 30 30;
-    stroke-dashoffset: -100;
-    stroke-width: 8px;
-    fill: transparent;
-    stroke: #444 !important;
-    border-bottom: 5px solid black;
-    transition: stroke-width 1s, stroke-dashoffset 1s, stroke-dasharray 1s;
-  }
+   .profileInput.inputIconBg input[type=number]:focus + i{
+      color:#fff;
+      background-color:dodgerBlue;
+    }
 
-  /* The message box is shown when the user clicks on the password field */
-  #message {
-    display:none;
-    background: #f1f1f1;
-    color: #000;
-    position: relative;
-    padding: 20px;
-    margin-top: 10px;
-  }
+   .profileInput.inputIconBg i{
+      background-color:#aaa;
+      color:#fff;
+      padding:8px 7px;
+      border-radius:4px 0 0 4px;
+    }
 
-  #message h5 {
-    padding: 35px;
-  }
+   .profileInput{
+      position:relative;
+    }
 
-  /* Add a green text color and a checkmark when the requirements are right */
-  .valid {
-    color: green;
-  }
+   .profileInput i{
+      position:absolute;
+      left:0;
+      top:12px;
+      padding:8px 12px;
+      color:#aaa;
+      transition:.3s;
+    }
+    .shape {
+      stroke-dasharray: 30 30;
+      stroke-dashoffset: -100;
+      stroke-width: 8px;
+      fill: transparent;
+      stroke: #444 !important;
+      border-bottom: 5px solid black;
+      transition: stroke-width 1s, stroke-dashoffset 1s, stroke-dasharray 1s;
+    }
 
-  .valid:before {
-    position: relative;
-    left: -2px;
-    content: "✔";
-  }
+    /* The message box is shown when the user clicks on the password field */
+    #message {
+      display:none;
+      background: #f1f1f1;
+      color: #000;
+      position: relative;
+      padding: 20px;
+      margin-top: 10px;
+    }
 
-  /* Add a red text color and an "x" when the requirements are wrong */
-  .invalid {
-    color: red;
-  }
+    #message h5 {
+      padding: 35px;
+    }
 
-  .invalid:before {
-    position: relative;
-    left: -2px;
-    content: "✖";
-  }
+    /* Add a green text color and a checkmark when the requirements are right */
+    .valid {
+      color: green;
+    }
+
+    .valid:before {
+      position: relative;
+      left: -2px;
+      content: "✔";
+    }
+
+    /* Add a red text color and an "x" when the requirements are wrong */
+    .invalid {
+      color: red;
+    }
+
+    .invalid:before {
+      position: relative;
+      left: -2px;
+      content: "✖";
+    }
 </style>
 @endsection
 @section('content')
@@ -510,22 +509,33 @@
             <input type="text" name="nik_profile" id="nik_change_password" value="{{$user_profile->nik}}" hidden> 
 
             <div class="form-group">
-              <label class="margin-top">Current Password</label>
-              <input class="form-control" id="current-password" name="current-password" type="Password" required  placeholder="Enter Your Current Password">
-                <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon" id="toggle1"></i> -->
+              <label>Current Password</label>
+              <div class="input-group">
+                <input class="form-control" id="current-password" name="current-password" type="Password" required  placeholder="Enter Your Current Password">
+                <div class="input-group-addon">
+                  <i onclick="eyeEnableOrDisable('current-password','toggle1')" toggle="#password-field" class="fa fa-fw fa-eye field-icon" id="toggle1"></i>
+                </div>
+              </div>
             </div>
 
             <div class="form-group">
-              <label class="margin-top">New Password</label>
-              <input class="form-control" id="new-password" name="password" type="Password" placeholder="Enter New Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!$#%]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required onkeypress="psw()">
-
-              <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" id="toggle2"></i> -->
+              <label>New Password</label>
+              <div class="input-group">
+                <input class="form-control" id="new-password" name="password" type="Password" placeholder="Enter New Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required onkeypress="psw()">
+                <div class="input-group-addon">
+                  <i onclick="eyeEnableOrDisable('new-password','toggle2')" toggle="#password-field" class="fa fa-fw fa-eye field-icon" id="toggle2"></i>
+                </div>
+              </div>
             </div>
 
             <div class="form-group">
-              <label class="margin-top">Confirm Password</label>
-              <input class="form-control" id="new-password-confirm" name="password_confirmation" required type="Password" placeholder="Enter Confirm Password">
-              <!-- <i toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password" id="toggle3"></i> -->
+              <label>Confirm Password</label>
+              <div class="input-group">
+                <input class="form-control" id="new-password-confirm" name="password_confirmation" required type="Password" placeholder="Enter Confirm Password">
+                <div class="input-group-addon">
+                  <i onclick="eyeEnableOrDisable('new-password-confirm','toggle3')" toggle="#password-field" class="fa fa-fw fa-eye field-icon" id="toggle3"></i>
+                </div>
+              </div>
             </div> 
 
             <div id="message">
@@ -534,7 +544,7 @@
               <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
               <p id="number" class="invalid">A <b>number</b></p>
               <p id="length" class="invalid">Minimum <b>8 characters</b></p>
-              <p id="char" class="invalid">Minimum <b>1 special character</b></p>
+              <!-- <p id="char" class="invalid">Minimum <b>1 special character</b></p> -->
             </div>
 
             <div class="modal-footer">
@@ -553,7 +563,7 @@
 @section('scriptImport')
 {{-- <script src="../../plugins/input-mask/jquery.inputmask.js"></script> --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-<script src="{{asset('template2/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.5/jquery.inputmask.js" integrity="sha512-SSQo56LrrC0adA0IJk1GONb6LLfKM6+gqBTAGgWNO8DIxHiy0ARRIztRWVK6hGnrlYWOFKEbSLQuONZDtJFK0Q==" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 @endsection
@@ -589,25 +599,23 @@
   }); 
 
 
-  $("#toggle1").click(function() {
-      $(this).toggleClass("fa-eye fa-eye-slash");
-      var x = document.getElementById("current-password");
-      if (x.type === "password") {
-          x.type = "text";
-      } else {
-          x.type = "password";
-      }
-  });
-
-  $("#toggle2").click(function() {
-      $(this).toggleClass("fa-eye fa-eye-slash");
-      var y = document.getElementById("new-password");
-      if (y.type === "password") {
-          y.type = "text";
-      } else {
-          y.type = "password";
-      }
-  });
+  function eyeEnableOrDisable(value,id) 
+  {
+    var x = document.getElementById(value); //getting the password field element
+    var y = document.getElementById(id); //getting the eye button element
+    if (x.type === "password") 
+    {
+      x.type = "text";
+      y.classList.remove("fa-eye");
+      y.classList.add("fa-eye-slash");
+    } 
+    else 
+    {
+      x.type = "password";
+      y.classList.remove("fa-eye-slash");
+      y.classList.add("fa-eye");
+    }
+  }
 
   $("#toggle3").click(function() {
       $(this).toggleClass("fa-eye fa-eye-slash");
@@ -630,7 +638,7 @@
     var number = document.getElementById("number");
     var length = document.getElementById("length");
     var myInput = document.getElementById("new-password");
-    var char = document.getElementById("char");
+    // var char = document.getElementById("char");
 
     // myInput.onfocus = function() {
       document.getElementById("message").style.display = "block";
@@ -648,14 +656,14 @@
         letter.classList.add("invalid");
       }
 
-      var charLetters = /[!$#%]/g;
-      if(myInput.value.match(charLetters)) {  
-        char.classList.remove("invalid");
-        char.classList.add("valid");
-      } else {
-        char.classList.remove("valid");
-        char.classList.add("invalid");
-      }
+      // var charLetters = /[!$#%]/g;
+      // if(myInput.value.match(charLetters)) {  
+      //   char.classList.remove("invalid");
+      //   char.classList.add("valid");
+      // } else {
+      //   char.classList.remove("valid");
+      //   char.classList.add("invalid");
+      // }
       
       // Validate capital letters
       var upperCaseLetters = /[A-Z]/g;
@@ -692,8 +700,10 @@
     if($("#letter").hasClass("invalid") ||
       $("#capital").hasClass("invalid") ||
       $("#number").hasClass("invalid") ||
-      $("#length").hasClass("invalid") ||
-      $("#char").hasClass("invalid")){
+      $("#length").hasClass("invalid"))
+      // ||
+      // $("#char").hasClass("invalid"))
+    {
       
       Swal.fire(
         'Oops',
@@ -709,13 +719,13 @@
           var capital = document.getElementById("capital");
           var number = document.getElementById("number");
           var length = document.getElementById("length");
-          var char = document.getElementById("char");
+          // var char = document.getElementById("char");
 
           letter.classList.add("invalid");
           capital.classList.add("invalid");
           number.classList.add("invalid");
           length.classList.add("invalid");
-          char.classList.add("invalid");
+          // char.classList.add("invalid");
           
           $("#new-password").parent().addClass('has-error')
           $("#new-password-confirm").parent().addClass('has-error')
@@ -790,13 +800,13 @@
                   var capital = document.getElementById("capital");
                   var number = document.getElementById("number");
                   var length = document.getElementById("length");
-                  var char = document.getElementById("char");
+                  // var char = document.getElementById("char");
 
                   letter.classList.add("invalid");
                   capital.classList.add("invalid");
                   number.classList.add("invalid");
                   length.classList.add("invalid");
-                  char.classList.add("invalid");
+                  // char.classList.add("invalid");
 
                   if(result.responseText == 'Your current password does not matches with the password you provided. Please try again.'){
                     $("#current-password").parent().addClass('has-error')
