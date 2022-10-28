@@ -3252,38 +3252,6 @@
 
   localStorage.setItem('isEditProduct',false)
   function nextPrevAddPembanding(n,value) {
-    // if (isNaN(value) == false && value != true) {
-    //   console.log('whats my value '+isNaN('value'))
-    //   // $(".tabGroupInitiateAdd").hide()
-    //   // $(".tab-add")[1].children[1].style.display = 'inline'
-    //   $.ajax({
-    //     type: "GET",
-    //     url: "{{url('/admin/getProductPembanding')}}",
-    //     data: {
-    //       no_pr:localStorage.getItem("no_pembanding"),
-    //     },
-    //     success: function(result) {
-    //       $.each(result.data,function(value,item){
-    //         $("#prevBtnAdd").css("display", "none");
-    //         localStorage.setItem('isEditProduct',true)
-    //         localStorage.setItem('id_product',result.data[value].id_product)
-    //         nominal = result.data[value].nominal_product
-    //         $("#inputNameProduct").val(result.data[value].name_product)
-    //         $("#inputDescProduct").val(result.data[value].description.replaceAll("<br>","\n"))
-    //         $("#inputQtyProduct").val(result.data[value].qty)
-    //         $("#selectTypeProduct").val(result.data[value].unit)
-    //         $("#inputPriceProduct").val(formatter.format(nominal))
-    //         $("#inputSerialNumber").val(result.data[value].serial_number)
-    //         $("#inputPartNumber").val(result.data[value].part_number)
-    //         $("#inputTotalPrice").val(formatter.format(result.data[value].grand_total))
-    //       })
-    //     }
-    //   })
-    // }else{
-    //   $(".tabGroupInitiateAdd").show()
-    //   $(".tab-add")[1].children[1].style.display = 'none'
-    // }
-
     if (value == undefined) {
       if (value == 0) {
         $(".tabGroupInitiateAdd").hide()
@@ -3458,138 +3426,144 @@
       }
     }else if (currentTab == 1) {
       if (($(".tab-add")[1].children[1].style.display == 'inline') == true) {
-        if ($("#inputNameProduct").val() == "") {
-          $("#inputNameProduct").closest('.form-group').addClass('has-error')
-          $("#inputNameProduct").closest('input').next('span').show();
-          $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputDescProduct").val() == "") {
-          $("#inputDescProduct").closest('.form-group').addClass('has-error')
-          $("#inputDescProduct").closest('textarea').next('span').show();
-          $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputQtyProduct").val() == "") {
-          $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
-          $("#inputQtyProduct").closest('input').next('span').show();
-          $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#selectTypeProduct").val() == "") {
-          $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
-          $("#selectTypeProduct").closest('select').next('span').show();
-          $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
-        }else if ($("#inputPriceProduct").val() == "") {
-          $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
-          $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
-          $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
-        }else{
-          if (localStorage.getItem('isEditProduct') == true) {
-            $.ajax({
-              url: "{{url('/admin/updateProductPr')}}",
-              type: 'post',
-              data: {
-               _token:"{{ csrf_token() }}",
-               id_product:localStorage.getItem('id_product'),
-               inputNameProduct:$("#inputNameProduct").val(),
-               inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
-               inputQtyProduct:$("#inputQtyProduct").val(),
-               selectTypeProduct:$("#selectTypeProduct").val(),
-               inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-               inputTotalPrice:$("#inputTotalPrice").val(),
-               inputSerialNumber:$("#inputSerialNumber").val(),
-               inputPartNumber:$("#inputPartNumber").val(),
-               inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
-              },beforeSend:function(){
-                Swal.fire({
-                  title: 'Please Wait..!',
-                  text: "It's sending..",
-                  allowOutsideClick: false,
-                  allowEscapeKey: false,
-                  allowEnterKey: false,
-                  customClass: {
-                    popup: 'border-radius-0',
-                  },
-                  didOpen: () => {
-                    Swal.showLoading()
-                  }
-                })
-              },success:function(){
-                Swal.close()
-
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
-                }
-                addDraftPrPembanding(currentTab);
-                addTable()
-                localStorage.setItem('isEditProduct',false)
-                $(".tabGroupInitiateAdd").show()
-                $(".tab-add")[1].children[1].style.display = 'none'
-                document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
-                $("#inputNameProduct").val('')
-                $("#inputDescProduct").val('')
-                $("#inputPriceProduct").val('')
-                $("#inputQtyProduct").val('')
-                $("#inputSerialNumber").val('')
-                $("#inputPartNumber").val('')
-                $("#inputTotalPrice").val('')
-              }
-            })
+        if (n == 1) {
+          if ($("#inputNameProduct").val() == "") {
+            $("#inputNameProduct").closest('.form-group').addClass('has-error')
+            $("#inputNameProduct").closest('input').next('span').show();
+            $("#inputNameProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#inputDescProduct").val() == "") {
+            $("#inputDescProduct").closest('.form-group').addClass('has-error')
+            $("#inputDescProduct").closest('textarea').next('span').show();
+            $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#inputQtyProduct").val() == "") {
+            $("#inputQtyProduct").closest('.col-md-4').addClass('has-error')
+            $("#inputQtyProduct").closest('input').next('span').show();
+            $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#selectTypeProduct").val() == "") {
+            $("#selectTypeProduct").closest('.col-md-4').addClass('has-error')
+            $("#selectTypeProduct").closest('select').next('span').show();
+            $("#selectTypeProduct").prev('.input-group-addon').css("background-color","red");
+          }else if ($("#inputPriceProduct").val() == "") {
+            $("#inputPriceProduct").closest('.col-md-4').addClass('has-error')
+            $("#inputPriceProduct").closest('input').closest('.input-group').next('span').show();
+            $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
           }else{
-            $.ajax({
-              url: "{{url('/admin/storePembandingProduct')}}",
-              type: 'post',
-              data: {
-               _token:"{{ csrf_token() }}",
-               no_pr:localStorage.getItem('no_pembanding'),
-               inputNameProduct:$("#inputNameProduct").val(),
-               inputDescProduct:$("#inputDescProduct").val(),
-               inputSerialNumber:$("#inputSerialNumber").val(),
-               inputPartNumber:$("#inputPartNumber").val(),
-               inputQtyProduct:$("#inputQtyProduct").val(),
-               selectTypeProduct:$("#selectTypeProduct").val(),
-               inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-               inputTotalPrice:$("#inputTotalPrice").val(),
-               inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
-              },beforeSend:function(){
-                Swal.fire({
+            if (localStorage.getItem('isEditProduct') == true) {
+              $.ajax({
+                url: "{{url('/admin/updateProductPr')}}",
+                type: 'post',
+                data: {
+                 _token:"{{ csrf_token() }}",
+                 id_product:localStorage.getItem('id_product'),
+                 inputNameProduct:$("#inputNameProduct").val(),
+                 inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
+                 inputQtyProduct:$("#inputQtyProduct").val(),
+                 selectTypeProduct:$("#selectTypeProduct").val(),
+                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                 inputTotalPrice:$("#inputTotalPrice").val(),
+                 inputSerialNumber:$("#inputSerialNumber").val(),
+                 inputPartNumber:$("#inputPartNumber").val(),
+                 inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
+                },beforeSend:function(){
+                  Swal.fire({
                     title: 'Please Wait..!',
                     text: "It's sending..",
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     allowEnterKey: false,
                     customClass: {
-                        popup: 'border-radius-0',
+                      popup: 'border-radius-0',
                     },
                     didOpen: () => {
-                        Swal.showLoading()
+                      Swal.showLoading()
                     }
-                })
-              },success:function(){
-                Swal.close()
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
+                  })
+                },success:function(){
+                  Swal.close()
+
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  addDraftPrPembanding(currentTab);
+                  addTable()
+                  localStorage.setItem('isEditProduct',false)
+                  $(".tabGroupInitiateAdd").show()
+                  $(".tab-add")[1].children[1].style.display = 'none'
+                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
+                  $("#inputNameProduct").val('')
+                  $("#inputDescProduct").val('')
+                  $("#inputPriceProduct").val('')
+                  $("#inputQtyProduct").val('')
+                  $("#inputSerialNumber").val('')
+                  $("#inputPartNumber").val('')
+                  $("#inputTotalPrice").val('')
                 }
-                addDraftPrPembanding(currentTab);
-                $(".tabGroupInitiateAdd").show()
-                $(".tab-add")[1].children[1].style.display = 'none'
-                document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
-                addTable()
-                
-                $("#inputNameProduct").val('')
-                $("#inputDescProduct").val('')
-                $("#inputPriceProduct").val('')
-                $("#inputQtyProduct").val('')
-                $("#inputSerialNumber").val('')
-                $("#inputPartNumber").val('')
-                $("#inputTotalPrice").val('')
-              }
-            })
-          }            
-        }  
+              })
+            }else{
+              $.ajax({
+                url: "{{url('/admin/storePembandingProduct')}}",
+                type: 'post',
+                data: {
+                 _token:"{{ csrf_token() }}",
+                 no_pr:localStorage.getItem('no_pembanding'),
+                 inputNameProduct:$("#inputNameProduct").val(),
+                 inputDescProduct:$("#inputDescProduct").val(),
+                 inputSerialNumber:$("#inputSerialNumber").val(),
+                 inputPartNumber:$("#inputPartNumber").val(),
+                 inputQtyProduct:$("#inputQtyProduct").val(),
+                 selectTypeProduct:$("#selectTypeProduct").val(),
+                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
+                 inputTotalPrice:$("#inputTotalPrice").val(),
+                 inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
+                },beforeSend:function(){
+                  Swal.fire({
+                      title: 'Please Wait..!',
+                      text: "It's sending..",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      customClass: {
+                          popup: 'border-radius-0',
+                      },
+                      didOpen: () => {
+                          Swal.showLoading()
+                      }
+                  })
+                },success:function(){
+                  Swal.close()
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  addDraftPrPembanding(currentTab);
+                  $(".tabGroupInitiateAdd").show()
+                  $(".tab-add")[1].children[1].style.display = 'none'
+                  document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
+                  addTable()
+                  
+                  $("#inputNameProduct").val('')
+                  $("#inputDescProduct").val('')
+                  $("#inputPriceProduct").val('')
+                  $("#inputQtyProduct").val('')
+                  $("#inputSerialNumber").val('')
+                  $("#inputPartNumber").val('')
+                  $("#inputTotalPrice").val('')
+                }
+              })
+            }            
+          }  
+        }else{
+          $(".tabGroupInitiateAdd").show()
+          $(".tab-add")[1].children[1].style.display = 'none'
+          document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
+        }
       }else{
         if ($('#uploadCsv').val() == "") {
           var x = document.getElementsByClassName("tab-add");
@@ -3816,32 +3790,34 @@
       })
     }else if (currentTab == 4) {
       if ($("#textAreaTOP").val() == "") {
-        $("#textAreaTOP").closest('.form').addClass('has-error')
-        $("#textAreaTOP").closest('textarea').next('span').show();
-        $("#textAreaTOP").prev('.form').css("background-color","red");
-      }
-
-      $.ajax({
-        url: "{{'/admin/storePembandingTermPayment'}}",
-        type: 'post',
-        data:{
-          no_pr:localStorage.getItem('no_pembanding'),
-          _token:"{{csrf_token()}}",
-          textAreaTOP:$("#textAreaTOP").val(),
-          status_tax:localStorage.getItem('status_tax')
-        },
-        success: function(data)
-        {
-          var x = document.getElementsByClassName("tab-add");
-          x[currentTab].style.display = "none";
-          currentTab = currentTab + n;
-          if (currentTab >= x.length) {
-            x[n].style.display = "none";
-            currentTab = 0;
+        $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+        $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+      }else{
+        $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+        $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+        
+        $.ajax({
+          url: "{{'/admin/storePembandingTermPayment'}}",
+          type: 'post',
+          data:{
+            no_pr:localStorage.getItem('no_pembanding'),
+            _token:"{{csrf_token()}}",
+            textAreaTOP:$("#textAreaTOP").val(),
+            status_tax:localStorage.getItem('status_tax')
+          },
+          success: function(data)
+          {
+            var x = document.getElementsByClassName("tab-add");
+            x[currentTab].style.display = "none";
+            currentTab = currentTab + n;
+            if (currentTab >= x.length) {
+              x[n].style.display = "none";
+              currentTab = 0;
+            }
+            addDraftPrPembanding(currentTab);
           }
-          addDraftPrPembanding(currentTab);
-        }
-      }); 
+        }); 
+      }
     }else{
       $(".divReasonRejectRevision").remove()
       
