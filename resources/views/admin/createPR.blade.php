@@ -413,7 +413,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Lead Register*</label>
-                      <select id="selectLeadId" style="width:100%" class="select2 form-control" >
+                      <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
                         
                       </select>
                       <span class="help-block" style="display:none;">Please fill Lead Register!</span>
@@ -422,7 +422,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>PID*</label>
-                      <select id="selectPid" style="width: 100%;" class="select2 form-control" >
+                      <select id="selectPid" style="width: 100%;" class="select2 form-control" onchange="fillInput('selectPID')">
                         
                       </select>
                       <span class="help-block" style="display:none;">Please fill PID!</span>
@@ -2579,8 +2579,8 @@
 
             fillInput('penawaranHarga')
   				}					
-  				$("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')				
-  				$("#nextBtnAdd").attr('onclick','nextPrevAdd(1)')
+  				$("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')				
+  				$("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
   				document.getElementById("prevBtnAdd").style.display = "inline";
 
           $.ajax({
@@ -3844,6 +3844,18 @@
         $("#inputAddress").prev('.input-group-addon').css("background-color","red");  
     	}
 
+      if (val == "selectLeadId") {
+        $("#selectLeadId").closest('.form-group').removeClass('has-error')
+        $("#selectLeadId").closest('select').next('span').next('span').hide();
+        $("#selectLeadId").prev('.input-group-addon').css("background-color","red");
+      }
+
+      if (val == "selectPID") {
+        $("#selectPID").closest('.form-group').removeClass('has-error')
+        $("#selectPID").closest('select').next('span').next('span').hide();
+        $("#selectPID").prev('.input-group-addon').css("background-color","red");
+      }
+
       if (val == "selectType") {
         $("#selectType").closest('.form-group').removeClass('has-error')
         $("#selectType").closest('select').next('span').hide();
@@ -4760,7 +4772,7 @@
               }
             })
           })
-          
+
           $('input[type="checkbox"].minimal').iCheck({
             checkboxClass: 'icheckbox_minimal-blue',
           })
