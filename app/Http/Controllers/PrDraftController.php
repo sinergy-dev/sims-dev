@@ -1523,6 +1523,7 @@ class PrDraftController extends Controller
             $tambah->title = $get_draft_pr->title;
             $tambah->division = 'PMO';
             $tambah->issuance = $get_draft_pr->issuance;
+            $tambah->from = $get_draft_pr->issuance;
             $tambah->amount = $get_draft_pr->nominal;
             $tambah->project_id = $get_draft_pr->pid;
             $tambah->category = $get_draft_pr->category;
