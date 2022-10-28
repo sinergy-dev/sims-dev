@@ -1112,10 +1112,12 @@ class PresenceController extends Controller
 
         // $parameterUser = $parameterUser->limit(1)->pluck('nik')->unique()->values();
         $parameterUser = User::whereIn('nik',$parameterUser->pluck('nik')->unique()->values())->get();
+        // $parameterUser = User::whereIn('nik',['1220599090'])->get();
         // return $parameterUser;
 
         $presenceHistoryAll = collect();
         foreach ($parameterUser as $value) {
+            // echo $value->nik . "<br>";
             $presenceHistoryTemp = PresenceHistory::select(
                 DB::raw("presence__history.*"),
                 DB::raw("CAST(`presence_actual` AS DATE) AS `presence_actual_date`"),
@@ -1129,6 +1131,7 @@ class PresenceController extends Controller
             ->orderBy('presence_type','ASC');
 
             // dd($presenceHistoryTemp->get());
+            // return $presenceHistoryTemp->get();
             // return $presenceHistoryTemp->where('presence_type','Check-In')->count() * 2;
             // return $presenceHistoryTemp->pluck('presence_type');
             // return $presenceHistoryTemp->get();
@@ -1198,7 +1201,11 @@ class PresenceController extends Controller
                     ]);
                 }
             } else {
-                $presenceHistoryAbsent = $workDays->diff($presenceHistory->pluck('date')->values())->values();
+                $workDays = $this->getWorkDays($startDate,$endDate)["workdays"]->values();
+                $presenceHistory = $presenceHistory->pluck('date')->values();
+                $presenceHistoryAbsent =  $workDays->diff($presenceHistory)->values()->toArray();
+                // print_r($workDays);
+                // $presenceHistoryAbsent = $workDays->diff($presenceHistory->pluck('date')->values())->values();
 
                 $presenceHistoryAbsentTemp = collect();
                 foreach ($presenceHistoryAbsent as $key => $absentDate) {
