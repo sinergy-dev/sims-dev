@@ -3492,6 +3492,8 @@
                selectTypeProduct:$("#selectTypeProduct").val(),
                inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
                inputTotalPrice:$("#inputTotalPrice").val(),
+               inputSerialNumber:$("#inputSerialNumber").val(),
+               inputPartNumber:$("#inputPartNumber").val(),
                inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
               },beforeSend:function(){
                 Swal.fire({
