@@ -431,14 +431,14 @@
                 <div class="row">
                   <div class="col-md-6">
                     <label>Lead Register*</label>
-                    <select id="selectLeadId" style="width:100%" class="select2 form-control" >
+                    <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
                       
                     </select>
                     <span class="help-block" style="display:none;">Please fill Lead Register!</span>
                   </div>
                   <div class="col-md-6">
                     <label>PID*</label>
-                    <select id="selectPid" style="width: 100%;" class="select2 form-control" >
+                    <select id="selectPid" style="width: 100%;" class="select2 form-control" onchange="fillInput('selectPID')">
                       
                     </select>
                     <span class="help-block" style="display:none;">Please fill PID!</span>
@@ -3175,6 +3175,18 @@
       $("#inputAddress").closest('.form-group').removeClass('has-error')
       $("#inputAddress").closest('input').next('span').hide();
       $("#inputAddress").prev('.input-group-addon').css("background-color","red");  
+    }
+
+    if (val == "selectLeadId") {
+      $("#selectLeadId").closest('.form-group').removeClass('has-error')
+      $("#selectLeadId").closest('select').next('span').next('span').hide();
+      $("#selectLeadId").prev('.input-group-addon').css("background-color","red");
+    }
+
+    if (val == "selectPID") {
+      $("#selectPID").closest('.form-group').removeClass('has-error')
+      $("#selectPID").closest('select').next('span').next('span').hide();
+      $("#selectPID").prev('.input-group-addon').css("background-color","red");
     }
 
     if (val == "selectType") {
