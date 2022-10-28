@@ -922,7 +922,6 @@
     $(document).ready(function(){   
       currentTab = 0     
       $('input[class="files"]').change(function(){
-        console.log(this.files[0])
         var f=this.files[0]
         var filePath = f;
      
@@ -941,7 +940,6 @@
           })
         }
 
-        console.log(filePath)
         var ext = filePath.name.split(".");
         ext = ext[ext.length-1].toLowerCase();      
         var arrayExtensions = ["jpg" , "jpeg", "png", "pdf"];
@@ -965,7 +963,6 @@
         ext = ext[ext.length-1].toLowerCase();      
         var arrayExtensions = ["csv"];
 
-        console.log(ext)
 
         if (arrayExtensions.lastIndexOf(ext) == -1) {
           Swal.fire({
@@ -1021,7 +1018,6 @@
 
       colors.push(ArrColors)
       $.each(colors[0], function(key, value){
-        console.log(value)
         append = append + '<div class="col-lg-3 col-xs-6">'
           append = append + '<div class="small-box ' + value.color + '">'
             append = append + '<div class="inner">'
@@ -1085,7 +1081,6 @@
 
       colors.push(ArrColors)
       $.each(colors[0], function(key, value){
-        console.log(value)
         append = append + '<div class="col-lg-3 col-xs-6">'
           append = append + '<div class="small-box ' + value.color + '">'
             append = append + '<div class="inner">'
@@ -1364,7 +1359,6 @@
         type:"GET",
         success:function(result){
           var parameterStatus = new URLSearchParams(temp);
-          console.log(parameterStatus.getAll('status'))
           if (parameterStatus.getAll('status[]')[0] == "") {
             $("#inputFilterStatus").empty();
 
@@ -1550,7 +1544,6 @@
         className = nameClass
       }
       
-      console.log(display)
       var append = ""
 
       append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
@@ -1569,7 +1562,6 @@
       localStorage.setItem('firstLaunch', false);
       localStorage.setItem('no_pr',id_draft)
       localStorage.setItem('status_unfinished',status)
-      console.log(status)
       if (status == 'revision') {
         url = "{{url('/admin/getDetailPr')}}"
       }else{
@@ -1861,7 +1853,6 @@
               localStorage.setItem('no_pr',id_draft)
               if (status == 'reject') {
                 if (result.verify.verify_type_of_letter == 'True'){
-                  console.log(result.verify.verify_type_of_letter)
                   $("#selectType").prop("disabled",true)
                 }
                 if (result.verify.verify_category == 'True'){
@@ -1912,7 +1903,6 @@
 
               //button add initiate product show form-group
               $("#btnInitiateAddProduct").click(function(){
-                console.log(x[n].children[0].children[0].style.display = 'inline')
                 $(".tabGroupInitiateAdd").hide()
                 x[n].children[1].style.display = 'inline'
                 $("#inputNameProduct").val('')
@@ -1988,7 +1978,6 @@
                       url: "{{url('/admin/getLead')}}",
                       type: "GET",
                       success: function(result) {
-                        console.log(result.data)
 
                         result.data.unshift({"id" : "-","text" : "Select Lead Register"})
 
@@ -1996,7 +1985,6 @@
                             data: result.data
                         }).on('change', function() {
                           var data = $("#selectLeadId option:selected").text();
-                          console.log(data)
                           $.ajax({
                             url: "{{url('/admin/getPid')}}",
                             type: "GET",
@@ -2051,8 +2039,6 @@
                       reasonReject(result.activity.reason,"block")
 
                     } else if (status == 'revision') {
-                      console.log(status)
-
                       reasonReject(result.activity.reason,"block")
                     } 
 
@@ -2176,8 +2162,6 @@
                     $("#tableDocPendukung").append(appendDocPendukung)              
 
                     $.each(result.dokumen,function(value,item){
-                      console.log(item.dokumen_location)
-                      console.log(value)
                       if (value != 0) {
                         const filedocpendukung = document.querySelector('.inputDocPendukung_'+value);
 
@@ -2306,7 +2290,6 @@
     localStorage.setItem('status_pr','')
   	function addDraftPr(n){
       localStorage.setItem('status_pr','')
-  		console.log("current_tab",n)
   		var x = document.getElementsByClassName("tab-add");
   		x[n].style.display = "inline";
   		if (n == (x.length - 1)) {
@@ -2316,7 +2299,6 @@
   			$(".modal-title").text('')
   			document.getElementById("prevBtnAdd").style.display = "inline";
   			$("#headerPreviewFinal").empty()
-  			console.log(n)
   			document.getElementById("nextBtnAdd").innerHTML = "Create";
   			$("#nextBtnAdd").attr('onclick','createPR("saved")');	
 
@@ -2541,7 +2523,6 @@
         })
   										
   		} else {
-  			console.log(n)
   			if (n == 0) {
           const firstLaunch = localStorage.getItem('firstLaunch')
   				document.getElementById("prevBtnAdd").style.display = "none";
@@ -2562,7 +2543,6 @@
 
           //button add initiate product show form-group
           $("#btnInitiateAddProduct").click(function(){
-            console.log(x[n].children[0].children[0].style.display = 'inline')
             $(".tabGroupInitiateAdd").hide()
             x[n].children[1].style.display = 'inline'
           })
@@ -2612,7 +2592,6 @@
                   data: result.data
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
-                console.log(data)
                 $.ajax({
                   url: "{{url('/admin/getPid')}}",
                   type: "GET",
@@ -2739,7 +2718,6 @@
     })
 
     function addDraftPrPembanding(n){
-      console.log("current_tab",n)
       var x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
       if (n == (x.length - 1)) {
@@ -2749,7 +2727,6 @@
         $(".modal-title").text('')
         document.getElementById("prevBtnAdd").style.display = "inline";
         $("#headerPreviewFinal").empty()
-        console.log(n)
         document.getElementById("nextBtnAdd").innerHTML = "Create";
         $("#nextBtnAdd").attr('onclick','createPRPembanding()');  
 
@@ -2930,7 +2907,6 @@
         })
                       
       } else {
-        console.log(n)
         if (n == 0) {
           $("#divNotePembanding").show()
           $("#selectType").attr("disabled",true)
@@ -3037,7 +3013,6 @@
                   data: result.data
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
-                console.log(data)
                 $.ajax({
                   url: "{{url('/admin/getPid')}}",
                   type: "GET",
@@ -4029,9 +4004,6 @@
           }
         })
       }
-      console.log("value", n)
-      console.log("current_tab_next",currentTab)
-      console.log('edit ' + valueEdit)
       if (currentTab == 0) {
         const validateEmail = (email) => {
           return email.match(
@@ -4139,7 +4111,6 @@
       }else if (currentTab == 1) {
         if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
           if (n == 1) {
-            console.log("nku =" + n)
             if ($("#inputNameProduct").val() == "") {
               $("#inputNameProduct").closest('.form-group').addClass('has-error')
               $("#inputNameProduct").closest('input').next('span').show();
@@ -4162,7 +4133,6 @@
               $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
             }else{
               if (localStorage.getItem('isEditProduct') == 'true') {
-                console.log(localStorage.getItem('id_product'))
                 $.ajax({
                   url: "{{url('/admin/updateProductPr')}}",
                   type: 'post',
@@ -4278,7 +4248,6 @@
           }
            
         }else{
-          console.log('lakukan baru')
 
           if ($('#uploadCsv').val() == "") {
             var x = document.getElementsByClassName("tab-add");
@@ -4357,7 +4326,6 @@
                 var arrInputDocPendukung = []
 
                 if (result.dokumen.length > 0) {
-                  console.log(result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1])
                   if ($('#inputPenawaranHarga').prop('files')[0].name.replace("/","") != result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1]) {
                     formData.append('inputPenawaranHarga', filepenawaranHarga)
                   } else {
@@ -4651,18 +4619,7 @@
       }else{
         url = "{{url('/admin/getProductPembanding')}}"
         no_pr = localStorage.getItem('no_pembanding')
-        // if (localStorage.getItem('status_pr') == 'revision') {
-        //   url = "{{url('/admin/getProductPembanding')}}"
-        //   no_pr = localStorage.getItem('no_pembanding')
-        // }else{
-        //   url = "{{url('/admin/getProductPr')}}"
-        //   no_pr = localStorage.getItem('no_pr')
-        // }
       }
-
-      console.log("status_pr"+localStorage.getItem('status_pr'))
-
-      console.log("onclick"+onclick)
   		$.ajax({
         type: "GET",
         url: url,
@@ -4714,7 +4671,6 @@
                 }else{
                   btnNext = 'nextPrevUnFinished(-1,'+ value +')'
                 }
-                console.log(btnNext)
   							append = append + '<button type="button" onclick="'+ btnNext +'" id="btnEditProduk" data-id="'+ value +'" data-value="'+ valueEdit +'" class="btn btn-xs btn-warning fa fa-edit btnEditProduk" style="width:25px;height:25px;margin-bottom:5px"></button>'
   							append = append + '<button id="btnDeleteProduk" type="button" data-id="'+ item.id_product +'" data-value="'+ value +'" class="btn btn-xs btn-danger fa fa-trash" style="width:25px;height:25px"></button>'
   						append = append + '</td>'
@@ -4760,8 +4716,6 @@
           $("#bottomProducts").append(appendBottom)
 
           $(document).on("click", "#btnDeleteProduk", function() {
-            console.log($(this).data("value"))
-
             Swal.fire({
               title: 'Are you sure?',  
               text: "Deleting Product",
@@ -4806,30 +4760,7 @@
               }
             })
           })
-
-          // $(document).on("click", "#btnEditProduk", function() {
-          //   nextPrevUnFinished(-1)
-          //   console.log($(this).data("id"))
-          //   valueEdit = $(this).data("id")
-          //   $(".tabGroupInitiateAdd").hide()
-          //   $(".tab-add")[1].children[1].style.display = 'inline'
-          //   $.each(result.data,function(value,item){
-          //     $("#prevBtnAdd").css("display", "none");
-          //     localStorage.setItem('isEditProduct',true)
-          //     localStorage.setItem('id_product',result.data[valueEdit].id_product)
-          //     nominal = result.data[valueEdit].nominal_product
-          //     console.log(result.data[valueEdit].nominal_product)
-          //     $("#inputNameProduct").val(result.data[valueEdit].name_product)
-          //     $("#inputDescProduct").val(result.data[valueEdit].description.replaceAll("<br>","\n"))
-          //     $("#inputQtyProduct").val(result.data[valueEdit].qty)
-          //     $("#selectTypeProduct").val(result.data[valueEdit].unit)
-          //     $("#inputPriceProduct").val(formatter.format(nominal))
-          //     $("#inputSerialNumber").val(result.data[valueEdit].serial_number)
-          //     $("#inputPartNumber").val(result.data[valueEdit].part_number)
-          //     $("#inputTotalPrice").val(formatter.format(result.data[valueEdit].grand_total))
-          //   })
-          // })
-
+          
           $('input[type="checkbox"].minimal').iCheck({
             checkboxClass: 'icheckbox_minimal-blue',
           })
@@ -4893,7 +4824,6 @@
                 localStorage.setItem('isEditProduct',true)
                 localStorage.setItem('id_product',item.id_product)
                 nominal = item.nominal_product
-                console.log(nominal)
                 $("#inputNameProduct").val(item.name_product)
                 $("#inputDescProduct").val(item.description.replaceAll("<br>","\n"))
                 $("#inputQtyProduct").val(item.qty)
@@ -4968,7 +4898,6 @@
           if (value == true) {
             isStoreSupplier = localStorage.getItem('isStoreSupplier')
             if (isStoreSupplier == 'false') {
-              console.log("apa ini")
               Swal.fire({
                   title: 'Are you sure?',
                   text: "Save info Supplier",
@@ -5013,7 +4942,6 @@
                           })
                         },
                         success: function(result){
-                          console.log("result",result)
                           localStorage.setItem('isStoreSupplier',true)
                           Swal.close()
                           var x = document.getElementsByClassName("tab-add");
@@ -5195,7 +5123,6 @@
             document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
           }
         }else{
-          console.log('lakukan baru')
 
           if ($('#uploadCsv').val() == "") {
             var x = document.getElementsByClassName("tab-add");
@@ -5279,7 +5206,6 @@
                 var lengthArrInputDocPendukung = $('#tableDocPendukung .trDocPendukung').length
                 arrInputDocPendukung = []
                 var i = 1;
-                console.log(lengthArrInputDocPendukung)
                 $('#tableDocPendukung .trDocPendukung').each(function() {
                   if(i >= lengthArrInputDocPendukung){
 
@@ -5436,7 +5362,6 @@
                   })
                 },
                 success: function(result){
-                  console.log("result",result)
                   localStorage.setItem('isStoreSupplier',true)
                   Swal.close()
                   var x = document.getElementsByClassName("tab-add");
@@ -5458,7 +5383,7 @@
   			}else{
           $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
           $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
-          
+
           $.ajax({
             url: "{{'/admin/storeTermPayment'}}",
             type: 'post',
@@ -5495,12 +5420,9 @@
         localStorage.setItem('status_pr','draft')
   		}
   		
-  		console.log("value", n)
-  		console.log("current_tab_next",currentTab)
   	}
 
     function nextPrevAddPembanding(n,value) {
-      console.log("value",value)
       if (currentTab == 0) {
         if ($("#inputTo").val() == "") {
           $("#inputTo").closest('.form-group').addClass('has-error')
@@ -5538,7 +5460,6 @@
           if (value == true) {
             isStoreSupplier = localStorage.getItem('isStoreSupplier')
             if (isStoreSupplier == 'false') {
-              console.log("apa ini")
               Swal.fire({
                   title: 'Are you sure?',
                   text: "Save info Supplier",
@@ -5713,14 +5634,12 @@
           data: {
             no_pr:window.location.href.split("/")[6],
           },success:function(result){
-            console.log(result)
             if (result.type_of_letter == 'IPR') {
               if ($("#inputPenawaranHarga").val() == "") {
                 $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
                 $("#inputPenawaranHarga").closest('div').next('span').show();
                 $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red");
               }else{
-                console.log("submit")
                 let formData = new FormData();
                 const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
                 if (filepenawaranHarga!="") {
@@ -5881,8 +5800,6 @@
         }
         addDraftPrPembanding(currentTab);
       }
-      console.log("value", n)
-      console.log("current_tab_next",currentTab)
     } 
     
     localStorage.setItem('isEditProduct',false)
@@ -5942,13 +5859,10 @@
   			currentTab = 0;
   		}
   		cekByAdmin(currentTab,no_pr);
-  		console.log("value", n)
-  		console.log("current_tab_next",currentTab)
     }
 
     var incrementDoc = 0
     function addDocPendukung(){
-      console.log("inputDocPendukung_" + incrementDoc)
       $("#titleDoc").show()
     	append = ""
         append = append + "<tr style='height:10px' class='trDocPendukung'>"
@@ -5970,13 +5884,11 @@
     $(document).on('click', '.btnRemoveAddDocPendukung', function() {
       $(this).closest("tr").remove();
       if($('#tableDocPendukung tr').length == 0){
-        console.log("0")
         $("#titleDoc").hide()
       }
     });
 
     function createPR(status){
-      console.log(status)
     	Swal.fire({
 			    title: 'Are you sure?',
 			    text: "Submit Draft PR",
