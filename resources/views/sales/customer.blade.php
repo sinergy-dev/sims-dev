@@ -304,7 +304,7 @@ Customer
                     Terdapat penyesuaian untuk penambahan data customer, data yang telah ditambah statusnya akan menjadi request dan menunggu <span class="AccName"></span> untuk melakukan <i>ACC</i>. Jika ada keperluan terkait hal tersebut, harap hubungi kontak dibawah ini:<br><br>
                     <ul>
                       <li>Email: <span class="AccEmail"></span><br></li>
-                      <li>Phone: 0812-1860-0150<br><br></li>
+                      <li>Phone: <span class="AccPhone"></span><br><br></li>
                     </ul>
                     Terima kasih.
                   </h5>
@@ -680,10 +680,11 @@ Customer
       cRequest =  JSON.parse('@json($count_request)')
 
       if (accesable.includes('popUp')) {
-        var AccName = JSON.parse('@json($roles)')
-        $('.AccName').text(AccName.name)
-        $('.AccEmail').text(AccName.email)
-
+        $.each(@json($roles),function(value,item){
+          $('.AccName').text(item.name)
+          $('.AccEmail').text(item.email)
+          $('.AccPhone').text('+62' + item.phone)
+        })
       }
 
       if (cRequest > 0) {
