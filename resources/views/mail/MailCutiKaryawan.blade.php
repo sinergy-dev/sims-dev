@@ -395,7 +395,7 @@
 						<tr>
 							<th>Tanggal Request Cuti</th>
 							<th> : </th>
-							<td>{{date('d-M-Y', strtotime($hari['cuti_accept']->date_req))}}}</td>
+							<td>{{date('d-M-Y', strtotime($hari['cuti_accept']->date_req))}}</td>
 						</tr>
 						<tr>
 							<th>Note</th>
