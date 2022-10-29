@@ -186,7 +186,7 @@ class PRDraft extends Model
                 ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'hr') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'HR MANAGER' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'sales') {
