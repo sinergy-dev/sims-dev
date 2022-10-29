@@ -4031,19 +4031,19 @@
           $("#selectType").closest('.form-group').addClass('has-error')
           $("#selectType").closest('select').next('span').show();
           $("#selectType").prev('.input-group-addon').css("background-color","red");
-        }
-        // else if ($("#inputEmail").val() == "") {
-        //   $("#inputEmail").closest('.form-group').addClass('has-error')
-        //   $("#inputEmail").closest('input').next('span').show();
-        //   $("#inputEmail").prev('.input-group-addon').css("background-color","red");
-        //   $("#inputEmail").closest('input').next('span').text("Please fill an Email!")
-        // }
-        else if(validateEmail($("#inputEmail").val()) == null){
+        }else if ($("#inputEmail").val() == "") {
           $("#inputEmail").closest('.form-group').addClass('has-error')
           $("#inputEmail").closest('input').next('span').show();
           $("#inputEmail").prev('.input-group-addon').css("background-color","red");
-          $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
-        }else if ($("#selectCategory").val() == "") {
+          $("#inputEmail").closest('input').next('span').text("Please fill an Email!")
+        }
+        // else if(validateEmail($("#inputEmail").val()) == null){
+        //   $("#inputEmail").closest('.form-group').addClass('has-error')
+        //   $("#inputEmail").closest('input').next('span').show();
+        //   $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+        //   $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
+        // }
+        else if ($("#selectCategory").val() == "") {
           $("#selectCategory").closest('.form-group').addClass('has-error')
           $("#selectCategory").closest('select').next('span').show();
           $("#selectCategory").prev('.input-group-addon').css("background-color","red");
