@@ -2496,7 +2496,6 @@ class PrDraftController extends Controller
 
         if ($get_type->type_of_letter == 'IPR') {
             if ($cek_group->group == 'pmo') {
-            if ($cek_group->group == 'pmo') {
                 $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
             } elseif ($cek_group->group == 'msm') {
                 $email_cc = User::select('users.email')->where('id_company', '1')->where('status_karyawan', '!=', 'dummy')->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`nik` = '" .$cek_group->user_id. "')")->get();
