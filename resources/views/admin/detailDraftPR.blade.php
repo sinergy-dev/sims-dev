@@ -3311,12 +3311,14 @@
         $("#inputEmail").closest('input').next('span').show();
         $("#inputEmail").prev('.input-group-addon').css("background-color","red");
         $("#inputEmail").closest('input').next('span').text("Please fill an Email!")
-      }else if(validateEmail($("#inputEmail").val()) == null){
-        $("#inputEmail").closest('.form-group').addClass('has-error')
-        $("#inputEmail").closest('input').next('span').show();
-        $("#inputEmail").prev('.input-group-addon').css("background-color","red");
-        $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
-      }else if ($("#selectPosition").val() == "") {
+      }
+      // else if(validateEmail($("#inputEmail").val()) == null){
+      //   $("#inputEmail").closest('.form-group').addClass('has-error')
+      //   $("#inputEmail").closest('input').next('span').show();
+      //   $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+      //   $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
+      // }
+      else if ($("#selectPosition").val() == "") {
         $("#selectPosition").closest('.form-group').addClass('has-error')
         $("#selectPosition").closest('select').next('span').show();
         $("#selectPosition").prev('.input-group-addon').css("background-color","red");
