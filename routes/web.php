@@ -44,6 +44,8 @@ Route::get('testRolesShow','TestController@testRole');
 
 Route::get('testPermission','TestController@testPermission');
 Route::get('permissionConfig','PermissionConfigController@testPermissionConfig');
+Route::get('/admin/getPdf', 'PrDraftController@getPdf');
+Route::get('/admin/mergePdf', 'PrDraftController@mergePdf');
 
 
 // Route::get('testPermissionConfigFeature','TestController@testPermissionConfigFeature');
@@ -131,6 +133,9 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/testgetCalendarList','TestController@getCalendarList');
 	Route::get('/testJson','TestController@testJson');	
 	Route::get('/oauth2callback','TestController@oauth2callback');
+
+	//coba calendar team up
+	Route::get('/indexCalendar','TestController@indexCalendar');
 
 	Route::get('permission/changeFeatureItem','TestController@changeFeatureItem');
 	Route::get('permission/getUserList','TestController@getUserList');
@@ -270,6 +275,67 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getTotalNominalByPidYear', 'PrController@getTotalNominalByPidYear');
 	Route::get('/getTotalNominalByCatIprYear', 'PrController@getTotalNominalByCatIprYear');
 	Route::get('/getTotalNominalByCatEprYear', 'PrController@getTotalNominalByCatEprYear');
+
+	//Draft PR
+	Route::get('/admin/draftPR', 'PrDraftController@draftPR');
+	Route::get('/admin/draftPR/{id}', 'PrDraftController@draftPR');
+	Route::get('/admin/draftPR/addPembanding/{id}', 'PrDraftController@draftPR');
+	Route::get('/admin/detail/draftPR/{id}', 'PrDraftController@detailDraftPR');
+	Route::get('/admin/getDraftPr', 'PrDraftController@getDraftPr');
+	Route::get('/admin/getLead', 'PrDraftController@getLeadRegister');
+	Route::get('/admin/getPid', 'PrDraftController@getPid');
+	Route::get('/admin/getProductPr', 'PrDraftController@getProductPr');
+	Route::get('/admin/getPreviewPr', 'PrDraftController@getPreviewPr');
+	Route::get('/admin/getDetailPr', 'PrDraftController@getDetailPr');
+	Route::post('/admin/storeDraftPr', 'PrDraftController@storeSupplierPr');
+	Route::post('/admin/storeProductPr', 'PrDraftController@storeProductPr');
+	Route::post('/admin/storeDokumen', 'PrDraftController@storeDokumen');
+	Route::post('/admin/storeLastStepDraftPr', 'PrDraftController@storeLastStepDraftPr');
+	Route::get('/admin/getQuote', 'PrDraftController@getQuote');
+	Route::post('/admin/storeTermPayment', 'PrDraftController@storeTermPayment');
+	Route::post('/admin/verifyDraft', 'PrDraftController@verifyDraft');
+	Route::post('/admin/storePembandingSupplier', 'PrDraftController@storePembandingSupplier');
+	Route::post('/admin/storePembandingProduct', 'PrDraftController@storePembandingProduct');
+	Route::post('/admin/storePembandingDokumen', 'PrDraftController@storePembandingDokumen');
+	Route::post('/admin/storePembandingTermPayment', 'PrDraftController@storePembandingTermPayment');
+	Route::post('/admin/storeLastStepPembanding', 'PrDraftController@storeLastStepPembanding');
+	Route::get('/admin/getPembanding', 'PrDraftController@getPembanding');
+	Route::get('/admin/getProductPembanding', 'PrDraftController@getProductPembanding');
+	Route::get('/admin/getTypePr', 'PrDraftController@getTypePr');
+	Route::get('/admin/getPreviewPembanding', 'PrDraftController@getPreviewPembanding');
+	Route::post('/admin/choosedComparison', 'PrDraftController@choosedComparison');
+	Route::get('/admin/getActivity', 'PrDraftController@getActivity');
+	Route::get('/admin/getCountComparing', 'PrDraftController@getCountComparing');
+	Route::get('/admin/cekTTD', 'PrDraftController@cekTTD');
+	Route::get('/admin/showTTD', 'PrDraftController@showTTD');
+	Route::post('/admin/uploadTTD', 'PrDraftController@uploadTTD');
+	Route::post('/admin/submitTtdApprovePR', 'PrDraftController@submitTtdApprovePR');
+	Route::post('/admin/rejectCirculerPR', 'PrDraftController@rejectCirculerPR');
+	Route::post('/admin/circulerPrTanpaPembanding', 'PrDraftController@circulerPrTanpaPembanding');
+	Route::post('/admin/circulerPr', 'PrDraftController@circulerPr');
+	Route::get('/admin/getDataSendEmail', 'PrDraftController@getDataSendEmail');
+	Route::get('/admin/getEmailTemplate', 'PrDraftController@getEmailTemplate');
+	Route::get('/admin/getPdfPr', 'PrDraftController@getPdfPr');
+	Route::get('/admin/getPdfPRFromLink', 'PrDraftController@getPdfPRFromLink');
+	Route::post('/admin/sendMailtoFinance', 'PrDraftController@sendMailtoFinance');
+	Route::post('/admin/deleteDokumen', 'PrDraftController@deleteDokumen');
+	Route::post('/admin/deleteProduct', 'PrDraftController@deleteProduct');
+	Route::post('/admin/updateSupplier', 'PrDraftController@updateSupplierPr');
+	Route::post('/admin/updateProductPr', 'PrDraftController@updateProductPr');
+	Route::get('/admin/sendMailDraft', 'PrDraftController@sendMailDraft');
+	Route::get('/admin/getSignStatusPR','PrDraftController@getSignStatusPR');
+	Route::get('/admin/getCount','PrDraftController@getCount');
+	Route::get('/admin/getFilterDraft','PrDraftController@getFilterDraft');
+	Route::get('/admin/getFilterStatus','PrDraftController@getFilterStatus');
+	Route::get('/admin/getFilterUser','PrDraftController@getFilterUser');
+	Route::get('/admin/getFilterCount','PrDraftController@getFilterCount');
+	Route::post('/admin/storeNotes', 'PrDraftController@storeNotes');
+	Route::post('/admin/storeReply', 'PrDraftController@storeReply');
+	Route::post('/admin/storeResolveNotes', 'PrDraftController@storeResolveNotes');
+	Route::get('/admin/getNotes', 'PrDraftController@getNotes');
+	Route::get('/admin/getProductById', 'PrDraftController@getProductById');
+	Route::post('/admin/uploadCSV','PrDraftController@uploadCSV');
+
 
 	Route::get('/po', 'PONumberController@index');
 	Route::get('/getPRNumber', 'PONumberController@getPRNumber');
@@ -474,7 +540,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/changePassword','HRController@changePassword');
 	Route::post('/resetPassword', 'HRController@resetPassword');
 	Route::get('/salesproject', 'SalesController@sales_project_index');
-	
+	Route::get('/getsalesproject', 'SalesController@getsalesproject');
 	Route::get('/getPIDIndex','SalesController@getPIDIndex');
 	Route::get('/getEditPID','SalesController@getEditPID');
 	Route::get('/getShowPIDReq','SalesController@getShowPIDReq');
@@ -1089,9 +1155,38 @@ Route::get('testCheckIn','TestController@checkIn');
 Route::post('testCheckIn','TestController@checkIn');
 Route::post('testCheckOut','TestController@checkOut');
 Route::post('testaddUserShifting','TestController@modifyUserShifting');
+Route::get('/mergePdf', 'TestController@mergePdf');
 
 Route::get('testDnsCrypt',function(){
 	$client = new GuzzleHttp\Client();
 	$res = $client->request('GET', 'https://www.reddit.com/');
 });
+
+Route::get('testPdfPR','TestController@testPdfPR');
+Route::get('testPdfPRLink','TestController@getLatestPDF');
+Route::get('getSignStatusPR','TestController@getSignStatusPR');
+
+Route::post('testUploadDocument','TestController@testUploadDocument');
+Route::get('showUploadDocument','TestController@showUploadDocument');
+// Route::get('showUploadDocument',function(){
+// 	// echo ini_get('post_max_size');
+// 	// echo "<pre>";
+// 	// print_r(ini_get_all());
+// 	// echo "</pre>";
+// 	echo phpinfo();
+// });
+
+
+Route::get('sendEmailRejct','TestController@sendEmailRejct');
+Route::get('testUploadPDF',function(){
+	$pr = new App\Http\Controllers\PrDraftController();
+	$pr->uploadPdf(52,"Faiqoh Cantik");
+});
+
+Route::get('testCSVUpload','TestController@testCSVUpload');
+Route::post('testCSVUploadPost','TestController@testCSVUploadPost');
+
+Route::get('testCSVUploadGetFile','TestController@testCSVUploadGetFile');
+
+
 
