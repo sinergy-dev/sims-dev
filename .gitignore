@@ -56,3 +56,8 @@ app/Http/Controllers/sims-notif.json
 
 # Backup Template
 resources/views/template/backup
+
+
+# Google Drive
+token_app.json
+credentials_app2.json
