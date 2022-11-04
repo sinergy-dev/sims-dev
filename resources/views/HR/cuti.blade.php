@@ -635,7 +635,7 @@ Leaving Permitte
   {{-- <script src="{{asset('js/fullcalendar.js')}}"></script> --}}
   {{-- <script type='text/javascript' src="{{asset('js/gcal.js')}}"></script> --}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script> -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 @endsection
@@ -782,7 +782,7 @@ Leaving Permitte
 
           var disableDate = []
           $.each(result.allCutiDate,function(key,value){
-            disableDate.push(moment( value).format("MM/DD/YYYY"))
+            disableDate.push(moment("2000-10-02",value).format("MM/DD/YYYY"))
           })
 
           if(result.shiftingUser){
@@ -797,19 +797,19 @@ Leaving Permitte
             weekStart: 1,
             daysOfWeekDisabled: daysOfWeekDisabled,
             daysOfWeekHighlighted: daysOfWeekHighlighted,
-            startDate: moment().format("MM/DD/YYYY"),
+            startDate: moment("2000-10-02").format("MM/DD/YYYY"),
             todayHighlight: true,
             multidate: true,
             datesDisabled: disableDate,
             beforeShowDay: function(date){
-              var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+              var index = hari_libur_nasional.indexOf(moment("2000-10-02",date).format("MM/DD/YYYY"))
               if(index > 0){
                 return {
                   // enabled: false,
                   tooltip: hari_libur_nasional_tooltip[index],
                   classes: 'hari_libur'
                 };
-              } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
+              } else if(disableDate.indexOf(moment("2000-10-02",date).format("MM/DD/YYYY")) > 0) {
                 return {
                   enabled: false,
                   tooltip: 'Cuti Pribadi',
@@ -833,11 +833,11 @@ Leaving Permitte
             }
 
           }).on('changeMonth', function(e){
-            console.log(moment(e.date).format("MM/YYYY"));
+            console.log(moment("2000-10-02",e.date).format("MM/YYYY"));
 
             const array = hari_libur_nasional_2;
 
-            const substring = moment(e.date).format("MM/YYYY");
+            const substring = moment("2000-10-02",e.date).format("MM/YYYY");
 
             var match = []
             $('#info_libur').empty()
@@ -933,59 +933,6 @@ Leaving Permitte
           }
       })
     })
-
-   //  $(document).on('click',"button[class^='approve_date']",function(e) {
-   //      $.ajax({
-   //        type:"GET",
-   //        url:'{{url("/detilcuti")}}',
-   //        data:{
-   //          cuti:this.value,
-   //        },
-   //        success: function(result){
-   //          var table = "";
-
-   //          $.each(result[0], function(key, value){
-   //            $("#id_cuti_detil").val(value.id_cuti);
-   //            $("#nik_cuti").val(value.nik);
-   //            $("#date_request_detil").val(moment(value.date_req).format('LL'));
-   //            $("#reason_detil").val(value.reason_leave);
-   //            $("#time_off").val(value.days);
-   //            $('#tanggal_cuti').empty();
-   //            table = table + '<tr>';
-   //            table = table + '<td>' + '<input type="checkbox" class="check_date" checked name="check_date[]"' +'</td>';
-   //            table = table + '<td hidden>' + value.date_off +'</td>';
-   //            table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
-   //            table = table + '</tr>';
-              
-   //          });
-
-   //          console.log(result[0].length);
-   //          var date_check = result[0].length;
-
-   //          $('#tanggal_cuti').append(table);
-
-   //          var countChecked = function() {
-			//   var n = $( ".check_date:checked" ).length;
-			//   console.log( n + (n === 1 ? " is" : " are") + " checked!")
-
-			//   if (date_check != $( ".check_date:checked" ).length) {
-			//   	$("#alasan_reject").css("display", "block");
-			//   	$("#reason_reject").prop('required',true);
-			//   }else{
-			//   	$("#alasan_reject").css("display", "none");
-			//   	$("#reason_reject").prop('required',false);
-			//   }
-
-			// };
-			// countChecked();
-			 
-			//  $( ".check_date" ).on( "click", countChecked );
-
-   //        }
-   //      });
-
-   //      $("#detail_cuti").modal("show");
-   //  });
 
     $(document).on('click',"button[class^='approve_date']",function(e) {
         $.ajax({
@@ -1096,7 +1043,7 @@ Leaving Permitte
 
               var disableDate = []
                 $.each(result.allCutiDate,function(key,value){
-                  disableDate.push(moment( value).format("MM/DD/YYYY"))
+                  disableDate.push(moment("2000-10-02",value).format("MM/DD/YYYY"))
               })
 
               $("#Dates").datepicker({
@@ -1104,20 +1051,20 @@ Leaving Permitte
                 // daysOfWeekDisabled: "0,6",
                 daysOfWeekHighlighted: [0,6],
                 minDate:'0',
-                startDate: moment().format("YYYY-MM-DD"),
+                startDate: moment("2000-10-02").format("YYYY-MM-DD"),
                 format: 'yyyy-mm-dd',
                 todayHighlight: true,
                 multidate: true,
                 datesDisabled: disableDate,
                 beforeShowDay: function(date){
-                  var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+                  var index = hari_libur_nasional.indexOf(moment("2000-10-02",date).format("MM/DD/YYYY"))
                   if(index > 0){
                     return {
                       enabled: false,
                       tooltip: hari_libur_nasional_tooltip[index],
                       classes: 'hari_libur'
                     };
-                  } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
+                  } else if(disableDate.indexOf(moment("2000-10-02",date).format("MM/DD/YYYY")) > 0) {
                     return {
                       enabled: false,
                       tooltip: 'Cuti Pribadi',
@@ -1393,19 +1340,19 @@ Leaving Permitte
     function exportExcel() {
       filter      = encodeURI($("#pilih").val())
       division    = encodeURI($("#division_cuti").val())
-      date_start  = encodeURI(moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"))
-      date_end    = encodeURI(moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
+      date_start  = encodeURI(moment("2000-10-02",$('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"))
+      date_end    = encodeURI(moment("2000-10-02",$('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
       myUrl       = url+"/downloadCutiReport?division="+division+"&date_start="+date_start+"&date_end="+date_end+"&filter="+filter
       location.assign(myUrl)
     }
 
-    var start_date = moment().startOf('year');
-    var end_date = moment().endOf('year');
+    var start_date = moment("2000-10-02").startOf('year');
+    var end_date = moment("2000-10-02").endOf('year');
     var monthCuti;
 
     get_list_cuti();
     get_cuti_byMonth();
-    get_history_cuti($("#filter_com").val(),"alldeh",moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
+    get_history_cuti($("#filter_com").val(),"alldeh",moment("2000-10-02",$('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment("2000-10-02",$('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
 
     function get_cuti_byMonth(){
       monthCuti = $("#datatablew").DataTable({
@@ -1450,6 +1397,7 @@ Leaving Permitte
           {
             render: function (data, type, row) {
               if({{Auth::User()->nik}} == row.nik){
+                console.log(row.nik)
                 if(row.status == 'n' || row.status == 'R'){
                   return '<button type="button" class="btn btn-sm btn-primary" style="margin-left: 10px;width: 100px" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-edit" style="margin-right: 5px"></i>Edit</button>' 
                   + ' ' +
@@ -1491,6 +1439,16 @@ Leaving Permitte
           }else{
             activeTab('cuti')
           }
+
+          // var accesable = @json($feature_item);
+          // console.log(accesable)
+          // if (accesable.length == 0) {
+          //   // Get the column API object
+          //   var columns = this.api().columns([5]);
+ 
+          //   // Toggle the visibility
+          //   columns.visible(!columns.visible());
+          // }
         },
         "searching": true,
         "lengthChange": true,
@@ -1802,7 +1760,7 @@ Leaving Permitte
 
     }
 
-    cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val());
+    cb(start_date,end_date,"{{url('/getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val());
 
     $('#datesReport').daterangepicker({
       startDate: start_date,
@@ -1811,8 +1769,8 @@ Leaving Permitte
         format: 'MM/DD/YYYY'
       },
       }, function(start, end, label) {
-        start_date  = moment(start).format("YYYY-MM-DD")
-        end_date    = moment(end).format("YYYY-MM-DD")
+        start_date  = moment("2000-10-02",start).format("YYYY-MM-DD")
+        end_date    = moment("2000-10-02",end).format("YYYY-MM-DD")
         
         var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
         get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),start_date,end_date)
@@ -1991,8 +1949,8 @@ Leaving Permitte
             url:'{{url("/detilcuti")}}',
             data:{
               pilih:$("#pilih").val(),
-              date_start:moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),
-              date_end:moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"),
+              date_start:moment("2000-10-02",$('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),
+              date_end:moment("2000-10-02",$('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"),
               cuti:this.value,
               status:"detil"
             },
@@ -2095,8 +2053,8 @@ Leaving Permitte
             $.each(result.items,function(key,value){
               if(value.description == "Public holiday"){
                 if(!liburNasionalException.includes(value.start.date)){
-                  hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
-                  hari_libur_nasional_2.push(moment( value.start.date).format("DD/MM/YYYY"))
+                  hari_libur_nasional.push(moment("2000-10-02",value.start.date).format("MM/DD/YYYY"))
+                  hari_libur_nasional_2.push(moment("2000-10-02",value.start.date).format("DD/MM/YYYY"))
                   hari_libur_nasional_tooltip.push(value.summary)
 
                 }
@@ -2140,22 +2098,14 @@ Leaving Permitte
         }
         
       } else {
-        // cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString,$("#division_cuti").val());
-
-        // $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
-        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
+        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment("2000-10-02",$('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment("2000-10-02",$('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
         // $("#filter_com").val()
       }
     });
 
     $("#division_cuti").change(function(){
       var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
-      // var start_date = $('#datesReport').data('daterangepicker').startDate
-      // var end_date = $('#datesReport').data('daterangepicker').endDate
-      get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
-
-      // $('#datatableq').DataTable().ajax.url("{{url('get_history_cuti')}}?filter_com=1&id="+companyString+"&division="+this.value).load();
-      // cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id="+companyString,this.value);
+      get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment("2000-10-02",$('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment("2000-10-02",$('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
     });
 
     function changeTabs(id) {
@@ -2179,10 +2129,7 @@ Leaving Permitte
           cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
         }
       } else {
-          // cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
-
-        // $('#datatableq').DataTable().ajax.url("{{url('get_history_cuti')}}?filter_com=1&id="+id).load();
-        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
+        get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment("2000-10-02",$('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment("2000-10-02",$('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
       }
     }
 
