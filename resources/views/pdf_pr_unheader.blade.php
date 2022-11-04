@@ -116,6 +116,26 @@
 			</tr>
 			<tr>
 				<td style="width: 12%;font: 9px;">
+				</td>
+				<td style="width: 68%;font: 9px;">
+				</td>
+				<td style="width: 5%;font: 9px;">
+				</td>
+				<td style="width: 15%;font: 9px;">
+				</td>
+			</tr>
+			<tr>
+				<td style="width: 12%;font: 9px;">
+				</td>
+				<td style="width: 68%;font: 9px;">
+				</td>
+				<td style="width: 5%;font: 9px;">
+				</td>
+				<td style="width: 15%;font: 9px;">
+				</td>
+			</tr>
+			<!-- <tr>
+				<td style="width: 12%;font: 9px;">
 					<b>Branch Office</b>
 				</td>
 				<td style="width: 68%;font: 9px;">
@@ -127,7 +147,7 @@
 				<td style="width: 15%;font: 9px;">
 					: info@sinergy.co.id
 				</td>
-			</tr>
+			</tr> -->
 			<tr>
 				<td style="width: 10%;font: 10px;" colspan="2">
 					<span style="color:white">.</span>
@@ -446,7 +466,7 @@
 				<tr>
 					<th></th>
 					<th></th>
-					@if($data->date >= "2022-04-01")
+					@if($data->date_pid >= "2022-04-01")
 						<th style="text-align:right" 11%>VAT 11%</th>
 					@else 
 						<th style="text-align: right" 11%>VAT 10%</th>
