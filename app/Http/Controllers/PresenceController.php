@@ -683,6 +683,8 @@ class PresenceController extends Controller
 
     public function getScheduleThisMonth(Request $req){
         return $this->getSchedule($req)
+            ->join('users', 'users.nik', '=', 'presence__shifting.nik')
+            ->where('status_karyawan', '!=', 'dummy')
             ->orderBy('start','DESC')
             ->get()
             ->map(function($data){
@@ -697,9 +699,11 @@ class PresenceController extends Controller
     public function getSummaryThisMonth(Request $req){
         $count_shift = $this->getSchedule($req);
         $count_shift->getQuery()->orders = null;
-        $count_shift = $count_shift->selectRaw('`nik`,`className`, COUNT(*) AS `count`')
+        $count_shift = $count_shift ->join('users', 'users.nik', '=', 'presence__shifting.nik')
+            ->selectRaw('`users`.`nik`,`className`, COUNT(*) AS `count`')
+            ->where('status_karyawan', '!=', 'dummy')
             ->groupBy('className')
-            ->groupBy('nik');
+            ->groupBy('presence__shifting.nik');
 
         // return $count_shift->get();
 
@@ -717,6 +721,7 @@ class PresenceController extends Controller
 
         $nicknameM = DB::table('users')
                    ->select('name as nickname','nik')
+                   ->where('status_karyawan', '!=', 'dummy')
                    ->where('name','RLIKE','^M[[:>:]]')
                    ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
                    ->orWhere('name','RLIKE','^Mochammad[[:>:]]')
@@ -726,6 +731,7 @@ class PresenceController extends Controller
                     ->select('name as nickname_all','nik')
                     ->whereNotIn('name',function($query){
                         $query->select('name')
+                        ->where('status_karyawan', '!=', 'dummy')
                         ->where('name','RLIKE','^M[[:>:]]')
                        ->orWhere('name','RLIKE','^Muhammad[[:>:]]')
                        ->orWhere('name','RLIKE','^Mochammad[[:>:]]')
@@ -752,6 +758,7 @@ class PresenceController extends Controller
             })
             ->join('users','users.nik','=','presence__shifting_user.nik')
             ->join('presence__shifting_project','presence__shifting_project.id','=','presence__shifting_user.shifting_project')
+            ->where('status_karyawan', '!=', 'dummy')
             ->get();
 
         $shifting_summary = $shifting_summary->map(function ($item, $key) use ($count_shift) {
@@ -768,6 +775,8 @@ class PresenceController extends Controller
         return $this->getSchedule($req)
             // ->select('presence__shifting.id','presence__shifting.nik','presence__shifting.title','presence__shifting.start','presence__shifting.end','presence__shifting.className','presence__shifting.hadir','presence__shifting.tanggal_shift','presence__shifting.nik','presence__shifting.id_project','presence__shifting.created_at')
             ->join('presence__shifting_user','presence__shifting_user.nik','=','presence__shifting.nik')
+            ->join('users', 'users.nik', '=', 'presence__shifting_user.nik')
+            ->where('status_karyawan', '!=', 'dummy')
             ->orderBy('start','DESC')
             ->get()
             ->toArray();

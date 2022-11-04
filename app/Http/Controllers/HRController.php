@@ -20,6 +20,7 @@ use App\Notifications\CreateUser;
 use App\Notifications\DeleteUser;
 
 use App\PresenceLocationUser;
+use App\PresenceShiftingUser;
 
 use Excel;
 // use Image;
@@ -1028,6 +1029,8 @@ class HRController extends Controller
         $update->status_delete = 'D';
         $update->password = Hash::make("Sinergy".date('dmy'));
         $update->update();
+
+        $delete = PresenceShiftingUser::where('nik', $nik)->delete();
 
         return redirect()->back()->with('alert', 'Deleted Employee!');
     }
