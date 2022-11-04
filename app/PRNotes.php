@@ -40,6 +40,6 @@ class PRNotes extends Model
 	public function getImageAttribute()
 	{
 		$data = DB::table('tb_pr_notes')->join('users', 'users.name', 'tb_pr_notes.operator')->select('gambar')->where('id', $this->id)->first();
-		return empty($data->gambar)?$this->id:$data->gambar;
+		return empty($data->gambar)?'-':$data->gambar;
 	}
 }
