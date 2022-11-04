@@ -85,17 +85,18 @@ class LoginController extends Controller
     }
 
     public function redirectToProvider() {
-            $user = Socialite::driver('google')->user();
-        // try {
-        // } catch (\Exception $e) {
-        //     Log::error($e);
-        //     return redirect()
-        //         ->to('/login')
-        //         ->withErrors([
-        //             'email_company' => ['Google services are currently unreachable, please use your local account or try again later.'],
-        //             'email_google_eror' => ['Google services are currently unreachable, please use your local account or try again later.']
-        //         ]);;
-        // } 
+        try {
+            $user = Socialite::driver('google')->redirect();
+            return $user;
+        } catch (\Exception $e) {
+            Log::error($e);
+            return redirect()
+                ->to('/login')
+                ->withErrors([
+                    'email_company' => ['Google services are currently unreachable, please use your local account or try again later.'],
+                    'email_google_eror' => ['Google services are currently unreachable, please use your local account or try again later.']
+                ]);;
+        } 
     }
 
     public function handleProviderCallback() {

@@ -202,8 +202,8 @@ class LeadSettingController extends Controller
                 'tb_contact.brand_name'
             )
             ->where('users.id_company','=','1')
-            ->where('sales_lead_register.result','<>','LOSE')
-            ->where('sales_lead_register.result','<>','WIN')
+            //->where('sales_lead_register.result','<>','LOSE')
+            //->where('sales_lead_register.result','<>','WIN')
             ->whereRaw('`sales_lead_register`.`opp_name` IS NOT NULL')
             ->join('tb_contact','sales_lead_register.id_customer','=','tb_contact.id_customer')
             ->join('users','users.nik','=','sales_lead_register.nik');

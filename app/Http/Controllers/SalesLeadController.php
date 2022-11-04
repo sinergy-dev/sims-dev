@@ -1244,11 +1244,20 @@ class SalesLeadController extends Controller
     public function getProductTechTag(Request $request)
     {
 
-        $getListProductLead = DB::table('tb_product_tag')->selectRaw('`id` AS `id`,`name_product` AS `text`')->get(); 
+        $getListProductLead = DB::table('tb_product_tag')->selectRaw('CONCAT("p",`id`) AS `id`,`name_product` AS `text`')
+                // ->selectRaw('`id` AS `id`,`name_product` AS `text`')
+                ->get(); 
 
-        $getListTechTag = DB::table('tb_technology_tag')->selectRaw('`id` AS `id`,`name_tech` AS `text`')->get(); 
+        $getListTechTag = DB::table('tb_technology_tag')->selectRaw('CONCAT("t",`id`) AS `id`,`name_tech` AS `text`')
+                // ->selectRaw('`id` AS `id`,`name_tech` AS `text`')
+                ->get();
 
-        return array("product_tag"=>$getListProductLead,"technology_tag"=>$getListTechTag);
+        return array(
+            collect(["id"=>0,"text"=>'Product',"children"=>$getListProductLead]),
+            collect(["id"=>1,"text"=>'Technology',"children"=>$getListTechTag])
+        ); 
+
+        // return array("product_tag"=>$getListProductLead,"technology_tag"=>$getListTechTag);
     }
 
     public function getLeadTp(Request $request)
@@ -2159,7 +2168,7 @@ class SalesLeadController extends Controller
 
         $tambah = new Sales();
         $tambah->lead_id = $lead;
-        if((Auth::User()->id_division == 'SALES') || (Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER') || Auth::User()->name == "Operations Team"){
+        if((Auth::User()->id_division == 'SALES') || (Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER') || Auth::User()->name == "Operations Team"){
             $tambah->nik = Auth::User()->nik;
         } else {
             $tambah->nik = $request['owner_sales'];
@@ -2248,7 +2257,7 @@ class SalesLeadController extends Controller
         $amount = str_replace('.', '', $request['amount']);
         $tambah_log = new SalesChangeLog();
         $tambah_log->lead_id = $lead_change_log;
-        if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER'){
+        if(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER'){
             $tambah_log->nik = Auth::User()->nik;
         } else {
             $tambah_log->nik = $request['owner_sales'];
@@ -2272,7 +2281,7 @@ class SalesLeadController extends Controller
                         ->where('id_division', 'TECHNICAL PRESALES')
                         ->orWhere('nik', $nik_sales)
                         ->get();
-        } elseif(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'MSM' && Auth::User()->id_position == 'MANAGER'){
+        } elseif(Auth::User()->id_division == 'SALES' || Auth::User()->id_division == 'BCD' && Auth::User()->id_position == 'MANAGER'){
             $kirim = User::select('email')
                         ->where('id_position', 'MANAGER')
                         ->where('id_division', 'TECHNICAL PRESALES')

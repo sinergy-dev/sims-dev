@@ -11,7 +11,7 @@ Ticketing
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
 
 <link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
-<link rel="stylesheet" href="{{ url('css/bootstrap-timepicker.min.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" integrity="sha512-/Ae8qSd9X8ajHk6Zty0m8yfnKJPlelk42HTJjOHDWs1Tjr41RfsSkceZ/8yyJGLkxALGMIYd5L2oGemy/x1PLg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{{ url('css/dataTables.bootstrap.css')}}">
 
 <style type="text/css">
@@ -2379,7 +2379,7 @@ Ticketing
 
 <script src="{{ url('js/dataTables.bootstrap.min.js')}}"></script>
 <script src="{{ url('js/jquery.slimscroll.min.js')}}"></script>
-<script src="{{ url('js/bootstrap-timepicker.min.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js" integrity="sha512-2xXe2z/uA+2SyT/sTSt9Uq4jDKsT0lV4evd3eoE/oxKih8DSAsOF6LUb+ncafMJPAimWAXdu9W+yMXGrCVOzQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{ url('js/jquery.emailinput.min.js')}}"></script>
 <script src="{{ url('js/roman.js')}}"></script>
 

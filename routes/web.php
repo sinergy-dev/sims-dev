@@ -111,7 +111,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('project/updateSbeTag', 'SalesLeadController@updateSbeTag');
 	Route::post('project/changeNominal', 'SalesLeadController@changeNominal');
 	Route::post('project/changeCustomer', 'SalesLeadController@changeCustomer');
-	Route::get('project/getProductTechTag', 'SalesLeadController@getProductTechTag');
+	// Route::get('project/getProductTechTag', 'SalesLeadController@getProductTechTag');
 
 	Route::get('/sorry_this_page_is_under_maintenance','DASHBOARDController@maintenance');
 
