@@ -15,7 +15,15 @@
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}"/>
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
 <style type="text/css">
+  html,body,buttons,input,textarea,etc {
+    font-family: inherit;
+  }
+
   input[type=file]::-webkit-file-upload-button {
+   display: none;
+  }
+
+  input::file-selector-button {
    display: none;
   }
 
@@ -48,8 +56,8 @@
     </ol>
   </section>
   <section class="content">
-  	<div class="row" id="showDetail">
-  	</div>
+    <div class="row" id="showDetail">
+    </div>
   </section>
   <div class="modal fade" id="ModalSirkulasiPr" role="dialog">
       <div class="modal-dialog modal-lg">
@@ -103,6 +111,7 @@
         </div>
       </div>
   </div>
+
   <div class="modal fade" id="ModalRejectSirkulasi" role="dialog">
       <div class="modal-dialog modal-md">
         <div class="modal-content">
@@ -125,6 +134,7 @@
         </div>
       </div>
   </div>
+
   <div class="modal fade" id="ModalAcceptSirkulasi" role="dialog">
       <div class="modal-dialog modal-md">
         <div class="modal-content">
@@ -369,9 +379,8 @@
                   </div>
                   <div class="col-md-4"> 
                     <label>Type*</label>
-                    <select class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
-                      <option value="pcs">Pcs</option>
-                      <option selected value="unit">Unit</option>                   
+                    <select style="width:100%" class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
+                      <option>                  
                     </select>
                     <span class="help-block" style="display:none;">Please fill Unit!</span>
                   </div>
@@ -432,14 +441,14 @@
                   <div class="col-md-6">
                     <label>Lead Register*</label>
                     <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
-                      
+                      <option>
                     </select>
                     <span class="help-block" style="display:none;">Please fill Lead Register!</span>
                   </div>
                   <div class="col-md-6">
                     <label>PID*</label>
                     <select id="selectPid" style="width: 100%;" class="select2 form-control" onchange="fillInput('selectPID')">
-                      
+                      <option>
                     </select>
                     <span class="help-block" style="display:none;">Please fill PID!</span>
                     <span id="makeId" style="cursor: pointer;">other?</span>
@@ -456,7 +465,7 @@
               <div class="form-group">
                 <label>SPK/Kontrak*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;">
+                  <input type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;font-family: inherit;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
                 <span style="display:none;" id="span_link_drive_spk"><a id="link_spk" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -465,7 +474,7 @@
               <div class="form-group">
                 <label>SBE*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;">
+                  <input type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;font-family: inherit;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
                 <span style="display:none;" id="span_link_drive_sbe"><a id="link_sbe" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -476,7 +485,7 @@
                   <div class="col-md-6">
                     <label>Quote Supplier*</label>
                     <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;">
-                      <input type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" class="fa fa-cloud-upload files" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;">
+                      <input type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" class="fa fa-cloud-upload files" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;font-family: inherit;">
                     </div>
                     <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
                     <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -484,7 +493,7 @@
                   <div class="col-md-6">
                     <label>Quote Number*</label>
                     <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
-                      
+                      <option>
                     </select>
                     <!-- <input type="file" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
                     <span class="help-block" style="display:none;">Please fill Quote Number!</span>
@@ -676,6 +685,44 @@
     })
   })
 
+  function select2TypeProduct(value){
+    var dataTypeProduct = []
+    dataTypeProduct = {
+      "results": [
+        {
+          "id": "pcs",
+          "text": "Pcs"
+        },
+        {
+          "id": "unit",
+          "text": "Unit"
+        },
+        {
+          "id": "lot",
+          "text": "Lot"
+        },
+        {
+          "id": "pax",
+          "text": "Pax"
+        },
+        {
+          "id": "node",
+          "text": "Node"
+        }
+      ]
+    }
+
+    $('#selectTypeProduct').select2({
+      data:dataTypeProduct.results,
+      placeholder:'Ex. Unit',
+      dropdownParent: $('#ModalDraftPr')
+    })
+
+    if (value != undefined) {
+      $('#selectTypeProduct').val(value.toLowerCase()).trigger('change')
+    }
+  }
+
   function cancelUploadCsv(){
     $("input[type='file'][name='uploadCsv']").val('')
     $("#uploadCsv").next('label').show()
@@ -811,7 +858,6 @@
                     $("#btnFinalize").prop('disabled',true)
                   }
                 }
-                // $('#'+item).attr('disabled',false)
               })
             }         
             
@@ -839,22 +885,32 @@
         $.each(result,function(item,value){
           no++
 
+          console.log(value.image)
+
           if (value.image != '' && value.image != '-' && value.image != null) {
             image = value.image
           }else{
             image = "place_profile_3.png"
           }
 
-          var span = ''
-          var disable = ''
+          let span = ''
+          let disableResolve = ''
+          let disableReply = ''
+          
           if (value.resolve == 'True') {
             span = '<span class="pull-right badge bg-green">Resolved</span>'
-            disable = 'disabled'
+            disableResolve = 'disabled'
+            disableReply = 'disabled'
           }else{
+            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              disableResolve
+              disableReply
+            }else{
+              disableResolve = 'disabled'
+              disableReply
+            }
             span = '<span class="pull-right badge bg-default">Progress</span>'
-            disable
           }
-
           const cals = moment(value.date_add)
           .calendar(null, {
             lastDay: '[Yesterday]',
@@ -881,8 +937,8 @@
           appendResolve = appendResolve + '<div class="box-body" style="">'
           appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p>'
           appendResolve = appendResolve + '<span style="display:inline" class="text-muted pull-right">'+ cals + '&nbspat&nbsp' + moment(value.date_add).format('hh:mm A') +'</span><br>'
-          appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" '+ disable +' class="pull-right btn btn-success btn-xs"><i class="fa fa-check"></i> Resolve</button>'
-          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disable +' class="btn btn-default btn-xs"><i class="fa fa-reply"></i> Reply</button>'
+          appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
+          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
           appendResolve = appendResolve + '</div>'
             if (value.reply.length > 0) {
               style = 'display:block'
@@ -924,27 +980,6 @@
 
         })
         $("#showResolve").append(appendResolve)
-
-        // $("#btnReply").click(function(){
-        //   var appendFooter = ''
-        //   appendFooter = appendFooter + '<img class="img-responsive img-circle img-sm" src="https://media1.popsugar-assets.com/files/thumbor/o3SqeZaXAC1pwWwoxvYBRClWiYA/0x251:3265x3516/fit-in/2048xorig/filters:format_auto-!!-:strip_icc-!!-/2022/03/22/318/n/48559432/c3febcd2623ac05c889a58.03128934_/i/who-is-nam-joo-hyuk-facts.jpg" alt="Alt Text">'
-        //   appendFooter = appendFooter + '<div class="img-push">'
-        //   appendFooter = appendFooter + '<div class="input-group">'
-        //     appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ $(this).data('id') +'" data-value="'+ $(this).data('value') +'" class="form-control input-sm" placeholder="Press enter to post comment">'
-        //     appendFooter = appendFooter + '<div class="input-group-addon">'
-        //       appendFooter = appendFooter + '<i onclick="pressReply('+ $(this).data('value') +','+ $(this).data('id') +')" class="fa fa-send"></i>'
-        //     appendFooter = appendFooter + '</div>'
-        //   appendFooter = appendFooter + '</div>'          
-        //   appendFooter = appendFooter + '</div>'
-        //   $("#showFooter").append(appendFooter)
-        //   $("#showFooter").show()
-
-        //   if ($("#inputReply").length == 1) {
-        //     $("#btnReply").prop("disabled",true)
-        //   }else{
-        //     $("#btnReply").prop("disabled",false)
-        //   }
-        // })
 
         $("#btnResolve").click(function(){
           Swal.fire({
@@ -1243,9 +1278,7 @@
           $(".cbDraft").prop('disabled',true)
           $(".cbPriority").prop('disabled',true)
           $(".cbPriority").closest('div').css('cursor','not-allowed')
-          $(".cbDraft").closest('div').css('cursor','not-allowed')        
-          // $(".cbDraft").closest('div').css("display","none")
-          // $(".cbPriority").closest('div').css("display","none")
+          $(".cbDraft").closest('div').css('cursor','not-allowed') 
         }
       }
     })   
@@ -1311,13 +1344,7 @@
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<select readonly class="form-control" style="width:80px;font-size:12px">'
-              if (item.unit == 'Pcs') {
-                append = append + '<option selected>Pcs</option>'
-                append = append + '<option>Unit</option>'
-              }else{
-                append = append + '<option>Pcs</option>'
-                append = append + '<option selected>Unit</option>'
-              }
+              append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
               append = append + '</select>'
             append = append + '</td>'
             append = append + '<td>'
@@ -1356,35 +1383,6 @@
         appendBottom = appendBottom + '    </form>'
         appendBottom = appendBottom + '  </div>'
         appendBottom = appendBottom + '</div>'
-
-        // appendBottom = appendBottom + '<div class="form-group">'
-        // appendBottom = appendBottom + '<div class="row">'
-        // appendBottom = appendBottom + '  <div class="col-md-12">'
-        // appendBottom = appendBottom + '    <div class="pull-right">'
-        // appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-        // appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductPreviewData" id="inputGrandTotalProductPreviewData" name="inputGrandTotalProductPreviewData">'
-        // appendBottom = appendBottom + '    </div>'
-        // appendBottom = appendBottom + '  </div>'
-        // appendBottom = appendBottom + '</div>'
-        // appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-        // appendBottom = appendBottom + ' <div class="col-md-12">'
-        // appendBottom = appendBottom + '   <div class="pull-right">'
-        // appendBottom = appendBottom + '     <span style="margin-right: -5px;">Vat 11%</span>'
-        // appendBottom = appendBottom + '       <div class="input-group margin" style="display: inline;">'
-        // appendBottom = appendBottom + '         <input readonly="" type="text" class="form-control vat_tax_preview pull-right" id="vat_tax_previewData" name="vat_tax_previewData" style="width:250px;">'
-        // appendBottom = appendBottom + '       </div>'
-        // appendBottom = appendBottom + '    </div>'
-        // appendBottom = appendBottom + ' </div>'
-        // appendBottom = appendBottom + '</div>'
-        // appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-        // appendBottom = appendBottom + '  <div class="col-md-12">'
-        // appendBottom = appendBottom + '    <div class="pull-right">'
-        // appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
-        // appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputFinalPageTotalPriceData" id="inputFinalPageTotalPriceData" name="inputFinalPageTotalPriceData">'
-        // appendBottom = appendBottom + '    </div>'
-        // appendBottom = appendBottom + '  </div>'
-        // appendBottom = appendBottom + '</div>'
-        // appendBottom = appendBottom + '</div>'
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
@@ -1588,14 +1586,8 @@
               append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px">'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<select readonly class="form-control" style="width:80px;font-size:12px">'
-              if (item.unit == 'Pcs') {
-                append = append + '<option selected>Pcs</option>'
-                append = append + '<option>Unit</option>'
-              }else{
-                append = append + '<option>Pcs</option>'
-                append = append + '<option selected>Unit</option>'
-              }
+              append = append + '<select disabled class="form-control" style="width:80px;font-size:12px">'
+              append = append + '<option>'+ item.unit.charAt(0).toUpperCase() + item.unit.slice(1) +'</option>'
               append = append + '</select>'
             append = append + '</td>'
             append = append + '<td>'
@@ -1634,34 +1626,6 @@
         appendBottom = appendBottom + '    </form>'
         appendBottom = appendBottom + '  </div>'
         appendBottom = appendBottom + '</div>'
-        
-        // appendBottom = appendBottom + '<div class="form-group">'
-        // appendBottom = appendBottom + '<div class="row">'
-        // appendBottom = appendBottom + '  <div class="col-md-12">'
-        // appendBottom = appendBottom + '    <div class="pull-right">'
-        // appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-        // appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" name="inputGrandTotalProductPreview">'
-        // appendBottom = appendBottom + '    </div>'
-        // appendBottom = appendBottom + '  </div>'
-        // appendBottom = appendBottom + '</div>'
-        // appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-        // appendBottom = appendBottom + ' <div class="col-md-12">'
-        // appendBottom = appendBottom + '   <div class="pull-right">'
-        //   appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
-        //   appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-        //   appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" name="vat_tax_preview" style="width:150px;">'
-        //   appendBottom = appendBottom + '     </div>'
-        // appendBottom = appendBottom + '    </div>'
-        // appendBottom = appendBottom + ' </div>'
-        // appendBottom = appendBottom + '</div>'
-        // appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-        // appendBottom = appendBottom + '  <div class="col-md-12">'
-        // appendBottom = appendBottom + '    <div class="pull-right">'
-        // appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
-        // appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" name="inputFinalPageTotalPrice">'
-        // appendBottom = appendBottom + '    </div>'
-        // appendBottom = appendBottom + '  </div>'
-        // appendBottom = appendBottom + '</div>'
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
@@ -1877,14 +1841,8 @@
                 append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;;font-size:12px">'
               append = append + '</td>'
               append = append + '<td>'
-                append = append + '<select readonly class="form-control" style="width:80px;font-size:12px">'
-                if (item.unit == 'Pcs') {
-                  append = append + '<option selected>Pcs</option>'
-                  append = append + '<option>Unit</option>'
-                }else{
-                  append = append + '<option>Pcs</option>'
-                  append = append + '<option selected>Unit</option>'
-                }
+                append = append + '<select disabled class="form-control" style="width:80px;font-size:12px">'
+                append = append + '<option>'+ item.unit.charAt(0).toUpperCase() + item.unit.slice(1) +'</option>'
                 append = append + '</select>'
               append = append + '</td>'
               append = append + '<td>'
@@ -1900,14 +1858,12 @@
     append = append + '</div>'
     append = append + '<div id="bottomPreviewPembanding" data-value="'+i+'" style="display:none">'
     append = append + '<hr>'
-    // append = append + '<div class="form-group">'
     append = append + '  <div class="row">'
     append = append + '    <div class="col-md-12">'
     append = append + '      <div class="col-md-6">'
     append = append + '        <div class="form-group">'
     append = append + '          <label>Note Pembanding</label>'
     append = append + '           <textarea readonly class="form-control" style="resize:none;overflow-y:scroll" id="note_pembandingView" rows="4" data-value="'+i+'"></textarea>'
-          // append = append + '  <textarea readonly class="form-control" style="width:100%;display:inline;resize:none;overflow-y:scroll" id="note_pembandingView" data-value="'+i+'"></textarea>'
     append = append + '        </div>'
     append = append + '      </div>'
     append = append + '      <div class="col-md-6">'
@@ -1930,23 +1886,10 @@
     append = append + '              <input readonly="" type="text" class="form-control inputFinalPageTotalPricePembanding" id="inputFinalPageTotalPricePembanding" data-value="'+i+'">'
     append = append + '            </div>'
     append = append + '          </div>'
-          // append = append + '    <div class="pull-right">'
-          // append = append + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-          // append = append + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPembanding" id="inputGrandTotalProductPembanding" name="inputGrandTotalProductPembanding" data-value="'+i+'">'
-          // append = append + '    </div>'
-          // append = append + '    <div class="pull-right" style="margin-top:10px">'
-          // append = append + '      <span style="margin-right: -5px;">Vat 11%</span>'
-          // append = append + '      <input data-value="'+i+'" readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_pembanding" name="vat_tax_preview" style="width:150px;">'
-          // append = append + '    </div>'
-          // append = append + '    <div class="pull-right" style="margin-top:10px">'
-          // append = append + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
-          // append = append + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageTotalPricePembanding" id="inputFinalPageTotalPricePembanding" name="inputFinalPageTotalPricePembanding" data-value="'+i+'">'
-          // append = append + '    </div>'
     append = append + '        </form>'
     append = append + '      </div>'
     append = append + '    </div>'
     append = append + '  </div>'
-    // append = append + '</div>'
     append = append + '<hr>'
     append = append + '<div class="box">'
       append = append + '<div class="box-header with-border">'
@@ -2368,13 +2311,7 @@
               append = append + '</td>'
               append = append + '<td width="10%">'
                 append = append + '<select style="width:80px;font-size:12px" class="form-control" readonly>'
-                if (item.unit == 'Pcs') {
-                  append = append + '<option selected>Pcs</option>'
-                  append = append + '<option>Unit</option>'
-                }else{
-                  append = append + '<option>Pcs</option>'
-                  append = append + '<option selected>Unit</option>'
-                }
+                append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
                 append = append + '</select>'
               append = append + '</td>'
               append = append + '<td width="15%">'
@@ -2431,7 +2368,6 @@
                 append = append + '<input class="form-control" name="emailTo" id="emailOpenTo">'
               append = append + '</div>'
               append = append + '<div class="col-sm-11 col-sm-offset-1 help-block" style="margin-bottom: 0px;">'
-                // append = append + 'Enter the recipient of this open email!'
               append = append + '</div>'
             append = append + '</div>'
             append = append + '<div class="form-group">'
@@ -2458,11 +2394,6 @@
             append = append + '</div>'
             append = append + '<div class="form-group">'
               append = append + '<div class="col-sm-12">'
-                // append = append + '<div style="margin-top:10px">'
-                //   append = append + '<div style="padding: 15px;background-color: #e0dfda;width: fit-content;display:inline">'
-                //     append = append + '<span style="display:inline;padding-right: 100px;"><i class="fa fa-file-pdf-o"></i>&nbsp PR - Subject</span>'
-                //     append = append + '<span style="display:inline;"><i class="fa fa-times"></i></span>'
-                //   append = append + '</div>'
                   append = append + '<button class="btn btn-flat btn-primary pull-right" style="display:inline" onclick="sendOpenEmail()"><i class="fa fa-envelope-o"></i> Send</button>'
                 append = append + '</div>'
               append = append + '</div>'
@@ -2497,8 +2428,6 @@
         no_pr:window.location.href.split("/")[6]
       },
       success: function(result){
-        // $('.emailMultiSelector').remove()
-        
         arrEmailCc = []
         $.each(result.cc,function(value,item){
           
@@ -2510,9 +2439,7 @@
         }).join(";")
        
         $("#emailOpenTo").val(result.to)
-        // $("#emailOpenTo").emailinput({ onlyValidValue: true, delim: ';' });
         $("#emailOpenCc").val(arrEmailCcJoin)
-        // $("#emailOpenCc").emailinput({ onlyValidValue: true, delim: ';' });
         $("#emailOpenSubject").val(result.subject);
       },complete: function(){
         $("#emailOpenTo").emailinput({ onlyValidValue: true, delim: ';' });
@@ -2717,17 +2644,13 @@
   
 
   function addPembanding(){
-    // location.replace("{{url('/admin/draftPR/addPembanding')}}/"+ window.location.href.split("/")[6])
     currentTab = 0
     addDraftPrPembanding(0)
   }
 
   function addDraftPrPembanding(n){
-
     const firstLaunch = localStorage.setItem('firstLaunch',true)
     localStorage.setItem('isStoreSupplier',false)
-
-    
     var x = document.getElementsByClassName("tab-add");
     x[n].style.display = "inline";
     if (n == (x.length - 1)) {
@@ -2797,14 +2720,8 @@
                 append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
               append = append + '</td>'
               append = append + '<td width="10%">'
-                append = append + '<select readonly style="width:75px;font-size: 12px; important" class="form-control">'
-                if (item.unit == 'Pcs') {
-                  append = append + '<option selected>Pcs</option>'
-                  append = append + '<option>Unit</option>'
-                }else{
-                  append = append + '<option>Pcs</option>'
-                  append = append + '<option selected>Unit</option>'
-                }
+                append = append + '<select disabled style="width:75px;font-size: 12px; important" class="form-control">'
+                append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
                 append = append + '</select>'
               append = append + '</td>'
               append = append + '<td width="15%">'
@@ -2984,6 +2901,8 @@
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(2,'+ firstLaunch +')')
         }         
       }else if (n == 1) {
+        select2TypeProduct()
+
         $(".modal-title").text('Information Product')
         $(".modal-dialog").removeClass('modal-lg')  
         $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
@@ -3034,11 +2953,67 @@
                 data:{
                   no_pr:window.location.href.split("/")[6]
                 },success:function(result){
-                  $("#selectLeadId").val(result.pr.lead_id).trigger("change").attr("disabled",true)
-                  $("#selectQuoteNumber").val(result.pr.quote_number).trigger("change").attr("disabled",true)
-                  $("#selectPid").val(result.pr.pid).trigger("change").attr("disabled",true)      
+                  var lead_id = result.pr.lead_id
+                  var quote_number = result.pr.quote_number
+                  var pid = result.pr.pid
                   $("#inputSPK").attr('disabled',true)
                   $("#inputSBE").attr('disabled',true)
+
+                  $.ajax({
+                    url: "{{url('/admin/getLead')}}",
+                    type: "GET",
+                    success: function(result) {
+                      $("#selectLeadId").select2({
+                        data: result.data,
+                        placeholder: "Select Lead Register",
+                        dropdownParent: $('#ModalDraftPr')
+                      }).on('change', function() {
+                        var data = $("#selectLeadId option:selected").text();
+                        
+                        $.ajax({
+                          url: "{{url('/admin/getPid')}}",
+                          type: "GET",
+                          data: {
+                            lead_id:data
+                          },
+                          success: function(result) {
+                            $("#selectPid").select2({
+                              data: result.data,
+                              placeholder: "Select PID",
+                              dropdownParent: $('#ModalDraftPr')
+                            })
+
+                            if (pid != "") {
+                              $("#selectPid").val(pid).trigger("change").attr("disabled",true)      
+                            }
+                          }
+                        }) 
+
+                        $.ajax({
+                          url: "{{url('/admin/getQuote')}}",
+                          type: "GET",
+                          data:{
+                            lead_id:data
+                          },
+                          success: function(result) {
+                            $("#selectQuoteNumber").select2({
+                              data: result.data,
+                              placeholder: "Select Quote Number",
+                              dropdownParent: $('#ModalDraftPr')
+                            })
+
+                            if (quote_number != "") {
+                              $("#selectQuoteNumber").val(quote_number).trigger("change").attr("disabled",true)
+                            }
+                          }
+                        }) 
+                      })
+
+                      if (lead_id != "") {
+                        $("#selectLeadId").val(lead_id).trigger("change").attr("disabled",true)
+                      }
+                    }
+                  })
 
                   const fileSPK   = document.querySelector('input[type="file"][name="inputSPK"]');
 
@@ -3091,43 +3066,6 @@
           }
         })
 
-        $.ajax({
-          url: "{{url('/admin/getLead')}}",
-          type: "GET",
-          success: function(result) {
-            $("#selectLeadId").select2({
-                data: result.data
-            }).on('change', function() {
-              var data = $("#selectLeadId option:selected").text();
-              
-              $.ajax({
-                url: "{{url('/admin/getPid')}}",
-                type: "GET",
-                data: {
-                  lead_id:data
-                },
-                success: function(result) {
-                  $("#selectPid").select2({
-                      data: result.data
-                  })
-                }
-              }) 
-
-              $.ajax({
-                url: "{{url('/admin/getQuote')}}",
-                type: "GET",
-                data:{
-                  lead_id:data
-                },
-                success: function(result) {
-                  $("#selectQuoteNumber").select2({
-                      data: result.data
-                  })
-                }
-              }) 
-            })
-          }
-        })
         $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
         $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
         document.getElementById("prevBtnAdd").style.display = "inline";
@@ -3151,9 +3089,31 @@
       $("#inputTo").closest('input').next('span').hide();
       $("#inputTo").prev('.input-group-addon').css("background-color","red");
     }else if (val == "email") {
-      $("#inputEmail").closest('.form-group').removeClass('has-error')
-      $("#inputEmail").closest('input').next('span').hide();
-      $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+      const validateEmail = (email) => {
+        return email.match(
+          /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )
+      }
+
+      emails = validateEmail($("#inputEmail").val())
+
+      if ($("#inputEmail").val() == '-') {
+        $("#inputEmail").closest('.form-group').removeClass('has-error')
+        $("#inputEmail").closest('input').next('span').hide()
+        $("#inputEmail").prev('.input-group-addon').css("background-color","red")
+      }else{
+        switch(emails){
+          case null:
+            $("#inputEmail").closest('.form-group').addClass('has-error')
+            $("#inputEmail").closest('input').next('span').show();
+            $("#inputEmail").prev('.input-group-addon').css("background-color","red");
+            $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
+          break;
+          default:
+            $("#inputEmail").closest('.form-group').removeClass('has-error')
+            $("#inputEmail").closest('input').next('span').hide()
+        }
+      }
     }else if (val == "phone") {
       $("#inputPhone").inputmask({"mask": "999-999-999-999"})
       $("#inputPhone").closest('.form-group').removeClass('has-error')
@@ -3285,7 +3245,7 @@
               $("#inputNameProduct").val(item.name_product)
               $("#inputDescProduct").val(item.description.replaceAll("<br>","\n"))
               $("#inputQtyProduct").val(item.qty)
-              $("#selectTypeProduct").val(item.unit)
+              select2TypeProduct(item.unit)
               $("#inputPriceProduct").val(formatter.format(nominal))
               $("#inputSerialNumber").val(item.serial_number)
               $("#inputPartNumber").val(item.part_number)
@@ -3296,12 +3256,6 @@
       }
     }
     if (currentTab == 0) {
-      const validateEmail = (email) => {
-        return email.match(
-          /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        );
-      };
-
       if ($("#inputTo").val() == "") {
         $("#inputTo").closest('.form-group').addClass('has-error')
         $("#inputTo").closest('input').next('span').show();
@@ -3312,12 +3266,6 @@
         $("#inputEmail").prev('.input-group-addon').css("background-color","red");
         $("#inputEmail").closest('input').next('span').text("Please fill an Email!")
       }
-      // else if(validateEmail($("#inputEmail").val()) == null){
-      //   $("#inputEmail").closest('.form-group').addClass('has-error')
-      //   $("#inputEmail").closest('input').next('span').show();
-      //   $("#inputEmail").prev('.input-group-addon').css("background-color","red");
-      //   $("#inputEmail").closest('input').next('span').text("Enter a Valid Email Address!")
-      // }
       else if ($("#selectPosition").val() == "") {
         $("#selectPosition").closest('.form-group').addClass('has-error')
         $("#selectPosition").closest('select').next('span').show();
@@ -3637,7 +3585,6 @@
         data: {
           no_pr:window.location.href.split("/")[6],
         },success:function(result){
-          
           if (result[0].type_of_letter == 'IPR') {
             if ($("#inputPenawaranHarga").val() == "") {
               $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
@@ -3649,20 +3596,21 @@
               const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
               if (filepenawaranHarga!="") {
                 formData.append('inputPenawaranHarga', filepenawaranHarga);
-                // formData.append('nama_file_penawaranHarga', nama_file_penawaranHarga);
               }
 
               $(".tableDocPendukung").empty()
 
               var arrInputDocPendukung = []
               $('#tableDocPendukung .trDocPendukung').each(function() {
-                formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                arrInputDocPendukung.push({
-                  nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                  no_pr:localStorage.getItem('no_pembanding'),
-                })
+                var fileInput = $(this).find('#inputDocPendukung').val()
+                if (fileInput && fileInput !== '') {   
+                  formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                  arrInputDocPendukung.push({
+                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                    no_pr:localStorage.getItem('no_pembanding'),
+                  })  
+                }
               });
-
               formData.append('_token',"{{csrf_token()}}")
               formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
               formData.append('no_pr',localStorage.getItem('no_pembanding'))
@@ -3691,7 +3639,6 @@
                     })
                   },
                   success: function(result){
-                    // localStorage.setItem('isStoreSupplier',true)
                     Swal.close()
                     var x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
@@ -3769,7 +3716,6 @@
                     })
                   },
                   success: function(result){
-                    // localStorage.setItem('isStoreSupplier',true)
                     Swal.close()
                     var x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
@@ -3956,14 +3902,8 @@
                 append = append + '<input id="inputQtyEdit" data-value="" readonly style="font-size: 12px; important;width:70px" class="form-control" type="number" name="" value="'+ item.qty +'">'
               append = append + '</td>'
               append = append + '<td width="10%">'
-              append = append + '<select id="inputTypeEdit" readonly data-value="" style="font-size: 12px; important;width:70px" class="form-control">'
-              if (item.unit == 'Pcs') {
-                append = append + '<option selected>Pcs</option>'
-                append = append + '<option>Unit</option>'
-              }else{
-                append = append + '<option>Pcs</option>'
-                append = append + '<option selected>Unit</option>'
-              }
+              append = append + '<select id="inputTypeEdit" disabled data-value="" style="font-size: 12px; important;width:70px" class="form-control">'
+              append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
               append = append + '</select>' 
               append = append + '</td>'
               append = append + '<td width="15%">'
@@ -4096,7 +4036,7 @@
       append = append + "<tr style='height:10px' class='trDocPendukung'>"
         append = append + "<td>"
           append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
-          append = append + '<input style="display:inline" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+          append = append + '<input style="display:inline;font-family: inherit;" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
         append = append + "</td>"
         append = append + "<td>"
           append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
