@@ -188,7 +188,7 @@
           <div class="tabGroup">
             <div class="form-group">
               <label for="">To*</label>
-              <input type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
+              <input autocomplete="off" type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
               <span class="help-block" style="display:none;">Please fill To!</span>
             </div>      
 
@@ -196,8 +196,8 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Type*</label>
-                  <select type="text" class="form-control" name="type" onchange="fillInput('selectType')" placeholder="ex. Internal Purchase Request" id="selectType" required>
-                      <option selected value="">Select Type</option>
+                  <select autofocus type="text" class="form-control" name="type" onchange="fillInput('selectType')" placeholder="ex. Internal Purchase Request" id="selectType" required>
+                      <option value="">Select Type</option>
                       <option value="IPR">IPR (Internal Purchase Request)</option>
                       <option value="EPR">EPR (Eksternal Purchase Request)</option>
                   </select>
@@ -208,7 +208,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Email*</label>
-                  <input type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
+                  <input autocomplete="off" type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
                   <span class="help-block" style="display:none;">Please fill Email!</span>
                 </div>
               </div>
@@ -216,7 +216,7 @@
 
             <div class="form-group">
               <label for="">Category</label>
-              <select type="text" class="form-control select2" onchange="fillInput('selectCategory')" name="selectCategory" id="selectCategory" style="width: 100%">
+              <select autofocus type="text" class="form-control select2" onchange="fillInput('selectCategory')" name="selectCategory" id="selectCategory" style="width: 100%">
                   <option value="">Select Category</option>
                   <option value="Barang dan Jasa">Barang dan Jasa</option>
                   <option value="Barang">Barang</option>
@@ -244,14 +244,14 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Phone*</label>
-                  <input class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
+                  <input autocomplete="off" class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
                   <span class="help-block" style="display:none;">Please fill Phone!</span>
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Attention*</label>
-                  <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
+                  <input autocomplete="off" type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
                   <span class="help-block" style="display:none;">Please fill Attention!</span>
                 </div>
               </div>
@@ -259,20 +259,20 @@
 
             <div class="form-group">
               <label for="">Subject*</label>
-              <input type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
+              <input autocomplete="off" type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
               <span class="help-block" style="display:none;">Please fill Subject!</span>
             </div>
 
             <div class="form-group">
               <label for="">Address*</label>
-              <textarea class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
+              <textarea autocomplete="off" class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
               <span class="help-block" style="display:none;">Please fill Address!</span>
             </div>
 
             <div class="form-group">
               <label for="">Request Methode*</label>
-              <select type="text" class="form-control" placeholder="ex. Purchase Order" name="type" id="selectMethode" required >
-                  <option selected value="">Select Methode</option>
+              <select autofocus type="text" class="form-control" placeholder="ex. Purchase Order" name="type" id="selectMethode" required >
+                  <option value="">Select Methode</option>
                   <option value="purchase_order">Purchase Order</option>
                   <option value="payment">Payment</option>
                   <option value="reimbursement">Reimbursement</option>
@@ -282,7 +282,7 @@
 
             <div class="form-group" id="divNotePembanding" style="display:none;">
               <label for="">Note Pembanding*</label>
-              <textarea class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
+              <textarea autocomplete="off" class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
               <span class="help-block" style="display:none;">Please fill Note Pembanding!</span>
             </div>
           </div>
@@ -321,7 +321,7 @@
           <div class="tabGroup" style="display:none">
             <div class="form-group">
               <label>Product*</label>
-              <input type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
+              <input autocomplete="off" type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
               <span class="help-block" style="display:none;">Please fill Name Product!</span>
             </div>
             <div class="form-group">
@@ -333,11 +333,11 @@
               <div class="row">
                 <div class="col-md-6"> 
                   <label>Serial Number</label>
-                  <input type="text" name="" class="form-control" id="inputSerialNumber">
+                  <input autocomplete="off" type="text" name="" class="form-control" id="inputSerialNumber">
                 </div>
                 <div class="col-md-6"> 
                   <label>Part Number</label>
-                  <input type="text" name="" class="form-control" id="inputPartNumber">
+                  <input autocomplete="off" type="text" name="" class="form-control" id="inputPartNumber">
                 </div>
               </div>
             </div>
@@ -345,7 +345,7 @@
               <div class="row">
                 <div class="col-md-4"> 
                   <label>Qty*</label>
-                  <input type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
+                  <input autocomplete="off" type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
                   <span class="help-block" style="display:none;">Please fill Qty!</span>
                 </div>
                 <div class="col-md-4"> 
@@ -362,7 +362,7 @@
                     <div class="input-group-addon">
                     Rp.
                     </div>
-                    <input type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+                    <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
                   </div>
                   <span class="help-block" style="display:none;">Please fill Price!</span>
                 </div>
@@ -374,7 +374,7 @@
                 <div class="input-group-addon">
                 Rp.
                 </div>
-                  <input readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
+                  <input autocomplete="off" readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
               </div>
             </div>
           </div>
@@ -414,7 +414,7 @@
                     <div class="form-group">
                       <label>Lead Register*</label>
                       <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
-                        <option>
+                        <option></option>
                       </select>
                       <span class="help-block" style="display:none;">Please fill Lead Register!</span>
                     </div>
@@ -429,7 +429,7 @@
                       <span id="makeId" style="cursor: pointer;">other?</span>
                       <div class="form-group" id="project_idNew" style="display: none;">
                         <div class="input-group">
-                          <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                          <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                           <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
                         </div>
                       </div> 
@@ -442,7 +442,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSPK" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;font-family: inherit;" type="file" class="files" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" >
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
@@ -454,7 +454,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSBE" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;font-family: inherit;" type="file" class="files" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" >
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
@@ -466,7 +466,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
@@ -489,7 +489,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputPenawaranHarga" style="margin-bottom:0px">
                     <i class="fa fa-cloud-upload" style="display:inline"></i>
-                    <input style="display: inline;" type="file" class="files" name="inputPenawaranHarga" id="inputPenawaranHarga" onchange="fillInput('penawaranHarga')">
+                    <input autocomplete="off" style="display: inline;" type="file" class="files" name="inputPenawaranHarga" id="inputPenawaranHarga" onchange="fillInput('penawaranHarga')">
                   </label>                  
                 </div>
                 <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
@@ -2327,7 +2327,7 @@
     localStorage.setItem('status_pr','')
     function addDraftPr(n){
       localStorage.setItem('status_pr','')
-      var x = document.getElementsByClassName("tab-add");
+      let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
       if (n == (x.length - 1)) {
         $(".modal-dialog").addClass('modal-lg')
@@ -2620,9 +2620,10 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
-              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
+              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder:"Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
                 $.ajax({
@@ -2633,7 +2634,8 @@
                   },
                   success: function(result) {
                     $("#selectPid").select2({
-                        data: result.data
+                        data: result.data,
+                        placeholder:"Select PID"
                     })
                   }
                 }) 
@@ -2646,7 +2648,8 @@
                   },
                   success: function(result) {
                     $("#selectQuoteNumber").select2({
-                        data: result.data
+                      data: result.data,
+                      placeholder:"Select Quote Number"
                     })
                   }
                 }) 
@@ -2659,7 +2662,8 @@
             type: "GET",
             success: function(result) {
               $("#selectQuoteNumber").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select Quote Number"
               })
             }
           }) 
@@ -2668,9 +2672,10 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
-              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
+              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select Lead Register"
               })
             }
           }) 
@@ -2680,7 +2685,8 @@
             type: "GET",
             success: function(result) {
               $("#selectPid").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select PID"
               })
             }
           }) 
@@ -3029,9 +3035,10 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
-              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
+              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
                 $.ajax({
@@ -3981,6 +3988,7 @@
         urlGetProduct = "{{url('/admin/getProductPr')}}"
         no_pr = localStorage.getItem("no_pr")
       }
+
       if (valueEdit == undefined) {
         if (valueEdit == 0) {
           $(".tabGroupInitiateAdd").hide()
@@ -4014,6 +4022,7 @@
           }
         })
       }
+
       if (currentTab == 0) {
         if ($("#inputTo").val() == "") {
           $("#inputTo").closest('.form-group').addClass('has-error')
@@ -4096,7 +4105,7 @@
             success: function(data)
             {
               Swal.close()
-              var x = document.getElementsByClassName("tab-add");
+              let x = document.getElementsByClassName("tab-add");
               x[currentTab].style.display = "none";
               currentTab = currentTab + n;
               if (currentTab >= x.length) {
@@ -4163,8 +4172,7 @@
                     })
                   },success:function(){
                     Swal.close()
-
-                    var x = document.getElementsByClassName("tab-add");
+                    let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -4217,8 +4225,7 @@
                     })
                   },success:function(){
                     Swal.close()
-
-                    var x = document.getElementsByClassName("tab-add");
+                    let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -4249,7 +4256,7 @@
         }else{
 
           if ($('#uploadCsv').val() == "") {
-            var x = document.getElementsByClassName("tab-add");
+            let x = document.getElementsByClassName("tab-add");
             x[currentTab].style.display = "none";
             currentTab = currentTab + n;
             if (currentTab >= x.length) {
@@ -4290,7 +4297,7 @@
                 if (result.status == "Error") {
                   reasonReject(result.text,"block","tabGroupInitiateAdd")
                 }else{
-                  var x = document.getElementsByClassName("tab-add");
+                  let x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
                   currentTab = currentTab + n;
                   if (currentTab >= x.length) {
@@ -4412,7 +4419,7 @@
                     success: function(data)
                     {
                       Swal.close()
-                      var x = document.getElementsByClassName("tab-add");
+                      let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
                       if (currentTab >= x.length) {
@@ -4423,7 +4430,7 @@
                     }
                   });
                 }else{
-                  var x = document.getElementsByClassName("tab-add");
+                  let x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
                   currentTab = currentTab + n;
                   if (currentTab >= x.length) {
@@ -4549,7 +4556,7 @@
                     },
                     success: function(result){
                       Swal.close()
-                      var x = document.getElementsByClassName("tab-add");
+                      let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
                       if (currentTab >= x.length) {
@@ -4560,7 +4567,7 @@
                     }
                   })
                 } else {
-                  var x = document.getElementsByClassName("tab-add");
+                  let x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
                   currentTab = currentTab + n;
                   if (currentTab >= x.length) {
@@ -4592,7 +4599,7 @@
             },
             success: function(data)
             {
-              var x = document.getElementsByClassName("tab-add");
+              let x = document.getElementsByClassName("tab-add");
               x[currentTab].style.display = "none";
               currentTab = currentTab + n;
               if (currentTab >= x.length) {
@@ -4605,8 +4612,7 @@
         }        
       }else{
         $(".divReasonRejectRevision").remove()
-
-        var x = document.getElementsByClassName("tab-add");
+        let x = document.getElementsByClassName("tab-add");
         x[currentTab].style.display = "none";
         currentTab = currentTab + n;
         if (currentTab >= x.length) {
@@ -5028,8 +5034,6 @@
                     })
                   },success:function(){
                     Swal.close()
-
-                    var x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -5085,7 +5089,7 @@
                     })
                   },success:function(){
                       Swal.close()
-                      var x = document.getElementsByClassName("tab-add");
+                      let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
                       if (currentTab >= x.length) {
@@ -5112,7 +5116,8 @@
             }
           }else{
             $(".tabGroupInitiateAdd").show()
-            x[n].children[1].style.display = 'none'
+            let x = document.getElementsByClassName("tab-add");
+            x[1].children[1].style.display = 'none'
             document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
           }
         }else{
@@ -5751,7 +5756,7 @@
                   success: function(result){
                     localStorage.setItem('isStoreSupplier',true)
                     Swal.close()
-                    var x = document.getElementsByClassName("tab-add");
+                    let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -5891,7 +5896,18 @@
     });
 
     function createPR(status){
-      Swal.fire({
+      if ($("#inputFinalPageGrandPrice").val() == '0') {
+        Swal.fire({
+          title: 'Alert',
+          text: "Please to add some products.",
+          icon: 'warning',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+        })
+      }else{
+        Swal.fire({
           title: 'Are you sure?',
           text: "Submit Draft PR",
           icon: 'warning',
@@ -5900,48 +5916,49 @@
           cancelButtonColor: '#d33',
           confirmButtonText: 'Yes',
           cancelButtonText: 'No',
-      }).then((result) => {
-          if (result.value) {
-              Swal.fire({
-                  title: 'Please Wait..!',
-                  text: "It's sending..",
-                  allowOutsideClick: false,
-                  allowEscapeKey: false,
-                  allowEnterKey: false,
-                  customClass: {
-                      popup: 'border-radius-0',
-                  },
-                  didOpen: () => {
-                      Swal.showLoading()
-                  }
-              })
-              $.ajax({
-                type:"POST",
-                url:"{{url('/admin/storeLastStepDraftPr')}}",
-                data:{
-                  _token:"{{csrf_token()}}",
-                  no_pr:localStorage.getItem('no_pr'),
-                  inputGrandTotalProduct:$("#inputFinalPageGrandPrice").val(),
-                  status_revision:status
-                },
-                success: function(result){
-                  Swal.fire({
-                    title: 'Drafting PR Successs',
-                    html: "<p style='text-align:center;'>Your PR draft will be verified by Admin/Procurement soon, please wait for further progress</p>",
-                    type: 'success',
-                    confirmButtonText: 'Reload',
-                  }).then((result) => {
-                    localStorage.setItem('status_pr','') 
-                    if (status == 'revision') {
-                      location.replace("{{url('/admin/detail/draftPR')}}/"+ localStorage.getItem('no_pr'))
-                    }else{
-                      location.replace("{{url('admin/draftPR')}}")
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                    didOpen: () => {
+                        Swal.showLoading()
                     }
-                  })
-                }
-              })
-          }
-      })
+                })
+                $.ajax({
+                  type:"POST",
+                  url:"{{url('/admin/storeLastStepDraftPr')}}",
+                  data:{
+                    _token:"{{csrf_token()}}",
+                    no_pr:localStorage.getItem('no_pr'),
+                    inputGrandTotalProduct:$("#inputFinalPageGrandPrice").val(),
+                    status_revision:status
+                  },
+                  success: function(result){
+                    Swal.fire({
+                      title: 'Drafting PR Successs',
+                      html: "<p style='text-align:center;'>Your PR draft will be verified by Admin/Procurement soon, please wait for further progress</p>",
+                      type: 'success',
+                      confirmButtonText: 'Reload',
+                    }).then((result) => {
+                      localStorage.setItem('status_pr','') 
+                      if (status == 'revision') {
+                        location.replace("{{url('/admin/detail/draftPR')}}/"+ localStorage.getItem('no_pr'))
+                      }else{
+                        location.replace("{{url('admin/draftPR')}}")
+                      }
+                    })
+                  }
+                })
+            }
+        })
+      }
     }
 
     function createPRPembanding(){
