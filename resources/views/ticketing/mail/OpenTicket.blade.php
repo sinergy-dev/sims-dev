@@ -83,15 +83,15 @@
 			<td  style=" border:1px solid; padding: 3px;" class="holderRoot"></td>
 		</tr> -->
 		<tr>
-			<th style=" border:1px solid #fff;  padding: 3px;width:120px;color: #fff;background-color: #337ab7;text-align: left;"" class="bg-primary">Status</th>
+			<th style=" border:1px solid #fff;  padding: 3px;width:120px;color: #fff;background-color: #337ab7;text-align: left;" class="bg-primary">Status</th>
 			<td  style=" border:1px solid; padding: 3px; text-align: center; background-color: #d33724;border-bottom: none;color:#FFFFFF;" class="holderStatus text-center bg-red-active"></td>
 		</tr>
 		<tr>
-			<th style=" border:1px solid #fff; padding: 3px; width:120px;color: #fff;background-color: #337ab7;text-align: left;"" class="bg-primary">Waktu</th>
+			<th style=" border:1px solid #fff; padding: 3px; width:120px;color: #fff;background-color: #337ab7;text-align: left;" class="bg-primary">Waktu</th>
 			<td style=" border:1px solid; padding: 3px; text-align: center; background-color: #d33724; border-top: none; color:#FFFFFF;" class="holderWaktu text-center bg-red-active" ></td>
 		</tr>
 		<tr>
-			<th style=" border:1px solid #fff; padding: 3px; width:120px;color: #fff;background-color: #337ab7;text-align: left;"" class="bg-primary">Note</th>
+			<th style=" border:1px solid #fff; padding: 3px; width:120px;color: #fff;background-color: #337ab7;text-align: left;" class="bg-primary">Note</th>
 			<td style=" border:1px solid; padding: 3px;" class="holderNote"></td>
 		</tr>
 	</table>
