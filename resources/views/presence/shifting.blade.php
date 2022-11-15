@@ -1081,7 +1081,7 @@ Presence Shifting
 
 					$.ajax({
 						type:"GET",
-						url:"https://reqres.in/api/users",
+						url:url,
 						data:{
 							delay:3
 						},
