@@ -63,7 +63,7 @@
 		<div style="line-height: 1.5em;padding-left: 13px;">
 			<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 				<p>
-					Hello Rizki Nugroho,
+					Hello Admin,
 				</p>
 				<p>
 					<br><b>Request Customer Data,</b> berikut rinciannya:
