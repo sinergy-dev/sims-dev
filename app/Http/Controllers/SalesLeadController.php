@@ -392,7 +392,7 @@ class SalesLeadController extends Controller
 
     public function getPresales()
     {
-        $getPresales = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','TECHNICAL PRESALES')->where('id_company','1')->get());
+        $getPresales = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','TECHNICAL PRESALES')->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPresales);
     }
