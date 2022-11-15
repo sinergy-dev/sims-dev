@@ -4118,7 +4118,8 @@ class SalesController extends Controller{
         $tambah->nik_request = Auth::User()->nik;
         $tambah->save();
 
-        $kirim = User::select('email')->where('email', 'nugroho@sinergy.co.id')->first();
+        $kirim = User::join('role_user','users.nik','=','role_user.user_id')
+                ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'BCD Procurement')->first();
 
         $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
                     ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status')
@@ -4127,7 +4128,7 @@ class SalesController extends Controller{
 
         Mail::to($kirim)->send(new RequestCustomer('[SIMS-App] Request Customer Data',$data));
 
-        return redirect('customer')->with('success', 'Please Waiting for Rizki Nugroho Accept this Request!');
+        return redirect('customer')->with('success', 'Please Waiting for Rily Accept this Request!');
     }
 
     public function acceptRequest(Request $request)
