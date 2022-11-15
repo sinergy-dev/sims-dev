@@ -469,7 +469,7 @@ Customer
                 Swal.showLoading()
                 Swal.fire(
                     'Successfully!',
-                    'Please Waiting for Rizki Nugroho Accept this Request!.',
+                    'Please Waiting for Rily Accept this Request!.',
                     'success'
                 ).then((result) => {
                     if (result.value) {
