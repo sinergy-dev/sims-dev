@@ -2236,6 +2236,25 @@ Human Resources
 		                        @endif
 		                    </div>
 		                </div>
+
+		                <!--tampilkan roles berdasarkan user-->
+		                <div class="form-group row">
+		                	<label for="roles_user" class="col-md-4 control-label margin-top">{{ __('Roles') }}</label>
+
+		                	<div class="col-md-4" id="div_roles_view_update">
+		                    	<input id="roles_view_update" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"  required readonly>
+		                	</div>
+
+		                    <div class="col-md-4 margin-top">
+		                        <select id="roles_user_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="roles_user" autofocus>
+		                            <option value="">-- Select Roles --</option>
+		                            @foreach($roles as $data)
+		                            <option value="{{$data->id}}">{{$data->name}}</option>
+		                            @endforeach
+		                        </select>
+		                    </div>
+		                </div>
+		                
 		                  
 		                <div class="form-group row">
 	                        <label for="pend_terakhir" class="col-md-4 col-form-label text-md-right">{{ __('Last Education') }}</label>
@@ -2472,6 +2491,8 @@ Human Resources
 		$("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
 	}
 	$(document).ready(function(){
+		localStorage.clear();
+
         var accesable = @json($feature_item);
         accesable.forEach(function(item,index){
           $("#" + item).show()          
@@ -2605,102 +2626,28 @@ Human Resources
         $("#modal_update_file").modal("show");
     });
 
-    // $('.btn-editan').click(function(){
-    //     $.ajax({
-    //       type:"GET",
-    //       url:"{{url('/hu_rec/get_hu')}}",
-    //       data:{
-    //         id_hu:this.value,
-    //       },
-    //       "processing": true,
-	   //    "language": {
-    //         'loadingRecords': '&nbsp;',
-    //         'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
-    //       },
-    //       success: function(result){
-    //         $.each(result[0], function(key, value){
-    //            $("#nik_update").val(value.nik);
-    //            $("#name_update").val(value.name);
-    //            $("#email_update").val(value.email);
-    //            $("#date_of_entry_update").val(value.date_of_entry);
-    //            $("#date_of_birth_update").val(value.date_of_birth);
-    //            $("#akhir_kontrak_update").val(value.akhir_kontrak);
-    //            $("#address_update").val(value.address);
-    //            $("#phone_number_update").val(value.phone);
-    //            $("#no_ktp_update").val(value.no_ktp);
-    //            $("#no_kk_update").val(value.no_kk);
-    //            $("#no_npwp_update").val(value.no_npwp);
-    //            $("#tempat_lahir_update").val(value.tempat_lahir);
-    //            $("#email_personal_update").val(value.email_pribadi);
-    //            $("#bpjs_ket_update").val(value.bpjs_ket);
-    //            $("#bpjs_kes_update").val(value.bpjs_kes);
-    //            $("#address_ktp_update").val(value.alamat_ktp);
-    //            $("#pend_terakhir_update").val(value.pend_terakhir);
-    //            $("#name_ec_update").val(value.name_ec)
-    //            $("#phone_ec_update").val(value.phone_ec)
-    //            $("#hubungan_ec_update").val(value.hubungan_ec)
-    //            if (value.status_kerja == 'Tetap') {
-    //            	$("#status_karyawan_update").val("Karyawan Tetap");
-    //            }else if (value.status_kerja == 'Kontrak') {
-    //            	$("#status_karyawan_update").val("Karyawan Kontrak");
-    //            }else{
-    //            	$("#status_karyawan_update").val("");
-    //            }
-    //            if (value.npwp_file == null) {
-    //            	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
-    //            } else {
-    //            	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
-    //            }
-    //            if (value.ktp_file == null) {
-    //            	$("#showgambarktp_update").attr("src","img/img_nf.png");
-    //            } else {
-    //            	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
-    //            }
-    //            if (value.bpjs_kes == null) {
-    //            	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
-    //            } else {
-    //            	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
-    //            }
-    //            if (value.bpjs_ket == null) {
-    //            	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
-    //            } else {
-    //            	$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
-    //            }
-               
-
-    //            $("#password_update").val(value.password);
-    //            $("#divisi_view_update").val(value.id_division);
-    //            $("#subdivisi_view_update").val(value.id_territory);
-    //            if (value.id_company == '1') {
-    //            	$("#company_view_update").val("SIP")
-    //            }else{
-    //            	$("#company_view_update").val("MSP")
-    //            }
-    //            $("#posisi_view_update").val(value.id_position);
-               
-    //         });
-
-    //       }
-    //     }); 
-    //     $("#modal_update").modal("show");
-    // });
-    var currentTab = 0
-
     $(".close").click(function(){
     	$("#modal_update").modal('hide')
-    	if (localStorage.length > 0 ) {
-		    localStorage.clear();
-		}
-    	location.reload()
-    	console.log("oke")
+		window.localStorage.clear()
+    	var x = document.getElementsByClassName("tab");
+        $.each(x, function(key, value){
+		    value.style.display = "none"
+		})
+    })
+
+    $('#modal_update').on('hidden.bs.modal', function () {
+    	currentTab = 0
+      	n = 0
     })
 
 	localStorage.setItem("divisi_update", "")
 	localStorage.setItem("sub_divisi_update", "")
 	localStorage.setItem("posisi_update", "")
+	localStorage.setItem("roles_update", "")
 
+    var currentTab = 0
     function showEditTab(value,n){ 
-    	console.log(value)	
+    	console.log("currentTab"+currentTab)
     	if (n == 0) {
 		document.getElementById("prevBtn").style.display = "none";
 		} else {
@@ -2708,12 +2655,11 @@ Human Resources
 		}
 		var x = document.getElementsByClassName("tab");
 		x[n].style.display = "inline";
+		console.log(n)
 		if (n == (x.length - 1)) {
-			console.log(n)
 			document.getElementById("nextBtn").innerHTML = "Update";
 			$("#nextBtn").attr('onclick','submitBtnEmp()');				
 		} else {
-			console.log(n)
 			$("#nextBtn").attr('onclick','nextPrev('+value+',1)');
 			$("#prevBtn").attr('onclick','nextPrev('+value+',-1)')
 			document.getElementById("nextBtn").innerHTML = "Next";
@@ -2731,10 +2677,9 @@ Human Resources
             'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
           },
           success: function(result){
-          	  window.localStorage.clear()
+          	   // window.localStorage.clear()
           	   $.each(result[0], function(key, value){
                if (value.status_delete == "D") {
-               	 console.log("delete")
                	 	if (n == 2) {
 						document.getElementById("nextBtn").style.display = "none";
                	 	}else{
@@ -2757,9 +2702,17 @@ Human Resources
 	               $("#bpjs_kes_update").val(value.bpjs_kes).prop("readonly", true);
 	               $("#address_ktp_update").val(value.alamat_ktp).prop("readonly", true);
 	               $("#pend_terakhir_update").val(value.pend_terakhir).prop("readonly", true);
-	               $("#name_ec_update").val(value.name_ec)
-	               $("#phone_ec_update").val(value.phone_ec)
-	               $("#hubungan_ec_update").val(value.hubungan_ec)
+	               $("#name_ec_update").val(value.name_ec).prop("readonly", true);
+	               $("#phone_ec_update").val(value.phone_ec).prop("readonly", true);
+	               $("#hubungan_ec_update").val(value.hubungan_ec).prop("readonly", true);
+
+	               $("#company_update").prop("disabled", true);
+	               $("#divisi_update").prop("disabled", true);
+	               $("#sub_divisi_update").prop("disabled", true);
+	               $("#posisi_update").prop("disabled", true);
+	               $("#roles_user_update").prop("disabled", true);
+	               $("#status_kerja_update").prop("disabled", true);
+
 	               if (value.status_kerja == 'Tetap') {
 	               	$("#status_karyawan_update").val("Karyawan Tetap").prop("readonly", true);
 	               }else if (value.status_kerja == 'Kontrak') {
@@ -2801,82 +2754,102 @@ Human Resources
 	               
                }else{               		
 				   $("#nik_update").val(value.nik);
-				   localStorage.setItem("name_update", $("#name_update").val())
-				   if (!localStorage.getItem("name_update")) {
+				   if (!localStorage.getItem("name_update") == true) {
 	               	$("#name_update").val(value.name);
+				   	localStorage.setItem("name_update", $("#name_update").val())
 				   }
-				   localStorage.setItem("email_update", $("#email_update").val())
-				   if (!localStorage.getItem("email_update")) {
+				   console.log(value.name)
+
+				   if (!localStorage.getItem("email_update") == true) {
 	               	$("#email_update").val(value.email);
+				   	localStorage.setItem("email_update", $("#email_update").val())
 				   }
-				   localStorage.setItem("date_of_entry_update", $("#date_of_entry_update").val())
-				   if (!localStorage.getItem("date_of_entry_update")) {
+
+				   if (!localStorage.getItem("date_of_entry_update") == true) {
 	               	$("#date_of_entry_update").val(value.date_of_entry).prop("readonly",true);
+				   	localStorage.setItem("date_of_entry_update", $("#date_of_entry_update").val())
 				   }
-				   localStorage.setItem("date_of_birth_update", $("#date_of_birth_update").val())
-				   if (!localStorage.getItem("date_of_entry_update")) {
+
+				   if (!localStorage.getItem("date_of_birth_update") == true) {
 	               	$("#date_of_birth_update").val(value.date_of_birth).prop("readonly",true);
+				   	localStorage.setItem("date_of_birth_update", $("#date_of_birth_update").val())
 				   }
-				   localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
-				   if (!localStorage.getItem("akhir_kontrak_update")) {
+
+				   if (!localStorage.getItem("akhir_kontrak_update") == true) {
 	               	$("#akhir_kontrak_update").val(value.akhir_kontrak);
+				   	localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
 				   }
-				   localStorage.setItem("address_update", $("#address_update").val())
-				   if (!localStorage.getItem("address_update")) {
+
+				   if (!localStorage.getItem("address_update") == true) {
 	               	$("#address_update").val(value.address);
+				   	localStorage.setItem("address_update", $("#address_update").val())
 				   }
-				   localStorage.setItem("phone_number_update", $("#phone_number_update").val())
-				   if (!localStorage.getItem("phone_number_update")) {
+
+				   if (!localStorage.getItem("phone_number_update") == true) {
 	               	$("#phone_number_update").val(value.phone);
+				   	localStorage.setItem("phone_number_update", $("#phone_number_update").val())
 				   }
-				   localStorage.setItem("no_ktp_update", $("#no_ktp_update").val())
-				   if (!localStorage.getItem("no_ktp_update")) {
+
+				   if (!localStorage.getItem("no_ktp_update") == true) {
 	               	$("#no_ktp_update").val(value.no_ktp);
+				   	localStorage.setItem("no_ktp_update", $("#no_ktp_update").val())
 				   }
-				   localStorage.setItem("no_kk_update", $("#no_kk_update").val())
-				   if (!localStorage.getItem("no_kk_update")) {
+
+				   if (!localStorage.getItem("no_kk_update") == true) {
 	               	$("#no_kk_update").val(value.no_kk);
+				   	localStorage.setItem("no_kk_update", $("#no_kk_update").val())
 				   }
-				   localStorage.setItem("no_npwp_update", $("#no_npwp_update").val())
-				   if (!localStorage.getItem("no_npwp_update")) {
+
+				   if (!localStorage.getItem("no_npwp_update") == true) {
 	               	$("#no_npwp_update").val(value.no_npwp);
+				   	localStorage.setItem("no_npwp_update", $("#no_npwp_update").val())
 				   }
-				   localStorage.setItem("tempat_lahir_update", $("#tempat_lahir_update").val())
-				   if (!localStorage.getItem("tempat_lahir_update")) {
+
+				   if (!localStorage.getItem("tempat_lahir_update") == true) {
 	               	$("#tempat_lahir_update").val(value.tempat_lahir);
+				   	localStorage.setItem("tempat_lahir_update", $("#tempat_lahir_update").val())
 				   }
-				   localStorage.setItem("email_personal_update", $("#email_personal_update").val())
-				   if (!localStorage.getItem("email_personal_update")) {
+
+				   if (!localStorage.getItem("email_personal_update") == true) {
 	               	$("#email_personal_update").val(value.email_pribadi);
+				   	localStorage.setItem("email_personal_update", $("#email_personal_update").val())
 				   }
-				   // localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
-				   // if (!localStorage.getItem("bpjs_ket_update")) {
+
+				   if (!localStorage.getItem("bpjs_ket_update") == true) {
 	               	$("#bpjs_ket_update").val(value.bpjs_ket);
-				   // }
-				   // localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
-				   // if (!localStorage.getItem("bpjs_kes_update")) {
+				   	localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
+				   }
+
+				   if (!localStorage.getItem("bpjs_kes_update") == true) {
 	               	$("#bpjs_kes_update").val(value.bpjs_kes);
-				   // }
-				   localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
-				   if (!localStorage.getItem("address_ktp_update")) {
+				   	localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
+				   }
+
+				   if (!localStorage.getItem("address_ktp_update") == true) {
 	               	$("#address_ktp_update").val(value.alamat_ktp);
+				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
 				   }
-				   localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
-				   if (!localStorage.getItem("pend_terakhir_update")) {
+
+				   if (!localStorage.getItem("pend_terakhir_update") == true) {
 	               	$("#pend_terakhir_update").val(value.pend_terakhir);
+				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
 				   }
-				   localStorage.setItem("name_ec_update", $("#name_ec_update").val())
-				   if (!localStorage.getItem("name_ec_update")) {
+
+				   if (!localStorage.getItem("name_ec_update") == true) {
 	               	$("#name_ec_update").val(value.name_ec);
+				   	localStorage.setItem("name_ec_update", $("#name_ec_update").val())
 				   }
-				   localStorage.setItem("phone_ec_update", $("#phone_ec_update").val())
-				   if (!localStorage.getItem("phone_ec_update")) {
+
+				   if (!localStorage.getItem("phone_ec_update") == true) {
 	               	$("#phone_ec_update").val(value.phone_ec);
+				   	localStorage.setItem("phone_ec_update", $("#phone_ec_update").val())
 				   }
-				   localStorage.setItem("hubungan_ec_update", $("#hubungan_ec_update").val())
-				   if (!localStorage.getItem("hubungan_ec_update")) {
+
+				   if (!localStorage.getItem("hubungan_ec_update") == true) {
 	               	$("#hubungan_ec_update").val(value.hubungan_ec);
+				   	localStorage.setItem("hubungan_ec_update", $("#hubungan_ec_update").val())
 				   }
+
 	               if (value.status_kerja == 'Tetap') {
 	               	$("#status_karyawan_update").val("Karyawan Tetap");
 	               }else if (value.status_kerja == 'Kontrak') {
@@ -2888,45 +2861,51 @@ Human Resources
 	               if (value.npwp_file == null) {
 	               	$("#showgambarnpwp_update").attr("src","img/img_nf.png");
 	               } else {
-	               	localStorage.setItem("showgambarnpwp_update", $("#showgambarnpwp_update").val())
-					   if (!localStorage.getItem("showgambarnpwp_update")) {
+					   if (!localStorage.getItem("showgambarnpwp_update") == true) {
 		               	$("#showgambarnpwp_update").attr("src","image/"+value.npwp_file);
+	               		localStorage.setItem("showgambarnpwp_update", $("#showgambarnpwp_update").val())
 					   }
 	               	
 	               }
 	               if (value.ktp_file == null) {
 	               	$("#showgambarktp_update").attr("src","img/img_nf.png");
 	               } else {
-	               	localStorage.setItem("showgambarktp_update", $("#showgambarktp_update").val())
-					   if (!localStorage.getItem("showgambarktp_update")) {
+					   if (!localStorage.getItem("showgambarktp_update") == true) {
 		               	$("#showgambarktp_update").attr("src","image/"+value.ktp_file);
+	               		localStorage.setItem("showgambarktp_update", $("#showgambarktp_update").val())
 					   }
 	               }
 	               if (value.bpjs_kes == null) {
 	               	$("#showgambarbpjs_kes_update").attr("src","img/img_nf.png");
 	               } else {
-	               	localStorage.setItem("showgambarbpjs_kes_update", $("#showgambarbpjs_kes_update").val())
-					   if (!localStorage.getItem("showgambarbpjs_kes_update")) {
+					   if (!localStorage.getItem("showgambarbpjs_kes_update") == true) {
 		               	$("#showgambarbpjs_kes_update").attr("src","image/"+value.bpjs_kes);
+	               		localStorage.setItem("showgambarbpjs_kes_update", $("#showgambarbpjs_kes_update").val())
 					   }
-	               	
 	               }
 	               if (value.bpjs_ket == null) {
 	               	$("#showgambarbpjs_ket_update").attr("src","img/img_nf.png");
 	               } else {
-	               	localStorage.setItem("showgambarbpjs_ket_update", $("#showgambarbpjs_ket_update").val())
-					   if (!localStorage.getItem("showgambarbpjs_ket_update")) {
+					   if (!localStorage.getItem("showgambarbpjs_ket_update") == true) {
 	               		$("#showgambarbpjs_ket_update").attr("src","image/"+value.bpjs_ket);
+	               		localStorage.setItem("showgambarbpjs_ket_update", $("#showgambarbpjs_ket_update").val())
 		               }
 	               }
 	               
-	               localStorage.setItem("password_update", $("#password_update").val())
-					   if (!localStorage.getItem("password_update")) {
-	               		$("#password_update").val(value.password);
-		               }
+				   	if (!localStorage.getItem("password_update") == true) {
+               			$("#password_update").val(value.password);
+               			localStorage.setItem("password_update", $("#password_update").val())
+	               	}
 
-		            $("#divisi_view_update").val(value.id_division).prop("readonly", true);
-		            $("#sub_divisi_view_update").val(value.id_territory).prop("readonly", true);
+		            $("#roles_view_update").val(value.roles).prop("readonly", true);
+	              	if (!localStorage.getItem("roles_update") == true) {
+	               		if ($("#roles_user_update").val() != "") {
+			            	localStorage.setItem("roles_update",$("#roles_user_update").val())
+			            }else{
+			            	localStorage.setItem("roles_update",value.role_id)
+			            }
+	               	}
+		            
 		            if (value.id_company == "1") {
 		            	console.log("sip")
 		             	$("#company_view_update").val("SIP").prop("readonly", true);
@@ -2936,33 +2915,61 @@ Human Resources
 	               		localStorage.setItem("company_update", 2)
 
 		            }
-		            $("#posisi_view_update").val(value.id_position).prop("readonly", true);
 
-	                localStorage.setItem("divisi_update", $("#divisi_update").val())
-					   if (localStorage.getItem("divisi_update") != 'null') {
-	               		$("#divisi_view_update").val(localStorage.getItem('divisi_update'));
-	                	localStorage.setItem("divisi_update", localStorage.getItem("divisi_update"))
-		               }else{
-		               	$("#divisi_view_update").val(value.id_division);
-	                	localStorage.setItem("divisi_update", value.id_division)
-		               }
+		            $("#divisi_view_update").val(value.id_division).prop("readonly", true);
+	              	if (!localStorage.getItem("divisi_update") == true) {
+	               		if ($("#divisi_update").val() != "") {
+			            	localStorage.setItem("divisi_update",$("#divisi_update").val())
+			            }else{
+			            	localStorage.setItem("divisi_update",value.id_division)
+			            }
+	               	}
+		            
+	       //          localStorage.setItem("divisi_update", $("#divisi_update").val())
+					   // if (localStorage.getItem("divisi_update") != 'null') {
+	       //         		$("#divisi_view_update").val(localStorage.getItem('divisi_update'));
+	       //          	localStorage.setItem("divisi_update", localStorage.getItem("divisi_update"))
+		      //          }else{
+		      //          	$("#divisi_view_update").val(value.id_division);
+	       //          	localStorage.setItem("divisi_update", value.id_division)
+		      //          }
 
-		            localStorage.setItem("sub_divisi_update", $("#sub_divisi_update").val())
-					   if (localStorage.getItem("sub_divisi_update") != 'null') {
-					   	$("#sub_divisi_view_update").val(localStorage.getItem('sub_divisi_update'));
-	                	localStorage.setItem("sub_divisi_update", localStorage.getItem("sub_divisi_update"))
-		               }else{
-	               		$("#sub_divisi_view_update").val(value.id_territory);
-	                	localStorage.setItem("sub_divisi_update", value.id_territory)
-		               }	               	
-	               	localStorage.setItem("posisi_update", $("#posisi_update").val())
-					   if (localStorage.getItem("posisi_update") != 'null') {
-					   	$("#posisi_view_update").val(localStorage.getItem('posisi_update'));
-	                	localStorage.setItem("posisi_update", localStorage.getItem("posisi_update"))
-		               } else{
-	               		$("#posisi_view_update").val(value.id_position);
-		               	localStorage.setItem("posisi_update", value.id_position)
-		               }              
+		      		$("#sub_divisi_view_update").val(value.id_territory).prop("readonly", true);
+	              	if (!localStorage.getItem("sub_divisi_update") == true) {
+	               		if ($("#sub_divisi_update").val() != "") {
+			            	localStorage.setItem("sub_divisi_update",$("#sub_divisi_update").val())
+			            }else{
+			            	localStorage.setItem("sub_divisi_update",value.id_division)
+			            }
+	               	}
+
+		       //      $("#sub_divisi_view_update").val(value.id_territory).prop("readonly", true);
+		       //      if (localStorage.getItem("sub_divisi_update") != 'null') {
+					   	// $("#sub_divisi_view_update").val(localStorage.getItem('sub_divisi_update'));
+	        //         	localStorage.setItem("sub_divisi_update", localStorage.getItem("sub_divisi_update"))
+		       //      }else{
+	        //        		$("#sub_divisi_view_update").val(value.id_territory);
+	        //         	localStorage.setItem("sub_divisi_update", value.id_territory)
+		       //      }	      
+
+		       		$("#posisi_view_update").val(value.id_position).prop("readonly", true);
+	              	if (!localStorage.getItem("posisi_update") == true) {
+	               		if ($("#posisi_update").val() != "") {
+			            	localStorage.setItem("posisi_update",$("#posisi_update").val())
+			            }else{
+			            	localStorage.setItem("posisi_update",value.id_position)
+			            }
+	               	}
+
+		      //       $("#posisi_view_update").val(value.id_position).prop("readonly", true);         	
+	       //         	localStorage.setItem("posisi_update", $("#posisi_update").val())
+					   // if (localStorage.getItem("posisi_update") != 'null') {
+					   // 	$("#posisi_view_update").val(localStorage.getItem('posisi_update'));
+	       //          	localStorage.setItem("posisi_update", localStorage.getItem("posisi_update"))
+		      //          } else{
+	       //         		$("#posisi_view_update").val(value.id_position);
+		      //          	localStorage.setItem("posisi_update", value.id_position)
+		      //          }              
                
                }
                
@@ -2978,14 +2985,13 @@ Human Resources
 
     function nextPrev(value,n) {
 		var x = document.getElementsByClassName("tab");
+        x[currentTab].style.display = "none";
+        currentTab = currentTab + n;
+        if (currentTab >= x.length) {
+          x[n].style.display = "none";
+          currentTab = 0;
+        }
 
-    	x[currentTab].style.display = "none";
-		currentTab = currentTab + n;
-		if (currentTab >= x.length) {
-			// $("#exampleModalCenter").modal('hide');
-			x[n].style.display = "none";
-			currentTab = 0;
-		} 
 		showEditTab(value,currentTab);
     }
 
@@ -3049,6 +3055,7 @@ Human Resources
 	        		divisi_update:localStorage.getItem("divisi_update"),//$("#divisi_update").val(),
 	        		sub_divisi_update:localStorage.getItem("sub_divisi_update"),//$("#sub_divisi_update").val(),
 	        		posisi_update:localStorage.getItem("posisi_update"),//$("#posisi_update").val(),
+	        		roles_update:localStorage.getItem("roles_update"),//$("#posisi_update").val(),
 	        		address_update:localStorage.getItem("address_update"),
 	        		phone_number_update:localStorage.getItem("phone_number_update"),
 	        		no_npwp_update:localStorage.getItem("no_npwp_update"),
