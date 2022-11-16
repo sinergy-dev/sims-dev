@@ -523,7 +523,7 @@
 								@endif
 							</div>
 							<div style="margin-top:5px;margin-bottom: 5px;">
-								<img src="{{ $eachSign['ttd'] }}" style="height:50px;">
+								<img src="{{ $eachSign['ttd'] }}" style="height:100px;">
 							</div>
 							<div>
 								<small>{{ $eachSign['date_sign'] }}</small>
@@ -566,7 +566,7 @@
 										@endif
 									</div>
 									<div style="margin-top:5px;margin-bottom: 5px;">
-										<img src="{{ $eachSign['ttd'] }}" style="height:50px;">
+										<img src="{{ $eachSign['ttd'] }}" style="height:100px;">
 									</div>
 									<div>
 										<small>{{ $eachSign['date_sign'] }}</small>
@@ -596,10 +596,11 @@
 			</tr>
 			@if(count($sign) != 2)
 				@if($sign[0]["signed"] == "true")
+					<tr><td style="height: 50px;" colspan="{{count($sign)}}"></td></tr>
 					<tr>
 						<td colspan="{{count($sign) - 1}}">
 							<div style="text-align:right;">
-								<img src="{{ $sign[0]['ttd'] }}" style="width:40px;height:40px;">
+								<img src="{{ $sign[0]['ttd'] }}" style="width:70px;height:70px;">
 							</div>
 						</td>
 					</tr>
