@@ -166,32 +166,33 @@ class PRDraft extends Model
                 ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
         } else {
             if ($cek_group->group == 'pmo') {
-                $sign->whereRaw("(`users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "Operations Director")');
+
+                $sign->whereRaw("(`users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "Finance & Accounting Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'msm') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                ->orderByRaw('FIELD(position, "BCD Manager", "MSM Manager", "Operations Director")');
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'MSM' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "MSM Manager", "Finance & Accounting Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'bcd') {
-                $sign->whereRaw("( `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                ->orderByRaw('FIELD(position, "BCD Manager", "Operations Director")');
+                $sign->whereRaw("( `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Finance & Accounting Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'DPG') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                ->orderByRaw('FIELD(position, "BCD Manager", "SID Manager", "Operations Director")');
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SID Manager", "Finance & Accounting Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'presales') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Operations Director")');
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Finance & Accounting Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'hr') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Finance & Accounting Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'sales') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
-                ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Finance & Accounting Manager", "Operations Director")');
             }
         }
 
