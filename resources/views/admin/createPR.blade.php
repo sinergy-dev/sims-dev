@@ -75,8 +75,8 @@
       <button class="btn btn-md btn-primary pull-right" style="display:none;" dusk="addDraftPr" id="addDraftPr" onclick="addDraftPr(0)" ><i class="fa fa-plus"></i> Draft PR</button>
     </div>
     <div class="box-body">
-      <div class="row" id="filterBox">
-        <div class="col-md-2">
+      <div class="row" style="margin-bottom:10px" id="filterBox">
+        <div class="col-md-2 col-xs-12">
           <b>Filter by Type PR : </b>
           <div>
             <select class="form-control select2" id="inputFilterTypePr" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true">
@@ -84,21 +84,21 @@
           </div>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2 col-xs-12">
           <b>Filter by Status : </b>
           <div>
             <select class="form-control select2" id="inputFilterStatus" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
           </div>
         </div>
 
-        <div class="col-md-2" id="filterUser" style="display:none">
+        <div class="col-md-2 col-xs-12" id="filterUser" style="display:none">
           <b>Filter by User : </b>
           <div>
             <select class="form-control select2" id="inputFilterUser" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
           </div>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2 col-xs-12">
           <b>Range Date PR : </b>
 
           <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate">
@@ -109,7 +109,7 @@
           </button>
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-4 col-xs-12">
           <b>Search Anything : </b>
           <div class="input-group pull-right">
             <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
@@ -132,7 +132,7 @@
               </button>
               
             </span>
-            <span class="input-group-btn">
+          <!--   <span class="input-group-btn">
               <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 Displayed Column
                 <span class="fa fa-caret-down"></span>
@@ -148,7 +148,7 @@
               <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" type="button" class="btn btn-default btn-flat">
                 <i class="fa fa-fw fa-refresh"></i>
               </button>
-            </span>
+            </span> -->
           </div>
         </div>
             
@@ -177,6 +177,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span></button>
         <h4 class="modal-title">Information Supplier</h4>
       </div>
       <div class="modal-body">
@@ -188,7 +190,7 @@
           <div class="tabGroup">
             <div class="form-group">
               <label for="">To*</label>
-              <input type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
+              <input autocomplete="off" type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
               <span class="help-block" style="display:none;">Please fill To!</span>
             </div>      
 
@@ -196,8 +198,8 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Type*</label>
-                  <select type="text" class="form-control" name="type" onchange="fillInput('selectType')" placeholder="ex. Internal Purchase Request" id="selectType" required>
-                      <option selected value="">Select Type</option>
+                  <select autofocus type="text" class="form-control" name="type" onchange="fillInput('selectType')" placeholder="ex. Internal Purchase Request" id="selectType" required>
+                      <option value="">Select Type</option>
                       <option value="IPR">IPR (Internal Purchase Request)</option>
                       <option value="EPR">EPR (Eksternal Purchase Request)</option>
                   </select>
@@ -208,7 +210,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Email*</label>
-                  <input type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
+                  <input autocomplete="off" type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
                   <span class="help-block" style="display:none;">Please fill Email!</span>
                 </div>
               </div>
@@ -216,7 +218,7 @@
 
             <div class="form-group">
               <label for="">Category</label>
-              <select type="text" class="form-control select2" onchange="fillInput('selectCategory')" name="selectCategory" id="selectCategory" style="width: 100%">
+              <select autofocus type="text" class="form-control select2" onchange="fillInput('selectCategory')" name="selectCategory" id="selectCategory" style="width: 100%">
                   <option value="">Select Category</option>
                   <option value="Barang dan Jasa">Barang dan Jasa</option>
                   <option value="Barang">Barang</option>
@@ -244,14 +246,14 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Phone*</label>
-                  <input class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
+                  <input autocomplete="off" class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
                   <span class="help-block" style="display:none;">Please fill Phone!</span>
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Attention*</label>
-                  <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
+                  <input autocomplete="off" type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
                   <span class="help-block" style="display:none;">Please fill Attention!</span>
                 </div>
               </div>
@@ -259,20 +261,20 @@
 
             <div class="form-group">
               <label for="">Subject*</label>
-              <input type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
+              <input autocomplete="off" type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
               <span class="help-block" style="display:none;">Please fill Subject!</span>
             </div>
 
             <div class="form-group">
               <label for="">Address*</label>
-              <textarea class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
+              <textarea autocomplete="off" class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
               <span class="help-block" style="display:none;">Please fill Address!</span>
             </div>
 
             <div class="form-group">
               <label for="">Request Methode*</label>
-              <select type="text" class="form-control" placeholder="ex. Purchase Order" name="type" id="selectMethode" required >
-                  <option selected value="">Select Methode</option>
+              <select autofocus type="text" class="form-control" placeholder="ex. Purchase Order" name="type" id="selectMethode" required >
+                  <option value="">Select Methode</option>
                   <option value="purchase_order">Purchase Order</option>
                   <option value="payment">Payment</option>
                   <option value="reimbursement">Reimbursement</option>
@@ -282,7 +284,7 @@
 
             <div class="form-group" id="divNotePembanding" style="display:none;">
               <label for="">Note Pembanding*</label>
-              <textarea class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
+              <textarea autocomplete="off" class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
               <span class="help-block" style="display:none;">Please fill Note Pembanding!</span>
             </div>
           </div>
@@ -296,8 +298,7 @@
               <span style="margin:0 auto;">OR</span>
             </div>
             <div class="form-group" style="display: flex;">
-              <div style="padding: 7px;
-                          width: 20%;
+              <div class="btn btn-sm btn-default" style="padding: 7px;
                           border: 1px solid #dee2e6 !important;
                           color: #337ab7;
                           height: 35px;
@@ -321,7 +322,7 @@
           <div class="tabGroup" style="display:none">
             <div class="form-group">
               <label>Product*</label>
-              <input type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
+              <input autocomplete="off" type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
               <span class="help-block" style="display:none;">Please fill Name Product!</span>
             </div>
             <div class="form-group">
@@ -329,52 +330,54 @@
               <textarea onkeyup="fillInput('desc_product')" style="resize:vertical;height:150px" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control"></textarea>
               <span class="help-block" style="display:none;">Please fill Description!</span>
             </div>
-            <div class="form-group">
-              <div class="row">
-                <div class="col-md-6"> 
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
                   <label>Serial Number</label>
-                  <input type="text" name="" class="form-control" id="inputSerialNumber">
-                </div>
-                <div class="col-md-6"> 
+                  <input autocomplete="off" type="text" name="" class="form-control" id="inputSerialNumber">
+                </div> 
+              </div>
+              <div class="col-md-6"> 
+                <div class="form-group">
                   <label>Part Number</label>
-                  <input type="text" name="" class="form-control" id="inputPartNumber">
+                  <input autocomplete="off" type="text" name="" class="form-control" id="inputPartNumber">
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <div class="row">
-                <div class="col-md-4"> 
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
                   <label>Qty*</label>
-                  <input type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
+                  <input autocomplete="off" type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
                   <span class="help-block" style="display:none;">Please fill Qty!</span>
-                </div>
-                <div class="col-md-4"> 
-                  <label>Type*</label>
-                  <select class="form-control" style="width:100%" id="selectTypeProduct" onchange="fillInput('type_product')">
-                    <option>
-                    <!-- <option selected value="unit">Unit</option>  -->
-                  </select>
-                  <span class="help-block" style="display:none;">Please fill Unit!</span>
-                </div>
-                <div class="col-md-4"> 
-                  <label>Price*</label>
-                  <div class="input-group">
-                    <div class="input-group-addon">
-                    Rp.
-                    </div>
-                    <input type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
-                  </div>
-                  <span class="help-block" style="display:none;">Please fill Price!</span>
-                </div>
+                </div> 
               </div>
-            </div>              
+              <div class="col-md-4" style="margin-bottom:10px"> 
+                <label>Type*</label>
+                <i class="fa fa-warning" title="If type is undefined, Please contact developer team!" style="display:inline"></i>
+                <select style="width:100%;display:inline;" class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
+                  <option>                  
+                </select>
+                <span class="help-block" style="display:none;">Please fill Unit!</span>
+              </div>
+              <div class="col-md-4" style="margin-bottom:10px"> 
+                <label>Price*</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                  Rp.
+                  </div>
+                  <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+                </div>
+                <span class="help-block" style="display:none;">Please fill Price!</span>
+              </div>
+            </div>            
             <div class="form-group">
               <label>Total Price</label>
               <div class="input-group">
                 <div class="input-group-addon">
                 Rp.
                 </div>
-                  <input readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
+                  <input autocomplete="off" readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
               </div>
             </div>
           </div>
@@ -402,7 +405,7 @@
               
             </div>
           </div>
-          <div class="form-group" style="display:flex;">
+          <div class="form-group" style="display:flex;margin-top: 10px;">
             <button class="btn btn-sm btn-primary" style="margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
           </div>
         </div>
@@ -414,7 +417,7 @@
                     <div class="form-group">
                       <label>Lead Register*</label>
                       <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
-                        <option>
+                        <option></option>
                       </select>
                       <span class="help-block" style="display:none;">Please fill Lead Register!</span>
                     </div>
@@ -429,7 +432,7 @@
                       <span id="makeId" style="cursor: pointer;">other?</span>
                       <div class="form-group" id="project_idNew" style="display: none;">
                         <div class="input-group">
-                          <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                          <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                           <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
                         </div>
                       </div> 
@@ -442,7 +445,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSPK" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;font-family: inherit;" type="file" class="files" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" >
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputSPK" id="inputSPK" onchange="fillInput('spk')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
@@ -454,7 +457,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputSBE" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;font-family: inherit;" type="file" class="files" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" >
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputSBE" id="inputSBE" onchange="fillInput('sbe')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
@@ -466,7 +469,7 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
                     <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
                   </label>
                 </div>
                 <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
@@ -489,13 +492,13 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputPenawaranHarga" style="margin-bottom:0px">
                     <i class="fa fa-cloud-upload" style="display:inline"></i>
-                    <input style="display: inline;" type="file" class="files" name="inputPenawaranHarga" id="inputPenawaranHarga" onchange="fillInput('penawaranHarga')">
+                    <input autocomplete="off" style="display: inline;" type="file" class="files" name="inputPenawaranHarga" id="inputPenawaranHarga" onchange="fillInput('penawaranHarga')">
                   </label>                  
                 </div>
                 <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
                 <span style="display:none;" id="span_link_drive_penawaranHarga"><a id="link_penawaran_harga" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
-              <div id="docPendukungContainer">
+              <div id="docPendukungContainer" class="table-responsive">
                 <label id="titleDoc" style="display:none;">Lampiran Dokumen Pendukung</label>
                 <table id="tableDocPendukung" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
                   
@@ -523,7 +526,7 @@
               </div>
             </div><br>
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 table-responsive">
                 <table class="table" style="white-space: nowrap;">
                   <thead>
                     <tr>
@@ -563,6 +566,8 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
           <h4 class="modal-title">Information Supplier</h4>
         </div>
         <div class="modal-body">
@@ -758,7 +763,7 @@
                 <label>SPK/Kontrak*</label>
                 <div class="input-group" readonly>
                   <div style="border: 1px solid #dee2e6 !important;padding: 5px;background-color: #EEEEEE;">
-                    <i class="icon" style="display:inline;color: #367fa9;"></i>
+                    <i class="icon_spk" style="display:inline;color: #367fa9;"></i>
                     <a target="_blank" href="" id="link_spkCek"><input style="display: inline;background-color: transparent;border: none;" type="text" name="inputSPK" id="inputSPKCek" disabled></a>
                   </div>
                   <div class="input-group-addon">
@@ -772,7 +777,7 @@
                 <label>SBE*</label>
                 <div class="input-group" readonly>
                   <div style="border: 1px solid #dee2e6 !important;padding: 5px;background-color: #EEEEEE;">
-                    <i class="icon" style="display:inline;color: #367fa9;"></i>
+                    <i class="icon_sbe" style="display:inline;color: #367fa9;"></i>
                     <a target="_blank" href="" id="link_sbeCek"><input style="display:inline;background-color: transparent;border: none;" type="text" name="inputSBECek" id="inputSBECek" disabled ></a>
                   </div>
                   <div class="input-group-addon">
@@ -788,7 +793,7 @@
                     <label>Quote Supplier*</label>
                     <div class="input-group" readonly>
                       <div style="border: 1px solid #dee2e6 !important;padding: 5px;background-color: #EEEEEE;">
-                        <i class="icon" style="display:inline;color: #367fa9;"></i>
+                        <i class="icon_quo" style="display:inline;color: #367fa9;"></i>
                         <a target="_blank" href="" id="link_quoteSupCek"><input style="display: inline;background-color: transparent;border: none;" type="text" name="inputQuoteSupplierCek" id="inputQuoteSupplierCek" disabled ></a>
                       </div>
                       <div class="input-group-addon">
@@ -832,7 +837,7 @@
               </div>
             </div><br>
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 table-responsive">
                 <table class="table" style="white-space: nowrap;">
                   <thead>
                     <tr>
@@ -1053,7 +1058,7 @@
 
       colors.push(ArrColors)
       $.each(colors[0], function(key, value){
-        append = append + '<div class="col-lg-3 col-xs-6">'
+        append = append + '<div class="col-lg-3 col-xs-12">'
           append = append + '<div class="small-box ' + value.color + '">'
             append = append + '<div class="inner">'
               append = append + '<h3 style="'+ value.style +'" class="counter" id="count_pr_'+value.index+'"</h3>'
@@ -1101,7 +1106,7 @@
       var append = ""
       var colors = []
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:red', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
         },
         {
             name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',index: 1
@@ -1674,7 +1679,7 @@
                   append = append + '<input readonly class="form-control" style="font-size: 12px; important" type="" name="" value="'+ item.name_product +'">'
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="width: 200px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
@@ -1700,7 +1705,7 @@
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<div class="form-group">'
             appendBottom = appendBottom + '  <div class="row">'
-            appendBottom = appendBottom + '    <div class="col-md-12">'
+            appendBottom = appendBottom + '    <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '      <div class="pull-right">'
             appendBottom = appendBottom + '        <span style="display: inline;margin-right: 15px;">Total</span>'
             appendBottom = appendBottom + '        <input readonly="" type="text" style="width:250px;display: inline;" id="inputGrandTotalProduct_unfinishPreview" class="form-control inputGrandTotalProduct_unfinishPreview">'
@@ -1708,7 +1713,7 @@
             appendBottom = appendBottom + '    </div>'
             appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + ' <div class="col-md-12">'
+            appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '   <div class="pull-right">'
               appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
               appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
@@ -1726,7 +1731,7 @@
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '  <div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + '    <div class="col-md-12">'
+            appendBottom = appendBottom + '    <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '      <div class="pull-right">'
             appendBottom = appendBottom + '        <span style="display: inline;margin-right: 15px;">Grand Price</span>'
             appendBottom = appendBottom + '        <input readonly type="text" style="width:250px;display: inline;" class="form-control inputFinalPageGrandPrice_unfinishPreview" id="inputFinalPageGrandPrice" name="inputFinalPageGrandPrice_unfinishPreview">'
@@ -2186,7 +2191,7 @@
                           appendDocPendukung = appendDocPendukung + "<td>"
                             appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
                                 appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px">'
-                                  appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"'>"
+                                  appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"'>"
                                  appendDocPendukung = appendDocPendukung + '</div>'
                                  appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
                           appendDocPendukung = appendDocPendukung + "</td>"
@@ -2327,7 +2332,7 @@
     localStorage.setItem('status_pr','')
     function addDraftPr(n){
       localStorage.setItem('status_pr','')
-      var x = document.getElementsByClassName("tab-add");
+      let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
       if (n == (x.length - 1)) {
         $(".modal-dialog").addClass('modal-lg')
@@ -2392,7 +2397,7 @@
                   append = append + '<input readonly class="form-control" style="font-size: 12px;" type="" name="" value="'+ item.name_product +'">'
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="width:150px;height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -2424,7 +2429,7 @@
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<div class="form-group">'
               appendBottom = appendBottom + '<div class="row">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
               appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputTotalPriceFinal" id="inputTotalPriceFinal" name="inputTotalPriceFinal">'
@@ -2432,7 +2437,7 @@
               appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + ' <div class="col-md-12">'
+              appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '   <div class="pull-right">'
                 appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
                 appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
@@ -2442,7 +2447,7 @@
               appendBottom = appendBottom + ' </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
               appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageGrandPrice" id="inputFinalPageGrandPrice" name="inputFinalPageGrandPrice">'
@@ -2620,9 +2625,10 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
-              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
+              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder:"Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
                 $.ajax({
@@ -2633,7 +2639,8 @@
                   },
                   success: function(result) {
                     $("#selectPid").select2({
-                        data: result.data
+                        data: result.data,
+                        placeholder:"Select PID"
                     })
                   }
                 }) 
@@ -2646,7 +2653,8 @@
                   },
                   success: function(result) {
                     $("#selectQuoteNumber").select2({
-                        data: result.data
+                      data: result.data,
+                      placeholder:"Select Quote Number"
                     })
                   }
                 }) 
@@ -2659,7 +2667,8 @@
             type: "GET",
             success: function(result) {
               $("#selectQuoteNumber").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select Quote Number"
               })
             }
           }) 
@@ -2668,9 +2677,10 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
-              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
+              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select Lead Register"
               })
             }
           }) 
@@ -2680,7 +2690,8 @@
             type: "GET",
             success: function(result) {
               $("#selectPid").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select PID"
               })
             }
           }) 
@@ -2813,7 +2824,7 @@
                   append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea style="font-size: 12px; important;height:250px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea style="font-size: 12px; important;width:200px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -3029,9 +3040,10 @@
             url: "{{url('/admin/getLead')}}",
             type: "GET",
             success: function(result) {
-              result.data.unshift({"id" : "-","text" : "Select Lead Register"})
+              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
               $("#selectLeadId").select2({
-                  data: result.data
+                  data: result.data,
+                  placeholder: "Select Lead Register"
               }).on('change', function() {
                 var data = $("#selectLeadId option:selected").text();
                 $.ajax({
@@ -3172,7 +3184,7 @@
               var appendBottom = ""
               appendBottom = appendBottom + '<hr>'
                 appendBottom = appendBottom + '<div class="row">'
-                appendBottom = appendBottom + '  <div class="col-md-12">'
+                appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
                 appendBottom = appendBottom + '    <div class="pull-right">'
                 appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
                 appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductCek" id="inputGrandTotalProductCek" name="inputGrandTotalProductCek">'
@@ -3180,7 +3192,7 @@
                 appendBottom = appendBottom + '  </div>'
                 appendBottom = appendBottom + '</div>'
                 appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-                appendBottom = appendBottom + ' <div class="col-md-12">'
+                appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
                 appendBottom = appendBottom + '   <div class="pull-right">'
                   appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
                   appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
@@ -3190,7 +3202,7 @@
                 appendBottom = appendBottom + ' </div>'
                 appendBottom = appendBottom + '</div>'
                 appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-                appendBottom = appendBottom + '  <div class="col-md-12">'
+                appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
                 appendBottom = appendBottom + '    <div class="pull-right">'
                 appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
                 appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinalCek" id="inputGrandTotalProductFinalCek" name="inputGrandTotalProductFinalCek">'
@@ -3289,7 +3301,7 @@
                   $("#span_link_drive_spk_cek").show()
                   $("#link_spkCek").attr("href",result.dokumen[0].link_drive)
                   $("#inputSPKCek").val(result.dokumen[0].dokumen_location)
-                  $(".icon").addClass(fa_doc)
+                  $(".icon_spk").addClass(fa_doc)
                 }
 
                 if (result.dokumen[1].link_drive != null) {
@@ -3301,7 +3313,7 @@
                   $("#span_link_drive_sbe_cek").show()
                   $("#link_sbeCek").attr("href",result.dokumen[1].link_drive)
                   $("#inputSBECek").val(result.dokumen[1].dokumen_location)
-                  $(".icon").addClass(fa_doc)
+                  $(".icon_sbe").addClass(fa_doc)
                 }
                 if (result.dokumen[2].link_drive != null) {
                   if (result.dokumen[2].dokumen_location.split(".")[1] == 'pdf') {
@@ -3312,7 +3324,7 @@
                   $("#span_link_drive_quoteSup_cek").show()
                   $("#link_quoteSupCek").attr("href",result.dokumen[2].link_drive)
                   $("#inputQuoteSupplierCek").val(result.dokumen[2].dokumen_location)
-                  $(".icon").addClass(fa_doc)
+                  $(".icon_quo").addClass(fa_doc)
                 }
 
               }else{
@@ -3441,7 +3453,7 @@
                     append = append + '<input style="font-size: 12px;" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
                   append = append + '</td>'
                   append = append + '<td width="35%">'
-                    append = append + '<textarea style="font-size: 12px;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                    append = append + '<textarea style="font-size: 12px;height:150px;width:250px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
                   append = append + '</td>'
                   append = append + '<td width="10%">'
                     append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px;">'
@@ -3467,7 +3479,7 @@
               appendBottom = appendBottom + '<hr>'
               appendBottom = appendBottom + '<div class="form-group">'
               appendBottom = appendBottom + '<div class="row">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
               appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPreviewCek" id="inputGrandTotalProductPreviewCek" name="inputGrandTotalProductPreviewCek">'
@@ -3475,7 +3487,7 @@
               appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + ' <div class="col-md-12">'
+              appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '   <div class="pull-right">'
                 appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
                 appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
@@ -3485,7 +3497,7 @@
               appendBottom = appendBottom + ' </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
               appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageGrandPricePreviewCek" id="inputFinalPageGrandPricePreviewCek" name="inputFinalPageGrandPricePreviewCek">'
@@ -3981,6 +3993,7 @@
         urlGetProduct = "{{url('/admin/getProductPr')}}"
         no_pr = localStorage.getItem("no_pr")
       }
+
       if (valueEdit == undefined) {
         if (valueEdit == 0) {
           $(".tabGroupInitiateAdd").hide()
@@ -4014,6 +4027,7 @@
           }
         })
       }
+
       if (currentTab == 0) {
         if ($("#inputTo").val() == "") {
           $("#inputTo").closest('.form-group').addClass('has-error')
@@ -4096,7 +4110,7 @@
             success: function(data)
             {
               Swal.close()
-              var x = document.getElementsByClassName("tab-add");
+              let x = document.getElementsByClassName("tab-add");
               x[currentTab].style.display = "none";
               currentTab = currentTab + n;
               if (currentTab >= x.length) {
@@ -4163,8 +4177,7 @@
                     })
                   },success:function(){
                     Swal.close()
-
-                    var x = document.getElementsByClassName("tab-add");
+                    let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -4217,8 +4230,7 @@
                     })
                   },success:function(){
                     Swal.close()
-
-                    var x = document.getElementsByClassName("tab-add");
+                    let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -4249,7 +4261,7 @@
         }else{
 
           if ($('#uploadCsv').val() == "") {
-            var x = document.getElementsByClassName("tab-add");
+            let x = document.getElementsByClassName("tab-add");
             x[currentTab].style.display = "none";
             currentTab = currentTab + n;
             if (currentTab >= x.length) {
@@ -4290,7 +4302,7 @@
                 if (result.status == "Error") {
                   reasonReject(result.text,"block","tabGroupInitiateAdd")
                 }else{
-                  var x = document.getElementsByClassName("tab-add");
+                  let x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
                   currentTab = currentTab + n;
                   if (currentTab >= x.length) {
@@ -4412,7 +4424,7 @@
                     success: function(data)
                     {
                       Swal.close()
-                      var x = document.getElementsByClassName("tab-add");
+                      let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
                       if (currentTab >= x.length) {
@@ -4423,7 +4435,7 @@
                     }
                   });
                 }else{
-                  var x = document.getElementsByClassName("tab-add");
+                  let x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
                   currentTab = currentTab + n;
                   if (currentTab >= x.length) {
@@ -4549,7 +4561,7 @@
                     },
                     success: function(result){
                       Swal.close()
-                      var x = document.getElementsByClassName("tab-add");
+                      let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
                       if (currentTab >= x.length) {
@@ -4560,7 +4572,7 @@
                     }
                   })
                 } else {
-                  var x = document.getElementsByClassName("tab-add");
+                  let x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
                   currentTab = currentTab + n;
                   if (currentTab >= x.length) {
@@ -4592,7 +4604,7 @@
             },
             success: function(data)
             {
-              var x = document.getElementsByClassName("tab-add");
+              let x = document.getElementsByClassName("tab-add");
               x[currentTab].style.display = "none";
               currentTab = currentTab + n;
               if (currentTab >= x.length) {
@@ -4605,8 +4617,7 @@
         }        
       }else{
         $(".divReasonRejectRevision").remove()
-
-        var x = document.getElementsByClassName("tab-add");
+        let x = document.getElementsByClassName("tab-add");
         x[currentTab].style.display = "none";
         currentTab = currentTab + n;
         if (currentTab >= x.length) {
@@ -4652,7 +4663,7 @@
                 append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.name_product +'">'
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:200px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:250px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -4688,7 +4699,7 @@
           var appendBottom = ""
           appendBottom = appendBottom + '<hr>'
           appendBottom = appendBottom + '<div class="row">'
-            appendBottom = appendBottom + '  <div class="col-md-12">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '    <div class="pull-right">'
             appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
             appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
@@ -4696,7 +4707,7 @@
             appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + ' <div class="col-md-12">'
+            appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '   <div class="pull-right">'
               appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
               appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
@@ -4709,7 +4720,7 @@
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + '  <div class="col-md-12">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '    <div class="pull-right">'
             appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
             appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
@@ -5028,8 +5039,6 @@
                     })
                   },success:function(){
                     Swal.close()
-
-                    var x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -5085,7 +5094,7 @@
                     })
                   },success:function(){
                       Swal.close()
-                      var x = document.getElementsByClassName("tab-add");
+                      let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
                       if (currentTab >= x.length) {
@@ -5112,7 +5121,8 @@
             }
           }else{
             $(".tabGroupInitiateAdd").show()
-            x[n].children[1].style.display = 'none'
+            let x = document.getElementsByClassName("tab-add");
+            x[1].children[1].style.display = 'none'
             document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex' 
           }
         }else{
@@ -5751,7 +5761,7 @@
                   success: function(result){
                     localStorage.setItem('isStoreSupplier',true)
                     Swal.close()
-                    var x = document.getElementsByClassName("tab-add");
+                    let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -5872,7 +5882,7 @@
             append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
             append = append + '<label for="inputDocPendukung" style="margin-bottom:0px">'
             append = append + '<span class="fa fa-cloud-upload" style="display:inline"></span>'
-            append = append + '<input style="display:inline;font-family: inherit;" class=" inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
+            append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class=" inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
             append = append + '</label>'
           append = append + "</td>"
           append = append + "<td>"
@@ -5891,7 +5901,18 @@
     });
 
     function createPR(status){
-      Swal.fire({
+      if ($("#inputFinalPageGrandPrice").val() == '0') {
+        Swal.fire({
+          title: 'Alert',
+          text: "Please to add some products.",
+          icon: 'warning',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+        })
+      }else{
+        Swal.fire({
           title: 'Are you sure?',
           text: "Submit Draft PR",
           icon: 'warning',
@@ -5900,48 +5921,49 @@
           cancelButtonColor: '#d33',
           confirmButtonText: 'Yes',
           cancelButtonText: 'No',
-      }).then((result) => {
-          if (result.value) {
-              Swal.fire({
-                  title: 'Please Wait..!',
-                  text: "It's sending..",
-                  allowOutsideClick: false,
-                  allowEscapeKey: false,
-                  allowEnterKey: false,
-                  customClass: {
-                      popup: 'border-radius-0',
-                  },
-                  didOpen: () => {
-                      Swal.showLoading()
-                  }
-              })
-              $.ajax({
-                type:"POST",
-                url:"{{url('/admin/storeLastStepDraftPr')}}",
-                data:{
-                  _token:"{{csrf_token()}}",
-                  no_pr:localStorage.getItem('no_pr'),
-                  inputGrandTotalProduct:$("#inputFinalPageGrandPrice").val(),
-                  status_revision:status
-                },
-                success: function(result){
-                  Swal.fire({
-                    title: 'Drafting PR Successs',
-                    html: "<p style='text-align:center;'>Your PR draft will be verified by Admin/Procurement soon, please wait for further progress</p>",
-                    type: 'success',
-                    confirmButtonText: 'Reload',
-                  }).then((result) => {
-                    localStorage.setItem('status_pr','') 
-                    if (status == 'revision') {
-                      location.replace("{{url('/admin/detail/draftPR')}}/"+ localStorage.getItem('no_pr'))
-                    }else{
-                      location.replace("{{url('admin/draftPR')}}")
+        }).then((result) => {
+            if (result.value) {
+                Swal.fire({
+                    title: 'Please Wait..!',
+                    text: "It's sending..",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    customClass: {
+                        popup: 'border-radius-0',
+                    },
+                    didOpen: () => {
+                        Swal.showLoading()
                     }
-                  })
-                }
-              })
-          }
-      })
+                })
+                $.ajax({
+                  type:"POST",
+                  url:"{{url('/admin/storeLastStepDraftPr')}}",
+                  data:{
+                    _token:"{{csrf_token()}}",
+                    no_pr:localStorage.getItem('no_pr'),
+                    inputGrandTotalProduct:$("#inputFinalPageGrandPrice").val(),
+                    status_revision:status
+                  },
+                  success: function(result){
+                    Swal.fire({
+                      title: 'Drafting PR Successs',
+                      html: "<p style='text-align:center;'>Your PR draft will be verified by Admin/Procurement soon, please wait for further progress</p>",
+                      type: 'success',
+                      confirmButtonText: 'Reload',
+                    }).then((result) => {
+                      localStorage.setItem('status_pr','') 
+                      if (status == 'revision') {
+                        location.replace("{{url('/admin/detail/draftPR')}}/"+ localStorage.getItem('no_pr'))
+                      }else{
+                        location.replace("{{url('admin/draftPR')}}")
+                      }
+                    })
+                  }
+                })
+            }
+        })
+      }
     }
 
     function createPRPembanding(){
