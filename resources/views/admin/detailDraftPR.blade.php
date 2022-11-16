@@ -214,7 +214,7 @@
           <div class="tab-add" style="display:none;">
             <div class="form-group">
               <label for="">To*</label>
-              <input type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
+              <input autocomplete="off" type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
               <span class="help-block" style="display:none;">Please fill To!</span>
             </div>      
 
@@ -234,7 +234,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Email*</label>
-                  <input type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
+                  <input autocomplete="off" type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
                   <span class="help-block" style="display:none;">Please fill Email!</span>
                 </div>
               </div>
@@ -270,14 +270,14 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Phone*</label>
-                  <input class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
+                  <input autocomplete="off" class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
                   <span class="help-block" style="display:none;">Please fill Phone!</span>
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Attention*</label>
-                  <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
+                  <input autocomplete="off" type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
                   <span class="help-block" style="display:none;">Please fill Attention!</span>
                 </div> 
                 <!-- <div class="form-group">
@@ -289,13 +289,13 @@
 
             <div class="form-group">
               <label for="">Subject*</label>
-              <input type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
+              <input autocomplete="off" type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
               <span class="help-block" style="display:none;">Please fill Subject!</span>
             </div>
 
             <div class="form-group">
               <label for="">Address*</label>
-              <textarea class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
+              <textarea autocomplete="off" class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
               <span class="help-block" style="display:none;">Please fill Address!</span>
             </div>
 
@@ -312,7 +312,7 @@
 
             <div class="form-group" id="divNotePembanding">
               <label for="">Note Pembanding*</label>
-              <textarea class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
+              <textarea autocomplete="off" class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
               <span class="help-block" style="display:none;">Please fill Note Pembanding!</span>
             </div>
           </div>
@@ -325,8 +325,7 @@
                 <span style="margin:0 auto;">OR</span>
               </div>
               <div class="form-group" style="display: flex;">
-                <div style="padding: 7px;
-                            width: 20%;
+                <div class="btn btn-sm btn-default" style="padding: 7px;
                             border: 1px solid #dee2e6 !important;
                             color: #337ab7;
                             height: 35px;
@@ -334,7 +333,7 @@
                             display: inline;
                             margin: 0 auto;">
                   <i class="fa fa-cloud-upload" style="margin-left:5px"></i>
-                  <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
+                  <input autocomplete="off" id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
                   <label for="uploadCsv">Upload CSV</label>
                   <i class="fa fa-times hidden" onclick="cancelUploadCsv()" style="display:inline;color: red;"></i>
                   <!-- <span class="help-block" style="display:none;">Please Upload File or Add Product!</span> -->
@@ -350,23 +349,23 @@
             <div class="tabGroup" style="display:none">
               <div class="form-group">
                 <label>Product*</label>
-                <input type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
+                <input autocomplete="off" type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
                 <span class="help-block" style="display:none;">Please fill Name Product!</span>
               </div>
               <div class="form-group">
                 <label>Description*</label> 
-                <textarea onkeyup="fillInput('desc_product')" style="resize:vertical;height:150px" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control"></textarea>
+                <textarea autocomplete="off" onkeyup="fillInput('desc_product')" style="resize:vertical;height:150px" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control"></textarea>
                 <span class="help-block" style="display:none;">Please fill Description!</span>
               </div>
               <div class="form-group">
                 <div class="row">
                   <div class="col-md-6"> 
                     <label>Serial Number</label>
-                    <input type="text" name="" class="form-control" id="inputSerialNumber">
+                    <input autocomplete="off" type="text" name="" class="form-control" id="inputSerialNumber">
                   </div>
                   <div class="col-md-6"> 
                     <label>Part Number</label>
-                    <input type="text" name="" class="form-control" id="inputPartNumber">
+                    <input autocomplete="off" type="text" name="" class="form-control" id="inputPartNumber">
                   </div>
                 </div>
               </div>
@@ -374,12 +373,13 @@
                 <div class="row">
                   <div class="col-md-4"> 
                     <label>Qty*</label>
-                    <input type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
+                    <input autocomplete="off" type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
                     <span class="help-block" style="display:none;">Please fill Qty!</span>
                   </div>
                   <div class="col-md-4"> 
                     <label>Type*</label>
-                    <select style="width:100%" class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
+                    <i class="fa fa-warning" title="If type is undefined, Please contact developer team!" style="display:inline"></i>
+                    <select style="width:100%;display:inline;" class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
                       <option>                  
                     </select>
                     <span class="help-block" style="display:none;">Please fill Unit!</span>
@@ -390,7 +390,7 @@
                       <div class="input-group-addon">
                       Rp.
                       </div>
-                      <input type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+                      <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
                     </div>
                     <span class="help-block" style="display:none;">Please fill Price!</span>
                   </div>
@@ -402,7 +402,7 @@
                   <div class="input-group-addon">
                   Rp.
                   </div>
-                    <input readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
+                    <input autocomplete="off" readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
                 </div>
               </div>
             </div>
@@ -430,7 +430,7 @@
                 
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-top:10px">
               <button class="btn btn-sm btn-primary" style="display:flex;margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
             </div>
           </div>
@@ -454,7 +454,7 @@
                     <span id="makeId" style="cursor: pointer;">other?</span>
                     <div class="form-group" id="project_idNew" style="display: none;">
                       <div class="input-group">
-                        <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                        <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                         <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
                       </div>
                     </div> 
@@ -465,7 +465,7 @@
               <div class="form-group">
                 <label>SPK/Kontrak*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;font-family: inherit;">
+                  <input autocomplete="off" type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;font-family: inherit;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
                 <span style="display:none;" id="span_link_drive_spk"><a id="link_spk" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -474,7 +474,7 @@
               <div class="form-group">
                 <label>SBE*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;font-family: inherit;">
+                  <input autocomplete="off" type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;font-family: inherit;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
                 <span style="display:none;" id="span_link_drive_sbe"><a id="link_sbe" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -484,8 +484,9 @@
                 <div class="row">
                   <div class="col-md-6">
                     <label>Quote Supplier*</label>
-                    <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;">
-                      <input type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" class="fa fa-cloud-upload files" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;font-family: inherit;">
+                    <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding-bottom: 5px;padding-top: 3px;padding-left: 10px;">
+                      <span class="fa fa-cloud-upload" style="display:inline;"></span>
+                      <input autocomplete="off" type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;font-family: inherit;display:inline;">
                     </div>
                     <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
                     <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -495,7 +496,6 @@
                     <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
                       <option>
                     </select>
-                    <!-- <input type="file" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
                     <span class="help-block" style="display:none;">Please fill Quote Number!</span>
                   </div>
                 </div>
@@ -508,14 +508,13 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputPenawaranHarga" style="margin-bottom:0px">
                     <span class="fa fa-cloud-upload" style="display:inline"></span>
-                    <input style="display: inline;" type="file" name="inputPenawaranHarga" class="files" id="inputPenawaranHarga">
+                    <input autocomplete="off" style="display: inline;" type="file" name="inputPenawaranHarga" class="files" id="inputPenawaranHarga">
                   </label>
                 </div>
-                <!-- <input type="file" name="inputPenawaranHarga" id="inputPenawaranHarga" class="form-control"> -->
                 <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
                 <span style="display:none;" id="span_link_drive"><a id="link_penawaran_harga" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
-              <div id="docPendukungContainer">
+              <div id="docPendukungContainer" class="table-responsive">
                 <label id="titleDoc" style="display:none;">Lampiran Dokumen Pendukung</label>
                 <table id="tableDocPendukung" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
                   
@@ -1360,7 +1359,7 @@
         appendBottom = ""
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="row">'
-        appendBottom = appendBottom + '  <div class="col-md-12">'
+        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
         appendBottom = appendBottom + '    <form class="form-horizontal">'
         appendBottom = appendBottom + '      <div class="form-group">'
         appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-6 col-sm-2 control-label">Total</label>'
@@ -1603,7 +1602,7 @@
         appendBottom = ""
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="row">'
-        appendBottom = appendBottom + '  <div class="col-md-12">'
+        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
         appendBottom = appendBottom + '    <form class="form-horizontal">'
         appendBottom = appendBottom + '      <div class="form-group">'
         appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-6 col-sm-2 control-label">Total</label>'
@@ -1859,14 +1858,14 @@
     append = append + '<div id="bottomPreviewPembanding" data-value="'+i+'" style="display:none">'
     append = append + '<hr>'
     append = append + '  <div class="row">'
-    append = append + '    <div class="col-md-12">'
+    append = append + '    <div class="col-md-12 col-xs-12">'
     append = append + '      <div class="col-md-6">'
     append = append + '        <div class="form-group">'
     append = append + '          <label>Note Pembanding</label>'
     append = append + '           <textarea readonly class="form-control" style="resize:none;overflow-y:scroll" id="note_pembandingView" rows="4" data-value="'+i+'"></textarea>'
     append = append + '        </div>'
     append = append + '      </div>'
-    append = append + '      <div class="col-md-6">'
+    append = append + '      <div class="col-md-6 col-xs-12">'
     append = append + '        <form class="form-horizontal">'
     append = append + '          <div class="form-group">'
     append = append + '            <label for="inputEmail3" class="col-sm-4 control-label">Total</label>'
@@ -1991,6 +1990,8 @@
           $("#btnAddPembanding").prop('disabled',true)
           $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
           $(".cbDraft").prop('disabled',true)
+          $(".cbPriority").closest('div').css('cursor','not-allowed')
+          $(".cbDraft").closest('div').css('cursor','not-allowed') 
         }     
       }
     })
@@ -2304,7 +2305,7 @@
                 append = append + '<input style="font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
               append = append + '</td>'
               append = append + '<td width="35%">'
-                append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                append = append + '<textarea style="font-size: 12px; important;height:150px;width:250px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="10%">'
                 append = append + '<input class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px" readonly>'
@@ -2598,23 +2599,79 @@
   }
 
   $("#btnAccept").click(function(){
-    $("#ModalSirkulasiPr").modal("hide")
-    $(".modal-dialog").removeClass("modal-lg")
-    $.ajax({
-      type:"GET",
-      url:"{{url('/admin/cekTTD')}}",
-      data:{
-        nik:"{{Auth::User()->nik}}",
-      },
-      success: function(result){
-        if (result.ttd == null) {
-          $("#ModalUploadNewTTD").modal("show")
-        }else{
-          $("#ModalAcceptSirkulasi").modal("show")
-          $("#TTD").attr("src","{!! asset('"+result.ttd+"')!!}")
+    // $("#ModalSirkulasiPr").modal("hide")
+    // $(".modal-dialog").removeClass("modal-lg")
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Circular this Process!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+        if (result.value) {
+          $("#ModalSirkulasiPr").modal("hide")
+          $.ajax({
+            type:"POST",
+            url:"{{url('/admin/submitTtdApprovePR')}}",
+            data:{
+              _token:"{{ csrf_token() }}",
+              no_pr:window.location.href.split("/")[6]
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              Swal.fire(
+                  'Successfully!',
+                  'Document has been circulated.',
+                  'success'
+              ).then((result) => {
+                location.reload()
+              })
+            },
+            error: function(resultAjax,errorStatus,errorMessage){
+              Swal.hideLoading()
+              Swal.fire({
+                title: 'Error!',
+                text: "Something went wrong, please try again!",
+                icon: 'error',
+                confirmButtonText: 'Try Again',
+              }).then((result) => {
+                $.ajax(this)
+              })
+            }
+          })
         }
-      }
     })
+    // $.ajax({
+    //   type:"GET",
+    //   url:"{{url('/admin/cekTTD')}}",
+    //   data:{
+    //     nik:"{{Auth::User()->nik}}",
+    //   },
+    //   success: function(result){
+    //     if (result.ttd == null) {
+    //       $("#ModalUploadNewTTD").modal("show")
+    //     }else{
+    //       $("#ModalAcceptSirkulasi").modal("show")
+    //       $("#TTD").attr("src","{!! asset('"+result.ttd+"')!!}")
+    //     }
+    //   }
+    // })
   })
 
   $("#btnReject").click(function(){
@@ -2740,7 +2797,7 @@
           appendBottom = appendBottom + '<hr>'
           appendBottom = appendBottom + '<div class="form-group">'
           appendBottom = appendBottom + '<div class="row">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
           appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPembandingModal" id="inputGrandTotalProductPembandingModal" name="inputGrandTotalProductPembandingModal">'
@@ -2748,7 +2805,7 @@
           appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + ' <div class="col-md-12">'
+          appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '   <div class="pull-right">'
             appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
             appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
@@ -2758,7 +2815,7 @@
           appendBottom = appendBottom + ' </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
           appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageTotalPricePembandingModal" id="inputFinalPageTotalPricePembandingModal" name="inputFinalPageTotalPricePembandingModal">'
@@ -3926,7 +3983,7 @@
         var appendBottom = ""
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="row">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
           appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
@@ -3934,7 +3991,7 @@
           appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + ' <div class="col-md-12">'
+          appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '   <div class="pull-right">'
             appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
             appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
@@ -3947,7 +4004,7 @@
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
           appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
@@ -4036,7 +4093,7 @@
       append = append + "<tr style='height:10px' class='trDocPendukung'>"
         append = append + "<td>"
           append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
-          append = append + '<input style="display:inline;font-family: inherit;" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+          append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
         append = append + "</td>"
         append = append + "<td>"
           append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
