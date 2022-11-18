@@ -325,7 +325,7 @@
                 <span style="margin:0 auto;">OR</span>
               </div>
               <div class="form-group" style="display: flex;">
-                <div class="btn btn-sm btn-default" style="padding: 7px;
+                <div style="padding: 7px;
                             border: 1px solid #dee2e6 !important;
                             color: #337ab7;
                             height: 35px;
@@ -346,7 +346,7 @@
                 <span style="margin: 0 auto;">And make sure, the change of template only at row 2, any change on row 1 (header) will be reject</span>
               </div>
             </div>
-            <div class="tabGroup" style="display:none">
+            <div class="tabGroupModal" style="display:none">
               <div class="form-group">
                 <label>Product*</label>
                 <input autocomplete="off" type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
@@ -749,28 +749,36 @@
     }
   })
 
-  function reasonReject(item,display,nameClass){
+  let arrReason = []
+  function reasonReject(item,display,nameClass,typeCallout=""){
     $(".divReasonRejectRevision").remove()
+    arrReason.push(item)
+    console.log(arrReason)
 
     var textTitle = ""
     var className = ""
 
-    if (nameClass == 'tabGroup') {
-      textTitle = "Note Reject PR"
+    if (nameClass == 'tabGroup' || nameClass == 'tabGroupModal') {
+      textTitle = "Note PR!"
       className = "tabGroup"
     }else{
-      textTitle = "Alert Error!"
+      textTitle = "Warning!"
       className = nameClass
     }
-    
+
     var append = ""
 
+    console.log(item)
     append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
       append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
-      append = append + '<p class="reason_reject_revision">'+item.replaceAll("\n","<br>")+'</p>'
+      $.each(arrReason,function(item,value){
+        console.log(item)
+        append = append + '<p class="reason_reject_revision">'+ value.replaceAll("\n","<br>")+'</p>'
+      })
     append = append + '</div>'
 
     $("." + nameClass).prepend(append)
+    
 
     if (display == "block") {
       $(".divReasonRejectRevision").show()
@@ -936,7 +944,7 @@
           appendResolve = appendResolve + '<div class="box-body" style="">'
           appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p>'
           appendResolve = appendResolve + '<span style="display:inline" class="text-muted pull-right">'+ cals + '&nbspat&nbsp' + moment(value.date_add).format('hh:mm A') +'</span><br>'
-          appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
+          appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" onclick="btnResolve('+ value.id +')" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
           appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
           appendResolve = appendResolve + '</div>'
             if (value.reply.length > 0) {
@@ -979,58 +987,6 @@
 
         })
         $("#showResolve").append(appendResolve)
-
-        $("#btnResolve").click(function(){
-          Swal.fire({
-            title: 'Are you sure?',  
-            text: "Resolve this",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-          }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                type: "POST",
-                url: "{{url('/admin/storeResolveNotes')}}",
-                data: {
-                  _token: "{{ csrf_token() }}",
-                  id:this.value,
-                },beforeSend:function(){
-                  Swal.fire({
-                      title: 'Please Wait..!',
-                      text: "It's sending..",
-                      allowOutsideClick: false,
-                      allowEscapeKey: false,
-                      allowEnterKey: false,
-                      customClass: {
-                          popup: 'border-radius-0',
-                      },
-                      didOpen: () => {
-                          Swal.showLoading()
-                      }
-                  })
-                },
-                success: function(result) {
-                  Swal.hideLoading()
-                  Swal.fire(
-                      'Successfully!',
-                      'success',
-                      'success'
-                  ).then((result) => {
-                    if (result.value) {
-                      location.reload()
-                      Swal.close()
-                    }
-                  })
-                  
-                }
-              })         
-            }
-          })
-        })
       }
     })
      
@@ -1041,6 +997,58 @@
       $("#ModalAddNote").modal("show")
     })
   }  
+
+  function btnResolve(id){
+    Swal.fire({
+      title: 'Are you sure?',  
+      text: "Resolve this",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+          $.ajax({
+          type: "POST",
+          url: "{{url('/admin/storeResolveNotes')}}",
+          data: {
+            _token: "{{ csrf_token() }}",
+            id:id,
+          },beforeSend:function(){
+            Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            })
+          },
+          success: function(result) {
+            Swal.hideLoading()
+            Swal.fire(
+                'Successfully!',
+                'success',
+                'success'
+            ).then((result) => {
+              if (result.value) {
+                location.reload()
+                Swal.close()
+              }
+            })
+            
+          }
+        })         
+      }
+    })
+  }
 
   function btnShowReply(no_pr,id){
     if ("{{Auth::User()->gambar}}" != null && "{{Auth::User()->gambar}}" != '' && "{{Auth::User()->gambar}}" != '-') {
@@ -1204,9 +1212,10 @@
   function pembanding(){    
     localStorage.setItem('isPembanding',true)
     $("#showDetail").empty()
+    arrReason = []
     loadData()
     append = ""
-    append = append + '<div class="col-md-6">'
+    append = append + '<div class="col-md-6 tabGroup">'
       append = append + '<div class="box">'
         append = append + '<div class="box-header with-border">'
           append = append + '<label style="display:table;margin:0 auto">Draft</label>'
@@ -1295,6 +1304,10 @@
         no_pr:window.location.href.split("/")[6],
       },
       success: function(result) {
+        // if (result.pr.isCommit == 'True') {
+        //   reasonReject("This supplier has been committed with us to supply this product.","block","tabGroup")
+        // }
+
         type_of_letter = result.pr.type_of_letter
         if (type_of_letter == 'IPR') {
           PRType = '<b>Internal Purchase Request</b>'
@@ -1522,8 +1535,13 @@
         } 
 
         if (result.getSign == '{{Auth::User()->name}}') {
-          
-          $("#btnSirkulasi").prop('disabled',false)
+          if (result.isNotes == 'False') {
+            $("#btnSirkulasi").prop('disabled',true)
+            reasonReject('Please Ask Admin / Procurement to resolve notes, to continue circular process!','block','tabGroup')
+          }else{
+            console.log("true")
+            $("#btnSirkulasi").prop('disabled',false)
+          }
         }
 
         if (result.pr.status == "UNAPPROVED" || result.pr.status == "CIRCULAR") {
@@ -1542,6 +1560,11 @@
 
         if (result.pr.status == "REJECT" || result.pr.status == "UNAPPROVED" || result.pr.activity == 'Updating' && result.pr.status == 'COMPARING'){
           reasonReject(result.activity.reason,"block")
+        }
+
+        if (result.pr.isCommit == 'True') {
+          console.log("iki commit")
+          reasonReject("This supplier has been committed with us to supply this product.","block","tabGroup","warning")
         }
 
         var appendHeader = ""
