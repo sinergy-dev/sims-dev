@@ -282,6 +282,13 @@
               <span class="help-block" style="display:none;">Please fill Type!</span>
             </div>
 
+            <div class="form-group">
+              <div style="display: inline;text-align:justify;">                
+                <span style="position:absolute;"><input type="checkbox" id="cbCommit" class="minimal" value=""/></span>
+                <span style="display:flex;margin-left: 25px;display:flex;">This supplier has been committed with us to supply this product</span>
+              </div>
+            </div>
+
             <div class="form-group" id="divNotePembanding" style="display:none;">
               <label for="">Note Pembanding*</label>
               <textarea autocomplete="off" class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
@@ -298,15 +305,15 @@
               <span style="margin:0 auto;">OR</span>
             </div>
             <div class="form-group" style="display: flex;">
-              <div class="btn btn-sm btn-default" style="padding: 7px;
+              <div style="padding: 7px;
                           border: 1px solid #dee2e6 !important;
                           color: #337ab7;
                           height: 35px;
                           background-color: #eee;
                           display: inline;
                           margin: 0 auto;">
-                <i class="fa fa-cloud-upload" style="margin-left:5px"></i>
-                <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
+                <i class="fa fa-cloud-upload" style="margin-left:5px">
+                <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;"></i>
                 <label for="uploadCsv">Upload CSV</label>
                 <i class="fa fa-times hidden" onclick="cancelUploadCsv()" style="display:inline;color: red;"></i>
                 <!-- <span class="help-block" style="display:none;">Please Upload File or Add Product!</span> -->
@@ -412,33 +419,54 @@
         <div class="tab-add" style="display:none">
           <div class="tabGroup">
             <div id="formForPrExternal" style="display:none">
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Lead Register*</label>
-                      <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
-                        <option></option>
-                      </select>
-                      <span class="help-block" style="display:none;">Please fill Lead Register!</span>
-                    </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>PID*</label>
+                    <select id="selectPid" style="width: 100%;" class="select2 form-control" onchange="fillInput('selectPID')">
+                      <option>
+                    </select>
+                    <span class="help-block" style="display:none;">Please fill PID!</span>
+                    <span id="makeId" style="cursor: pointer;">other?</span>
+                    <div class="form-group" id="project_idNew" style="display: none;">
+                      <div class="input-group">
+                        <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                        <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
+                      </div>
+                    </div> 
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>PID*</label>
-                      <select id="selectPid" style="width: 100%;" class="select2 form-control" onchange="fillInput('selectPID')">
-                        <option>
-                      </select>
-                      <span class="help-block" style="display:none;">Please fill PID!</span>
-                      <span id="makeId" style="cursor: pointer;">other?</span>
-                      <div class="form-group" id="project_idNew" style="display: none;">
-                        <div class="input-group">
-                          <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
-                          <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
-                        </div>
-                      </div> 
-                    </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Lead Register*</label>
+                    <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
+                      <option></option>
+                    </select>
+                    <span class="help-block" style="display:none;">Please fill Lead Register!</span>
                   </div>
-                </div>               
+                </div>
+              </div> 
+
+              <div class="form-group">
+                <label>Quote Number*</label>
+                <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
+                  <option>
+                </select>
+                <!-- <input type="file" class="files" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
+                <span class="help-block" style="display:none;">Please fill Quote Number!</span>
+              </div> 
+
+              <div class="form-group">
+                <label>Quote Supplier*</label>
+                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                  <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
+                    <span class="fa fa-cloud-upload" style="display:inline;"></span>
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
+                  </label>
+                </div>
+                <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
+                <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
+              </div>             
               
               <div class="form-group">
                 <label>SPK/Kontrak*</label>
@@ -463,27 +491,16 @@
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
                 <span style="display:none;" id="span_link_drive_sbe"><a id="link_sbe" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
-              
-              <div class="form-group">
-                <label>Quote Supplier*</label>
-                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
-                  <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
-                    <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
-                  </label>
-                </div>
-                <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
-                <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
-              </div> 
 
-              <div class="form-group">
-                <label>Quote Number*</label>
-                <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
-                  <option>
-                </select>
-                <!-- <input type="file" class="files" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
-                <span class="help-block" style="display:none;">Please fill Quote Number!</span>
-              </div>   
+              <div id="docPendukungContainer" class="table-responsive">
+                <label id="titleDoc_epr" style="display:none;">Lampiran Dokumen Lainnya</label>
+                <table id="tableDocPendukung_epr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+                  
+                </table>
+              </div>
+              <div class="form-group" style="display: flex;margin-top: 10px;">
+                <button type="button" id="btnAddDocPendukung" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('epr')"><i class="fa fa-plus"></i>&nbsp Dokumen Lainnya</button>
+              </div>  
             </div>
               
             <div id="formForPrInternal" style="display:none;">
@@ -498,14 +515,15 @@
                 <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
                 <span style="display:none;" id="span_link_drive_penawaranHarga"><a id="link_penawaran_harga" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
+
               <div id="docPendukungContainer" class="table-responsive">
-                <label id="titleDoc" style="display:none;">Lampiran Dokumen Pendukung</label>
-                <table id="tableDocPendukung" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+                <label id="titleDoc_ipr" style="display:none;">Lampiran Dokumen Pendukung</label>
+                <table id="tableDocPendukung_ipr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
                   
                 </table>
               </div>
               <div class="form-group" style="display: flex;margin-top: 10px;">
-                <button type="button" id="btnAddDocPendukung" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung()"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</button>
+                <button type="button" id="btnAddDocPendukung" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('ipr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</button>
               </div>
             </div>
           </div>
@@ -812,7 +830,12 @@
                     </div>
                   </div>
                 </div>
-              </div>    
+              </div>  
+
+              <div class="form-group">
+                <div id="docPendukungContainerCekEPR">
+                </div>
+              </div>  
             </div>
               
             <div id="formForPrInternalCek" style="display:none;">
@@ -1879,6 +1902,10 @@
               }
               $("#selectCategory").val(result.pr.category)
 
+              if (result.pr.isCommit == 'True') {
+                $("#cbCommit").prop('checked',true)
+              }
+
               const firstLaunch = localStorage.getItem('firstLaunch')
               document.getElementById("prevBtnAdd").style.display = "none";
               $(".modal-title").text('Information Supplier')
@@ -2008,61 +2035,55 @@
                     no_pr:localStorage.getItem('no_pr'),
                   },
                   success:function(result){
-                    var selectedLead = result.pr.lead_id
+                    var selectedPid = result.pr.pid
 
                     $.ajax({
-                      url: "{{url('/admin/getLead')}}",
+                      url: "{{url('/admin/getPidAll')}}",
                       type: "GET",
                       success: function(result) {
-
-                        // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
-
-                        $("#selectLeadId").select2({
+                        $("#selectPid").select2({
                             data: result.data,
-                            placeholder: "Select Lead Regoster",
+                            placeholder: "Select Pid",
                             dropdownParent: $('#ModalDraftPr')
                         }).on('change', function() {
-                          var data = $("#selectLeadId option:selected").text();
+                          var data = $("#selectPid option:selected").text();
+                          $("#selectLeadId").empty()
                           $.ajax({
-                            url: "{{url('/admin/getPid')}}",
+                            url: "{{url('/admin/getLeadByPid')}}",
                             type: "GET",
                             data: {
-                              lead_id:data
+                              pid:data
                             },
                             success: function(result) {
-                              if (selectedLead == '-') {
-                                // result.data.unshift({"id" : "-","text" : "Select PID"})
-                              }
-
-                              $("#selectPid").select2({
+                              $("#selectLeadId").select2({
                                   data: result.data,
-                                  placeholder: "Select PID",
+                                  placeholder: "Select Lead Register",
                                   dropdownParent: $('#ModalDraftPr')
                               })
-                            }
-                          }) 
 
-                          $.ajax({
-                            url: "{{url('/admin/getQuote')}}",
-                            type: "GET",
-                            data:{
-                              lead_id:data
-                            },
-                            success: function(result) {
-                              if (selectedLead == '-') {
-                                // result.data.unshift({"id" : "-","text" : "Select Quote Number"})
-                              }
-                              $("#selectQuoteNumber").select2({
-                                  data: result.data,
-                                  placeholder: "Select Quote Number",
-                                  dropdownParent: $('#ModalDraftPr')
-                              })
+                              var lead_id = $("#selectLeadId option:selected").text();
+                              $("#selectQuoteNumber").empty()
+
+                              $.ajax({
+                                url: "{{url('/admin/getQuote')}}",
+                                type: "GET",
+                                data:{
+                                  lead_id:lead_id
+                                },
+                                success: function(result) {
+                                  $("#selectQuoteNumber").select2({
+                                      data: result.data,
+                                      placeholder: "Select Quote Number",
+                                      dropdownParent: $('#ModalDraftPr')
+                                  })
+                                }
+                              }) 
                             }
                           }) 
                         })
 
                         if (status == 'reject' || status == 'revision' || status == 'saved') {
-                          $("#selectLeadId").val(selectedLead).trigger("change")
+                          $("#selectPid").val(selectedPid).trigger("change")
                         }
                       }
                     })
@@ -2088,40 +2109,7 @@
                       let formData = new FormData();
 
                       if (result.dokumen[0] !== undefined) {
-                        const myFileSpk = new File(['{{asset("/")}}"'+ result.dokumen[0].dokumen_location +'"'], '/'+ result.dokumen[0].dokumen_location,{
-                            type: 'text/plain',
-                            lastModified: new Date(),
-                        });
-
-                        // Now let's create a DataTransfer to get a FileList
-                        const dataTransferSpk = new DataTransfer();
-                        dataTransferSpk.items.add(myFileSpk);
-                        fileSPK.files = dataTransferSpk.files;
-
-                        if (result.dokumen[0].link_drive != null) {
-                          $("#span_link_drive_spk").show()
-                          $("#link_spk").attr("href",result.dokumen[0].link_drive) 
-                        }
-                      }
-
-                      if (result.dokumen[1] !== undefined) {
-                        const myFileSbe = new File(['{{asset("/")}}"'+ result.dokumen[1].dokumen_location +'"'], '/'+ result.dokumen[1].dokumen_location,{
-                          type: 'text/plain',
-                          lastModified: new Date(),
-                        });
-                        // Now let's create a DataTransfer to get a FileList
-                        const dataTransferSbe = new DataTransfer();
-                        dataTransferSbe.items.add(myFileSbe);
-                        fileSBE.files = dataTransferSbe.files;
-
-                        if (result.dokumen[1].link_drive != null) {
-                          $("#span_link_drive_sbe").show()
-                          $("#link_sbe").attr("href",result.dokumen[1].link_drive)
-                        }
-                      }
-
-                      if (result.dokumen[2] !== undefined) {
-                        const myFileQuote = new File(['{{asset("/")}}"'+ result.dokumen[2].dokumen_location +'"'], '/'+ result.dokumen[2].dokumen_location,{
+                        const myFileQuote = new File(['{{asset("/")}}"'+ result.dokumen[0].dokumen_location +'"'], '/'+ result.dokumen[0].dokumen_location,{
                             type: 'text/plain',
                             lastModified: new Date(),
                         });
@@ -2131,11 +2119,142 @@
                         dataTransferQuote.items.add(myFileQuote);
                         fileQuote.files = dataTransferQuote.files;
 
-                        if (result.dokumen[2].link_drive != null) {
+                        if (result.dokumen[0].link_drive != null) {
                           $("#span_link_drive_quoteSup").show()
-                          $("#link_quoteSup").attr("href",result.dokumen[2].link_drive) 
+                          $("#link_quoteSup").attr("href",result.dokumen[0].link_drive) 
                         }
-                      }  
+                      }
+
+                      if (result.dokumen[1] !== undefined) {
+                        const myFileSpk = new File(['{{asset("/")}}"'+ result.dokumen[1].dokumen_location +'"'], '/'+ result.dokumen[1].dokumen_location,{
+                            type: 'text/plain',
+                            lastModified: new Date(),
+                        });
+
+                        // Now let's create a DataTransfer to get a FileList
+                        const dataTransferSpk = new DataTransfer();
+                        dataTransferSpk.items.add(myFileSpk);
+                        fileSPK.files = dataTransferSpk.files;
+
+                        if (result.dokumen[1].link_drive != null) {
+                          $("#span_link_drive_spk").show()
+                          $("#link_spk").attr("href",result.dokumen[1].link_drive) 
+                        }
+                      }
+
+                      if (result.dokumen[2] !== undefined) {
+                        const myFileSbe = new File(['{{asset("/")}}"'+ result.dokumen[2].dokumen_location +'"'], '/'+ result.dokumen[2].dokumen_location,{
+                          type: 'text/plain',
+                          lastModified: new Date(),
+                        });
+                        // Now let's create a DataTransfer to get a FileList
+                        const dataTransferSbe = new DataTransfer();
+                        dataTransferSbe.items.add(myFileSbe);
+                        fileSBE.files = dataTransferSbe.files;
+
+                        if (result.dokumen[2].link_drive != null) {
+                          $("#span_link_drive_sbe").show()
+                          $("#link_sbe").attr("href",result.dokumen[2].link_drive)
+                        }
+                      }                        
+
+                      $("#tableDocPendukung_epr").empty()
+
+                      if (result.dokumen.length > 3) {
+                        $("#titleDoc_epr").css("display",'block')
+                      }
+                      appendDocPendukung = ""
+                      $.each(result.dokumen,function(value,item){
+                        console.log(item)
+                        if (value != 0 &&  value != 1 && value != 2) {
+                          appendDocPendukung = appendDocPendukung + '<tr style="height:10px" class="trDocPendukung">'
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+                                  appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px">'
+                                    appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"'>"
+                                   appendDocPendukung = appendDocPendukung + '</div>'
+                                   appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" value="'+ item.dokumen_name +'" name="inputNameDocPendukung" id="inputNameDocPendukung"><br>'
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                          appendDocPendukung = appendDocPendukung + "</tr>"
+                        }   
+                      })
+                      $("#tableDocPendukung_epr").append(appendDocPendukung)
+
+                      $.each(result.dokumen,function(value,item){
+                        if (value != 0 &&  value != 1 && value != 2) {
+                          const filedocpendukung = document.querySelector('.inputDocPendukung_'+value);
+
+                          const FilePendukung = new File(['{{asset("/")}}"'+ item.dokumen_location +'"'], '/'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1],{
+                              type: 'text/plain',
+                              lastModified: new Date(),
+                          });
+
+                          // Now let's create a DataTransfer to get a FileList
+                          const dataTransfer = new DataTransfer();
+                          dataTransfer.items.add(FilePendukung);
+                          filedocpendukung.files = dataTransfer.files;
+
+                          $('.inputNameDocPendukung_'+value).val(item.dokumen_name)
+                        }
+
+                        $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").click(function(){
+                          Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Deleting document",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                          }).then((result) => {
+                              if (result.value) {
+                                $.ajax({
+                                  type:"POST",
+                                  url:"{{url('/admin/deleteDokumen/')}}",
+                                  data:{
+                                    _token:"{{ csrf_token() }}",
+                                    id:this.value
+                                  },beforeSend:function(){
+                                    Swal.fire({
+                                        title: 'Please Wait..!',
+                                        text: "It's sending..",
+                                        allowOutsideClick: false,
+                                        allowEscapeKey: false,
+                                        allowEnterKey: false,
+                                        customClass: {
+                                            popup: 'border-radius-0',
+                                        },
+                                        didOpen: () => {
+                                            Swal.showLoading()
+                                        }
+                                    })
+                                  },
+                                  success: function(data)
+                                  {
+                                    Swal.showLoading()
+                                    Swal.fire(
+                                        'Document has been deleted!',
+                                        'You can adding another document files',
+                                        'success'
+                                    ).then((result) => {
+                                      if (result.value) {
+                                        $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").closest("tr").remove();
+                                      }
+                                    })
+                                  }
+                                })
+                              }
+                          })
+                          if($('#tableDocPendukung_epr tr').length == 0){
+                            $("#titleDoc_epr").hide()
+                          }
+                        })
+                      })
+                      
                     }
                   }
                 })
@@ -2165,7 +2284,7 @@
 
                     if(result.dokumen.length > 0){
                       if (result.dokumen.length > 1) {
-                        $("#titleDoc").show()
+                        $("#titleDoc_ipr").show()
                       }
                       const myFile = new File(['{{asset("/")}}"'+ result.dokumen[0].dokumen_location +'"'], '/'+ result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1],{
                           type: 'text/plain',
@@ -2182,7 +2301,7 @@
                     }    
 
 
-                    $("#tableDocPendukung").empty()
+                    $("#tableDocPendukung_ipr").empty()
 
                     appendDocPendukung = ""
                     $.each(result.dokumen,function(value,item){
@@ -2201,7 +2320,7 @@
                         appendDocPendukung = appendDocPendukung + "</tr>"
                       }   
                     })
-                    $("#tableDocPendukung").append(appendDocPendukung)              
+                    $("#tableDocPendukung_ipr").append(appendDocPendukung)              
 
                     $.each(result.dokumen,function(value,item){
                       if (value != 0) {
@@ -2622,39 +2741,46 @@
           document.getElementById("prevBtnAdd").style.display = "inline";
 
           $.ajax({
-            url: "{{url('/admin/getLead')}}",
+            url: "{{url('/admin/getPidAll')}}",
             type: "GET",
             success: function(result) {
-              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
-              $("#selectLeadId").select2({
+              $("#selectPid").select2({
                   data: result.data,
-                  placeholder:"Select Lead Register"
+                  placeholder: "Select Pid",
+                  dropdownParent: $('#ModalDraftPr')
               }).on('change', function() {
-                var data = $("#selectLeadId option:selected").text();
+                var data = $("#selectPid option:selected").text();
+                var lead_id = $("#selectLeadId option:selected").text();
+
+                $("#selectLeadId").empty()
                 $.ajax({
-                  url: "{{url('/admin/getPid')}}",
+                  url: "{{url('/admin/getLeadByPid')}}",
                   type: "GET",
                   data: {
-                    lead_id:data
+                    pid:data
                   },
                   success: function(result) {
-                    $("#selectPid").select2({
+
+                    $("#selectLeadId").select2({
                         data: result.data,
-                        placeholder:"Select PID"
+                        placeholder: "Select Lead Register",
+                        dropdownParent: $('#ModalDraftPr')
                     })
                   }
                 }) 
 
+                $("#selectQuoteNumber").empty()
                 $.ajax({
                   url: "{{url('/admin/getQuote')}}",
                   type: "GET",
                   data:{
-                    lead_id:data
+                    lead_id:lead_id
                   },
                   success: function(result) {
                     $("#selectQuoteNumber").select2({
-                      data: result.data,
-                      placeholder:"Select Quote Number"
+                        data: result.data,
+                        placeholder: "Select Quote Number",
+                        dropdownParent: $('#ModalDraftPr')
                     })
                   }
                 }) 
@@ -3292,16 +3418,17 @@
 
                 var pdf = "fa fa-fw fa-file-pdf-o"
                 var image = "fa fa-fw fa-file-image-o"
+                
                 if (result.dokumen[0].link_drive != null) {
                   if (result.dokumen[0].dokumen_location.split(".")[1] == 'pdf') {
                     var fa_doc = pdf
                   }else{
                     var fa_doc = image
                   }
-                  $("#span_link_drive_spk_cek").show()
-                  $("#link_spkCek").attr("href",result.dokumen[0].link_drive)
-                  $("#inputSPKCek").val(result.dokumen[0].dokumen_location)
-                  $(".icon_spk").addClass(fa_doc)
+                  $("#span_link_drive_quoteSup_cek").show()
+                  $("#link_quoteSupCek").attr("href",result.dokumen[0].link_drive)
+                  $("#inputQuoteSupplierCek").val(result.dokumen[0].dokumen_location)
+                  $(".icon_quo").addClass(fa_doc)
                 }
 
                 if (result.dokumen[1].link_drive != null) {
@@ -3315,17 +3442,54 @@
                   $("#inputSBECek").val(result.dokumen[1].dokumen_location)
                   $(".icon_sbe").addClass(fa_doc)
                 }
+
                 if (result.dokumen[2].link_drive != null) {
                   if (result.dokumen[2].dokumen_location.split(".")[1] == 'pdf') {
                     var fa_doc = pdf
                   }else{
                     var fa_doc = image
                   }
-                  $("#span_link_drive_quoteSup_cek").show()
-                  $("#link_quoteSupCek").attr("href",result.dokumen[2].link_drive)
-                  $("#inputQuoteSupplierCek").val(result.dokumen[2].dokumen_location)
-                  $(".icon_quo").addClass(fa_doc)
+                  $("#span_link_drive_spk_cek").show()
+                  $("#link_spkCek").attr("href",result.dokumen[2].link_drive)
+                  $("#inputSPKCek").val(result.dokumen[2].dokumen_location)
+                  $(".icon_spk").addClass(fa_doc)
                 }
+
+                var appendDokumen = ""
+                $("#docPendukungContainerCekEPR").empty()
+
+                $.each(result.dokumen,function(value,item){
+                  var pdf = "fa fa-fw fa-file-pdf-o"
+                  var image = "fa fa-fw fa-file-image-o"
+                  if (item.dokumen_location.split(".")[1] == 'pdf') {
+                    var fa_doc = pdf
+                  }else{
+                    var fa_doc = image
+                  }
+
+                  if (value != 0 && value != 1 && value != 2) {
+                    appendDokumen = appendDokumen + '<div class="form-group">'
+                    appendDokumen = appendDokumen + '<label>Lampiran Dokumen Pendukung</label>'
+                    
+                    appendDokumen = appendDokumen + '<div class="form-group" style="font-size: reguler;">'
+                      appendDokumen = appendDokumen + '<div class="row">'
+                        appendDokumen = appendDokumen + '<div class="col-md-6">'
+                          appendDokumen = appendDokumen + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;"><a href="'+item.link_drive+'" target="blank"><i class="'+ fa_doc +'"></i>'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1] +'</a>'
+                          appendDokumen = appendDokumen + '</div>'
+                        appendDokumen = appendDokumen + '</div>'
+                        appendDokumen = appendDokumen + '<div class="col-md-6">'
+                          appendDokumen = appendDokumen + '<div style="padding: 5px;display:inline"> Dokumen Pendukung : ' + item.dokumen_name + '</div><input style="display:inline" id="doc_'+item.id_dokumen+'_pendukung" class="minimal" type="checkbox" name="chk[]" />'
+                        appendDokumen = appendDokumen + '</div>'
+                      appendDokumen = appendDokumen + '</div>'
+                    appendDokumen = appendDokumen + '</div>'
+                  }
+
+                })
+                $("#docPendukungContainerCekEPR").append(appendDokumen)
+
+                $('input[type="checkbox"].minimal').iCheck({
+                  checkboxClass: 'icheckbox_minimal-blue',
+                })
 
               }else{
                 $(".modal-title").text('Internal Purchase Request')
@@ -3857,14 +4021,14 @@
 
       if (val == "selectLeadId") {
         $("#selectLeadId").closest('.form-group').removeClass('has-error')
-        $("#selectLeadId").closest('select').next('span').next('span').hide();
-        $("#selectLeadId").prev('.input-group-addon').css("background-color","red");
+        $("#selectLeadId").closest('select').next('span').next("span").hide(); 
+        $("#selectLeadId").prev('.col-md-6').css("background-color","red");
       }
 
       if (val == "selectPID") {
-        $("#selectPID").closest('.form-group').removeClass('has-error')
-        $("#selectPID").closest('select').next('span').next('span').hide();
-        $("#selectPID").prev('.input-group-addon').css("background-color","red");
+        $("#selectPid").closest('.form-group').removeClass('has-error')
+        $("#selectPid").closest('select').next('span').next("span").hide(); 
+        $("#selectPid").prev('.col-md-6').css("background-color","red");
       }
 
       if (val == "selectType") {
@@ -3929,7 +4093,7 @@
 
       if (val == "quoteNumber") {
         $("#inputQuoteNumber").closest('.form-group').removeClass('has-error')
-        $("#inputQuoteNumber").closest('input').next('span').hide();
+        $("#inputQuoteNumber").closest('select').next('span').next("span").hide(); 
         $("#inputQuoteNumber").prev('.input-group-addon').css("background-color","red");  
       }
 
@@ -4075,6 +4239,12 @@
           $("#selectMethode").closest('select').next('span').show();
           $("#selectMethode").prev('.input-group-addon').css("background-color","red");
         }else{
+          let commitValue = ''
+          if ($("#cbCommit").is(':checked')){
+            commitValue = 'True'
+          }else{
+            commitValue = 'False'
+          }
           $.ajax({
             type:"POST",
             url:"{{url('/admin/updateSupplier/')}}",
@@ -4091,6 +4261,7 @@
               selectMethode:$("#selectMethode").val(),
               selectPosition:$("#selectPosition").val(),
               selectCategory:$("#selectCategory").val(),
+              cbCommit:commitValue,
               no_pr:localStorage.getItem('no_pr')
             },beforeSend:function(){
               Swal.fire({
@@ -4346,7 +4517,7 @@
                   if (result.dokumen[1] != undefined) {
                     $.each(result.dokumen,function(item,value){
                       if (item != 0) {
-                        $('#tableDocPendukung .trDocPendukung').each(function() {
+                        $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
                           if ($(this).find('#inputDocPendukung').prop('files')[0].name.replace("/","") != value.dokumen_location.substring(0,15) + '....'+ value.dokumen_location.split(".")[0].substring(value.dokumen_location.length -10) + "." + value.dokumen_location.split(".")[1]) {
                             var fileInput = $(this).find('#inputDocPendukung').val()
                             if (fileInput && fileInput !== '') { 
@@ -4367,7 +4538,7 @@
                     })  
 
                   }else{
-                    $('#tableDocPendukung .trDocPendukung').each(function() {
+                    $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
                       var fileInput = $(this).find('#inputDocPendukung').val()
                       if (fileInput && fileInput !== '') { 
                         formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
@@ -4382,7 +4553,7 @@
                                   
                 }else{
                   formData.append('inputPenawaranHarga', filepenawaranHarga);
-                  $('#tableDocPendukung .trDocPendukung').each(function() {
+                  $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
                     var fileInput = $(this).find('#inputDocPendukung').val()
                     if (fileInput && fileInput !== '') { 
                       formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
@@ -4449,14 +4620,18 @@
           }
           
         }else{
-          if ($("#selectLeadId").val() == "-") {
-            $("#selectLeadId").closest('.form-group').addClass('has-error')
-            $("#selectLeadId").closest('select').siblings('span.help-block').show();
-            $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-          }else if ($("#selectPid").val() == "-") {
+          if ($("#selectPid").val() == "") {
             $("#selectPid").closest('.form-group').addClass('has-error')
-            $("#selectPid").closest('select').next('span help-block').show();
+            $("#selectPid").closest('select').next('span').next("span").show(); 
             $("#selectPid").prev('.col-md-6').css("background-color","red");
+          }else if ($("#selectLeadId").val() == "") {
+            $("#selectLeadId").closest('.form-group').addClass('has-error')
+            $("#selectLeadId").closest('select').next('span').next("span").show(); 
+            $("#selectLeadId").prev('.col-md-6').css("background-color","red");
+          }else if ($("#inputQuoteNumber").val() == "") {
+            $("#inputQuoteNumber").closest('.form-group').addClass('has-error')
+            $("#inputQuoteNumber").closest('select').next('span').next("span").show(); 
+            $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
           }else if ($("#inputSPK").val() == "") {
             $("#inputSPK").closest('.form-group').addClass('has-error')
             $("#inputSPK").closest('div').next('span').show();
@@ -4469,10 +4644,6 @@
             $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
             $("#inputQuoteSupplier").closest('div').next('span').show();
             $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputQuoteNumber").val() == "-") {
-            $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
-            $("#inputQuoteNumber").closest('input').next('span').show();
-            $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
           }else{
             $.ajax({
               type: "GET",
@@ -4494,7 +4665,17 @@
 
                 if (result.dokumen.length > 0) {
                   if (result.dokumen[0] !== undefined) {
-                    if (result.dokumen[0].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","") || $('#inputSPK').prop('files').length == 0) {
+                    if (result.dokumen[0].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","") || $('#inputQuoteSupplier').prop('files').length == 0) {
+                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                    } else {
+                      formData.append('inputQuoteSupplier', "-");
+                    }
+                  }else{
+                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                  }
+
+                  if (result.dokumen[1] !== undefined) {
+                    if (result.dokumen[1].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","") || $('#inputSPK').prop('files').length == 0) {
                       formData.append('inputSPK', fileSpk);
                     } else {
                       formData.append('inputSPK', "-");
@@ -4503,8 +4684,8 @@
                     formData.append('inputSPK', fileSpk);
                   }                  
 
-                  if (result.dokumen[1] !== undefined) {
-                    if (result.dokumen[1].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","") || $('#inputSBE').prop('files').length == 0) {
+                  if (result.dokumen[2] !== undefined) {
+                    if (result.dokumen[2].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","") || $('#inputSBE').prop('files').length == 0) {
                       formData.append('inputSBE', fileSbe);
                     } else {
                       formData.append('inputSBE', "-");
@@ -4513,22 +4694,50 @@
                       formData.append('inputSBE', fileSbe);
                   }
 
-                  if (result.dokumen[2] !== undefined) {
-                    if (result.dokumen[2].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","") || $('#inputQuoteSupplier').prop('files').length == 0) {
-                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                    } else {
-                      formData.append('inputQuoteSupplier', "-");
-                    }
-                  }else{
-                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                  }
-                  
                 }else{
                   formData.append('inputSPK', fileSpk);
                   formData.append('inputQuoteSupplier', fileQuoteSupplier);
                   formData.append('inputSBE', fileSbe);
                 }
-                
+
+                if($('#tableDocPendukung_epr .trDocPendukung').length != arrInputDocPendukung.length){
+                  if(arrInputDocPendukung.length != 0){
+                    var lengthArrInputDocPendukung = $('#tableDocPendukung_epr .trDocPendukung').length
+                    arrInputDocPendukung = []
+                    var i = 1;
+                    $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                      if(i >= lengthArrInputDocPendukung){
+                        var fileInput = $(this).find('#inputDocPendukung').val()
+                        if (fileInput && fileInput !== '') { 
+                          formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                          arrInputDocPendukung.push({
+                            nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                            no_pr:localStorage.getItem('no_pr')
+                          })
+                        }
+                      }
+                      i++
+                    });
+                  } else {
+                    $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                      var fileInput = $(this).find('#inputDocPendukung').val()
+                      if (fileInput && fileInput !== '') {
+                        formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                        arrInputDocPendukung.push({
+                          nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                          no_pr:localStorage.getItem('no_pr')
+                        })
+                      }                  
+                    });
+                  }
+                } else {
+                  var fileInput = $(this).find('#inputDocPendukung').val()
+                  if (fileInput && fileInput !== '') {
+                    formData.append('inputDocPendukung[]',"-")
+                  }
+                }                
 
                 formData.append('_token',"{{csrf_token()}}")
                 formData.append('no_pr',no_pr)
@@ -4536,6 +4745,7 @@
                 formData.append('selectPid', $("#selectPid").val())
                 formData.append('inputPid',$("#projectIdInputNew").val())
                 formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
 
                 if(n == 1){
                   $.ajax({
@@ -4852,6 +5062,7 @@
           })          
         }
       }
+
       if (currentTab == 0) {
         if ($("#inputTo").val() == "") {
           $("#inputTo").closest('.form-group').addClass('has-error')
@@ -4902,6 +5113,12 @@
           if (value == true) {
             isStoreSupplier = localStorage.getItem('isStoreSupplier')
             if (isStoreSupplier == 'false') {
+              let commitValue = ''
+              if ($("#cbCommit").is(':checked')){
+                commitValue = 'True'
+              }else{
+                commitValue = 'False'
+              }
               Swal.fire({
                   title: 'Are you sure?',
                   text: "Save info Supplier",
@@ -4929,7 +5146,8 @@
                           inputAddress:$("#inputAddress").val(),
                           selectMethode:$("#selectMethode").val(),
                           selectPosition:$("#selectPosition").val(),
-                          selectCategory:$("#selectCategory").val()
+                          selectCategory:$("#selectCategory").val(),
+                          cbCommit:commitValue,
                         },beforeSend:function(){
                           Swal.fire({
                             title: 'Please Wait..!',
@@ -5343,12 +5561,53 @@
                 formData.append('inputQuoteSupplier', "-");
               }
             }
+
+            if($('#tableDocPendukung .trDocPendukung').length != arrInputDocPendukung.length){
+              if(arrInputDocPendukung.length != 0){
+                var lengthArrInputDocPendukung = $('#tableDocPendukung .trDocPendukung').length
+                arrInputDocPendukung = []
+                var i = 1;
+                $('#tableDocPendukung .trDocPendukung').each(function() {
+                  if(i >= lengthArrInputDocPendukung){
+                    var fileInput = $(this).find('#inputDocPendukung').val()
+                    if (fileInput && fileInput !== '') { 
+                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                      arrInputDocPendukung.push({
+                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                        no_pr:localStorage.getItem('no_pr')
+                      })
+                    }
+                  }
+                  i++
+                });
+              } else {
+                $('#tableDocPendukung .trDocPendukung').each(function() {
+                  var fileInput = $(this).find('#inputDocPendukung').val()
+                  if (fileInput && fileInput !== '') {
+                    formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                    arrInputDocPendukung.push({
+                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                      no_pr:localStorage.getItem('no_pr')
+                    })
+                  }                  
+                });
+              }
+            } else {
+              var fileInput = $(this).find('#inputDocPendukung').val()
+              if (fileInput && fileInput !== '') {
+                formData.append('inputDocPendukung[]',"-")
+              }
+            }
+
             formData.append('_token',"{{csrf_token()}}")
             formData.append('no_pr', localStorage.getItem('no_pr'))
             formData.append('selectLeadId', $("#selectLeadId").val())
             formData.append('selectPid', $("#selectPid").val())
             formData.append('inputPid',$("#projectIdInputNew").val())
             formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+            formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
 
             $.ajax({
                 type:"POST",
@@ -5874,8 +6133,8 @@
     }
 
     var incrementDoc = 0
-    function addDocPendukung(){
-      $("#titleDoc").show()
+    function addDocPendukung(value){
+      $("#titleDoc_"+value).show()
       append = ""
         append = append + "<tr style='height:10px' class='trDocPendukung'>"
           append = append + "<td>"
@@ -5889,7 +6148,7 @@
             append = append + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung">'
           append = append + "</td>"
         append = append + "</tr>"
-      $("#tableDocPendukung").append(append) 
+      $("#tableDocPendukung_"+value).append(append) 
       incrementDoc++
     }
 
