@@ -1,1 +1,1 @@
-﻿no;product;description;serial_number;part_number;qty;type;price
+﻿no;product;description;serial_number;part_number;qty;type(Pcs,Unit,Lot,Pack,Node);price(non-ppn)
