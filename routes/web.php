@@ -335,6 +335,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/admin/getNotes', 'PrDraftController@getNotes');
 	Route::get('/admin/getProductById', 'PrDraftController@getProductById');
 	Route::post('/admin/uploadCSV','PrDraftController@uploadCSV');
+	Route::get('/admin/getPidAll', 'PrDraftController@getPidAll');
+	Route::get('/admin/getLeadByPid', 'PrDraftController@getLeadByPid');
 
 
 	Route::get('/po', 'PONumberController@index');
