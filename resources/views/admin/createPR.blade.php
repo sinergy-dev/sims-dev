@@ -4165,31 +4165,39 @@
         }
       }else{
         valueEdit = valueEdit
-        $(".tabGroupInitiateAdd").hide()
-        $(".tab-add")[1].children[1].style.display = 'inline'
-        $.ajax({
-          type: "GET",
-          url: urlGetProduct,
-          data: {
-            no_pr:no_pr,
-          },
-          success: function(result) {
-            $.each(result.data,function(value,item){
-              $("#prevBtnAdd").css("display", "none");
-              localStorage.setItem('isEditProduct',true)
-              localStorage.setItem('id_product',result.data[valueEdit].id_product)
-              nominal = result.data[valueEdit].nominal_product
-              $("#inputNameProduct").val(result.data[valueEdit].name_product)
-              $("#inputDescProduct").val(result.data[valueEdit].description.replaceAll("<br>","\n"))
-              $("#inputQtyProduct").val(result.data[valueEdit].qty)
-              select2TypeProduct(result.data[valueEdit].unit)
-              $("#inputPriceProduct").val(formatter.format(nominal))
-              $("#inputSerialNumber").val(result.data[valueEdit].serial_number)
-              $("#inputPartNumber").val(result.data[valueEdit].part_number)
-              $("#inputTotalPrice").val(formatter.format(result.data[valueEdit].grand_total))
-            })
-          }
-        })
+        if (valueEdit == true) {
+          valueEdit = 'true'
+        }else{
+          valueEdit = 'false'
+        }
+        if (!isNaN(valueEdit)) {
+          $(".tabGroupInitiateAdd").hide()
+          $(".tab-add")[1].children[1].style.display = 'inline'
+          $.ajax({
+            type: "GET",
+            url: urlGetProduct,
+            data: {
+              no_pr:no_pr,
+            },
+            success: function(result) {
+              $.each(result.data,function(value,item){
+                $("#prevBtnAdd").css("display", "none");
+                localStorage.setItem('isEditProduct',true)
+                localStorage.setItem('id_product',result.data[valueEdit].id_product)
+                nominal = result.data[valueEdit].nominal_product
+                $("#inputNameProduct").val(result.data[valueEdit].name_product)
+                $("#inputDescProduct").val(result.data[valueEdit].description.replaceAll("<br>","\n"))
+                $("#inputQtyProduct").val(result.data[valueEdit].qty)
+                select2TypeProduct(result.data[valueEdit].unit)
+                $("#inputPriceProduct").val(formatter.format(nominal))
+                $("#inputSerialNumber").val(result.data[valueEdit].serial_number)
+                $("#inputPartNumber").val(result.data[valueEdit].part_number)
+                $("#inputTotalPrice").val(formatter.format(result.data[valueEdit].grand_total))
+              })
+            }
+          })
+        }
+        
       }
 
       if (currentTab == 0) {
