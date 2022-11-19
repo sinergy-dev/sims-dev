@@ -3422,6 +3422,7 @@
                       },
                       success: function(result){
                         localStorage.setItem('isStoreSupplier',true)
+                        localStorage.setItem('firstLaunch',false)
                         Swal.close()
                         var x = document.getElementsByClassName("tab-add");
                         x[currentTab].style.display = "none";
