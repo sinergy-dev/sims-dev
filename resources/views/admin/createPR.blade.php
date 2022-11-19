@@ -1647,8 +1647,8 @@
           x[n].style.display = "inline";
           if (n == (x.length - 1)) {
             $(".modal-dialog").addClass('modal-lg')
-            $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
-            $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+            $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
+            $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
             $(".modal-title").text('')
             document.getElementById("prevBtnAdd").style.display = "inline";
             $("#headerPreviewFinal").empty()
@@ -1943,19 +1943,19 @@
 
                 reasonReject(result.activity.reason,"block")
 
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else if (status == 'revision') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
 
                 reasonReject(result.activity.reason,"block")
 
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else {
                 if (firstLaunch == 'true') {
-                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
                 }else{
-                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
+                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
                 } 
               }
             } else if (n == 1) {
@@ -1981,8 +1981,8 @@
               if (status == 'admin') {
                 $("#nextBtnAdd").attr('onclick','nextPrevAddAdmin(1,'+ id_draft +')')
               }else{
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
-                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')     
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
+                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')     
               }
               if (localStorage.getItem('isEditProduct') == 'true') {
                 document.getElementById("prevBtnAdd").style.display = "none";
@@ -1997,10 +1997,10 @@
               localStorage.setItem('firstLaunch',false)
               addTable(0)
               if (localStorage.getItem('firstLaunch') == 'false') {
-                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-2)')
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-2,"saved")')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
               }else{
-                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')
+                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')
               } 
               document.getElementById("prevBtnAdd").style.display = "inline";
               localStorage.setItem('no_pr',id_draft)
@@ -2397,8 +2397,8 @@
                 })                  
               }   
     
-              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
-              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
+              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
               document.getElementById("prevBtnAdd").style.display = "inline";
             } else if (n == 4) {
               $(".modal-dialog").removeClass('modal-lg')
@@ -2415,8 +2415,8 @@
               }
               $(".modal-title").text('Term Of Payment')   
               $(".modal-dialog").removeClass('modal-lg')   
-              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
-              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
+              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
               document.getElementById("prevBtnAdd").style.display = "inline";
 
               if ($('.wysihtml5-toolbar').length == 0) {
@@ -2440,7 +2440,7 @@
             }
             document.getElementById("nextBtnAdd").innerHTML = "Next"
             $("#nextBtnAdd").prop("disabled",false)
-            $("#addProduct").attr('onclick','nextPrevUnFinished(-1)')
+            $("#addProduct").attr('onclick','nextPrevUnFinished(-1,"saved")')
           }
         }
       })
