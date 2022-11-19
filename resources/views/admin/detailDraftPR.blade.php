@@ -2728,8 +2728,9 @@
     addDraftPrPembanding(0)
   }
 
+  const firstLaunch = localStorage.setItem('firstLaunch',true)
+
   function addDraftPrPembanding(n){
-    const firstLaunch = localStorage.setItem('firstLaunch',true)
     localStorage.setItem('isStoreSupplier',false)
     var x = document.getElementsByClassName("tab-add");
     x[n].style.display = "inline";
