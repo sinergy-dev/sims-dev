@@ -2176,7 +2176,7 @@
                                    appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
                             appendDocPendukung = appendDocPendukung + "</td>"
                             appendDocPendukung = appendDocPendukung + "<td>"
-                              appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" value="'+ item.dokumen_name +'" name="inputNameDocPendukung" id="inputNameDocPendukung"><br>'
+                              appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" value="'+ item.dokumen_name +'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
                             appendDocPendukung = appendDocPendukung + "</td>"
                           appendDocPendukung = appendDocPendukung + "</tr>"
                         }   
@@ -2315,7 +2315,7 @@
                                  appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
                           appendDocPendukung = appendDocPendukung + "</td>"
                           appendDocPendukung = appendDocPendukung + "<td>"
-                            appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" id="inputNameDocPendukung"><br>'
+                            appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
                           appendDocPendukung = appendDocPendukung + "</td>"
                         appendDocPendukung = appendDocPendukung + "</tr>"
                       }   
@@ -2736,8 +2736,8 @@
 
             fillInput('penawaranHarga')
           }         
-          $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')       
-          $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+          $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')       
+          $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
           document.getElementById("prevBtnAdd").style.display = "inline";
 
           $.ajax({
@@ -6147,7 +6147,7 @@
             append = append + '</label>'
           append = append + "</td>"
           append = append + "<td>"
-            append = append + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung">'
+            append = append + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak">'
           append = append + "</td>"
         append = append + "</tr>"
       $("#tableDocPendukung_"+value).append(append) 
