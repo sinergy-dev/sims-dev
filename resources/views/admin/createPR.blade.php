@@ -5033,8 +5033,10 @@
         valueEdit = valueEdit
         if (valueEdit == true) {
           valueEdit = 'true'
+        }else{
+          valueEdit = 'false'
         }
-        if (isNaN(valueEdit) === false) {
+        if (!isNaN(valueEdit)) {
           $(".tabGroupInitiateAdd").hide()
           $(".tab-add")[1].children[1].style.display = 'inline'
           $.ajax({
