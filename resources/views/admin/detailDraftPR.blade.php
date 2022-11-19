@@ -3307,8 +3307,10 @@
       value = value
       if (value == true) {
         value = 'true'
+      }else{
+        value = 'false'
       }
-      if (value == false || isNaN(value) == false) {
+      if (!isNaN(value)) {
         $(".tabGroupInitiateAdd").hide()
         $(".tab-add")[1].children[1].style.display = 'inline'
         $.ajax({
