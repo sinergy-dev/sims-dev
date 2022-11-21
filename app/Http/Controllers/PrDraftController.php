@@ -1419,8 +1419,8 @@ class PrDraftController extends Controller
 
     public function verifyDraft(Request $request)
     {	
-        if (isset($request['valuesChecked'])) {
-            foreach ($request['valuesChecked'] as $key => $value) {
+        if (isset($request->valuesChecked)) {
+            foreach ($request->valuesChecked as $key => $value) {
                 if ($value == 'type_cek') {
                     $update = PRDraftVerify::where('id_draft_pr', $request->no_pr)->first();
                     $update->verify_type_of_letter = 'True';
