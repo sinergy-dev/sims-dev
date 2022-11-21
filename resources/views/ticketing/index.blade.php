@@ -6386,7 +6386,7 @@ Ticketing
 			let dataClient = []
 
 			result.client_data.forEach(function(data,index){
-				dataClient.push({id: data.id, text: data.client_acronym})
+				dataClient.push({id: data.id, text: '[' + data.client_acronym + '] - ' + data.client_name})
 			})
 
 			$("#selectReportingClient").select2({
