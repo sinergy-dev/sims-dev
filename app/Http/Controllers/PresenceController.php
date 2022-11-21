@@ -465,9 +465,8 @@ class PresenceController extends Controller
             ->Where('setting_check_out', $request->work_out);
 
         if ($data->exists()) {
-
             $update_setting = User::where('nik', $request->nik)->first();
-            $update_setting->id_presence_setting = $update_setting->id_presence_setting;
+            $update_setting->id_presence_setting = $data->first()->id;
             $update_setting->update();            
 
         } else {
