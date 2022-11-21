@@ -1006,7 +1006,8 @@ Ticketing
 						<div class="col-md-3 finish-report" style="display:none;">
 							<div class="form-group">
 								<label>Select Client</label>
-								<select id="selectReportingClient" class="form-control">
+								<select id="selectReportingClient" style="width:100% !important" class="select2 form-control">
+								</option>
 								</select>
 							</div>
 						</div>
@@ -6382,9 +6383,17 @@ Ticketing
 			$("#selectReportingMonth").append("<option>Select Month</option>")
 			$("#selectReportingYear").append("<option>Select Year</option>")
 
+			let dataClient = []
+
 			result.client_data.forEach(function(data,index){
-				$("#selectReportingClient").append("<option value='" + data.id + "'>[" + data.client_acronym + "] " + data.client_name + "</option>")
+				dataClient.push({id: data.id, text: data.client_acronym})
 			})
+
+			$("#selectReportingClient").select2({
+              placeholder: " Select Client",
+              data:dataClient,
+            })
+
 			result.ticket_year.forEach(function(data,index){
 				$("#selectReportingYear").append("<option value='" + data.year + "'>" + data.year + "</option>")
 			})
@@ -6432,7 +6441,7 @@ Ticketing
 			})
 		} else if ($("#selectReportingYear").val() === moment().format('YYYY')){
 			console.log('false')
-			$("#selectReportingMonth").empty()
+			// $("#selectReportingMonth").empty()
 			$("#selectReportingMonth").append("<option>Select Month</option>")
 			moment.months().forEach(function(data,index){
 				if(index < moment().format('M')){
