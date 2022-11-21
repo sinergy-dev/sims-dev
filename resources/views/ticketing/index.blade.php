@@ -6397,6 +6397,8 @@ Ticketing
 			result.ticket_year.forEach(function(data,index){
 				$("#selectReportingYear").append("<option value='" + data.year + "'>" + data.year + "</option>")
 			})
+
+			// $("#selectReportingMonth").empty()
 			moment.months().forEach(function(data,index){
 				if(index < moment().format('M')){
 					$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
@@ -6427,28 +6429,28 @@ Ticketing
 			console.log($("#selectReportingClient").val())
 			console.log($("#selectReportingYear").val())
 			console.log($("#selectReportingMonth").val())
-			
+
 			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
 			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
 			$("#ReportingButtonGo").show()
 		}
-		if ($("#selectReportingYear").val() !== moment().format('YYYY') && $("#selectReportingYear").val() !== "Select Year"){
-			console.log('true')
-			$("#selectReportingMonth").empty()
-			$("#selectReportingMonth").append("<option>Select Month</option>")
-			moment.months().forEach(function(data,index){
-				$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
-			})
-		} else if ($("#selectReportingYear").val() === moment().format('YYYY')){
-			console.log('false')
-			// $("#selectReportingMonth").empty()
-			$("#selectReportingMonth").append("<option>Select Month</option>")
-			moment.months().forEach(function(data,index){
-				if(index < moment().format('M')){
-					$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
-				}
-			})
-		}
+		// if ($("#selectReportingYear").val() !== moment().format('YYYY') && $("#selectReportingYear").val() !== "Select Year"){
+		// 	console.log('true')
+		// 	$("#selectReportingMonth").empty()
+		// 	$("#selectReportingMonth").append("<option>Select Month</option>")
+		// 	moment.months().forEach(function(data,index){
+		// 		$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+		// 	})
+		// } else if ($("#selectReportingYear").val() === moment().format('YYYY')){
+		// 	console.log('false')
+		// 	$("#selectReportingMonth").empty()
+		// 	$("#selectReportingMonth").append("<option>Select Month</option>")
+		// 	moment.months().forEach(function(data,index){
+		// 		if(index < moment().format('M')){
+		// 			$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+		// 		}
+		// 	})
+		// }
 	})
 
 	function getReport(urlAjax){
