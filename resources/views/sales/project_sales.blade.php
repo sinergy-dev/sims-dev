@@ -1548,6 +1548,8 @@ Lead Register
 	
 	$(document).ready(function(){  	
 		var year = $('#year_dif').val();
+		var tempYear = '?year[]='
+		
     var i = 0
 		var colors = []
 		var prepend = ""
@@ -1634,8 +1636,6 @@ Lead Register
 			    success: function(result) {
 			        $("#searchTags").select2().val("");
 			        var arr = result;
-			        // var arrTech = result.technology_tag;
-
 			        var selectOption = [];
 			        var otherOption;
 			        var otherTechOption;
@@ -1647,14 +1647,6 @@ Lead Register
 			                otherOption = value
 			            }
 			        })
-
-			        // $.each(arrTech, function(key, value) {
-			        //     if (value.text != "Others") {
-			        //         selectOption.push(value)
-			        //     } else {
-			        //         otherTechOption = value
-			        //     }
-			        // })
 
 			        selectOption.push(otherOption)
 			        selectOption.push(otherTechOption)
@@ -1700,9 +1692,7 @@ Lead Register
 
 				$("#filter-com").append(prependFilterCom)
 				$(".cb-company").click(function(){
-					
 					searchCustom()
-
 				})
 			}
 		})
@@ -1779,87 +1769,123 @@ Lead Register
 			}
 		})
 
-		dashboardCount(year)
+		$.each(year,function(item,value){
+			if (tempYear == '?year[]=') {
+	      tempYear = tempYear + value
+	    }else{
+	      tempYear = tempYear + '&year[]=' + value
+	    }
+		})
+
+		dashboardCount(tempYear)
 	  
   })	
 	
 	var timer
 	function searchCustom(id_table,id_seach_bar){
-		var temp = [], tempCom = [], tempSales = [], tempPresales = [], tempTer = [], tempResult = [], tempCustomer = [], tempTech = [], tempProduct = [], tempSearch = ''
+		var temp = 'year[]=', tempCom = 'company[]=', tempSales = 'sales_name[]=', tempPresales = 'presales_name[]=', tempTer = 'territory[]=', tempResult = 'result[]=', tempCustomer = 'customer[]=', tempTech = 'tech_tag[]=', tempProduct = 'product_tag[]=', tempSearch = 'search='
 
 		$.each($(".cb-territory:checked"),function(key,value){
-			tempTer = tempTer + '&territory[]=' + value.value
+			if (tempTer == 'territory[]=') {
+	      tempTer = tempTer + value.value
+	    }else{
+	      tempTer = tempTer + '&territory[]=' + value.value
+	    }
 		})
 
 	  $.each($("#filter_sales").val(),function(key,value){
-			tempSales = tempSales + '&sales_name[]='+ value
+	  	if (tempSales == 'sales_name[]=') {
+	      tempSales = tempSales + value
+	    }else{
+	      tempSales = tempSales + '&sales_name[]='+ value
+	    }
 		})
 
 		$.each($("#filter_sales_manager").val(),function(key,value){
-			tempSales = tempSales + '&sales_name[]='+ value
-		})
-
-		$.each($("#year_dif").val(),function(key,value){
-			temp = temp + '&year[]='+ value
+			if (tempSales == 'sales_name[]=') {
+	      tempSales = tempSales + value
+	    }else{
+	      tempSales = tempSales + '&sales_name[]='+ value
+	    }
 		})
 
 		if ($("#year_dif").val() == '') {
 			temp = temp + '&year[]='+ new Date().getFullYear()
+		}else{
+			$.each($("#year_dif").val(),function(key,value){
+				if (temp == 'year[]=') {
+		      temp = temp + value
+		    }else{
+		      temp = temp + '&year[]='+ value
+		    }
+			})
 		}
 
 		$.each($("#filter_presales").val(),function(key,value){
-			tempPresales = tempPresales + '&presales_name[]='+ value
+			if (tempPresales == 'presales_name[]=') {
+	      tempPresales = tempPresales + value
+	    }else{
+	      tempPresales = tempPresales + '&presales_name[]='+ value
+	    }
 		})
 
 	  $.each($('#searchTags').val(),function(key, value) {
 	  	// console.log(value)
 	    if (value.substr(0,1) == 'p') {
 	    	// console.log(value.substr(1,1))
-				tempProduct = tempProduct + '&product_tag[]='+ value.replace("p","")
+	    	if (tempProduct == 'product_tag[]=') {
+		      tempProduct = tempProduct + value
+		    }else{
+		    	tempProduct = tempProduct + '&product_tag[]='+ value.replace("p","")
+		    }
 	    }
 	    if (value.substr(0,1) == 't') {
-				tempTech = tempTech + '&tech_tag[]='+ value.replace("t","")
+	    	if (tempTech == 'tech_tag[]=') {
+		      tempTech = tempTech + value
+		    }else{
+		    	tempTech = tempTech + '&tech_tag[]='+ value.replace("t","")
+		    }
 	    }
 	    // console.log(tempProduct)
 	  });
 
 	  $.each($('#filter_customer').val(),function(key,value){
-	  	tempCustomer = tempCustomer + '&customer[]=' + value
+	  	if (tempCustomer == 'customer[]=') {
+	      tempCustomer = tempCustomer + value
+	    }else{
+	    	tempCustomer = tempCustomer + '&customer[]=' + value
+	    }
 	  })
 		
 		$.each($(".cb-company:checked"),function(key,value){
-			tempCom = tempCom + '&company[]=' + value.value
+			if (tempCom == 'company[]=') {
+	      tempCom = tempCom + value.value
+	    }else{
+	    	tempCom = tempCom + '&company[]=' + value.value
+	    }
 		})
 
 		var checklist = false
 		$.each($(".cb-result:checked"),function(key,value){
-			tempResult = tempResult + '&result[]=' + value.value
+			if (tempResult == 'result[]=') {
+	      tempResult = tempResult + value.value
+	    }else{
+	    	tempResult = tempResult + '&result[]=' + value.value
+	    }
 			checklist = true
 		})
 
-		tempSearch = tempSearch + '&search=' + $('#searchLead').val()
+		if (tempSearch == 'search=') {
+      tempSearch = tempSearch + $('#searchLead').val()
+    }else{
+    	tempSearch = tempSearch + '&search=' + $('#searchLead').val()
+    }
 
-		if (id_table != undefined) {
-			clearTimeout(timer);
-		  timer = setTimeout(function() {
-		  	$("#" + id_table).DataTable().ajax.url("{{url('project/getSearchLead')}}?search=" + $('#' + id_seach_bar).val() +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
+		var tempFiltered = '?' + temp + '&' + tempSales + '&' + tempPresales + '&' + tempTer + '&' + tempCom + '&' + tempResult + '&' + tempProduct + '&' + tempTech + '&' + tempCustomer + '&' + tempSearch
 
-		  	dashboardCount(temp)
-		  }, 800);
-		}else{
-			$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom + tempResult + tempProduct + tempTech + tempCustomer).load();
-			if (checklist == false) {
-				dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult)
-			} else {
-			}
-			dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult)
+		$("#tableLead").DataTable().ajax.url("{{url('project/getSearchLead')}}" + tempFiltered).load();
 
-		  // console.log('undefin!')
-
-		}
-
-
-		
+		dashboardCountFilter(tempFiltered)
 	}
 
 	//dashboard count
@@ -1887,10 +1913,7 @@ Lead Register
 			var resultComplete
 			$.ajax({
 				type:"GET",
-				url:"{{url('/project/getCountLead')}}",
-				data:{
-					year:year,
-				},
+				url:"{{url('project/getCountLead')}}"+ year,
 				success:function(result){
 						// Buat Mas ganjar total lead di ganti jadi Lead - Unassigned
 						if(result.presales){
@@ -1948,12 +1971,12 @@ Lead Register
 		})
 	}
 
-	function dashboardCountFilter(temp,tempSearch,tempSales,tempPresales,tempTer,tempCom,tempProduct,tempTech,tempCustomer,tempResult){	
+	function dashboardCountFilter(temp){	
 		Pace.restart();
 		Pace.track(function() {
 			$.ajax({
 				type:"GET",
-				url:"{{url('/project/filterCountLead')}}?=" + tempSearch +  temp + tempSales + tempPresales + tempTer + tempCom  + tempProduct + tempTech + tempCustomer + tempResult,
+				url:"{{url('/project/filterCountLead')}}" + temp,
 				success:function(result){
 					$.each(result,function(){						
 						$("#"+countLead[0]).text(result.lead)
@@ -1976,9 +1999,9 @@ Lead Register
 						$("#filter_lead_4").next().text("WIN (" + result.win_unfiltered + ")")
 						$("#filter_lead_5").next().text("LOSE (" + result.lose_unfiltered + ")")
 						$("#filter_lead_6").next().text("CANCEL (" + result.cancel_unfiltered + ")")	
-
 					})
 					initRemoveMask()
+
 					$('.counter').each(function () {
 					    var size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
 					    $(this).prop('Counter', 0).animate({

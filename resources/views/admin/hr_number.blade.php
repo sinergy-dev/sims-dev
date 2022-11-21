@@ -127,6 +127,7 @@ HR Number
                 <option value="SK">SK</option>
                 <option value="SP">SP</option>
                 <option value="IDS">IDS</option>
+                <option value="Legal">Legal</option>
             </select>
           </div>
           <div class="form-group">
@@ -213,6 +214,7 @@ HR Number
                 <option value="SK">SK</option>
                 <option value="SP">SP</option>
                 <option value="IDS">IDS</option>
+                <option value="Legal">Legal</option>
             </select>
           </div>
           <div class="form-group">

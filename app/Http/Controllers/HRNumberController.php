@@ -266,7 +266,12 @@ class HRNumberController extends Controller
             $akhirnomor = $lastnumber;
         }
 
-        $no = $akhirnomor.'/'.$divisi .'/'. $type.'/' . $bln .'/'. $year_hr;
+        if ($type == 'Legal') {
+            $no = $akhirnomor.'/SIP/'. $type.'/' . $bln .'/'. $year_hr;
+        } else {
+            $no = $akhirnomor.'/'.$divisi .'/'. $type.'/' . $bln .'/'. $year_hr;
+        }
+
         $nom = HRNumber::select('no')->orderBy('no','desc')->first();
 
         $tambah = new HRNumber();
@@ -318,7 +323,13 @@ class HRNumberController extends Controller
         $getno = HRNumber::where('no', $no)->first()->no_letter;
         $getnumberLetter =  explode("/",$getno)[0];
 
-        $no_update = $getnumberLetter.'/HR/' . $type . '/' . $bln .'/'. $year_letter;
+        // $no_update = $getnumberLetter.'/HR/' . $type . '/' . $bln .'/'. $year_letter;
+
+        if ($type == 'Legal') {
+            $no_update = $getnumberLetter.'/SIP/' . $type . '/' . $bln .'/'. $year_letter;
+        } else {
+            $no_update = $getnumberLetter.'/HR/' . $type . '/' . $bln .'/'. $year_letter;
+        }
 
         $update = HRNumber::where('no',$no)->first();
         $update->to = $request['edit_to'];  
