@@ -69,7 +69,7 @@
             <form method="POST" action="" id="sirkulasi_pr" name="sirkulasi_pr">
               <div class="tab-sirkulasi">
                 <div class="form-group">
-                  <label>Tidak ada pembanding, apakah anda yakin? Berikan alasan</label>
+                  <label>There is no comparison, are you sure? Give a reason</label>
                   <textarea style="resize: vertical;" class="form-control" id="reasonNoPembanding"></textarea>
                   <span class="help-block" style="display:none;">Please fill the reason!</span>
                 </div>
@@ -311,9 +311,9 @@
             </div>
 
             <div class="form-group" id="divNotePembanding">
-              <label for="">Note Pembanding*</label>
+              <label for="">Comparison Note*</label>
               <textarea autocomplete="off" class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
-              <span class="help-block" style="display:none;">Please fill Note Pembanding!</span>
+              <span class="help-block" style="display:none;">Please fill Comparison Note!</span>
             </div>
           </div>
           <div class="tab-add" style="display:none">
@@ -631,11 +631,11 @@
       /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
       var ErrorText = []
-      if (f.size > 40000000 || f.fileSize > 40000000) {
+      if (f.size > 30000000 || f.fileSize > 30000000) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Invalid file size, just allow file with size less than 40MB!',
+          text: 'Invalid file size, just allow file with size less than 30MB!',
         }).then((result) => {
           this.value = ''
         })
@@ -795,8 +795,8 @@
               append = append + '<div class="row">'
                 append = append + '<div class="col-md-12">'
                   append = append + '<span><b>Action</b></span><br>'
-                  append = append + '<button class="btn btn-sm bg-purple" id="btnPembanding" onclick="pembanding()" style="margin-right:5px">Pembanding</button>'
-                  append = append + '<button disabled class="btn btn-sm btn-warning" id="btnSirkulasi" style="margin-right:5px" onclick="sirkulasi(0)">Sirkulasi</button>'
+                   append = append + '<button class="btn btn-sm bg-purple" id="btnPembanding" onclick="pembanding()" style="margin-right:5px">Comparison</button>'
+                      append = append + '<button disabled class="btn btn-sm btn-warning" id="btnSirkulasi" style="margin-right:5px" onclick="sirkulasi(0)">Circular</button>'
                   append = append + '<button class="btn btn-sm btn-success" id="btnFinalize" disabled onclick="finalize()">Finalize</button>'
                   append = append + '<a id="btnShowPdf" target="_blank" href="{{url("/admin/getPdfPRFromLink")}}/?no_pr='+ window.location.href.split("/")[6] +'" class="btn btn-sm bg-orange pull-right">Show PDF</a>'
                   append = append + '<button id="btnAddNotes" class="btn btn-sm btn-primary pull-right" style="margin-right:5px"><i class="fa fa-plus"></i>&nbspNotes</button>'
@@ -909,7 +909,7 @@
             disableResolve = 'disabled'
             disableReply = 'disabled'
           }else{
-            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
               disableResolve
               disableReply
             }else{
@@ -1250,7 +1250,7 @@
         append = append + '</div>'
     append = append + '<div class="col-md-6" >'
     append = append + '<div id="divPembanding"></div>'
-    append = append + '<div style="display:table;margin:0 auto"><button style="display:none" id="btnAddPembanding" class="btn btn-sm bg-purple" onclick="addPembanding()"><i class="fa fa-plus"></i>&nbspPembanding</button</div>'        
+    append = append + '<div style="display:table;margin:0 auto"><button style="display:none" id="btnAddPembanding" class="btn btn-sm bg-purple" onclick="addPembanding()"><i class="fa fa-plus"></i>&nbspComparison</button</div>'        
     append = append + '</div>'
     $("#showDetail").append(append)
 
@@ -1381,7 +1381,7 @@
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat 11%</label>'
+        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
         appendBottom = appendBottom + '        <div class="col-sm-4">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control vat_tax_preview pull-right" id="vat_tax_previewData" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
@@ -1486,20 +1486,38 @@
             sum += temp;
         });
 
-        if (result.pr.status_tax == 'True') {
-          tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // if (result.pr.status_tax == 'True') {
+        //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+        //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // }else{
+        //   tempVat = tempVat
+        //   tempGrand = parseInt(sum)
+        // }
+
+        if (result.pr.status_tax == false) {
+          valueVat = 'false'
         }else{
-          tempVat = tempVat
-          tempGrand = parseInt(sum)
+          valueVat = result.pr.status_tax
+        }
+        if (!isNaN(valueVat)) {
+          tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+          finalVat = tempVat
+
+          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+          finalGrand = tempGrand
+
+          tempTotal = sum
+
+          $('.title_tax').text(valueVat + '%')
+        }else{
+          tempGrand = sum
+
+          $('.title_tax').text("")
         }
 
-        finalVat = tempVat
-
-        finalGrand = tempGrand
-
-        tempTotal = sum
-        $("#vat_tax_previewData").val(tempVat)
+        $("#vat_tax_previewData").val(formatter.format(tempVat))
         $("#inputGrandTotalProductPreviewData").val(formatter.format(sum))
         $("#inputFinalPageTotalPriceData").val(formatter.format(tempGrand))
       }
@@ -1549,7 +1567,7 @@
             $("#btnSirkulasi").prop('disabled',true)
           }
         }else{
-          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
             if (result.pr.status == "FINALIZED" || result.pr.status == "SENDED") {
               $("#btnSirkulasi").prop('disabled',true)
             }else{
@@ -1749,26 +1767,45 @@
         var finalGrand = 0
         var tempTotal = 0
         var sum = 0
+        var valueVat = ""
 
         $('.grandTotalPrice').each(function() {
             var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
             sum += temp;
         });
 
-        if (result.pr.status_tax == 'True') {
-          tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // if (result.pr.status_tax == 'True') {
+        //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+        //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // }else{
+        //   tempVat = tempVat
+        //   tempGrand = parseInt(sum)
+        // }
+
+        if (result.pr.status_tax == false) {
+          valueVat = 'false'
         }else{
-          tempVat = tempVat
-          tempGrand = parseInt(sum)
+          valueVat = result.pr.status_tax
+        }
+        if (!isNaN(valueVat)) {
+          tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+          finalVat = tempVat
+
+          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+          finalGrand = tempGrand
+
+          tempTotal = sum
+
+          $('.title_tax').text(valueVat + '%')
+        }else{
+          tempGrand = sum
+
+          $('.title_tax').text("")
         }
 
-        finalVat = tempVat
-
-        finalGrand = tempGrand
-
-        tempTotal = sum
-        $("#vat_tax_preview").val(tempVat)
+        $("#vat_tax_preview").val(formatter.format(tempVat))
         $("#inputGrandTotalProductPreview").val(formatter.format(sum))
         $("#inputFinalPageTotalPrice").val(formatter.format(tempGrand))
       }
@@ -1897,7 +1934,7 @@
     append = append + '            </div>'
     append = append + '          </div>'
     append = append + '          <div class="form-group">'
-    append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat 11%</label>'
+    append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat <span class="title_tax"></span></label>'
     append = append + '            <div class="col-sm-8">'
     append = append + '              <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_pembanding" data-value="'+i+'">'
     append = append + '            </div>'
@@ -2112,20 +2149,53 @@
         sum += temp;
     });
 
-    if (item.status_tax == 'True') {
-      tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+    // if (item.status_tax == 'True') {
+    //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+    //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+    // }else{
+    //   tempVat = tempVat
+    //   tempGrand = parseInt(sum)
+    // }
+
+    if (item.status_tax == false) {
+      valueVat = 'false'
     }else{
-      tempVat = tempVat
-      tempGrand = parseInt(sum)
+      valueVat = item.status_tax
+    }
+    // btnVatStatus = true
+    localStorage.setItem('status_tax',valueVat)
+
+    $('.inputTotalPriceEdit').each(function() {
+        var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        sum += temp;
+    });
+
+    if (!isNaN(valueVat)) {
+      tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+      finalVat = tempVat
+
+      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+      finalGrand = tempGrand
+
+      tempTotal = sum
+
+      $('.title_tax').text(valueVat + '%')
+    }else{
+      tempVat = 0
+
+      tempGrand = sum
+
+      $('.title_tax').text("")
     }
 
-    finalVat = tempVat
+    // finalVat = tempVat
 
-    finalGrand = tempGrand
+    // finalGrand = tempGrand
 
-    tempTotal = sum
-    $("#vat_tax_pembanding[data-value='" + i + "']").val(tempVat)
+    // tempTotal = sum
+    $("#vat_tax_pembanding[data-value='" + i + "']").val(formatter.format(tempVat))
     $("#inputGrandTotalProductPembanding[data-value='" + i + "']").val(formatter.format(sum))
     $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(tempGrand))
 
@@ -2831,7 +2901,7 @@
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
           appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '   <div class="pull-right">'
-            appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+            appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat <span class="title_tax"></span></span>'
             appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
             appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_PembandingModal" name="vat_tax_PembandingModal" style="width:150px;">'
             appendBottom = appendBottom + '     </div>'
@@ -2918,26 +2988,53 @@
           var finalGrand = 0
           var tempTotal = 0
           var sum = 0
+          var valueVat = ""
 
           $('.grandTotalPreviewPembandingModal').each(function() {
               var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
               sum += temp;
           });
 
-          if (result.pr.status_tax == 'True') {
-            tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          // if (result.pr.status_tax == 'True') {
+          //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+          //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          // }else{
+          //   tempVat = tempVat
+          //   tempGrand = parseInt(sum)
+          // }
+
+          if (result.pr.status_tax == false) {
+            valueVat = 'false'
           }else{
-            tempVat = tempVat
-            tempGrand = parseInt(sum)
+            valueVat = result.pr.status_tax
+          }
+          console.log(valueVat)
+          // btnVatStatus = true
+          finalVat = tempVat
+          finalGrand = tempGrand
+          localStorage.setItem('status_tax',valueVat)
+          if (!isNaN(valueVat)) {
+
+            tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+            finalVat = tempVat
+
+            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+            finalGrand = tempGrand
+
+            tempTotal = sum
+
+            $('.title_tax').text(valueVat + '%')
+          }else{
+            tempVat = 0
+
+            tempGrand = sum
+
+            $('.title_tax').text("")
           }
 
-          finalVat = tempVat
-
-          finalGrand = tempGrand
-
-          tempTotal = sum
-          $("#vat_tax_PembandingModal").val(tempVat)
+          $("#vat_tax_PembandingModal").val(formatter.format(tempVat))
           $("#inputGrandTotalProductPembandingModal").val(formatter.format(sum))
           $("#inputFinalPageTotalPricePembandingModal").val(formatter.format(tempGrand))
         }
@@ -3307,9 +3404,12 @@
       value = value
       if (value == true) {
         value = 'true'
-      }else{
+      }else if (value == false) {
         value = 'false'
+      }else{
+        value = parseInt(value)
       }
+
       if (!isNaN(value)) {
         $(".tabGroupInitiateAdd").hide()
         $(".tab-add")[1].children[1].style.display = 'inline'
@@ -3923,37 +4023,83 @@
     })
   } 
 
-  var tempVat = 0
-  var finalVat = 0
-  var tempGrand = 0
-  var finalGrand = 0
-  var tempTotal = 0
-  var btnVatStatus = true
-  localStorage.setItem("status_tax",'True')
+  // var tempVat = 0
+  // var finalVat = 0
+  // var tempGrand = 0
+  // var finalGrand = 0
+  // var tempTotal = 0
+  // var sum = 0
+  // var btnVatStatus = true
+  // localStorage.setItem("status_tax",'True')
 
-  function changeVatValue(){
-    if($("#btn-vat").hasClass('btn-default')){
-      btnVatStatus = false
-      finalVat = 0
-      finalGrand = tempTotal
-      $("#btn-vat").removeClass('btn-default')
-      $("#btn-vat").addClass('btn-danger')
-      $("#btn-vat").text('✖')
-      $("#vat_tax").val(0)
-      $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
-      localStorage.setItem("status_tax",'False')
+  function changeVatValue(value){
+    var tempVat = 0
+    var finalVat = 0
+    var tempGrand = 0
+    var finalGrand = 0
+    var tempTotal = 0
+    var sum = 0
 
-    } else {
-      btnVatStatus = true
-      finalVat = tempVat
-      finalGrand = tempGrand
-      $("#btn-vat").addClass('btn-default')
-      $("#btn-vat").removeClass('btn-danger')
-      $("#btn-vat").text('✓')
-      $("#vat_tax").val(formatter.format(tempVat))
-      $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
-      localStorage.setItem("status_tax",'True')
+    if (value == false) {
+      valueVat = 'false'
+    }else{
+      valueVat = value
     }
+    console.log(valueVat)
+    // btnVatStatus = true
+    localStorage.setItem('status_tax',valueVat)
+
+    $('.inputTotalPriceEdit').each(function() {
+        var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        sum += temp;
+    });
+
+    if (!isNaN(valueVat)) {
+      tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+      finalVat = tempVat
+
+      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+      finalGrand = tempGrand
+
+      tempTotal = sum
+
+      $('.title_tax').text(valueVat + '%')
+    }else{
+      tempVat = 0
+
+      tempGrand = sum
+
+      $('.title_tax').text("")
+    }
+
+    $("#vat_tax").val(formatter.format(tempVat))
+
+    $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+
+    // if($("#btn-vat").hasClass('btn-default')){
+    //   btnVatStatus = false
+    //   finalVat = 0
+    //   finalGrand = tempTotal
+    //   $("#btn-vat").removeClass('btn-default')
+    //   $("#btn-vat").addClass('btn-danger')
+    //   $("#btn-vat").text('✖')
+    //   $("#vat_tax").val(0)
+    //   $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
+    //   localStorage.setItem("status_tax",'False')
+
+    // } else {
+    //   btnVatStatus = true
+    //   finalVat = tempVat
+    //   finalGrand = tempGrand
+    //   $("#btn-vat").addClass('btn-default')
+    //   $("#btn-vat").removeClass('btn-danger')
+    //   $("#btn-vat").text('✓')
+    //   $("#vat_tax").val(formatter.format(tempVat))
+    //   $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+    //   localStorage.setItem("status_tax",'True')
+    // }
   }
 
   function addTable(n){ 
@@ -4019,15 +4165,42 @@
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
           appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
-          appendBottom = appendBottom + '   <div class="pull-right">'
-            appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
-            appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-              appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
-                appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
-              appendBottom = appendBottom + ' </span>'
-            appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
-            appendBottom = appendBottom + ' </div>'
-          appendBottom = appendBottom + ' </div>'
+
+          appendBottom = appendBottom + ' <div class="pull-right">'
+          appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
+          appendBottom = appendBottom + '  </span>'
+          appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
+          appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
+          appendBottom = appendBottom + '  <div class="input-group-btn">'
+          appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
+          appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
+          appendBottom = appendBottom + '       </button>'
+          appendBottom = appendBottom + '       <ul class="dropdown-menu">'
+          appendBottom = appendBottom + '       <li>'
+          appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
+          appendBottom = appendBottom + '       </li>'
+          appendBottom = appendBottom + '       <li>'
+          appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
+          appendBottom = appendBottom + '       </li>'
+          appendBottom = appendBottom + '       <li>'
+          appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,1 %</a>'
+          appendBottom = appendBottom + '       </li>'
+          appendBottom = appendBottom + '      </ul>'
+          appendBottom = appendBottom + '     </div>'
+          appendBottom = appendBottom + '    </div>'
+          appendBottom = appendBottom + '  </div>'
+
+
+
+          // appendBottom = appendBottom + '   <div class="pull-right">'
+          //   appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
+          //   appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+          //     appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
+          //       appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
+          //     appendBottom = appendBottom + ' </span>'
+          //   appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
+          //   appendBottom = appendBottom + ' </div>'
+          // appendBottom = appendBottom + ' </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
@@ -4041,27 +4214,27 @@
 
         $("#bottomProducts").append(appendBottom) 
 
-        var sum = 0
-        $('.inputTotalPriceEdit').each(function() {
-            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-            sum += temp;
-        });
+          var sum = 0
+          $('.inputTotalPriceEdit').each(function() {
+              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+              sum += temp;
+          });
 
-        $("#inputGrandTotalProduct").val(formatter.format(sum))
+          $("#inputGrandTotalProduct").val(formatter.format(sum))
 
-        tempVat = (parseFloat(sum) * 11) / 100
+          // tempVat = (parseFloat(sum) * 11) / 100
 
-        finalVat = tempVat
+          // finalVat = tempVat
 
-        tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          tempGrand = parseInt(sum)
 
-        finalGrand = tempGrand
+          // finalGrand = tempGrand
 
-        tempTotal = sum
-        $("#vat_tax").val(formatter.format(tempVat))
+          // tempTotal = sum
 
+          $("#vat_tax").val(0)
 
-        $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+          $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
       }
     })
   }
