@@ -294,7 +294,7 @@
 					<th></th>
 					<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal,2)}}</th>
 				</tr>
-				@if($data->status_tax == 'True')
+				@if($data->status_tax != 'False')
 				<tr>
 					<th></th>
 					<th></th>
@@ -302,7 +302,11 @@
 					<th></th>
 					<th></th>
 					@endif
+					@if($data->status_tax == '11')
 					<th style="text-align:right" 11%>VAT 11%</th>
+					@else
+					<th style="text-align:right" 11%>VAT 1.1%</th>
+					@endif
 					<th></th>
 					<th></th>
 					<th></th>
