@@ -586,11 +586,11 @@ class PrDraftController extends Controller
             $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->get();
         }
 
-        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name = 'Finance & Accounting Manager') {
+        if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
             $getData = PRDraft::where('type_of_letter', 'IPR')->get();
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            // $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->get();
         } else if ($cek_role->name == 'PMO Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
             $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
@@ -609,6 +609,8 @@ class PrDraftController extends Controller
         } else {
             $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->get();
         }
+
+        // return $nik;
 
         return array("data"=>$getData->merge($getDataEPR));
         
@@ -1170,7 +1172,8 @@ class PrDraftController extends Controller
             foreach ($dataAll as $key => $data) {
                 // if (in_array("", $request->inputDocPendukung)) {
                 if($request->inputDocPendukung[0] != '-'){
-                    // return "abc";
+                    // return 'aha';
+                    // return $request->inputDocPendukung[0];
                     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
                     $file                   = $request->file('inputDocPendukung')[$key];
                     $fileName               = $file->getClientOriginalName();
@@ -1204,11 +1207,15 @@ class PrDraftController extends Controller
                             ->orderBy('tb_pr_document_draft.id','desc')
                             ->first();
 
+                        // return $data_dokumen;
+
                         if (!empty($data_dokumen)) {
                             if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                // return 'disini1';
                                 $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
                                 $pdf_name = explode('/', $pdf_name)[1];
                             } else {
+                                // return 'disini2';
                                 $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
                             }
                         }
@@ -1379,9 +1386,24 @@ class PrDraftController extends Controller
 
         $kirim_user = $kirim->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
-        $email_cc = User::select('email')
+        // $nik = Auth::User()->nik;
+        $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+        $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+        // return $listTerritory;
+
+        if ($cek_role->group == 'sales') {
+            $email_cc = User::select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `name` = '".$listTerritory->name."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
+                ->get()->pluck('email');
+        } else {
+            $email_cc = User::select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
                 ->get()->pluck('email');
+        }
+        
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR Submitted and Ready to Verify', 'detail_approver', 'next_approver'));
         
@@ -1414,6 +1436,7 @@ class PrDraftController extends Controller
         $update = PRDraft::where('id', $request->no_pr)->first();
         $update->term_payment = $request['textAreaTOP'];
         $update->status_tax = $request->status_tax;
+        // $update->var_tax = $request->status_tax;
         $update->save();
     }
 
@@ -1530,9 +1553,21 @@ class PrDraftController extends Controller
 
             $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
 
-            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+            $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+            $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+            $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+            if ($cek_role->group == 'sales') {
+                $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager' OR `users`.`name` = '".$listTerritory->name."')")
                     ->where('status_karyawan', '!=', 'dummy')
                     ->get()->pluck('email');
+            } else {
+                $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                    ->where('status_karyawan', '!=', 'dummy')
+                    ->get()->pluck('email');
+            }
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR '.$detail->id.' Rejected', 'detail_approver', 'next_approver'));
 
@@ -1641,9 +1676,21 @@ class PrDraftController extends Controller
 
             $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
 
-            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+            $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+            $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+            $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+            if ($cek_role->group == 'sales') {
+                $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager' OR `users`.`name` = '".$listTerritory->name."')")
                     ->where('status_karyawan', '!=', 'dummy')
                     ->get()->pluck('email');
+            } else {
+                $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                    ->where('status_karyawan', '!=', 'dummy')
+                    ->get()->pluck('email');
+            }
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-App] Draft PR ' .$detail->id. ' Verified and Ready to Get Compare and Circulate', 'detail_approver', 'next_approver'));
 
@@ -2301,12 +2348,27 @@ class PrDraftController extends Controller
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
             $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr, 'detail'))->first();
+
+            $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+            $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+            $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
             $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
             $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
-            $email_cc = User::select('email')
+            if ($cek_role->group == 'sales') {
+                $email_cc = User::select('email')
+                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD' OR `name` = '".$listTerritory->name."')")
+                    ->get()->pluck('email');
+            } else {
+                $email_cc = User::select('email')
                     ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
                     ->get()->pluck('email');
+            }
+
+            
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name, $detail_approver, $next_approver));
         }
@@ -2385,10 +2447,23 @@ class PrDraftController extends Controller
         $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
         $kirim_user = $detail_approver->pluck('email');
 
-        $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+        $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+        $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+        if ($cek_role->group == 'sales') {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement' OR `users`.`name` = '".$listTerritory->name."')")
+                ->where('status_karyawan', '!=', 'dummy')
+                ->get()->pluck('email');
+        } else {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement')")
                 ->where('status_karyawan', '!=', 'dummy')
                 ->get()->pluck('email');
+        }
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
     }
@@ -2414,10 +2489,23 @@ class PrDraftController extends Controller
         $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
         $kirim_user = $detail_approver->pluck('email');
 
-        $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+        $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+        $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+        if ($cek_role->group == 'sales') {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement' OR `users`.`name` = '".$listTerritory->name."')")
+                ->where('status_karyawan', '!=', 'dummy')
+                ->get()->pluck('email');
+        } else {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `roles`.`name` = 'BCD Procurement')")
                 ->where('status_karyawan', '!=', 'dummy')
                 ->get()->pluck('email');
+        }
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
     }
@@ -2469,9 +2557,23 @@ class PrDraftController extends Controller
             $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
             $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
 
-            $email_cc = User::select('email')
+            $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+            $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                        ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+            $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+            if ($cek_role->group == 'sales') {
+                $email_cc = User::select('email')
+                    ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD' OR `name` = '".$listTerritory->name."')")
+                    ->get()->pluck('email');
+            } else {
+                $email_cc = User::select('email')
                     ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
                     ->get()->pluck('email');
+            }
+
+            
 
             Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Approved By ' . Auth::User()->name, $detail_approver, $next_approver));
         }
@@ -2521,9 +2623,23 @@ class PrDraftController extends Controller
 
         $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
-        $email_cc = User::select('email')
+        $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+        $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+        if ($cek_role->group == 'sales') {
+            $email_cc = User::select('email')
+                ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD' OR `name` = '".$listTerritory->name."')")
+                ->get()->pluck('email');
+        } else {
+            $email_cc = User::select('email')
                 ->whereRaw("(`nik` = '".$detail->issuance."' OR `id_position` = 'MANAGER' AND `id_division` = 'BCD')")
                 ->get()->pluck('email');
+        }
+
+        
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Reject By ' . Auth::User()->name,'detail_approver', $next_approver));
     }
@@ -2675,7 +2791,12 @@ class PrDraftController extends Controller
                 ->orderByRaw('FIELD(dokumen_name, "SBE", "Quote Supplier", "SPK")')->get();
         }
 
-        $amount_tax = $sum_nominal * 11/100;
+        // $amount_tax = $sum_nominal * 11/100;
+        if ($data->status_tax == '1.1') {
+            $amount_tax = $sum_nominal * 11/1000;
+        } elseif ($data->status == '11') {
+            $amount_tax = $sum_nominal * 11/100;
+        }
 
         $amount_tax_project = $data->amount_idr_before_tax * 11/100;
 
@@ -2777,7 +2898,12 @@ class PrDraftController extends Controller
                 ->select('grand_total')->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->sum('grand_total');
         }
 
-        $amount_tax = $sum_nominal * 11/100;
+        if ($data->status_tax == '1.1') {
+            $amount_tax = $sum_nominal * 11/1000;
+        } elseif ($data->status_tax == '11') {
+            $amount_tax = $sum_nominal * 11/100;
+        }
+        
 
         $territory = DB::table('users')
             ->select('id_territory')
@@ -3313,8 +3439,8 @@ class PrDraftController extends Controller
             "serial_number",
             "part_number",
             "qty",
-            "type",
-            "price"
+            "type(Pcs,Unit,Lot,Pack,Node)",
+            "price(non-ppn per item)"
         );
 
         if (($open = fopen($locationFile, "r")) !== FALSE) {
