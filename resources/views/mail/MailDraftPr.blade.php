@@ -80,13 +80,31 @@
 			</p>
 			<p style="font-size: 16px">
 				@if($detail->status == 'DRAFT' || $detail->status == 'COMPARING')
-					Berikut kami lampirkan untuk Draft PR terbaru dengan detail sebagai berikut:
+					@if($next_approver == 'addNotes')
+						{{Auth::User()->name}} baru saja menambahkan notes, dengan detail sebagai berikut.
+					@elseif($next_approver == 'replyNotes')
+						{{Auth::User()->name}} baru saja membalas notes, dengan detail sebagai berikut.
+					@else
+						Berikut kami lampirkan untuk Draft PR terbaru dengan detail sebagai berikut:
+					@endif
 				@elseif($detail->status == 'VERIFIED')
-					Untuk Draft PR anda sudah terverifikasi dan siap untuk dibuatkan pembanding kemudian disirkulasikan kepada masing-masing Approver
+					@if($next_approver == 'addNotes')
+						{{Auth::User()->name}} baru saja menambahkan notes, dengan detail sebagai berikut.
+					@elseif($next_approver == 'replyNotes')
+						{{Auth::User()->name}} baru saja membalas notes, dengan detail sebagai berikut.
+					@else
+						Untuk Draft PR anda sudah terverifikasi dan siap untuk dibuatkan pembanding kemudian disirkulasikan kepada masing-masing Approver.
+					@endif
 				@elseif($detail->status == 'REJECT')
 					Untuk Draft PR anda sudah terverifikasi dan ada beberapa perbaikan yang perlu dilakukan sebelum peroses dapat dilanjutkan. Untuk perbaikan bisa dilihat pada note perbaikan dibawah ini.
 				@elseif($detail->status == 'CIRCULAR')
-					PR sudah mulai disirkulasi untuk diperiksa dan disetujui. Kepada masing-masing approver dimohon untuk segera melakukan pemeriksaan dan penyetujuan dari PR yang diajukan.
+					@if($next_approver == 'addNotes')
+						{{Auth::User()->name}} baru saja menambahkan notes, dengan detail sebagai berikut.
+					@elseif($next_approver == 'replyNotes')
+						{{Auth::User()->name}} baru saja membalas notes, dengan detail sebagai berikut.
+					@else
+						PR sudah mulai disirkulasi untuk diperiksa dan disetujui. Kepada masing-masing approver dimohon untuk segera melakukan pemeriksaan dan penyetujuan dari PR yang diajukan.
+					@endif
 				@elseif($detail->status == 'FINALIZED')
 					Proses sirkulasi PR sudah selesai dilakukan, kemudian PR sudah siap untuk di Finalisasi oleh BCD Procurement.
 				@elseif($detail->status == 'UNAPPROVED')
@@ -94,18 +112,21 @@
 				@endif
 			</p>
 			@if($detail->status == 'CIRCULAR')
-			<div id="bg_ket" style="background-color: #ffffff; padding: 10px">
-				<center><b><i>List Approver</i></b></center>
-				<table style="text-align: left;margin: 5px; font-size: 16px" class="tableLead">
-					@foreach($detail_approver as $data)
-					<tr>
-						<th>{{$data->position}}</th>
-						<th></th>
-						<td>{{$data->name}}</td>
-					</tr>
-					@endforeach
-				</table>
-			</div>
+				@if($next_approver == 'addNotes' || $next_approver == 'replyNotes')
+				@else
+					<div id="bg_ket" style="background-color: #ffffff; padding: 10px">
+						<center><b><i>List Approver</i></b></center>
+						<table style="text-align: left;margin: 5px; font-size: 16px" class="tableLead">
+							@foreach($detail_approver as $data)
+							<tr>
+								<th>{{$data->position}}</th>
+								<th></th>
+								<td>{{$data->name}}</td>
+							</tr>
+							@endforeach
+						</table>
+					</div>
+				@endif
 			<br>
 			@endif
 			@if($detail->status == 'REJECT')
@@ -130,6 +151,17 @@
 			</div>
 			<br>
 			@endif
+			@if($next_approver == 'addNotes')
+			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
+				<center><b>Notes</b></center><br>
+				<center>{{$detail->notes}}</center>
+			</div>
+			@elseif($next_approver == 'replyNotes')
+			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
+				<center><b>Notes</b></center><br>
+				<center>{{$detail->reply}}</center>
+			</div>
+			@else
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<center><b></b></center>
 				<table style="text-align: left;margin: 5px; font-size: 16px" class="tableLead">
@@ -153,7 +185,7 @@
 						<th> : </th>
 						<td>{{$detail->title}}</td>
 					</tr>
-					@if($detail->status == 'CIRCULAR')
+					@if($detail->status == 'CIRCULAR' && $next_approver != 'addNotes')
 					<tr>
 						<th>Next Approver</th>
 						<th> : </th>
@@ -168,13 +200,22 @@
 					@endif
 				</table>
 			</div>
+			@endif
 			<p style="font-size: 16px">
 				@if($detail->status == 'DRAFT')
 					<b>Untuk detail dari Draft PR dapat dilihat dengan mengunjungi halaman dibawah ini</b>
 				@elseif($detail->status == 'VERIFIED')
-					<b>Harap menunggu email pemberitahuan selanjutnya untuk proses pembandingan dan sirkulasi PR.</b>
+					@if($next_approver == 'addNotes' || $next_approver == 'replyNotes')
+						<b>Dimohon untuk segera membalas notes, dan resolve notes agar PR bisa segera disirkulasi.</b>
+					@else
+						<b>Harap menunggu email pemberitahuan selanjutnya untuk proses pembandingan dan sirkulasi PR.</b>
+					@endif
 				@elseif($detail->status == 'CIRCULAR')
-					<b>Dimohon untuk Approver selanjutnya untuk memeriksa serta memastikan PR sudah sesuai. Jika dirasa tidak ada kesalahan dimohon untuk segera Approve PR tersebut.</b>
+					@if($next_approver == 'addNotes' || $next_approver == 'replyNotes')
+						<b>Dimohon untuk segera membalas dan resolve notes agar PR bisa segera disirkulasi.</b>
+					@else
+						<b>Dimohon untuk Approver selanjutnya untuk memeriksa serta memastikan PR sudah sesuai. Jika dirasa tidak ada kesalahan dimohon untuk segera Approve PR tersebut.</b>
+					@endif
 				@elseif($detail->status == 'FINALIZED')
 					Dimohon untuk menantikan email finalisasi yang dikirim oleh BCD Procurement kepada Finance dengan lampiran yang sudah disiapkan.
 				@endif
