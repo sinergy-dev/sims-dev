@@ -1555,7 +1555,6 @@
           PRType = '<b>External Purchase Request</b>'
         } 
         var appendHeader = ""
-
         appendHeader = appendHeader + '<div class="row">'
         appendHeader = appendHeader + '    <div class="col-md-6">'
         appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
@@ -1563,7 +1562,7 @@
         appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
         appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
         appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
-        appendHeader = appendHeader + '        <div class="">From: Albert Setiawan</div>'
+        appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
         appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
         appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
 
@@ -1844,26 +1843,40 @@
         }
 
         var appendHeader = ""
-        if (type_of_letter == 'IPR') {
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'>"+ result.pr.no_pr +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-        }else{
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'>"+ result.pr.no_pr +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Address: </span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-          appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span><span style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br><br>'
+        appendHeader = appendHeader + '<div class="row">'
+        appendHeader = appendHeader + '    <div class="col-md-6">'
+        appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+        appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+        appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+        appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+        appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+        appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+        appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+        appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+        appendHeader = appendHeader + '    </div>'
+        if (window.matchMedia("(max-width: 767px)").matches)
+        {
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            // The viewport is less than 768 pixels wide
+            console.log("This is a mobile device.");
+        } else {
+            appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+            // The viewport is at least 768 pixels wide
+            console.log("This is a tablet or desktop.");
         }
+        appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+        appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+        appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+        appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+        if (type_of_letter == 'EPR') {
+          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+        }
+        appendHeader = appendHeader + '    </div>'
+        appendHeader = appendHeader + '</div>'
 
         $("#headerPreview").append(appendHeader)
         var append = ""
@@ -1875,7 +1888,7 @@
               append = append + '<span>'+ i +'</span>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+            append = append + "<input data-value='' readonly style='width:200px;font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<textarea style="font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
@@ -2107,26 +2120,40 @@
     append = append + '</div>'
     append = append + '<div class="box-body">'
     append = append + '<div id="headerPreviewPembanding" data-value="'+i+'">'
-    if (type_of_letter == 'IPR') {
-      append = append + "<span style='display:inline;'>To: <span id='textTo'>"+ item.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-      append = append + "<span style='display:inline'>Email: <span id='textEmail'>"+ item.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-      append = append + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ item.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ item.request_method +"</span></br>"
-      append = append + "<span style='display:inline;'>Fax: <span id='textFax'>"+ item.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(item.created_at).format('DD MMMM') +"</span></br>"
-      append = append + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ item.attention +"</span></span></br>"
-      append = append + "<span style='display:inline;'>From: <span id='textFrom'>"+ item.issuance +"</span></span><br>"
-      append = append + "<span style='display:inline'>Subject: <span id='textSubject'>"+ item.title +"</span></span></br>"
-      append = append + "<span style='display:inline'>Address: <span id='textAddress'>"+ item.address +"</span></span<br>"
-    }else{
-      append = append + "<span style='display:inline;'>To: <span id='textTo'>"+ item.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-      append = append + "<span style='display:inline'>Email: <span id='textEmail'>"+ item.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-      append = append + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ item.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ item.request_method +"</span></br>"
-      append = append + "<span style='display:inline;'>Fax: <span id='textFax'>"+ item.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(item.created_at).format('DD MMMM') +"</span></br>"
-      append = append + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ item.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-      append = append + "<span style='display:inline;'>From: <span id='textFrom'>"+ item.issuance +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ item.lead_id +"</span><br>"
-      append = append + "<span style='display:inline'>Subject: <span id='textSubject'>"+ item.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-      append = append + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ item.quote_number +'</span></span><br>'
-      append = append + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ item.address +'</span></span><br><br>'
+    append = append + '<div class="row">'
+    append = append + '    <div class="col-md-6">'
+    append = append + '        <div class="">To: '+ item.to +'</div>'
+    append = append + '        <div class="">Email: ' + item.email + '</div>'
+    append = append + '        <div class="">Phone: ' + item.phone + '</div>'
+    append = append + '        <div class="">Fax: '+ item.fax +' </div>'
+    append = append + '        <div class="">Attention: '+ item.attention +'</div>'
+    append = append + '        <div class="">From: '+ item.name +'</div>'
+    append = append + '        <div class="">Subject: '+ item.title +'</div>'
+    append = append + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ item.address +'</div>'
+
+    append = append + '    </div>'
+    if (window.matchMedia("(max-width: 767px)").matches)
+    {
+        append = append + '    <div class="col-md-6">'
+        // The viewport is less than 768 pixels wide
+        console.log("This is a mobile device.");
+    } else {
+        append = append + '    <div class="col-md-6" style="text-align:end">'
+        // The viewport is at least 768 pixels wide
+        console.log("This is a tablet or desktop.");
     }
+    append = append + '        <div>'+ PRType +'</div>'
+    append = append + '        <div><b>Request Methode</b></div>'
+    append = append + '        <div>'+ item.request_method +'</div>'
+    append = append + '        <div>'+ moment(item.created_at).format('DD MMMM') +'</div>'
+    if (type_of_letter == 'EPR') {
+      append = append + '        <div><b>Lead Register</b></div>'
+      append = append + '        <div>'+ item.lead_id +'</div>'
+      append = append + '        <div><b>Quote Number</b></div>'
+      append = append + '        <div>'+ item.quote_number +'</div>'
+    }
+    append = append + '    </div>'
+    append = append + '</div>'
     append = append + '</div>'
     append = append + '<hr id="hr_pembanding" data-value="'+i+'" style="display:none">'
     append = append + '<div id="bodyPreviewPembanding" data-value="'+i+'" style="display:none;overflow:auto" class="table-responsive">'
@@ -2149,7 +2176,7 @@
                 append = append + '<span>'+ noProduct +'</span>'
               append = append + '</td>'
               append = append + '<td>'
-                append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+              append = append + "<input data-value='' readonly style='width:200px;font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td>'
                 append = append + '<textarea style="width:-webkit-fill-available;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
@@ -2192,7 +2219,7 @@
     append = append + '            </div>'
     append = append + '          </div>'
     append = append + '          <div class="form-group">'
-    append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat <span class="title_tax"></span></label>'
+    append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat <span class="title_tax_pembanding"></span></label>'
     append = append + '            <div class="col-sm-8">'
     append = append + '              <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_pembanding" data-value="'+i+'">'
     append = append + '            </div>'
@@ -2439,13 +2466,13 @@
 
       tempTotal = sum
 
-      $('.title_tax').text(valueVat + '%')
+      $('.title_tax_pembanding').text(valueVat + '%')
     }else{
       tempVat = 0
 
       tempGrand = sum
 
-      $('.title_tax').text("")
+      $('.title_tax_pembanding').text("")
     }
 
     // finalVat = tempVat
@@ -2653,7 +2680,7 @@
                 append = append + '<span>'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input style="font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+              append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="35%">'
                 append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
@@ -3085,6 +3112,7 @@
   const firstLaunch = localStorage.setItem('firstLaunch',true)
 
   function addDraftPrPembanding(n){
+    localStorage.setItem('status_tax',false)
     localStorage.setItem('isStoreSupplier',false)
     var x = document.getElementsByClassName("tab-add");
     x[n].style.display = "inline";
@@ -3113,26 +3141,40 @@
           }
 
           var appendHeader = ""
-          if (result.pr.type_of_letter == 'IPR') {
-            appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-          }else{
-            appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-            appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-            appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br><br>'
+          appendHeader = appendHeader + '<div class="row">'
+          appendHeader = appendHeader + '    <div class="col-md-6">'
+          appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+          appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+          appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+          appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+          appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+          appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+          appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+          appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+          appendHeader = appendHeader + '    </div>'
+          if (window.matchMedia("(max-width: 768px)").matches)
+          {
+              appendHeader = appendHeader + '    <div class="col-md-6">'
+              // The viewport is less than 768 pixels wide
+              console.log("This is a mobile device.");
+          } else {
+              appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+              // The viewport is at least 768 pixels wide
+              console.log("This is a tablet or desktop.");
           }
+          appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+          appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+          appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+          if (type_of_letter == 'EPR') {
+            appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+            appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+          }
+          appendHeader = appendHeader + '    </div>'
+          appendHeader = appendHeader + '</div>'
 
           $("#headerPreviewFinal").append(appendHeader)
 
@@ -3146,7 +3188,7 @@
                 append = append + '<span>'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
+              append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="35%">'
                 append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
@@ -4324,7 +4366,6 @@
   // var sum = 0
   // var btnVatStatus = true
   localStorage.setItem('status_tax',false)
-
   function changeVatValue(value){
     var tempVat = 0
     var finalVat = 0
@@ -4415,7 +4456,7 @@
                 append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px;width:200px" class="form-control" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
                 append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:200px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number

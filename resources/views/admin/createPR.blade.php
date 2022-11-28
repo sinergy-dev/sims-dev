@@ -531,7 +531,7 @@
         <div class="tab-add" style="display:none">
           <div class="tabGroup">
             <div class="box-body pad">
-              <textarea onkeydown="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. term of payment"></textarea>
+              <textarea onkeydown="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. Terms & Condition"></textarea>
               <span class="help-block" style="display:none;">Please fill Top of Payment!</span>
             </div>
           </div>
@@ -906,7 +906,7 @@
                 </div>
                 <div class="form-group" style="display:none;" id="divReasonReject">
                   <h4>Reason of Reject</h4>
-                  <textarea id="textAreaReasonReject" class="form-control" placeholder="ex. [Informasi Supplier - To] Ada Kesalahan Penulisan Nama" style="resize:vertical;"></textarea>
+                  <textarea id="textAreaReasonReject" onkeyup="fillInput('reason_reject')" class="form-control" placeholder="ex. [Informasi Supplier - To] Ada Kesalahan Penulisan Nama" style="resize:vertical;"></textarea>
                   <span class="help-block" style="display:none;">Please fill Reason!</span>
                 </div>
             </div>  
@@ -943,7 +943,7 @@
   <script type="text/javascript">
     $(".money").mask('000,000,000,000,000', {reverse: true})
 
-    $(document).ready(function(){   
+    $(document).ready(function(){ 
       currentTab = 0     
       $('input[class="files"]').change(function(){
         var f=this.files[0]
@@ -954,7 +954,7 @@
         /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
         var ErrorText = []
-        if (f.size > 30000000|| f.fileSize > 30000000) {
+        if (f.size > 2000|| f.fileSize > 2000) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -1247,7 +1247,7 @@
         },
         { 
           render: function (data, type, row, meta){
-            return '[<b><i>' + row.type_of_letter + '</i></b>] ' + row.title         
+            return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
           },
         },
         { "data": "to"},
@@ -1258,7 +1258,8 @@
             }else{
               return formatter.format(row.nominal)          
             }
-          }
+          },
+          className:'text-right'
         },
         { 
           orderData:[7],
@@ -1308,7 +1309,7 @@
                 return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
               } 
             }else if(row.status == 'UNAPPROVED'){
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                 status = '"revision"'
 
                 return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
@@ -1337,7 +1338,7 @@
           $(".btnCekDraft").prop("disabled",false)
         }
       },
-      "pageLength":10,
+      "pageLength":100,
       lengthChange:false,
       autoWidth:false,
       initComplete: function () {
@@ -1625,6 +1626,7 @@
       localStorage.setItem('firstLaunch', false);
       localStorage.setItem('no_pr',id_draft)
       localStorage.setItem('status_unfinished',status)
+
       if (status == 'revision') {
         url = "{{url('/admin/getDetailPr')}}"
       }else{
@@ -1666,26 +1668,40 @@
             quoteNumber = $("#selectQuoteNumber").val() 
             
             var appendHeader = ""
-            if (result.pr.type_of_letter == 'IPR') {
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-            }else{
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ leadRegister +"</span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-              appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ quoteNumber +'</span></span><br>'
-              appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+            appendHeader = appendHeader + '<div class="row">'
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+            appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+            appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+            appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+            appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+            appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+            appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+            appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+            appendHeader = appendHeader + '    </div>'
+            if (window.matchMedia("(max-width: 768px)").matches)
+            {
+                appendHeader = appendHeader + '    <div class="col-md-6">'
+                // The viewport is less than 768 pixels wide
+                console.log("This is a mobile device.");
+            } else {
+                appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                // The viewport is at least 768 pixels wide
+                console.log("This is a tablet or desktop.");
             }
+            appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+            appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+            appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+            if (PRType == 'EPR') {
+              appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+              appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+            }
+            appendHeader = appendHeader + '    </div>'
+            appendHeader = appendHeader + '</div>'
 
             $("#headerPreviewFinal").append(appendHeader)
 
@@ -1699,15 +1715,15 @@
                   append = append + '<span>'+ i +'</span>'
                 append = append + '</td>'
                 append = append + '<td width="20%">'
-                  append = append + '<input readonly class="form-control" style="font-size: 12px; important" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
-                append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="width: 200px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
+                append = append + '<td width="40%">'
+                  append = append + '<textarea readonly class="form-control" style="resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
                 append = append + '</td>'
-                append = append + '<td width="10%">'
+                append = append + '<td width="5%">'
                   append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
                 append = append + '</td>'
-                append = append + '<td width="10%">'
+                append = append + '<td width="5%">'
                   append = append + '<select readonly style="width:75px;font-size: 12px; important" class="form-control">'
                   append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
                   append = append + '</select>'
@@ -1774,7 +1790,7 @@
             appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -1895,12 +1911,12 @@
             $("#inputFinalPageGrandPrice").val(formatter.format(finalGrand))
 
             if (status == 'reject' || status == 'revision') {
-              reasonReject(result.activity.reason,"block")
+              reasonReject(result.activity.reason,"block","tabGroup")
             }                               
 
             if (window.location.href.split("/")[5] != undefined) {
               if (window.location.href.split("/")[5].split("?")[1].split("=")[1] == 'reject' || window.location.href.split("/")[5].split("?")[1].split("=")[1] == 'revision') {
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
               }
             }
             
@@ -1972,14 +1988,14 @@
                   $("#selectMethode").prop("disabled",true)
                 }
 
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
                 $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else if (status == 'revision') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
 
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
                 $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else {
@@ -2130,10 +2146,10 @@
                         $("#selectQuoteNumber").prop("disabled",true)
                       }
 
-                      reasonReject(result.activity.reason,"block")
+                      reasonReject(result.activity.reason,"block","tabGroup")
 
                     } else if (status == 'revision') {
-                      reasonReject(result.activity.reason,"block")
+                      reasonReject(result.activity.reason,"block","tabGroup")
                     } 
 
                     if (result.dokumen.length > 0) {
@@ -2309,6 +2325,13 @@
                     no_pr:localStorage.getItem("no_pr"),
                   },
                   success:function(result){
+                    if (status == 'reject') {
+                      reasonReject(result.activity.reason,"block","tabGroup")
+
+                    }else if (status == 'revision') {
+                      reasonReject(result.activity.reason,"block","tabGroup")
+                    }
+
                     var pdf = "fa fa-fw fa-file-pdf-o"
                     var image = "fa fa-fw fa-file-image-o"
 
@@ -2436,14 +2459,14 @@
               if (status == 'reject') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").val(result.activity.reason.replaceAll("\n","<br>"))
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
               }else if (status == 'revision') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
               }
-              $(".modal-title").text('Term Of Payment')   
+              $(".modal-title").text('Terms & Condition')   
               $(".modal-dialog").removeClass('modal-lg')   
               $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
               $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
@@ -2510,26 +2533,40 @@
           },
           success: function(result) {
             var appendHeader = ""
-            if (result.pr.type_of_letter == 'IPR') {
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress' style='float:right;width:500px'>"+ result.pr.address +"</span></span<br>"
-            }else{
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ leadRegister +"</span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-              appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ quoteNumber +'</span></span><br>'
-              appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+            appendHeader = appendHeader + '<div class="row">'
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+            appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+            appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+            appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+            appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+            appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+            appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+            appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+            appendHeader = appendHeader + '    </div>'
+            if (window.matchMedia("(max-width: 768px)").matches)
+            {
+                appendHeader = appendHeader + '    <div class="col-md-6">'
+                // The viewport is less than 768 pixels wide
+                console.log("This is a mobile device.");
+            } else {
+                appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                // The viewport is at least 768 pixels wide
+                console.log("This is a tablet or desktop.");
             }
+            appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+            appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+            appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+            if (PRType == 'EPR') {
+              appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+              appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+            }
+            appendHeader = appendHeader + '    </div>'
+            appendHeader = appendHeader + '</div>'
 
             $("#headerPreviewFinal").append(appendHeader)
 
@@ -2543,10 +2580,10 @@
                   append = append + '<span>'+ i +'</span>'
                 append = append + '</td>'
                 append = append + '<td width="20%">'
-                  append = append + '<input readonly class="form-control" style="font-size: 12px;" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="width:150px;height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -2605,7 +2642,7 @@
               appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -2869,7 +2906,7 @@
             });
           }
 
-          $(".modal-title").text('Term Of Payment')   
+          $(".modal-title").text('Terms & Condition')   
           $(".modal-dialog").removeClass('modal-lg')   
           $("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')        
           $("#nextBtnAdd").attr('onclick','nextPrevAdd(1)')
@@ -2944,26 +2981,40 @@
             }
 
             var appendHeader = ""
-            if (result.pr.type_of_letter == 'IPR') {
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-            }else{
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-              appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-              appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+            appendHeader = appendHeader + '<div class="row">'
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+            appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+            appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+            appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+            appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+            appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+            appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+            appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+            appendHeader = appendHeader + '    </div>'
+            if (window.matchMedia("(max-width: 768px)").matches)
+            {
+                appendHeader = appendHeader + '    <div class="col-md-6">'
+                // The viewport is less than 768 pixels wide
+                console.log("This is a mobile device.");
+            } else {
+                appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                // The viewport is at least 768 pixels wide
+                console.log("This is a tablet or desktop.");
             }
+            appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+            appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+            appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+            if (PRType == 'EPR') {
+              appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+              appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+            }
+            appendHeader = appendHeader + '    </div>'
+            appendHeader = appendHeader + '</div>'
 
             $("#headerPreviewFinal").append(appendHeader)
 
@@ -2977,10 +3028,10 @@
                   append = append + '<span>'+ i +'</span>'
                 append = append + '</td>'
                 append = append + '<td width="20%">'
-                  append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea style="font-size: 12px; important;width:200px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea style="font-size: 12px; important;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -3021,7 +3072,7 @@
               appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -3234,7 +3285,7 @@
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
           document.getElementById("prevBtnAdd").style.display = "inline";
         }else if (n == 4) {
-          $(".modal-title").text('Term Of Payment')   
+          $(".modal-title").text('Terms & Condition')   
           $(".modal-dialog").removeClass('modal-lg')   
           $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
@@ -3586,7 +3637,7 @@
 
             }else if (n == 3) {
               $("#textAreaTOPCek").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
-              $(".modal-title").text('Term Of Payment')
+              $(".modal-title").text('Terms & Condition')
               $(".modal-dialog").removeClass('modal-lg')
               $("#prevBtnAddAdmin").attr('onclick','nextPrevAddAdmin(-1,'+ result.pr.id +')')       
               $("#nextBtnAddAdmin").attr('onclick','nextPrevAddAdmin(1,'+ result.pr.id +')')
@@ -3611,26 +3662,40 @@
               PRMethode = $("#selectMethode").find(":selected").text()
 
               var appendHeader = ""
-              if (result.pr.type_of_letter == 'IPR') {
-                appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-              }else{
-                appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-                appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-                appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+              appendHeader = appendHeader + '<div class="row">'
+              appendHeader = appendHeader + '    <div class="col-md-6">'
+              appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+              appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+              appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+              appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+              appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+              appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+              appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+              appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+              appendHeader = appendHeader + '    </div>'
+              if (window.matchMedia("(max-width: 768px)").matches)
+              {
+                  appendHeader = appendHeader + '    <div class="col-md-6">'
+                  // The viewport is less than 768 pixels wide
+                  console.log("This is a mobile device.");
+              } else {
+                  appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                  // The viewport is at least 768 pixels wide
+                  console.log("This is a tablet or desktop.");
               }
+              appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+              appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+              appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+              if (PRType == 'EPR') {
+                appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+                appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+                appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+                appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+              }
+              appendHeader = appendHeader + '    </div>'
+              appendHeader = appendHeader + '</div>'
 
               $("#headerPreviewFinalCek").append(appendHeader)
 
@@ -3644,15 +3709,15 @@
                     append = append + '<span>'+ i +'</span>'
                   append = append + '</td>'
                   append = append + '<td width="20%">'
-                    append = append + '<input style="font-size: 12px;" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
+                  append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                   append = append + '</td>'
-                  append = append + '<td width="35%">'
-                    append = append + '<textarea style="font-size: 12px;height:150px;width:250px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                  append = append + '<td width="40%">'
+                    append = append + '<textarea style="font-size: 12px;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
                   append = append + '</td>'
-                  append = append + '<td width="10%">'
+                  append = append + '<td width="5%">'
                     append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px;">'
                   append = append + '</td>'
-                  append = append + '<td width="10%">'
+                  append = append + '<td width="5%">'
                     append = append + '<select disabled style="width:70px;font-size: 12px;" class="form-control">'
                     append = append + '<option>'+ item.unit.charAt(0).toUpperCase() + item.unit.slice(1) +'</option>'
                     append = append + '</select>'
@@ -3700,7 +3765,7 @@
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<hr>'
-              appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+              appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
               appendBottom = appendBottom + '<div readonly id="termPreviewCek" class="form-control" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
               appendBottom = appendBottom + '<hr>'
               appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -3849,10 +3914,10 @@
                 append = append + '<span style="font-size: 12px;">'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px;" class="form-control" type="" name="" value="'+ value.name_product +'">'
+              append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ value.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;width:200px" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -4187,6 +4252,12 @@
         $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
         $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()  
       }
+
+      if (val == "reason_reject") {
+        $("#textAreaReasonReject").closest('.form-group').removeClass('has-error')
+        $("#textAreaReasonReject").closest('textarea').next('span').hide();
+        $("#textAreaReasonReject").prev('.input-group-addon').css("background-color","red"); 
+      }
     }
 
     // var tempVat = 0
@@ -4197,7 +4268,7 @@
     // var sum = 0
     // var btnVatStatus = true
     // var valueVat = ""
-    // localStorage.setItem('status_tax','True')
+    localStorage.setItem('status_tax',false)
 
     function changeVatValue(value){
       var tempVat = 0
@@ -4212,6 +4283,7 @@
       }else{
         valueVat = value
       }
+      console.log(valueVat)
       // btnVatStatus = true
       localStorage.setItem('status_tax',valueVat)
 
@@ -4649,33 +4721,214 @@
           }
         }             
       }else if (currentTab == 3) {
-        if ($("#selectType").val() == 'IPR') {
-          if ($("#inputPenawaranHarga").val() == "") {
-            $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
-            $("#inputPenawaranHarga").closest('div').next('span').show();
-            $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
-          }else{
-            $.ajax({
-              type: "GET",
-              url: url,
-              data: {
-                no_pr:localStorage.getItem('no_pr'),
-              },
-              success:function(result){
-                let formData = new FormData();
-                const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
-                var arrInputDocPendukung = []
+        if (n == 1) {
+          if ($("#selectType").val() == 'IPR') {
+            if ($("#inputPenawaranHarga").val() == "") {
+              $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
+              $("#inputPenawaranHarga").closest('div').next('span').show();
+              $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
+            }else{
+              $.ajax({
+                type: "GET",
+                url: url,
+                data: {
+                  no_pr:localStorage.getItem('no_pr'),
+                },
+                success:function(result){
+                  let formData = new FormData();
+                  const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
+                  var arrInputDocPendukung = []
 
-                if (result.dokumen.length > 0) {
-                  if ($('#inputPenawaranHarga').prop('files')[0].name.replace("/","") != result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1]) {
-                    formData.append('inputPenawaranHarga', filepenawaranHarga)
-                  } else {
-                    formData.append('inputPenawaranHarga', '-')
+                  if (result.dokumen.length > 0) {
+                    if ($('#inputPenawaranHarga').prop('files')[0].name.replace("/","") != result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1]) {
+                      formData.append('inputPenawaranHarga', filepenawaranHarga)
+                    } else {
+                      formData.append('inputPenawaranHarga', '-')
+                    }
+
+                    if (result.dokumen[1] != undefined) {
+                      if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
+                        $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
+                          formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                          arrInputDocPendukung.push({
+                            nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                            no_pr:no_pr
+                          })
+                        })
+
+                      }else{
+                        var fileInput = $(this).find('#inputDocPendukung').val()
+                        if (fileInput && fileInput !== '') { 
+                          formData.append('inputDocPendukung[]','-')
+                        }
+                      }  
+                    }else{
+                      $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
+                        var fileInput = $(this).find('#inputDocPendukung').val()
+                        if (fileInput && fileInput !== '') { 
+                          formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                          arrInputDocPendukung.push({
+                            nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                            no_pr:no_pr
+                          })
+                        }
+                      });
+                    }
+                                    
+                  }else{
+                    formData.append('inputPenawaranHarga', filepenawaranHarga);
+                    $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
+                      var fileInput = $(this).find('#inputDocPendukung').val()
+                      if (fileInput && fileInput !== '') { 
+                        formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                        arrInputDocPendukung.push({
+                          nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                          no_pr:no_pr
+                        }) 
+                      }
+                    });
+                    
+                  }               
+
+                  formData.append('_token',"{{csrf_token()}}")
+                  formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+                  formData.append('no_pr',no_pr)
+
+                  if (n == 1) {
+                    $.ajax({
+                      url: urlDokumen,
+                      type: 'post',
+                      data:formData,
+                      processData: false,
+                      contentType: false,
+                      beforeSend:function(){
+                        Swal.fire({
+                            title: 'Please Wait..!',
+                            text: "It's sending..",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            customClass: {
+                                popup: 'border-radius-0',
+                            },
+                            didOpen: () => {
+                                Swal.showLoading()
+                            }
+                        })
+                      },
+                      success: function(data)
+                      {
+                        Swal.close()
+                        let x = document.getElementsByClassName("tab-add");
+                        x[currentTab].style.display = "none";
+                        currentTab = currentTab + n;
+                        if (currentTab >= x.length) {
+                          x[n].style.display = "none";
+                          currentTab = 0;
+                        }
+                        unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                      }
+                    });
+                  }else{
+                    let x = document.getElementsByClassName("tab-add");
+                    x[currentTab].style.display = "none";
+                    currentTab = currentTab + n;
+                    if (currentTab >= x.length) {
+                      x[n].style.display = "none";
+                      currentTab = 0;
+                    }
+                    unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                  }                 
+                }
+              })           
+            }
+            
+          }else{
+            if ($("#selectPid").val() == "") {
+              $("#selectPid").closest('.form-group').addClass('has-error')
+              $("#selectPid").closest('select').next('span').next("span").show(); 
+              $("#selectPid").prev('.col-md-6').css("background-color","red");
+            }else if ($("#selectLeadId").val() == "") {
+              $("#selectLeadId").closest('.form-group').addClass('has-error')
+              $("#selectLeadId").closest('select').next('span').next("span").show(); 
+              $("#selectLeadId").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputQuoteNumber").val() == "") {
+              $("#inputQuoteNumber").closest('.form-group').addClass('has-error')
+              $("#inputQuoteNumber").closest('select').next('span').next("span").show(); 
+              $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputQuoteSupplier").val() == "") {
+              $("#inputQuoteSupplier").closest('.form-group').addClass('has-error')
+              $("#inputQuoteSupplier").closest('div').next('span').show();
+              $("#inputQuoteSupplier").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputSPK").val() == "") {
+              $("#inputSPK").closest('.form-group').addClass('has-error')
+              $("#inputSPK").closest('div').next('span').show();
+              $("#inputSPK").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputSBE").val() == "") {
+              $("#inputSBE").closest('.form-group').addClass('has-error')
+              $("#inputSBE").closest('div').next('span').show();
+              $("#inputSBE").prev('.input-group-addon').css("background-color","red");
+            }else{
+              $.ajax({
+                type: "GET",
+                url: url,
+                data: {
+                  no_pr:localStorage.getItem('no_pr'),
+                },
+                success:function(result){
+                  let formData = new FormData();
+
+                  const fileSpk = $('#inputSPK').prop('files')[0];
+                  var nama_file_spk = $('#inputSPK').val();
+
+                  const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
+                  var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
+
+                  const fileSbe = $('#inputSBE').prop('files')[0];
+                  var nama_file_sbe = $('#inputSBE').val();
+
+                  if (result.dokumen.length > 0) {
+                    if (result.dokumen[0] !== undefined) {
+                      if (result.dokumen[0].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","") || $('#inputQuoteSupplier').prop('files').length == 0) {
+                        formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                      } else {
+                        formData.append('inputQuoteSupplier', "-");
+                      }
+                    }else{
+                        formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                    }
+
+                    if (result.dokumen[1] !== undefined) {
+                      if (result.dokumen[1].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","") || $('#inputSPK').prop('files').length == 0) {
+                        formData.append('inputSPK', fileSpk);
+                      } else {
+                        formData.append('inputSPK', "-");
+                      }
+                    }else{
+                      formData.append('inputSPK', fileSpk);
+                    }                  
+
+                    if (result.dokumen[2] !== undefined) {
+                      if (result.dokumen[2].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","") || $('#inputSBE').prop('files').length == 0) {
+                        formData.append('inputSBE', fileSbe);
+                      } else {
+                        formData.append('inputSBE', "-");
+                      }
+                    }else{
+                        formData.append('inputSBE', fileSbe);
+                    }
+
+                  }else{
+                    formData.append('inputSPK', fileSpk);
+                    formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                    formData.append('inputSBE', fileSbe);
                   }
 
-                  if (result.dokumen[1] != undefined) {
-                    if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
-                      $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
+                  var arrInputDocPendukung = []
+
+                  if (result.dokumen.length > 0) {
+                    if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+                      $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
                         formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                         arrInputDocPendukung.push({
                           nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
@@ -4688,257 +4941,88 @@
                       if (fileInput && fileInput !== '') { 
                         formData.append('inputDocPendukung[]','-')
                       }
-                    }  
+                    }                                 
                   }else{
-                    $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
+                    $('#tableDocPendukung_epr .trDocPendukung').each(function() {
                       var fileInput = $(this).find('#inputDocPendukung').val()
                       if (fileInput && fileInput !== '') { 
+
                         formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                         arrInputDocPendukung.push({
                           nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
                           no_pr:no_pr
                         })
                       }
-                    });
-                  }
-                                  
-                }else{
-                  formData.append('inputPenawaranHarga', filepenawaranHarga);
-                  $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
-                    var fileInput = $(this).find('#inputDocPendukung').val()
-                    if (fileInput && fileInput !== '') { 
-                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                      arrInputDocPendukung.push({
-                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                        no_pr:no_pr
-                      }) 
-                    }
-                  });
-                  
-                }               
-
-                formData.append('_token',"{{csrf_token()}}")
-                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-                formData.append('no_pr',no_pr)
-
-                if (n == 1) {
-                  $.ajax({
-                    url: urlDokumen,
-                    type: 'post',
-                    data:formData,
-                    processData: false,
-                    contentType: false,
-                    beforeSend:function(){
-                      Swal.fire({
-                          title: 'Please Wait..!',
-                          text: "It's sending..",
-                          allowOutsideClick: false,
-                          allowEscapeKey: false,
-                          allowEnterKey: false,
-                          customClass: {
-                              popup: 'border-radius-0',
-                          },
-                          didOpen: () => {
-                              Swal.showLoading()
-                          }
-                      })
-                    },
-                    success: function(data)
-                    {
-                      Swal.close()
-                      let x = document.getElementsByClassName("tab-add");
-                      x[currentTab].style.display = "none";
-                      currentTab = currentTab + n;
-                      if (currentTab >= x.length) {
-                        x[n].style.display = "none";
-                        currentTab = 0;
-                      }
-                      unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                    }
-                  });
-                }else{
-                  let x = document.getElementsByClassName("tab-add");
-                  x[currentTab].style.display = "none";
-                  currentTab = currentTab + n;
-                  if (currentTab >= x.length) {
-                    x[n].style.display = "none";
-                    currentTab = 0;
-                  }
-                  unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                }                 
-              }
-            })           
-          }
-          
-        }else{
-          if ($("#selectPid").val() == "") {
-            $("#selectPid").closest('.form-group').addClass('has-error')
-            $("#selectPid").closest('select').next('span').next("span").show(); 
-            $("#selectPid").prev('.col-md-6').css("background-color","red");
-          }else if ($("#selectLeadId").val() == "") {
-            $("#selectLeadId").closest('.form-group').addClass('has-error')
-            $("#selectLeadId").closest('select').next('span').next("span").show(); 
-            $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputQuoteNumber").val() == "") {
-            $("#inputQuoteNumber").closest('.form-group').addClass('has-error')
-            $("#inputQuoteNumber").closest('select').next('span').next("span").show(); 
-            $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputQuoteSupplier").val() == "") {
-            $("#inputQuoteSupplier").closest('.form-group').addClass('has-error')
-            $("#inputQuoteSupplier").closest('div').next('span').show();
-            $("#inputQuoteSupplier").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputSPK").val() == "") {
-            $("#inputSPK").closest('.form-group').addClass('has-error')
-            $("#inputSPK").closest('div').next('span').show();
-            $("#inputSPK").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputSBE").val() == "") {
-            $("#inputSBE").closest('.form-group').addClass('has-error')
-            $("#inputSBE").closest('div').next('span').show();
-            $("#inputSBE").prev('.input-group-addon').css("background-color","red");
-          }else{
-            $.ajax({
-              type: "GET",
-              url: url,
-              data: {
-                no_pr:localStorage.getItem('no_pr'),
-              },
-              success:function(result){
-                let formData = new FormData();
-
-                const fileSpk = $('#inputSPK').prop('files')[0];
-                var nama_file_spk = $('#inputSPK').val();
-
-                const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
-                var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
-
-                const fileSbe = $('#inputSBE').prop('files')[0];
-                var nama_file_sbe = $('#inputSBE').val();
-
-                if (result.dokumen.length > 0) {
-                  if (result.dokumen[0] !== undefined) {
-                    if (result.dokumen[0].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","") || $('#inputQuoteSupplier').prop('files').length == 0) {
-                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                    } else {
-                      formData.append('inputQuoteSupplier', "-");
-                    }
-                  }else{
-                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                  }
-
-                  if (result.dokumen[1] !== undefined) {
-                    if (result.dokumen[1].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","") || $('#inputSPK').prop('files').length == 0) {
-                      formData.append('inputSPK', fileSpk);
-                    } else {
-                      formData.append('inputSPK', "-");
-                    }
-                  }else{
-                    formData.append('inputSPK', fileSpk);
-                  }                  
-
-                  if (result.dokumen[2] !== undefined) {
-                    if (result.dokumen[2].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","") || $('#inputSBE').prop('files').length == 0) {
-                      formData.append('inputSBE', fileSbe);
-                    } else {
-                      formData.append('inputSBE', "-");
-                    }
-                  }else{
-                      formData.append('inputSBE', fileSbe);
-                  }
-
-                }else{
-                  formData.append('inputSPK', fileSpk);
-                  formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                  formData.append('inputSBE', fileSbe);
-                }
-
-                var arrInputDocPendukung = []
-
-                if (result.dokumen.length > 0) {
-                  if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
-                    $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
-                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                      arrInputDocPendukung.push({
-                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                        no_pr:no_pr
-                      })
                     })
+                  }              
 
-                  }else{
-                    var fileInput = $(this).find('#inputDocPendukung').val()
-                    if (fileInput && fileInput !== '') { 
-                      formData.append('inputDocPendukung[]','-')
-                    }
-                  }                                 
-                }else{
-                  $('#tableDocPendukung_epr .trDocPendukung').each(function() {
-                    var fileInput = $(this).find('#inputDocPendukung').val()
-                    if (fileInput && fileInput !== '') { 
+                  formData.append('_token',"{{csrf_token()}}")
+                  formData.append('no_pr',no_pr)
+                  formData.append('selectLeadId', $("#selectLeadId").val())
+                  formData.append('selectPid', $("#selectPid").val())
+                  formData.append('inputPid',$("#projectIdInputNew").val())
+                  formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+                  formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
 
-                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                      arrInputDocPendukung.push({
-                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                        no_pr:no_pr
-                      })
-                    }
-                  })
-                }              
-
-                formData.append('_token',"{{csrf_token()}}")
-                formData.append('no_pr',no_pr)
-                formData.append('selectLeadId', $("#selectLeadId").val())
-                formData.append('selectPid', $("#selectPid").val())
-                formData.append('inputPid',$("#projectIdInputNew").val())
-                formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
-                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-
-                if(n == 1){
-                  $.ajax({
-                    type:"POST",
-                    url:urlDokumen,
-                    processData: false,
-                    contentType: false,
-                    data:formData,
-                    beforeSend:function(){
-                      Swal.fire({
-                          title: 'Please Wait..!',
-                          text: "It's sending..",
-                          allowOutsideClick: false,
-                          allowEscapeKey: false,
-                          allowEnterKey: false,
-                          customClass: {
-                              popup: 'border-radius-0',
-                          },
-                          didOpen: () => {
-                              Swal.showLoading()
-                          }
-                      })
-                    },
-                    success: function(result){
-                      Swal.close()
-                      let x = document.getElementsByClassName("tab-add");
-                      x[currentTab].style.display = "none";
-                      currentTab = currentTab + n;
-                      if (currentTab >= x.length) {
-                        x[n].style.display = "none";
-                        currentTab = 0;
+                  if(n == 1){
+                    $.ajax({
+                      type:"POST",
+                      url:urlDokumen,
+                      processData: false,
+                      contentType: false,
+                      data:formData,
+                      beforeSend:function(){
+                        Swal.fire({
+                            title: 'Please Wait..!',
+                            text: "It's sending..",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            customClass: {
+                                popup: 'border-radius-0',
+                            },
+                            didOpen: () => {
+                                Swal.showLoading()
+                            }
+                        })
+                      },
+                      success: function(result){
+                        Swal.close()
+                        let x = document.getElementsByClassName("tab-add");
+                        x[currentTab].style.display = "none";
+                        currentTab = currentTab + n;
+                        if (currentTab >= x.length) {
+                          x[n].style.display = "none";
+                          currentTab = 0;
+                        }
+                        unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
                       }
-                      unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                    })
+                  } else {
+                    let x = document.getElementsByClassName("tab-add");
+                    x[currentTab].style.display = "none";
+                    currentTab = currentTab + n;
+                    if (currentTab >= x.length) {
+                      x[n].style.display = "none";
+                      currentTab = 0;
                     }
-                  })
-                } else {
-                  let x = document.getElementsByClassName("tab-add");
-                  x[currentTab].style.display = "none";
-                  currentTab = currentTab + n;
-                  if (currentTab >= x.length) {
-                    x[n].style.display = "none";
-                    currentTab = 0;
-                  }
-                  unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                }                
-              }
-            })            
-          } 
+                    unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                  }                
+                }
+              })            
+            } 
+          }
+        }else{
+          let x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
         }
+        
       }else if (currentTab == 4) {
         if (n == 1) {
           if ($("#textAreaTOP").val() == "") {
@@ -5026,10 +5110,10 @@
                 append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:250px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -5579,193 +5663,78 @@
           }
         }       
       }else if (currentTab == 3) {
-        if ($("#selectType").val() == 'IPR') {
-          if ($("#inputPenawaranHarga").val() == "") {
-            $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
-            $("#inputPenawaranHarga").closest('div').next('span').show();
-            $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
-          }else{
-            let formData = new FormData();
-            const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
-            if (isFilledPenawaranHarga) {
-              formData.append('inputPenawaranHarga', filepenawaranHarga);
-              isFilledPenawaranHarga = false
-              // formData.append('nama_file_penawaranHarga', nama_file_penawaranHarga);
-            } else {
-              formData.append('inputPenawaranHarga', "-");
-            }
+        if (n == 1) {
+          if ($("#selectType").val() == 'IPR') {
+            if ($("#inputPenawaranHarga").val() == "") {
+              $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
+              $("#inputPenawaranHarga").closest('div').next('span').show();
+              $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
+            }else{
+              let formData = new FormData();
+              const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
+              if (isFilledPenawaranHarga) {
+                formData.append('inputPenawaranHarga', filepenawaranHarga);
+                isFilledPenawaranHarga = false
+                // formData.append('nama_file_penawaranHarga', nama_file_penawaranHarga);
+              } else {
+                formData.append('inputPenawaranHarga', "-");
+              }
 
-            $(".tableDocPendukung").empty()
+              $(".tableDocPendukung").empty()
 
 
-            if($('#tableDocPendukung .trDocPendukung').length != arrInputDocPendukung.length){
-              if(arrInputDocPendukung.length != 0){
-                var lengthArrInputDocPendukung = $('#tableDocPendukung .trDocPendukung').length
-                arrInputDocPendukung = []
-                var i = 1;
-                $('#tableDocPendukung .trDocPendukung').each(function() {
-                  if(i >= lengthArrInputDocPendukung){
+              if($('#tableDocPendukung .trDocPendukung').length != arrInputDocPendukung.length){
+                if(arrInputDocPendukung.length != 0){
+                  var lengthArrInputDocPendukung = $('#tableDocPendukung .trDocPendukung').length
+                  arrInputDocPendukung = []
+                  var i = 1;
+                  $('#tableDocPendukung .trDocPendukung').each(function() {
+                    if(i >= lengthArrInputDocPendukung){
+                      var fileInput = $(this).find('#inputDocPendukung').val()
+                      if (fileInput && fileInput !== '') { 
+                        formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                        arrInputDocPendukung.push({
+                          nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                          no_pr:localStorage.getItem('no_pr')
+                        })
+                      }
+                    }
+                    i++
+                  });
+                } else {
+                  $('#tableDocPendukung .trDocPendukung').each(function() {
                     var fileInput = $(this).find('#inputDocPendukung').val()
-                    if (fileInput && fileInput !== '') { 
+                    if (fileInput && fileInput !== '') {
                       formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
 
                       arrInputDocPendukung.push({
                         nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
                         no_pr:localStorage.getItem('no_pr')
                       })
-                    }
-                  }
-                  i++
-                });
-              } else {
-                $('#tableDocPendukung .trDocPendukung').each(function() {
-                  var fileInput = $(this).find('#inputDocPendukung').val()
-                  if (fileInput && fileInput !== '') {
-                    formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-
-                    arrInputDocPendukung.push({
-                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                      no_pr:localStorage.getItem('no_pr')
-                    })
-                  }                  
-                });
-              }
-            } else {
-              var fileInput = $(this).find('#inputDocPendukung').val()
-              if (fileInput && fileInput !== '') {
-                formData.append('inputDocPendukung[]',"-")
-              }
-            }
-            
-
-            isFilledDocPendukung = false
-
-            formData.append('_token',"{{csrf_token()}}")
-            formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-            formData.append('no_pr',localStorage.getItem('no_pr'))
-
-            $.ajax({
-              url: "{{'/admin/storeDokumen'}}",
-              type: 'post',
-              data:formData,
-              processData: false,
-              contentType: false,
-              beforeSend:function(){
-                Swal.fire({
-                    title: 'Please Wait..!',
-                    text: "It's sending..",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    allowEnterKey: false,
-                    customClass: {
-                        popup: 'border-radius-0',
-                    },
-                    didOpen: () => {
-                        Swal.showLoading()
-                    }
-                })
-              },
-              success: function(data)
-              {
-                Swal.close()
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
+                    }                  
+                  });
                 }
-                addDraftPr(currentTab);
+              } else {
+                var fileInput = $(this).find('#inputDocPendukung').val()
+                if (fileInput && fileInput !== '') {
+                  formData.append('inputDocPendukung[]',"-")
+                }
               }
-            });           
-          }         
-        }else{
-          if ($("#selectLeadId").val() == "-") {
-            $("#selectLeadId").closest('.col-md-6').addClass('has-error')
-            $("#selectLeadId").closest('select').siblings('span.help-block').show();
-            $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-          }else if ($("#selectPid").val() == "-") {
-            $("#selectPid").closest('.col-md-6').addClass('has-error')
-            $("#selectPid").closest('select').next('span help-block').show();
-            $("#selectPid").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputSPK").val() == "") {
-            $("#inputSPK").closest('.form-group').addClass('has-error')
-            $("#inputSPK").closest('div').next('span').show();
-            $("#inputSPK").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputSBE").val() == "") {
-            $("#inputSBE").closest('.form-group').addClass('has-error')
-            $("#inputSBE").closest('div').next('span').show();
-            $("#inputSBE").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputQuoteSupplier").val() == "") {
-            $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
-            $("#inputQuoteSupplier").closest('div').next('span').show();
-            $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputQuoteNumber").val() == "-") {
-            $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
-            $("#inputQuoteNumber").closest('input').next('span').show();
-            $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
-          }else{
-            let formData = new FormData();
+              
 
-            const fileSpk = $('#inputSPK').prop('files')[0];
+              isFilledDocPendukung = false
 
-            arrInputDocPendukung = []
-            
-            if ($('#inputSPK').val() !="") {
-              if(nama_file_spk == ""){
-                nama_file_spk = $('#inputSPK').val();
-                formData.append('inputSPK', fileSpk);
-              } else if (nama_file_spk == $('#inputSPK').val()){
-                formData.append('inputSPK', "-");
-              }
-            }
-            const fileSbe = $('#inputSBE').prop('files')[0];
-            
-            if ($('#inputSBE').val() !="") {
-              if(nama_file_sbe == ""){
-                nama_file_sbe = $('#inputSBE').val();
-                formData.append('inputSBE', fileSbe);
-              } else if (nama_file_sbe == $('#inputSBE').val()){
-                formData.append('inputSBE', "-");
-              }
-            }
-            const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
-            
-            if ($('#inputQuoteSupplier').val() !="") {
-              if(nama_file_quote_supplier == ""){
-                nama_file_quote_supplier = $('#inputQuoteSupplier').val();
-                formData.append('inputQuoteSupplier', fileQuoteSupplier);
-              } else if (nama_file_quote_supplier == $('#inputQuoteSupplier').val()){
-                formData.append('inputQuoteSupplier', "-");
-              }
-            }
+              formData.append('_token',"{{csrf_token()}}")
+              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+              formData.append('no_pr',localStorage.getItem('no_pr'))
 
-            $('#tableDocPendukung_epr .trDocPendukung').each(function() {
-              var fileInput = $(this).find('#inputDocPendukung').val()
-              if (fileInput && fileInput !== '') {
-                formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-
-                arrInputDocPendukung.push({
-                  nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                  no_pr:localStorage.getItem('no_pr')
-                })
-              }                  
-            });
-
-            formData.append('_token',"{{csrf_token()}}")
-            formData.append('no_pr', localStorage.getItem('no_pr'))
-            formData.append('selectLeadId', $("#selectLeadId").val())
-            formData.append('selectPid', $("#selectPid").val())
-            formData.append('inputPid',$("#projectIdInputNew").val())
-            formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
-            formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-
-            $.ajax({
-                type:"POST",
-                url:"{{url('/admin/storeDokumen')}}",
+              $.ajax({
+                url: "{{'/admin/storeDokumen'}}",
+                type: 'post',
+                data:formData,
                 processData: false,
                 contentType: false,
-                data:formData,
                 beforeSend:function(){
                   Swal.fire({
                       title: 'Please Wait..!',
@@ -5781,8 +5750,8 @@
                       }
                   })
                 },
-                success: function(result){
-                  localStorage.setItem('isStoreSupplier',true)
+                success: function(data)
+                {
                   Swal.close()
                   var x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
@@ -5793,39 +5762,177 @@
                   }
                   addDraftPr(currentTab);
                 }
-            })                        
-          } 
-        }
-      }else if (currentTab == 4) {
-        if ($("#textAreaTOP").val() == "") {
-          $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
-          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
-        }else{
-          $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
-          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+              });           
+            }         
+          }else{
+            if ($("#selectLeadId").val() == "-") {
+              $("#selectLeadId").closest('.col-md-6').addClass('has-error')
+              $("#selectLeadId").closest('select').siblings('span.help-block').show();
+              $("#selectLeadId").prev('.col-md-6').css("background-color","red");
+            }else if ($("#selectPid").val() == "-") {
+              $("#selectPid").closest('.col-md-6').addClass('has-error')
+              $("#selectPid").closest('select').next('span help-block').show();
+              $("#selectPid").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputSPK").val() == "") {
+              $("#inputSPK").closest('.form-group').addClass('has-error')
+              $("#inputSPK").closest('div').next('span').show();
+              $("#inputSPK").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputSBE").val() == "") {
+              $("#inputSBE").closest('.form-group').addClass('has-error')
+              $("#inputSBE").closest('div').next('span').show();
+              $("#inputSBE").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputQuoteSupplier").val() == "") {
+              $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
+              $("#inputQuoteSupplier").closest('div').next('span').show();
+              $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputQuoteNumber").val() == "-") {
+              $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
+              $("#inputQuoteNumber").closest('input').next('span').show();
+              $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
+            }else{
+              let formData = new FormData();
 
-          $.ajax({
-            url: "{{'/admin/storeTermPayment'}}",
-            type: 'post',
-            data:{
-              no_pr:localStorage.getItem('no_pr'),
-              _token:"{{csrf_token()}}",
-              textAreaTOP:$("#textAreaTOP").val(),
-              status_tax:localStorage.getItem('status_tax')
-            },
-            success: function(data)
-            {
-              var x = document.getElementsByClassName("tab-add");
-              x[currentTab].style.display = "none";
-              currentTab = currentTab + n;
-              if (currentTab >= x.length) {
-                x[n].style.display = "none";
-                currentTab = 0;
+              const fileSpk = $('#inputSPK').prop('files')[0];
+
+              arrInputDocPendukung = []
+              
+              if ($('#inputSPK').val() !="") {
+                if(nama_file_spk == ""){
+                  nama_file_spk = $('#inputSPK').val();
+                  formData.append('inputSPK', fileSpk);
+                } else if (nama_file_spk == $('#inputSPK').val()){
+                  formData.append('inputSPK', "-");
+                }
               }
-              addDraftPr(currentTab);
-            }
-          });
-        }        
+              const fileSbe = $('#inputSBE').prop('files')[0];
+              
+              if ($('#inputSBE').val() !="") {
+                if(nama_file_sbe == ""){
+                  nama_file_sbe = $('#inputSBE').val();
+                  formData.append('inputSBE', fileSbe);
+                } else if (nama_file_sbe == $('#inputSBE').val()){
+                  formData.append('inputSBE', "-");
+                }
+              }
+              const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
+              
+              if ($('#inputQuoteSupplier').val() !="") {
+                if(nama_file_quote_supplier == ""){
+                  nama_file_quote_supplier = $('#inputQuoteSupplier').val();
+                  formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                } else if (nama_file_quote_supplier == $('#inputQuoteSupplier').val()){
+                  formData.append('inputQuoteSupplier', "-");
+                }
+              }
+
+              $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                var fileInput = $(this).find('#inputDocPendukung').val()
+                if (fileInput && fileInput !== '') {
+                  formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                  arrInputDocPendukung.push({
+                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                    no_pr:localStorage.getItem('no_pr')
+                  })
+                }                  
+              });
+
+              formData.append('_token',"{{csrf_token()}}")
+              formData.append('no_pr', localStorage.getItem('no_pr'))
+              formData.append('selectLeadId', $("#selectLeadId").val())
+              formData.append('selectPid', $("#selectPid").val())
+              formData.append('inputPid',$("#projectIdInputNew").val())
+              formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+
+              $.ajax({
+                  type:"POST",
+                  url:"{{url('/admin/storeDokumen')}}",
+                  processData: false,
+                  contentType: false,
+                  data:formData,
+                  beforeSend:function(){
+                    Swal.fire({
+                        title: 'Please Wait..!',
+                        text: "It's sending..",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        customClass: {
+                            popup: 'border-radius-0',
+                        },
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    })
+                  },
+                  success: function(result){
+                    localStorage.setItem('isStoreSupplier',true)
+                    Swal.close()
+                    var x = document.getElementsByClassName("tab-add");
+                    x[currentTab].style.display = "none";
+                    currentTab = currentTab + n;
+                    if (currentTab >= x.length) {
+                      x[n].style.display = "none";
+                      currentTab = 0;
+                    }
+                    addDraftPr(currentTab);
+                  }
+              })                        
+            } 
+          }
+        }else{
+          var x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          addDraftPr(currentTab);
+        }
+        
+      }else if (currentTab == 4) {
+        if (n == 1) {
+          if ($("#textAreaTOP").val() == "") {
+            $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+            $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+          }else{
+            $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+            $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+
+            $.ajax({
+              url: "{{'/admin/storeTermPayment'}}",
+              type: 'post',
+              data:{
+                no_pr:localStorage.getItem('no_pr'),
+                _token:"{{csrf_token()}}",
+                textAreaTOP:$("#textAreaTOP").val(),
+                status_tax:localStorage.getItem('status_tax')
+              },
+              success: function(data)
+              {
+                var x = document.getElementsByClassName("tab-add");
+                x[currentTab].style.display = "none";
+                currentTab = currentTab + n;
+                if (currentTab >= x.length) {
+                  x[n].style.display = "none";
+                  currentTab = 0;
+                }
+                addDraftPr(currentTab);
+              }
+            });
+          }  
+        }else{
+          var x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          addDraftPr(currentTab);
+        }  
       }else{
         $(".divReasonRejectRevision").remove()
 
@@ -6273,6 +6380,11 @@
           }
         })
       }
+
+      if (n == -1) {
+        $(".radioConfirm").prop('checked', false);
+      }
+
       var x = document.getElementsByClassName("tab-cek");
       x[currentTab].style.display = "none";
       currentTab = currentTab + n;
@@ -6363,6 +6475,7 @@
                       confirmButtonText: 'Reload',
                     }).then((result) => {
                       localStorage.setItem('status_pr','') 
+                      localStorage.setItem('status_tax',false)
                       if (status == 'revision') {
                         location.replace("{{url('/admin/detail/draftPR')}}/"+ localStorage.getItem('no_pr'))
                       }else{

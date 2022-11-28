@@ -1385,7 +1385,7 @@ class PrDraftController extends Controller
             $activity->date_time = Carbon::now()->toDateTimeString();
             $activity->status = 'DRAFT';
             $activity->operator = Auth::User()->name;
-            $activity->activity = 'Add Draft PR with subject' . $update->title;
+            $activity->activity = 'Add Draft PR with subject ' . $update->title;
             $activity->save();
         }
 
@@ -2142,7 +2142,8 @@ class PrDraftController extends Controller
 
     public function getPreviewPembanding(Request $request)
     {
-        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', 'lead_id',  DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category', 'tb_pr_compare.status_tax')->where('tb_pr_compare.id', $request->no_pr)->first();
+
+        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', 'lead_id', DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category', 'tb_pr_compare.status_tax')->where('tb_pr_compare.id', $request->no_pr)->first();
 
         $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
         		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
@@ -3035,13 +3036,14 @@ class PrDraftController extends Controller
                 ->where('status_karyawan', '!=', 'dummy');
 
         if ($data->type_of_letter == 'EPR') {
+
             if ($data->category == 'Bank Garansi') {
                 $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
             } else {
                 $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
-            }
+
         } else {
             if ($cek_group->group == 'pmo') {
 
@@ -3261,7 +3263,6 @@ class PrDraftController extends Controller
             ->where('status_karyawan', '!=', 'dummy');
 
         if ($data->type_of_letter == 'EPR') {
-
             if ($data->category == 'Bank Garansi') {
                 $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
@@ -3269,7 +3270,6 @@ class PrDraftController extends Controller
                 $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
             }
-            
         } else {
             if ($cek_group->group == 'pmo') {
 
