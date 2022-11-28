@@ -384,7 +384,7 @@
               </div>
               <div class="form-group">
                 <div class="row">
-                  <div class="col-md-4"> 
+                  <div class="col-md-2"> 
                     <label>Qty*</label>
                     <input autocomplete="off" type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
                     <span class="help-block" style="display:none;">Please fill Qty!</span>
@@ -397,13 +397,22 @@
                     </select>
                     <span class="help-block" style="display:none;">Please fill Unit!</span>
                   </div>
-                  <div class="col-md-4"> 
+                  <div class="col-md-6"> 
                     <label>Price*</label>
                     <div class="input-group">
                       <div class="input-group-addon">
                       Rp.
                       </div>
-                      <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+                      <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 500,00.00" onkeyup="fillInput('price_product')">
+                      <div class="input-group-btn">       
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">         
+                          <span class="fa fa-caret-down"></span>       
+                        </button>       
+                        <ul class="dropdown-menu">       
+                          <li><a onclick="changeCurreny('usd')">USD($)</a></li>
+                          <li><a onclick="changeCurreny('dollar')">IDR(RP)</a></li>
+                        </ul>
+                      </div>
                     </div>
                     <span class="help-block" style="display:none;">Please fill Price!</span>
                   </div>
@@ -512,7 +521,19 @@
                     <span class="help-block" style="display:none;">Please fill Quote Number!</span>
                   </div>
                 </div>
-              </div>    
+              </div> 
+
+              <div class="form-group">
+                <div id="docPendukungContainer" class="table-responsive">
+                  <label id="titleDoc_epr" style="display:none;">Lampiran Dokumen Lainnya</label>
+                  <table id="tableDocPendukung_epr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+                    
+                  </table>
+                </div>
+                <div class="form-group" style="display:flex;margin-top: 10px;">
+                  <a type="button" style="margin:0 auto" id="btnAddDocPendukung" class="btn btn-sm btn-primary" onclick="addDocPendukung('epr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</a>
+                </div>
+              </div>   
             </div>
               
             <div id="formForPrInternal" style="display:none;">
@@ -528,13 +549,13 @@
                 <span style="display:none;" id="span_link_drive"><a id="link_penawaran_harga" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
               <div id="docPendukungContainer" class="table-responsive">
-                <label id="titleDoc" style="display:none;">Lampiran Dokumen Pendukung</label>
-                <table id="tableDocPendukung" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+                <label id="titleDoc_ipr" style="display:none;">Lampiran Dokumen Pendukung</label>
+                <table id="tableDocPendukung_ipr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
                   
                 </table>
               </div>
               <div class="form-group" style="display:flex;margin-top: 10px;">
-                <a type="button" style="margin:0 auto" id="btnAddDocPendukung" class="btn btn-sm btn-primary" onclick="addDocPendukung(0)"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</a>
+                <a type="button" style="margin:0 auto" id="btnAddDocPendukung" class="btn btn-sm btn-primary" onclick="addDocPendukung('ipr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</a>
               </div>
             </div>
           </div>   
@@ -623,115 +644,6 @@
 @section('script')
 <script type="text/javascript">
   $(".money").mask('000,000,000,000,000', {reverse: true})
-  // function KeyPress(e) {
-  //   var evtobj = window.event? event : e
-  //   if (evtobj.keyCode == 50 && evtobj.shiftKey){
-      
-  //   }
-  // }
-
-  // function ListdoSomthingOnComplete(no_pr) {
-  //   var arrUser = []
-
-  //   // console.log(no_pr)
-  //   $.ajax({
-  //     type:"GET",
-  //     url:"{{url('/admin/getPerson')}}",
-  //     data:{
-  //       no_pr:no_pr
-  //     },
-  //     success: function(result){
-  //       $("textarea.mention").mention({
-  //         queryBy: ['username', 'name'],
-  //         users: result
-  //       });
-  //       $.each(result,function(item,value){
-  //         if (value.avatar == null) {
-  //           arrUser.push({username:value.name,name:value.email,image:'{{ asset("image/place_profile_3.png")}}'})
-  //         }else{
-  //           arrUser.push({username:value.name,name:value.email,image:value.avatar})
-  //         }
-  //       })
-  //     }
-  //   })
-
-  //   return arrUser
-  // }
-
-  //   result = [
-  //     {
-  //     "name": "Timurta Bagus Prapditya Laksana",
-  //     "email": "timurta@sinergy.co.id",
-  //     "avatar": null
-  //     },
-  //     {
-  //     "name": "Rily Janirawanty",
-  //     "email": "rily@sinergy.co.id",
-  //     "avatar": null
-  //     },
-  //     {
-  //     "name": "Endraw Denny Hermanto",
-  //     "position": "BCD Manager",
-  //     "ttd": "image/tanda_tangan/Tanda_tangan_1100492050.png",
-  //     "email": "endraw@sinergy.co.id",
-  //     "avatar": "https://lh3.googleusercontent.com/a-/AFdZuconopfZh_YM9ElwnEgQl4JGQQs-sSvZliuAU8lPn5lk3-xaUpDYS9bcbkroa5pZdWFq5bU21cL3gQnL9XhEF7xHt9QolfwuflFti0_bLWN5b2rjebxRQby5rXwywDs0AknD4SwUFwhqwZPObcLCVB2tBbNKnUu4on9WnGerj8aKOy5Z15h218_KcNW6o6pj2ECww022oYhKJ3Wr4COdnFLr-8oliUmrE_2MwR6fQl-owckze5DuwpUMwdoIL_7sFAunTt9VHhQkNvXSks20LRqj_l3DA1OJUfpTT5l_g_XThhd71rvGSgpfZfK7t5U1pKoBw1FeMon2jMw9-9d_QnmHMK-Lj_u9RU7np6TqqiFOpivSucwrRZpDEwzw_diiIEKdfYljaaXVmev5tWwB1jrd096StpqqtbGt8xUnPo_pKDrSKXXSP0wK3pYzBdCtiYvxAV34xuzHgGKDTzZ8zUqylJaSRGwF6wEAEJxAKrkNIj0rbIFZBh7LTx-wCgfVC-65HDjwINlUOP3QgRKP3ofoeKX5WeYeJrUqaZhumuRE56oY1JbdauQBuSRkNwd3LePLFn8j3K1fErGVszV_jJ-A6zXRL6J6lbtkC6KznxQ5Oc2WCD9nVAVFJZ1PIOndPrPpOfUI6TGyzth_W3Bpcifs0rztQmB5jXmjoB5niJiwNk2c544dhd4iU2ybev00kg6lp6CpFhW6j9cot2kOG45xfxJY-dQGC10viEc8FoSS5RNud6E9Dcc13Yijm_r-Wkt-YH3a=s96-c",
-  //     "date_sign": "-",
-  //     "signed": "false"
-  //     },
-  //     {
-  //     "name": "Agustinus Angger Muryanto",
-  //     "position": "PMO Manager",
-  //     "ttd": "image/tanda_tangan/Tanda_tangan_1170387080.png",
-  //     "email": "angger@sinergy.co.id",
-  //     "avatar": null,
-  //     "date_sign": "-",
-  //     "signed": "false"
-  //     },
-  //     {
-  //     "name": "Ganjar Pramudya Wijaya",
-  //     "position": "SOL Manager",
-  //     "ttd": "image/tanda_tangan/Tanda_tangan_1110492070.png",
-  //     "email": "ganjar@sinergy.co.id",
-  //     "avatar": null,
-  //     "date_sign": "-",
-  //     "signed": "false"
-  //     },
-  //     {
-  //     "name": "Muhammad Nabil",
-  //     "position": "Operations Director",
-  //     "ttd": "image/tanda_tangan/Tanda_tangan_1061184050.png",
-  //     "email": "nabil@sinergy.co.id",
-  //     "avatar": null,
-  //     "date_sign": "-",
-  //     "signed": "false"
-  //     }
-  // ]
-  // var i = 0
-  // const results = result.map(item => {
-  //     const container = {};
-
-  //     container.id = i++;
-  //     container.name = item.name;
-  //     container.avatar = item.avatar;
-  //     container.info = item.email; 
-
-  //     return container;
-  // })
-  // $('textarea.mention').mentiony({
-  //     onDataRequest: function (mode, keyword, onDataRequestCompleteCallback) {
-
-  //         var data = results
-
-  //         data = jQuery.grep(data, function( item ) {
-  //             return item.name.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
-  //         });
-
-  //         // Call this to populate mention.
-  //         onDataRequestCompleteCallback.call(this, data);
-  //     },
-  //     timeOut: 0,
-  //     debug: 1,
-  // });
 
   $.ajax({
     type:"GET",
@@ -767,38 +679,7 @@
       });
       
     }
-  })
-
-  // let ListUser =  ListdoSomthingOnComplete(window.location.href.split("/")[6])    
-
-  // console.log(ListUser)
-
-  // $("textarea.mention").mention({
-  //   queryBy: ['username', 'name'],
-  //   users: ListUser
-  // });
-
-  // ListUser = []
-
-
-  // document.onkeydown = KeyPress;
-
-  // $("textarea.mention").mention({
-  //     queryBy: ['name', 'username'],
-  //     users: [{
-  //         username: "Ladinar Nanda Aprilia",
-  //         name: "Sarah Jones",
-  //         image: "http://placekitten.com/25/25"
-  //     }, { 
-  //         username: "Faiqoh",
-  //         name: "Scott Pfaff",
-  //         image: "http://placekitten.com/25/25"
-  //     }, { 
-  //         username: "Tito Maulana",
-  //         name: "Roger Penn",
-  //         image: "http://placekitten.com/25/25"
-  //     }]
-  // });  
+  })  
 
   var formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
@@ -810,7 +691,7 @@
   isPembanding = localStorage.setItem('isPembanding',false)
   isLastStorePembanding = localStorage.getItem('isLastStorePembanding')
 
-  $(document).ready(function(){
+  $(document).ready(function(){    
     Pace.restart()
     Pace.track(function() {
       if (isLastStorePembanding == 'true') {
@@ -831,11 +712,11 @@
       /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
       var ErrorText = []
-      if (f.size > 30000000 || f.fileSize > 30000000) {
+      if (f.size > 2000000|| f.fileSize > 2000000) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Invalid file size, just allow file with size less than 30MB!',
+          text: 'Invalid file size, just allow file with size less than 2MB!',
         }).then((result) => {
           this.value = ''
         })
@@ -907,6 +788,10 @@
         {
           "id": "node",
           "text": "Node"
+        },
+        {
+         "id": "kg",
+         "text": "Kg"
         }
       ]
     }
@@ -1810,12 +1695,17 @@
         } 
 
         if (result.getSign == '{{Auth::User()->name}}') {
-          if (result.isNotes == 'False') {
-            $("#btnSirkulasi").prop('disabled',true)
-            reasonReject('Please Ask Admin / Procurement to resolve notes, to continue circular process!','block','tabGroup')
-          }else{
-            console.log("true")
+          //bcd manager & pmo manager bisa circular meskipun belum diresolve
+          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"PMO Manager")->exists()}}") {
             $("#btnSirkulasi").prop('disabled',false)
+          }else{
+            if (result.isNotes == 'False') {
+              $("#btnSirkulasi").prop('disabled',true)
+              reasonReject('Please Ask Admin / Procurement to resolve notes, to continue circular process!','block','tabGroup')
+            }else{
+              console.log("true")
+              $("#btnSirkulasi").prop('disabled',false)
+            }
           }
         }
 
@@ -1866,6 +1756,9 @@
             console.log("This is a tablet or desktop.");
         }
         appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+        if (result.pr.no_pr != undefined) {
+          appendHeader = appendHeader + '        <div>'+ result.pr.no_pr +'</div>'
+        }
         appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
         appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
         appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
@@ -3426,7 +3319,11 @@
           $("#inputPartNumber").val('')
           $("#inputTotalPrice").val('')
         })
+        localStorage.setItem('status_tax',false)
+
       }else if(n == 2){
+        localStorage.setItem('status_tax',false)
+
         $(".modal-title").text('')
         $("#nextBtnAdd").removeAttr('onclick')
         $(".modal-dialog").addClass('modal-lg')
@@ -3443,11 +3340,11 @@
         $(".modal-dialog").removeClass('modal-lg')
         $.ajax({
           type: "GET",
-          url: "{{url('/admin/getTypePr')}}",
+          url: "{{url('/admin/getPreviewPembanding')}}",
           data: {
-            no_pr:window.location.href.split("/")[6],
+            no_pr:localStorage.getItem('no_pembanding'),
           },success:function(result){
-            if (result[0].type_of_letter == 'EPR') {
+            if (result.pr.type_of_letter == 'EPR') {
               $(".modal-title").text('External Purchase Request')
               $("#formForPrExternal").show()
               $("#formForPrInternal").hide()    
@@ -3558,6 +3455,32 @@
                         $("#link_sbe").attr("href",result.dokumen[1].link_drive)
                       }
                     }
+
+                    if(result.dokumen.splice(1).length > 0){
+                      console.log("kok muncul")
+                      $("#tableDocPendukung_epr").empty()
+                      
+                      $("#titleDoc_epr").css("display",'block')
+
+                      appendDocPendukung = ""
+                      $.each(result.dokumen,function(value,item){
+                        if (value != 0 &&  value != 1 && value != 2) {
+                          appendDocPendukung = appendDocPendukung + '<tr style="height:10px" class="trDocPendukung">'
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+                                  appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px;background-color:darkgrey;cursor:not-allowed">'
+                                    appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;color:grey' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"' disabled>"
+                                   appendDocPendukung = appendDocPendukung + '</div>'
+                                   appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" value="'+ item.dokumen_name +'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                          appendDocPendukung = appendDocPendukung + "</tr>"
+                        }   
+                      })
+                      $("#tableDocPendukung_epr").append(appendDocPendukung)
+                    }
                   }
                 }
               })              
@@ -3565,7 +3488,100 @@
             }else{
               $(".modal-title").text('Internal Purchase Request')
               $("#formForPrInternal").show()
-              $("#formForPrExternal").hide()        
+              $("#formForPrExternal").hide() 
+
+              $("#tableDocPendukung_ipr").empty()
+
+              appendDocPendukung = ""
+              $.each(result.dokumen,function(value,item){
+                if (value != 0) {
+                  appendDocPendukung = appendDocPendukung + '<tr style="height:10px" class="trDocPendukung">'
+                    appendDocPendukung = appendDocPendukung + "<td>"
+                      appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+                          appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px;background-color:darkgrey;cursor:not-allowed">'
+                            appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;color:grey' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"' disabled>"
+                           appendDocPendukung = appendDocPendukung + '</div>'
+                           appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
+                    appendDocPendukung = appendDocPendukung + "</td>"
+                    appendDocPendukung = appendDocPendukung + "<td>"
+                      appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
+                    appendDocPendukung = appendDocPendukung + "</td>"
+                  appendDocPendukung = appendDocPendukung + "</tr>"
+                }   
+              })
+              $("#tableDocPendukung_ipr").append(appendDocPendukung)              
+
+              $.each(result.dokumen,function(value,item){
+                if (value != 0) {
+                  const filedocpendukung = document.querySelector('.inputDocPendukung_'+value);
+
+                  const FilePendukung = new File(['{{asset("/")}}"'+ item.dokumen_location +'"'], '/'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1],{
+                      type: 'text/plain',
+                      lastModified: new Date(),
+                  });
+
+                  // Now let's create a DataTransfer to get a FileList
+                  const dataTransfer = new DataTransfer();
+                  dataTransfer.items.add(FilePendukung);
+                  filedocpendukung.files = dataTransfer.files;
+
+                  $('.inputNameDocPendukung_'+value).val(item.dokumen_name)
+                }
+
+                $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").click(function(){
+                  Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Deleting document",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No',
+                  }).then((result) => {
+                      if (result.value) {
+                        $.ajax({
+                          type:"POST",
+                          url:"{{url('/admin/deleteDokumen/')}}",
+                          data:{
+                            _token:"{{ csrf_token() }}",
+                            id:this.value
+                          },beforeSend:function(){
+                            Swal.fire({
+                                title: 'Please Wait..!',
+                                text: "It's sending..",
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                customClass: {
+                                    popup: 'border-radius-0',
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading()
+                                }
+                            })
+                          },
+                          success: function(data)
+                          {
+                            Swal.showLoading()
+                            Swal.fire(
+                                'Document has been deleted!',
+                                'You can adding another document files',
+                                'success'
+                            ).then((result) => {
+                              if (result.value) {
+                                $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").closest("tr").remove();
+                              }
+                            })
+                          }
+                        })
+                      }
+                  })
+                  if($('#tableDocPendukung_ipr tr').length == 0){
+                    $("#titleDoc").hide()
+                  }
+                })
+              })       
             } 
           }
         })
@@ -3749,7 +3765,7 @@
         $(".tab-add")[1].children[1].style.display = 'inline'
         $.ajax({
           type: "GET",
-          url: "{{url('/admin/getProductById')}}",
+          url: "{{url('/admin/getProductCompareById')}}",
           data: {
             id_product:value,
           },
@@ -3767,6 +3783,12 @@
               $("#inputSerialNumber").val(item.serial_number)
               $("#inputPartNumber").val(item.part_number)
               $("#inputTotalPrice").val(formatter.format(item.grand_total))
+              console.log("okee"+item.isRupiah)
+              if (item.isRupiah == "false") {
+                $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+              }else{
+                $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+              }
             })
           }
         }) 
@@ -4096,198 +4118,291 @@
           })
         }
       }       
-    }else if (currentTab == 3) {
+    }else if (currentTab == 2) {
       $.ajax({
-        type: "GET",
-        url: "{{url('/admin/getTypePr')}}",
-        data: {
-          no_pr:window.location.href.split("/")[6],
-        },success:function(result){
-          if (result[0].type_of_letter == 'IPR') {
-            if ($("#inputPenawaranHarga").val() == "") {
-              $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
-              $("#inputPenawaranHarga").closest('div').next('span').show();
-              $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red");
-            }else{
-              
-              let formData = new FormData();
-              const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
-              if (filepenawaranHarga!="") {
-                formData.append('inputPenawaranHarga', filepenawaranHarga);
+        type:"POST",
+        url:"{{url('/admin/storeTaxComparing')}}",
+        data:{
+          no_pr:localStorage.getItem('no_pembanding'),
+          isRupiah:localStorage.getItem('isRupiah'),
+          status_tax:localStorage.getItem('status_tax'),
+          _token:"{{csrf_token()}}"
+        },
+        beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
               }
-
-              $(".tableDocPendukung").empty()
-
-              var arrInputDocPendukung = []
-              $('#tableDocPendukung .trDocPendukung').each(function() {
-                var fileInput = $(this).find('#inputDocPendukung').val()
-                if (fileInput && fileInput !== '') {   
-                  formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                  arrInputDocPendukung.push({
-                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                    no_pr:localStorage.getItem('no_pembanding'),
-                  })  
-                }
-              });
-              formData.append('_token',"{{csrf_token()}}")
-              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-              formData.append('no_pr',localStorage.getItem('no_pembanding'))
-              formData.append('id_draft_pr',localStorage.getItem('id_draft_pr'))
-
-              if (n == 1) {
-                $.ajax({
-                  type:"POST",
-                  url:"{{url('/admin/storePembandingDokumen')}}",
-                  processData: false,
-                  contentType: false,
-                  data:formData,
-                  beforeSend:function(){
-                    Swal.fire({
-                        title: 'Please Wait..!',
-                        text: "It's sending..",
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        allowEnterKey: false,
-                        customClass: {
-                            popup: 'border-radius-0',
-                        },
-                        didOpen: () => {
-                            Swal.showLoading()
-                        }
-                    })
-                  },
-                  success: function(result){
-                    Swal.close()
-                    var x = document.getElementsByClassName("tab-add");
-                    x[currentTab].style.display = "none";
-                    currentTab = currentTab + n;
-                    if (currentTab >= x.length) {
-                      x[n].style.display = "none";
-                      currentTab = 0;
-                    }
-                    addDraftPrPembanding(currentTab);
-                  }
-                }) 
-              }else{
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
-                }
-                addDraftPrPembanding(currentTab);
-              }
-            }
-          }else{
-            if ($("#selectLeadId").val() == "") {
-              $("#selectLeadId").closest('.col-md-6').addClass('has-error')
-              $("#selectLeadId").closest('select').next('span help-block').show();
-              $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-            }else if ($("#selectPid").val() == "") {
-              $("#selectPid").closest('.col-md-6').addClass('has-error')
-              $("#selectPid").closest('select').next('span help-block').show();
-              $("#selectPid").prev('.col-md-6').css("background-color","red");
-            }else if ($("#inputQuoteSupplier").val() == "") {
-              $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
-              $("#inputQuoteSupplier").closest('div').next('span').show();
-              $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-            }else if ($("#inputQuoteNumber").val() == "") {
-              $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
-              $("#inputQuoteNumber").closest('input').next('span').show();
-              $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
-            }else{
-              let formData = new FormData();
-              const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
-              var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
-              if (nama_file_quote_supplier!="" && fileQuoteSupplier!="") {
-                formData.append('inputQuoteSupplier', fileQuoteSupplier);
-              }
-
-              formData.append('_token',"{{csrf_token()}}")
-              formData.append('no_pr', localStorage.getItem('no_pembanding'))
-              formData.append('selectLeadId', $("#selectLeadId").val())
-              formData.append('selectPid', $("#selectPid").val())
-              formData.append('inputPid',$("#projectIdInputNew").val())
-              formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
-
-              if (n == 1) {
-                $.ajax({
-                  type:"POST",
-                  url:"{{url('/admin/storePembandingDokumen')}}",
-                  processData: false,
-                  contentType: false,
-                  data:formData,
-                  beforeSend:function(){
-                    Swal.fire({
-                        title: 'Please Wait..!',
-                        text: "It's sending..",
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        allowEnterKey: false,
-                        customClass: {
-                            popup: 'border-radius-0',
-                        },
-                        didOpen: () => {
-                            Swal.showLoading()
-                        }
-                    })
-                  },
-                  success: function(result){
-                    Swal.close()
-                    var x = document.getElementsByClassName("tab-add");
-                    x[currentTab].style.display = "none";
-                    currentTab = currentTab + n;
-                    if (currentTab >= x.length) {
-                      x[n].style.display = "none";
-                      currentTab = 0;
-                    }
-                    addDraftPrPembanding(currentTab);
-                  }
-                })
-              }else{
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
-                }
-                addDraftPrPembanding(currentTab);
-              }              
-            } 
+          })
+        },
+        success: function(result){
+          Swal.close()
+          let x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
           }
+          addDraftPrPembanding(currentTab);
         }
       })
-    }else if (currentTab == 4) {
-      if ($("#textAreaTOP").val() == "") {
-        $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
-        $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
-      }else{
-        $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
-        $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
-        
+    }else if (currentTab == 3) {
+      if (n == 1) {
         $.ajax({
-          url: "{{'/admin/storePembandingTermPayment'}}",
-          type: 'post',
-          data:{
+          type: "GET",
+          url: "{{url('/admin/getPreviewPembanding')}}",
+          data: {
             no_pr:localStorage.getItem('no_pembanding'),
-            _token:"{{csrf_token()}}",
-            textAreaTOP:$("#textAreaTOP").val(),
-            status_tax:localStorage.getItem('status_tax')
-          },
-          success: function(data)
-          {
-            var x = document.getElementsByClassName("tab-add");
-            x[currentTab].style.display = "none";
-            currentTab = currentTab + n;
-            if (currentTab >= x.length) {
-              x[n].style.display = "none";
-              currentTab = 0;
+          },success:function(result){
+            if (result.pr.type_of_letter == 'IPR') {
+              if ($("#inputPenawaranHarga").val() == "") {
+                $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
+                $("#inputPenawaranHarga").closest('div').next('span').show();
+                $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red");
+              }else{
+                let formData = new FormData();
+                const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
+                if (filepenawaranHarga!="") {
+                  formData.append('inputPenawaranHarga', filepenawaranHarga);
+                }
+
+                $(".tableDocPendukung_ipr").empty()
+
+                var arrInputDocPendukung = []
+                $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
+                  var fileInput = $(this).find('#inputDocPendukung').val()
+                  if (fileInput && fileInput !== '') {   
+                    formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                    arrInputDocPendukung.push({
+                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                      no_pr:localStorage.getItem('no_pembanding'),
+                    })  
+                  }
+                });
+                formData.append('_token',"{{csrf_token()}}")
+                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+                formData.append('no_pr',localStorage.getItem('no_pembanding'))
+                formData.append('id_draft_pr',localStorage.getItem('id_draft_pr'))
+
+                if (n == 1) {
+                  $.ajax({
+                    type:"POST",
+                    url:"{{url('/admin/storePembandingDokumen')}}",
+                    processData: false,
+                    contentType: false,
+                    data:formData,
+                    beforeSend:function(){
+                      Swal.fire({
+                          title: 'Please Wait..!',
+                          text: "It's sending..",
+                          allowOutsideClick: false,
+                          allowEscapeKey: false,
+                          allowEnterKey: false,
+                          customClass: {
+                              popup: 'border-radius-0',
+                          },
+                          didOpen: () => {
+                              Swal.showLoading()
+                          }
+                      })
+                    },
+                    success: function(result){
+                      Swal.close()
+                      var x = document.getElementsByClassName("tab-add");
+                      x[currentTab].style.display = "none";
+                      currentTab = currentTab + n;
+                      if (currentTab >= x.length) {
+                        x[n].style.display = "none";
+                        currentTab = 0;
+                      }
+                      addDraftPrPembanding(currentTab);
+                    }
+                  }) 
+                }else{
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  addDraftPrPembanding(currentTab);
+                }
+              }
+            }else{
+              if ($("#selectLeadId").val() == "") {
+                $("#selectLeadId").closest('.col-md-6').addClass('has-error')
+                $("#selectLeadId").closest('select').next('span help-block').show();
+                $("#selectLeadId").prev('.col-md-6').css("background-color","red");
+              }else if ($("#selectPid").val() == "") {
+                $("#selectPid").closest('.col-md-6').addClass('has-error')
+                $("#selectPid").closest('select').next('span help-block').show();
+                $("#selectPid").prev('.col-md-6').css("background-color","red");
+              }else if ($("#inputQuoteSupplier").val() == "") {
+                $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
+                $("#inputQuoteSupplier").closest('div').next('span').show();
+                $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
+              }else if ($("#inputQuoteNumber").val() == "") {
+                $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
+                $("#inputQuoteNumber").closest('input').next('span').show();
+                $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
+              }else{
+                let formData = new FormData();
+                const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
+                var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
+                if (nama_file_quote_supplier!="" && fileQuoteSupplier!="") {
+                  formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                }
+
+                var arrInputDocPendukung = []
+
+                if (result.dokumen.length > 0) {
+                  if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+                    $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
+                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                      arrInputDocPendukung.push({
+                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                        no_pr:localStorage.getItem('no_pembanding')
+                      })
+                    })
+
+                  }else{
+                    var fileInput = $(this).find('#inputDocPendukung').val()
+                    if (fileInput && fileInput !== '') { 
+                      formData.append('inputDocPendukung[]','-')
+                    }
+                  }                                 
+                }else{
+                  console.log("ada baru")
+                  $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                    var fileInput = $(this).find('#inputDocPendukung').val()
+                    if (fileInput && fileInput !== '') { 
+
+                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                      arrInputDocPendukung.push({
+                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                        no_pr:localStorage.getItem('no_pembanding')
+                      })
+
+                      console.log(arrInputDocPendukung)
+                    }
+                  })
+                }  
+
+                formData.append('_token',"{{csrf_token()}}")
+                formData.append('no_pr', localStorage.getItem('no_pembanding'))
+                formData.append('selectLeadId', $("#selectLeadId").val())
+                formData.append('selectPid', $("#selectPid").val())
+                formData.append('inputPid',$("#projectIdInputNew").val())
+                formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+
+                if (n == 1) {
+                  $.ajax({
+                    type:"POST",
+                    url:"{{url('/admin/storePembandingDokumen')}}",
+                    processData: false,
+                    contentType: false,
+                    data:formData,
+                    beforeSend:function(){
+                      Swal.fire({
+                          title: 'Please Wait..!',
+                          text: "It's sending..",
+                          allowOutsideClick: false,
+                          allowEscapeKey: false,
+                          allowEnterKey: false,
+                          customClass: {
+                              popup: 'border-radius-0',
+                          },
+                          didOpen: () => {
+                              Swal.showLoading()
+                          }
+                      })
+                    },
+                    success: function(result){
+                      Swal.close()
+                      var x = document.getElementsByClassName("tab-add");
+                      x[currentTab].style.display = "none";
+                      currentTab = currentTab + n;
+                      if (currentTab >= x.length) {
+                        x[n].style.display = "none";
+                        currentTab = 0;
+                      }
+                      addDraftPrPembanding(currentTab);
+                    }
+                  })
+                }else{
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  addDraftPrPembanding(currentTab);
+                }              
+              } 
             }
-            addDraftPrPembanding(currentTab);
           }
-        }); 
+        })
+      }else{
+        var x = document.getElementsByClassName("tab-add");
+        x[currentTab].style.display = "none";
+        currentTab = currentTab + n;
+        if (currentTab >= x.length) {
+          x[n].style.display = "none";
+          currentTab = 0;
+        }
+        addDraftPrPembanding(currentTab);
+      }
+    }else if (currentTab == 4) {
+      if (n == 1) {
+        if ($("#textAreaTOP").val() == "") {
+          $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+        }else{
+          $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+          
+          $.ajax({
+            url: "{{'/admin/storePembandingTermPayment'}}",
+            type: 'post',
+            data:{
+              no_pr:localStorage.getItem('no_pembanding'),
+              _token:"{{csrf_token()}}",
+              textAreaTOP:$("#textAreaTOP").val(),
+            },
+            success: function(data)
+            {
+              var x = document.getElementsByClassName("tab-add");
+              x[currentTab].style.display = "none";
+              currentTab = currentTab + n;
+              if (currentTab >= x.length) {
+                x[n].style.display = "none";
+                currentTab = 0;
+              }
+              addDraftPrPembanding(currentTab);
+            }
+          }); 
+        }
+      }else{
+        var x = document.getElementsByClassName("tab-add");
+        x[currentTab].style.display = "none";
+        currentTab = currentTab + n;
+        if (currentTab >= x.length) {
+          x[n].style.display = "none";
+          currentTab = 0;
+        }
+        addDraftPrPembanding(currentTab);
       }
     }else{
       $(".divReasonRejectRevision").remove()
@@ -4323,6 +4438,7 @@
               _token:"{{csrf_token()}}",
               no_pr:localStorage.getItem('no_pembanding'),
               inputGrandTotalProduct:$("#inputFinalPageTotalPricePembandingModal").val(),
+              isRupiah:localStorage.getItem("isRupiah"),
             },beforeSend:function(){
               Swal.fire({
                   title: 'Please Wait..!',
@@ -4388,6 +4504,8 @@
         sum += temp;
     });
 
+    $("#inputGrandTotalProduct").val(formatter.format(sum))
+
     if (!isNaN(valueVat)) {
       tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
 
@@ -4436,7 +4554,18 @@
     // }
   }
 
-  function addTable(n){ 
+  localStorage.setItem('isRupiah',true)
+  function changeCurreny(value){
+    if (value == "usd") {
+      $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+      localStorage.setItem('isRupiah',false)
+    }else{
+      $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+      localStorage.setItem('isRupiah',true)
+    }
+  }
+
+  function addTable(n,status){ 
     $.ajax({
         type: "GET",
         url: "{{url('/admin/getProductPembanding')}}",
@@ -4493,7 +4622,7 @@
           appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:-webkit-fill-available;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
+          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
           appendBottom = appendBottom + '    </div>'
           appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
@@ -4548,27 +4677,31 @@
 
         $("#bottomProducts").append(appendBottom) 
 
-          var sum = 0
-          $('.inputTotalPriceEdit').each(function() {
-              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-              sum += temp;
-          });
+        if (status != "") {
+          changeVatValue(status)
+        }
 
-          $("#inputGrandTotalProduct").val(formatter.format(sum))
+          // var sum = 0
+          // $('.inputTotalPriceEdit').each(function() {
+          //     var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          //     sum += temp;
+          // });
 
-          // tempVat = (parseFloat(sum) * 11) / 100
+          // $("#inputGrandTotalProduct").val(formatter.format(sum))
 
-          // finalVat = tempVat
+          // // tempVat = (parseFloat(sum) * 11) / 100
 
-          tempGrand = parseInt(sum)
+          // // finalVat = tempVat
 
-          // finalGrand = tempGrand
+          // tempGrand = parseInt(sum)
 
-          // tempTotal = sum
+          // // finalGrand = tempGrand
 
-          $("#vat_tax").val(0)
+          // // tempTotal = sum
 
-          $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+          // $("#vat_tax").val(0)
+
+          // $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
       }
     })
   }
@@ -4620,26 +4753,41 @@
   })
 
   var incrementDoc = 0
-  function addDocPendukung(i){
-    incrementDoc++
-    $("#titleDoc").show()
+  function addDocPendukung(value){
+    // incrementDoc++
+    // $("#titleDoc").show()
+    // append = ""
+    //   append = append + "<tr style='height:10px' class='trDocPendukung'>"
+    //     append = append + "<td>"
+    //       append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+    //       append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+    //     append = append + "</td>"
+    //     append = append + "<td>"
+    //       append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
+    //     append = append + "</td>"
+    //   append = append + "</tr>"
+    // $("#tableDocPendukung_"+value).append(append)
+    $("#titleDoc_"+value).show()
     append = ""
       append = append + "<tr style='height:10px' class='trDocPendukung'>"
         append = append + "<td>"
           append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
-          append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+          append = append + '<label for="inputDocPendukung" style="margin-bottom:0px">'
+          append = append + '<span class="fa fa-cloud-upload" style="display:inline"></span>'
+          append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class=" inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
+          append = append + '</label>'
         append = append + "</td>"
         append = append + "<td>"
-          append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
+          append = append + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak">'
         append = append + "</td>"
       append = append + "</tr>"
-    $("#tableDocPendukung").append(append)
+    $("#tableDocPendukung_"+value).append(append) 
+    incrementDoc++
   }  
 
   $(document).on('click', '.btnRemoveAddDocPendukung', function() {
     $(this).closest("tr").remove();
     if($('#tableDocPendukung tr').length == 0){
-      
       $("#titleDoc").hide()
     }
   });
