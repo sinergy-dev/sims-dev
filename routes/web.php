@@ -334,9 +334,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/admin/storeResolveNotes', 'PrDraftController@storeResolveNotes');
 	Route::get('/admin/getNotes', 'PrDraftController@getNotes');
 	Route::get('/admin/getProductById', 'PrDraftController@getProductById');
+	Route::get('/admin/getProductCompareById', 'PrDraftController@getProductCompareById');
 	Route::post('/admin/uploadCSV','PrDraftController@uploadCSV');
 	Route::get('/admin/getPidAll', 'PrDraftController@getPidAll');
 	Route::get('/admin/getLeadByPid', 'PrDraftController@getLeadByPid');
+	Route::get('/admin/getPerson', 'PrDraftController@getPerson');
+	Route::post('admin/storeTax', 'PrDraftController@storeTax');
+	Route::post('admin/storeTaxComparing', 'PrDraftController@storeTaxComparing');
 
 
 	Route::get('/po', 'PONumberController@index');
