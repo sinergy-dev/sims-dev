@@ -352,7 +352,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-2">
                 <div class="form-group">
                   <label>Qty*</label>
                   <input autocomplete="off" type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
@@ -367,13 +367,22 @@
                 </select>
                 <span class="help-block" style="display:none;">Please fill Unit!</span>
               </div>
-              <div class="col-md-4" style="margin-bottom:10px"> 
+              <div class="col-md-6" style="margin-bottom:10px"> 
                 <label>Price*</label>
                 <div class="input-group">
                   <div class="input-group-addon">
                   Rp.
                   </div>
-                  <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+                  <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 500,000.00" onkeyup="fillInput('price_product')">
+                  <div class="input-group-btn">       
+                    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">         
+                      <span class="fa fa-caret-down"></span>       
+                    </button>       
+                    <ul class="dropdown-menu">       
+                      <li><a onclick="changeCurreny('usd')">USD($)</a></li>
+                      <li><a onclick="changeCurreny('dollar')">IDR(RP)</a></li>
+                    </ul>
+                  </div>
                 </div>
                 <span class="help-block" style="display:none;">Please fill Price!</span>
               </div>
@@ -954,11 +963,12 @@
         /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
         var ErrorText = []
-        if (f.size > 2000|| f.fileSize > 2000) {
+        // console.log(f.size);
+        if (f.size > 2000000|| f.fileSize > 2000000) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Invalid file size, just allow file with size less than 30MB!',
+            text: 'Invalid file size, just allow file with size less than 2MB!',
           }).then((result) => {
             this.value = ''
           })
@@ -1033,6 +1043,10 @@
           {
             "id": "node",
             "text": "Node"
+          },
+          {
+            "id": "kg",
+            "text": "Kg"
           }
         ]
       }
@@ -1626,6 +1640,7 @@
       localStorage.setItem('firstLaunch', false);
       localStorage.setItem('no_pr',id_draft)
       localStorage.setItem('status_unfinished',status)
+      localStorage.setItem('status_tax',false)
 
       if (status == 'revision') {
         url = "{{url('/admin/getDetailPr')}}"
@@ -2042,7 +2057,11 @@
               $("#nextBtnAdd").removeAttr('onclick')
               $(".modal-dialog").addClass('modal-lg')
               localStorage.setItem('firstLaunch',false)
-              addTable(0)
+              localStorage.setItem('status_tax',false)
+
+              console.log("status tax kini"+result.pr.status_tax)
+
+              addTable(0,result.pr.status_tax)
               if (localStorage.getItem('firstLaunch') == 'false') {
                 $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-2,"saved")')
                 $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
@@ -2441,7 +2460,7 @@
                               })
                             }
                         })
-                        if($('#tableDocPendukung tr').length == 0){
+                        if($('#tableDocPendukung_ipr tr').length == 0){
                           $("#titleDoc").hide()
                         }
                       })
@@ -2503,6 +2522,8 @@
 
     localStorage.setItem('status_pr','')
     function addDraftPr(n){
+      localStorage.setItem('status_tax',false)
+
       localStorage.setItem('status_pr','')
       let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
@@ -2785,7 +2806,6 @@
             $("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')
           } 
           document.getElementById("prevBtnAdd").style.display = "inline";
-
         }else if (n == 3) {
           $(".modal-dialog").removeClass('modal-lg')
           if ($("#selectType").val() == 'EPR') {
@@ -4291,6 +4311,7 @@
           var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
           sum += temp;
       });
+      $("#inputGrandTotalProduct").val(formatter.format(sum))
 
       if (!isNaN(valueVat)) {
         tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
@@ -4338,9 +4359,24 @@
       //   localStorage.setItem('status_tax','True')
       // }
     }
+    localStorage.setItem("isRupiah",true)
+    function changeCurreny(value){
+      if (value == "usd") {
+        $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+        localStorage.setItem("isRupiah",false)
+
+      }else{
+        $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+        localStorage.setItem("isRupiah",true)
+
+      }
+    }
 
     currentTab = 0
     function nextPrevUnFinished(n,valueEdit){
+      console.log(currentTab)
+      localStorage.setItem('status_tax',false)
+
       if(localStorage.getItem('status_draft_pr') == 'pembanding'){
         url = "{{url('/admin/getDetailPr')}}"
         urlDokumen = "{{url('/admin/storePembandingDokumen')}}"
@@ -4394,6 +4430,11 @@
                 $("#inputSerialNumber").val(item.serial_number)
                 $("#inputPartNumber").val(item.part_number)
                 $("#inputTotalPrice").val(formatter.format(item.grand_total))
+                if (item.isRupiah == "false") {
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+                }else{
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+                }
               })
             }
           })
@@ -4524,6 +4565,8 @@
           })          
         }         
       }else if (currentTab == 1) {
+        localStorage.setItem('status_tax',false)
+
         if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
           if (n == 1) {
             if ($("#inputNameProduct").val() == "") {
@@ -4631,6 +4674,8 @@
                       }
                     })
                   },success:function(){
+                    localStorage.setItem('status_tax',false)
+
                     Swal.close()
                     let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
@@ -5020,9 +5065,9 @@
             x[n].style.display = "none";
             currentTab = 0;
           }
+          console.log(localStorage.getItem('no_pr'))
           unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
         }
-        
       }else if (currentTab == 4) {
         if (n == 1) {
           if ($("#textAreaTOP").val() == "") {
@@ -5039,7 +5084,6 @@
                 no_pr:localStorage.getItem('no_pr'),
                 _token:"{{csrf_token()}}",
                 textAreaTOP:$("#textAreaTOP").val(),
-                status_tax:localStorage.getItem('status_tax')
               },
               success: function(data)
               {
@@ -5078,7 +5122,9 @@
       }
     }
 
-    function addTable(n){ 
+    function addTable(n,status){ 
+      console.log("status"+status)
+
       if (window.location.href.split("/")[6] == undefined) {
         if (localStorage.getItem('status_pr') == 'revision') {
           url = "{{url('/admin/getProductPembanding')}}"
@@ -5244,27 +5290,33 @@
             checkboxClass: 'icheckbox_minimal-blue',
           })
 
-          var sum = 0
-          $('.inputTotalPriceEdit').each(function() {
-              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-              sum += temp;
-          });
+          if (status != "") {
+            console.log(status)
+            changeVatValue(status)
+          }
 
-          $("#inputGrandTotalProduct").val(formatter.format(sum))
+          // var sum = 0
+          // $('.inputTotalPriceEdit').each(function() {
+          //     var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          //     sum += temp;
+          // });
 
-          // tempVat = (parseFloat(sum) * 11) / 100
+          // $("#inputGrandTotalProduct").val(formatter.format(sum))
 
-          // finalVat = tempVat
 
-          tempGrand = parseInt(sum)
 
-          // finalGrand = tempGrand
+          // // tempVat = (parseFloat(sum) * 11) / 100
 
-          // tempTotal = sum
+          // // finalVat = tempVat
 
-          $("#vat_tax").val(0)
+          // tempGrand = parseInt(sum)
 
-          $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+          // // finalGrand = tempGrand
+
+          // // tempTotal = sum
+          // $("#vat_tax").val(0)
+
+          // $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
         }
       })
     }
@@ -5278,6 +5330,7 @@
     var nama_file_quote_supplier = ""
 
     function nextPrevAdd(n,value) {
+      localStorage.setItem('status_tax',false)
       valueEdit = value
       if (valueEdit == undefined) {
         if (valueEdit == 0) {
@@ -5316,6 +5369,11 @@
                 $("#inputSerialNumber").val(item.serial_number)
                 $("#inputPartNumber").val(item.part_number)
                 $("#inputTotalPrice").val(formatter.format(item.grand_total))
+                if (item.isRupiah == "false") {
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+                }else{
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+                }
               })
             }
           })          
@@ -5581,6 +5639,8 @@
                       }
                       addDraftPr(currentTab);
                       localStorage.setItem('status_pr','draft')
+                      localStorage.setItem('status_tax',false)
+
                       addTable(0)
                       $("#inputNameProduct").val('')
                       $("#inputDescProduct").val('')
@@ -5662,6 +5722,43 @@
             })
           }
         }       
+      }else if (currentTab == 2) {
+        $.ajax({
+          type:"POST",
+          url:"{{url('/admin/storeTax')}}",
+            data:{
+              _token:"{{csrf_token()}}",
+              no_pr:localStorage.getItem('no_pr'),
+              isRupiah:localStorage.getItem('isRupiah'),
+              status_tax:localStorage.getItem('status_tax'),
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result){
+              Swal.close()
+              let x = document.getElementsByClassName("tab-add");
+              x[currentTab].style.display = "none";
+              currentTab = currentTab + n;
+              if (currentTab >= x.length) {
+                x[n].style.display = "none";
+                currentTab = 0;
+              }
+              unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+          }
+        })
       }else if (currentTab == 3) {
         if (n == 1) {
           if ($("#selectType").val() == 'IPR') {
@@ -5908,7 +6005,6 @@
                 no_pr:localStorage.getItem('no_pr'),
                 _token:"{{csrf_token()}}",
                 textAreaTOP:$("#textAreaTOP").val(),
-                status_tax:localStorage.getItem('status_tax')
               },
               success: function(data)
               {
@@ -6465,7 +6561,8 @@
                     _token:"{{csrf_token()}}",
                     no_pr:localStorage.getItem('no_pr'),
                     inputGrandTotalProduct:$("#inputFinalPageGrandPrice").val(),
-                    status_revision:status
+                    status_revision:status,
+                    isRupiah:localStorage.getItem("isRupiah"),
                   },
                   success: function(result){
                     Swal.fire({
