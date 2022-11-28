@@ -531,7 +531,7 @@
         <div class="tab-add" style="display:none">
           <div class="tabGroup">
             <div class="box-body pad">
-              <textarea onkeydown="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. term of payment"></textarea>
+              <textarea onkeydown="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. Terms & Condition"></textarea>
               <span class="help-block" style="display:none;">Please fill Top of Payment!</span>
             </div>
           </div>
@@ -906,7 +906,7 @@
                 </div>
                 <div class="form-group" style="display:none;" id="divReasonReject">
                   <h4>Reason of Reject</h4>
-                  <textarea id="textAreaReasonReject" class="form-control" placeholder="ex. [Informasi Supplier - To] Ada Kesalahan Penulisan Nama" style="resize:vertical;"></textarea>
+                  <textarea id="textAreaReasonReject" onkeyup="fillInput('reason_reject')" class="form-control" placeholder="ex. [Informasi Supplier - To] Ada Kesalahan Penulisan Nama" style="resize:vertical;"></textarea>
                   <span class="help-block" style="display:none;">Please fill Reason!</span>
                 </div>
             </div>  
@@ -954,7 +954,7 @@
         /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
         var ErrorText = []
-        if (f.size > 30000000|| f.fileSize > 30000000) {
+        if (f.size > 2000|| f.fileSize > 2000) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -1247,7 +1247,7 @@
         },
         { 
           render: function (data, type, row, meta){
-            return '[<b><i>' + row.type_of_letter + '</i></b>] ' + row.title         
+            return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
           },
         },
         { "data": "to"},
@@ -1258,7 +1258,8 @@
             }else{
               return formatter.format(row.nominal)          
             }
-          }
+          },
+          className:'text-right'
         },
         { 
           orderData:[7],
@@ -1308,7 +1309,7 @@
                 return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
               } 
             }else if(row.status == 'UNAPPROVED'){
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                 status = '"revision"'
 
                 return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
@@ -1716,13 +1717,13 @@
                 append = append + '<td width="20%">'
                 append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
-                append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="width: 200px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
+                append = append + '<td width="40%">'
+                  append = append + '<textarea readonly class="form-control" style="resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
                 append = append + '</td>'
-                append = append + '<td width="10%">'
+                append = append + '<td width="5%">'
                   append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
                 append = append + '</td>'
-                append = append + '<td width="10%">'
+                append = append + '<td width="5%">'
                   append = append + '<select readonly style="width:75px;font-size: 12px; important" class="form-control">'
                   append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
                   append = append + '</select>'
@@ -1789,7 +1790,7 @@
             appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -1987,14 +1988,14 @@
                   $("#selectMethode").prop("disabled",true)
                 }
 
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
                 $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else if (status == 'revision') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
 
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
                 $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else {
@@ -2465,7 +2466,7 @@
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
                 reasonReject(result.activity.reason,"block","tabGroup")
               }
-              $(".modal-title").text('Term Of Payment')   
+              $(".modal-title").text('Terms & Condition')   
               $(".modal-dialog").removeClass('modal-lg')   
               $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
               $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
@@ -2582,7 +2583,7 @@
                 append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="width:150px;height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -2641,7 +2642,7 @@
               appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -2905,7 +2906,7 @@
             });
           }
 
-          $(".modal-title").text('Term Of Payment')   
+          $(".modal-title").text('Terms & Condition')   
           $(".modal-dialog").removeClass('modal-lg')   
           $("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')        
           $("#nextBtnAdd").attr('onclick','nextPrevAdd(1)')
@@ -3030,7 +3031,7 @@
                 append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea style="font-size: 12px; important;width:200px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea style="font-size: 12px; important;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -3071,7 +3072,7 @@
               appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -3284,7 +3285,7 @@
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
           document.getElementById("prevBtnAdd").style.display = "inline";
         }else if (n == 4) {
-          $(".modal-title").text('Term Of Payment')   
+          $(".modal-title").text('Terms & Condition')   
           $(".modal-dialog").removeClass('modal-lg')   
           $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
@@ -3636,7 +3637,7 @@
 
             }else if (n == 3) {
               $("#textAreaTOPCek").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
-              $(".modal-title").text('Term Of Payment')
+              $(".modal-title").text('Terms & Condition')
               $(".modal-dialog").removeClass('modal-lg')
               $("#prevBtnAddAdmin").attr('onclick','nextPrevAddAdmin(-1,'+ result.pr.id +')')       
               $("#nextBtnAddAdmin").attr('onclick','nextPrevAddAdmin(1,'+ result.pr.id +')')
@@ -3710,13 +3711,13 @@
                   append = append + '<td width="20%">'
                   append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                   append = append + '</td>'
-                  append = append + '<td width="35%">'
-                    append = append + '<textarea style="font-size: 12px;height:150px;width:250px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                  append = append + '<td width="40%">'
+                    append = append + '<textarea style="font-size: 12px;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
                   append = append + '</td>'
-                  append = append + '<td width="10%">'
+                  append = append + '<td width="5%">'
                     append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px;">'
                   append = append + '</td>'
-                  append = append + '<td width="10%">'
+                  append = append + '<td width="5%">'
                     append = append + '<select disabled style="width:70px;font-size: 12px;" class="form-control">'
                     append = append + '<option>'+ item.unit.charAt(0).toUpperCase() + item.unit.slice(1) +'</option>'
                     append = append + '</select>'
@@ -3764,7 +3765,7 @@
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<hr>'
-              appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+              appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
               appendBottom = appendBottom + '<div readonly id="termPreviewCek" class="form-control" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
               appendBottom = appendBottom + '<hr>'
               appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -3916,7 +3917,7 @@
               append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ value.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;width:200px" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -4251,6 +4252,12 @@
         $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
         $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()  
       }
+
+      if (val == "reason_reject") {
+        $("#textAreaReasonReject").closest('.form-group').removeClass('has-error')
+        $("#textAreaReasonReject").closest('textarea').next('span').hide();
+        $("#textAreaReasonReject").prev('.input-group-addon').css("background-color","red"); 
+      }
     }
 
     // var tempVat = 0
@@ -4261,6 +4268,7 @@
     // var sum = 0
     // var btnVatStatus = true
     // var valueVat = ""
+    localStorage.setItem('status_tax',false)
 
     function changeVatValue(value){
       var tempVat = 0
@@ -5105,7 +5113,7 @@
                 append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:250px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -6372,6 +6380,11 @@
           }
         })
       }
+
+      if (n == -1) {
+        $(".radioConfirm").prop('checked', false);
+      }
+
       var x = document.getElementsByClassName("tab-cek");
       x[currentTab].style.display = "none";
       currentTab = currentTab + n;
