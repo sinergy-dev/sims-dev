@@ -678,7 +678,18 @@ class PrDraftController extends Controller
 
     public function getProductById(Request $request)
     {
-        $getProduct = PrProduct::select('tb_pr_product.name_product', 'tb_pr_product.description', 'tb_pr_product.qty', 'tb_pr_product.unit', 'tb_pr_product.nominal_product', 'tb_pr_product.grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'tb_pr_product.id as id_product')->where('id', $request->id_product)->first();
+        $getProduct = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
+                ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'isRupiah', 'tb_pr_product.id as id_product')->where('tb_pr_product.id', $request->id_product)->first();
+
+        return array("data"=>$getProduct);
+    }
+
+    public function getProductCompareById(Request $request)
+    {
+         $getProduct = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
+                ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'isRupiah', 'tb_pr_product.id as id_product')->where('tb_pr_product.id', $request->id_product)->first();
 
         return array("data"=>$getProduct);
     }
@@ -803,10 +814,40 @@ class PrDraftController extends Controller
         $update->save();
     }
 
+    public function storeTax(Request $request)
+    {
+        $update = PRDraft::where('id', $request->no_pr)->first();
+        $update->status_tax = $request->status_tax;
+        $update->isRupiah = $request->isRupiah;
+        $update->save();
+
+        $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
+        if (!empty($update_pr)) {
+            $update_pr->status_tax = $request->status_tax;
+            $update->isRupiah = $request->isRupiah;
+            $update_pr->save();
+        }
+    }
+
+    public function storeTaxComparing(Request $request)
+    {
+        $update = PRCompare::where('id', $request->no_pr)->first();
+        $update->status_tax = $request->status_tax;
+        $update->isRupiah = $request->isRupiah;
+        $update->save();
+
+        $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
+        if (!empty($update_pr)) {
+            $update_pr->status_tax = $request->status_tax;
+            $update->isRupiah = $request->isRupiah;
+            $update_pr->save();
+        }
+    }
+
     public function storeDokumen(Request $request)
     {
         $get_pr = DB::table('tb_pr_draft')->select('type_of_letter', 'parent_id_drive')->where('id', $request['no_pr'])->first();
-        $count = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')->where('tb_pr_document_draft.id_draft_pr')->count();
+        $count = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')->where('id_draft_pr', $request['no_pr'])->count();
         $directory = "draft_pr/";
 
         // Eksternal Purchase Request
@@ -822,64 +863,107 @@ class PrDraftController extends Controller
                 $nameDoc                = $request['no_pr'] . '_quote_supplier.' . $lastElement;
                 $extension              = $file->getClientOriginalExtension();
                 $check                  = in_array($extension,$allowedfileExtension);
-                $tambah_quote = new PrDokumen();
-                if ($check) {
-                    // $request->file('inputQuoteSupplier')->move("draft_pr/", $nameDoc);
-                    $this->uploadToLocal($request->file('inputQuoteSupplier'),$directory,$nameDoc);
-                    $tambah_quote->dokumen_name             = "Quote Supplier";
-                } else {
-                    return redirect()->back()->with('alert','Oops! Only pdf');
-                }
 
-                if(isset($fileName)){
-                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
-                    $pdf_name = $nameDoc;
-                } else {
-                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                    $pdf_name = 'pdf_lampiran';
-                }
+                if ($count == 0) {
+                    $tambah_quote = new PrDokumen();
+                    if ($check) {
+                        // $request->file('inputQuoteSupplier')->move("draft_pr/", $nameDoc);
+                        $this->uploadToLocal($request->file('inputQuoteSupplier'),$directory,$nameDoc);
+                        $tambah_quote->dokumen_name             = "Quote Supplier";
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
 
-                if ($get_pr->parent_id_drive == null) {
-                    $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
-                } else {
-                    $parentID = [];
-                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
-                    array_push($parentID,$parent_id);
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
 
-                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
-                    if (empty($data)) {
-                        $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
-                                ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
-                                ->where("tb_pr_document.dokumen_name","=","Quote Supplier")
-                                ->orderBy('tb_pr_document_draft.id','desc')
-                                ->first();
+                    if ($get_pr->parent_id_drive == null) {
+                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+                    } else {
+                        $parentID = [];
+                        $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                        array_push($parentID,$parent_id);
 
-                        if (!empty($data_dokumen)) {
-                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
-                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
-                                $pdf_name = explode('/', $pdf_name)[1];
+                        $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                        if (empty($data)) {
+                            $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                                    ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                                    ->where("tb_pr_document.dokumen_name","=","Quote Supplier")
+                                    ->orderBy('tb_pr_document_draft.id','desc')
+                                    ->first();
+
+                            if (!empty($data_dokumen)) {
+                                if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                    $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                    $pdf_name = explode('/', $pdf_name)[1];
+                                } else {
+                                    $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                                }
+                            }
+                        } else{
+                            if (strpos($data->title, 'Revisi')) {
+                                $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
                             } else {
                                 $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
                             }
                         }
-                    } else{
-                        if (strpos($data->title, 'Revisi')) {
-                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
-                        } else {
-                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
-                        }
                     }
+
+                    $tambah_quote->dokumen_location         = "draft_pr/" . $pdf_name;
+                    $tambah_quote->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $tambah_quote->save();
+
+                    $tambah_quote_draft = new PRDocumentDraft();
+                    $tambah_quote_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_quote_draft->id_document = $tambah_quote->id;
+                    $tambah_quote_draft->added = Carbon::now()->toDateTimeString();
+                    $tambah_quote_draft->save();
+
+                } else {
+                    $getId = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')->select('tb_pr_document.id', 'tb_pr_document_draft.id as id_dokumen_draft')->where('id_draft_pr', $request['no_pr'])->where('dokumen_name', 'Quote Supplier')->first();
+                    // return $getId;
+                    $update_quote = PrDokumen::where('id', $getId->id)->first();
+                    if ($check) {
+                        // $request->file('inputQuoteSupplier')->move("draft_pr/", $nameDoc);
+                        $this->uploadToLocal($request->file('inputQuoteSupplier'),$directory,$nameDoc);
+                        $update_quote->dokumen_name             = "Quote Supplier";
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    if ($get_pr->parent_id_drive == null) {
+                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+                    } else {
+                        $parentID = [];
+                        $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                        array_push($parentID,$parent_id);
+                        $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
+                    }
+
+                    $update_quote->dokumen_location         = "draft_pr/" . $pdf_name;
+                    $update_quote->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_quote->save();
+
+                    // $update_quote_draft = PRDocumentDraft::where('id', $getId->id_dokumen_draft)->first();
+                    // $update_quote_draft->id_draft_pr = $request['no_pr'];
+                    // $update_quote_draft->id_document = $update_quote->id;
+                    // $update_quote_draft->added = Carbon::now()->toDateTimeString();
+                    // $update_quote_draft->save();
                 }
 
-                $tambah_quote->dokumen_location         = "draft_pr/" . $pdf_name;
-                $tambah_quote->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-                $tambah_quote->save();
-
-                $tambah_quote_draft = new PRDocumentDraft();
-                $tambah_quote_draft->id_draft_pr = $request['no_pr'];
-                $tambah_quote_draft->id_document = $tambah_quote->id;
-                $tambah_quote_draft->added = Carbon::now()->toDateTimeString();
-                $tambah_quote_draft->save();
 
                 $update_parent = PRDraft::where('id', $request['no_pr'])->first();
                 $update_parent->parent_id_drive = $parentID;
@@ -899,61 +983,93 @@ class PrDraftController extends Controller
                 $nameDoc                = $request['no_pr'] . '_spk.' . $lastElement;
                 $extension              = $file->getClientOriginalExtension();
                 $check                  = in_array($extension,$allowedfileExtension);
-                $tambah_spk = new PrDokumen();
-                if ($check) {
-                    // $request->file('inputSPK')->move("draft_pr/", $nameDoc);
-                    $this->uploadToLocal($request->file('inputSPK'),$directory,$nameDoc);
-                    $tambah_spk->dokumen_name             = "SPK";
-                } else {
-                    return redirect()->back()->with('alert','Oops! Only pdf');
-                }
 
-                if(isset($fileName)){
-                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
-                    $pdf_name = $nameDoc;
-                } else {
-                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                    $pdf_name = 'pdf_lampiran';
-                }
-
-                $parentID = [];
-                $parent_id = explode('"', $get_pr->parent_id_drive)[1];
-                array_push($parentID,$parent_id);
-
-                $data = PR::where('id_draft_pr', $request->no_pr)->first();
-                if (empty($data)) {
-                    $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
-                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
-                            ->where("tb_pr_document.dokumen_name","=","SPK")
-                            ->orderBy('tb_pr_document_draft.id','desc')
-                            ->first();
-
-                    if (!empty($data_dokumen)) {
-                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
-                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
-                                $pdf_name = explode('/', $pdf_name)[1];
-                            } else {
-                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
-                            }
-                        }
-                } else{
-                    
-                    if (strpos($data->title, 'Revisi')) {
-                        $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                if ($count == 0) {
+                    $tambah_spk = new PrDokumen();
+                    if ($check) {
+                        // $request->file('inputSPK')->move("draft_pr/", $nameDoc);
+                        $this->uploadToLocal($request->file('inputSPK'),$directory,$nameDoc);
+                        $tambah_spk->dokumen_name             = "SPK";
                     } else {
-                        $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        return redirect()->back()->with('alert','Oops! Only pdf');
                     }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $parentID = [];
+                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+
+                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    if (empty($data)) {
+                        $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                                ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                                ->where("tb_pr_document.dokumen_name","=","SPK")
+                                ->orderBy('tb_pr_document_draft.id','desc')
+                                ->first();
+
+                        if (!empty($data_dokumen)) {
+                                if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                    $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                    $pdf_name = explode('/', $pdf_name)[1];
+                                } else {
+                                    $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                                }
+                            }
+                    } else{
+                        
+                        if (strpos($data->title, 'Revisi')) {
+                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                        } else {
+                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        }
+                    }
+
+                    $tambah_spk->dokumen_location         = "draft_pr/" . $pdf_name;
+                    $tambah_spk->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $tambah_spk->save();
+
+                    $tambah_spk_draft = new PRDocumentDraft();
+                    $tambah_spk_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_spk_draft->id_document = $tambah_spk->id;
+                    $tambah_spk_draft->added = Carbon::now()->toDateTimeString();
+                    $tambah_spk_draft->save();
+                } else {
+                    $getId = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')->select('tb_pr_document.id', 'tb_pr_document_draft.id as id_dokumen_draft')->where('id_draft_pr', $request['no_pr'])->where('dokumen_name', 'SPK')->first();
+                    $update_spk = PrDokumen::where('id', $getId->id)->first();
+                    if ($check) {
+                        // $request->file('inputSPK')->move("draft_pr/", $nameDoc);
+                        $this->uploadToLocal($request->file('inputSPK'),$directory,$nameDoc);
+                        $update_spk->dokumen_name             = "SPK";
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $parentID = [];
+                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
+
+                    $update_spk->dokumen_location         = "draft_pr/" . $pdf_name;
+                    $update_spk->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_spk->save();
                 }
 
-                $tambah_spk->dokumen_location         = "draft_pr/" . $pdf_name;
-                $tambah_spk->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-                $tambah_spk->save();
-
-                $tambah_spk_draft = new PRDocumentDraft();
-                $tambah_spk_draft->id_draft_pr = $request['no_pr'];
-                $tambah_spk_draft->id_document = $tambah_spk->id;
-                $tambah_spk_draft->added = Carbon::now()->toDateTimeString();
-                $tambah_spk_draft->save();
+                
             } 
 
             // tambah SBE
@@ -966,60 +1082,114 @@ class PrDraftController extends Controller
                 $nameDoc                = $request['no_pr'] . '_sbe.' . $lastElement;
                 $extension              = $file->getClientOriginalExtension();
                 $check                  = in_array($extension,$allowedfileExtension);
-                $tambah_sbe = new PrDokumen();
-                if ($check) {
-                    // $request->file('inputSBE')->move("draft_pr/", $nameDoc);
-                    $this->uploadToLocal($request->file('inputSBE'),$directory,$nameDoc);
-                    $tambah_sbe->dokumen_name             = "SBE";
-                } else {
-                    return redirect()->back()->with('alert','Oops! Only pdf');
-                }
 
-                if(isset($fileName)){
-                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
-                    $pdf_name = $nameDoc;
-                } else {
-                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                    $pdf_name = 'pdf_lampiran';
-                }
+                if ($count == 0) {
+                    $tambah_sbe = new PrDokumen();
+                    if ($check) {
+                        // $request->file('inputSBE')->move("draft_pr/", $nameDoc);
+                        $this->uploadToLocal($request->file('inputSBE'),$directory,$nameDoc);
+                        $tambah_sbe->dokumen_name             = "SBE";
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
 
-                $parentID = [];
-                $parent_id = explode('"', $get_pr->parent_id_drive)[1];
-                array_push($parentID,$parent_id);
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
 
-                $data = PR::where('id_draft_pr', $request->no_pr)->first();
-                if (empty($data)) {
-                    $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
-                        ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
-                        ->where("tb_pr_document.dokumen_name","=","SBE")
-                        ->orderBy('tb_pr_document_draft.id','desc')
-                        ->first();
+                    $parentID = [];
+                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
 
-                    if (!empty($data_dokumen)) {
-                        if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
-                            $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
-                            $pdf_name = explode('/', $pdf_name)[1];
+                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    if (empty($data)) {
+                        $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                            ->where("tb_pr_document.dokumen_name","=","SBE")
+                            ->orderBy('tb_pr_document_draft.id','desc')
+                            ->first();
+
+                        if (!empty($data_dokumen)) {
+                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                $pdf_name = explode('/', $pdf_name)[1];
+                            } else {
+                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                            }
+                        }
+                    } else{
+                        if (strpos($data->title, 'Revisi')) {
+                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
                         } else {
                             $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
                         }
                     }
-                } else{
-                    if (strpos($data->title, 'Revisi')) {
-                        $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+
+                    $tambah_sbe->dokumen_location         = "draft_pr/" . $pdf_name;
+                    $tambah_sbe->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $tambah_sbe->save();
+
+                    $tambah_sbe_draft = new PRDocumentDraft();
+                    $tambah_sbe_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_sbe_draft->id_document = $tambah_sbe->id;
+                    $tambah_sbe_draft->added = Carbon::now()->toDateTimeString();
+                    $tambah_sbe_draft->save();
+                } else {
+                    $getId = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')->select('tb_pr_document.id', 'tb_pr_document_draft.id as id_dokumen_draft')->where('id_draft_pr', $request['no_pr'])->where('dokumen_name', 'SPK')->first();
+                    $update_sbe = PrDokumen::where('id', $getId->id)->first();
+                    if ($check) {
+                        // $request->file('inputSBE')->move("draft_pr/", $nameDoc);
+                        $this->uploadToLocal($request->file('inputSBE'),$directory,$nameDoc);
+                        $update_sbe->dokumen_name             = "SBE";
                     } else {
-                        $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        return redirect()->back()->with('alert','Oops! Only pdf');
                     }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $parentID = [];
+                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+
+                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    if (empty($data)) {
+                        $data_dokumen = PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                            ->where("tb_pr_document.dokumen_name","=","SBE")
+                            ->orderBy('tb_pr_document_draft.id','desc')
+                            ->first();
+
+                        if (!empty($data_dokumen)) {
+                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                $pdf_name = explode('/', $pdf_name)[1];
+                            } else {
+                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                            }
+                        }
+                    } else{
+                        if (strpos($data->title, 'Revisi')) {
+                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                        } else {
+                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        }
+                    }
+
+                    $update_sbe->dokumen_location         = "draft_pr/" . $pdf_name;
+                    $update_sbe->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_sbe->save();
                 }
-
-                $tambah_sbe->dokumen_location         = "draft_pr/" . $pdf_name;
-                $tambah_sbe->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-                $tambah_sbe->save();
-
-                $tambah_sbe_draft = new PRDocumentDraft();
-                $tambah_sbe_draft->id_draft_pr = $request['no_pr'];
-                $tambah_sbe_draft->id_document = $tambah_sbe->id;
-                $tambah_sbe_draft->added = Carbon::now()->toDateTimeString();
-                $tambah_sbe_draft->save();
+                
             }
 
             // return gettype($request->arrInputDocPendukung);
@@ -1058,29 +1228,31 @@ class PrDraftController extends Controller
                     $parent_id = explode('"', $get_pr->parent_id_drive)[1];
                     array_push($parentID,$parent_id);
 
-                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
-                    if (empty($data)) {
-                        $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
-                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
-                            ->where('dokumen_name', '=', $tambah_dok->dokumen_name )
-                            ->orderBy('tb_pr_document_draft.id','desc')
-                            ->first();
+                    // $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    // if (empty($data)) {
+                    //     $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                    //         ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                    //         ->where('dokumen_name', '=', $tambah_dok->dokumen_name )
+                    //         ->orderBy('tb_pr_document_draft.id','desc')
+                    //         ->first();
 
-                        if (!empty($data_dokumen)) {
-                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
-                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
-                                $pdf_name = explode('/', $pdf_name)[1];
-                            } else {
-                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
-                            }
-                        }
-                    } else{
-                        if (strpos($data->title, 'Revisi')) {
-                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
-                        } else {
-                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
-                        }
-                    }
+                    //     if (!empty($data_dokumen)) {
+                    //         if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                    //             $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                    //             $pdf_name = explode('/', $pdf_name)[1];
+                    //         } else {
+                    //             $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                    //         }
+                    //     }
+                    // } else{
+                    //     if (strpos($data->title, 'Revisi')) {
+                    //         $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                    //     } else {
+                    //         $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                    //     }
+                    // }
+
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
 
                     $tambah_dok->dokumen_location         = "draft_pr/".$pdf_name;
                     $tambah_dok->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
@@ -1139,57 +1311,92 @@ class PrDraftController extends Controller
                 $nameDoc                = $request['no_pr'] . '_penawaran_harga.' . $lastElement;
                 $extension              = $file->getClientOriginalExtension();
                 $check                  = in_array($extension,$allowedfileExtension);
-                $tambah = new PrDokumen();
-                if ($check) {
-                    // $request->file('inputPenawaranHarga')->move("draft_pr/", $nameDoc);
-                  $this->uploadToLocal($request->file('inputPenawaranHarga'),$directory,$nameDoc);
-                    $tambah->dokumen_name             = "Penawaran Harga";
 
-                } else {
-                    return redirect()->back()->with('alert','Oops! Only pdf');
-                }
+                if ($count == 0) {
+                    $tambah = new PrDokumen();
+                    if ($check) {
+                        // $request->file('inputPenawaranHarga')->move("draft_pr/", $nameDoc);
+                      $this->uploadToLocal($request->file('inputPenawaranHarga'),$directory,$nameDoc);
+                        $tambah->dokumen_name             = "Penawaran Harga";
 
-                if(isset($fileName)){
-                    $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
-                    $pdf_name = $nameDoc;
-                } else {
-                    $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
-                    $pdf_name = 'pdf_lampiran';
-                }
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
 
-                $data = PR::where('id_draft_pr', $request->no_pr)->first();
-                if (empty($data)) {
-                    $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
-                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
-                            ->where("tb_pr_document.dokumen_name","=","Penawaran Harga")
-                            ->orderBy('tb_pr_document_draft.id','desc')
-                            ->first();
-                    if (!empty($data_dokumen)) {
-                        if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
-                            $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
-                            $pdf_name = explode('/', $pdf_name)[1];
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    if (empty($data)) {
+                        $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                                ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                                ->where("tb_pr_document.dokumen_name","=","Penawaran Harga")
+                                ->orderBy('tb_pr_document_draft.id','desc')
+                                ->first();
+                        if (!empty($data_dokumen)) {
+                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                $pdf_name = explode('/', $pdf_name)[1];
+                            } else {
+                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                            }
+                        }
+                    } else{
+                        
+                        if (strpos($data->title, 'Revisi')) {
+                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
                         } else {
                             $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
                         }
                     }
-                } else{
-                    
-                    if (strpos($data->title, 'Revisi')) {
-                        $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+
+                    $tambah->dokumen_location         = "draft_pr/".$pdf_name;
+                    $tambah->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $tambah->save();
+
+                    $tambah_draft = new PRDocumentDraft();
+                    $tambah_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_draft->id_document = $tambah->id;
+                    $tambah_draft->added = Carbon::now()->toDateTimeString();
+                    $tambah_draft->save();
+                } else {
+                    $getId = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')->select('tb_pr_document.id', 'tb_pr_document_draft.id as id_dokumen_draft')->where('id_draft_pr', $request['no_pr'])->where('dokumen_name', 'Penawaran Harga')->first();
+                    $update = PrDokumen::where('id', $getId->id)->first();
+                    if ($check) {
+                        // $request->file('inputPenawaranHarga')->move("draft_pr/", $nameDoc);
+                      $this->uploadToLocal($request->file('inputPenawaranHarga'),$directory,$nameDoc);
+                        $update->dokumen_name             = "Penawaran Harga";
+
                     } else {
-                        $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                        return redirect()->back()->with('alert','Oops! Only pdf');
                     }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
+
+                    $update->dokumen_location         = "draft_pr/".$pdf_name;
+                    $update->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update->save();
+
+                    $tambah_draft = new PRDocumentDraft();
+                    $tambah_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_draft->id_document = $update->id;
+                    $tambah_draft->added = Carbon::now()->toDateTimeString();
+                    $tambah_draft->save();
                 }
-
-                $tambah->dokumen_location         = "draft_pr/".$pdf_name;
-                $tambah->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
-                $tambah->save();
-
-                $tambah_draft = new PRDocumentDraft();
-                $tambah_draft->id_draft_pr = $request['no_pr'];
-                $tambah_draft->id_document = $tambah->id;
-                $tambah_draft->added = Carbon::now()->toDateTimeString();
-                $tambah_draft->save();
+                
             }
 
             $dataAll = json_decode($request->arrInputDocPendukung,true);
@@ -1223,37 +1430,41 @@ class PrDraftController extends Controller
                         $pdf_name = 'pdf_lampiran';
                     }
 
-                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
-                    if (empty($data)) {
-                        $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
-                            ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
-                            ->where('dokumen_name', '=', $tambah_dok->dokumen_name )
-                            ->orderBy('tb_pr_document_draft.id','desc')
-                            ->first();
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
+                    // $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                    // if (empty($data)) {
+                    //     $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                    //         ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                    //         ->where('dokumen_name', '=', $tambah_dok->dokumen_name )
+                    //         ->orderBy('tb_pr_document_draft.id','desc')
+                    //         ->first();
 
-                        // return $data_dokumen;
+                    //     // return $data_dokumen;
 
-                        if (!empty($data_dokumen)) {
-                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
-                                // return 'disini1';
-                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
-                                $pdf_name = explode('/', $pdf_name)[1];
-                            } else {
-                                // return 'disini2';
-                                $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
-                            }
-                        }
-                    } else{
-                        if (strpos($data->title, 'Revisi')) {
-                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
-                        } else {
-                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
-                        }
-                    }
+                    //     if (!empty($data_dokumen)) {
+                    //         if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                    //             // return 'disini1';
+                    //             $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                    //             $pdf_name = explode('/', $pdf_name)[1];
+                    //         } else {
+                    //             // return 'disini2';
+                    //             $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                    //         }
+                    //     }
+                    // } else{
+                    //     if (strpos($data->title, 'Revisi')) {
+                    //         $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
+                    //     } else {
+                    //         $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                    //     }
+                    // }
 
                     $tambah_dok->dokumen_location         = "draft_pr/".$pdf_name;
-                    $tambah_dok->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
                     $tambah_dok->save();
+
+                    $update_link = PrDokumen::where('id', $tambah_dok->id)->first();
+                    $update_link->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_link->save();
 
                     $tambah_dok_draft = new PRDocumentDraft();
                     $tambah_dok_draft->id_draft_pr = $request['no_pr'];
@@ -1445,14 +1656,11 @@ class PrDraftController extends Controller
     {
         $update = PRDraft::where('id', $request->no_pr)->first();
         $update->term_payment = $request['textAreaTOP'];
-        $update->status_tax = $request->status_tax;
-        // $update->var_tax = $request->status_tax;
         $update->save();
 
         $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
         if (!empty($update_pr)) {
             $update_pr->term_payment =  $request['textAreaTOP'];
-            $update_pr->status_tax = $request->status_tax;
             $update_pr->save();
         }
     }
@@ -1687,6 +1895,7 @@ class PrDraftController extends Controller
             $tambah->id_draft_pr = $request['no_pr'];
             $tambah->status_tax = $get_draft_pr->status_tax;
             $tambah->status_draft_pr = 'draft';
+            $tambah->isRupiah = $get_draft_pr->isRupiah;
             $tambah->save(); 
 
             $detail = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('users.name as name_issuance', 'tb_pr_draft.to', 'tb_pr_draft.attention', 'tb_pr_draft.title', 'tb_pr_draft.nominal', 'tb_pr_draft.id', 'status', 'issuance')->where('tb_pr_draft.id', $request->no_pr)->first();
@@ -1723,7 +1932,7 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
                 // ->leftJoin('tb_pr_draft_verify', 'tb_pr_draft_verify.id_draft_pr', '=', 'tb_pr_draft.id')
                 ->join('tb_pr_activity', 'tb_pr_activity.id_draft_pr', '=', 'tb_pr_draft.id')
-                ->select('tb_pr_draft.to','tb_pr_draft.email', 'tb_pr_draft.phone', 'attention', 'title', 'tb_pr_draft.address', 'request_method', 'tb_pr_draft.created_at', 'lead_id', DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'term_payment','type_of_letter', 'users.name','tb_pr_draft.id', DB::raw("(CASE WHEN (fax is null) THEN '-' ELSE fax END) as fax"), 'pid', 'category','status_used', 'status_tax', 'isCommit')
+                ->select('tb_pr_draft.to','tb_pr_draft.email', 'tb_pr_draft.phone', 'attention', 'title', 'tb_pr_draft.address', 'request_method', 'tb_pr_draft.created_at', 'lead_id', DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'term_payment','type_of_letter', 'users.name','tb_pr_draft.id', DB::raw("(CASE WHEN (fax is null) THEN '-' ELSE fax END) as fax"), 'pid', 'category','status_used', 'status_tax', 'isCommit', 'isRupiah')
                 ->where('tb_pr_draft.id', $request->no_pr)
                 ->first();
 
@@ -1776,7 +1985,7 @@ class PrDraftController extends Controller
             ->leftJoinSub($getActivityComparing,'temp_tb_pr_activity',function($join){
                 $join->on("temp_tb_pr_activity.id_draft_pr","tb_pr_draft.id");
             })
-            ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr_draft.status', 'activity', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr_draft.isCommit')
+            ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr_draft.status', 'activity', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr_draft.isCommit', 'tb_pr.isRupiah')
             ->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
 
@@ -2010,6 +2219,55 @@ class PrDraftController extends Controller
                 $tambah_quote_draft->added = Carbon::now()->toDateTimeString();
                 $tambah_quote_draft->save();
             }
+
+            $dataAll = json_decode($request->arrInputDocPendukung,true);
+            // return $dataAll;
+            foreach ($dataAll as $key => $data) {
+                // return $dataAll;
+                if($request->inputDocPendukung[0] != '-'){
+                    $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
+                    $file                   = $request->file('inputDocPendukung')[$key];
+                    $fileName               = $file->getClientOriginalName();
+                    $strfileName            = explode('.', $fileName);
+                    $lastElement            = end($strfileName);
+                    $nameDoc                = $get_pr->id_draft_pr . '_Compare#' . $count_comparison . '_' . $data['nameDocPendukung'] . '.' . $lastElement;
+                    $extension              = $file->getClientOriginalExtension();
+                    $check                  = in_array($extension,$allowedfileExtension);
+                    $tambah_dok = new PrDokumen();
+                    if ($check) {
+                        $this->uploadToLocal($request->file('inputDocPendukung')[$key],$directory,$nameDoc);
+                        $tambah_dok->dokumen_name             = $data['nameDocPendukung'];
+
+                    } else {
+                        return redirect()->back()->with('alert','Oops! Only pdf');
+                    }
+
+                    if(isset($fileName)){
+                        $pdf_url = urldecode(url("draft_pr/" . $nameDoc));
+                        $pdf_name = $nameDoc;
+                    } else {
+                        $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+                        $pdf_name = 'pdf_lampiran';
+                    }
+
+                    // return $pdf_name;
+                    $parentID = [];
+                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
+
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
+
+                    $tambah_dok->dokumen_location         = "draft_pr/".$pdf_name;
+                    $tambah_dok->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $tambah_dok->save();
+
+                    $tambah_dok_draft = new PRDocumentCompare();
+                    $tambah_dok_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_dok_draft->id_document = $tambah_dok->id;
+                    $tambah_dok_draft->added = Carbon::now()->toDateTimeString();
+                    $tambah_dok_draft->save();
+                }
+            }
         }
 
 
@@ -2158,7 +2416,7 @@ class PrDraftController extends Controller
             $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
         } else {
             $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`');
-            $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->get();
+            $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at','asc')->get();
         }
 
         return collect([
@@ -2834,12 +3092,12 @@ class PrDraftController extends Controller
     }
 
     public function getEmailTemplate(Request $request){
-        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax', 'tb_pr.isRupiah')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
         if ($data->status_draft_pr == 'draft') {
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
 
             $sum_nominal = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
@@ -2853,7 +3111,7 @@ class PrDraftController extends Controller
         } else if ($data->status_draft_pr == 'pembanding'){
             $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
-                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->get();
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
 
             $sum_nominal = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
@@ -2953,7 +3211,7 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')
                 ->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')
                 ->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')
-                ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.status_tax',
+                ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr.isRupiah',
                 DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', 'tb_pr.issuance', 'parent_id_drive', 'status_draft_pr',
                 DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
@@ -2965,7 +3223,7 @@ class PrDraftController extends Controller
         if ($data->status_draft_pr == 'pembanding') {
             $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
-                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->get();
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
 
             $sum_nominal = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id', 'left')
                 ->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr', 'left')
@@ -2974,7 +3232,7 @@ class PrDraftController extends Controller
         } else if($data->status_draft_pr == 'draft'){
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
             ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-            ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+            ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
 
             $sum_nominal = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
@@ -3043,6 +3301,7 @@ class PrDraftController extends Controller
             } else {
                 $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
+            }
 
         } else {
             if ($cek_group->group == 'pmo') {
