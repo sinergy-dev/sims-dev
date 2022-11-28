@@ -14,9 +14,22 @@
 <link rel="stylesheet" href="{{ url('css/dataTables.bootstrap.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}"/>
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
+<link rel="stylesheet" type="text/css" href="{{ url('css/recommended-styles.css')}}">
+<link rel="stylesheet" href="{{ url('css/jquery.mentiony.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+<link href="{{ url('css/jquery.mentionsInput.css')}}" rel="stylesheet" type="text/css">
+
 <style type="text/css">
+  textarea {width: 100%}
+  .mentiony-container, .mentiony-content{width: 100%!important;}
+  .demo-item{ height: 300px;}
+  .demo-item .demo, .demo-item .demo > *{ height: 100%; }
   html,body,buttons,input,textarea,etc {
     font-family: inherit;
+  }
+
+  p > strong::before{
+    content: "@";
   }
 
   input[type=file]::-webkit-file-upload-button {
@@ -122,8 +135,8 @@
             <form method="POST" action="" id="rejectsirkulasi" name="rejectsirkulasi">
                 <div class="form-group">
                   <label>Reason</label>
-                  <textarea class="form-control" style="resize: vertical;"  id="reasonRejectSirkular" name="reasonRejectSirkular">
-                  </textarea>
+                  <textarea class="form-control" style="resize: vertical;" onkeyup="fillInput('reason_reject')"  id="reasonRejectSirkular" name="reasonRejectSirkular"></textarea>
+                  <span class="help-block" style="display:none;">Please fill Reason!</span>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
@@ -190,7 +203,7 @@
           <div class="modal-body">
             <form method="POST" action="" id="notes" name="notes">
                 <div class="form-group">
-                  <textarea class="form-control" id="inputNotes" style="resize:vertical;height: 200px;" ></textarea>
+                  <textarea class="form-control mention" id="inputNotes" style="resize:vertical;height: 200px;" placeholder="@ mention member"></textarea>
                 </div>
                 <div class="modal-footer">
                   <button type="button" onclick="btnSubmitNotes()" class="btn btn-success">Saved</button>
@@ -528,7 +541,7 @@
           <div class="tab-add" style="display:none">
             <div class="box-body pad">
               <form> 
-                <textarea onkeyup="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. term of payment"></textarea>
+                <textarea onkeyup="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. terms & Condition"></textarea>
                 <span class="help-block" style="display:none;">Please fill Top of Payment!</span>
               </form>
             </div>
@@ -576,6 +589,8 @@
   </div>
 @endsection
 @section('scriptImport')
+<script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js' type='text/javascript'></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.5/Chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
@@ -595,10 +610,195 @@
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
+<script src="{{asset('js/mention.js')}}"></script>
+<script src="{{asset('js/bootstrap-typeahead.js')}}"></script>
+<script src="{{asset('js/jquery.mentionsInput.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.events.input.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.elastic.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.mentionsInput.js')}}" type="text/javascript"></script>
+
+<!-- <script src="{{asset('js/jquery.mentiony.js')}}"></script> -->
+
 @endsection
 @section('script')
 <script type="text/javascript">
   $(".money").mask('000,000,000,000,000', {reverse: true})
+  // function KeyPress(e) {
+  //   var evtobj = window.event? event : e
+  //   if (evtobj.keyCode == 50 && evtobj.shiftKey){
+      
+  //   }
+  // }
+
+  // function ListdoSomthingOnComplete(no_pr) {
+  //   var arrUser = []
+
+  //   // console.log(no_pr)
+  //   $.ajax({
+  //     type:"GET",
+  //     url:"{{url('/admin/getPerson')}}",
+  //     data:{
+  //       no_pr:no_pr
+  //     },
+  //     success: function(result){
+  //       $("textarea.mention").mention({
+  //         queryBy: ['username', 'name'],
+  //         users: result
+  //       });
+  //       $.each(result,function(item,value){
+  //         if (value.avatar == null) {
+  //           arrUser.push({username:value.name,name:value.email,image:'{{ asset("image/place_profile_3.png")}}'})
+  //         }else{
+  //           arrUser.push({username:value.name,name:value.email,image:value.avatar})
+  //         }
+  //       })
+  //     }
+  //   })
+
+  //   return arrUser
+  // }
+
+  //   result = [
+  //     {
+  //     "name": "Timurta Bagus Prapditya Laksana",
+  //     "email": "timurta@sinergy.co.id",
+  //     "avatar": null
+  //     },
+  //     {
+  //     "name": "Rily Janirawanty",
+  //     "email": "rily@sinergy.co.id",
+  //     "avatar": null
+  //     },
+  //     {
+  //     "name": "Endraw Denny Hermanto",
+  //     "position": "BCD Manager",
+  //     "ttd": "image/tanda_tangan/Tanda_tangan_1100492050.png",
+  //     "email": "endraw@sinergy.co.id",
+  //     "avatar": "https://lh3.googleusercontent.com/a-/AFdZuconopfZh_YM9ElwnEgQl4JGQQs-sSvZliuAU8lPn5lk3-xaUpDYS9bcbkroa5pZdWFq5bU21cL3gQnL9XhEF7xHt9QolfwuflFti0_bLWN5b2rjebxRQby5rXwywDs0AknD4SwUFwhqwZPObcLCVB2tBbNKnUu4on9WnGerj8aKOy5Z15h218_KcNW6o6pj2ECww022oYhKJ3Wr4COdnFLr-8oliUmrE_2MwR6fQl-owckze5DuwpUMwdoIL_7sFAunTt9VHhQkNvXSks20LRqj_l3DA1OJUfpTT5l_g_XThhd71rvGSgpfZfK7t5U1pKoBw1FeMon2jMw9-9d_QnmHMK-Lj_u9RU7np6TqqiFOpivSucwrRZpDEwzw_diiIEKdfYljaaXVmev5tWwB1jrd096StpqqtbGt8xUnPo_pKDrSKXXSP0wK3pYzBdCtiYvxAV34xuzHgGKDTzZ8zUqylJaSRGwF6wEAEJxAKrkNIj0rbIFZBh7LTx-wCgfVC-65HDjwINlUOP3QgRKP3ofoeKX5WeYeJrUqaZhumuRE56oY1JbdauQBuSRkNwd3LePLFn8j3K1fErGVszV_jJ-A6zXRL6J6lbtkC6KznxQ5Oc2WCD9nVAVFJZ1PIOndPrPpOfUI6TGyzth_W3Bpcifs0rztQmB5jXmjoB5niJiwNk2c544dhd4iU2ybev00kg6lp6CpFhW6j9cot2kOG45xfxJY-dQGC10viEc8FoSS5RNud6E9Dcc13Yijm_r-Wkt-YH3a=s96-c",
+  //     "date_sign": "-",
+  //     "signed": "false"
+  //     },
+  //     {
+  //     "name": "Agustinus Angger Muryanto",
+  //     "position": "PMO Manager",
+  //     "ttd": "image/tanda_tangan/Tanda_tangan_1170387080.png",
+  //     "email": "angger@sinergy.co.id",
+  //     "avatar": null,
+  //     "date_sign": "-",
+  //     "signed": "false"
+  //     },
+  //     {
+  //     "name": "Ganjar Pramudya Wijaya",
+  //     "position": "SOL Manager",
+  //     "ttd": "image/tanda_tangan/Tanda_tangan_1110492070.png",
+  //     "email": "ganjar@sinergy.co.id",
+  //     "avatar": null,
+  //     "date_sign": "-",
+  //     "signed": "false"
+  //     },
+  //     {
+  //     "name": "Muhammad Nabil",
+  //     "position": "Operations Director",
+  //     "ttd": "image/tanda_tangan/Tanda_tangan_1061184050.png",
+  //     "email": "nabil@sinergy.co.id",
+  //     "avatar": null,
+  //     "date_sign": "-",
+  //     "signed": "false"
+  //     }
+  // ]
+  // var i = 0
+  // const results = result.map(item => {
+  //     const container = {};
+
+  //     container.id = i++;
+  //     container.name = item.name;
+  //     container.avatar = item.avatar;
+  //     container.info = item.email; 
+
+  //     return container;
+  // })
+  // $('textarea.mention').mentiony({
+  //     onDataRequest: function (mode, keyword, onDataRequestCompleteCallback) {
+
+  //         var data = results
+
+  //         data = jQuery.grep(data, function( item ) {
+  //             return item.name.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
+  //         });
+
+  //         // Call this to populate mention.
+  //         onDataRequestCompleteCallback.call(this, data);
+  //     },
+  //     timeOut: 0,
+  //     debug: 1,
+  // });
+
+  $.ajax({
+    type:"GET",
+    url:"{{url('/admin/getPerson')}}",
+    data:{
+      no_pr:window.location.href.split("/")[6]
+    },
+    success: function(result){
+      var i = 0
+      const results = result.map(item => {
+          const container = {};
+
+          container.id = i++;
+          container.name = item.name;
+          if (item.avatar == null) {
+            container.avatar = '{{ asset("image/place_profile_3.png")}}';
+          }else{
+            container.avatar = item.avatar;
+          }
+          container.type = item.email;
+
+          return container;
+      })
+
+      $('textarea.mention').mentionsInput({
+        onDataRequest:function (mode, query, callback) {
+          var data = results
+
+          data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+
+          callback.call(this, data);
+        }
+      });
+      
+    }
+  })
+
+  // let ListUser =  ListdoSomthingOnComplete(window.location.href.split("/")[6])    
+
+  // console.log(ListUser)
+
+  // $("textarea.mention").mention({
+  //   queryBy: ['username', 'name'],
+  //   users: ListUser
+  // });
+
+  // ListUser = []
+
+
+  // document.onkeydown = KeyPress;
+
+  // $("textarea.mention").mention({
+  //     queryBy: ['name', 'username'],
+  //     users: [{
+  //         username: "Ladinar Nanda Aprilia",
+  //         name: "Sarah Jones",
+  //         image: "http://placekitten.com/25/25"
+  //     }, { 
+  //         username: "Faiqoh",
+  //         name: "Scott Pfaff",
+  //         image: "http://placekitten.com/25/25"
+  //     }, { 
+  //         username: "Tito Maulana",
+  //         name: "Roger Penn",
+  //         image: "http://placekitten.com/25/25"
+  //     }]
+  // });  
 
   var formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
@@ -797,7 +997,8 @@
                   append = append + '<span><b>Action</b></span><br>'
                    append = append + '<button class="btn btn-sm bg-purple" id="btnPembanding" onclick="pembanding()" style="margin-right:5px">Comparison</button>'
                       append = append + '<button disabled class="btn btn-sm btn-warning" id="btnSirkulasi" style="margin-right:5px" onclick="sirkulasi(0)">Circular</button>'
-                  append = append + '<button class="btn btn-sm btn-success" id="btnFinalize" disabled onclick="finalize()">Finalize</button>'
+                  append = append + '<button class="btn btn-sm btn-success" style="margin-right:5px" id="btnFinalize" disabled>Finalize</button>'
+                  append = append + '<button class="btn btn-sm btn-danger" id="btnRevision" style="display:none" disabled>Revision</button>'
                   append = append + '<a id="btnShowPdf" target="_blank" href="{{url("/admin/getPdfPRFromLink")}}/?no_pr='+ window.location.href.split("/")[6] +'" class="btn btn-sm bg-orange pull-right">Show PDF</a>'
                   append = append + '<button id="btnAddNotes" class="btn btn-sm btn-primary pull-right" style="margin-right:5px"><i class="fa fa-plus"></i>&nbspNotes</button>'
                 append = append + '</div>'
@@ -813,11 +1014,11 @@
                       append = append + '<thead>'
                         append = append + '<th>No</th>'
                         append = append + '<th width="20%">Product</th>'
-                        append = append + '<th width="35%">Description</th>'
-                        append = append + '<th width="10%">Qty</th>'
-                        append = append + '<th width="10%">Type</th>'
-                        append = append + '<th width="15%">Price</th>'
-                        append = append + '<th width="15%">Total Price</th>'
+                        append = append + '<th width="40%">Description</th>'
+                        append = append + '<th width="5%">Qty</th>'
+                        append = append + '<th width="5%">Type</th>'
+                        append = append + '<th width="10%">Price</th>'
+                        append = append + '<th width="10%">Total Price</th>'
                       append = append + '</thead>'
                       append = append + '<tbody id="bodyPreview">'
                       append = append + '</tbody>'
@@ -849,8 +1050,12 @@
             //for user privilege
 
             if (result[2].isCircular == 'True') {   
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                 $("#btnSirkulasi").prop('disabled',true)
+                $("#btnRevision").show().prop('disabled',false).click(function(){
+                  $(".modal-title").text("Sirkulasi PR - Revision")
+                  $("#ModalRejectSirkulasi").modal("show")
+                })
               }
             }        
 
@@ -933,7 +1138,7 @@
           appendResolve = appendResolve + '<div class="user-block">'
           appendResolve = appendResolve + '<img class="img-circle" src="{{ asset("image/")}}/'+ image +'" alt="User Image">'
           appendResolve = appendResolve + '<span class="username"><a href="#">'+ value.operator +'</a></span>'
-          appendResolve = appendResolve + '<span class="description">'+ span +'Note #'+ no +' - '+ value.no_pr +'</span>'
+          appendResolve = appendResolve + '<span class="description">'+ span +'Note #'+ no +' - '+ value.no_pr + ' - ' +  cals + '&nbspat&nbsp' + moment(value.date_add).format('hh:mm A') +'</span>'
           appendResolve = appendResolve + '</div>'
           appendResolve = appendResolve + '<div class="box-tools">'
           appendResolve = appendResolve + '<button type="button" class="btn btn-box-tool" data-widget="collapse" onclick="btnMinusNotes('+item+')" data-value="'+ item +'"><i class="fa fa-minus"></i>'
@@ -942,8 +1147,7 @@
           appendResolve = appendResolve + '</div>'
           appendResolve = appendResolve + '<div id="bodyCollapse" data-value="'+ item +'">'
           appendResolve = appendResolve + '<div class="box-body" style="">'
-          appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p>'
-          appendResolve = appendResolve + '<span style="display:inline" class="text-muted pull-right">'+ cals + '&nbspat&nbsp' + moment(value.date_add).format('hh:mm A') +'</span><br>'
+          appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p><br>'
           appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" onclick="btnResolve('+ value.id +')" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
           appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
           appendResolve = appendResolve + '</div>'
@@ -972,7 +1176,7 @@
                 sameElse: 'L'
               })
               appendResolve = appendResolve + '<span class="username">'+ values.operator +'<span class="text-muted pull-right">'+ cal + '&nbspat&nbsp' + moment(values.date_add).format('hh:mm A') +'</span>'
-              appendResolve = appendResolve + '</span>'+ values.reply +'</div>'
+              appendResolve = appendResolve + '</span><p>'+ values.reply +'</p></div>'
               appendResolve = appendResolve + '</div>'
             })            
             appendResolve = appendResolve + '</div>'
@@ -1060,7 +1264,7 @@
     appendFooter = appendFooter + '<img class="img-responsive img-circle img-sm" src="{{ asset("image/")}}/'+ gambar +'" alt="Alt Text">'
     appendFooter = appendFooter + '<div class="img-push">'
     appendFooter = appendFooter + '<div class="input-group">'
-      appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="form-control input-sm" placeholder="Type reply comment">'
+      appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention form-control input-sm" placeholder="Type reply comment, @ mention member">'
       appendFooter = appendFooter + '<span class="input-group-btn">'
         appendFooter = appendFooter + '<button onclick="pressReply('+ no_pr +','+ id +')" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-send"></i></button>'
       appendFooter = appendFooter + '</span>'
@@ -1074,6 +1278,42 @@
     }else{
       $("#btnReply[data-value='"+ id +"']").prop("disabled",false)
     }
+
+    $.ajax({
+      type:"GET",
+      url:"{{url('/admin/getPerson')}}",
+      data:{
+        no_pr:window.location.href.split("/")[6]
+      },
+      success: function(result){
+        var i = 0
+        const results = result.map(item => {
+            const container = {};
+
+            container.id = i++;
+            container.name = item.name;
+            if (item.avatar == null) {
+              container.avatar = '{{ asset("image/place_profile_3.png")}}';
+            }else{
+              container.avatar = item.avatar;
+            }
+            container.type = item.email;
+
+            return container;
+        })
+
+        $('.mention').mentionsInput({
+          onDataRequest:function (mode, query, callback) {
+            var data = results
+
+            data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+
+            callback.call(this, data);
+          }
+        });
+        
+      }
+    })
   }
 
   function pressReply(no_pr,id){
@@ -1083,7 +1323,7 @@
       data: {
         _token: "{{ csrf_token() }}",
         id_notes:id,
-        inputReply:$("#inputReply[data-value='"+ id +"']").val(),
+        inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
         no_pr:no_pr,
       },beforeSend:function(){
         Swal.fire({
@@ -1124,7 +1364,7 @@
       data: {
         _token: "{{ csrf_token() }}",
         no_pr:window.location.href.split("/")[6],
-        inputNotes:$("#inputNotes").val(),
+        inputNotes:$("#inputNotes").prev('.mentions').find("div").html(),
       },beforeSend:function(){
         Swal.fire({
             title: 'Please Wait..!',
@@ -1233,9 +1473,9 @@
                   append = append + '<thead>'
                     append = append + '<th>No</th>'
                     append = append + '<th width="20%">Product</th>'
-                    append = append + '<th width="35%">Description</th>'
-                    append = append + '<th width="10%">Qty</th>'
-                    append = append + '<th width="15%">Type</th>'
+                    append = append + '<th width="40%">Description</th>'
+                    append = append + '<th width="5%">Qty</th>'
+                    append = append + '<th width="5%">Type</th>'
                     append = append + '<th width="15%">Price</th>'
                     append = append + '<th width="15%">Total Price</th>'
                   append = append + '</thead>'
@@ -1315,26 +1555,41 @@
           PRType = '<b>External Purchase Request</b>'
         } 
         var appendHeader = ""
-        if (type_of_letter == 'IPR') {
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-        }else{
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-          appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-          appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br><br>'
+
+        appendHeader = appendHeader + '<div class="row">'
+        appendHeader = appendHeader + '    <div class="col-md-6">'
+        appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+        appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+        appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+        appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+        appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+        appendHeader = appendHeader + '        <div class="">From: Albert Setiawan</div>'
+        appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+        appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+        appendHeader = appendHeader + '    </div>'
+        if (window.matchMedia("(max-width: 767px)").matches)
+        {
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            // The viewport is less than 768 pixels wide
+            console.log("This is a mobile device.");
+        } else {
+            appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+            // The viewport is at least 768 pixels wide
+            console.log("This is a tablet or desktop.");
         }
+        appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+        appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+        appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+        appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+        if (type_of_letter == 'EPR') {
+          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+        }
+        appendHeader = appendHeader + '    </div>'
+        appendHeader = appendHeader + '</div>'
 
         $("#headerPreview").append(appendHeader)
         var append = ""
@@ -1346,24 +1601,24 @@
               append = append + '<span>'+ i +'</span>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input style="width:200px;font-size:12px;" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+            append = append + "<input data-value='' readonly style='width:200px;font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<textarea style="width:250px;font-size:12px;resize:none;height:150px" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+              append = append + '<textarea style="width:-moz-available;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px">'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<select readonly class="form-control" style="width:80px;font-size:12px">'
-              append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
+              append = append + '<select disabled class="form-control" style="width:80px;font-size:12px">'
+              append = append + '<option>'+ item.unit.charAt(0).toUpperCase() + item.unit.slice(1) +'</option>'
               append = append + '</select>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px;font-size:12px;">'
+              append = append + '<input readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px;font-size:12px">'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input readonly class="form-control grandTotalPrice" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size:12px">'
+              append = append + '<input readonly class="form-control grandTotalPrice" id="grandTotalPrice" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size:12px">'
             append = append + '</td>'
           append = append + '</tr>'
         })
@@ -1398,7 +1653,7 @@
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
-            appendBottom = appendBottom + '<h3 class="box-title">Terms of Payment</h3>'
+            appendBottom = appendBottom + '<h3 class="box-title">Terms & Condition</h3>'
             appendBottom = appendBottom + '<div class="box-tools pull-right">'
                 appendBottom = appendBottom + '<button type="button" class="btn btn-box-tool btnTerm" data-value="draft"><span class="fa fa-2x fa-angle-right" style="margin-top:-5px"></span>'
                 appendBottom = appendBottom + '</button>'
@@ -1545,6 +1800,9 @@
         no_pr:window.location.href.split("/")[6],
       },
       success: function(result) {
+        //initiate btn finalize
+        $("#btnFinalize").attr("onclick","finalize("+ '"' +result.pr.request_method+ '"' +")")
+
         type_of_letter = result.pr.type_of_letter
         if (type_of_letter == 'IPR') {
           PRType = '<b>Internal Purchase Request</b>'
@@ -1620,7 +1878,7 @@
               append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
+              append = append + '<textarea style="font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px">'
@@ -1646,20 +1904,20 @@
         appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
         appendBottom = appendBottom + '    <form class="form-horizontal">'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-6 col-sm-2 control-label">Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-8 col-sm-2 control-label">Total</label>'
+        appendBottom = appendBottom + '        <div class="col-sm-2">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat 11%</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
+        appendBottom = appendBottom + '        <div class="col-sm-2">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail5" class="col-sm-offset-6 col-sm-2 control-label">Grand Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '        <label for="inputEmail5" class="col-sm-offset-8 col-sm-2 control-label">Grand Total</label>'
+        appendBottom = appendBottom + '        <div class="col-sm-2">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
@@ -1669,7 +1927,7 @@
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
-            appendBottom = appendBottom + '<h3 class="box-title">Terms of Payment</h3>'
+            appendBottom = appendBottom + '<h3 class="box-title">Terms & Condition</h3>'
             appendBottom = appendBottom + '<div class="box-tools pull-right">'
                 appendBottom = appendBottom + '<button type="button" class="btn btn-box-tool btnTerm" data-value="submitted"><span class="fa fa-2x fa-angle-right" style="margin-top:-5px"></span>'
                 appendBottom = appendBottom + '</button>'
@@ -1876,9 +2134,9 @@
         append = append + '<thead>'
           append = append + '<th>No</th>'
           append = append + '<th width="20%">Product</th>'
-          append = append + '<th width="35%">Description</th>'
-          append = append + '<th width="10%">Qty</th>'
-          append = append + '<th width="15%">Type</th>'
+          append = append + '<th width="40%">Description</th>'
+          append = append + '<th width="5%">Qty</th>'
+          append = append + '<th width="5%">Type</th>'
           append = append + '<th width="15%">Price</th>'
           append = append + '<th width="15%">Total Price</th>'
         append = append + '</thead>'
@@ -1894,7 +2152,7 @@
                 append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
               append = append + '</td>'
               append = append + '<td>'
-                append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                append = append + '<textarea style="width:-webkit-fill-available;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
               append = append + '</td>'
               append = append + '<td>'
                 append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;;font-size:12px">'
@@ -1952,7 +2210,7 @@
     append = append + '<hr>'
     append = append + '<div class="box">'
       append = append + '<div class="box-header with-border">'
-        append = append + '<h3 class="box-title">Terms of Payment</h3>'
+        append = append + '<h3 class="box-title">Terms & Condition</h3>'
         append = append + '<div class="box-tools pull-right">'
             append = append + '<button type="button" class="btn btn-box-tool btnTerm" onclick="btnTerm('+ i +')" data-value="'+i+'"><span class="fa fa-2x fa-angle-right" style="margin-top:-5px"></span>'
             append = append + '</button>'
@@ -2398,7 +2656,7 @@
                 append = append + '<input style="font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
               append = append + '</td>'
               append = append + '<td width="35%">'
-                append = append + '<textarea style="font-size: 12px; important;height:150px;width:250px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="10%">'
                 append = append + '<input class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px" readonly>'
@@ -2423,7 +2681,7 @@
 
           appendBottom = ""
           appendBottom = appendBottom + '<hr>'
-          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
           appendBottom = appendBottom + '<div id="textareaTOP" readonly class="form-control" style="width: 100%; height: 200px; font-size: 12px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
 
           $("#bottomPreviewSirkulasi").append(appendBottom) 
@@ -2434,10 +2692,14 @@
     }
   }
 
-  function finalize(){
+  function finalize(reqMethode){
     localStorage.setItem('isEmail',true)
-    $("#showDetail").empty()
-    showEmail()
+    if (reqMethode != 'Payment') {
+      $("#showDetail").empty()
+      showEmail(reqMethode)
+    }else{
+      sendOpenEmail('sended')
+    }
   }
 
   $('#bodyOpenMail').slimScroll({
@@ -2448,7 +2710,11 @@
     width: '600px'
   });
 
-  function showEmail(){
+
+
+  function showEmail(reqMethode){
+    //restart arr reason
+    arrReason = []
     append = ""
     append = append + '<div class="col-md-12">'
       append = append + '<div class="box">'
@@ -2498,10 +2764,16 @@
     append = append + '</div>'
 
     $("#showDetail").append(append)
-    createEmailBody()
+    if (reqMethode == "Purchase Order") {
+      createEmailBody('Felicia Debi Noor')
+    }else if (reqMethode == "Reimbursement") {
+      createEmailBody('Clara Keneyzia')
+    }else{
+      createEmailBody('-')
+    }
   }
 
-  function createEmailBody(){
+  function createEmailBody(user){
     $('.emailMultiSelector').remove()
     
     $.ajax({
@@ -2511,7 +2783,11 @@
       },
       type:"GET",
       success: function (result){
-        $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>Mba Felicia</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon untuk dibuatkan PO</span><br><br>" + result)       
+        if (user == 'Felicia Debi Noor') {
+          $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>"+ user +"</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon untuk dibuatkan PO dengan detail berikut:</span><br><br>" + result)   
+        }else if (user == 'Clara Keneyzia') {
+          $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>"+ user +"</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon dilakukan pembayaran dengan detail berikut:</span><br><br>" + result)   
+        }   
       }
     })
 
@@ -2519,7 +2795,8 @@
       type:"GET",
       url:"{{url('/admin/getDataSendEmail')}}",
       data:{
-        no_pr:window.location.href.split("/")[6]
+        no_pr:window.location.href.split("/")[6],
+        user:user,
       },
       success: function(result){
         arrEmailCc = []
@@ -2542,7 +2819,13 @@
     })
   }
 
-  function sendOpenEmail(){
+  function sendOpenEmail(status=''){
+    console.log(status)
+    if (status == 'sended') {
+      text = 'PR has been processed'
+    }else{
+      text = 'Email Sended'
+    }
     Swal.fire({
       title: 'Are you sure?',
       text: 'Make sure there is nothing wrong to send this',
@@ -2561,6 +2844,7 @@
             data: {
               _token: "{{ csrf_token() }}",
               no_pr:window.location.href.split("/")[6],
+              status:status,
               body:$("#bodyOpenMail").html(),
               subject: $("#emailOpenSubject").val(),
               to: $("#emailOpenTo").val(),
@@ -2585,7 +2869,7 @@
               Swal.hideLoading()
               Swal.fire({
                 title: 'Success!',
-                text: "Email Sended",
+                text: text,
                 icon: 'success',
                 confirmButtonText: 'Reload',
               }).then((result) => {
@@ -2918,7 +3202,7 @@
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<hr>'
-          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
           appendBottom = appendBottom + '<div class="form-control" id="termPreviewPembandingModal" style="width: 100%; height: 200px; font-size: 12px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
           appendBottom = appendBottom + '<hr>'
           appendBottom = appendBottom + '<span><b>Attached Files</b></span>'
@@ -3248,7 +3532,7 @@
         $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
         document.getElementById("prevBtnAdd").style.display = "inline";
       }else if (n == 4) {
-        $(".modal-title").text('Term Of Payment')   
+        $(".modal-title").text('Terms & Condition')   
         $(".modal-dialog").removeClass('modal-lg')   
         $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
         $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
@@ -3390,6 +3674,14 @@
       $("#textAreaTOP").closest('.form-group').removeClass('has-error')
       $("#textAreaTOP").closest('textarea').next('span').hide();
       $("#textAreaTOP").prev('.input-group-addon').css("background-color","red"); 
+    }
+
+    if (val == "reason_reject") {
+      if (val == "reason_reject") {
+        $("#reasonRejectSirkular").closest('.form-group').removeClass('has-error')
+        $("#reasonRejectSirkular").closest('textarea').next('span').hide();
+        $("#reasonRejectSirkular").prev('.input-group-addon').css("background-color","red"); 
+      }
     }
   }
 
@@ -4015,6 +4307,7 @@
                   if (result.value) {
                     location.replace("{{url('/admin/detail/draftPR')}}/"+ window.location.href.split("/")[6])
                     localStorage.setItem('isLastStorePembanding',true)
+                    localStorage.setItem('status_tax',false)
                   }
               })
             }
@@ -4030,7 +4323,7 @@
   // var tempTotal = 0
   // var sum = 0
   // var btnVatStatus = true
-  // localStorage.setItem("status_tax",'True')
+  localStorage.setItem('status_tax',false)
 
   function changeVatValue(value){
     var tempVat = 0
@@ -4159,7 +4452,7 @@
           appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
-          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
+          appendBottom = appendBottom + '      <input readonly="" type="text" style="width:-webkit-fill-available;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
           appendBottom = appendBottom + '    </div>'
           appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
@@ -4339,43 +4632,49 @@
   }
 
   function rejectSirkulasi(){
-    $.ajax({
-      type: "POST",
-      url: "{{url('/admin/rejectCirculerPR')}}",
-      data: {
-        _token: "{{ csrf_token() }}",
-        no_pr:window.location.href.split("/")[6],
-        reasonRejectSirkular:$("#reasonRejectSirkular").val(),
-      },beforeSend:function(){
-        Swal.fire({
-            title: 'Please Wait..!',
-            text: "It's sending..",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            customClass: {
-                popup: 'border-radius-0',
-            },
-            didOpen: () => {
-                Swal.showLoading()
+    if ($("#reasonRejectSirkular").val() == "") {
+      $("#reasonRejectSirkular").closest('.form-group').addClass('has-error')
+      $("#reasonRejectSirkular").closest('textarea').next('span').show();
+      $("#reasonRejectSirkular").prev('.input-group-addon').css("background-color","red");
+    }else{
+      $.ajax({
+        type: "POST",
+        url: "{{url('/admin/rejectCirculerPR')}}",
+        data: {
+          _token: "{{ csrf_token() }}",
+          no_pr:window.location.href.split("/")[6],
+          reasonRejectSirkular:$("#reasonRejectSirkular").val(),
+        },beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
+              }
+          })
+        },
+        success: function(result) {
+          Swal.hideLoading()
+          Swal.fire(
+              'Successfully!',
+              'success',
+              'success'
+          ).then((result) => {
+            if (result.value) {
+              location.replace("{{url('/admin/draftPR')}}/")
+              Swal.close()
             }
-        })
-      },
-      success: function(result) {
-        Swal.hideLoading()
-        Swal.fire(
-            'Successfully!',
-            'success',
-            'success'
-        ).then((result) => {
-          if (result.value) {
-            location.replace("{{url('/admin/draftPR')}}/")
-            Swal.close()
-          }
-        })
-        
-      }
-    }) 
+          })
+          
+        }
+      }) 
+    }
   }
 </script>
 @endsection
