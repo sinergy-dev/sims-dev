@@ -143,13 +143,18 @@ class PrDraftController extends Controller
                 if(in_array("IPR", $request->type_of_letter)){
                     if ($cek_role->name == 'SOL Manager') {
                         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
+                        $getData->orWhere(function ($query) use ($listGroup){
+                            $query->whereIn('tb_pr_draft.issuance',$listGroup)
+                            ->where('tb_pr_draft.type_of_letter', 'IPR');
+                        });
                     } else if ($cek_role->name == 'PMO Manager') {
                         $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
+                        $getData->orWhere(function ($query) use ($listGroup){
+                            $query->whereIn('tb_pr_draft.issuance',$listGroup)
+                            ->where('tb_pr_draft.type_of_letter', 'IPR');
+                        });
                     }
-                    $getData->orWhere(function ($query) use ($listGroup){
-                        $query->whereIn('tb_pr_draft.issuance',$listGroup)
-                        ->where('tb_pr_draft.type_of_letter', 'IPR');
-                    });
+                    
                 }
             } else {
                 if ($cek_role->name == 'SOL Manager') {
@@ -666,7 +671,7 @@ class PrDraftController extends Controller
         $getProductPr = PrProduct::join('tb_pr_product_draft', 'tb_pr_product.id', '=', 'tb_pr_product_draft.id_product')
         				->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
                         ->select('tb_pr_product.name_product', 'tb_pr_product.description', 'tb_pr_product.qty', 'tb_pr_product.unit', 'tb_pr_product.nominal_product', 'tb_pr_product.grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'tb_pr_product.id as id_product')
-        				->where('id_draft_pr', $request->no_pr)->get();
+        				->where('id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
         return array("data"=>$getProductPr);
     }
@@ -713,6 +718,25 @@ class PrDraftController extends Controller
         $activity->operator = Auth::User()->name;
         $activity->activity = 'Create Supplier';
         $activity->save();
+
+        if ($activity->status == 'SAVED') {
+            $tambah = new PRDraftVerify();
+            $tambah->id_draft_pr = $no_akhir;
+            $tambah->verify_type_of_letter = 'False';
+            $tambah->verify_category = 'False';
+            $tambah->verify_to = 'False';
+            $tambah->verify_email = 'False';
+            $tambah->verify_phone = 'False';
+            $tambah->verify_attention = 'False';
+            $tambah->verify_title = 'False';
+            $tambah->verify_address = 'False';
+            $tambah->verify_request_method = 'False';
+            $tambah->verify_pid = 'False';
+            $tambah->verify_lead_id = 'False';
+            $tambah->verify_quote_number = 'False';
+            $tambah->verify_term_payment = 'False';
+            $tambah->save();
+        }
 
         return $no_akhir;
     }
@@ -1329,6 +1353,7 @@ class PrDraftController extends Controller
             } else {
                 $update_pr->title = $update_pr->title . ' (Revisi 1)';
             }
+            $update_pr->amount = str_replace(',', '', $request['inputGrandTotalProduct']);
             $update_pr->save();
 
             $activity = new PRActivity();
@@ -1338,6 +1363,10 @@ class PrDraftController extends Controller
             $activity->operator = Auth::User()->name;
             $activity->activity = substr($update_pr->title, -10) . ' - Updating PR with subject ' . $update_pr->title;
             $activity->save();
+
+            $approver = '';
+
+            $this->uploadPdfMerge($request->no_pr,$approver);
         } else {
             $update = PRDraft::where('id', $request->no_pr)->first();
             $update->nominal = str_replace(',', '', $request['inputGrandTotalProduct']);
@@ -1358,25 +1387,6 @@ class PrDraftController extends Controller
             $activity->operator = Auth::User()->name;
             $activity->activity = 'Add Draft PR with subject' . $update->title;
             $activity->save();
-        }
-
-        if ($request->status_revision == 'saved') {
-            $tambah = new PRDraftVerify();
-            $tambah->id_draft_pr = $request['no_pr'];
-            $tambah->verify_type_of_letter = 'False';
-            $tambah->verify_category = 'False';
-            $tambah->verify_to = 'False';
-            $tambah->verify_email = 'False';
-            $tambah->verify_phone = 'False';
-            $tambah->verify_attention = 'False';
-            $tambah->verify_title = 'False';
-            $tambah->verify_address = 'False';
-            $tambah->verify_request_method = 'False';
-            $tambah->verify_pid = 'False';
-            $tambah->verify_lead_id = 'False';
-            $tambah->verify_quote_number = 'False';
-            $tambah->verify_term_payment = 'False';
-            $tambah->save();
         }
 
         $detail = PRDraft::join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('users.name as name_issuance', 'tb_pr_draft.to', 'tb_pr_draft.attention', 'tb_pr_draft.title', 'tb_pr_draft.nominal', 'tb_pr_draft.id', 'tb_pr_draft.issuance', 'status', 'id')->where('tb_pr_draft.id', $request->no_pr)->first();
@@ -1438,6 +1448,13 @@ class PrDraftController extends Controller
         $update->status_tax = $request->status_tax;
         // $update->var_tax = $request->status_tax;
         $update->save();
+
+        $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
+        if (!empty($update_pr)) {
+            $update_pr->term_payment =  $request['textAreaTOP'];
+            $update_pr->status_tax = $request->status_tax;
+            $update_pr->save();
+        }
     }
 
     public function verifyDraft(Request $request)
@@ -1706,7 +1723,7 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
                 // ->leftJoin('tb_pr_draft_verify', 'tb_pr_draft_verify.id_draft_pr', '=', 'tb_pr_draft.id')
                 ->join('tb_pr_activity', 'tb_pr_activity.id_draft_pr', '=', 'tb_pr_draft.id')
-                ->select('tb_pr_draft.to','tb_pr_draft.email', 'tb_pr_draft.phone', 'attention', 'title', 'tb_pr_draft.address', 'request_method', 'tb_pr_draft.created_at', 'lead_id', 'quote_number', 'term_payment','type_of_letter', 'users.name','tb_pr_draft.id', DB::raw("(CASE WHEN (fax is null) THEN '-' ELSE fax END) as fax"), 'pid', 'category','status_used', 'status_tax', 'isCommit')
+                ->select('tb_pr_draft.to','tb_pr_draft.email', 'tb_pr_draft.phone', 'attention', 'title', 'tb_pr_draft.address', 'request_method', 'tb_pr_draft.created_at', 'lead_id', DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'term_payment','type_of_letter', 'users.name','tb_pr_draft.id', DB::raw("(CASE WHEN (fax is null) THEN '-' ELSE fax END) as fax"), 'pid', 'category','status_used', 'status_tax', 'isCommit')
                 ->where('tb_pr_draft.id', $request->no_pr)
                 ->first();
 
@@ -1727,7 +1744,7 @@ class PrDraftController extends Controller
 
         $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
         		->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', 'tb_pr_product.id as id_product', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', 'tb_pr_product.id as id_product', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
         $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
         		->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
@@ -1759,7 +1776,7 @@ class PrDraftController extends Controller
             ->leftJoinSub($getActivityComparing,'temp_tb_pr_activity',function($join){
                 $join->on("temp_tb_pr_activity.id_draft_pr","tb_pr_draft.id");
             })
-            ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', 'tb_pr.quote_number', 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr_draft.status', 'activity', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr_draft.isCommit')
+            ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr_draft.status', 'activity', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr_draft.isCommit')
             ->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
 
@@ -1776,7 +1793,7 @@ class PrDraftController extends Controller
             $id_compare_pr = '';
         	$product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
         		->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
             $dokumen = PrDokumen::join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
@@ -1794,7 +1811,7 @@ class PrDraftController extends Controller
             $id_compare_pr = PRCompare::select('id')->where('id_draft_pr', $request->no_pr)->where('tb_pr_compare.status', 'Selected')->first()->id;
         	$product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
         		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->get();
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_compare.id_draft_pr', $request->no_pr)->where('status','Selected')->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
 
             $getDokumen = DB::table('tb_pr_document')->join('tb_pr_document_draft', 'tb_pr_document_draft.id_document', '=', 'tb_pr_document.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr_document_draft.id_draft_pr')
@@ -2118,14 +2135,14 @@ class PrDraftController extends Controller
         $getProductPr = PrProduct::join('tb_pr_product_compare', 'tb_pr_product.id', '=', 'tb_pr_product_compare.id_product')
         				->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
         				->select('tb_pr_product.name_product', 'tb_pr_product.description', 'tb_pr_product.qty', 'tb_pr_product.unit', 'tb_pr_product.nominal_product', 'tb_pr_product.grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'id_product')
-        				->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->get();
+        				->where('tb_pr_product_compare.id_compare_pr', $request->no_pr)->orderBy('tb_pr_product_compare.id_product', 'asc')->get();
 
         return array("data"=>$getProductPr);
     }
 
     public function getPreviewPembanding(Request $request)
     {
-        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', 'lead_id', 'quote_number', 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category', 'tb_pr_compare.status_tax')->where('tb_pr_compare.id', $request->no_pr)->first();
+        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', 'lead_id',  DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category', 'tb_pr_compare.status_tax')->where('tb_pr_compare.id', $request->no_pr)->first();
 
         $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
         		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
@@ -2549,6 +2566,7 @@ class PrDraftController extends Controller
         } else {
             $update = PRDraft::where('id', $request->no_pr)->first();
             $update->status = 'CIRCULAR';
+            $update->isCircular = 'True';
             $update->save();
 
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.status', 'tb_pr_draft.id')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
@@ -2639,8 +2657,6 @@ class PrDraftController extends Controller
                 ->get()->pluck('email');
         }
 
-        
-
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR ' .$detail->no_pr. ' Is Reject By ' . Auth::User()->name,'detail_approver', $next_approver));
     }
 
@@ -2661,6 +2677,34 @@ class PrDraftController extends Controller
         $tambah_activity->operator = Auth::User()->name;
         $tambah_activity->activity = 'Add Notes ';
         $tambah_activity->save();
+
+        $notes = PRNotes::select('notes', 'id_draft_pr')->where('id_draft_pr', $request->no_pr)->orderBy('date_add', 'desc')->take(1);
+
+        $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
+                ->joinSub($notes,'temp_tb_pr_notes',function($join){
+                    $join->on("temp_tb_pr_notes.id_draft_pr","tb_pr_draft.id");
+                })
+                ->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr_draft.status', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.id as id', 'notes')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $kirim_user = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email', 'users.name as name_receiver')->where('nik', $detail->issuance)->first();
+
+        $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+        $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+        if ($cek_role->group == 'sales') {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager' OR `users`.`name` = '".$listTerritory->name."')")
+                ->where('status_karyawan', '!=', 'dummy')
+                ->get()->pluck('email');
+        } else {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                ->where('status_karyawan', '!=', 'dummy')
+                ->get()->pluck('email');
+        }
+
+        Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] Add Notes by ' . Auth::User()->name . ' On PR ' . $detail->no_pr, 'detail_approver', 'addNotes'));
     }
 
     public function storeReply(Request $request)
@@ -2681,6 +2725,36 @@ class PrDraftController extends Controller
         $tambah_activity->operator = Auth::User()->name;
         $tambah_activity->activity = "Reply " . $data->operator . "'s notes";
         $tambah_activity->save();
+
+        $kirim_user = User::where('name', $data->operator)->first()->email;
+
+        $notes = PRNotes::join('tb_pr_notes_detail', 'tb_pr_notes_detail.id_notes', '=', 'tb_pr_notes.id')->select('reply', 'id_draft_pr')->where('id_draft_pr', $request->no_pr)->orderBy('tb_pr_notes_detail.date_add', 'desc')->take(1);
+
+        $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
+                ->joinSub($notes,'temp_tb_pr_notes',function($join){
+                    $join->on("temp_tb_pr_notes.id_draft_pr","tb_pr_draft.id");
+                })
+                ->select('users.name as name_issuance', 'tb_pr.to', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.amount as nominal', 'tb_pr_draft.status', 'tb_pr.issuance', 'no_pr', 'tb_pr_draft.id as id', 'reply')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $detail->issuance)->first(); 
+
+        $listTerritory = User::where('id_territory',$territory)->where('id_position', 'MANAGER')->where('status_karyawan', '!=', 'dummy')->first();
+
+        // return $detail;
+
+        if ($cek_role->group == 'sales') {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager' OR `users`.`name` = '".$listTerritory->name."')")
+                ->where('status_karyawan', '!=', 'dummy')
+                ->get()->pluck('email');
+        } else {
+            $email_cc = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('email')->whereRaw("(`roles`.`name` = 'BCD Procurement' OR `roles`.`name` = 'BCD Manager')")
+                ->where('status_karyawan', '!=', 'dummy')
+                ->get()->pluck('email');
+        }
+
+        Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] ' . Auth::User()->name . ' Reply Notes On PR ' . $detail->no_pr, 'detail_approver', 'replyNotes'));
     }
 
     public function storeResolveNotes(Request $request)
@@ -2720,7 +2794,7 @@ class PrDraftController extends Controller
         $cek_group = PR::join('role_user', 'role_user.user_id', '=', 'tb_pr.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group', 'role_user.user_id')->where('tb_pr.id_draft_pr', $request['no_pr'])->first();
 
         $email_to = User::select('users.email as email_to')
-                ->where('email', 'felicia@sinergy.co.id')
+                ->where('name', $request->user)
                 ->first()->email_to;
 
         if ($get_type->type_of_letter == 'IPR') {
@@ -2759,7 +2833,7 @@ class PrDraftController extends Controller
     }
 
     public function getEmailTemplate(Request $request){
-        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', 'tb_pr.quote_number', 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
         if ($data->status_draft_pr == 'draft') {
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
@@ -2796,6 +2870,8 @@ class PrDraftController extends Controller
             $amount_tax = $sum_nominal * 11/1000;
         } elseif ($data->status == '11') {
             $amount_tax = $sum_nominal * 11/100;
+        } else {
+            $amount_tax = 0;
         }
 
         $amount_tax_project = $data->amount_idr_before_tax * 11/100;
@@ -2843,14 +2919,20 @@ class PrDraftController extends Controller
         $tambah->id_draft_pr = $request['no_pr'];
         $tambah->status = 'SENDED';
         $tambah->date_time = Carbon::now()->toDateTimeString();
-        $tambah->activity = 'PR has been sent to the Finance Division';
+        if ($request->status == 'sended') {
+            $tambah->activity = 'PR has been processed';
+        } else {
+            $tambah->activity = 'PR has been sent to the Finance Division';
+        }
         $tambah->save();
 
         $update = PRDraft::where('id', $request->no_pr)->first();
         $update->status = 'SENDED';
         $update->save();
 
-        $this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
+        if ($request->status != 'sended') {
+            $this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
+        }
     }
 
     public function sendEmail($to, $cc, $subject, $body){
@@ -2870,7 +2952,7 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')
                 ->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')
                 ->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')
-                ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', 'tb_pr.quote_number', 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.status_tax',
+                ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.status_tax',
                 DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', 'tb_pr.issuance', 'parent_id_drive', 'status_draft_pr',
                 DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
@@ -2902,6 +2984,8 @@ class PrDraftController extends Controller
             $amount_tax = $sum_nominal * 11/1000;
         } elseif ($data->status_tax == '11') {
             $amount_tax = $sum_nominal * 11/100;
+        } else {
+            $amount_tax = 0;
         }
         
 
@@ -2951,9 +3035,13 @@ class PrDraftController extends Controller
                 ->where('status_karyawan', '!=', 'dummy');
 
         if ($data->type_of_letter == 'EPR') {
-            $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
-            ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
-
+            if ($data->category == 'Bank Garansi') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+            } else {
+                $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
+            }
         } else {
             if ($cek_group->group == 'pmo') {
 
@@ -3162,6 +3250,7 @@ class PrDraftController extends Controller
                     'roles.name as position', 
                     'ttd',
                     'email',
+                    'avatar',
                     DB::raw("IFNULL(SUBSTR(`temp_tb_pr_activity`.`date_time`,1,10),'-') AS `date_sign`"),
                     DB::raw('IF(ISNULL(`temp_tb_pr_activity`.`date_time`),"false","true") AS `signed`')
                 )
@@ -3172,8 +3261,15 @@ class PrDraftController extends Controller
             ->where('status_karyawan', '!=', 'dummy');
 
         if ($data->type_of_letter == 'EPR') {
-            $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
+
+            if ($data->category == 'Bank Garansi') {
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = '" . $territory . "' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
+                ->orderByRaw('FIELD(position, "BCD Manager", "Sales Manager", "Operations Director")');
+            } else {
+                $sign->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "PMO Manager", "SOL Manager", "Operations Director")');
+            }
+            
         } else {
             if ($cek_group->group == 'pmo') {
 
@@ -3212,7 +3308,7 @@ class PrDraftController extends Controller
                 // ->orderByRaw('FIELD(position, "BCD Manager", "SOL Manager", "Finance & Accounting Manager", "Operations Director")');
 
             } elseif ($cek_group->group == 'hr') {
-                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER'")
+                $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER')")
                 ->orderByRaw('FIELD(position, "BCD Manager", "HR Manager", "Operations Director")');
 
                 // $sign->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'BCD' OR `roles`.`name` = 'HR Manager' OR  `users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE')")
@@ -3468,5 +3564,18 @@ class PrDraftController extends Controller
 
         return $array;
         // return array_shift($array);
+    }
+
+    public function getPerson(Request $request)
+    {
+        $requestor = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->where('tb_pr_draft.id', $request->no_pr)->first();
+        $getAll = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('users.name', 'users.email', 'users.avatar')
+                ->whereRaw("(`nik` = '".$requestor->issuance."' OR `roles`.`name` = 'BCD Procurement')")
+                ->where('status_karyawan', '!=', 'dummy')
+                ->get();
+
+        $next_approver = $this->getSignStatusPR($request->no_pr, 'circular');
+        $array = array_merge($getAll->toArray(), $next_approver->toArray());
+        return $array;
     }
 }
