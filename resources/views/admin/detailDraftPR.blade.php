@@ -5,25 +5,16 @@
 @section('head_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css"> -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
-
 <link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
 <link rel="stylesheet" href="{{ url('css/bootstrap-timepicker.min.css')}}">
 <link rel="stylesheet" href="{{ url('css/dataTables.bootstrap.css')}}">
+<link rel="stylesheet" href="{{ url('js/mentions/jquery.mentionsInput.css')}}" type="text/css">
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}"/>
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
-<link rel="stylesheet" type="text/css" href="{{ url('css/recommended-styles.css')}}">
-<link rel="stylesheet" href="{{ url('css/jquery.mentiony.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-<link href="{{ url('css/jquery.mentionsInput.css')}}" rel="stylesheet" type="text/css">
 
 <style type="text/css">
-  textarea {width: 100%}
-  .mentiony-container, .mentiony-content{width: 100%!important;}
-  .demo-item{ height: 300px;}
-  .demo-item .demo, .demo-item .demo > *{ height: 100%; }
   html,body,buttons,input,textarea,etc {
     font-family: inherit;
   }
@@ -203,7 +194,7 @@
           <div class="modal-body">
             <form method="POST" action="" id="notes" name="notes">
                 <div class="form-group">
-                  <textarea class="form-control mention" id="inputNotes" style="resize:vertical;height: 200px;" placeholder="@ mention member"></textarea>
+                  <textarea class="form-control mention" id="inputNotes" style="resize:vertical;height: 50px;" placeholder="@ mention member"></textarea>
                 </div>
                 <div class="modal-footer">
                   <button type="button" onclick="btnSubmitNotes()" class="btn btn-success">Saved</button>
@@ -611,7 +602,6 @@
 @endsection
 @section('scriptImport')
 <script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js' type='text/javascript'></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.5/Chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
@@ -631,15 +621,9 @@
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
-<script src="{{asset('js/mention.js')}}"></script>
-<script src="{{asset('js/bootstrap-typeahead.js')}}"></script>
-<script src="{{asset('js/jquery.mentionsInput.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/mentions/jquery.mentionsInput.js')}}" type="text/javascript"></script>
 <script src="{{asset('js/jquery.events.input.js')}}" type="text/javascript"></script>
 <script src="{{asset('js/jquery.elastic.js')}}" type="text/javascript"></script>
-<script src="{{asset('js/jquery.mentionsInput.js')}}" type="text/javascript"></script>
-
-<!-- <script src="{{asset('js/jquery.mentiony.js')}}"></script> -->
-
 @endsection
 @section('script')
 <script type="text/javascript">
@@ -668,7 +652,7 @@
           return container;
       })
 
-      $('textarea.mention').mentionsInput({
+      $('.mention').mentionsInput({
         onDataRequest:function (mode, query, callback) {
           var data = results
 
