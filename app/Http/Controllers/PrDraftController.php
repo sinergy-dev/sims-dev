@@ -3097,7 +3097,9 @@ class PrDraftController extends Controller
         if ($data->status_draft_pr == 'draft') {
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+                ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))
+                ->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)
+                ->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
             $sum_nominal = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
@@ -3232,7 +3234,9 @@ class PrDraftController extends Controller
         } else if($data->status_draft_pr == 'draft'){
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
             ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
-            ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)->get();
+            ->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'nominal_product', 'grand_total', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"))
+            ->where('tb_pr_product_draft.id_draft_pr', $request->no_pr)
+            ->orderBy('tb_pr_product_draft.id_product', 'asc')->get();
 
             $sum_nominal = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
                 ->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_product_draft.id_draft_pr')
