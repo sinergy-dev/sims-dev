@@ -29,6 +29,10 @@
 			content:"Rp";
 		}
 
+		center > strong::before{
+		 content: "@";
+		}
+
 		.button {
 			border: none;
 			color: white;
@@ -65,6 +69,8 @@
 			<center><img src="{{ asset('image/unapproved_pr.png')}}" style="width: 50%; height: 50%"></center>
 		@elseif($detail->status == 'FINALIZED')
 			<center><img src="{{ asset('image/finalized_pr.png')}}" style="width: 50%; height: 50%"></center>
+		@elseif($detail->status == 'CANCEL')
+			<center><img src="{{ asset('image/cancelled_pr.png')}}" style="width: 50%; height: 50%"></center>
 		@endif
 	</div>
 	<div style="line-height: 1.5em;padding-left: 13px;">
@@ -74,7 +80,7 @@
 					<b>Hi {{$kirim_user->name_receiver}}</b>
 				@elseif($detail->status == 'VERIFIED' || $detail->status == 'FINALIZED' || $detail->status == 'REJECT')
 					<b>Hi {{$detail->name_issuance}}</b>
-				@elseif($detail->status == 'CIRCULAR')
+				@else
 					<b>Hi Team</b>
 				@endif
 			</p>
@@ -109,6 +115,8 @@
 					Proses sirkulasi PR sudah selesai dilakukan, kemudian PR sudah siap untuk di Finalisasi oleh BCD Procurement.
 				@elseif($detail->status == 'UNAPPROVED')
 					Untuk proses sirkulasi PR Anda terhenti dengan alasan sebagai berikut:
+				@elseif($detail->status == 'CANCEL')
+					Berikut kami lampirkan Draft PR yang dibatalkan dengan detail sebagai berikut:
 				@endif
 			</p>
 			@if($detail->status == 'CIRCULAR')
@@ -140,6 +148,17 @@
 			</div>
 			<br>
 			@endif
+			@if($detail->status == 'CANCEL')
+			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
+				<b><i>Note</i></b>
+				<table style="font-size: 12px" class="tableLead">
+					<tr>
+						<td>{!! str_replace("\n","<br>",$detail->activity) !!}</td>
+					</tr>
+				</table>
+			</div>
+			<br>
+			@endif
 			@if($detail->status == 'UNAPPROVED')
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<b><i>Rejected By {{Auth::User()->name}}</i></b>
@@ -154,12 +173,12 @@
 			@if($next_approver == 'addNotes')
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<center><b>Notes</b></center><br>
-				<center>{{$detail->notes}}</center>
+				<center>{!!$detail->notes!!}</center>
 			</div>
 			@elseif($next_approver == 'replyNotes')
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<center><b>Notes</b></center><br>
-				<center>{{$detail->reply}}</center>
+				<center>{!!strip_tags($detail->reply)!!}</center>
 			</div>
 			@else
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
@@ -191,7 +210,7 @@
 						<th> : </th>
 						<td>{{$next_approver}}</td>
 					</tr>
-					@else
+					@elseif($detail->status != 'CANCEL')
 					<tr>
 						<th>Grand Total</th>
 						<th> : </th>
