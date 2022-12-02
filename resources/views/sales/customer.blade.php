@@ -680,11 +680,10 @@ Customer
       cRequest =  JSON.parse('@json($count_request)')
 
       if (accesable.includes('popUp')) {
-        $.each(@json($roles),function(value,item){
-          $('.AccName').text(item.name)
-          $('.AccEmail').text(item.email)
-          $('.AccPhone').text('+62' + item.phone)
-        })
+          // console.log(value)
+          $('.AccName').text(@json($roles).name)
+          $('.AccEmail').text(@json($roles).email)
+          $('.AccPhone').text('+62' + @json($roles).phone)
       }
 
       if (cRequest > 0) {
