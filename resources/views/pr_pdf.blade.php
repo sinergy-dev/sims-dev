@@ -196,7 +196,13 @@
 			<th></th>
 			<th></th>
 			@if($data->isRupiah == 'true')
-			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal+$amount_tax,2)}}</th>
+				@if($data->status_tax == '11')
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal+$amount_tax,2)}}</th>
+				@elseif($data->status_tax == '1.1')
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal+$amount_tax,2)}}</th>
+				@else
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">0</th>
+				@endif
 			@else
 			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+$amount_tax,2)}}</th>
 			@endif
