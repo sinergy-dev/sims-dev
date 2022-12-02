@@ -291,6 +291,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/admin/storeProductPr', 'PrDraftController@storeProductPr');
 	Route::post('/admin/storeDokumen', 'PrDraftController@storeDokumen');
 	Route::post('/admin/storeLastStepDraftPr', 'PrDraftController@storeLastStepDraftPr');
+	Route::post('/admin/cancelDraftPr', 'PrDraftController@cancelDraftPr');
 	Route::get('/admin/getQuote', 'PrDraftController@getQuote');
 	Route::post('/admin/storeTermPayment', 'PrDraftController@storeTermPayment');
 	Route::post('/admin/verifyDraft', 'PrDraftController@verifyDraft');

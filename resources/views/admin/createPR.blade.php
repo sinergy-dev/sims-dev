@@ -72,105 +72,92 @@
   <div class="row" id="BoxId">
     <!--box id-->
   </div>
-  <div class="box">
-    <div class="box-header with-border">
-      <button class="btn btn-md btn-primary pull-right" style="display:none;" dusk="addDraftPr" id="addDraftPr" onclick="addDraftPr(0)" ><i class="fa fa-plus"></i> Draft PR</button>
-    </div>
-    <div class="box-body">
-      <div class="row" style="margin-bottom:10px" id="filterBox">
-        <div class="col-md-2 col-xs-12">
-          <b>Filter by Type PR : </b>
-          <div>
-            <select class="form-control select2" id="inputFilterTypePr" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true">
-            </select>
-          </div>
+  <div class="row">
+    <div class="col-lg-12 col-xs-12">
+      <div class="box">
+        <div class="box-header with-border">
+          <button class="btn btn-md btn-primary pull-right" style="display:none;" dusk="addDraftPr" id="addDraftPr" onclick="addDraftPr(0)" ><i class="fa fa-plus"></i> Draft PR</button>
         </div>
-
-        <div class="col-md-2 col-xs-12">
-          <b>Filter by Status : </b>
-          <div>
-            <select class="form-control select2" id="inputFilterStatus" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
-          </div>
-        </div>
-
-        <div class="col-md-2 col-xs-12" id="filterUser" style="display:none">
-          <b>Filter by User : </b>
-          <div>
-            <select class="form-control select2" id="inputFilterUser" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
-          </div>
-        </div>
-
-        <div class="col-md-2 col-xs-12">
-          <b>Range Date PR : </b>
-
-          <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate">
-            <i class="fa fa-calendar"></i> Date range picker
-            <span>
-              <i class="fa fa-caret-down"></i>
-            </span>
-          </button>
-        </div>
-        
-        <div class="col-md-4 col-xs-12">
-          <b>Search Anything : </b>
-          <div class="input-group pull-right">
-            <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
-            
-            <div class="input-group-btn">
-              <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Show 10 
-                <span class="fa fa-caret-down"></span>
-              </button>
-              <ul class="dropdown-menu" id="selectShowEntryTicket">
-                <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-              </ul>
+        <div class="box-body">
+          <div class="row" style="margin-bottom:10px" id="filterBox">
+            <div class="col-md-2 col-xs-12">
+              <b>Filter by Type PR : </b>
+              <div>
+                <select class="form-control select2" id="inputFilterTypePr" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true">
+                </select>
+              </div>
             </div>
-            <span class="input-group-btn">
-              <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" type="button" class="btn btn-default btn-flat">
-                <i class="fa fa-fw fa-remove"></i>
+
+            <div class="col-md-2 col-xs-12">
+              <b>Filter by Status : </b>
+              <div>
+                <select class="form-control select2" id="inputFilterStatus" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
+              </div>
+            </div>
+
+            <div class="col-md-2 col-xs-12" id="filterUser" style="display:none">
+              <b>Filter by User : </b>
+              <div>
+                <select class="form-control select2" id="inputFilterUser" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
+              </div>
+            </div>
+
+            <div class="col-md-2 col-xs-12">
+              <b>Range Date PR : </b>
+
+              <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate">
+                <i class="fa fa-calendar"></i> Date range picker
+                <span>
+                  <i class="fa fa-caret-down"></i>
+                </span>
               </button>
-              
-            </span>
-          <!--   <span class="input-group-btn">
-              <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Displayed Column
-                <span class="fa fa-caret-down"></span>
-              </button>
-              <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="0"><span class="text">No. PR</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="1"><span class="text">Created at</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="2"><span class="text">Subject</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="3"><span class="text">Supplier</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="4"><span class="text">Total Price</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="5"><span class="text">Status</span></li>
-              </ul>
-              <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" type="button" class="btn btn-default btn-flat">
-                <i class="fa fa-fw fa-refresh"></i>
-              </button>
-            </span> -->
+            </div>
+            
+            <div class="col-md-4 col-xs-12">
+              <b>Search Anything : </b>
+              <div class="input-group pull-right">
+                <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
+                
+                <div class="input-group-btn">
+                  <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    Show 10 
+                    <span class="fa fa-caret-down"></span>
+                  </button>
+                  <ul class="dropdown-menu" id="selectShowEntryTicket">
+                    <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+                    <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+                    <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+                    <li class="active"><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                  </ul>
+                </div>
+                <span class="input-group-btn">
+                  <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" type="button" class="btn btn-default btn-flat">
+                    <i class="fa fa-fw fa-remove"></i>
+                  </button>
+                  
+                </span>
+              </div>
+            </div>
+                
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped dataTable nowrap" id="draftPr" width="100%" cellspacing="0">
+              <thead>
+                <tr style="text-align: center;">
+                  <th>No. PR</th>
+                  <th>Created at</th>
+                  <th>Subject</th>
+                  <th>Supplier</th>
+                  <th>Total Price</th>
+                  <th style="text-align: center;vertical-align: middle;">Status</th>
+                  <th style="text-align: center;vertical-align: middle;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyDraft" name="tbodyDraft">
+              </tbody>
+            </table>
           </div>
         </div>
-            
-      </div>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped dataTable nowrap" id="draftPr" width="100%" cellspacing="0">
-          <thead>
-            <tr style="text-align: center;">
-              <th>No. PR</th>
-              <th>Created at</th>
-              <th>Subject</th>
-              <th>Supplier</th>
-              <th>Total Price</th>
-              <th style="text-align: center;vertical-align: middle;">Status</th>
-              <th style="text-align: center;vertical-align: middle;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyDraft" name="tbodyDraft">
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -510,7 +497,7 @@
                 </table>
               </div>
               <div class="form-group" style="display: flex;margin-top: 10px;">
-                <button type="button" id="btnAddDocPendukung" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('epr')"><i class="fa fa-plus"></i>&nbsp Dokumen Lainnya</button>
+                <button type="button" id="btnAddDocPendukung_epr" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('epr')"><i class="fa fa-plus"></i>&nbsp Dokumen Lainnya</button>
               </div>  
             </div>
               
@@ -534,7 +521,7 @@
                 </table>
               </div>
               <div class="form-group" style="display: flex;margin-top: 10px;">
-                <button type="button" id="btnAddDocPendukung" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('ipr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</button>
+                <button type="button" id="btnAddDocPendukung_ipr" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('ipr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</button>
               </div>
             </div>
           </div>
@@ -1242,6 +1229,8 @@
               data.status_numerical = 8
             }else if (data.status == 'SENDED') {
               data.status_numerical = 9
+            }else if (data.status == 'CANCEL') {
+              data.status_numerical = 10
             }
           })
           return json.data
@@ -1286,8 +1275,6 @@
               return '<span class="label label-primary">'+row.status+'</span>'           
             }else if (row.status == 'DRAFT') {
               return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'REJECT') {
-              return '<span class="label label-danger">'+row.status+'</span>' 
             }else if (row.status == 'VERIFIED') {
               return '<span class="label label-success">'+row.status+'</span>'
             }else if (row.status == 'COMPARING') {
@@ -1302,7 +1289,7 @@
               return '<span class="label label-success">'+row.status+'</span>'           
             }else if (row.status == 'SENDED') {
               return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'UNAPPROVED') {
+            }else if (row.status == 'UNAPPROVED' || row.status == 'REJECT' || row.status == 'CANCEL') {
               return '<span class="label label-danger">'+row.status+'</span>' 
             }
           },
@@ -1310,33 +1297,80 @@
         },
         { 
           render: function (data, type, row, meta){
+            let onclick = ""
+            let title = ""
+            let btnClass = ""
+            let isDisabled = ""
+            let isDisabledCancel = ""
+            let btnId = ""
+            let status = ""
+            let value = ""
+
             if (row.status == 'DRAFT') {
-              return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
+              onclick = "cekByAdmin(0,"+ row.id +")"
+              title = "Verify"
+              btnClass = "btnCekDraft btn-primary"
+              isDisabled = "disabled"
+              btnId = "btnCekDraft"
+              // return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
             }else if (row.status == 'SAVED') {
+              btnClass = "btn-warning"
+              title = "Draft"
+              btnId = "btnDraft"
               if (row.issuance == '{{Auth::User()->nik}}') {
                 status = '"saved"'
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
+                value = status
+                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
               }else{
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
+                isDisabled = "disabled"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
               } 
             }else if (row.status == 'REJECT') {
-              status = '"reject"'
+              title = "Revision"
+              btnClass = "btn-warning"
+              btnId = "btnDraft"
               if (row.issuance == '{{Auth::User()->nik}}') {
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
+                status = '"reject"'
+                value = status
+                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
               }else{
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
+                isDisabled = "disabled"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
               } 
             }else if(row.status == 'UNAPPROVED'){
+              title = "Revision"
+              btnClass = "btn-warning"
               if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                 status = '"revision"'
+                value = status
+                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
 
-                return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
+                // return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
               }else{
-                return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
+                isDisabled = "disabled"
+                // return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
               }
             }else{
-              return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
-            }                     
+              title = "Detail"
+              btnClass = "btn-primary"
+              btnId = "btnDetail"
+              onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"
+              if (row.issuance == '{{Auth::User()->nik}}') {
+                if (row.status == 'CANCEL') {
+                  isDisabledCancel = 'disabled'
+                }else{
+                  isDisabledCancel = ''
+                }
+              }else{
+                isDisabledCancel = 'disabled'
+              }
+              
+              // return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
+            } 
+
+            return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
           },
           className:'text-center'
         },//action
@@ -1650,7 +1684,6 @@
       localStorage.setItem('firstLaunch', false);
       localStorage.setItem('no_pr',id_draft)
       localStorage.setItem('status_unfinished',status)
-      localStorage.setItem('status_tax',false)
 
       if (status == 'revision') {
         url = "{{url('/admin/getDetailPr')}}"
@@ -2067,7 +2100,6 @@
               $("#nextBtnAdd").removeAttr('onclick')
               $(".modal-dialog").addClass('modal-lg')
               localStorage.setItem('firstLaunch',false)
-              localStorage.setItem('status_tax',false)
 
               console.log("status tax kini"+result.pr.status_tax)
 
@@ -2258,6 +2290,17 @@
                       })
                       $("#tableDocPendukung_epr").append(appendDocPendukung)
 
+                      $('#inputNameDocPendukung').keydown(function(){
+                        console.log(this.value)
+                        if ($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung')).data('value').val() == "") {
+                          $("#btnAddDocPendukung_epr").prop("disabled",true)
+                          $("#btnAddDocPendukung_ipr").prop("disabled",true)
+                        }else{
+                          $("#btnAddDocPendukung_epr").prop("disabled",false)
+                          $("#btnAddDocPendukung_ipr").prop("disabled",false)
+                        }
+                      })
+
                       $.each(result.dokumen,function(value,item){
                         if (value != 0 &&  value != 1 && value != 2) {
                           const filedocpendukung = document.querySelector('.inputDocPendukung_'+value);
@@ -2397,12 +2440,12 @@
                                  appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
                           appendDocPendukung = appendDocPendukung + "</td>"
                           appendDocPendukung = appendDocPendukung + "<td>"
-                            appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
+                            appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" data-value='+ value +' id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
                           appendDocPendukung = appendDocPendukung + "</td>"
                         appendDocPendukung = appendDocPendukung + "</tr>"
                       }   
                     })
-                    $("#tableDocPendukung_ipr").append(appendDocPendukung)              
+                    $("#tableDocPendukung_ipr").append(appendDocPendukung)                            
 
                     $.each(result.dokumen,function(value,item){
                       if (value != 0) {
@@ -2530,10 +2573,69 @@
       $("#ModalDraftPr").modal('show') 
     }
 
+    function btnCancel(id){
+      Swal.fire({
+        title: 'Are you sure to',
+        html:
+        '<b style="font-size:14px">cancel this PR?</b><br>',
+        icon: 'warning',
+        input: 'textarea',
+        // inputLabel: 'Cancelation reason',
+        inputPlaceholder: 'Type reason here...',
+        inputAttributes: {
+          'aria-label': 'Type reason here'
+        },
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+            $.ajax({
+            type: "POST",
+            url: "{{url('/admin/cancelDraftPr')}}",
+            data: {
+              _token: "{{ csrf_token() }}",
+              no_pr:id,
+              notes:result.value
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              Swal.hideLoading()
+              Swal.fire(
+                  'Successfully!',
+                  'success',
+                  'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                  Swal.close()
+                }
+              })
+              
+            }
+          })         
+        }
+      })
+    }
+
     localStorage.setItem('status_pr','')
     function addDraftPr(n){
-      localStorage.setItem('status_tax',false)
-
+      console.log(localStorage.getItem('status_tax')+"okeee")
       localStorage.setItem('status_pr','')
       let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
@@ -4299,8 +4401,7 @@
     // var btnVatStatus = true
     // var valueVat = ""
     localStorage.setItem('status_tax',false)
-
-    function changeVatValue(value){
+    function changeVatValue(value=false){
       var tempVat = 0
       var finalVat = 0
       var tempGrand = 0
@@ -4385,7 +4486,6 @@
     currentTab = 0
     function nextPrevUnFinished(n,valueEdit){
       console.log(currentTab)
-      localStorage.setItem('status_tax',false)
 
       if(localStorage.getItem('status_draft_pr') == 'pembanding'){
         url = "{{url('/admin/getDetailPr')}}"
@@ -4575,8 +4675,6 @@
           })          
         }         
       }else if (currentTab == 1) {
-        localStorage.setItem('status_tax',false)
-
         if (($(".tab-add")[1].children[1].style.display == 'inline' ) == true) {
           if (n == 1) {
             if ($("#inputNameProduct").val() == "") {
@@ -4684,8 +4782,6 @@
                       }
                     })
                   },success:function(){
-                    localStorage.setItem('status_tax',false)
-
                     Swal.close()
                     let x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
@@ -4776,14 +4872,11 @@
           }
         }             
       }else if (currentTab == 3) {
+        $("#btnAddDocPendukung_epr").prop("disabled",false)
+        $("#btnAddDocPendukung_ipr").prop("disabled",false)
         if (n == 1) {
           if ($("#selectType").val() == 'IPR') {
-            if ($("#inputPenawaranHarga").val() == "") {
-              $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
-              $("#inputPenawaranHarga").closest('div').next('span').show();
-              $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
-            }else{
-              $.ajax({
+            $.ajax({
                 type: "GET",
                 url: url,
                 data: {
@@ -4804,14 +4897,24 @@
                     if (result.dokumen[1] != undefined) {
                       if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
                         $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
-                          formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                          arrInputDocPendukung.push({
-                            nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                            no_pr:no_pr
-                          })
+                          var fileInput = $(this).find('#inputDocPendukung').prop('files').length
+                          if (fileInput == 0) { 
+                            console.log("benar")
+
+                            formData.append('inputDocPendukung[]','-')
+                          }else{
+                          console.log("salah")
+
+                            formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                            arrInputDocPendukung.push({
+                              nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                              no_pr:no_pr
+                            })
+                          }
                         })
 
                       }else{
+                        console.log("benarrrr")
                         var fileInput = $(this).find('#inputDocPendukung').val()
                         if (fileInput && fileInput !== '') { 
                           formData.append('inputDocPendukung[]','-')
@@ -4849,55 +4952,106 @@
                   formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
                   formData.append('no_pr',no_pr)
 
-                  if (n == 1) {
-                    $.ajax({
-                      url: urlDokumen,
-                      type: 'post',
-                      data:formData,
-                      processData: false,
-                      contentType: false,
-                      beforeSend:function(){
-                        Swal.fire({
-                            title: 'Please Wait..!',
-                            text: "It's sending..",
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            allowEnterKey: false,
-                            customClass: {
-                                popup: 'border-radius-0',
-                            },
-                            didOpen: () => {
-                                Swal.showLoading()
-                            }
-                        })
-                      },
-                      success: function(data)
-                      {
-                        Swal.close()
-                        let x = document.getElementsByClassName("tab-add");
-                        x[currentTab].style.display = "none";
-                        currentTab = currentTab + n;
-                        if (currentTab >= x.length) {
-                          x[n].style.display = "none";
-                          currentTab = 0;
+                  function storeIPR(urlDokumen,formData){
+                    if (n == 1) {
+                      $.ajax({
+                        url: urlDokumen,
+                        type: 'post',
+                        data:formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend:function(){
+                          Swal.fire({
+                              title: 'Please Wait..!',
+                              text: "It's sending..",
+                              allowOutsideClick: false,
+                              allowEscapeKey: false,
+                              allowEnterKey: false,
+                              customClass: {
+                                  popup: 'border-radius-0',
+                              },
+                              didOpen: () => {
+                                  Swal.showLoading()
+                              }
+                          })
+                        },
+                        success: function(data)
+                        {
+                          Swal.close()
+                          let x = document.getElementsByClassName("tab-add");
+                          x[currentTab].style.display = "none";
+                          currentTab = currentTab + n;
+                          if (currentTab >= x.length) {
+                            x[n].style.display = "none";
+                            currentTab = 0;
+                          }
+                          unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
                         }
-                        unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                      });
+                    }else{
+                      let x = document.getElementsByClassName("tab-add");
+                      x[currentTab].style.display = "none";
+                      currentTab = currentTab + n;
+                      if (currentTab >= x.length) {
+                        x[n].style.display = "none";
+                        currentTab = 0;
                       }
-                    });
-                  }else{
-                    let x = document.getElementsByClassName("tab-add");
-                    x[currentTab].style.display = "none";
-                    currentTab = currentTab + n;
-                    if (currentTab >= x.length) {
-                      x[n].style.display = "none";
-                      currentTab = 0;
+                      unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                    } 
+                  }
+
+                  if ($("#inputPenawaranHarga").val() == "") {
+                    $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
+                    $("#inputPenawaranHarga").closest('div').next('span').show();
+                    $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
+                  }else if($("#tableDocPendukung_ipr .trDocPendukung").length > 0){
+                    console.log("okee")
+                    if (result.dokumen[1] != undefined) {
+                      if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
+                        $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
+                          if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                            if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                            }else{
+                              storeIPR(urlDokumen,formData)
+                            }
+                          }else{
+                            storeIPR(urlDokumen,formData)
+                          }
+                        })
+                      }else{
+                        console.log("benarrrr")
+                        var fileInput = $(this).find('#inputDocPendukung').val()
+                        if (fileInput && fileInput !== '') { 
+                          formData.append('inputDocPendukung[]','-')
+                        }
+
+                        storeIPR(urlDokumen,formData)
+                      }  
+                    }else{
+                      $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
+                        if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                          if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                          }else{
+                            storeIPR(urlDokumen,formData)
+                          }
+                        }else{
+                          storeIPR(urlDokumen,formData)
+                        }
+                      })
                     }
-                    unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                  }                 
+                  }else{
+                    storeIPR(urlDokumen,formData)
+                  }               
                 }
-              })           
-            }
-            
+            })
           }else{
             if ($("#selectPid").val() == "") {
               $("#selectPid").closest('.form-group').addClass('has-error')
@@ -4940,7 +5094,7 @@
                   var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
 
                   const fileSbe = $('#inputSBE').prop('files')[0];
-                  var nama_file_sbe = $('#inputSBE').val();
+                  var nama_file_sbe = $('#inputSBE').val();          
 
                   if (result.dokumen.length > 0) {
                     if (result.dokumen[0] !== undefined) {
@@ -4979,90 +5133,161 @@
                     formData.append('inputSBE', fileSbe);
                   }
 
-                  var arrInputDocPendukung = []
-
-                  if (result.dokumen.length > 0) {
-                    if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
-                      $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
-                        formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                        arrInputDocPendukung.push({
-                          nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                          no_pr:no_pr
-                        })
-                      })
-
-                    }else{
-                      var fileInput = $(this).find('#inputDocPendukung').val()
-                      if (fileInput && fileInput !== '') { 
-                        formData.append('inputDocPendukung[]','-')
-                      }
-                    }                                 
-                  }else{
-                    $('#tableDocPendukung_epr .trDocPendukung').each(function() {
-                      var fileInput = $(this).find('#inputDocPendukung').val()
-                      if (fileInput && fileInput !== '') { 
-
-                        formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                        arrInputDocPendukung.push({
-                          nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                          no_pr:no_pr
-                        })
-                      }
-                    })
-                  }              
-
                   formData.append('_token',"{{csrf_token()}}")
                   formData.append('no_pr',no_pr)
                   formData.append('selectLeadId', $("#selectLeadId").val())
                   formData.append('selectPid', $("#selectPid").val())
                   formData.append('inputPid',$("#projectIdInputNew").val())
                   formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
-                  formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
 
-                  if(n == 1){
-                    $.ajax({
-                      type:"POST",
-                      url:urlDokumen,
-                      processData: false,
-                      contentType: false,
-                      data:formData,
-                      beforeSend:function(){
-                        Swal.fire({
-                            title: 'Please Wait..!',
-                            text: "It's sending..",
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            allowEnterKey: false,
-                            customClass: {
-                                popup: 'border-radius-0',
-                            },
-                            didOpen: () => {
-                                Swal.showLoading()
-                            }
-                        })
-                      },
-                      success: function(result){
-                        Swal.close()
-                        let x = document.getElementsByClassName("tab-add");
-                        x[currentTab].style.display = "none";
-                        currentTab = currentTab + n;
-                        if (currentTab >= x.length) {
-                          x[n].style.display = "none";
-                          currentTab = 0;
+                  function storeEPR(urlDokumen,formData){
+                    if(n == 1){
+                      $.ajax({
+                        type:"POST",
+                        url:urlDokumen,
+                        processData: false,
+                        contentType: false,
+                        data:formData,
+                        beforeSend:function(){
+                          Swal.fire({
+                              title: 'Please Wait..!',
+                              text: "It's sending..",
+                              allowOutsideClick: false,
+                              allowEscapeKey: false,
+                              allowEnterKey: false,
+                              customClass: {
+                                  popup: 'border-radius-0',
+                              },
+                              didOpen: () => {
+                                  Swal.showLoading()
+                              }
+                          })
+                        },
+                        success: function(result){
+                          Swal.close()
+                          let x = document.getElementsByClassName("tab-add");
+                          x[currentTab].style.display = "none";
+                          currentTab = currentTab + n;
+                          if (currentTab >= x.length) {
+                            x[n].style.display = "none";
+                            currentTab = 0;
+                          }
+                          unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
                         }
-                        unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                      })
+                    } else {
+                      let x = document.getElementsByClassName("tab-add");
+                      x[currentTab].style.display = "none";
+                      currentTab = currentTab + n;
+                      if (currentTab >= x.length) {
+                        x[n].style.display = "none";
+                        currentTab = 0;
                       }
-                    })
-                  } else {
-                    let x = document.getElementsByClassName("tab-add");
-                    x[currentTab].style.display = "none";
-                    currentTab = currentTab + n;
-                    if (currentTab >= x.length) {
-                      x[n].style.display = "none";
-                      currentTab = 0;
+                      unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
                     }
-                    unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                  }                
+                  }
+                  
+
+                  if($("#tableDocPendukung_epr .trDocPendukung").length > 0){
+                    console.log("okee")
+                      console.log("tidak undefined")
+                      if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+                        $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
+                          if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                            if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                            }else{
+                              var arrInputDocPendukungEPR = []
+                              arrInputDocPendukungEPR.push({
+                                nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                                no_pr:no_pr
+                              })
+
+                              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
+                              formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                              
+                              console.log(arrInputDocPendukungEPR)
+                              console.log($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val())
+                              storeEPR(urlDokumen,formData)
+                            }
+                          }else{
+                            storeEPR(urlDokumen,formData)
+                          }
+                        })
+                      }else{
+                        console.log("benarrrr")
+                        var arrInputDocPendukungEPR = []
+                        formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
+                        formData.append('inputDocPendukung[]','-')
+
+                        storeEPR(urlDokumen,formData)
+                      }  
+                  }else{
+                    console.log("ikiiilo")
+                    storeEPR(urlDokumen,formData)
+                  }
+
+
+                  // if (result.dokumen.length > 0) {
+                  //   if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+                  //     $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
+                  //         console.log("ke 4")
+
+                  //       if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                  //         if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                  //         }else{
+                  //           console.log("ada isinya")
+                  //           formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                  //           arrInputDocPendukung.push({
+                  //             nameDocPendukung:$(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val(),
+                  //             no_pr:no_pr
+                  //           })
+                  //           storeEPR(urlDokumen,formData)
+                  //         }
+                  //       }else{
+                  //         console.log("aku disini")
+                  //         storeEPR(urlDokumen,formData)
+                  //       }
+                        
+                  //     })
+
+                  //   }else{
+                  //     var fileInput = $(this).find('#inputDocPendukung').prop('files').length
+                  //     if (fileInput == 0) { 
+                  //       console.log("aku disiniii")
+
+                  //       formData.append('inputDocPendukung[]','-')
+                  //       storeEPR(urlDokumen,formData)
+                  //     }
+
+                  //   }                                 
+                  // }else{
+                  //   $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                  //     var fileInput = $(this).find('#inputDocPendukung').prop('files').length
+                  //     if (fileInput !== 0) { 
+
+                  //       formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                  //       arrInputDocPendukung.push({
+                  //         nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                  //         no_pr:no_pr
+                  //       })
+
+                  //       storeEPR(urlDokumen,formData)
+                  //     }else{
+                  //       formData.append('inputDocPendukung[]','-')
+
+                  //       storeEPR(urlDokumen,formData)
+                  //     }
+                  //   })
+                  // } 
+                          
                 }
               })            
             } 
@@ -5120,15 +5345,44 @@
         }
                 
       }else{
-        $(".divReasonRejectRevision").remove()
-        let x = document.getElementsByClassName("tab-add");
-        x[currentTab].style.display = "none";
-        currentTab = currentTab + n;
-        if (currentTab >= x.length) {
-          x[n].style.display = "none";
-          currentTab = 0;
-        }
-        unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+        $.ajax({
+          type:"POST",
+          url:"{{url('/admin/storeTax')}}",
+            data:{
+              _token:"{{csrf_token()}}",
+              no_pr:localStorage.getItem('no_pr'),
+              isRupiah:localStorage.getItem('isRupiah'),
+              status_tax:localStorage.getItem('status_tax'),
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result){
+              Swal.close()
+              $(".divReasonRejectRevision").remove()
+              let x = document.getElementsByClassName("tab-add");
+              x[currentTab].style.display = "none";
+              currentTab = currentTab + n;
+              if (currentTab >= x.length) {
+                x[n].style.display = "none";
+                currentTab = 0;
+              }
+
+              unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+          }
+        })
       }
     }
 
@@ -5340,7 +5594,6 @@
     var nama_file_quote_supplier = ""
 
     function nextPrevAdd(n,value) {
-      localStorage.setItem('status_tax',false)
       valueEdit = value
       if (valueEdit == undefined) {
         if (valueEdit == 0) {
@@ -5592,7 +5845,7 @@
                       currentTab = 0;
                     }
                     addDraftPr(currentTab);
-                    addTable()
+                    addTable(0,localStorage.getItem('status_tax'))
                     localStorage.setItem('isEditProduct',false)
                     localStorage.setItem('status_pr','draft')
                     $(".tabGroupInitiateAdd").show()
@@ -5649,9 +5902,7 @@
                       }
                       addDraftPr(currentTab);
                       localStorage.setItem('status_pr','draft')
-                      localStorage.setItem('status_tax',false)
-
-                      addTable(0)
+                      addTable(0,localStorage.getItem('status_tax'))
                       $("#inputNameProduct").val('')
                       $("#inputDescProduct").val('')
                       $("#inputPriceProduct").val('')
@@ -5725,50 +5976,13 @@
                     currentTab = 0;
                   }
                   addDraftPr(currentTab);
-                  addTable()
+                  addTable(0,localStorage.getItem('status_tax'))
                   localStorage.setItem('status_pr','draft')
                 }
               }
             })
           }
         }       
-      }else if (currentTab == 2) {
-        $.ajax({
-          type:"POST",
-          url:"{{url('/admin/storeTax')}}",
-            data:{
-              _token:"{{csrf_token()}}",
-              no_pr:localStorage.getItem('no_pr'),
-              isRupiah:localStorage.getItem('isRupiah'),
-              status_tax:localStorage.getItem('status_tax'),
-            },
-            beforeSend:function(){
-              Swal.fire({
-                  title: 'Please Wait..!',
-                  text: "It's sending..",
-                  allowOutsideClick: false,
-                  allowEscapeKey: false,
-                  allowEnterKey: false,
-                  customClass: {
-                      popup: 'border-radius-0',
-                  },
-                  didOpen: () => {
-                      Swal.showLoading()
-                  }
-              })
-            },
-            success: function(result){
-              Swal.close()
-              let x = document.getElementsByClassName("tab-add");
-              x[currentTab].style.display = "none";
-              currentTab = currentTab + n;
-              if (currentTab >= x.length) {
-                x[n].style.display = "none";
-                currentTab = 0;
-              }
-              unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-          }
-        })
       }else if (currentTab == 3) {
         if (n == 1) {
           if ($("#selectType").val() == 'IPR') {
@@ -6040,17 +6254,45 @@
           addDraftPr(currentTab);
         }  
       }else{
-        $(".divReasonRejectRevision").remove()
+        $.ajax({
+          type:"POST",
+          url:"{{url('/admin/storeTax')}}",
+            data:{
+              _token:"{{csrf_token()}}",
+              no_pr:localStorage.getItem('no_pr'),
+              isRupiah:localStorage.getItem('isRupiah'),
+              status_tax:localStorage.getItem('status_tax'),
+            },
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result){
+              Swal.close()
+              $(".divReasonRejectRevision").remove()
 
-        var x = document.getElementsByClassName("tab-add");
-        x[currentTab].style.display = "none";
-        currentTab = currentTab + n;
-        if (currentTab >= x.length) {
-          x[n].style.display = "none";
-          currentTab = 0;
-        }
-        addDraftPr(currentTab);
-        localStorage.setItem('status_pr','draft')
+              var x = document.getElementsByClassName("tab-add");
+              x[currentTab].style.display = "none";
+              currentTab = currentTab + n;
+              if (currentTab >= x.length) {
+                x[n].style.display = "none";
+                currentTab = 0;
+              }
+              addDraftPr(currentTab);
+              localStorage.setItem('status_pr','draft')
+          }
+        })
       }
       
     }
@@ -6238,7 +6480,7 @@
                   }
                   addDraftPrPembanding(currentTab);
 
-                  addTable(0)
+                  addTable(0,localStorage.getItem('status_tax'))
                   $("#inputNameProduct").val('')
                   $("#inputDescProduct").val('')
                   $("#inputPriceProduct").val('')
@@ -6510,15 +6752,32 @@
             append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
             append = append + '<label for="inputDocPendukung" style="margin-bottom:0px">'
             append = append + '<span class="fa fa-cloud-upload" style="display:inline"></span>'
-            append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class=" inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
+            append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class="inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
             append = append + '</label>'
           append = append + "</td>"
           append = append + "<td>"
-            append = append + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak">'
+            append = append + '<input style="width:250px;margin-left:20px" data-value='+ incrementDoc +' class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><span class="help-block" style="display:none;margin-left:20px">Please fill Document Name!</span>'
           append = append + "</td>"
         append = append + "</tr>"
       $("#tableDocPendukung_"+value).append(append) 
       incrementDoc++
+
+      $("#btnAddDocPendukung_epr").prop("disabled",true)
+      $("#btnAddDocPendukung_ipr").prop("disabled",true)
+
+      $("#tableDocPendukung_"+ value +" .trDocPendukung").each(function(){
+        console.log("hoeeee")
+        $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).keydown(function(){
+          console.log(this.value)
+          if (this.value == "") {
+            $("#btnAddDocPendukung_epr").prop("disabled",true)
+            $("#btnAddDocPendukung_ipr").prop("disabled",true)
+          }else{
+            $("#btnAddDocPendukung_epr").prop("disabled",false)
+            $("#btnAddDocPendukung_ipr").prop("disabled",false)
+          }
+        })   
+      })   
     }
 
     $(document).on('click', '.btnRemoveAddDocPendukung', function() {
@@ -6582,7 +6841,6 @@
                       confirmButtonText: 'Reload',
                     }).then((result) => {
                       localStorage.setItem('status_pr','') 
-                      localStorage.setItem('status_tax',false)
                       if (status == 'revision') {
                         location.replace("{{url('/admin/detail/draftPR')}}/"+ localStorage.getItem('no_pr'))
                       }else{
@@ -6642,7 +6900,7 @@
     }
 
     function refreshTable(){
-      addTable()
+      addTable(0,localStorage.getItem('status_tax'))
     }
 
     $('#makeId').click(function(){
