@@ -4065,7 +4065,9 @@ class SalesController extends Controller{
         }
 
         $roles = DB::table('role_user')->join('roles','role_user.role_id','=','roles.id')
+                ->select('users.name as name','users.email as email','users.phone as phone')
                 ->join('users','role_user.user_id','=','users.nik')
+                ->where('status_karyawan', '!=', 'dummy')
                 ->where('roles.id',42)
                 ->first();
 
