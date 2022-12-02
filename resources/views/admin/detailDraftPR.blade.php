@@ -194,7 +194,7 @@
           <div class="modal-body">
             <form method="POST" action="" id="notes" name="notes">
                 <div class="form-group">
-                  <textarea class="form-control mention" id="inputNotes" style="resize:vertical;height: 50px;" placeholder="@ mention member"></textarea>
+                  <textarea class="form-control" id="inputNotes" style="resize:none;height: 200px;" placeholder="@ mention member"></textarea>
                 </div>
                 <div class="modal-footer">
                   <button type="button" onclick="btnSubmitNotes()" class="btn btn-success">Saved</button>
@@ -652,7 +652,7 @@
           return container;
       })
 
-      $('.mention').mentionsInput({
+      $('#inputNotes').mentionsInput({
         onDataRequest:function (mode, query, callback) {
           var data = results
 
@@ -1186,6 +1186,15 @@
   }
 
   function pressReply(no_pr,id){
+    var emailMention = []
+    if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 1) {
+      obj_notes = $("#inputReply").closest("div").find(".mentions").find("div").find("span").splice("span")
+      for (var i = 0; i < obj_notes.length; i++) {
+        emailMention.push({'name':obj_notes[i].textContent})
+      }      
+    }else{
+      emailMention.push({'name':$("#inputReply").closest("div").find(".mentions").find("div").find("strong").text()})
+    }
     $.ajax({
       type: "POST",
       url: "{{url('/admin/storeReply')}}",
@@ -1194,6 +1203,7 @@
         id_notes:id,
         inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
         no_pr:no_pr,
+        emailMention:emailMention
       },beforeSend:function(){
         Swal.fire({
             title: 'Please Wait..!',
@@ -1227,6 +1237,15 @@
   }
 
   function btnSubmitNotes(){
+    var emailMention = []
+    if ($("#inputNotes").closest("div").find(".mentions").find("div").find("strong").length > 1) {
+      obj_notes = $("#inputNotes").closest("div").find(".mentions").find("div").find("span").splice("span")
+      for (var i = 0; i < obj_notes.length; i++) {
+        emailMention.push({'name':obj_notes[i].textContent})
+      }      
+    }else{
+      emailMention.push({'name':$("#inputNotes").closest("div").find(".mentions").find("div").find("strong").text()})
+    }
     $.ajax({
       type: "POST",
       url: "{{url('/admin/storeNotes')}}",
@@ -1234,6 +1253,7 @@
         _token: "{{ csrf_token() }}",
         no_pr:window.location.href.split("/")[6],
         inputNotes:$("#inputNotes").prev('.mentions').find("div").html(),
+        emailMention:emailMention,
       },beforeSend:function(){
         Swal.fire({
             title: 'Please Wait..!',
@@ -1277,7 +1297,7 @@
           append = append + '<i class="fa fa-lock label-primary"></i>'          
         }else if (item.status == 'DRAFT') {
           append = append + '<i class="fa fa-inbox label-primary"></i>' 
-        }else if (item.status == 'REJECT') {
+        }else if (item.status == 'REJECT' || item.status == 'CANCEL') {
           append = append + '<i class="fa fa-times label-danger"></i>' 
         }else if (item.status == 'VERIFIED') {
           append = append + '<i class="fa fa-check label-success"></i>'
@@ -1319,6 +1339,7 @@
   }
 
   function pembanding(){    
+    localStorage.setItem('status_tax',false)
     localStorage.setItem('isPembanding',true)
     $("#showDetail").empty()
     arrReason = []
@@ -2916,6 +2937,7 @@
               })
             },
             success: function(result) {
+              processing=false
               Swal.fire(
                   'Successfully!',
                   'Document has been circulated.',
@@ -2935,7 +2957,7 @@
                 $.ajax(this)
               })
             }
-          })
+          })          
         }
     })
     // $.ajax({
@@ -2989,7 +3011,6 @@
   const firstLaunch = localStorage.setItem('firstLaunch',true)
 
   function addDraftPrPembanding(n){
-    localStorage.setItem('status_tax',false)
     localStorage.setItem('isStoreSupplier',false)
     var x = document.getElementsByClassName("tab-add");
     x[n].style.display = "inline";
@@ -3303,11 +3324,8 @@
           $("#inputPartNumber").val('')
           $("#inputTotalPrice").val('')
         })
-        localStorage.setItem('status_tax',false)
 
       }else if(n == 2){
-        localStorage.setItem('status_tax',false)
-
         $(".modal-title").text('')
         $("#nextBtnAdd").removeAttr('onclick')
         $(".modal-dialog").addClass('modal-lg')
@@ -3968,7 +3986,7 @@
                     currentTab = 0;
                   }
                   addDraftPrPembanding(currentTab);
-                  addTable()
+                  addTable(0)
                   localStorage.setItem('isEditProduct',false)
                   $(".tabGroupInitiateAdd").show()
                   $(".tab-add")[1].children[1].style.display = 'none'
@@ -4025,7 +4043,7 @@
                   $(".tabGroupInitiateAdd").show()
                   $(".tab-add")[1].children[1].style.display = 'none'
                   document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
-                  addTable()
+                  addTable(0)
                   
                   $("#inputNameProduct").val('')
                   $("#inputDescProduct").val('')
@@ -4096,7 +4114,7 @@
                   currentTab = 0;
                 }
                 addDraftPrPembanding(currentTab)
-                addTable()
+                addTable(0)
               }
             }
           })
@@ -4449,7 +4467,6 @@
                   if (result.value) {
                     location.replace("{{url('/admin/detail/draftPR')}}/"+ window.location.href.split("/")[6])
                     localStorage.setItem('isLastStorePembanding',true)
-                    localStorage.setItem('status_tax',false)
                   }
               })
             }
@@ -4465,8 +4482,7 @@
   // var tempTotal = 0
   // var sum = 0
   // var btnVatStatus = true
-  localStorage.setItem('status_tax',false)
-  function changeVatValue(value){
+  function changeVatValue(value=false){
     var tempVat = 0
     var finalVat = 0
     var tempGrand = 0
@@ -4777,7 +4793,7 @@
   });
 
   function refreshTable(){
-    addTable()
+    addTable(0,localStorage.getItem('status_tax'))
   }
 
   function next(n){
