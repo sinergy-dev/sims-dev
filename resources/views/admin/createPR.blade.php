@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
 <style type="text/css">
   .modal { overflow: auto !important; }
   .textarea-scrollbar {
@@ -70,105 +72,92 @@
   <div class="row" id="BoxId">
     <!--box id-->
   </div>
-  <div class="box">
-    <div class="box-header with-border">
-      <button class="btn btn-md btn-primary pull-right" style="display:none;" dusk="addDraftPr" id="addDraftPr" onclick="addDraftPr(0)" ><i class="fa fa-plus"></i> Draft PR</button>
-    </div>
-    <div class="box-body">
-      <div class="row" id="filterBox">
-        <div class="col-md-2">
-          <b>Filter by Type PR : </b>
-          <div>
-            <select class="form-control select2" id="inputFilterTypePr" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true">
-            </select>
-          </div>
+  <div class="row">
+    <div class="col-lg-12 col-xs-12">
+      <div class="box">
+        <div class="box-header with-border">
+          <button class="btn btn-md btn-primary pull-right" style="display:none;" dusk="addDraftPr" id="addDraftPr" onclick="addDraftPr(0)" ><i class="fa fa-plus"></i> Draft PR</button>
         </div>
-
-        <div class="col-md-2">
-          <b>Filter by Status : </b>
-          <div>
-            <select class="form-control select2" id="inputFilterStatus" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
-          </div>
-        </div>
-
-        <div class="col-md-2" id="filterUser" style="display:none">
-          <b>Filter by User : </b>
-          <div>
-            <select class="form-control select2" id="inputFilterUser" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <b>Range Date PR : </b>
-
-          <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate">
-            <i class="fa fa-calendar"></i> Date range picker
-            <span>
-              <i class="fa fa-caret-down"></i>
-            </span>
-          </button>
-        </div>
-        
-        <div class="col-md-4">
-          <b>Search Anything : </b>
-          <div class="input-group pull-right">
-            <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
-            
-            <div class="input-group-btn">
-              <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Show 10 
-                <span class="fa fa-caret-down"></span>
-              </button>
-              <ul class="dropdown-menu" id="selectShowEntryTicket">
-                <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
-                <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
-                <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
-                <li><a href="#" onclick="changeNumberEntries(100)">100</a></li>
-              </ul>
+        <div class="box-body">
+          <div class="row" style="margin-bottom:10px" id="filterBox">
+            <div class="col-md-2 col-xs-12">
+              <b>Filter by Type PR : </b>
+              <div>
+                <select class="form-control select2" id="inputFilterTypePr" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true">
+                </select>
+              </div>
             </div>
-            <span class="input-group-btn">
-              <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" type="button" class="btn btn-default btn-flat">
-                <i class="fa fa-fw fa-remove"></i>
+
+            <div class="col-md-2 col-xs-12">
+              <b>Filter by Status : </b>
+              <div>
+                <select class="form-control select2" id="inputFilterStatus" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
+              </div>
+            </div>
+
+            <div class="col-md-2 col-xs-12" id="filterUser" style="display:none">
+              <b>Filter by User : </b>
+              <div>
+                <select class="form-control select2" id="inputFilterUser" onchange="searchCustom()" style="width:100%" tabindex="-1" aria-hidden="true"></select>
+              </div>
+            </div>
+
+            <div class="col-md-2 col-xs-12">
+              <b>Range Date PR : </b>
+
+              <button type="button" class="btn btn-default btn-flat pull-left" style="width:100%" id="inputRangeDate">
+                <i class="fa fa-calendar"></i> Date range picker
+                <span>
+                  <i class="fa fa-caret-down"></i>
+                </span>
               </button>
-              
-            </span>
-            <span class="input-group-btn">
-              <button style="margin-left: 10px;" type="button" id="btnShowColumnTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Displayed Column
-                <span class="fa fa-caret-down"></span>
-              </button>
-              <ul class="dropdown-menu" style="padding-left:5px;padding-right: 5px;" id="selectShowColumnTicket">
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="0"><span class="text">No. PR</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="1"><span class="text">Created at</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="2"><span class="text">Subject</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="3"><span class="text">Supplier</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="4"><span class="text">Total Price</span></li>
-                <li style="cursor: pointer;"><input style="margin: 0 10px 0 5px;" type="checkbox" onclick="changeColumnTable(this)" data-column="5"><span class="text">Status</span></li>
-              </ul>
-              <button style="margin-left: 10px;" title="Refresh Table" id="reloadTable" type="button" class="btn btn-default btn-flat">
-                <i class="fa fa-fw fa-refresh"></i>
-              </button>
-            </span>
+            </div>
+            
+            <div class="col-md-4 col-xs-12">
+              <b>Search Anything : </b>
+              <div class="input-group pull-right">
+                <input id="inputSearchAnything" onchange="searchCustom()" type="text" class="form-control" placeholder="ex: PR Id">
+                
+                <div class="input-group-btn">
+                  <button type="button" id="btnShowEntryTicket" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    Show 10 
+                    <span class="fa fa-caret-down"></span>
+                  </button>
+                  <ul class="dropdown-menu" id="selectShowEntryTicket">
+                    <li><a href="#" onclick="changeNumberEntries(10)">10</a></li>
+                    <li><a href="#" onclick="changeNumberEntries(25)">25</a></li>
+                    <li><a href="#" onclick="changeNumberEntries(50)">50</a></li>
+                    <li class="active"><a href="#" onclick="changeNumberEntries(100)">100</a></li>
+                  </ul>
+                </div>
+                <span class="input-group-btn">
+                  <button style="margin-left: 10px;" title="Clear Filter" id="clearFilterTable" type="button" class="btn btn-default btn-flat">
+                    <i class="fa fa-fw fa-remove"></i>
+                  </button>
+                  
+                </span>
+              </div>
+            </div>
+                
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped dataTable nowrap" id="draftPr" width="100%" cellspacing="0">
+              <thead>
+                <tr style="text-align: center;">
+                  <th>No. PR</th>
+                  <th>Created at</th>
+                  <th>Subject</th>
+                  <th>Supplier</th>
+                  <th>Total Price</th>
+                  <th style="text-align: center;vertical-align: middle;">Status</th>
+                  <th style="text-align: center;vertical-align: middle;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyDraft" name="tbodyDraft">
+              </tbody>
+            </table>
           </div>
         </div>
-            
-      </div>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped dataTable nowrap" id="draftPr" width="100%" cellspacing="0">
-          <thead>
-            <tr style="text-align: center;">
-              <th>No. PR</th>
-              <th>Created at</th>
-              <th>Subject</th>
-              <th>Supplier</th>
-              <th>Total Price</th>
-              <th style="text-align: center;vertical-align: middle;">Status</th>
-              <th style="text-align: center;vertical-align: middle;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyDraft" name="tbodyDraft">
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -177,6 +166,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span></button>
         <h4 class="modal-title">Information Supplier</h4>
       </div>
       <div class="modal-body">
@@ -280,6 +271,13 @@
               <span class="help-block" style="display:none;">Please fill Type!</span>
             </div>
 
+            <div class="form-group">
+              <div style="display: inline;text-align:justify;">                
+                <span style="position:absolute;"><input type="checkbox" id="cbCommit" class="minimal" value=""/></span>
+                <span style="display:flex;margin-left: 25px;display:flex;">This supplier has been committed with us to supply this product</span>
+              </div>
+            </div>
+
             <div class="form-group" id="divNotePembanding" style="display:none;">
               <label for="">Note Pembanding*</label>
               <textarea autocomplete="off" class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
@@ -297,15 +295,14 @@
             </div>
             <div class="form-group" style="display: flex;">
               <div style="padding: 7px;
-                          width: 20%;
                           border: 1px solid #dee2e6 !important;
                           color: #337ab7;
                           height: 35px;
                           background-color: #eee;
                           display: inline;
                           margin: 0 auto;">
-                <i class="fa fa-cloud-upload" style="margin-left:5px"></i>
-                <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
+                <i class="fa fa-cloud-upload" style="margin-left:5px">
+                <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;"></i>
                 <label for="uploadCsv">Upload CSV</label>
                 <i class="fa fa-times hidden" onclick="cancelUploadCsv()" style="display:inline;color: red;"></i>
                 <!-- <span class="help-block" style="display:none;">Please Upload File or Add Product!</span> -->
@@ -329,45 +326,56 @@
               <textarea onkeyup="fillInput('desc_product')" style="resize:vertical;height:150px" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control"></textarea>
               <span class="help-block" style="display:none;">Please fill Description!</span>
             </div>
-            <div class="form-group">
-              <div class="row">
-                <div class="col-md-6"> 
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
                   <label>Serial Number</label>
                   <input autocomplete="off" type="text" name="" class="form-control" id="inputSerialNumber">
-                </div>
-                <div class="col-md-6"> 
+                </div> 
+              </div>
+              <div class="col-md-6"> 
+                <div class="form-group">
                   <label>Part Number</label>
                   <input autocomplete="off" type="text" name="" class="form-control" id="inputPartNumber">
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <div class="row">
-                <div class="col-md-4"> 
+            <div class="row">
+              <div class="col-md-2">
+                <div class="form-group">
                   <label>Qty*</label>
                   <input autocomplete="off" type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
                   <span class="help-block" style="display:none;">Please fill Qty!</span>
-                </div>
-                <div class="col-md-4"> 
-                  <label>Type*</label>
-                  <select class="form-control" style="width:100%" id="selectTypeProduct" onchange="fillInput('type_product')">
-                    <option>
-                    <!-- <option selected value="unit">Unit</option>  -->
-                  </select>
-                  <span class="help-block" style="display:none;">Please fill Unit!</span>
-                </div>
-                <div class="col-md-4"> 
-                  <label>Price*</label>
-                  <div class="input-group">
-                    <div class="input-group-addon">
-                    Rp.
-                    </div>
-                    <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
-                  </div>
-                  <span class="help-block" style="display:none;">Please fill Price!</span>
-                </div>
+                </div> 
               </div>
-            </div>              
+              <div class="col-md-4" style="margin-bottom:10px"> 
+                <label>Type*</label>
+                <i class="fa fa-warning" title="If type is undefined, Please contact developer team!" style="display:inline"></i>
+                <select style="width:100%;display:inline;" class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
+                  <option>                  
+                </select>
+                <span class="help-block" style="display:none;">Please fill Unit!</span>
+              </div>
+              <div class="col-md-6" style="margin-bottom:10px"> 
+                <label>Price*</label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                  Rp.
+                  </div>
+                  <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 500,000.00" onkeyup="fillInput('price_product')">
+                  <div class="input-group-btn">       
+                    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">         
+                      <span class="fa fa-caret-down"></span>       
+                    </button>       
+                    <ul class="dropdown-menu">       
+                      <li><a onclick="changeCurreny('usd')">USD($)</a></li>
+                      <li><a onclick="changeCurreny('dollar')">IDR(RP)</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <span class="help-block" style="display:none;">Please fill Price!</span>
+              </div>
+            </div>            
             <div class="form-group">
               <label>Total Price</label>
               <div class="input-group">
@@ -402,40 +410,61 @@
               
             </div>
           </div>
-          <div class="form-group" style="display:flex;">
+          <div class="form-group" style="display:flex;margin-top: 10px;">
             <button class="btn btn-sm btn-primary" style="margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
           </div>
         </div>
         <div class="tab-add" style="display:none">
           <div class="tabGroup">
             <div id="formForPrExternal" style="display:none">
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Lead Register*</label>
-                      <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
-                        <option></option>
-                      </select>
-                      <span class="help-block" style="display:none;">Please fill Lead Register!</span>
-                    </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>PID*</label>
+                    <select id="selectPid" style="width: 100%;" class="select2 form-control" onchange="fillInput('selectPID')">
+                      <option>
+                    </select>
+                    <span class="help-block" style="display:none;">Please fill PID!</span>
+                    <span id="makeId" style="cursor: pointer;">other?</span>
+                    <div class="form-group" id="project_idNew" style="display: none;">
+                      <div class="input-group">
+                        <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                        <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
+                      </div>
+                    </div> 
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>PID*</label>
-                      <select id="selectPid" style="width: 100%;" class="select2 form-control" onchange="fillInput('selectPID')">
-                        <option>
-                      </select>
-                      <span class="help-block" style="display:none;">Please fill PID!</span>
-                      <span id="makeId" style="cursor: pointer;">other?</span>
-                      <div class="form-group" id="project_idNew" style="display: none;">
-                        <div class="input-group">
-                          <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
-                          <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
-                        </div>
-                      </div> 
-                    </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Lead Register*</label>
+                    <select id="selectLeadId" style="width:100%" class="select2 form-control" onchange="fillInput('selectLeadId')">
+                      <option></option>
+                    </select>
+                    <span class="help-block" style="display:none;">Please fill Lead Register!</span>
                   </div>
-                </div>               
+                </div>
+              </div> 
+
+              <div class="form-group">
+                <label>Quote Number*</label>
+                <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
+                  <option>
+                </select>
+                <!-- <input type="file" class="files" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
+                <span class="help-block" style="display:none;">Please fill Quote Number!</span>
+              </div> 
+
+              <div class="form-group">
+                <label>Quote Supplier*</label>
+                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
+                  <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
+                    <span class="fa fa-cloud-upload" style="display:inline;"></span>
+                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
+                  </label>
+                </div>
+                <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
+                <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
+              </div>             
               
               <div class="form-group">
                 <label>SPK/Kontrak*</label>
@@ -460,27 +489,16 @@
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
                 <span style="display:none;" id="span_link_drive_sbe"><a id="link_sbe" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
-              
-              <div class="form-group">
-                <label>Quote Supplier*</label>
-                <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
-                  <label for="inputQuoteSupplier" style="margin-bottom: 0px;">
-                    <span class="fa fa-cloud-upload" style="display:inline;"></span>
-                    <input autocomplete="off" style="display: inline;font-family: inherit;" type="file" class="files" name="inputQuoteSupplier" id="inputQuoteSupplier" onchange="fillInput('quoteSupplier')" >
-                  </label>
-                </div>
-                <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
-                <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
-              </div> 
 
-              <div class="form-group">
-                <label>Quote Number*</label>
-                <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
-                  <option>
-                </select>
-                <!-- <input type="file" class="files" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
-                <span class="help-block" style="display:none;">Please fill Quote Number!</span>
-              </div>   
+              <div id="docPendukungContainer" class="table-responsive">
+                <label id="titleDoc_epr" style="display:none;">Lampiran Dokumen Lainnya</label>
+                <table id="tableDocPendukung_epr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+                  
+                </table>
+              </div>
+              <div class="form-group" style="display: flex;margin-top: 10px;">
+                <button type="button" id="btnAddDocPendukung_epr" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('epr')"><i class="fa fa-plus"></i>&nbsp Dokumen Lainnya</button>
+              </div>  
             </div>
               
             <div id="formForPrInternal" style="display:none;">
@@ -495,14 +513,15 @@
                 <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
                 <span style="display:none;" id="span_link_drive_penawaranHarga"><a id="link_penawaran_harga" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
-              <div id="docPendukungContainer">
-                <label id="titleDoc" style="display:none;">Lampiran Dokumen Pendukung</label>
-                <table id="tableDocPendukung" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+
+              <div id="docPendukungContainer" class="table-responsive">
+                <label id="titleDoc_ipr" style="display:none;">Lampiran Dokumen Pendukung</label>
+                <table id="tableDocPendukung_ipr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
                   
                 </table>
               </div>
               <div class="form-group" style="display: flex;margin-top: 10px;">
-                <button type="button" id="btnAddDocPendukung" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung()"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</button>
+                <button type="button" id="btnAddDocPendukung_ipr" style="margin:0 auto" class="btn btn-sm btn-primary" onclick="addDocPendukung('ipr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</button>
               </div>
             </div>
           </div>
@@ -510,7 +529,7 @@
         <div class="tab-add" style="display:none">
           <div class="tabGroup">
             <div class="box-body pad">
-              <textarea onkeydown="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. term of payment"></textarea>
+              <textarea onkeydown="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. Terms & Condition"></textarea>
               <span class="help-block" style="display:none;">Please fill Top of Payment!</span>
             </div>
           </div>
@@ -523,7 +542,7 @@
               </div>
             </div><br>
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 table-responsive">
                 <table class="table" style="white-space: nowrap;">
                   <thead>
                     <tr>
@@ -563,6 +582,8 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
           <h4 class="modal-title">Information Supplier</h4>
         </div>
         <div class="modal-body">
@@ -758,7 +779,7 @@
                 <label>SPK/Kontrak*</label>
                 <div class="input-group" readonly>
                   <div style="border: 1px solid #dee2e6 !important;padding: 5px;background-color: #EEEEEE;">
-                    <i class="icon" style="display:inline;color: #367fa9;"></i>
+                    <i class="icon_spk" style="display:inline;color: #367fa9;"></i>
                     <a target="_blank" href="" id="link_spkCek"><input style="display: inline;background-color: transparent;border: none;" type="text" name="inputSPK" id="inputSPKCek" disabled></a>
                   </div>
                   <div class="input-group-addon">
@@ -772,7 +793,7 @@
                 <label>SBE*</label>
                 <div class="input-group" readonly>
                   <div style="border: 1px solid #dee2e6 !important;padding: 5px;background-color: #EEEEEE;">
-                    <i class="icon" style="display:inline;color: #367fa9;"></i>
+                    <i class="icon_sbe" style="display:inline;color: #367fa9;"></i>
                     <a target="_blank" href="" id="link_sbeCek"><input style="display:inline;background-color: transparent;border: none;" type="text" name="inputSBECek" id="inputSBECek" disabled ></a>
                   </div>
                   <div class="input-group-addon">
@@ -788,7 +809,7 @@
                     <label>Quote Supplier*</label>
                     <div class="input-group" readonly>
                       <div style="border: 1px solid #dee2e6 !important;padding: 5px;background-color: #EEEEEE;">
-                        <i class="icon" style="display:inline;color: #367fa9;"></i>
+                        <i class="icon_quo" style="display:inline;color: #367fa9;"></i>
                         <a target="_blank" href="" id="link_quoteSupCek"><input style="display: inline;background-color: transparent;border: none;" type="text" name="inputQuoteSupplierCek" id="inputQuoteSupplierCek" disabled ></a>
                       </div>
                       <div class="input-group-addon">
@@ -807,7 +828,12 @@
                     </div>
                   </div>
                 </div>
-              </div>    
+              </div>  
+
+              <div class="form-group">
+                <div id="docPendukungContainerCekEPR">
+                </div>
+              </div>  
             </div>
               
             <div id="formForPrInternalCek" style="display:none;">
@@ -832,7 +858,7 @@
               </div>
             </div><br>
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 table-responsive">
                 <table class="table" style="white-space: nowrap;">
                   <thead>
                     <tr>
@@ -878,7 +904,7 @@
                 </div>
                 <div class="form-group" style="display:none;" id="divReasonReject">
                   <h4>Reason of Reject</h4>
-                  <textarea id="textAreaReasonReject" class="form-control" placeholder="ex. [Informasi Supplier - To] Ada Kesalahan Penulisan Nama" style="resize:vertical;"></textarea>
+                  <textarea id="textAreaReasonReject" onkeyup="fillInput('reason_reject')" class="form-control" placeholder="ex. [Informasi Supplier - To] Ada Kesalahan Penulisan Nama" style="resize:vertical;"></textarea>
                   <span class="help-block" style="display:none;">Please fill Reason!</span>
                 </div>
             </div>  
@@ -898,6 +924,8 @@
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+  <!-- <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.2.1/js/dataTables.fixedColumns.min.js"></script> -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
@@ -915,7 +943,7 @@
   <script type="text/javascript">
     $(".money").mask('000,000,000,000,000', {reverse: true})
 
-    $(document).ready(function(){   
+    $(document).ready(function(){ 
       currentTab = 0     
       $('input[class="files"]').change(function(){
         var f=this.files[0]
@@ -926,11 +954,12 @@
         /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
         var ErrorText = []
-        if (f.size > 40000000|| f.fileSize > 40000000) {
+        // console.log(f.size);
+        if (f.size > 2000000|| f.fileSize > 2000000) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Invalid file size, just allow file with size less than 40MB!',
+            text: 'Invalid file size, just allow file with size less than 2MB!',
           }).then((result) => {
             this.value = ''
           })
@@ -1005,6 +1034,10 @@
           {
             "id": "node",
             "text": "Node"
+          },
+          {
+            "id": "kg",
+            "text": "Kg"
           }
         ]
       }
@@ -1053,7 +1086,7 @@
 
       colors.push(ArrColors)
       $.each(colors[0], function(key, value){
-        append = append + '<div class="col-lg-3 col-xs-6">'
+        append = append + '<div class="col-lg-3 col-xs-12">'
           append = append + '<div class="small-box ' + value.color + '">'
             append = append + '<div class="inner">'
               append = append + '<h3 style="'+ value.style +'" class="counter" id="count_pr_'+value.index+'"</h3>'
@@ -1101,7 +1134,7 @@
       var append = ""
       var colors = []
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:red', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
         },
         {
             name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',index: 1
@@ -1196,6 +1229,8 @@
               data.status_numerical = 8
             }else if (data.status == 'SENDED') {
               data.status_numerical = 9
+            }else if (data.status == 'CANCEL') {
+              data.status_numerical = 10
             }
           })
           return json.data
@@ -1219,7 +1254,7 @@
         },
         { 
           render: function (data, type, row, meta){
-            return '[<b><i>' + row.type_of_letter + '</i></b>] ' + row.title         
+            return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
           },
         },
         { "data": "to"},
@@ -1230,7 +1265,8 @@
             }else{
               return formatter.format(row.nominal)          
             }
-          }
+          },
+          className:'text-right'
         },
         { 
           orderData:[7],
@@ -1239,8 +1275,6 @@
               return '<span class="label label-primary">'+row.status+'</span>'           
             }else if (row.status == 'DRAFT') {
               return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'REJECT') {
-              return '<span class="label label-danger">'+row.status+'</span>' 
             }else if (row.status == 'VERIFIED') {
               return '<span class="label label-success">'+row.status+'</span>'
             }else if (row.status == 'COMPARING') {
@@ -1255,7 +1289,7 @@
               return '<span class="label label-success">'+row.status+'</span>'           
             }else if (row.status == 'SENDED') {
               return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'UNAPPROVED') {
+            }else if (row.status == 'UNAPPROVED' || row.status == 'REJECT' || row.status == 'CANCEL') {
               return '<span class="label label-danger">'+row.status+'</span>' 
             }
           },
@@ -1263,33 +1297,80 @@
         },
         { 
           render: function (data, type, row, meta){
+            let onclick = ""
+            let title = ""
+            let btnClass = ""
+            let isDisabled = ""
+            let isDisabledCancel = ""
+            let btnId = ""
+            let status = ""
+            let value = ""
+
             if (row.status == 'DRAFT') {
-              return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
+              onclick = "cekByAdmin(0,"+ row.id +")"
+              title = "Verify"
+              btnClass = "btnCekDraft btn-primary"
+              isDisabled = "disabled"
+              btnId = "btnCekDraft"
+              // return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
             }else if (row.status == 'SAVED') {
+              btnClass = "btn-warning"
+              title = "Draft"
+              btnId = "btnDraft"
               if (row.issuance == '{{Auth::User()->nik}}') {
                 status = '"saved"'
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
+                value = status
+                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
               }else{
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
+                isDisabled = "disabled"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
               } 
             }else if (row.status == 'REJECT') {
-              status = '"reject"'
+              title = "Revision"
+              btnClass = "btn-warning"
+              btnId = "btnDraft"
               if (row.issuance == '{{Auth::User()->nik}}') {
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
+                status = '"reject"'
+                value = status
+                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
               }else{
-                return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
+                isDisabled = "disabled"
+                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
               } 
             }else if(row.status == 'UNAPPROVED'){
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              title = "Revision"
+              btnClass = "btn-warning"
+              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                 status = '"revision"'
+                value = status
+                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
 
-                return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
+                // return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
               }else{
-                return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
+                isDisabled = "disabled"
+                // return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
               }
             }else{
-              return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
-            }                     
+              title = "Detail"
+              btnClass = "btn-primary"
+              btnId = "btnDetail"
+              onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"
+              if (row.issuance == '{{Auth::User()->nik}}') {
+                if (row.status == 'CANCEL') {
+                  isDisabledCancel = 'disabled'
+                }else{
+                  isDisabledCancel = ''
+                }
+              }else{
+                isDisabledCancel = 'disabled'
+              }
+              
+              // return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
+            } 
+
+            return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
           },
           className:'text-center'
         },//action
@@ -1309,9 +1390,15 @@
           $(".btnCekDraft").prop("disabled",false)
         }
       },
-      "pageLength":10,
+      "pageLength":100,
       lengthChange:false,
-      autoWidth:false,
+      // autoWidth:true,
+      scrollX:        true,
+      scrollCollapse: true,
+      // paging:         false,
+      fixedColumns:   {
+        left: 1,
+      },
       initComplete: function () {
         $.each($("#selectShowColumnTicket li input"),function(index,item){
           var column = $("#draftPr").DataTable().column(index)
@@ -1597,6 +1684,7 @@
       localStorage.setItem('firstLaunch', false);
       localStorage.setItem('no_pr',id_draft)
       localStorage.setItem('status_unfinished',status)
+
       if (status == 'revision') {
         url = "{{url('/admin/getDetailPr')}}"
       }else{
@@ -1619,8 +1707,8 @@
           x[n].style.display = "inline";
           if (n == (x.length - 1)) {
             $(".modal-dialog").addClass('modal-lg')
-            $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
-            $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+            $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
+            $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
             $(".modal-title").text('')
             document.getElementById("prevBtnAdd").style.display = "inline";
             $("#headerPreviewFinal").empty()
@@ -1638,26 +1726,40 @@
             quoteNumber = $("#selectQuoteNumber").val() 
             
             var appendHeader = ""
-            if (result.pr.type_of_letter == 'IPR') {
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-            }else{
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ leadRegister +"</span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-              appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ quoteNumber +'</span></span><br>'
-              appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+            appendHeader = appendHeader + '<div class="row">'
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+            appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+            appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+            appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+            appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+            appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+            appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+            appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+            appendHeader = appendHeader + '    </div>'
+            if (window.matchMedia("(max-width: 768px)").matches)
+            {
+                appendHeader = appendHeader + '    <div class="col-md-6">'
+                // The viewport is less than 768 pixels wide
+                console.log("This is a mobile device.");
+            } else {
+                appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                // The viewport is at least 768 pixels wide
+                console.log("This is a tablet or desktop.");
             }
+            appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+            appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+            appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+            if (PRType == 'EPR') {
+              appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+              appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+            }
+            appendHeader = appendHeader + '    </div>'
+            appendHeader = appendHeader + '</div>'
 
             $("#headerPreviewFinal").append(appendHeader)
 
@@ -1671,15 +1773,15 @@
                   append = append + '<span>'+ i +'</span>'
                 append = append + '</td>'
                 append = append + '<td width="20%">'
-                  append = append + '<input readonly class="form-control" style="font-size: 12px; important" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
-                append = append + '<td width="35%">'
-                  append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
+                append = append + '<td width="40%">'
+                  append = append + '<textarea readonly class="form-control" style="resize: none;height: 120px;font-size: 12px; important">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +  '</textarea>'
                 append = append + '</td>'
-                append = append + '<td width="10%">'
+                append = append + '<td width="5%">'
                   append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px; important">'
                 append = append + '</td>'
-                append = append + '<td width="10%">'
+                append = append + '<td width="5%">'
                   append = append + '<select readonly style="width:75px;font-size: 12px; important" class="form-control">'
                   append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
                   append = append + '</select>'
@@ -1700,7 +1802,7 @@
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<div class="form-group">'
             appendBottom = appendBottom + '  <div class="row">'
-            appendBottom = appendBottom + '    <div class="col-md-12">'
+            appendBottom = appendBottom + '    <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '      <div class="pull-right">'
             appendBottom = appendBottom + '        <span style="display: inline;margin-right: 15px;">Total</span>'
             appendBottom = appendBottom + '        <input readonly="" type="text" style="width:250px;display: inline;" id="inputGrandTotalProduct_unfinishPreview" class="form-control inputGrandTotalProduct_unfinishPreview">'
@@ -1708,25 +1810,36 @@
             appendBottom = appendBottom + '    </div>'
             appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + ' <div class="col-md-12">'
-            appendBottom = appendBottom + '   <div class="pull-right">'
-              appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
-              appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-                appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
-                  if(btnVatStatus) {
-                    appendBottom = appendBottom + '            <button type="button" class="btn btn-flat btn-default" disabled="true" id="btn-vat2">✓</button>'
-                  }
-                  else {
-                    appendBottom = appendBottom + '            <button type="button" class="btn btn-flat btn-danger" disabled="true" id="btn-vat2">✖</button>'
-                  }
-                appendBottom = appendBottom + ' </span>'
-              appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_unfinishPreview" name="vat_tax_unfinishPreview" style="width:215px;">'
-              appendBottom = appendBottom + ' </div>'
+            appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
+
+            appendBottom = appendBottom + ' <div class="pull-right">'
+              appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
+            appendBottom = appendBottom + '  </span>'
+            appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
+            appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax_unfinishPreview" name=""vat_tax_unfinishPreview" style="width:250px;display:inline">'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
+
+
+
+            // appendBottom = appendBottom + '   <div class="pull-right">'
+            //   appendBottom = appendBottom + '   <span>Vat <span class="title_tax"></span></span>'
+            //   appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+            //     // appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
+            //     //   if(btnVatStatus) {
+            //     //     appendBottom = appendBottom + '            <button type="button" class="btn btn-flat btn-default" disabled="true" id="btn-vat2">✓</button>'
+            //     //   }
+            //     //   else {
+            //     //     appendBottom = appendBottom + '            <button type="button" class="btn btn-flat btn-danger" disabled="true" id="btn-vat2">✖</button>'
+            //     //   }
+            //     // appendBottom = appendBottom + ' </span>'
+            //   appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_unfinishPreview" name="vat_tax_unfinishPreview" style="width:250px;">'
+            //   appendBottom = appendBottom + ' </div>'
             appendBottom = appendBottom + ' </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '  <div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + '    <div class="col-md-12">'
+            appendBottom = appendBottom + '    <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '      <div class="pull-right">'
             appendBottom = appendBottom + '        <span style="display: inline;margin-right: 15px;">Grand Price</span>'
             appendBottom = appendBottom + '        <input readonly type="text" style="width:250px;display: inline;" class="form-control inputFinalPageGrandPrice_unfinishPreview" id="inputFinalPageGrandPrice" name="inputFinalPageGrandPrice_unfinishPreview">'
@@ -1735,7 +1848,7 @@
             appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -1811,37 +1924,57 @@
             var finalGrand = 0
             var tempTotal = 0
             var sum = 0
+            var valueVat = ""
 
             $('.grandTotalPreview').each(function() {
                 var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                 sum += temp;
             });
 
-            if (result.pr.status_tax == 'True') {
-              tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-              tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+            // if (result.pr.status_tax == 'True') {
+            //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+            //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+            // }else{
+            //   tempVat = tempVat
+            //   tempGrand = parseInt(sum)
+            // }
+
+            if (result.pr.status_tax == false) {
+              valueVat = 'false'
             }else{
-              tempVat = tempVat
-              tempGrand = parseInt(sum)
+              valueVat = result.pr.status_tax
             }
+            if (!isNaN(valueVat)) {
+              tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
 
-            finalVat = tempVat
+              finalVat = tempVat
 
-            finalGrand = tempGrand
+              tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
 
-            tempTotal = sum    
+              finalGrand = tempGrand
 
-            $("#vat_tax_unfinishPreview").val(tempVat)
+              tempTotal = sum
+
+              $('.title_tax').text(valueVat + '%')
+            }else{
+              tempVat = 0
+
+              finalGrand = sum
+
+              $('.title_tax').text("")
+            }  
+
+            $("#vat_tax_unfinishPreview").val(formatter.format(tempVat))
             $("#inputGrandTotalProduct_unfinishPreview").val(formatter.format(sum))
             $("#inputFinalPageGrandPrice").val(formatter.format(finalGrand))
 
             if (status == 'reject' || status == 'revision') {
-              reasonReject(result.activity.reason,"block")
+              reasonReject(result.activity.reason,"block","tabGroup")
             }                               
 
             if (window.location.href.split("/")[5] != undefined) {
               if (window.location.href.split("/")[5].split("?")[1].split("=")[1] == 'reject' || window.location.href.split("/")[5].split("?")[1].split("=")[1] == 'revision') {
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
               }
             }
             
@@ -1873,6 +2006,10 @@
                 $("#selectMethode").val('payment')
               }
               $("#selectCategory").val(result.pr.category)
+
+              if (result.pr.isCommit == 'True') {
+                $("#cbCommit").prop('checked',true)
+              }
 
               const firstLaunch = localStorage.getItem('firstLaunch')
               document.getElementById("prevBtnAdd").style.display = "none";
@@ -1909,21 +2046,21 @@
                   $("#selectMethode").prop("disabled",true)
                 }
 
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else if (status == 'revision') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
 
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
               } else {
                 if (firstLaunch == 'true') {
-                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
                 }else{
-                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2)')
+                  $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(2,"saved")')
                 } 
               }
             } else if (n == 1) {
@@ -1949,8 +2086,8 @@
               if (status == 'admin') {
                 $("#nextBtnAdd").attr('onclick','nextPrevAddAdmin(1,'+ id_draft +')')
               }else{
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
-                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')     
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
+                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')     
               }
               if (localStorage.getItem('isEditProduct') == 'true') {
                 document.getElementById("prevBtnAdd").style.display = "none";
@@ -1963,12 +2100,15 @@
               $("#nextBtnAdd").removeAttr('onclick')
               $(".modal-dialog").addClass('modal-lg')
               localStorage.setItem('firstLaunch',false)
-              addTable(0)
+
+              console.log("status tax kini"+result.pr.status_tax)
+
+              addTable(0,result.pr.status_tax)
               if (localStorage.getItem('firstLaunch') == 'false') {
-                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-2)')
-                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-2,"saved")')
+                $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
               }else{
-                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')
+                $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')
               } 
               document.getElementById("prevBtnAdd").style.display = "inline";
               localStorage.setItem('no_pr',id_draft)
@@ -2003,61 +2143,55 @@
                     no_pr:localStorage.getItem('no_pr'),
                   },
                   success:function(result){
-                    var selectedLead = result.pr.lead_id
+                    var selectedPid = result.pr.pid
 
                     $.ajax({
-                      url: "{{url('/admin/getLead')}}",
+                      url: "{{url('/admin/getPidAll')}}",
                       type: "GET",
                       success: function(result) {
-
-                        // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
-
-                        $("#selectLeadId").select2({
+                        $("#selectPid").select2({
                             data: result.data,
-                            placeholder: "Select Lead Regoster",
+                            placeholder: "Select Pid",
                             dropdownParent: $('#ModalDraftPr')
                         }).on('change', function() {
-                          var data = $("#selectLeadId option:selected").text();
+                          var data = $("#selectPid option:selected").text();
+                          $("#selectLeadId").empty()
                           $.ajax({
-                            url: "{{url('/admin/getPid')}}",
+                            url: "{{url('/admin/getLeadByPid')}}",
                             type: "GET",
                             data: {
-                              lead_id:data
+                              pid:data
                             },
                             success: function(result) {
-                              if (selectedLead == '-') {
-                                // result.data.unshift({"id" : "-","text" : "Select PID"})
-                              }
-
-                              $("#selectPid").select2({
+                              $("#selectLeadId").select2({
                                   data: result.data,
-                                  placeholder: "Select PID",
+                                  placeholder: "Select Lead Register",
                                   dropdownParent: $('#ModalDraftPr')
                               })
-                            }
-                          }) 
 
-                          $.ajax({
-                            url: "{{url('/admin/getQuote')}}",
-                            type: "GET",
-                            data:{
-                              lead_id:data
-                            },
-                            success: function(result) {
-                              if (selectedLead == '-') {
-                                // result.data.unshift({"id" : "-","text" : "Select Quote Number"})
-                              }
-                              $("#selectQuoteNumber").select2({
-                                  data: result.data,
-                                  placeholder: "Select Quote Number",
-                                  dropdownParent: $('#ModalDraftPr')
-                              })
+                              var lead_id = $("#selectLeadId option:selected").text();
+                              $("#selectQuoteNumber").empty()
+
+                              $.ajax({
+                                url: "{{url('/admin/getQuote')}}",
+                                type: "GET",
+                                data:{
+                                  lead_id:lead_id
+                                },
+                                success: function(result) {
+                                  $("#selectQuoteNumber").select2({
+                                      data: result.data,
+                                      placeholder: "Select Quote Number",
+                                      dropdownParent: $('#ModalDraftPr')
+                                  })
+                                }
+                              }) 
                             }
                           }) 
                         })
 
                         if (status == 'reject' || status == 'revision' || status == 'saved') {
-                          $("#selectLeadId").val(selectedLead).trigger("change")
+                          $("#selectPid").val(selectedPid).trigger("change")
                         }
                       }
                     })
@@ -2073,50 +2207,17 @@
                         $("#selectQuoteNumber").prop("disabled",true)
                       }
 
-                      reasonReject(result.activity.reason,"block")
+                      reasonReject(result.activity.reason,"block","tabGroup")
 
                     } else if (status == 'revision') {
-                      reasonReject(result.activity.reason,"block")
+                      reasonReject(result.activity.reason,"block","tabGroup")
                     } 
 
                     if (result.dokumen.length > 0) {
                       let formData = new FormData();
 
                       if (result.dokumen[0] !== undefined) {
-                        const myFileSpk = new File(['{{asset("/")}}"'+ result.dokumen[0].dokumen_location +'"'], '/'+ result.dokumen[0].dokumen_location,{
-                            type: 'text/plain',
-                            lastModified: new Date(),
-                        });
-
-                        // Now let's create a DataTransfer to get a FileList
-                        const dataTransferSpk = new DataTransfer();
-                        dataTransferSpk.items.add(myFileSpk);
-                        fileSPK.files = dataTransferSpk.files;
-
-                        if (result.dokumen[0].link_drive != null) {
-                          $("#span_link_drive_spk").show()
-                          $("#link_spk").attr("href",result.dokumen[0].link_drive) 
-                        }
-                      }
-
-                      if (result.dokumen[1] !== undefined) {
-                        const myFileSbe = new File(['{{asset("/")}}"'+ result.dokumen[1].dokumen_location +'"'], '/'+ result.dokumen[1].dokumen_location,{
-                          type: 'text/plain',
-                          lastModified: new Date(),
-                        });
-                        // Now let's create a DataTransfer to get a FileList
-                        const dataTransferSbe = new DataTransfer();
-                        dataTransferSbe.items.add(myFileSbe);
-                        fileSBE.files = dataTransferSbe.files;
-
-                        if (result.dokumen[1].link_drive != null) {
-                          $("#span_link_drive_sbe").show()
-                          $("#link_sbe").attr("href",result.dokumen[1].link_drive)
-                        }
-                      }
-
-                      if (result.dokumen[2] !== undefined) {
-                        const myFileQuote = new File(['{{asset("/")}}"'+ result.dokumen[2].dokumen_location +'"'], '/'+ result.dokumen[2].dokumen_location,{
+                        const myFileQuote = new File(['{{asset("/")}}"'+ result.dokumen[0].dokumen_location +'"'], '/'+ result.dokumen[0].dokumen_location,{
                             type: 'text/plain',
                             lastModified: new Date(),
                         });
@@ -2126,11 +2227,152 @@
                         dataTransferQuote.items.add(myFileQuote);
                         fileQuote.files = dataTransferQuote.files;
 
-                        if (result.dokumen[2].link_drive != null) {
+                        if (result.dokumen[0].link_drive != null) {
                           $("#span_link_drive_quoteSup").show()
-                          $("#link_quoteSup").attr("href",result.dokumen[2].link_drive) 
+                          $("#link_quoteSup").attr("href",result.dokumen[0].link_drive) 
                         }
-                      }  
+                      }
+
+                      if (result.dokumen[1] !== undefined) {
+                        const myFileSpk = new File(['{{asset("/")}}"'+ result.dokumen[1].dokumen_location +'"'], '/'+ result.dokumen[1].dokumen_location,{
+                            type: 'text/plain',
+                            lastModified: new Date(),
+                        });
+
+                        // Now let's create a DataTransfer to get a FileList
+                        const dataTransferSpk = new DataTransfer();
+                        dataTransferSpk.items.add(myFileSpk);
+                        fileSPK.files = dataTransferSpk.files;
+
+                        if (result.dokumen[1].link_drive != null) {
+                          $("#span_link_drive_spk").show()
+                          $("#link_spk").attr("href",result.dokumen[1].link_drive) 
+                        }
+                      }
+
+                      if (result.dokumen[2] !== undefined) {
+                        const myFileSbe = new File(['{{asset("/")}}"'+ result.dokumen[2].dokumen_location +'"'], '/'+ result.dokumen[2].dokumen_location,{
+                          type: 'text/plain',
+                          lastModified: new Date(),
+                        });
+                        // Now let's create a DataTransfer to get a FileList
+                        const dataTransferSbe = new DataTransfer();
+                        dataTransferSbe.items.add(myFileSbe);
+                        fileSBE.files = dataTransferSbe.files;
+
+                        if (result.dokumen[2].link_drive != null) {
+                          $("#span_link_drive_sbe").show()
+                          $("#link_sbe").attr("href",result.dokumen[2].link_drive)
+                        }
+                      }                        
+
+                      $("#tableDocPendukung_epr").empty()
+
+                      if (result.dokumen.length > 3) {
+                        $("#titleDoc_epr").css("display",'block')
+                      }
+                      appendDocPendukung = ""
+                      $.each(result.dokumen,function(value,item){
+                        if (value != 0 &&  value != 1 && value != 2) {
+                          appendDocPendukung = appendDocPendukung + '<tr style="height:10px" class="trDocPendukung">'
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+                                  appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px;background-color:darkgrey;cursor:not-allowed">'
+                                    appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;color:grey' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"' disabled>"
+                                   appendDocPendukung = appendDocPendukung + '</div>'
+                                   appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" value="'+ item.dokumen_name +'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                          appendDocPendukung = appendDocPendukung + "</tr>"
+                        }   
+                      })
+                      $("#tableDocPendukung_epr").append(appendDocPendukung)
+
+                      $('#inputNameDocPendukung').keydown(function(){
+                        console.log(this.value)
+                        if ($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung')).data('value').val() == "") {
+                          $("#btnAddDocPendukung_epr").prop("disabled",true)
+                          $("#btnAddDocPendukung_ipr").prop("disabled",true)
+                        }else{
+                          $("#btnAddDocPendukung_epr").prop("disabled",false)
+                          $("#btnAddDocPendukung_ipr").prop("disabled",false)
+                        }
+                      })
+
+                      $.each(result.dokumen,function(value,item){
+                        if (value != 0 &&  value != 1 && value != 2) {
+                          const filedocpendukung = document.querySelector('.inputDocPendukung_'+value);
+
+                          const FilePendukung = new File(['{{asset("/")}}"'+ item.dokumen_location +'"'], '/'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1],{
+                              type: 'text/plain',
+                              lastModified: new Date(),
+                          });
+
+                          // Now let's create a DataTransfer to get a FileList
+                          const dataTransfer = new DataTransfer();
+                          dataTransfer.items.add(FilePendukung);
+                          filedocpendukung.files = dataTransfer.files;
+
+                          $('.inputNameDocPendukung_'+value).val(item.dokumen_name)
+                        }
+
+                        $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").click(function(){
+                          Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Deleting document",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                          }).then((result) => {
+                              if (result.value) {
+                                $.ajax({
+                                  type:"POST",
+                                  url:"{{url('/admin/deleteDokumen/')}}",
+                                  data:{
+                                    _token:"{{ csrf_token() }}",
+                                    id:this.value
+                                  },beforeSend:function(){
+                                    Swal.fire({
+                                        title: 'Please Wait..!',
+                                        text: "It's sending..",
+                                        allowOutsideClick: false,
+                                        allowEscapeKey: false,
+                                        allowEnterKey: false,
+                                        customClass: {
+                                            popup: 'border-radius-0',
+                                        },
+                                        didOpen: () => {
+                                            Swal.showLoading()
+                                        }
+                                    })
+                                  },
+                                  success: function(data)
+                                  {
+                                    Swal.showLoading()
+                                    Swal.fire(
+                                        'Document has been deleted!',
+                                        'You can adding another document files',
+                                        'success'
+                                    ).then((result) => {
+                                      if (result.value) {
+                                        $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").closest("tr").remove();
+                                      }
+                                    })
+                                  }
+                                })
+                              }
+                          })
+                          if($('#tableDocPendukung_epr tr').length == 0){
+                            $("#titleDoc_epr").hide()
+                          }
+                        })
+                      })
+                      
                     }
                   }
                 })
@@ -2155,12 +2397,19 @@
                     no_pr:localStorage.getItem("no_pr"),
                   },
                   success:function(result){
+                    if (status == 'reject') {
+                      reasonReject(result.activity.reason,"block","tabGroup")
+
+                    }else if (status == 'revision') {
+                      reasonReject(result.activity.reason,"block","tabGroup")
+                    }
+
                     var pdf = "fa fa-fw fa-file-pdf-o"
                     var image = "fa fa-fw fa-file-image-o"
 
                     if(result.dokumen.length > 0){
                       if (result.dokumen.length > 1) {
-                        $("#titleDoc").show()
+                        $("#titleDoc_ipr").show()
                       }
                       const myFile = new File(['{{asset("/")}}"'+ result.dokumen[0].dokumen_location +'"'], '/'+ result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1],{
                           type: 'text/plain',
@@ -2177,7 +2426,7 @@
                     }    
 
 
-                    $("#tableDocPendukung").empty()
+                    $("#tableDocPendukung_ipr").empty()
 
                     appendDocPendukung = ""
                     $.each(result.dokumen,function(value,item){
@@ -2185,18 +2434,18 @@
                         appendDocPendukung = appendDocPendukung + '<tr style="height:10px" class="trDocPendukung">'
                           appendDocPendukung = appendDocPendukung + "<td>"
                             appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
-                                appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px">'
-                                  appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"'>"
+                                appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px;background-color:darkgrey;cursor:not-allowed">'
+                                  appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;color:grey' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"' disabled>"
                                  appendDocPendukung = appendDocPendukung + '</div>'
                                  appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
                           appendDocPendukung = appendDocPendukung + "</td>"
                           appendDocPendukung = appendDocPendukung + "<td>"
-                            appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" id="inputNameDocPendukung"><br>'
+                            appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" data-value='+ value +' id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
                           appendDocPendukung = appendDocPendukung + "</td>"
                         appendDocPendukung = appendDocPendukung + "</tr>"
                       }   
                     })
-                    $("#tableDocPendukung").append(appendDocPendukung)              
+                    $("#tableDocPendukung_ipr").append(appendDocPendukung)                            
 
                     $.each(result.dokumen,function(value,item){
                       if (value != 0) {
@@ -2264,7 +2513,7 @@
                               })
                             }
                         })
-                        if($('#tableDocPendukung tr').length == 0){
+                        if($('#tableDocPendukung_ipr tr').length == 0){
                           $("#titleDoc").hide()
                         }
                       })
@@ -2273,8 +2522,8 @@
                 })                  
               }   
     
-              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
-              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
+              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
               document.getElementById("prevBtnAdd").style.display = "inline";
             } else if (n == 4) {
               $(".modal-dialog").removeClass('modal-lg')
@@ -2282,17 +2531,17 @@
               if (status == 'reject') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").val(result.activity.reason.replaceAll("\n","<br>"))
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
 
               }else if (status == 'revision') {
                 $(".divReasonRejectRevision").show()
                 $(".reason_reject_revision").html(result.activity.reason.replaceAll("\n","<br>"))
-                reasonReject(result.activity.reason,"block")
+                reasonReject(result.activity.reason,"block","tabGroup")
               }
-              $(".modal-title").text('Term Of Payment')   
+              $(".modal-title").text('Terms & Condition')   
               $(".modal-dialog").removeClass('modal-lg')   
-              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')        
-              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+              $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')        
+              $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
               document.getElementById("prevBtnAdd").style.display = "inline";
 
               if ($('.wysihtml5-toolbar').length == 0) {
@@ -2316,7 +2565,7 @@
             }
             document.getElementById("nextBtnAdd").innerHTML = "Next"
             $("#nextBtnAdd").prop("disabled",false)
-            $("#addProduct").attr('onclick','nextPrevUnFinished(-1)')
+            $("#addProduct").attr('onclick','nextPrevUnFinished(-1,"saved")')
           }
         }
       })
@@ -2324,8 +2573,69 @@
       $("#ModalDraftPr").modal('show') 
     }
 
+    function btnCancel(id){
+      Swal.fire({
+        title: 'Are you sure to',
+        html:
+        '<b style="font-size:14px">cancel this PR?</b><br>',
+        icon: 'warning',
+        input: 'textarea',
+        // inputLabel: 'Cancelation reason',
+        inputPlaceholder: 'Type reason here...',
+        inputAttributes: {
+          'aria-label': 'Type reason here'
+        },
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+            $.ajax({
+            type: "POST",
+            url: "{{url('/admin/cancelDraftPr')}}",
+            data: {
+              _token: "{{ csrf_token() }}",
+              no_pr:id,
+              notes:result.value
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              Swal.hideLoading()
+              Swal.fire(
+                  'Successfully!',
+                  'success',
+                  'success'
+              ).then((result) => {
+                if (result.value) {
+                  location.reload()
+                  Swal.close()
+                }
+              })
+              
+            }
+          })         
+        }
+      })
+    }
+
     localStorage.setItem('status_pr','')
     function addDraftPr(n){
+      console.log(localStorage.getItem('status_tax')+"okeee")
       localStorage.setItem('status_pr','')
       let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
@@ -2356,26 +2666,40 @@
           },
           success: function(result) {
             var appendHeader = ""
-            if (result.pr.type_of_letter == 'IPR') {
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress' style='float:right;width:500px'>"+ result.pr.address +"</span></span<br>"
-            }else{
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ PRMethode +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ leadRegister +"</span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-              appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ quoteNumber +'</span></span><br>'
-              appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+            appendHeader = appendHeader + '<div class="row">'
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+            appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+            appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+            appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+            appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+            appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+            appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+            appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+            appendHeader = appendHeader + '    </div>'
+            if (window.matchMedia("(max-width: 768px)").matches)
+            {
+                appendHeader = appendHeader + '    <div class="col-md-6">'
+                // The viewport is less than 768 pixels wide
+                console.log("This is a mobile device.");
+            } else {
+                appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                // The viewport is at least 768 pixels wide
+                console.log("This is a tablet or desktop.");
             }
+            appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+            appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+            appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+            if (PRType == 'EPR') {
+              appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+              appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+            }
+            appendHeader = appendHeader + '    </div>'
+            appendHeader = appendHeader + '</div>'
 
             $("#headerPreviewFinal").append(appendHeader)
 
@@ -2389,7 +2713,7 @@
                   append = append + '<span>'+ i +'</span>'
                 append = append + '</td>'
                 append = append + '<td width="20%">'
-                  append = append + '<input readonly class="form-control" style="font-size: 12px;" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="35%">'
                   append = append + '<textarea readonly class="form-control" style="height: 250px;resize: none;height: 120px;font-size: 12px;">' + item.description.replaceAll("<br>","\n") + '</textarea>'
@@ -2424,7 +2748,7 @@
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<div class="form-group">'
               appendBottom = appendBottom + '<div class="row">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
               appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputTotalPriceFinal" id="inputTotalPriceFinal" name="inputTotalPriceFinal">'
@@ -2432,17 +2756,17 @@
               appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + ' <div class="col-md-12">'
+              appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '   <div class="pull-right">'
-                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat <span class="title_tax"></span></span>'
                 appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-                appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_final" name="vat_tax_final" style="width:150px;">'
+                appendBottom = appendBottom + '       <input readonly="" autocomplete="off" type="text" class="form-control vat_tax pull-right" id="vat_tax_final" name="vat_tax_final" style="width:150px;">'
                 appendBottom = appendBottom + '     </div>'
               appendBottom = appendBottom + '    </div>'
               appendBottom = appendBottom + ' </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
               appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageGrandPrice" id="inputFinalPageGrandPrice" name="inputFinalPageGrandPrice">'
@@ -2451,7 +2775,7 @@
               appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -2594,7 +2918,6 @@
             $("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')
           } 
           document.getElementById("prevBtnAdd").style.display = "inline";
-
         }else if (n == 3) {
           $(".modal-dialog").removeClass('modal-lg')
           if ($("#selectType").val() == 'EPR') {
@@ -2612,44 +2935,51 @@
 
             fillInput('penawaranHarga')
           }         
-          $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1)')       
-          $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1)')
+          $("#prevBtnAdd").attr('onclick','nextPrevUnFinished(-1,"saved")')       
+          $("#nextBtnAdd").attr('onclick','nextPrevUnFinished(1,"saved")')
           document.getElementById("prevBtnAdd").style.display = "inline";
 
           $.ajax({
-            url: "{{url('/admin/getLead')}}",
+            url: "{{url('/admin/getPidAll')}}",
             type: "GET",
             success: function(result) {
-              // result.data.unshift({"id" : "-","text" : "Select Lead Register"})
-              $("#selectLeadId").select2({
+              $("#selectPid").select2({
                   data: result.data,
-                  placeholder:"Select Lead Register"
+                  placeholder: "Select Pid",
+                  dropdownParent: $('#ModalDraftPr')
               }).on('change', function() {
-                var data = $("#selectLeadId option:selected").text();
+                var data = $("#selectPid option:selected").text();
+                var lead_id = $("#selectLeadId option:selected").text();
+
+                $("#selectLeadId").empty()
                 $.ajax({
-                  url: "{{url('/admin/getPid')}}",
+                  url: "{{url('/admin/getLeadByPid')}}",
                   type: "GET",
                   data: {
-                    lead_id:data
+                    pid:data
                   },
                   success: function(result) {
-                    $("#selectPid").select2({
+
+                    $("#selectLeadId").select2({
                         data: result.data,
-                        placeholder:"Select PID"
+                        placeholder: "Select Lead Register",
+                        dropdownParent: $('#ModalDraftPr')
                     })
                   }
                 }) 
 
+                $("#selectQuoteNumber").empty()
                 $.ajax({
                   url: "{{url('/admin/getQuote')}}",
                   type: "GET",
                   data:{
-                    lead_id:data
+                    lead_id:lead_id
                   },
                   success: function(result) {
                     $("#selectQuoteNumber").select2({
-                      data: result.data,
-                      placeholder:"Select Quote Number"
+                        data: result.data,
+                        placeholder: "Select Quote Number",
+                        dropdownParent: $('#ModalDraftPr')
                     })
                   }
                 }) 
@@ -2708,7 +3038,7 @@
             });
           }
 
-          $(".modal-title").text('Term Of Payment')   
+          $(".modal-title").text('Terms & Condition')   
           $(".modal-dialog").removeClass('modal-lg')   
           $("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')        
           $("#nextBtnAdd").attr('onclick','nextPrevAdd(1)')
@@ -2783,26 +3113,40 @@
             }
 
             var appendHeader = ""
-            if (result.pr.type_of_letter == 'IPR') {
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-            }else{
-              appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-              appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-              appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-              appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-              appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+            appendHeader = appendHeader + '<div class="row">'
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+            appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+            appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+            appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+            appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+            appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+            appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+            appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+            appendHeader = appendHeader + '    </div>'
+            if (window.matchMedia("(max-width: 768px)").matches)
+            {
+                appendHeader = appendHeader + '    <div class="col-md-6">'
+                // The viewport is less than 768 pixels wide
+                console.log("This is a mobile device.");
+            } else {
+                appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                // The viewport is at least 768 pixels wide
+                console.log("This is a tablet or desktop.");
             }
+            appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+            appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+            appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+            if (PRType == 'EPR') {
+              appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+              appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+            }
+            appendHeader = appendHeader + '    </div>'
+            appendHeader = appendHeader + '</div>'
 
             $("#headerPreviewFinal").append(appendHeader)
 
@@ -2816,10 +3160,10 @@
                   append = append + '<span>'+ i +'</span>'
                 append = append + '</td>'
                 append = append + '<td width="20%">'
-                  append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                 append = append + '</td>'
                 append = append + '<td width="35%">'
-                  append = append + '<textarea style="font-size: 12px; important;height:250px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
+                  append = append + '<textarea style="font-size: 12px; important;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '</textarea>'
                 append = append + '</td>'
                 append = append + '<td width="10%">'
                   append = append + '<input readonly class="form-control" type="text" name="" value="'+ item.serial_number +'" style="width:100px;font-size: 12px;">'
@@ -2860,7 +3204,7 @@
               appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<hr>'
-            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+            appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
             appendBottom = appendBottom + '<div class="form-control" id="termPreview" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
             appendBottom = appendBottom + '<hr>'
             appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -3073,7 +3417,7 @@
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
           document.getElementById("prevBtnAdd").style.display = "inline";
         }else if (n == 4) {
-          $(".modal-title").text('Term Of Payment')   
+          $(".modal-title").text('Terms & Condition')   
           $(".modal-dialog").removeClass('modal-lg')   
           $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
           $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
@@ -3179,7 +3523,7 @@
               var appendBottom = ""
               appendBottom = appendBottom + '<hr>'
                 appendBottom = appendBottom + '<div class="row">'
-                appendBottom = appendBottom + '  <div class="col-md-12">'
+                appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
                 appendBottom = appendBottom + '    <div class="pull-right">'
                 appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
                 appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductCek" id="inputGrandTotalProductCek" name="inputGrandTotalProductCek">'
@@ -3187,9 +3531,9 @@
                 appendBottom = appendBottom + '  </div>'
                 appendBottom = appendBottom + '</div>'
                 appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-                appendBottom = appendBottom + ' <div class="col-md-12">'
+                appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
                 appendBottom = appendBottom + '   <div class="pull-right">'
-                  appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+                  appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat <span class="title_tax"></span></span>'
                   appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
                   appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax_cek pull-right" id="vat_tax_cek" name="vat_tax_cek" style="width:250px;">'
                   appendBottom = appendBottom + '     </div>'
@@ -3197,7 +3541,7 @@
                 appendBottom = appendBottom + ' </div>'
                 appendBottom = appendBottom + '</div>'
                 appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-                appendBottom = appendBottom + '  <div class="col-md-12">'
+                appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
                 appendBottom = appendBottom + '    <div class="pull-right">'
                 appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
                 appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinalCek" id="inputGrandTotalProductFinalCek" name="inputGrandTotalProductFinalCek">'
@@ -3287,16 +3631,29 @@
 
                 var pdf = "fa fa-fw fa-file-pdf-o"
                 var image = "fa fa-fw fa-file-image-o"
+                
                 if (result.dokumen[0].link_drive != null) {
                   if (result.dokumen[0].dokumen_location.split(".")[1] == 'pdf') {
                     var fa_doc = pdf
                   }else{
                     var fa_doc = image
                   }
-                  $("#span_link_drive_spk_cek").show()
-                  $("#link_spkCek").attr("href",result.dokumen[0].link_drive)
-                  $("#inputSPKCek").val(result.dokumen[0].dokumen_location)
-                  $(".icon").addClass(fa_doc)
+                  $("#span_link_drive_quoteSup_cek").show()
+                  $("#link_quoteSupCek").attr("href",result.dokumen[0].link_drive)
+                  $("#inputQuoteSupplierCek").val(result.dokumen[0].dokumen_location)
+                  $(".icon_quo").addClass(fa_doc)
+                }
+
+                if (result.dokumen[2].link_drive != null) {
+                  if (result.dokumen[2].dokumen_location.split(".")[1] == 'pdf') {
+                    var fa_doc = pdf
+                  }else{
+                    var fa_doc = image
+                  }
+                  $("#span_link_drive_sbe_cek").show()
+                  $("#link_sbeCek").attr("href",result.dokumen[2].link_drive)
+                  $("#inputSBECek").val(result.dokumen[2].dokumen_location)
+                  $(".icon_sbe").addClass(fa_doc)
                 }
 
                 if (result.dokumen[1].link_drive != null) {
@@ -3305,22 +3662,47 @@
                   }else{
                     var fa_doc = image
                   }
-                  $("#span_link_drive_sbe_cek").show()
-                  $("#link_sbeCek").attr("href",result.dokumen[1].link_drive)
-                  $("#inputSBECek").val(result.dokumen[1].dokumen_location)
-                  $(".icon").addClass(fa_doc)
+                  $("#span_link_drive_spk_cek").show()
+                  $("#link_spkCek").attr("href",result.dokumen[1].link_drive)
+                  $("#inputSPKCek").val(result.dokumen[1].dokumen_location)
+                  $(".icon_spk").addClass(fa_doc)
                 }
-                if (result.dokumen[2].link_drive != null) {
-                  if (result.dokumen[2].dokumen_location.split(".")[1] == 'pdf') {
+
+                var appendDokumen = ""
+                $("#docPendukungContainerCekEPR").empty()
+
+                $.each(result.dokumen,function(value,item){
+                  var pdf = "fa fa-fw fa-file-pdf-o"
+                  var image = "fa fa-fw fa-file-image-o"
+                  if (item.dokumen_location.split(".")[1] == 'pdf') {
                     var fa_doc = pdf
                   }else{
                     var fa_doc = image
                   }
-                  $("#span_link_drive_quoteSup_cek").show()
-                  $("#link_quoteSupCek").attr("href",result.dokumen[2].link_drive)
-                  $("#inputQuoteSupplierCek").val(result.dokumen[2].dokumen_location)
-                  $(".icon").addClass(fa_doc)
-                }
+
+                  if (value != 0 && value != 1 && value != 2) {
+                    appendDokumen = appendDokumen + '<div class="form-group">'
+                    appendDokumen = appendDokumen + '<label>Lampiran Dokumen Pendukung</label>'
+                    
+                    appendDokumen = appendDokumen + '<div class="form-group" style="font-size: reguler;">'
+                      appendDokumen = appendDokumen + '<div class="row">'
+                        appendDokumen = appendDokumen + '<div class="col-md-6">'
+                          appendDokumen = appendDokumen + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;"><a href="'+item.link_drive+'" target="blank"><i class="'+ fa_doc +'"></i>'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1] +'</a>'
+                          appendDokumen = appendDokumen + '</div>'
+                        appendDokumen = appendDokumen + '</div>'
+                        appendDokumen = appendDokumen + '<div class="col-md-6">'
+                          appendDokumen = appendDokumen + '<div style="padding: 5px;display:inline"> Dokumen Pendukung : ' + item.dokumen_name + '</div><input style="display:inline" id="doc_'+item.id_dokumen+'_pendukung" class="minimal" type="checkbox" name="chk[]" />'
+                        appendDokumen = appendDokumen + '</div>'
+                      appendDokumen = appendDokumen + '</div>'
+                    appendDokumen = appendDokumen + '</div>'
+                  }
+
+                })
+                $("#docPendukungContainerCekEPR").append(appendDokumen)
+
+                $('input[type="checkbox"].minimal').iCheck({
+                  checkboxClass: 'icheckbox_minimal-blue',
+                })
 
               }else{
                 $(".modal-title").text('Internal Purchase Request')
@@ -3387,7 +3769,7 @@
 
             }else if (n == 3) {
               $("#textAreaTOPCek").html(result.pr.term_payment.replaceAll("&lt;br&gt;","<br>"))
-              $(".modal-title").text('Term Of Payment')
+              $(".modal-title").text('Terms & Condition')
               $(".modal-dialog").removeClass('modal-lg')
               $("#prevBtnAddAdmin").attr('onclick','nextPrevAddAdmin(-1,'+ result.pr.id +')')       
               $("#nextBtnAddAdmin").attr('onclick','nextPrevAddAdmin(1,'+ result.pr.id +')')
@@ -3412,26 +3794,40 @@
               PRMethode = $("#selectMethode").find(":selected").text()
 
               var appendHeader = ""
-              if (result.pr.type_of_letter == 'IPR') {
-                appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-              }else{
-                appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-                appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-                appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-                appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-                appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br>'
+              appendHeader = appendHeader + '<div class="row">'
+              appendHeader = appendHeader + '    <div class="col-md-6">'
+              appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+              appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+              appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+              appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+              appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+              appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+              appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+              appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+              appendHeader = appendHeader + '    </div>'
+              if (window.matchMedia("(max-width: 768px)").matches)
+              {
+                  appendHeader = appendHeader + '    <div class="col-md-6">'
+                  // The viewport is less than 768 pixels wide
+                  console.log("This is a mobile device.");
+              } else {
+                  appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+                  // The viewport is at least 768 pixels wide
+                  console.log("This is a tablet or desktop.");
               }
+              appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+              appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+              appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+              appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+              if (PRType == 'EPR') {
+                appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+                appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+                appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+                appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+              }
+              appendHeader = appendHeader + '    </div>'
+              appendHeader = appendHeader + '</div>'
 
               $("#headerPreviewFinalCek").append(appendHeader)
 
@@ -3445,15 +3841,15 @@
                     append = append + '<span>'+ i +'</span>'
                   append = append + '</td>'
                   append = append + '<td width="20%">'
-                    append = append + '<input style="font-size: 12px;" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
+                  append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
                   append = append + '</td>'
-                  append = append + '<td width="35%">'
+                  append = append + '<td width="40%">'
                     append = append + '<textarea style="font-size: 12px;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
                   append = append + '</td>'
-                  append = append + '<td width="10%">'
+                  append = append + '<td width="5%">'
                     append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size: 12px;">'
                   append = append + '</td>'
-                  append = append + '<td width="10%">'
+                  append = append + '<td width="5%">'
                     append = append + '<select disabled style="width:70px;font-size: 12px;" class="form-control">'
                     append = append + '<option>'+ item.unit.charAt(0).toUpperCase() + item.unit.slice(1) +'</option>'
                     append = append + '</select>'
@@ -3474,7 +3870,7 @@
               appendBottom = appendBottom + '<hr>'
               appendBottom = appendBottom + '<div class="form-group">'
               appendBottom = appendBottom + '<div class="row">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
               appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPreviewCek" id="inputGrandTotalProductPreviewCek" name="inputGrandTotalProductPreviewCek">'
@@ -3482,9 +3878,9 @@
               appendBottom = appendBottom + '  </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + ' <div class="col-md-12">'
+              appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '   <div class="pull-right">'
-                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+                appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat <span class="title_tax"></span></span>'
                 appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
                 appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_PreviewCek" name="vat_tax_PreviewCek" style="width:150px;">'
                 appendBottom = appendBottom + '     </div>'
@@ -3492,7 +3888,7 @@
               appendBottom = appendBottom + ' </div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-              appendBottom = appendBottom + '  <div class="col-md-12">'
+              appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
               appendBottom = appendBottom + '    <div class="pull-right">'
               appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
               appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageGrandPricePreviewCek" id="inputFinalPageGrandPricePreviewCek" name="inputFinalPageGrandPricePreviewCek">'
@@ -3501,7 +3897,7 @@
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '</div>'
               appendBottom = appendBottom + '<hr>'
-              appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+              appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
               appendBottom = appendBottom + '<div readonly id="termPreviewCek" class="form-control" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
               appendBottom = appendBottom + '<hr>'
               appendBottom = appendBottom + '<span><b>Attached Files</b><span>'
@@ -3576,26 +3972,47 @@
               var finalGrand = 0
               var tempTotal = 0
               var sum = 0
+              var valueVat = ""
+              // if (result.pr.status_tax == 'True') {
+              //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+              //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+              // }else{
+              //   tempVat = tempVat
+              //   tempGrand = parseInt(sum)
+              // }
 
               $('.grandTotalCek').each(function() {
-                  var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-                  sum += temp;
+                var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                sum += temp;
               });
 
-              if (result.pr.status_tax == 'True') {
-                tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-                tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+              if (result.pr.status_tax == false) {
+                valueVat = 'false'
               }else{
-                tempVat = tempVat
-                tempGrand = parseInt(sum)
+                valueVat = result.pr.status_tax
+              }
+              if (!isNaN(valueVat)) {
+
+                tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+                finalVat = tempVat
+
+                tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+                finalGrand = tempGrand
+
+                tempTotal = sum
+
+                $('.title_tax').text(valueVat + '%')
+              }else{
+                tempVat = 0
+
+                tempGrand = sum
+
+                $('.title_tax').text("")
               }
 
-              finalVat = tempVat
-
-              finalGrand = tempGrand
-
-              tempTotal = sum
-              $("#vat_tax_PreviewCek").val(tempVat)
+              $("#vat_tax_PreviewCek").val(formatter.format(tempVat))
               $("#inputGrandTotalProductPreviewCek").val(formatter.format(sum))
               $("#inputFinalPageGrandPricePreviewCek").val(formatter.format(tempGrand))
             }
@@ -3629,10 +4046,10 @@
                 append = append + '<span style="font-size: 12px;">'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px;" class="form-control" type="" name="" value="'+ value.name_product +'">'
+              append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ value.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;width:200px" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px;resize: none;height: 150px;" class="form-control">'+ value.description.replaceAll("<br>","\n") + '&#10;&#10;' + 'SN : ' + value.serial_number + '&#10;PN : ' + value.part_number
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -3672,12 +4089,8 @@
           var finalGrand = 0
           var tempTotal = 0
           var btnVatStatus = true
-
+          var valueVat = ''
           var sum = 0
-          $('.inputTotalPriceEditCek').each(function() {
-              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-              sum += temp;
-          });
 
           finalVat = tempVat
 
@@ -3685,14 +4098,47 @@
 
           tempTotal = sum
 
-          if (result.pr.status_tax == 'True') {
-            tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          // if (result.pr.status_tax == 'True') {
+          //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+          //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          // }else{
+          //   tempVat = tempVat
+          //   tempGrand = parseInt(sum)
+          // }
+
+          if (result.pr.status_tax == false) {
+            valueVat = 'false'
           }else{
-            tempVat = tempVat
-            tempGrand = parseInt(sum)
+            valueVat = result.pr.status_tax
           }
-          $("#vat_tax_cek").val(tempVat)
+
+          $('.inputTotalPriceEditCek').each(function() {
+            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+            sum += temp;
+          });
+
+          if (!isNaN(valueVat)) {
+
+            tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+            finalVat = tempVat
+
+            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+            finalGrand = tempGrand
+
+            tempTotal = sum
+
+            $('.title_tax').text(valueVat + '%')
+          }else{
+            tempVat = 0
+
+            tempGrand = sum
+
+            $('.title_tax').text("")
+          }
+
+          $("#vat_tax_cek").val(formatter.format(tempVat))
           $("#inputGrandTotalProductCek").val(formatter.format(sum))
           $("#inputGrandTotalProductFinalCek").val(formatter.format(tempGrand))
 
@@ -3852,14 +4298,14 @@
 
       if (val == "selectLeadId") {
         $("#selectLeadId").closest('.form-group').removeClass('has-error')
-        $("#selectLeadId").closest('select').next('span').next('span').hide();
-        $("#selectLeadId").prev('.input-group-addon').css("background-color","red");
+        $("#selectLeadId").closest('select').next('span').next("span").hide(); 
+        $("#selectLeadId").prev('.col-md-6').css("background-color","red");
       }
 
       if (val == "selectPID") {
-        $("#selectPID").closest('.form-group').removeClass('has-error')
-        $("#selectPID").closest('select').next('span').next('span').hide();
-        $("#selectPID").prev('.input-group-addon').css("background-color","red");
+        $("#selectPid").closest('.form-group').removeClass('has-error')
+        $("#selectPid").closest('select').next('span').next("span").hide(); 
+        $("#selectPid").prev('.col-md-6').css("background-color","red");
       }
 
       if (val == "selectType") {
@@ -3924,7 +4370,7 @@
 
       if (val == "quoteNumber") {
         $("#inputQuoteNumber").closest('.form-group').removeClass('has-error')
-        $("#inputQuoteNumber").closest('input').next('span').hide();
+        $("#inputQuoteNumber").closest('select').next('span').next("span").hide(); 
         $("#inputQuoteNumber").prev('.input-group-addon').css("background-color","red");  
       }
 
@@ -3938,43 +4384,109 @@
         $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
         $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()  
       }
+
+      if (val == "reason_reject") {
+        $("#textAreaReasonReject").closest('.form-group').removeClass('has-error')
+        $("#textAreaReasonReject").closest('textarea').next('span').hide();
+        $("#textAreaReasonReject").prev('.input-group-addon').css("background-color","red"); 
+      }
     }
 
-    var tempVat = 0
-    var finalVat = 0
-    var tempGrand = 0
-    var finalGrand = 0
-    var tempTotal = 0
-    var btnVatStatus = true
-    localStorage.setItem('status_tax','True')
+    // var tempVat = 0
+    // var finalVat = 0
+    // var tempGrand = 0
+    // var finalGrand = 0
+    // var tempTotal = 0
+    // var sum = 0
+    // var btnVatStatus = true
+    // var valueVat = ""
+    localStorage.setItem('status_tax',false)
+    function changeVatValue(value=false){
+      var tempVat = 0
+      var finalVat = 0
+      var tempGrand = 0
+      var finalGrand = 0
+      var tempTotal = 0
+      var sum = 0
 
-    function changeVatValue(){
-      if($("#btn-vat").hasClass('btn-default')){
-        btnVatStatus = false
-        finalVat = 0
-        finalGrand = tempTotal
-        $("#btn-vat").removeClass('btn-default')
-        $("#btn-vat").addClass('btn-danger')
-        $("#btn-vat").text('✖')
-        $("#vat_tax").val(0)
-        $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
-        localStorage.setItem('status_tax','False')
+      if (value == false) {
+        valueVat = 'false'
+      }else{
+        valueVat = value
+      }
+      console.log(valueVat)
+      // btnVatStatus = true
+      localStorage.setItem('status_tax',valueVat)
 
-      } else {
-        btnVatStatus = true
+      $('.inputTotalPriceEdit').each(function() {
+          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          sum += temp;
+      });
+      $("#inputGrandTotalProduct").val(formatter.format(sum))
+
+      if (!isNaN(valueVat)) {
+        tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
         finalVat = tempVat
+
+        tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
         finalGrand = tempGrand
-        $("#btn-vat").addClass('btn-default')
-        $("#btn-vat").removeClass('btn-danger')
-        $("#btn-vat").text('✓')
-        $("#vat_tax").val(formatter.format(tempVat))
-        $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
-        localStorage.setItem('status_tax','True')
+
+        tempTotal = sum
+
+        $('.title_tax').text(valueVat + '%')
+      }else{
+        tempVat = 0
+
+        tempGrand = sum
+
+        $('.title_tax').text("")
+      }
+
+      $("#vat_tax").val(formatter.format(tempVat))
+
+      $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+      // if($("#btn-vat").hasClass('btn-default')){
+      //   btnVatStatus = false
+      //   finalVat = 0 
+      //   finalGrand = tempTotal
+      //   $("#btn-vat").removeClass('btn-default')
+      //   $("#btn-vat").addClass('btn-danger')
+      //   $("#btn-vat").text('✖')
+      //   $("#vat_tax").val(0)
+      //   $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
+      //   localStorage.setItem('status_tax','False')
+
+      // } else {
+      //   btnVatStatus = true
+      //   finalVat = tempVat
+      //   finalGrand = tempGrand
+      //   $("#btn-vat").addClass('btn-default')
+      //   $("#btn-vat").removeClass('btn-danger')
+      //   $("#btn-vat").text('✓')
+      //   $("#vat_tax").val(formatter.format(tempVat))
+      //   $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+      //   localStorage.setItem('status_tax','True')
+      // }
+    }
+    localStorage.setItem("isRupiah",true)
+    function changeCurreny(value){
+      if (value == "usd") {
+        $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+        localStorage.setItem("isRupiah",false)
+
+      }else{
+        $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+        localStorage.setItem("isRupiah",true)
+
       }
     }
 
     currentTab = 0
     function nextPrevUnFinished(n,valueEdit){
+      console.log(currentTab)
+
       if(localStorage.getItem('status_draft_pr') == 'pembanding'){
         url = "{{url('/admin/getDetailPr')}}"
         urlDokumen = "{{url('/admin/storePembandingDokumen')}}"
@@ -3996,31 +4508,70 @@
         }
       }else{
         valueEdit = valueEdit
-        $(".tabGroupInitiateAdd").hide()
-        $(".tab-add")[1].children[1].style.display = 'inline'
-        $.ajax({
-          type: "GET",
-          url: urlGetProduct,
-          data: {
-            no_pr:no_pr,
-          },
-          success: function(result) {
-            $.each(result.data,function(value,item){
-              $("#prevBtnAdd").css("display", "none");
-              localStorage.setItem('isEditProduct',true)
-              localStorage.setItem('id_product',result.data[valueEdit].id_product)
-              nominal = result.data[valueEdit].nominal_product
-              $("#inputNameProduct").val(result.data[valueEdit].name_product)
-              $("#inputDescProduct").val(result.data[valueEdit].description.replaceAll("<br>","\n"))
-              $("#inputQtyProduct").val(result.data[valueEdit].qty)
-              select2TypeProduct(result.data[valueEdit].unit)
-              $("#inputPriceProduct").val(formatter.format(nominal))
-              $("#inputSerialNumber").val(result.data[valueEdit].serial_number)
-              $("#inputPartNumber").val(result.data[valueEdit].part_number)
-              $("#inputTotalPrice").val(formatter.format(result.data[valueEdit].grand_total))
-            })
-          }
-        })
+        if (valueEdit == true) {
+          valueEdit = 'true'
+        }else if (valueEdit == false) {
+          valueEdit = 'false'
+        }else{
+          valueEdit = parseInt(valueEdit)
+        }
+
+        //ini false kalau nilainya angka
+        if (!isNaN(valueEdit)) {
+          $(".tabGroupInitiateAdd").hide()
+          $(".tab-add")[1].children[1].style.display = 'inline'
+          $.ajax({
+            type: "GET",
+            url: "{{url('/admin/getProductById')}}",
+            data: {
+              id_product:valueEdit,
+            },
+            success: function(result) {
+              $.each(result,function(value,item){
+                $("#prevBtnAdd").css("display", "none");
+                localStorage.setItem('isEditProduct',true)
+                localStorage.setItem('id_product',item.id_product)
+                nominal = item.nominal_product
+                $("#inputNameProduct").val(item.name_product)
+                $("#inputDescProduct").val(item.description.replaceAll("<br>","\n"))
+                $("#inputQtyProduct").val(item.qty)
+                select2TypeProduct(item.unit)
+                $("#inputPriceProduct").val(formatter.format(nominal))
+                $("#inputSerialNumber").val(item.serial_number)
+                $("#inputPartNumber").val(item.part_number)
+                $("#inputTotalPrice").val(formatter.format(item.grand_total))
+                if (item.isRupiah == "false") {
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+                }else{
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+                }
+              })
+            }
+          })
+          // $.ajax({
+          //   type: "GET",
+          //   url: urlGetProduct,
+          //   data: {
+          //     no_pr:no_pr,
+          //   },
+          //   success: function(result) {
+          //     $.each(result.data,function(value,item){
+          //       $("#prevBtnAdd").css("display", "none");
+          //       localStorage.setItem('isEditProduct',true)
+          //       localStorage.setItem('id_product',result.data[valueEdit].id_product)
+          //       nominal = result.data[valueEdit].nominal_product
+          //       $("#inputNameProduct").val(result.data[valueEdit].name_product)
+          //       $("#inputDescProduct").val(result.data[valueEdit].description.replaceAll("<br>","\n"))
+          //       $("#inputQtyProduct").val(result.data[valueEdit].qty)
+          //       select2TypeProduct(result.data[valueEdit].unit)
+          //       $("#inputPriceProduct").val(formatter.format(nominal))
+          //       $("#inputSerialNumber").val(result.data[valueEdit].serial_number)
+          //       $("#inputPartNumber").val(result.data[valueEdit].part_number)
+          //       $("#inputTotalPrice").val(formatter.format(result.data[valueEdit].grand_total))
+          //     })
+          //   }
+          // })
+        }
       }
 
       if (currentTab == 0) {
@@ -4070,6 +4621,12 @@
           $("#selectMethode").closest('select').next('span').show();
           $("#selectMethode").prev('.input-group-addon').css("background-color","red");
         }else{
+          let commitValue = ''
+          if ($("#cbCommit").is(':checked')){
+            commitValue = 'True'
+          }else{
+            commitValue = 'False'
+          }
           $.ajax({
             type:"POST",
             url:"{{url('/admin/updateSupplier/')}}",
@@ -4086,6 +4643,7 @@
               selectMethode:$("#selectMethode").val(),
               selectPosition:$("#selectPosition").val(),
               selectCategory:$("#selectCategory").val(),
+              cbCommit:commitValue,
               no_pr:localStorage.getItem('no_pr')
             },beforeSend:function(){
               Swal.fire({
@@ -4314,111 +4872,123 @@
           }
         }             
       }else if (currentTab == 3) {
-        if ($("#selectType").val() == 'IPR') {
-          if ($("#inputPenawaranHarga").val() == "") {
-            $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
-            $("#inputPenawaranHarga").closest('div').next('span').show();
-            $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
-          }else{
+        $("#btnAddDocPendukung_epr").prop("disabled",false)
+        $("#btnAddDocPendukung_ipr").prop("disabled",false)
+        if (n == 1) {
+          if ($("#selectType").val() == 'IPR') {
             $.ajax({
-              type: "GET",
-              url: url,
-              data: {
-                no_pr:localStorage.getItem('no_pr'),
-              },
-              success:function(result){
-                let formData = new FormData();
-                const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
-                var arrInputDocPendukung = []
+                type: "GET",
+                url: url,
+                data: {
+                  no_pr:localStorage.getItem('no_pr'),
+                },
+                success:function(result){
+                  let formData = new FormData();
+                  const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
+                  var arrInputDocPendukung = []
 
-                if (result.dokumen.length > 0) {
-                  if ($('#inputPenawaranHarga').prop('files')[0].name.replace("/","") != result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1]) {
-                    formData.append('inputPenawaranHarga', filepenawaranHarga)
-                  } else {
-                    formData.append('inputPenawaranHarga', '-')
-                  }
+                  if (result.dokumen.length > 0) {
+                    if ($('#inputPenawaranHarga').prop('files')[0].name.replace("/","") != result.dokumen[0].dokumen_location.substring(0,15) + '....'+ result.dokumen[0].dokumen_location.split(".")[0].substring(result.dokumen[0].dokumen_location.length -10) + "." + result.dokumen[0].dokumen_location.split(".")[1]) {
+                      formData.append('inputPenawaranHarga', filepenawaranHarga)
+                    } else {
+                      formData.append('inputPenawaranHarga', '-')
+                    }
 
-                  if (result.dokumen[1] != undefined) {
-                    $.each(result.dokumen,function(item,value){
-                      if (item != 0) {
-                        $('#tableDocPendukung .trDocPendukung').each(function() {
-                          if ($(this).find('#inputDocPendukung').prop('files')[0].name.replace("/","") != value.dokumen_location.substring(0,15) + '....'+ value.dokumen_location.split(".")[0].substring(value.dokumen_location.length -10) + "." + value.dokumen_location.split(".")[1]) {
-                            var fileInput = $(this).find('#inputDocPendukung').val()
-                            if (fileInput && fileInput !== '') { 
-                              formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                              arrInputDocPendukung.push({
-                                nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                                no_pr:no_pr
-                              })
-                            }
+                    if (result.dokumen[1] != undefined) {
+                      if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
+                        $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
+                          var fileInput = $(this).find('#inputDocPendukung').prop('files').length
+                          if (fileInput == 0) { 
+                            console.log("benar")
+
+                            formData.append('inputDocPendukung[]','-')
                           }else{
-                            var fileInput = $(this).find('#inputDocPendukung').val()
-                            if (fileInput && fileInput !== '') { 
-                              formData.append('inputDocPendukung[]','-')
-                            }
-                          }
-                        });
-                      }
-                    })  
+                          console.log("salah")
 
+                            formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                            arrInputDocPendukung.push({
+                              nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                              no_pr:no_pr
+                            })
+                          }
+                        })
+
+                      }else{
+                        console.log("benarrrr")
+                        var fileInput = $(this).find('#inputDocPendukung').val()
+                        if (fileInput && fileInput !== '') { 
+                          formData.append('inputDocPendukung[]','-')
+                        }
+                      }  
+                    }else{
+                      $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
+                        var fileInput = $(this).find('#inputDocPendukung').val()
+                        if (fileInput && fileInput !== '') { 
+                          formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                          arrInputDocPendukung.push({
+                            nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                            no_pr:no_pr
+                          })
+                        }
+                      });
+                    }
+                                    
                   }else{
-                    $('#tableDocPendukung .trDocPendukung').each(function() {
+                    formData.append('inputPenawaranHarga', filepenawaranHarga);
+                    $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
                       var fileInput = $(this).find('#inputDocPendukung').val()
                       if (fileInput && fileInput !== '') { 
                         formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                         arrInputDocPendukung.push({
                           nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
                           no_pr:no_pr
-                        })
+                        }) 
                       }
                     });
                     
-                  }
-                                  
-                }else{
-                  formData.append('inputPenawaranHarga', filepenawaranHarga);
-                  $('#tableDocPendukung .trDocPendukung').each(function() {
-                    var fileInput = $(this).find('#inputDocPendukung').val()
-                    if (fileInput && fileInput !== '') { 
-                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                      arrInputDocPendukung.push({
-                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                        no_pr:no_pr
-                      }) 
-                    }
-                  });
-                  
-                }               
+                  }               
 
-                formData.append('_token',"{{csrf_token()}}")
-                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-                formData.append('no_pr',no_pr)
+                  formData.append('_token',"{{csrf_token()}}")
+                  formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+                  formData.append('no_pr',no_pr)
 
-                if (n == 1) {
-                  $.ajax({
-                    url: urlDokumen,
-                    type: 'post',
-                    data:formData,
-                    processData: false,
-                    contentType: false,
-                    beforeSend:function(){
-                      Swal.fire({
-                          title: 'Please Wait..!',
-                          text: "It's sending..",
-                          allowOutsideClick: false,
-                          allowEscapeKey: false,
-                          allowEnterKey: false,
-                          customClass: {
-                              popup: 'border-radius-0',
-                          },
-                          didOpen: () => {
-                              Swal.showLoading()
+                  function storeIPR(urlDokumen,formData){
+                    if (n == 1) {
+                      $.ajax({
+                        url: urlDokumen,
+                        type: 'post',
+                        data:formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend:function(){
+                          Swal.fire({
+                              title: 'Please Wait..!',
+                              text: "It's sending..",
+                              allowOutsideClick: false,
+                              allowEscapeKey: false,
+                              allowEnterKey: false,
+                              customClass: {
+                                  popup: 'border-radius-0',
+                              },
+                              didOpen: () => {
+                                  Swal.showLoading()
+                              }
+                          })
+                        },
+                        success: function(data)
+                        {
+                          Swal.close()
+                          let x = document.getElementsByClassName("tab-add");
+                          x[currentTab].style.display = "none";
+                          currentTab = currentTab + n;
+                          if (currentTab >= x.length) {
+                            x[n].style.display = "none";
+                            currentTab = 0;
                           }
-                      })
-                    },
-                    success: function(data)
-                    {
-                      Swal.close()
+                          unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                        }
+                      });
+                    }else{
                       let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
@@ -4427,135 +4997,185 @@
                         currentTab = 0;
                       }
                       unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                    }
-                  });
-                }else{
-                  let x = document.getElementsByClassName("tab-add");
-                  x[currentTab].style.display = "none";
-                  currentTab = currentTab + n;
-                  if (currentTab >= x.length) {
-                    x[n].style.display = "none";
-                    currentTab = 0;
+                    } 
                   }
-                  unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                }                 
-              }
-            })           
-          }
-          
-        }else{
-          if ($("#selectLeadId").val() == "-") {
-            $("#selectLeadId").closest('.form-group').addClass('has-error')
-            $("#selectLeadId").closest('select').siblings('span.help-block').show();
-            $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-          }else if ($("#selectPid").val() == "-") {
-            $("#selectPid").closest('.form-group').addClass('has-error')
-            $("#selectPid").closest('select').next('span help-block').show();
-            $("#selectPid").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputSPK").val() == "") {
-            $("#inputSPK").closest('.form-group').addClass('has-error')
-            $("#inputSPK").closest('div').next('span').show();
-            $("#inputSPK").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputSBE").val() == "") {
-            $("#inputSBE").closest('.form-group').addClass('has-error')
-            $("#inputSBE").closest('div').next('span').show();
-            $("#inputSBE").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputQuoteSupplier").val() == "") {
-            $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
-            $("#inputQuoteSupplier").closest('div').next('span').show();
-            $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputQuoteNumber").val() == "-") {
-            $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
-            $("#inputQuoteNumber").closest('input').next('span').show();
-            $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
-          }else{
-            $.ajax({
-              type: "GET",
-              url: url,
-              data: {
-                no_pr:localStorage.getItem('no_pr'),
-              },
-              success:function(result){
-                let formData = new FormData();
 
-                const fileSpk = $('#inputSPK').prop('files')[0];
-                var nama_file_spk = $('#inputSPK').val();
+                  if ($("#inputPenawaranHarga").val() == "") {
+                    $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
+                    $("#inputPenawaranHarga").closest('div').next('span').show();
+                    $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
+                  }else if($("#tableDocPendukung_ipr .trDocPendukung").length > 0){
+                    console.log("okee")
+                    if (result.dokumen[1] != undefined) {
+                      if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
+                        $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
+                          if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                            if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                            }else{
+                              storeIPR(urlDokumen,formData)
+                            }
+                          }else{
+                            storeIPR(urlDokumen,formData)
+                          }
+                        })
+                      }else{
+                        console.log("benarrrr")
+                        var fileInput = $(this).find('#inputDocPendukung').val()
+                        if (fileInput && fileInput !== '') { 
+                          formData.append('inputDocPendukung[]','-')
+                        }
 
-                const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
-                var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
-
-                const fileSbe = $('#inputSBE').prop('files')[0];
-                var nama_file_sbe = $('#inputSBE').val();
-
-                if (result.dokumen.length > 0) {
-                  if (result.dokumen[0] !== undefined) {
-                    if (result.dokumen[0].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","") || $('#inputSPK').prop('files').length == 0) {
-                      formData.append('inputSPK', fileSpk);
-                    } else {
-                      formData.append('inputSPK', "-");
+                        storeIPR(urlDokumen,formData)
+                      }  
+                    }else{
+                      $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
+                        if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                          if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                          }else{
+                            storeIPR(urlDokumen,formData)
+                          }
+                        }else{
+                          storeIPR(urlDokumen,formData)
+                        }
+                      })
                     }
+                  }else{
+                    storeIPR(urlDokumen,formData)
+                  }               
+                }
+            })
+          }else{
+            if ($("#selectPid").val() == "") {
+              $("#selectPid").closest('.form-group').addClass('has-error')
+              $("#selectPid").closest('select').next('span').next("span").show(); 
+              $("#selectPid").prev('.col-md-6').css("background-color","red");
+            }else if ($("#selectLeadId").val() == "") {
+              $("#selectLeadId").closest('.form-group').addClass('has-error')
+              $("#selectLeadId").closest('select').next('span').next("span").show(); 
+              $("#selectLeadId").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputQuoteNumber").val() == "") {
+              $("#inputQuoteNumber").closest('.form-group').addClass('has-error')
+              $("#inputQuoteNumber").closest('select').next('span').next("span").show(); 
+              $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputQuoteSupplier").val() == "") {
+              $("#inputQuoteSupplier").closest('.form-group').addClass('has-error')
+              $("#inputQuoteSupplier").closest('div').next('span').show();
+              $("#inputQuoteSupplier").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputSPK").val() == "") {
+              $("#inputSPK").closest('.form-group').addClass('has-error')
+              $("#inputSPK").closest('div').next('span').show();
+              $("#inputSPK").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputSBE").val() == "") {
+              $("#inputSBE").closest('.form-group').addClass('has-error')
+              $("#inputSBE").closest('div').next('span').show();
+              $("#inputSBE").prev('.input-group-addon').css("background-color","red");
+            }else{
+              $.ajax({
+                type: "GET",
+                url: url,
+                data: {
+                  no_pr:localStorage.getItem('no_pr'),
+                },
+                success:function(result){
+                  let formData = new FormData();
+
+                  const fileSpk = $('#inputSPK').prop('files')[0];
+                  var nama_file_spk = $('#inputSPK').val();
+
+                  const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
+                  var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
+
+                  const fileSbe = $('#inputSBE').prop('files')[0];
+                  var nama_file_sbe = $('#inputSBE').val();          
+
+                  if (result.dokumen.length > 0) {
+                    if (result.dokumen[0] !== undefined) {
+                      if (result.dokumen[0].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","") || $('#inputQuoteSupplier').prop('files').length == 0) {
+                        formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                      } else {
+                        formData.append('inputQuoteSupplier', "-");
+                      }
+                    }else{
+                        formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                    }
+
+                    if (result.dokumen[1] !== undefined) {
+                      if (result.dokumen[1].dokumen_location != $('#inputSPK').prop('files')[0].name.replace("/","") || $('#inputSPK').prop('files').length == 0) {
+                        formData.append('inputSPK', fileSpk);
+                      } else {
+                        formData.append('inputSPK', "-");
+                      }
+                    }else{
+                      formData.append('inputSPK', fileSpk);
+                    }                  
+
+                    if (result.dokumen[2] !== undefined) {
+                      if (result.dokumen[2].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","") || $('#inputSBE').prop('files').length == 0) {
+                        formData.append('inputSBE', fileSbe);
+                      } else {
+                        formData.append('inputSBE', "-");
+                      }
+                    }else{
+                        formData.append('inputSBE', fileSbe);
+                    }
+
                   }else{
                     formData.append('inputSPK', fileSpk);
-                  }                  
-
-                  if (result.dokumen[1] !== undefined) {
-                    if (result.dokumen[1].dokumen_location != $('#inputSBE').prop('files')[0].name.replace("/","") || $('#inputSBE').prop('files').length == 0) {
-                      formData.append('inputSBE', fileSbe);
-                    } else {
-                      formData.append('inputSBE', "-");
-                    }
-                  }else{
-                      formData.append('inputSBE', fileSbe);
+                    formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                    formData.append('inputSBE', fileSbe);
                   }
 
-                  if (result.dokumen[2] !== undefined) {
-                    if (result.dokumen[2].dokumen_location != $('#inputQuoteSupplier').prop('files')[0].name.replace("/","") || $('#inputQuoteSupplier').prop('files').length == 0) {
-                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                    } else {
-                      formData.append('inputQuoteSupplier', "-");
-                    }
-                  }else{
-                      formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                  }
-                  
-                }else{
-                  formData.append('inputSPK', fileSpk);
-                  formData.append('inputQuoteSupplier', fileQuoteSupplier);
-                  formData.append('inputSBE', fileSbe);
-                }
-                
+                  formData.append('_token',"{{csrf_token()}}")
+                  formData.append('no_pr',no_pr)
+                  formData.append('selectLeadId', $("#selectLeadId").val())
+                  formData.append('selectPid', $("#selectPid").val())
+                  formData.append('inputPid',$("#projectIdInputNew").val())
+                  formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
 
-                formData.append('_token',"{{csrf_token()}}")
-                formData.append('no_pr',no_pr)
-                formData.append('selectLeadId', $("#selectLeadId").val())
-                formData.append('selectPid', $("#selectPid").val())
-                formData.append('inputPid',$("#projectIdInputNew").val())
-                formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
-
-                if(n == 1){
-                  $.ajax({
-                    type:"POST",
-                    url:urlDokumen,
-                    processData: false,
-                    contentType: false,
-                    data:formData,
-                    beforeSend:function(){
-                      Swal.fire({
-                          title: 'Please Wait..!',
-                          text: "It's sending..",
-                          allowOutsideClick: false,
-                          allowEscapeKey: false,
-                          allowEnterKey: false,
-                          customClass: {
-                              popup: 'border-radius-0',
-                          },
-                          didOpen: () => {
-                              Swal.showLoading()
+                  function storeEPR(urlDokumen,formData){
+                    if(n == 1){
+                      $.ajax({
+                        type:"POST",
+                        url:urlDokumen,
+                        processData: false,
+                        contentType: false,
+                        data:formData,
+                        beforeSend:function(){
+                          Swal.fire({
+                              title: 'Please Wait..!',
+                              text: "It's sending..",
+                              allowOutsideClick: false,
+                              allowEscapeKey: false,
+                              allowEnterKey: false,
+                              customClass: {
+                                  popup: 'border-radius-0',
+                              },
+                              didOpen: () => {
+                                  Swal.showLoading()
+                              }
+                          })
+                        },
+                        success: function(result){
+                          Swal.close()
+                          let x = document.getElementsByClassName("tab-add");
+                          x[currentTab].style.display = "none";
+                          currentTab = currentTab + n;
+                          if (currentTab >= x.length) {
+                            x[n].style.display = "none";
+                            currentTab = 0;
                           }
+                          unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+                        }
                       })
-                    },
-                    success: function(result){
-                      Swal.close()
+                    } else {
                       let x = document.getElementsByClassName("tab-add");
                       x[currentTab].style.display = "none";
                       currentTab = currentTab + n;
@@ -4565,40 +5185,193 @@
                       }
                       unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
                     }
-                  })
-                } else {
-                  let x = document.getElementsByClassName("tab-add");
-                  x[currentTab].style.display = "none";
-                  currentTab = currentTab + n;
-                  if (currentTab >= x.length) {
-                    x[n].style.display = "none";
-                    currentTab = 0;
                   }
-                  unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-                }                
-              }
-            })            
-          } 
+                  
+
+                  if($("#tableDocPendukung_epr .trDocPendukung").length > 0){
+                    console.log("okee")
+                      console.log("tidak undefined")
+                      if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+                        $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
+                          if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                            if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                            }else{
+                              var arrInputDocPendukungEPR = []
+                              arrInputDocPendukungEPR.push({
+                                nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                                no_pr:no_pr
+                              })
+
+                              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
+                              formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                              
+                              console.log(arrInputDocPendukungEPR)
+                              console.log($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val())
+                              storeEPR(urlDokumen,formData)
+                            }
+                          }else{
+                            storeEPR(urlDokumen,formData)
+                          }
+                        })
+                      }else{
+                        console.log("benarrrr")
+                        var arrInputDocPendukungEPR = []
+                        formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
+                        formData.append('inputDocPendukung[]','-')
+
+                        storeEPR(urlDokumen,formData)
+                      }  
+                  }else{
+                    console.log("ikiiilo")
+                    storeEPR(urlDokumen,formData)
+                  }
+
+
+                  // if (result.dokumen.length > 0) {
+                  //   if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+                  //     $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
+                  //         console.log("ke 4")
+
+                  //       if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
+                  //         if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
+                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
+                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
+                  //         }else{
+                  //           console.log("ada isinya")
+                  //           formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                  //           arrInputDocPendukung.push({
+                  //             nameDocPendukung:$(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val(),
+                  //             no_pr:no_pr
+                  //           })
+                  //           storeEPR(urlDokumen,formData)
+                  //         }
+                  //       }else{
+                  //         console.log("aku disini")
+                  //         storeEPR(urlDokumen,formData)
+                  //       }
+                        
+                  //     })
+
+                  //   }else{
+                  //     var fileInput = $(this).find('#inputDocPendukung').prop('files').length
+                  //     if (fileInput == 0) { 
+                  //       console.log("aku disiniii")
+
+                  //       formData.append('inputDocPendukung[]','-')
+                  //       storeEPR(urlDokumen,formData)
+                  //     }
+
+                  //   }                                 
+                  // }else{
+                  //   $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                  //     var fileInput = $(this).find('#inputDocPendukung').prop('files').length
+                  //     if (fileInput !== 0) { 
+
+                  //       formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                  //       arrInputDocPendukung.push({
+                  //         nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                  //         no_pr:no_pr
+                  //       })
+
+                  //       storeEPR(urlDokumen,formData)
+                  //     }else{
+                  //       formData.append('inputDocPendukung[]','-')
+
+                  //       storeEPR(urlDokumen,formData)
+                  //     }
+                  //   })
+                  // } 
+                          
+                }
+              })            
+            } 
+          }
+        }else{
+          let x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          console.log(localStorage.getItem('no_pr'))
+          unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
         }
       }else if (currentTab == 4) {
-        if ($("#textAreaTOP").val() == "") {
-          $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
-          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
-        }else{
-          $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
-          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+        if (n == 1) {
+          if ($("#textAreaTOP").val() == "") {
+            $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+            $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+          }else{
+            $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+            $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
 
-          $.ajax({
-            url: "{{'/admin/storeTermPayment'}}",
-            type: 'post',
+            $.ajax({
+              url: "{{'/admin/storeTermPayment'}}",
+              type: 'post',
+              data:{
+                no_pr:localStorage.getItem('no_pr'),
+                _token:"{{csrf_token()}}",
+                textAreaTOP:$("#textAreaTOP").val(),
+              },
+              success: function(data)
+              {
+                let x = document.getElementsByClassName("tab-add");
+                x[currentTab].style.display = "none";
+                currentTab = currentTab + n;
+                if (currentTab >= x.length) {
+                  x[n].style.display = "none";
+                  currentTab = 0;
+                }
+                unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+              }
+            }); 
+          }
+        }else{
+          let x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+        }
+                
+      }else{
+        $.ajax({
+          type:"POST",
+          url:"{{url('/admin/storeTax')}}",
             data:{
-              no_pr:localStorage.getItem('no_pr'),
               _token:"{{csrf_token()}}",
-              textAreaTOP:$("#textAreaTOP").val(),
-              status_tax:localStorage.getItem('status_tax')
+              no_pr:localStorage.getItem('no_pr'),
+              isRupiah:localStorage.getItem('isRupiah'),
+              status_tax:localStorage.getItem('status_tax'),
             },
-            success: function(data)
-            {
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result){
+              Swal.close()
+              $(".divReasonRejectRevision").remove()
               let x = document.getElementsByClassName("tab-add");
               x[currentTab].style.display = "none";
               currentTab = currentTab + n;
@@ -4606,24 +5379,16 @@
                 x[n].style.display = "none";
                 currentTab = 0;
               }
+
               unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
-            }
-          }); 
-        }        
-      }else{
-        $(".divReasonRejectRevision").remove()
-        let x = document.getElementsByClassName("tab-add");
-        x[currentTab].style.display = "none";
-        currentTab = currentTab + n;
-        if (currentTab >= x.length) {
-          x[n].style.display = "none";
-          currentTab = 0;
-        }
-        unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
+          }
+        })
       }
     }
 
-    function addTable(n){ 
+    function addTable(n,status){ 
+      console.log("status"+status)
+
       if (window.location.href.split("/")[6] == undefined) {
         if (localStorage.getItem('status_pr') == 'revision') {
           url = "{{url('/admin/getProductPembanding')}}"
@@ -4655,10 +5420,10 @@
                 append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px; important" class="form-control" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
-                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:200px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
+                append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number 
                 append = append + '</textarea>'
               append = append + '</td>'
               append = append + '<td width="7%">'
@@ -4679,7 +5444,7 @@
                 if (localStorage.getItem('status_pr') == 'draft') {
                   btnNext = 'nextPrevAdd(-1,'+ item.id_product +')'
                 }else{
-                  btnNext = 'nextPrevUnFinished(-1,'+ value +')'
+                  btnNext = 'nextPrevUnFinished(-1,'+ item.id_product +')'
                 }
                 append = append + '<button type="button" onclick="'+ btnNext +'" id="btnEditProduk" data-id="'+ value +'" data-value="'+ valueEdit +'" class="btn btn-xs btn-warning fa fa-edit btnEditProduk" style="width:25px;height:25px;margin-bottom:5px"></button>'
                 append = append + '<button id="btnDeleteProduk" type="button" data-id="'+ item.id_product +'" data-value="'+ value +'" class="btn btn-xs btn-danger fa fa-trash" style="width:25px;height:25px"></button>'
@@ -4694,7 +5459,7 @@
           var appendBottom = ""
           appendBottom = appendBottom + '<hr>'
           appendBottom = appendBottom + '<div class="row">'
-            appendBottom = appendBottom + '  <div class="col-md-12">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '    <div class="pull-right">'
             appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
             appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
@@ -4702,20 +5467,34 @@
             appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + ' <div class="col-md-12">'
-            appendBottom = appendBottom + '   <div class="pull-right">'
-              appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
-              appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-                appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
-                  appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
-                appendBottom = appendBottom + ' </span>'
-              appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
-              appendBottom = appendBottom + ' </div>'
-            appendBottom = appendBottom + ' </div>'
+            appendBottom = appendBottom + '<div class="col-md-12 col-xs-12">'
+            appendBottom = appendBottom + ' <div class="pull-right">'
+            appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
+            appendBottom = appendBottom + '  </span>'
+            appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
+            appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
+            appendBottom = appendBottom + '  <div class="input-group-btn">'
+            appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
+            appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
+            appendBottom = appendBottom + '       </button>'
+            appendBottom = appendBottom + '       <ul class="dropdown-menu">'
+            appendBottom = appendBottom + '       <li>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
+            appendBottom = appendBottom + '       </li>'
+            appendBottom = appendBottom + '       <li>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
+            appendBottom = appendBottom + '       </li>'
+            appendBottom = appendBottom + '       <li>'
+            appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,1 %</a>'
+            appendBottom = appendBottom + '       </li>'
+            appendBottom = appendBottom + '      </ul>'
+            appendBottom = appendBottom + '     </div>'
+            appendBottom = appendBottom + '    </div>'
+            appendBottom = appendBottom + '  </div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '</div>'
             appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-            appendBottom = appendBottom + '  <div class="col-md-12">'
+            appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
             appendBottom = appendBottom + '    <div class="pull-right">'
             appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
             appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
@@ -4775,26 +5554,33 @@
             checkboxClass: 'icheckbox_minimal-blue',
           })
 
-          var sum = 0
-          $('.inputTotalPriceEdit').each(function() {
-              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-              sum += temp;
-          });
+          if (status != "") {
+            console.log(status)
+            changeVatValue(status)
+          }
 
-          $("#inputGrandTotalProduct").val(formatter.format(sum))
+          // var sum = 0
+          // $('.inputTotalPriceEdit').each(function() {
+          //     var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          //     sum += temp;
+          // });
 
-          tempVat = (parseFloat(sum) * 11) / 100
+          // $("#inputGrandTotalProduct").val(formatter.format(sum))
 
-          finalVat = tempVat
 
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
 
-          finalGrand = tempGrand
+          // // tempVat = (parseFloat(sum) * 11) / 100
 
-          tempTotal = sum
-          $("#vat_tax").val(formatter.format(tempVat))
+          // // finalVat = tempVat
 
-          $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+          // tempGrand = parseInt(sum)
+
+          // // finalGrand = tempGrand
+
+          // // tempTotal = sum
+          // $("#vat_tax").val(0)
+
+          // $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
         }
       })
     }
@@ -4818,8 +5604,12 @@
         valueEdit = valueEdit
         if (valueEdit == true) {
           valueEdit = 'true'
+        }else if (valueEdit == false) {
+          valueEdit = 'false'
+        }else{
+          valueEdit = parseInt(valueEdit)
         }
-        if (isNaN(valueEdit) === false) {
+        if (!isNaN(valueEdit)) {
           $(".tabGroupInitiateAdd").hide()
           $(".tab-add")[1].children[1].style.display = 'inline'
           $.ajax({
@@ -4842,11 +5632,17 @@
                 $("#inputSerialNumber").val(item.serial_number)
                 $("#inputPartNumber").val(item.part_number)
                 $("#inputTotalPrice").val(formatter.format(item.grand_total))
+                if (item.isRupiah == "false") {
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+                }else{
+                  $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+                }
               })
             }
           })          
         }
       }
+
       if (currentTab == 0) {
         if ($("#inputTo").val() == "") {
           $("#inputTo").closest('.form-group').addClass('has-error')
@@ -4897,6 +5693,12 @@
           if (value == true) {
             isStoreSupplier = localStorage.getItem('isStoreSupplier')
             if (isStoreSupplier == 'false') {
+              let commitValue = ''
+              if ($("#cbCommit").is(':checked')){
+                commitValue = 'True'
+              }else{
+                commitValue = 'False'
+              }
               Swal.fire({
                   title: 'Are you sure?',
                   text: "Save info Supplier",
@@ -4924,7 +5726,8 @@
                           inputAddress:$("#inputAddress").val(),
                           selectMethode:$("#selectMethode").val(),
                           selectPosition:$("#selectPosition").val(),
-                          selectCategory:$("#selectCategory").val()
+                          selectCategory:$("#selectCategory").val(),
+                          cbCommit:commitValue,
                         },beforeSend:function(){
                           Swal.fire({
                             title: 'Please Wait..!',
@@ -5034,6 +5837,7 @@
                     })
                   },success:function(){
                     Swal.close()
+                    var x = document.getElementsByClassName("tab-add");
                     x[currentTab].style.display = "none";
                     currentTab = currentTab + n;
                     if (currentTab >= x.length) {
@@ -5041,7 +5845,7 @@
                       currentTab = 0;
                     }
                     addDraftPr(currentTab);
-                    addTable()
+                    addTable(0,localStorage.getItem('status_tax'))
                     localStorage.setItem('isEditProduct',false)
                     localStorage.setItem('status_pr','draft')
                     $(".tabGroupInitiateAdd").show()
@@ -5098,7 +5902,7 @@
                       }
                       addDraftPr(currentTab);
                       localStorage.setItem('status_pr','draft')
-                      addTable(0)
+                      addTable(0,localStorage.getItem('status_tax'))
                       $("#inputNameProduct").val('')
                       $("#inputDescProduct").val('')
                       $("#inputPriceProduct").val('')
@@ -5172,7 +5976,7 @@
                     currentTab = 0;
                   }
                   addDraftPr(currentTab);
-                  addTable()
+                  addTable(0,localStorage.getItem('status_tax'))
                   localStorage.setItem('status_pr','draft')
                 }
               }
@@ -5180,177 +5984,78 @@
           }
         }       
       }else if (currentTab == 3) {
-        if ($("#selectType").val() == 'IPR') {
-          if ($("#inputPenawaranHarga").val() == "") {
-            $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
-            $("#inputPenawaranHarga").closest('div').next('span').show();
-            $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
-          }else{
-            let formData = new FormData();
-            const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
-            if (isFilledPenawaranHarga) {
-              formData.append('inputPenawaranHarga', filepenawaranHarga);
-              isFilledPenawaranHarga = false
-              // formData.append('nama_file_penawaranHarga', nama_file_penawaranHarga);
-            } else {
-              formData.append('inputPenawaranHarga', "-");
-            }
+        if (n == 1) {
+          if ($("#selectType").val() == 'IPR') {
+            if ($("#inputPenawaranHarga").val() == "") {
+              $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
+              $("#inputPenawaranHarga").closest('div').next('span').show();
+              $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
+            }else{
+              let formData = new FormData();
+              const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
+              if (isFilledPenawaranHarga) {
+                formData.append('inputPenawaranHarga', filepenawaranHarga);
+                isFilledPenawaranHarga = false
+                // formData.append('nama_file_penawaranHarga', nama_file_penawaranHarga);
+              } else {
+                formData.append('inputPenawaranHarga', "-");
+              }
 
-            $(".tableDocPendukung").empty()
+              $(".tableDocPendukung").empty()
 
 
-            if($('#tableDocPendukung .trDocPendukung').length != arrInputDocPendukung.length){
-              if(arrInputDocPendukung.length != 0){
-                var lengthArrInputDocPendukung = $('#tableDocPendukung .trDocPendukung').length
-                arrInputDocPendukung = []
-                var i = 1;
-                $('#tableDocPendukung .trDocPendukung').each(function() {
-                  if(i >= lengthArrInputDocPendukung){
+              if($('#tableDocPendukung .trDocPendukung').length != arrInputDocPendukung.length){
+                if(arrInputDocPendukung.length != 0){
+                  var lengthArrInputDocPendukung = $('#tableDocPendukung .trDocPendukung').length
+                  arrInputDocPendukung = []
+                  var i = 1;
+                  $('#tableDocPendukung .trDocPendukung').each(function() {
+                    if(i >= lengthArrInputDocPendukung){
+                      var fileInput = $(this).find('#inputDocPendukung').val()
+                      if (fileInput && fileInput !== '') { 
+                        formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                        arrInputDocPendukung.push({
+                          nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                          no_pr:localStorage.getItem('no_pr')
+                        })
+                      }
+                    }
+                    i++
+                  });
+                } else {
+                  $('#tableDocPendukung .trDocPendukung').each(function() {
                     var fileInput = $(this).find('#inputDocPendukung').val()
-                    if (fileInput && fileInput !== '') { 
+                    if (fileInput && fileInput !== '') {
                       formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
 
                       arrInputDocPendukung.push({
                         nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
                         no_pr:localStorage.getItem('no_pr')
                       })
-                    }
-                  }
-                  i++
-                });
-              } else {
-                $('#tableDocPendukung .trDocPendukung').each(function() {
-                  var fileInput = $(this).find('#inputDocPendukung').val()
-                  if (fileInput && fileInput !== '') {
-                    formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-
-                    arrInputDocPendukung.push({
-                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                      no_pr:localStorage.getItem('no_pr')
-                    })
-                  }                  
-                });
-              }
-            } else {
-              var fileInput = $(this).find('#inputDocPendukung').val()
-              if (fileInput && fileInput !== '') {
-                formData.append('inputDocPendukung[]',"-")
-              }
-            }
-            
-
-            isFilledDocPendukung = false
-
-            formData.append('_token',"{{csrf_token()}}")
-            formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-            formData.append('no_pr',localStorage.getItem('no_pr'))
-
-            $.ajax({
-              url: "{{'/admin/storeDokumen'}}",
-              type: 'post',
-              data:formData,
-              processData: false,
-              contentType: false,
-              beforeSend:function(){
-                Swal.fire({
-                    title: 'Please Wait..!',
-                    text: "It's sending..",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    allowEnterKey: false,
-                    customClass: {
-                        popup: 'border-radius-0',
-                    },
-                    didOpen: () => {
-                        Swal.showLoading()
-                    }
-                })
-              },
-              success: function(data)
-              {
-                Swal.close()
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
+                    }                  
+                  });
                 }
-                addDraftPr(currentTab);
+              } else {
+                var fileInput = $(this).find('#inputDocPendukung').val()
+                if (fileInput && fileInput !== '') {
+                  formData.append('inputDocPendukung[]',"-")
+                }
               }
-            });           
-          }         
-        }else{
-          if ($("#selectLeadId").val() == "-") {
-            $("#selectLeadId").closest('.col-md-6').addClass('has-error')
-            $("#selectLeadId").closest('select').siblings('span.help-block').show();
-            $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-          }else if ($("#selectPid").val() == "-") {
-            $("#selectPid").closest('.col-md-6').addClass('has-error')
-            $("#selectPid").closest('select').next('span help-block').show();
-            $("#selectPid").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputSPK").val() == "") {
-            $("#inputSPK").closest('.form-group').addClass('has-error')
-            $("#inputSPK").closest('div').next('span').show();
-            $("#inputSPK").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputSBE").val() == "") {
-            $("#inputSBE").closest('.form-group').addClass('has-error')
-            $("#inputSBE").closest('div').next('span').show();
-            $("#inputSBE").prev('.input-group-addon').css("background-color","red");
-          }else if ($("#inputQuoteSupplier").val() == "") {
-            $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
-            $("#inputQuoteSupplier").closest('div').next('span').show();
-            $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-          }else if ($("#inputQuoteNumber").val() == "-") {
-            $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
-            $("#inputQuoteNumber").closest('input').next('span').show();
-            $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
-          }else{
-            let formData = new FormData();
+              
 
-            const fileSpk = $('#inputSPK').prop('files')[0];
-            
-            if ($('#inputSPK').val() !="") {
-              if(nama_file_spk == ""){
-                nama_file_spk = $('#inputSPK').val();
-                formData.append('inputSPK', fileSpk);
-              } else if (nama_file_spk == $('#inputSPK').val()){
-                formData.append('inputSPK', "-");
-              }
-            }
-            const fileSbe = $('#inputSBE').prop('files')[0];
-            
-            if ($('#inputSBE').val() !="") {
-              if(nama_file_sbe == ""){
-                nama_file_sbe = $('#inputSBE').val();
-                formData.append('inputSBE', fileSbe);
-              } else if (nama_file_sbe == $('#inputSBE').val()){
-                formData.append('inputSBE', "-");
-              }
-            }
-            const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
-            
-            if ($('#inputQuoteSupplier').val() !="") {
-              if(nama_file_quote_supplier == ""){
-                nama_file_quote_supplier = $('#inputQuoteSupplier').val();
-                formData.append('inputQuoteSupplier', fileQuoteSupplier);
-              } else if (nama_file_quote_supplier == $('#inputQuoteSupplier').val()){
-                formData.append('inputQuoteSupplier', "-");
-              }
-            }
-            formData.append('_token',"{{csrf_token()}}")
-            formData.append('no_pr', localStorage.getItem('no_pr'))
-            formData.append('selectLeadId', $("#selectLeadId").val())
-            formData.append('selectPid', $("#selectPid").val())
-            formData.append('inputPid',$("#projectIdInputNew").val())
-            formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+              isFilledDocPendukung = false
 
-            $.ajax({
-                type:"POST",
-                url:"{{url('/admin/storeDokumen')}}",
+              formData.append('_token',"{{csrf_token()}}")
+              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+              formData.append('no_pr',localStorage.getItem('no_pr'))
+
+              $.ajax({
+                url: "{{'/admin/storeDokumen'}}",
+                type: 'post',
+                data:formData,
                 processData: false,
                 contentType: false,
-                data:formData,
                 beforeSend:function(){
                   Swal.fire({
                       title: 'Please Wait..!',
@@ -5366,8 +6071,8 @@
                       }
                   })
                 },
-                success: function(result){
-                  localStorage.setItem('isStoreSupplier',true)
+                success: function(data)
+                {
                   Swal.close()
                   var x = document.getElementsByClassName("tab-add");
                   x[currentTab].style.display = "none";
@@ -5378,28 +6083,205 @@
                   }
                   addDraftPr(currentTab);
                 }
-            })                        
-          } 
-        }
-      }else if (currentTab == 4) {
-        if ($("#textAreaTOP").val() == "") {
-          $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
-          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
-        }else{
-          $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
-          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+              });           
+            }         
+          }else{
+            if ($("#selectLeadId").val() == "-") {
+              $("#selectLeadId").closest('.col-md-6').addClass('has-error')
+              $("#selectLeadId").closest('select').siblings('span.help-block').show();
+              $("#selectLeadId").prev('.col-md-6').css("background-color","red");
+            }else if ($("#selectPid").val() == "-") {
+              $("#selectPid").closest('.col-md-6').addClass('has-error')
+              $("#selectPid").closest('select').next('span help-block').show();
+              $("#selectPid").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputSPK").val() == "") {
+              $("#inputSPK").closest('.form-group').addClass('has-error')
+              $("#inputSPK").closest('div').next('span').show();
+              $("#inputSPK").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputSBE").val() == "") {
+              $("#inputSBE").closest('.form-group').addClass('has-error')
+              $("#inputSBE").closest('div').next('span').show();
+              $("#inputSBE").prev('.input-group-addon').css("background-color","red");
+            }else if ($("#inputQuoteSupplier").val() == "") {
+              $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
+              $("#inputQuoteSupplier").closest('div').next('span').show();
+              $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
+            }else if ($("#inputQuoteNumber").val() == "-") {
+              $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
+              $("#inputQuoteNumber").closest('input').next('span').show();
+              $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
+            }else{
+              let formData = new FormData();
 
-          $.ajax({
-            url: "{{'/admin/storeTermPayment'}}",
-            type: 'post',
+              const fileSpk = $('#inputSPK').prop('files')[0];
+
+              arrInputDocPendukung = []
+              
+              if ($('#inputSPK').val() !="") {
+                if(nama_file_spk == ""){
+                  nama_file_spk = $('#inputSPK').val();
+                  formData.append('inputSPK', fileSpk);
+                } else if (nama_file_spk == $('#inputSPK').val()){
+                  formData.append('inputSPK', "-");
+                }
+              }
+              const fileSbe = $('#inputSBE').prop('files')[0];
+              
+              if ($('#inputSBE').val() !="") {
+                if(nama_file_sbe == ""){
+                  nama_file_sbe = $('#inputSBE').val();
+                  formData.append('inputSBE', fileSbe);
+                } else if (nama_file_sbe == $('#inputSBE').val()){
+                  formData.append('inputSBE', "-");
+                }
+              }
+              const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
+              
+              if ($('#inputQuoteSupplier').val() !="") {
+                if(nama_file_quote_supplier == ""){
+                  nama_file_quote_supplier = $('#inputQuoteSupplier').val();
+                  formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                } else if (nama_file_quote_supplier == $('#inputQuoteSupplier').val()){
+                  formData.append('inputQuoteSupplier', "-");
+                }
+              }
+
+              $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                var fileInput = $(this).find('#inputDocPendukung').val()
+                if (fileInput && fileInput !== '') {
+                  formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+                  arrInputDocPendukung.push({
+                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                    no_pr:localStorage.getItem('no_pr')
+                  })
+                }                  
+              });
+
+              formData.append('_token',"{{csrf_token()}}")
+              formData.append('no_pr', localStorage.getItem('no_pr'))
+              formData.append('selectLeadId', $("#selectLeadId").val())
+              formData.append('selectPid', $("#selectPid").val())
+              formData.append('inputPid',$("#projectIdInputNew").val())
+              formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+
+              $.ajax({
+                  type:"POST",
+                  url:"{{url('/admin/storeDokumen')}}",
+                  processData: false,
+                  contentType: false,
+                  data:formData,
+                  beforeSend:function(){
+                    Swal.fire({
+                        title: 'Please Wait..!',
+                        text: "It's sending..",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        customClass: {
+                            popup: 'border-radius-0',
+                        },
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    })
+                  },
+                  success: function(result){
+                    localStorage.setItem('isStoreSupplier',true)
+                    Swal.close()
+                    var x = document.getElementsByClassName("tab-add");
+                    x[currentTab].style.display = "none";
+                    currentTab = currentTab + n;
+                    if (currentTab >= x.length) {
+                      x[n].style.display = "none";
+                      currentTab = 0;
+                    }
+                    addDraftPr(currentTab);
+                  }
+              })                        
+            } 
+          }
+        }else{
+          var x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          addDraftPr(currentTab);
+        }
+        
+      }else if (currentTab == 4) {
+        if (n == 1) {
+          if ($("#textAreaTOP").val() == "") {
+            $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+            $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+          }else{
+            $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+            $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+
+            $.ajax({
+              url: "{{'/admin/storeTermPayment'}}",
+              type: 'post',
+              data:{
+                no_pr:localStorage.getItem('no_pr'),
+                _token:"{{csrf_token()}}",
+                textAreaTOP:$("#textAreaTOP").val(),
+              },
+              success: function(data)
+              {
+                var x = document.getElementsByClassName("tab-add");
+                x[currentTab].style.display = "none";
+                currentTab = currentTab + n;
+                if (currentTab >= x.length) {
+                  x[n].style.display = "none";
+                  currentTab = 0;
+                }
+                addDraftPr(currentTab);
+              }
+            });
+          }  
+        }else{
+          var x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
+          }
+          addDraftPr(currentTab);
+        }  
+      }else{
+        $.ajax({
+          type:"POST",
+          url:"{{url('/admin/storeTax')}}",
             data:{
-              no_pr:localStorage.getItem('no_pr'),
               _token:"{{csrf_token()}}",
-              textAreaTOP:$("#textAreaTOP").val(),
-              status_tax:localStorage.getItem('status_tax')
+              no_pr:localStorage.getItem('no_pr'),
+              isRupiah:localStorage.getItem('isRupiah'),
+              status_tax:localStorage.getItem('status_tax'),
             },
-            success: function(data)
-            {
+            beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result){
+              Swal.close()
+              $(".divReasonRejectRevision").remove()
+
               var x = document.getElementsByClassName("tab-add");
               x[currentTab].style.display = "none";
               currentTab = currentTab + n;
@@ -5408,21 +6290,9 @@
                 currentTab = 0;
               }
               addDraftPr(currentTab);
-            }
-          });
-        }        
-      }else{
-        $(".divReasonRejectRevision").remove()
-
-        var x = document.getElementsByClassName("tab-add");
-        x[currentTab].style.display = "none";
-        currentTab = currentTab + n;
-        if (currentTab >= x.length) {
-          x[n].style.display = "none";
-          currentTab = 0;
-        }
-        addDraftPr(currentTab);
-        localStorage.setItem('status_pr','draft')
+              localStorage.setItem('status_pr','draft')
+          }
+        })
       }
       
     }
@@ -5610,7 +6480,7 @@
                   }
                   addDraftPrPembanding(currentTab);
 
-                  addTable(0)
+                  addTable(0,localStorage.getItem('status_tax'))
                   $("#inputNameProduct").val('')
                   $("#inputDescProduct").val('')
                   $("#inputPriceProduct").val('')
@@ -5858,6 +6728,11 @@
           }
         })
       }
+
+      if (n == -1) {
+        $(".radioConfirm").prop('checked', false);
+      }
+
       var x = document.getElementsByClassName("tab-cek");
       x[currentTab].style.display = "none";
       currentTab = currentTab + n;
@@ -5869,23 +6744,40 @@
     }
 
     var incrementDoc = 0
-    function addDocPendukung(){
-      $("#titleDoc").show()
+    function addDocPendukung(value){
+      $("#titleDoc_"+value).show()
       append = ""
         append = append + "<tr style='height:10px' class='trDocPendukung'>"
           append = append + "<td>"
             append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
             append = append + '<label for="inputDocPendukung" style="margin-bottom:0px">'
             append = append + '<span class="fa fa-cloud-upload" style="display:inline"></span>'
-            append = append + '<input style="display:inline;font-family: inherit;" class=" inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
+            append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class="inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
             append = append + '</label>'
           append = append + "</td>"
           append = append + "<td>"
-            append = append + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung">'
+            append = append + '<input style="width:250px;margin-left:20px" data-value='+ incrementDoc +' class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><span class="help-block" style="display:none;margin-left:20px">Please fill Document Name!</span>'
           append = append + "</td>"
         append = append + "</tr>"
-      $("#tableDocPendukung").append(append) 
+      $("#tableDocPendukung_"+value).append(append) 
       incrementDoc++
+
+      $("#btnAddDocPendukung_epr").prop("disabled",true)
+      $("#btnAddDocPendukung_ipr").prop("disabled",true)
+
+      $("#tableDocPendukung_"+ value +" .trDocPendukung").each(function(){
+        console.log("hoeeee")
+        $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).keydown(function(){
+          console.log(this.value)
+          if (this.value == "") {
+            $("#btnAddDocPendukung_epr").prop("disabled",true)
+            $("#btnAddDocPendukung_ipr").prop("disabled",true)
+          }else{
+            $("#btnAddDocPendukung_epr").prop("disabled",false)
+            $("#btnAddDocPendukung_ipr").prop("disabled",false)
+          }
+        })   
+      })   
     }
 
     $(document).on('click', '.btnRemoveAddDocPendukung', function() {
@@ -5938,7 +6830,8 @@
                     _token:"{{csrf_token()}}",
                     no_pr:localStorage.getItem('no_pr'),
                     inputGrandTotalProduct:$("#inputFinalPageGrandPrice").val(),
-                    status_revision:status
+                    status_revision:status,
+                    isRupiah:localStorage.getItem("isRupiah"),
                   },
                   success: function(result){
                     Swal.fire({
@@ -6007,7 +6900,7 @@
     }
 
     function refreshTable(){
-      addTable()
+      addTable(0,localStorage.getItem('status_tax'))
     }
 
     $('#makeId').click(function(){

@@ -5,18 +5,22 @@
 @section('head_css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css">
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css"> -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
-
 <link rel="stylesheet" href="{{ url('css/jquery.emailinput.min.css') }}">
 <link rel="stylesheet" href="{{ url('css/bootstrap-timepicker.min.css')}}">
 <link rel="stylesheet" href="{{ url('css/dataTables.bootstrap.css')}}">
+<link rel="stylesheet" href="{{ url('js/mentions/jquery.mentionsInput.css')}}" type="text/css">
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}"/>
 <link rel="stylesheet" type="text/css" href="{{asset('/plugins/iCheck/all.css')}}">
+
 <style type="text/css">
   html,body,buttons,input,textarea,etc {
     font-family: inherit;
+  }
+
+  p > strong::before{
+    content: "@";
   }
 
   input[type=file]::-webkit-file-upload-button {
@@ -69,7 +73,7 @@
             <form method="POST" action="" id="sirkulasi_pr" name="sirkulasi_pr">
               <div class="tab-sirkulasi">
                 <div class="form-group">
-                  <label>Tidak ada pembanding, apakah anda yakin? Berikan alasan</label>
+                  <label>There is no comparison, are you sure? Give a reason</label>
                   <textarea style="resize: vertical;" class="form-control" id="reasonNoPembanding"></textarea>
                   <span class="help-block" style="display:none;">Please fill the reason!</span>
                 </div>
@@ -122,8 +126,8 @@
             <form method="POST" action="" id="rejectsirkulasi" name="rejectsirkulasi">
                 <div class="form-group">
                   <label>Reason</label>
-                  <textarea class="form-control" style="resize: vertical;"  id="reasonRejectSirkular" name="reasonRejectSirkular">
-                  </textarea>
+                  <textarea class="form-control" style="resize: vertical;" onkeyup="fillInput('reason_reject')"  id="reasonRejectSirkular" name="reasonRejectSirkular"></textarea>
+                  <span class="help-block" style="display:none;">Please fill Reason!</span>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
@@ -190,7 +194,7 @@
           <div class="modal-body">
             <form method="POST" action="" id="notes" name="notes">
                 <div class="form-group">
-                  <textarea class="form-control" id="inputNotes" style="resize:vertical;height: 200px;" ></textarea>
+                  <textarea class="form-control" id="inputNotes" style="resize:none;height: 200px;" placeholder="@ mention member"></textarea>
                 </div>
                 <div class="modal-footer">
                   <button type="button" onclick="btnSubmitNotes()" class="btn btn-success">Saved</button>
@@ -214,7 +218,7 @@
           <div class="tab-add" style="display:none;">
             <div class="form-group">
               <label for="">To*</label>
-              <input type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
+              <input autocomplete="off" type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
               <span class="help-block" style="display:none;">Please fill To!</span>
             </div>      
 
@@ -234,7 +238,7 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Email*</label>
-                  <input type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
+                  <input autocomplete="off" type="" class="form-control" placeholder="ex. absolut588@gmail.com" id="inputEmail" name="inputEmail" onkeyup="fillInput('email')">
                   <span class="help-block" style="display:none;">Please fill Email!</span>
                 </div>
               </div>
@@ -270,14 +274,14 @@
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Phone*</label>
-                  <input class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
+                  <input autocomplete="off" class="form-control" id="inputPhone" type="" name="" placeholder="ex. 999-999-999-999" onkeyup="fillInput('phone')">
                   <span class="help-block" style="display:none;">Please fill Phone!</span>
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group">
                   <label for="">Attention*</label>
-                  <input type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
+                  <input autocomplete="off" type="text" class="form-control" placeholder="ex. Marsono" name="inputAttention" id="inputAttention" onkeyup="fillInput('attention')">
                   <span class="help-block" style="display:none;">Please fill Attention!</span>
                 </div> 
                 <!-- <div class="form-group">
@@ -289,13 +293,13 @@
 
             <div class="form-group">
               <label for="">Subject*</label>
-              <input type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
+              <input autocomplete="off" type="text" class="form-control" placeholder="ex. Pembelian laptop MSI Modern 14 (Sdri. Faiqoh, Sdr. Oktavian, Sdr. Subchana)" name="inputSubject" id="inputSubject" onkeyup="fillInput('subject')">
               <span class="help-block" style="display:none;">Please fill Subject!</span>
             </div>
 
             <div class="form-group">
               <label for="">Address*</label>
-              <textarea class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
+              <textarea autocomplete="off" class="form-control" id="inputAddress" name="inputAddress" placeholder="ex. Plaza Pinangsia Lt. 1 No. 7-8 Jl. Pinangsia Raya no.1" onkeyup="fillInput('address')" style="resize: vertical;"></textarea>
               <span class="help-block" style="display:none;">Please fill Address!</span>
             </div>
 
@@ -311,9 +315,9 @@
             </div>
 
             <div class="form-group" id="divNotePembanding">
-              <label for="">Note Pembanding*</label>
-              <textarea class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
-              <span class="help-block" style="display:none;">Please fill Note Pembanding!</span>
+              <label for="">Comparison Note*</label>
+              <textarea autocomplete="off" class="form-control" id="note_pembanding" name="note_pembanding"></textarea>
+              <span class="help-block" style="display:none;">Please fill Comparison Note!</span>
             </div>
           </div>
           <div class="tab-add" style="display:none">
@@ -326,7 +330,6 @@
               </div>
               <div class="form-group" style="display: flex;">
                 <div style="padding: 7px;
-                            width: 20%;
                             border: 1px solid #dee2e6 !important;
                             color: #337ab7;
                             height: 35px;
@@ -334,7 +337,7 @@
                             display: inline;
                             margin: 0 auto;">
                   <i class="fa fa-cloud-upload" style="margin-left:5px"></i>
-                  <input id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
+                  <input autocomplete="off" id="uploadCsv" class="hidden" type="file" name="uploadCsv" style="margin-top: 3px;width: 80px;display: inline;">
                   <label for="uploadCsv">Upload CSV</label>
                   <i class="fa fa-times hidden" onclick="cancelUploadCsv()" style="display:inline;color: red;"></i>
                   <!-- <span class="help-block" style="display:none;">Please Upload File or Add Product!</span> -->
@@ -347,50 +350,60 @@
                 <span style="margin: 0 auto;">And make sure, the change of template only at row 2, any change on row 1 (header) will be reject</span>
               </div>
             </div>
-            <div class="tabGroup" style="display:none">
+            <div class="tabGroupModal" style="display:none">
               <div class="form-group">
                 <label>Product*</label>
-                <input type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
+                <input autocomplete="off" type="text" name="" class="form-control" id="inputNameProduct" placeholder="ex. Laptop MSI Modern 14" onkeyup="fillInput('name_product')">
                 <span class="help-block" style="display:none;">Please fill Name Product!</span>
               </div>
               <div class="form-group">
                 <label>Description*</label> 
-                <textarea onkeyup="fillInput('desc_product')" style="resize:vertical;height:150px" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control"></textarea>
+                <textarea autocomplete="off" onkeyup="fillInput('desc_product')" style="resize:vertical;height:150px" id="inputDescProduct" placeholder='ex. Laptop mSI Modern 14, Processor AMD Rayzen 7 5700, Memory 16GB, SSD 512 Gb, Screen 14", VGA vega 8, Windows 11 Home' name="inputDescProduct" class="form-control"></textarea>
                 <span class="help-block" style="display:none;">Please fill Description!</span>
               </div>
               <div class="form-group">
                 <div class="row">
                   <div class="col-md-6"> 
                     <label>Serial Number</label>
-                    <input type="text" name="" class="form-control" id="inputSerialNumber">
+                    <input autocomplete="off" type="text" name="" class="form-control" id="inputSerialNumber">
                   </div>
                   <div class="col-md-6"> 
                     <label>Part Number</label>
-                    <input type="text" name="" class="form-control" id="inputPartNumber">
+                    <input autocomplete="off" type="text" name="" class="form-control" id="inputPartNumber">
                   </div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="row">
-                  <div class="col-md-4"> 
+                  <div class="col-md-2"> 
                     <label>Qty*</label>
-                    <input type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
+                    <input autocomplete="off" type="number" name="" class="form-control" id="inputQtyProduct" placeholder="ex. 5" onkeyup="fillInput('qty_product')">
                     <span class="help-block" style="display:none;">Please fill Qty!</span>
                   </div>
                   <div class="col-md-4"> 
                     <label>Type*</label>
-                    <select style="width:100%" class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
+                    <i class="fa fa-warning" title="If type is undefined, Please contact developer team!" style="display:inline"></i>
+                    <select style="width:100%;display:inline;" class="form-control" id="selectTypeProduct" placeholder="ex. Unit" onchange="fillInput('type_product')">
                       <option>                  
                     </select>
                     <span class="help-block" style="display:none;">Please fill Unit!</span>
                   </div>
-                  <div class="col-md-4"> 
+                  <div class="col-md-6"> 
                     <label>Price*</label>
                     <div class="input-group">
                       <div class="input-group-addon">
                       Rp.
                       </div>
-                      <input type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 15.000.000,00" onkeyup="fillInput('price_product')">
+                      <input autocomplete="off" type="text" name="" class="form-control money" id="inputPriceProduct" placeholder="ex. 500,00.00" onkeyup="fillInput('price_product')">
+                      <div class="input-group-btn">       
+                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">         
+                          <span class="fa fa-caret-down"></span>       
+                        </button>       
+                        <ul class="dropdown-menu">       
+                          <li><a onclick="changeCurreny('usd')">USD($)</a></li>
+                          <li><a onclick="changeCurreny('dollar')">IDR(RP)</a></li>
+                        </ul>
+                      </div>
                     </div>
                     <span class="help-block" style="display:none;">Please fill Price!</span>
                   </div>
@@ -402,7 +415,7 @@
                   <div class="input-group-addon">
                   Rp.
                   </div>
-                    <input readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
+                    <input autocomplete="off" readonly type="text" name="" class="form-control" id="inputTotalPrice" placeholder="75.000.000,00">
                 </div>
               </div>
             </div>
@@ -430,7 +443,7 @@
                 
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-top:10px">
               <button class="btn btn-sm btn-primary" style="display:flex;margin: 0 auto;" type="button" id="addProduct"><i class="fa fa-plus"></i>&nbsp Add product</button>
             </div>
           </div>
@@ -454,7 +467,7 @@
                     <span id="makeId" style="cursor: pointer;">other?</span>
                     <div class="form-group" id="project_idNew" style="display: none;">
                       <div class="input-group">
-                        <input type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
+                        <input autocomplete="off" type="text" class="form-control pull-left col-md-8" placeholder="input Project ID" name="project_idInputNew" id="projectIdInputNew">
                         <span class="input-group-addon" style="cursor: pointer;" id="removeNewId"><i class="glyphicon glyphicon-remove"></i></span>
                       </div>
                     </div> 
@@ -465,7 +478,7 @@
               <div class="form-group">
                 <label>SPK/Kontrak*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;font-family: inherit;">
+                  <input autocomplete="off" type="file" name="inputSPK" id="inputSPK" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('spk')" style="margin-top: 4px;font-family: inherit;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SPK/Kontrak!</span>
                 <span style="display:none;" id="span_link_drive_spk"><a id="link_spk" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -474,7 +487,7 @@
               <div class="form-group">
                 <label>SBE*</label>
                 <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;background-color: #eee;">
-                  <input type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;font-family: inherit;">
+                  <input autocomplete="off" type="file" name="inputSBE" id="inputSBE" class="fa fa-cloud-upload files" disabled onkeyup="fillInput('sbe')" style="margin-top: 4px;font-family: inherit;">
                 </div>
                 <span class="help-block" style="display:none;">Please fill SBE!</span>
                 <span style="display:none;" id="span_link_drive_sbe"><a id="link_sbe" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -484,8 +497,9 @@
                 <div class="row">
                   <div class="col-md-6">
                     <label>Quote Supplier*</label>
-                    <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding: 6px 12px;">
-                      <input type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" class="fa fa-cloud-upload files" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;font-family: inherit;">
+                    <div style="border: 1px solid #dee2e6 !important;color: #337ab7;height: 34px;padding-bottom: 5px;padding-top: 3px;padding-left: 10px;">
+                      <span class="fa fa-cloud-upload" style="display:inline;"></span>
+                      <input autocomplete="off" type="file" name="inputQuoteSupplier" id="inputQuoteSupplier" onkeyup="fillInput('quoteSupplier')" style="margin-top: 4px;font-family: inherit;display:inline;">
                     </div>
                     <span class="help-block" style="display:none;">Please fill Quote Supplier!</span>
                     <span style="display:none;" id="span_link_drive_quoteSup"><a id="link_quoteSup" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
@@ -495,11 +509,22 @@
                     <select name="selectQuoteNumber" class="select2 form-control" id="selectQuoteNumber" >
                       <option>
                     </select>
-                    <!-- <input type="file" name="inputQuoteNumber" id="inputQuoteNumber" class="form-control" onkeyup="fillInput('quoteNumber')"> -->
                     <span class="help-block" style="display:none;">Please fill Quote Number!</span>
                   </div>
                 </div>
-              </div>    
+              </div> 
+
+              <div class="form-group">
+                <div id="docPendukungContainer" class="table-responsive">
+                  <label id="titleDoc_epr" style="display:none;">Lampiran Dokumen Lainnya</label>
+                  <table id="tableDocPendukung_epr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+                    
+                  </table>
+                </div>
+                <div class="form-group" style="display:flex;margin-top: 10px;">
+                  <a type="button" style="margin:0 auto" id="btnAddDocPendukung" class="btn btn-sm btn-primary" onclick="addDocPendukung('epr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</a>
+                </div>
+              </div>   
             </div>
               
             <div id="formForPrInternal" style="display:none;">
@@ -508,28 +533,27 @@
                 <div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;">
                   <label for="inputPenawaranHarga" style="margin-bottom:0px">
                     <span class="fa fa-cloud-upload" style="display:inline"></span>
-                    <input style="display: inline;" type="file" name="inputPenawaranHarga" class="files" id="inputPenawaranHarga">
+                    <input autocomplete="off" style="display: inline;" type="file" name="inputPenawaranHarga" class="files" id="inputPenawaranHarga">
                   </label>
                 </div>
-                <!-- <input type="file" name="inputPenawaranHarga" id="inputPenawaranHarga" class="form-control"> -->
                 <span class="help-block" style="display:none;">Please fill Penawaran Harga!</span>
                 <span style="display:none;" id="span_link_drive"><a id="link_penawaran_harga" target="_blank"><i class="fa fa-link"></i>&nbspLink drive</a></span>
               </div>
-              <div id="docPendukungContainer">
-                <label id="titleDoc" style="display:none;">Lampiran Dokumen Pendukung</label>
-                <table id="tableDocPendukung" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
+              <div id="docPendukungContainer" class="table-responsive">
+                <label id="titleDoc_ipr" style="display:none;">Lampiran Dokumen Pendukung</label>
+                <table id="tableDocPendukung_ipr" class="border-collapse:collapse" style="border-collapse: separate;border-spacing: 0 15px;">
                   
                 </table>
               </div>
               <div class="form-group" style="display:flex;margin-top: 10px;">
-                <a type="button" style="margin:0 auto" id="btnAddDocPendukung" class="btn btn-sm btn-primary" onclick="addDocPendukung(0)"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</a>
+                <a type="button" style="margin:0 auto" id="btnAddDocPendukung" class="btn btn-sm btn-primary" onclick="addDocPendukung('ipr')"><i class="fa fa-plus"></i>&nbsp Dokumen Pendukung</a>
               </div>
             </div>
           </div>   
           <div class="tab-add" style="display:none">
             <div class="box-body pad">
               <form> 
-                <textarea onkeyup="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. term of payment"></textarea>
+                <textarea onkeyup="fillInput('textArea_TOP')" class="textarea" id="textAreaTOP" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid rgb(221, 221, 221);" placeholder="ex. terms & Condition"></textarea>
                 <span class="help-block" style="display:none;">Please fill Top of Payment!</span>
               </form>
             </div>
@@ -577,6 +601,7 @@
   </div>
 @endsection
 @section('scriptImport')
+<script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js' type='text/javascript'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.5/Chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.7/js/jquery.dataTables.min.js"></script>
@@ -596,10 +621,49 @@
 <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
 <script type="text/javascript" src="{{asset('/plugins/iCheck/icheck.min.js')}}"></script>
+<script src="{{asset('js/mentions/jquery.mentionsInput.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.events.input.js')}}" type="text/javascript"></script>
+<script src="{{asset('js/jquery.elastic.js')}}" type="text/javascript"></script>
 @endsection
 @section('script')
 <script type="text/javascript">
   $(".money").mask('000,000,000,000,000', {reverse: true})
+
+  $.ajax({
+    type:"GET",
+    url:"{{url('/admin/getPerson')}}",
+    data:{
+      no_pr:window.location.href.split("/")[6]
+    },
+    success: function(result){
+      var i = 0
+      const results = result.map(item => {
+          const container = {};
+
+          container.id = i++;
+          container.name = item.name;
+          if (item.avatar == null) {
+            container.avatar = '{{ asset("image/place_profile_3.png")}}';
+          }else{
+            container.avatar = item.avatar;
+          }
+          container.type = item.email;
+
+          return container;
+      })
+
+      $('#inputNotes').mentionsInput({
+        onDataRequest:function (mode, query, callback) {
+          var data = results
+
+          data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+
+          callback.call(this, data);
+        }
+      });
+      
+    }
+  })  
 
   var formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
@@ -611,7 +675,7 @@
   isPembanding = localStorage.setItem('isPembanding',false)
   isLastStorePembanding = localStorage.getItem('isLastStorePembanding')
 
-  $(document).ready(function(){
+  $(document).ready(function(){    
     Pace.restart()
     Pace.track(function() {
       if (isLastStorePembanding == 'true') {
@@ -632,11 +696,11 @@
       /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
       var ErrorText = []
-      if (f.size > 40000000 || f.fileSize > 40000000) {
+      if (f.size > 2000000|| f.fileSize > 2000000) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Invalid file size, just allow file with size less than 40MB!',
+          text: 'Invalid file size, just allow file with size less than 2MB!',
         }).then((result) => {
           this.value = ''
         })
@@ -708,6 +772,10 @@
         {
           "id": "node",
           "text": "Node"
+        },
+        {
+         "id": "kg",
+         "text": "Kg"
         }
       ]
     }
@@ -750,28 +818,36 @@
     }
   })
 
-  function reasonReject(item,display,nameClass){
+  let arrReason = []
+  function reasonReject(item,display,nameClass,typeCallout=""){
     $(".divReasonRejectRevision").remove()
+    arrReason.push(item)
+    console.log(arrReason)
 
     var textTitle = ""
     var className = ""
 
-    if (nameClass == 'tabGroup') {
-      textTitle = "Note Reject PR"
+    if (nameClass == 'tabGroup' || nameClass == 'tabGroupModal') {
+      textTitle = "Note PR!"
       className = "tabGroup"
     }else{
-      textTitle = "Alert Error!"
+      textTitle = "Warning!"
       className = nameClass
     }
-    
+
     var append = ""
 
+    console.log(item)
     append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
       append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
-      append = append + '<p class="reason_reject_revision">'+item.replaceAll("\n","<br>")+'</p>'
+      $.each(arrReason,function(item,value){
+        console.log(item)
+        append = append + '<p class="reason_reject_revision">'+ value.replaceAll("\n","<br>")+'</p>'
+      })
     append = append + '</div>'
 
     $("." + nameClass).prepend(append)
+    
 
     if (display == "block") {
       $(".divReasonRejectRevision").show()
@@ -788,9 +864,10 @@
               append = append + '<div class="row">'
                 append = append + '<div class="col-md-12">'
                   append = append + '<span><b>Action</b></span><br>'
-                  append = append + '<button class="btn btn-sm bg-purple" id="btnPembanding" onclick="pembanding()" style="margin-right:5px">Pembanding</button>'
-                  append = append + '<button disabled class="btn btn-sm btn-warning" id="btnSirkulasi" style="margin-right:5px" onclick="sirkulasi(0)">Sirkulasi</button>'
-                  append = append + '<button class="btn btn-sm btn-success" id="btnFinalize" disabled onclick="finalize()">Finalize</button>'
+                   append = append + '<button class="btn btn-sm bg-purple" id="btnPembanding" onclick="pembanding()" style="margin-right:5px">Comparison</button>'
+                      append = append + '<button disabled class="btn btn-sm btn-warning" id="btnSirkulasi" style="margin-right:5px" onclick="sirkulasi(0)">Circular</button>'
+                  append = append + '<button class="btn btn-sm btn-success" style="margin-right:5px" id="btnFinalize" disabled>Finalize</button>'
+                  append = append + '<button class="btn btn-sm btn-danger" id="btnRevision" style="display:none" disabled>Revision</button>'
                   append = append + '<a id="btnShowPdf" target="_blank" href="{{url("/admin/getPdfPRFromLink")}}/?no_pr='+ window.location.href.split("/")[6] +'" class="btn btn-sm bg-orange pull-right">Show PDF</a>'
                   append = append + '<button id="btnAddNotes" class="btn btn-sm btn-primary pull-right" style="margin-right:5px"><i class="fa fa-plus"></i>&nbspNotes</button>'
                 append = append + '</div>'
@@ -806,11 +883,11 @@
                       append = append + '<thead>'
                         append = append + '<th>No</th>'
                         append = append + '<th width="20%">Product</th>'
-                        append = append + '<th width="35%">Description</th>'
-                        append = append + '<th width="10%">Qty</th>'
-                        append = append + '<th width="10%">Type</th>'
-                        append = append + '<th width="15%">Price</th>'
-                        append = append + '<th width="15%">Total Price</th>'
+                        append = append + '<th width="40%">Description</th>'
+                        append = append + '<th width="5%">Qty</th>'
+                        append = append + '<th width="5%">Type</th>'
+                        append = append + '<th width="10%">Price</th>'
+                        append = append + '<th width="10%">Total Price</th>'
                       append = append + '</thead>'
                       append = append + '<tbody id="bodyPreview">'
                       append = append + '</tbody>'
@@ -842,8 +919,12 @@
             //for user privilege
 
             if (result[2].isCircular == 'True') {   
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                 $("#btnSirkulasi").prop('disabled',true)
+                $("#btnRevision").show().prop('disabled',false).click(function(){
+                  $(".modal-title").text("Sirkulasi PR - Revision")
+                  $("#ModalRejectSirkulasi").modal("show")
+                })
               }
             }        
 
@@ -902,7 +983,7 @@
             disableResolve = 'disabled'
             disableReply = 'disabled'
           }else{
-            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
               disableResolve
               disableReply
             }else{
@@ -926,7 +1007,7 @@
           appendResolve = appendResolve + '<div class="user-block">'
           appendResolve = appendResolve + '<img class="img-circle" src="{{ asset("image/")}}/'+ image +'" alt="User Image">'
           appendResolve = appendResolve + '<span class="username"><a href="#">'+ value.operator +'</a></span>'
-          appendResolve = appendResolve + '<span class="description">'+ span +'Note #'+ no +' - '+ value.no_pr +'</span>'
+          appendResolve = appendResolve + '<span class="description">'+ span +'Note #'+ no +' - '+ value.no_pr + ' - ' +  cals + '&nbspat&nbsp' + moment(value.date_add).format('hh:mm A') +'</span>'
           appendResolve = appendResolve + '</div>'
           appendResolve = appendResolve + '<div class="box-tools">'
           appendResolve = appendResolve + '<button type="button" class="btn btn-box-tool" data-widget="collapse" onclick="btnMinusNotes('+item+')" data-value="'+ item +'"><i class="fa fa-minus"></i>'
@@ -935,9 +1016,8 @@
           appendResolve = appendResolve + '</div>'
           appendResolve = appendResolve + '<div id="bodyCollapse" data-value="'+ item +'">'
           appendResolve = appendResolve + '<div class="box-body" style="">'
-          appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p>'
-          appendResolve = appendResolve + '<span style="display:inline" class="text-muted pull-right">'+ cals + '&nbspat&nbsp' + moment(value.date_add).format('hh:mm A') +'</span><br>'
-          appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
+          appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p><br>'
+          appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" onclick="btnResolve('+ value.id +')" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
           appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
           appendResolve = appendResolve + '</div>'
             if (value.reply.length > 0) {
@@ -965,7 +1045,7 @@
                 sameElse: 'L'
               })
               appendResolve = appendResolve + '<span class="username">'+ values.operator +'<span class="text-muted pull-right">'+ cal + '&nbspat&nbsp' + moment(values.date_add).format('hh:mm A') +'</span>'
-              appendResolve = appendResolve + '</span>'+ values.reply +'</div>'
+              appendResolve = appendResolve + '</span><p>'+ values.reply +'</p></div>'
               appendResolve = appendResolve + '</div>'
             })            
             appendResolve = appendResolve + '</div>'
@@ -980,58 +1060,6 @@
 
         })
         $("#showResolve").append(appendResolve)
-
-        $("#btnResolve").click(function(){
-          Swal.fire({
-            title: 'Are you sure?',  
-            text: "Resolve this",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-          }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                type: "POST",
-                url: "{{url('/admin/storeResolveNotes')}}",
-                data: {
-                  _token: "{{ csrf_token() }}",
-                  id:this.value,
-                },beforeSend:function(){
-                  Swal.fire({
-                      title: 'Please Wait..!',
-                      text: "It's sending..",
-                      allowOutsideClick: false,
-                      allowEscapeKey: false,
-                      allowEnterKey: false,
-                      customClass: {
-                          popup: 'border-radius-0',
-                      },
-                      didOpen: () => {
-                          Swal.showLoading()
-                      }
-                  })
-                },
-                success: function(result) {
-                  Swal.hideLoading()
-                  Swal.fire(
-                      'Successfully!',
-                      'success',
-                      'success'
-                  ).then((result) => {
-                    if (result.value) {
-                      location.reload()
-                      Swal.close()
-                    }
-                  })
-                  
-                }
-              })         
-            }
-          })
-        })
       }
     })
      
@@ -1043,6 +1071,58 @@
     })
   }  
 
+  function btnResolve(id){
+    Swal.fire({
+      title: 'Are you sure?',  
+      text: "Resolve this",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+          $.ajax({
+          type: "POST",
+          url: "{{url('/admin/storeResolveNotes')}}",
+          data: {
+            _token: "{{ csrf_token() }}",
+            id:id,
+          },beforeSend:function(){
+            Swal.fire({
+                title: 'Please Wait..!',
+                text: "It's sending..",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                customClass: {
+                    popup: 'border-radius-0',
+                },
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            })
+          },
+          success: function(result) {
+            Swal.hideLoading()
+            Swal.fire(
+                'Successfully!',
+                'success',
+                'success'
+            ).then((result) => {
+              if (result.value) {
+                location.reload()
+                Swal.close()
+              }
+            })
+            
+          }
+        })         
+      }
+    })
+  }
+
   function btnShowReply(no_pr,id){
     if ("{{Auth::User()->gambar}}" != null && "{{Auth::User()->gambar}}" != '' && "{{Auth::User()->gambar}}" != '-') {
       gambar = "{{Auth::User()->gambar}}"
@@ -1053,7 +1133,7 @@
     appendFooter = appendFooter + '<img class="img-responsive img-circle img-sm" src="{{ asset("image/")}}/'+ gambar +'" alt="Alt Text">'
     appendFooter = appendFooter + '<div class="img-push">'
     appendFooter = appendFooter + '<div class="input-group">'
-      appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="form-control input-sm" placeholder="Type reply comment">'
+      appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention form-control input-sm" placeholder="Type reply comment, @ mention member">'
       appendFooter = appendFooter + '<span class="input-group-btn">'
         appendFooter = appendFooter + '<button onclick="pressReply('+ no_pr +','+ id +')" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-send"></i></button>'
       appendFooter = appendFooter + '</span>'
@@ -1067,17 +1147,63 @@
     }else{
       $("#btnReply[data-value='"+ id +"']").prop("disabled",false)
     }
+
+    $.ajax({
+      type:"GET",
+      url:"{{url('/admin/getPerson')}}",
+      data:{
+        no_pr:window.location.href.split("/")[6]
+      },
+      success: function(result){
+        var i = 0
+        const results = result.map(item => {
+            const container = {};
+
+            container.id = i++;
+            container.name = item.name;
+            if (item.avatar == null) {
+              container.avatar = '{{ asset("image/place_profile_3.png")}}';
+            }else{
+              container.avatar = item.avatar;
+            }
+            container.type = item.email;
+
+            return container;
+        })
+
+        $('.mention').mentionsInput({
+          onDataRequest:function (mode, query, callback) {
+            var data = results
+
+            data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+
+            callback.call(this, data);
+          }
+        });
+        
+      }
+    })
   }
 
   function pressReply(no_pr,id){
+    var emailMention = []
+    if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 1) {
+      obj_notes = $("#inputReply").closest("div").find(".mentions").find("div").find("span").splice("span")
+      for (var i = 0; i < obj_notes.length; i++) {
+        emailMention.push({'name':obj_notes[i].textContent})
+      }      
+    }else{
+      emailMention.push({'name':$("#inputReply").closest("div").find(".mentions").find("div").find("strong").text()})
+    }
     $.ajax({
       type: "POST",
       url: "{{url('/admin/storeReply')}}",
       data: {
         _token: "{{ csrf_token() }}",
         id_notes:id,
-        inputReply:$("#inputReply[data-value='"+ id +"']").val(),
+        inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
         no_pr:no_pr,
+        emailMention:emailMention
       },beforeSend:function(){
         Swal.fire({
             title: 'Please Wait..!',
@@ -1111,13 +1237,23 @@
   }
 
   function btnSubmitNotes(){
+    var emailMention = []
+    if ($("#inputNotes").closest("div").find(".mentions").find("div").find("strong").length > 1) {
+      obj_notes = $("#inputNotes").closest("div").find(".mentions").find("div").find("span").splice("span")
+      for (var i = 0; i < obj_notes.length; i++) {
+        emailMention.push({'name':obj_notes[i].textContent})
+      }      
+    }else{
+      emailMention.push({'name':$("#inputNotes").closest("div").find(".mentions").find("div").find("strong").text()})
+    }
     $.ajax({
       type: "POST",
       url: "{{url('/admin/storeNotes')}}",
       data: {
         _token: "{{ csrf_token() }}",
         no_pr:window.location.href.split("/")[6],
-        inputNotes:$("#inputNotes").val(),
+        inputNotes:$("#inputNotes").prev('.mentions').find("div").html(),
+        emailMention:emailMention,
       },beforeSend:function(){
         Swal.fire({
             title: 'Please Wait..!',
@@ -1161,7 +1297,7 @@
           append = append + '<i class="fa fa-lock label-primary"></i>'          
         }else if (item.status == 'DRAFT') {
           append = append + '<i class="fa fa-inbox label-primary"></i>' 
-        }else if (item.status == 'REJECT') {
+        }else if (item.status == 'REJECT' || item.status == 'CANCEL') {
           append = append + '<i class="fa fa-times label-danger"></i>' 
         }else if (item.status == 'VERIFIED') {
           append = append + '<i class="fa fa-check label-success"></i>'
@@ -1203,11 +1339,13 @@
   }
 
   function pembanding(){    
+    localStorage.setItem('status_tax',false)
     localStorage.setItem('isPembanding',true)
     $("#showDetail").empty()
+    arrReason = []
     loadData()
     append = ""
-    append = append + '<div class="col-md-6">'
+    append = append + '<div class="col-md-6 tabGroup">'
       append = append + '<div class="box">'
         append = append + '<div class="box-header with-border">'
           append = append + '<label style="display:table;margin:0 auto">Draft</label>'
@@ -1225,9 +1363,9 @@
                   append = append + '<thead>'
                     append = append + '<th>No</th>'
                     append = append + '<th width="20%">Product</th>'
-                    append = append + '<th width="35%">Description</th>'
-                    append = append + '<th width="10%">Qty</th>'
-                    append = append + '<th width="15%">Type</th>'
+                    append = append + '<th width="40%">Description</th>'
+                    append = append + '<th width="5%">Qty</th>'
+                    append = append + '<th width="5%">Type</th>'
                     append = append + '<th width="15%">Price</th>'
                     append = append + '<th width="15%">Total Price</th>'
                   append = append + '</thead>'
@@ -1242,7 +1380,7 @@
         append = append + '</div>'
     append = append + '<div class="col-md-6" >'
     append = append + '<div id="divPembanding"></div>'
-    append = append + '<div style="display:table;margin:0 auto"><button style="display:none" id="btnAddPembanding" class="btn btn-sm bg-purple" onclick="addPembanding()"><i class="fa fa-plus"></i>&nbspPembanding</button</div>'        
+    append = append + '<div style="display:table;margin:0 auto"><button style="display:none" id="btnAddPembanding" class="btn btn-sm bg-purple" onclick="addPembanding()"><i class="fa fa-plus"></i>&nbspComparison</button</div>'        
     append = append + '</div>'
     $("#showDetail").append(append)
 
@@ -1296,6 +1434,10 @@
         no_pr:window.location.href.split("/")[6],
       },
       success: function(result) {
+        // if (result.pr.isCommit == 'True') {
+        //   reasonReject("This supplier has been committed with us to supply this product.","block","tabGroup")
+        // }
+
         type_of_letter = result.pr.type_of_letter
         if (type_of_letter == 'IPR') {
           PRType = '<b>Internal Purchase Request</b>'
@@ -1303,26 +1445,40 @@
           PRType = '<b>External Purchase Request</b>'
         } 
         var appendHeader = ""
-        if (type_of_letter == 'IPR') {
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-        }else{
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-          appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-          appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br><br>'
+        appendHeader = appendHeader + '<div class="row">'
+        appendHeader = appendHeader + '    <div class="col-md-6">'
+        appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+        appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+        appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+        appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+        appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+        appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+        appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+        appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+        appendHeader = appendHeader + '    </div>'
+        if (window.matchMedia("(max-width: 767px)").matches)
+        {
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            // The viewport is less than 768 pixels wide
+            console.log("This is a mobile device.");
+        } else {
+            appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+            // The viewport is at least 768 pixels wide
+            console.log("This is a tablet or desktop.");
         }
+        appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+        appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+        appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+        appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+        if (type_of_letter == 'EPR') {
+          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+        }
+        appendHeader = appendHeader + '    </div>'
+        appendHeader = appendHeader + '</div>'
 
         $("#headerPreview").append(appendHeader)
         var append = ""
@@ -1334,24 +1490,24 @@
               append = append + '<span>'+ i +'</span>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input style="width:200px;font-size:12px;" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+            append = append + "<input data-value='' readonly style='width:200px;font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<textarea style="width:250px;font-size:12px;resize:none;height:150px" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+              append = append + '<textarea style="width:500px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px">'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<select readonly class="form-control" style="width:80px;font-size:12px">'
-              append = append + '<option>' + item.unit.charAt(0).toUpperCase() + item.unit.slice(1) + '</option>'
+              append = append + '<select disabled class="form-control" style="width:80px;font-size:12px">'
+              append = append + '<option>'+ item.unit.charAt(0).toUpperCase() + item.unit.slice(1) +'</option>'
               append = append + '</select>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px;font-size:12px;">'
+              append = append + '<input readonly class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'" style="width:100px;font-size:12px">'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input readonly class="form-control grandTotalPrice" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size:12px">'
+              append = append + '<input readonly class="form-control grandTotalPrice" id="grandTotalPrice" type="" name="" value="'+ formatter.format(item.grand_total) +'" style="width:100px;font-size:12px">'
             append = append + '</td>'
           append = append + '</tr>'
         })
@@ -1360,7 +1516,7 @@
         appendBottom = ""
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="row">'
-        appendBottom = appendBottom + '  <div class="col-md-12">'
+        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
         appendBottom = appendBottom + '    <form class="form-horizontal">'
         appendBottom = appendBottom + '      <div class="form-group">'
         appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-6 col-sm-2 control-label">Total</label>'
@@ -1369,7 +1525,7 @@
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat 11%</label>'
+        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
         appendBottom = appendBottom + '        <div class="col-sm-4">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control vat_tax_preview pull-right" id="vat_tax_previewData" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
@@ -1386,7 +1542,7 @@
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
-            appendBottom = appendBottom + '<h3 class="box-title">Terms of Payment</h3>'
+            appendBottom = appendBottom + '<h3 class="box-title">Terms & Condition</h3>'
             appendBottom = appendBottom + '<div class="box-tools pull-right">'
                 appendBottom = appendBottom + '<button type="button" class="btn btn-box-tool btnTerm" data-value="draft"><span class="fa fa-2x fa-angle-right" style="margin-top:-5px"></span>'
                 appendBottom = appendBottom + '</button>'
@@ -1474,20 +1630,38 @@
             sum += temp;
         });
 
-        if (result.pr.status_tax == 'True') {
-          tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // if (result.pr.status_tax == 'True') {
+        //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+        //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // }else{
+        //   tempVat = tempVat
+        //   tempGrand = parseInt(sum)
+        // }
+
+        if (result.pr.status_tax == false) {
+          valueVat = 'false'
         }else{
-          tempVat = tempVat
-          tempGrand = parseInt(sum)
+          valueVat = result.pr.status_tax
+        }
+        if (!isNaN(valueVat)) {
+          tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+          finalVat = tempVat
+
+          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+          finalGrand = tempGrand
+
+          tempTotal = sum
+
+          $('.title_tax').text(valueVat + '%')
+        }else{
+          tempGrand = sum
+
+          $('.title_tax').text("")
         }
 
-        finalVat = tempVat
-
-        finalGrand = tempGrand
-
-        tempTotal = sum
-        $("#vat_tax_previewData").val(tempVat)
+        $("#vat_tax_previewData").val(formatter.format(tempVat))
         $("#inputGrandTotalProductPreviewData").val(formatter.format(sum))
         $("#inputFinalPageTotalPriceData").val(formatter.format(tempGrand))
       }
@@ -1515,6 +1689,9 @@
         no_pr:window.location.href.split("/")[6],
       },
       success: function(result) {
+        //initiate btn finalize
+        $("#btnFinalize").attr("onclick","finalize("+ '"' +result.pr.request_method+ '"' +")")
+
         type_of_letter = result.pr.type_of_letter
         if (type_of_letter == 'IPR') {
           PRType = '<b>Internal Purchase Request</b>'
@@ -1523,8 +1700,18 @@
         } 
 
         if (result.getSign == '{{Auth::User()->name}}') {
-          
-          $("#btnSirkulasi").prop('disabled',false)
+          //bcd manager & pmo manager bisa circular meskipun belum diresolve
+          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"PMO Manager")->exists()}}") {
+            $("#btnSirkulasi").prop('disabled',false)
+          }else{
+            if (result.isNotes == 'False') {
+              $("#btnSirkulasi").prop('disabled',true)
+              reasonReject('Please Ask Admin / Procurement to resolve notes, to continue circular process!','block','tabGroup')
+            }else{
+              console.log("true")
+              $("#btnSirkulasi").prop('disabled',false)
+            }
+          }
         }
 
         if (result.pr.status == "UNAPPROVED" || result.pr.status == "CIRCULAR") {
@@ -1532,7 +1719,7 @@
             $("#btnSirkulasi").prop('disabled',true)
           }
         }else{
-          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
             if (result.pr.status == "FINALIZED" || result.pr.status == "SENDED") {
               $("#btnSirkulasi").prop('disabled',true)
             }else{
@@ -1545,27 +1732,49 @@
           reasonReject(result.activity.reason,"block")
         }
 
-        var appendHeader = ""
-        if (type_of_letter == 'IPR') {
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'>"+ result.pr.no_pr +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-        }else{
-          appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'>"+ result.pr.no_pr +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-          appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-          appendHeader = appendHeader + "<span style='display:inline'>Address: </span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-          appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span><span style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br><br>'
+        if (result.pr.isCommit == 'True') {
+          console.log("iki commit")
+          reasonReject("This supplier has been committed with us to supply this product.","block","tabGroup","warning")
         }
+
+        var appendHeader = ""
+        appendHeader = appendHeader + '<div class="row">'
+        appendHeader = appendHeader + '    <div class="col-md-6">'
+        appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+        appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+        appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+        appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+        appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+        appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+        appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+        appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+        appendHeader = appendHeader + '    </div>'
+        if (window.matchMedia("(max-width: 767px)").matches)
+        {
+            appendHeader = appendHeader + '    <div class="col-md-6">'
+            // The viewport is less than 768 pixels wide
+            console.log("This is a mobile device.");
+        } else {
+            appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+            // The viewport is at least 768 pixels wide
+            console.log("This is a tablet or desktop.");
+        }
+        appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+        if (result.pr.no_pr != undefined) {
+          appendHeader = appendHeader + '        <div>'+ result.pr.no_pr +'</div>'
+        }
+        appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+        appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+        appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+        if (type_of_letter == 'EPR') {
+          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+        }
+        appendHeader = appendHeader + '    </div>'
+        appendHeader = appendHeader + '</div>'
 
         $("#headerPreview").append(appendHeader)
         var append = ""
@@ -1577,10 +1786,10 @@
               append = append + '<span>'+ i +'</span>'
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+            append = append + "<input data-value='' readonly style='width:200px;font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
             append = append + '</td>'
             append = append + '<td>'
-              append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
+              append = append + '<textarea style="font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number +'</textarea>'
             append = append + '</td>'
             append = append + '<td>'
               append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;font-size:12px">'
@@ -1603,23 +1812,23 @@
         appendBottom = ""
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="row">'
-        appendBottom = appendBottom + '  <div class="col-md-12">'
+        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
         appendBottom = appendBottom + '    <form class="form-horizontal">'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-6 col-sm-2 control-label">Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-8 col-sm-2 control-label">Total</label>'
+        appendBottom = appendBottom + '        <div class="col-sm-2">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-6 col-sm-2 control-label">Vat 11%</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
+        appendBottom = appendBottom + '        <div class="col-sm-2">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
         appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail5" class="col-sm-offset-6 col-sm-2 control-label">Grand Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-4">'
+        appendBottom = appendBottom + '        <label for="inputEmail5" class="col-sm-offset-8 col-sm-2 control-label">Grand Total</label>'
+        appendBottom = appendBottom + '        <div class="col-sm-2">'
         appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
         appendBottom = appendBottom + '        </div>'
         appendBottom = appendBottom + '      </div>'
@@ -1629,7 +1838,7 @@
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
-            appendBottom = appendBottom + '<h3 class="box-title">Terms of Payment</h3>'
+            appendBottom = appendBottom + '<h3 class="box-title">Terms & Condition</h3>'
             appendBottom = appendBottom + '<div class="box-tools pull-right">'
                 appendBottom = appendBottom + '<button type="button" class="btn btn-box-tool btnTerm" data-value="submitted"><span class="fa fa-2x fa-angle-right" style="margin-top:-5px"></span>'
                 appendBottom = appendBottom + '</button>'
@@ -1727,26 +1936,45 @@
         var finalGrand = 0
         var tempTotal = 0
         var sum = 0
+        var valueVat = ""
 
         $('.grandTotalPrice').each(function() {
             var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
             sum += temp;
         });
 
-        if (result.pr.status_tax == 'True') {
-          tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // if (result.pr.status_tax == 'True') {
+        //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+        //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+        // }else{
+        //   tempVat = tempVat
+        //   tempGrand = parseInt(sum)
+        // }
+
+        if (result.pr.status_tax == false) {
+          valueVat = 'false'
         }else{
-          tempVat = tempVat
-          tempGrand = parseInt(sum)
+          valueVat = result.pr.status_tax
+        }
+        if (!isNaN(valueVat)) {
+          tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+          finalVat = tempVat
+
+          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+          finalGrand = tempGrand
+
+          tempTotal = sum
+
+          $('.title_tax').text(valueVat + '%')
+        }else{
+          tempGrand = sum
+
+          $('.title_tax').text("")
         }
 
-        finalVat = tempVat
-
-        finalGrand = tempGrand
-
-        tempTotal = sum
-        $("#vat_tax_preview").val(tempVat)
+        $("#vat_tax_preview").val(formatter.format(tempVat))
         $("#inputGrandTotalProductPreview").val(formatter.format(sum))
         $("#inputFinalPageTotalPrice").val(formatter.format(tempGrand))
       }
@@ -1790,26 +2018,40 @@
     append = append + '</div>'
     append = append + '<div class="box-body">'
     append = append + '<div id="headerPreviewPembanding" data-value="'+i+'">'
-    if (type_of_letter == 'IPR') {
-      append = append + "<span style='display:inline;'>To: <span id='textTo'>"+ item.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-      append = append + "<span style='display:inline'>Email: <span id='textEmail'>"+ item.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-      append = append + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ item.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ item.request_method +"</span></br>"
-      append = append + "<span style='display:inline;'>Fax: <span id='textFax'>"+ item.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(item.created_at).format('DD MMMM') +"</span></br>"
-      append = append + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ item.attention +"</span></span></br>"
-      append = append + "<span style='display:inline;'>From: <span id='textFrom'>"+ item.issuance +"</span></span><br>"
-      append = append + "<span style='display:inline'>Subject: <span id='textSubject'>"+ item.title +"</span></span></br>"
-      append = append + "<span style='display:inline'>Address: <span id='textAddress'>"+ item.address +"</span></span<br>"
-    }else{
-      append = append + "<span style='display:inline;'>To: <span id='textTo'>"+ item.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-      append = append + "<span style='display:inline'>Email: <span id='textEmail'>"+ item.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-      append = append + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ item.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ item.request_method +"</span></br>"
-      append = append + "<span style='display:inline;'>Fax: <span id='textFax'>"+ item.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(item.created_at).format('DD MMMM') +"</span></br>"
-      append = append + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ item.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-      append = append + "<span style='display:inline;'>From: <span id='textFrom'>"+ item.issuance +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ item.lead_id +"</span><br>"
-      append = append + "<span style='display:inline'>Subject: <span id='textSubject'>"+ item.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-      append = append + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ item.quote_number +'</span></span><br>'
-      append = append + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ item.address +'</span></span><br><br>'
+    append = append + '<div class="row">'
+    append = append + '    <div class="col-md-6">'
+    append = append + '        <div class="">To: '+ item.to +'</div>'
+    append = append + '        <div class="">Email: ' + item.email + '</div>'
+    append = append + '        <div class="">Phone: ' + item.phone + '</div>'
+    append = append + '        <div class="">Fax: '+ item.fax +' </div>'
+    append = append + '        <div class="">Attention: '+ item.attention +'</div>'
+    append = append + '        <div class="">From: '+ item.name +'</div>'
+    append = append + '        <div class="">Subject: '+ item.title +'</div>'
+    append = append + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ item.address +'</div>'
+
+    append = append + '    </div>'
+    if (window.matchMedia("(max-width: 767px)").matches)
+    {
+        append = append + '    <div class="col-md-6">'
+        // The viewport is less than 768 pixels wide
+        console.log("This is a mobile device.");
+    } else {
+        append = append + '    <div class="col-md-6" style="text-align:end">'
+        // The viewport is at least 768 pixels wide
+        console.log("This is a tablet or desktop.");
     }
+    append = append + '        <div>'+ PRType +'</div>'
+    append = append + '        <div><b>Request Methode</b></div>'
+    append = append + '        <div>'+ item.request_method +'</div>'
+    append = append + '        <div>'+ moment(item.created_at).format('DD MMMM') +'</div>'
+    if (type_of_letter == 'EPR') {
+      append = append + '        <div><b>Lead Register</b></div>'
+      append = append + '        <div>'+ item.lead_id +'</div>'
+      append = append + '        <div><b>Quote Number</b></div>'
+      append = append + '        <div>'+ item.quote_number +'</div>'
+    }
+    append = append + '    </div>'
+    append = append + '</div>'
     append = append + '</div>'
     append = append + '<hr id="hr_pembanding" data-value="'+i+'" style="display:none">'
     append = append + '<div id="bodyPreviewPembanding" data-value="'+i+'" style="display:none;overflow:auto" class="table-responsive">'
@@ -1817,9 +2059,9 @@
         append = append + '<thead>'
           append = append + '<th>No</th>'
           append = append + '<th width="20%">Product</th>'
-          append = append + '<th width="35%">Description</th>'
-          append = append + '<th width="10%">Qty</th>'
-          append = append + '<th width="15%">Type</th>'
+          append = append + '<th width="40%">Description</th>'
+          append = append + '<th width="5%">Qty</th>'
+          append = append + '<th width="5%">Type</th>'
           append = append + '<th width="15%">Price</th>'
           append = append + '<th width="15%">Total Price</th>'
         append = append + '</thead>'
@@ -1832,10 +2074,10 @@
                 append = append + '<span>'+ noProduct +'</span>'
               append = append + '</td>'
               append = append + '<td>'
-                append = append + '<input style="width:200px;font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+              append = append + "<input data-value='' readonly style='width:200px;font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td>'
-                append = append + '<textarea style="width:250px;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
+                append = append + '<textarea style="width:-webkit-fill-available;font-size:12px;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
               append = append + '</td>'
               append = append + '<td>'
                 append = append + '<input readonly class="form-control" type="" name="" value="'+ item.qty +'" style="width:45px;;font-size:12px">'
@@ -1859,14 +2101,14 @@
     append = append + '<div id="bottomPreviewPembanding" data-value="'+i+'" style="display:none">'
     append = append + '<hr>'
     append = append + '  <div class="row">'
-    append = append + '    <div class="col-md-12">'
+    append = append + '    <div class="col-md-12 col-xs-12">'
     append = append + '      <div class="col-md-6">'
     append = append + '        <div class="form-group">'
     append = append + '          <label>Note Pembanding</label>'
     append = append + '           <textarea readonly class="form-control" style="resize:none;overflow-y:scroll" id="note_pembandingView" rows="4" data-value="'+i+'"></textarea>'
     append = append + '        </div>'
     append = append + '      </div>'
-    append = append + '      <div class="col-md-6">'
+    append = append + '      <div class="col-md-6 col-xs-12">'
     append = append + '        <form class="form-horizontal">'
     append = append + '          <div class="form-group">'
     append = append + '            <label for="inputEmail3" class="col-sm-4 control-label">Total</label>'
@@ -1875,7 +2117,7 @@
     append = append + '            </div>'
     append = append + '          </div>'
     append = append + '          <div class="form-group">'
-    append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat 11%</label>'
+    append = append + '            <label for="inputEmail4" class="col-sm-4 control-label">Vat <span class="title_tax_pembanding"></span></label>'
     append = append + '            <div class="col-sm-8">'
     append = append + '              <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_pembanding" data-value="'+i+'">'
     append = append + '            </div>'
@@ -1893,7 +2135,7 @@
     append = append + '<hr>'
     append = append + '<div class="box">'
       append = append + '<div class="box-header with-border">'
-        append = append + '<h3 class="box-title">Terms of Payment</h3>'
+        append = append + '<h3 class="box-title">Terms & Condition</h3>'
         append = append + '<div class="box-tools pull-right">'
             append = append + '<button type="button" class="btn btn-box-tool btnTerm" onclick="btnTerm('+ i +')" data-value="'+i+'"><span class="fa fa-2x fa-angle-right" style="margin-top:-5px"></span>'
             append = append + '</button>'
@@ -1991,6 +2233,8 @@
           $("#btnAddPembanding").prop('disabled',true)
           $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
           $(".cbDraft").prop('disabled',true)
+          $(".cbPriority").closest('div').css('cursor','not-allowed')
+          $(".cbDraft").closest('div').css('cursor','not-allowed') 
         }     
       }
     })
@@ -2088,20 +2332,53 @@
         sum += temp;
     });
 
-    if (item.status_tax == 'True') {
-      tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+    // if (item.status_tax == 'True') {
+    //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+    //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+    // }else{
+    //   tempVat = tempVat
+    //   tempGrand = parseInt(sum)
+    // }
+
+    if (item.status_tax == false) {
+      valueVat = 'false'
     }else{
-      tempVat = tempVat
-      tempGrand = parseInt(sum)
+      valueVat = item.status_tax
+    }
+    // btnVatStatus = true
+    localStorage.setItem('status_tax',valueVat)
+
+    $('.inputTotalPriceEdit').each(function() {
+        var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        sum += temp;
+    });
+
+    if (!isNaN(valueVat)) {
+      tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+      finalVat = tempVat
+
+      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+      finalGrand = tempGrand
+
+      tempTotal = sum
+
+      $('.title_tax_pembanding').text(valueVat + '%')
+    }else{
+      tempVat = 0
+
+      tempGrand = sum
+
+      $('.title_tax_pembanding').text("")
     }
 
-    finalVat = tempVat
+    // finalVat = tempVat
 
-    finalGrand = tempGrand
+    // finalGrand = tempGrand
 
-    tempTotal = sum
-    $("#vat_tax_pembanding[data-value='" + i + "']").val(tempVat)
+    // tempTotal = sum
+    $("#vat_tax_pembanding[data-value='" + i + "']").val(formatter.format(tempVat))
     $("#inputGrandTotalProductPembanding[data-value='" + i + "']").val(formatter.format(sum))
     $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(tempGrand))
 
@@ -2301,7 +2578,7 @@
                 append = append + '<span>'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input style="font-size:12px" class="form-control" type="" name="" value="'+ item.name_product +'" readonly>'
+              append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="35%">'
                 append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" class="form-control" readonly>' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
@@ -2329,7 +2606,7 @@
 
           appendBottom = ""
           appendBottom = appendBottom + '<hr>'
-          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
           appendBottom = appendBottom + '<div id="textareaTOP" readonly class="form-control" style="width: 100%; height: 200px; font-size: 12px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
 
           $("#bottomPreviewSirkulasi").append(appendBottom) 
@@ -2340,10 +2617,14 @@
     }
   }
 
-  function finalize(){
+  function finalize(reqMethode){
     localStorage.setItem('isEmail',true)
-    $("#showDetail").empty()
-    showEmail()
+    if (reqMethode != 'Payment') {
+      $("#showDetail").empty()
+      showEmail(reqMethode)
+    }else{
+      sendOpenEmail('sended')
+    }
   }
 
   $('#bodyOpenMail').slimScroll({
@@ -2354,7 +2635,11 @@
     width: '600px'
   });
 
-  function showEmail(){
+
+
+  function showEmail(reqMethode){
+    //restart arr reason
+    arrReason = []
     append = ""
     append = append + '<div class="col-md-12">'
       append = append + '<div class="box">'
@@ -2404,10 +2689,16 @@
     append = append + '</div>'
 
     $("#showDetail").append(append)
-    createEmailBody()
+    if (reqMethode == "Purchase Order") {
+      createEmailBody('Felicia Debi Noor')
+    }else if (reqMethode == "Reimbursement") {
+      createEmailBody('Clara Keneyzia')
+    }else{
+      createEmailBody('-')
+    }
   }
 
-  function createEmailBody(){
+  function createEmailBody(user){
     $('.emailMultiSelector').remove()
     
     $.ajax({
@@ -2417,7 +2708,11 @@
       },
       type:"GET",
       success: function (result){
-        $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>Mba Felicia</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon untuk dibuatkan PO</span><br><br>" + result)       
+        if (user == 'Felicia Debi Noor') {
+          $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>"+ user +"</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon untuk dibuatkan PO dengan detail berikut:</span><br><br>" + result)   
+        }else if (user == 'Clara Keneyzia') {
+          $("#bodyOpenMail").html("<span style='font-family: Lucida Sans Unicode, sans-serif;'>Dear <b>"+ user +"</b></span><br><br><span style='font-family: Lucida Sans Unicode, sans-serif;'>Berikut Terlampir PR, Mohon dilakukan pembayaran dengan detail berikut:</span><br><br>" + result)   
+        }   
       }
     })
 
@@ -2425,7 +2720,8 @@
       type:"GET",
       url:"{{url('/admin/getDataSendEmail')}}",
       data:{
-        no_pr:window.location.href.split("/")[6]
+        no_pr:window.location.href.split("/")[6],
+        user:user,
       },
       success: function(result){
         arrEmailCc = []
@@ -2448,7 +2744,13 @@
     })
   }
 
-  function sendOpenEmail(){
+  function sendOpenEmail(status=''){
+    console.log(status)
+    if (status == 'sended') {
+      text = 'PR has been processed'
+    }else{
+      text = 'Email Sended'
+    }
     Swal.fire({
       title: 'Are you sure?',
       text: 'Make sure there is nothing wrong to send this',
@@ -2467,6 +2769,7 @@
             data: {
               _token: "{{ csrf_token() }}",
               no_pr:window.location.href.split("/")[6],
+              status:status,
               body:$("#bodyOpenMail").html(),
               subject: $("#emailOpenSubject").val(),
               to: $("#emailOpenTo").val(),
@@ -2491,7 +2794,7 @@
               Swal.hideLoading()
               Swal.fire({
                 title: 'Success!',
-                text: "Email Sended",
+                text: text,
                 icon: 'success',
                 confirmButtonText: 'Reload',
               }).then((result) => {
@@ -2598,23 +2901,80 @@
   }
 
   $("#btnAccept").click(function(){
-    $("#ModalSirkulasiPr").modal("hide")
-    $(".modal-dialog").removeClass("modal-lg")
-    $.ajax({
-      type:"GET",
-      url:"{{url('/admin/cekTTD')}}",
-      data:{
-        nik:"{{Auth::User()->nik}}",
-      },
-      success: function(result){
-        if (result.ttd == null) {
-          $("#ModalUploadNewTTD").modal("show")
-        }else{
-          $("#ModalAcceptSirkulasi").modal("show")
-          $("#TTD").attr("src","{!! asset('"+result.ttd+"')!!}")
+    // $("#ModalSirkulasiPr").modal("hide")
+    // $(".modal-dialog").removeClass("modal-lg")
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Circular this Process!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+        if (result.value) {
+          $("#ModalSirkulasiPr").modal("hide")
+          $.ajax({
+            type:"POST",
+            url:"{{url('/admin/submitTtdApprovePR')}}",
+            data:{
+              _token:"{{ csrf_token() }}",
+              no_pr:window.location.href.split("/")[6]
+            },beforeSend:function(){
+              Swal.fire({
+                  title: 'Please Wait..!',
+                  text: "It's sending..",
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  allowEnterKey: false,
+                  customClass: {
+                      popup: 'border-radius-0',
+                  },
+                  didOpen: () => {
+                      Swal.showLoading()
+                  }
+              })
+            },
+            success: function(result) {
+              processing=false
+              Swal.fire(
+                  'Successfully!',
+                  'Document has been circulated.',
+                  'success'
+              ).then((result) => {
+                location.reload()
+              })
+            },
+            error: function(resultAjax,errorStatus,errorMessage){
+              Swal.hideLoading()
+              Swal.fire({
+                title: 'Error!',
+                text: "Something went wrong, please try again!",
+                icon: 'error',
+                confirmButtonText: 'Try Again',
+              }).then((result) => {
+                $.ajax(this)
+              })
+            }
+          })          
         }
-      }
     })
+    // $.ajax({
+    //   type:"GET",
+    //   url:"{{url('/admin/cekTTD')}}",
+    //   data:{
+    //     nik:"{{Auth::User()->nik}}",
+    //   },
+    //   success: function(result){
+    //     if (result.ttd == null) {
+    //       $("#ModalUploadNewTTD").modal("show")
+    //     }else{
+    //       $("#ModalAcceptSirkulasi").modal("show")
+    //       $("#TTD").attr("src","{!! asset('"+result.ttd+"')!!}")
+    //     }
+    //   }
+    // })
   })
 
   $("#btnReject").click(function(){
@@ -2648,8 +3008,9 @@
     addDraftPrPembanding(0)
   }
 
+  const firstLaunch = localStorage.setItem('firstLaunch',true)
+
   function addDraftPrPembanding(n){
-    const firstLaunch = localStorage.setItem('firstLaunch',true)
     localStorage.setItem('isStoreSupplier',false)
     var x = document.getElementsByClassName("tab-add");
     x[n].style.display = "inline";
@@ -2678,26 +3039,40 @@
           }
 
           var appendHeader = ""
-          if (result.pr.type_of_letter == 'IPR') {
-            appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Address: <span id='textAddress'>"+ result.pr.address +"</span></span<br>"
-          }else{
-            appendHeader = appendHeader + "<span style='display:inline;'>To: <span id='textTo'>"+ result.pr.to +"</span></span><span id='textPRType' style='display:inline;' class='pull-right'>"+ PRType +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Email: <span id='textEmail'>"+ result.pr.email +"</span></span><span style='display:inline;' class='pull-right'><b>Request Methode</b></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Phone: <span id='textPhone'>"+ result.pr.phone +"</span></span><span id='textTypeMethode' style='display:inline;' class='pull-right'>"+ result.pr.request_method +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Fax: <span id='textFax'>"+ result.pr.fax +"</span> <span id='textDate' style='display:inline;' class='pull-right'>"+ moment(result.pr.created_at).format('DD MMMM') +"</span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>Attention: <span id='textAttention'>"+ result.pr.attention +"</span></span><span style='display:inline;' class='pull-right'><b>Lead Register</b></span></br>"
-            appendHeader = appendHeader + "<span style='display:inline;'>From: <span id='textFrom'>"+ result.pr.name +"</span></span><span id='textLeadRegister' style='display:inline;' class='pull-right'>"+ result.pr.lead_id +"</span><br>"
-            appendHeader = appendHeader + "<span style='display:inline'>Subject: <span id='textSubject'>"+ result.pr.title +"</span></span><span style='display:inline;' class='pull-right'><b>Quote Number</b></span></br>"
-            appendHeader = appendHeader + '<span>Address: <span id="textQuoteNumber" style="display:inline;" class="pull-right">'+ result.pr.quote_number +'</span></span><br>'
-            appendHeader = appendHeader + '<span style="display:inline"><span id="textAddress" style="float:right;width:500px;float: left;">'+ result.pr.address +'</span></span><br><br>'
+          appendHeader = appendHeader + '<div class="row">'
+          appendHeader = appendHeader + '    <div class="col-md-6">'
+          appendHeader = appendHeader + '        <div class="">To: '+ result.pr.to +'</div>'
+          appendHeader = appendHeader + '        <div class="">Email: ' + result.pr.email + '</div>'
+          appendHeader = appendHeader + '        <div class="">Phone: ' + result.pr.phone + '</div>'
+          appendHeader = appendHeader + '        <div class="">Fax: '+ result.pr.fax +' </div>'
+          appendHeader = appendHeader + '        <div class="">Attention: '+ result.pr.attention +'</div>'
+          appendHeader = appendHeader + '        <div class="">From: '+ result.pr.name +'</div>'
+          appendHeader = appendHeader + '        <div class="">Subject: '+ result.pr.title +'</div>'
+          appendHeader = appendHeader + '        <div class="" style="width:fit-content;word-wrap: break-word;">Address: '+ result.pr.address +'</div>'
+
+          appendHeader = appendHeader + '    </div>'
+          if (window.matchMedia("(max-width: 768px)").matches)
+          {
+              appendHeader = appendHeader + '    <div class="col-md-6">'
+              // The viewport is less than 768 pixels wide
+              console.log("This is a mobile device.");
+          } else {
+              appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
+              // The viewport is at least 768 pixels wide
+              console.log("This is a tablet or desktop.");
           }
+          appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
+          appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
+          appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
+          if (type_of_letter == 'EPR') {
+            appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+            appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
+          }
+          appendHeader = appendHeader + '    </div>'
+          appendHeader = appendHeader + '</div>'
 
           $("#headerPreviewFinal").append(appendHeader)
 
@@ -2711,7 +3086,7 @@
                 append = append + '<span>'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input style="font-size: 12px; important" readonly class="form-control" type="" name="" value="'+ item.name_product +'">'
+              append = append + "<input data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="35%">'
                 append = append + '<textarea style="font-size: 12px; important;height:150px;resize:none" readonly class="form-control">' + item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number + '</textarea>'
@@ -2740,7 +3115,7 @@
           appendBottom = appendBottom + '<hr>'
           appendBottom = appendBottom + '<div class="form-group">'
           appendBottom = appendBottom + '<div class="row">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
           appendBottom = appendBottom + '      <input readonly="" type="text" style="width:150px;display: inline;" class="form-control inputGrandTotalProductPembandingModal" id="inputGrandTotalProductPembandingModal" name="inputGrandTotalProductPembandingModal">'
@@ -2748,9 +3123,9 @@
           appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + ' <div class="col-md-12">'
+          appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '   <div class="pull-right">'
-            appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat 11%</span>'
+            appendBottom = appendBottom + '   <span style="margin-right: -5px;">Vat <span class="title_tax"></span></span>'
             appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
             appendBottom = appendBottom + '       <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_PembandingModal" name="vat_tax_PembandingModal" style="width:150px;">'
             appendBottom = appendBottom + '     </div>'
@@ -2758,7 +3133,7 @@
           appendBottom = appendBottom + ' </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
           appendBottom = appendBottom + '      <input readonly type="text" style="width:150px;display: inline;" class="form-control inputFinalPageTotalPricePembandingModal" id="inputFinalPageTotalPricePembandingModal" name="inputFinalPageTotalPricePembandingModal">'
@@ -2767,7 +3142,7 @@
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<hr>'
-          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms of Payment</b></span>'
+          appendBottom = appendBottom + '<span style="display:block;text-align:center"><b>Terms & Condition</b></span>'
           appendBottom = appendBottom + '<div class="form-control" id="termPreviewPembandingModal" style="width: 100%; height: 200px; font-size: 12px; line-height: 18px; border: 1px solid rgb(221, 221, 221);overflow:auto"></div>'
           appendBottom = appendBottom + '<hr>'
           appendBottom = appendBottom + '<span><b>Attached Files</b></span>'
@@ -2837,26 +3212,53 @@
           var finalGrand = 0
           var tempTotal = 0
           var sum = 0
+          var valueVat = ""
 
           $('.grandTotalPreviewPembandingModal').each(function() {
               var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
               sum += temp;
           });
 
-          if (result.pr.status_tax == 'True') {
-            tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          // if (result.pr.status_tax == 'True') {
+          //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
+          //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          // }else{
+          //   tempVat = tempVat
+          //   tempGrand = parseInt(sum)
+          // }
+
+          if (result.pr.status_tax == false) {
+            valueVat = 'false'
           }else{
-            tempVat = tempVat
-            tempGrand = parseInt(sum)
+            valueVat = result.pr.status_tax
+          }
+          console.log(valueVat)
+          // btnVatStatus = true
+          finalVat = tempVat
+          finalGrand = tempGrand
+          localStorage.setItem('status_tax',valueVat)
+          if (!isNaN(valueVat)) {
+
+            tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
+            finalVat = tempVat
+
+            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
+            finalGrand = tempGrand
+
+            tempTotal = sum
+
+            $('.title_tax').text(valueVat + '%')
+          }else{
+            tempVat = 0
+
+            tempGrand = sum
+
+            $('.title_tax').text("")
           }
 
-          finalVat = tempVat
-
-          finalGrand = tempGrand
-
-          tempTotal = sum
-          $("#vat_tax_PembandingModal").val(tempVat)
+          $("#vat_tax_PembandingModal").val(formatter.format(tempVat))
           $("#inputGrandTotalProductPembandingModal").val(formatter.format(sum))
           $("#inputFinalPageTotalPricePembandingModal").val(formatter.format(tempGrand))
         }
@@ -2922,6 +3324,7 @@
           $("#inputPartNumber").val('')
           $("#inputTotalPrice").val('')
         })
+
       }else if(n == 2){
         $(".modal-title").text('')
         $("#nextBtnAdd").removeAttr('onclick')
@@ -2939,11 +3342,11 @@
         $(".modal-dialog").removeClass('modal-lg')
         $.ajax({
           type: "GET",
-          url: "{{url('/admin/getTypePr')}}",
+          url: "{{url('/admin/getPreviewPembanding')}}",
           data: {
-            no_pr:window.location.href.split("/")[6],
+            no_pr:localStorage.getItem('no_pembanding'),
           },success:function(result){
-            if (result[0].type_of_letter == 'EPR') {
+            if (result.pr.type_of_letter == 'EPR') {
               $(".modal-title").text('External Purchase Request')
               $("#formForPrExternal").show()
               $("#formForPrInternal").hide()    
@@ -3054,6 +3457,32 @@
                         $("#link_sbe").attr("href",result.dokumen[1].link_drive)
                       }
                     }
+
+                    if(result.dokumen.splice(1).length > 0){
+                      console.log("kok muncul")
+                      $("#tableDocPendukung_epr").empty()
+                      
+                      $("#titleDoc_epr").css("display",'block')
+
+                      appendDocPendukung = ""
+                      $.each(result.dokumen,function(value,item){
+                        if (value != 0 &&  value != 1 && value != 2) {
+                          appendDocPendukung = appendDocPendukung + '<tr style="height:10px" class="trDocPendukung">'
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+                                  appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px;background-color:darkgrey;cursor:not-allowed">'
+                                    appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;color:grey' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"' disabled>"
+                                   appendDocPendukung = appendDocPendukung + '</div>'
+                                   appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                            appendDocPendukung = appendDocPendukung + "<td>"
+                              appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" value="'+ item.dokumen_name +'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
+                            appendDocPendukung = appendDocPendukung + "</td>"
+                          appendDocPendukung = appendDocPendukung + "</tr>"
+                        }   
+                      })
+                      $("#tableDocPendukung_epr").append(appendDocPendukung)
+                    }
                   }
                 }
               })              
@@ -3061,7 +3490,100 @@
             }else{
               $(".modal-title").text('Internal Purchase Request')
               $("#formForPrInternal").show()
-              $("#formForPrExternal").hide()        
+              $("#formForPrExternal").hide() 
+
+              $("#tableDocPendukung_ipr").empty()
+
+              appendDocPendukung = ""
+              $.each(result.dokumen,function(value,item){
+                if (value != 0) {
+                  appendDocPendukung = appendDocPendukung + '<tr style="height:10px" class="trDocPendukung">'
+                    appendDocPendukung = appendDocPendukung + "<td>"
+                      appendDocPendukung = appendDocPendukung + '<button type="button" value="'+ item.id_dokumen +'" class="fa fa-times btnRemoveDocPendukung" data-value="remove_'+ value +'" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+                          appendDocPendukung = appendDocPendukung + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;color: #337ab7;display: inline-block;width:200px;background-color:darkgrey;cursor:not-allowed">'
+                            appendDocPendukung = appendDocPendukung + "<input style='font-family: inherit;width: 90px;color:grey' type='file' name='inputDocPendukung' id='inputDocPendukung' data-value='"+ item.id_dokumen +"' class='inputDocPendukung_"+value+"' disabled>"
+                           appendDocPendukung = appendDocPendukung + '</div>'
+                           appendDocPendukung = appendDocPendukung + "<br><a style='margin-left: 26px;font-family:Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif' href='"+ item.link_drive +"' target='_blank'><i class='fa fa-link'></i>&nbspLink drive</a>"
+                    appendDocPendukung = appendDocPendukung + "</td>"
+                    appendDocPendukung = appendDocPendukung + "<td>"
+                      appendDocPendukung = appendDocPendukung + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+value+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak"><br>'
+                    appendDocPendukung = appendDocPendukung + "</td>"
+                  appendDocPendukung = appendDocPendukung + "</tr>"
+                }   
+              })
+              $("#tableDocPendukung_ipr").append(appendDocPendukung)              
+
+              $.each(result.dokumen,function(value,item){
+                if (value != 0) {
+                  const filedocpendukung = document.querySelector('.inputDocPendukung_'+value);
+
+                  const FilePendukung = new File(['{{asset("/")}}"'+ item.dokumen_location +'"'], '/'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1],{
+                      type: 'text/plain',
+                      lastModified: new Date(),
+                  });
+
+                  // Now let's create a DataTransfer to get a FileList
+                  const dataTransfer = new DataTransfer();
+                  dataTransfer.items.add(FilePendukung);
+                  filedocpendukung.files = dataTransfer.files;
+
+                  $('.inputNameDocPendukung_'+value).val(item.dokumen_name)
+                }
+
+                $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").click(function(){
+                  Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Deleting document",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No',
+                  }).then((result) => {
+                      if (result.value) {
+                        $.ajax({
+                          type:"POST",
+                          url:"{{url('/admin/deleteDokumen/')}}",
+                          data:{
+                            _token:"{{ csrf_token() }}",
+                            id:this.value
+                          },beforeSend:function(){
+                            Swal.fire({
+                                title: 'Please Wait..!',
+                                text: "It's sending..",
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                customClass: {
+                                    popup: 'border-radius-0',
+                                },
+                                didOpen: () => {
+                                    Swal.showLoading()
+                                }
+                            })
+                          },
+                          success: function(data)
+                          {
+                            Swal.showLoading()
+                            Swal.fire(
+                                'Document has been deleted!',
+                                'You can adding another document files',
+                                'success'
+                            ).then((result) => {
+                              if (result.value) {
+                                $(".btnRemoveDocPendukung[data-value='remove_" + value + "']").closest("tr").remove();
+                              }
+                            })
+                          }
+                        })
+                      }
+                  })
+                  if($('#tableDocPendukung_ipr tr').length == 0){
+                    $("#titleDoc").hide()
+                  }
+                })
+              })       
             } 
           }
         })
@@ -3070,7 +3592,7 @@
         $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
         document.getElementById("prevBtnAdd").style.display = "inline";
       }else if (n == 4) {
-        $(".modal-title").text('Term Of Payment')   
+        $(".modal-title").text('Terms & Condition')   
         $(".modal-dialog").removeClass('modal-lg')   
         $("#prevBtnAdd").attr('onclick','nextPrevAddPembanding(-1)')        
         $("#nextBtnAdd").attr('onclick','nextPrevAddPembanding(1)')
@@ -3213,6 +3735,14 @@
       $("#textAreaTOP").closest('textarea').next('span').hide();
       $("#textAreaTOP").prev('.input-group-addon').css("background-color","red"); 
     }
+
+    if (val == "reason_reject") {
+      if (val == "reason_reject") {
+        $("#reasonRejectSirkular").closest('.form-group').removeClass('has-error')
+        $("#reasonRejectSirkular").closest('textarea').next('span').hide();
+        $("#reasonRejectSirkular").prev('.input-group-addon').css("background-color","red"); 
+      }
+    }
   }
 
   localStorage.setItem('isEditProduct',false)
@@ -3226,13 +3756,18 @@
       value = value
       if (value == true) {
         value = 'true'
+      }else if (value == false) {
+        value = 'false'
+      }else{
+        value = parseInt(value)
       }
-      if (value == false || isNaN(value) == false) {
+
+      if (!isNaN(value)) {
         $(".tabGroupInitiateAdd").hide()
         $(".tab-add")[1].children[1].style.display = 'inline'
         $.ajax({
           type: "GET",
-          url: "{{url('/admin/getProductById')}}",
+          url: "{{url('/admin/getProductCompareById')}}",
           data: {
             id_product:value,
           },
@@ -3250,6 +3785,12 @@
               $("#inputSerialNumber").val(item.serial_number)
               $("#inputPartNumber").val(item.part_number)
               $("#inputTotalPrice").val(formatter.format(item.grand_total))
+              console.log("okee"+item.isRupiah)
+              if (item.isRupiah == "false") {
+                $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+              }else{
+                $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+              }
             })
           }
         }) 
@@ -3342,6 +3883,7 @@
                       },
                       success: function(result){
                         localStorage.setItem('isStoreSupplier',true)
+                        localStorage.setItem('firstLaunch',false)
                         Swal.close()
                         var x = document.getElementsByClassName("tab-add");
                         x[currentTab].style.display = "none";
@@ -3444,7 +3986,7 @@
                     currentTab = 0;
                   }
                   addDraftPrPembanding(currentTab);
-                  addTable()
+                  addTable(0)
                   localStorage.setItem('isEditProduct',false)
                   $(".tabGroupInitiateAdd").show()
                   $(".tab-add")[1].children[1].style.display = 'none'
@@ -3501,7 +4043,7 @@
                   $(".tabGroupInitiateAdd").show()
                   $(".tab-add")[1].children[1].style.display = 'none'
                   document.getElementsByClassName('tabGroupInitiateAdd')[0].childNodes[1].style.display = 'flex'
-                  addTable()
+                  addTable(0)
                   
                   $("#inputNameProduct").val('')
                   $("#inputDescProduct").val('')
@@ -3572,204 +4114,297 @@
                   currentTab = 0;
                 }
                 addDraftPrPembanding(currentTab)
-                addTable()
+                addTable(0)
               }
             }
           })
         }
       }       
-    }else if (currentTab == 3) {
+    }else if (currentTab == 2) {
       $.ajax({
-        type: "GET",
-        url: "{{url('/admin/getTypePr')}}",
-        data: {
-          no_pr:window.location.href.split("/")[6],
-        },success:function(result){
-          if (result[0].type_of_letter == 'IPR') {
-            if ($("#inputPenawaranHarga").val() == "") {
-              $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
-              $("#inputPenawaranHarga").closest('div').next('span').show();
-              $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red");
-            }else{
-              
-              let formData = new FormData();
-              const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
-              if (filepenawaranHarga!="") {
-                formData.append('inputPenawaranHarga', filepenawaranHarga);
+        type:"POST",
+        url:"{{url('/admin/storeTaxComparing')}}",
+        data:{
+          no_pr:localStorage.getItem('no_pembanding'),
+          isRupiah:localStorage.getItem('isRupiah'),
+          status_tax:localStorage.getItem('status_tax'),
+          _token:"{{csrf_token()}}"
+        },
+        beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
               }
-
-              $(".tableDocPendukung").empty()
-
-              var arrInputDocPendukung = []
-              $('#tableDocPendukung .trDocPendukung').each(function() {
-                var fileInput = $(this).find('#inputDocPendukung').val()
-                if (fileInput && fileInput !== '') {   
-                  formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                  arrInputDocPendukung.push({
-                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                    no_pr:localStorage.getItem('no_pembanding'),
-                  })  
-                }
-              });
-              formData.append('_token',"{{csrf_token()}}")
-              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
-              formData.append('no_pr',localStorage.getItem('no_pembanding'))
-              formData.append('id_draft_pr',localStorage.getItem('id_draft_pr'))
-
-              if (n == 1) {
-                $.ajax({
-                  type:"POST",
-                  url:"{{url('/admin/storePembandingDokumen')}}",
-                  processData: false,
-                  contentType: false,
-                  data:formData,
-                  beforeSend:function(){
-                    Swal.fire({
-                        title: 'Please Wait..!',
-                        text: "It's sending..",
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        allowEnterKey: false,
-                        customClass: {
-                            popup: 'border-radius-0',
-                        },
-                        didOpen: () => {
-                            Swal.showLoading()
-                        }
-                    })
-                  },
-                  success: function(result){
-                    Swal.close()
-                    var x = document.getElementsByClassName("tab-add");
-                    x[currentTab].style.display = "none";
-                    currentTab = currentTab + n;
-                    if (currentTab >= x.length) {
-                      x[n].style.display = "none";
-                      currentTab = 0;
-                    }
-                    addDraftPrPembanding(currentTab);
-                  }
-                }) 
-              }else{
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
-                }
-                addDraftPrPembanding(currentTab);
-              }
-            }
-          }else{
-            if ($("#selectLeadId").val() == "") {
-              $("#selectLeadId").closest('.col-md-6').addClass('has-error')
-              $("#selectLeadId").closest('select').next('span help-block').show();
-              $("#selectLeadId").prev('.col-md-6').css("background-color","red");
-            }else if ($("#selectPid").val() == "") {
-              $("#selectPid").closest('.col-md-6').addClass('has-error')
-              $("#selectPid").closest('select').next('span help-block').show();
-              $("#selectPid").prev('.col-md-6').css("background-color","red");
-            }else if ($("#inputQuoteSupplier").val() == "") {
-              $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
-              $("#inputQuoteSupplier").closest('div').next('span').show();
-              $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
-            }else if ($("#inputQuoteNumber").val() == "") {
-              $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
-              $("#inputQuoteNumber").closest('input').next('span').show();
-              $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
-            }else{
-              let formData = new FormData();
-              const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
-              var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
-              if (nama_file_quote_supplier!="" && fileQuoteSupplier!="") {
-                formData.append('inputQuoteSupplier', fileQuoteSupplier);
-              }
-
-              formData.append('_token',"{{csrf_token()}}")
-              formData.append('no_pr', localStorage.getItem('no_pembanding'))
-              formData.append('selectLeadId', $("#selectLeadId").val())
-              formData.append('selectPid', $("#selectPid").val())
-              formData.append('inputPid',$("#projectIdInputNew").val())
-              formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
-
-              if (n == 1) {
-                $.ajax({
-                  type:"POST",
-                  url:"{{url('/admin/storePembandingDokumen')}}",
-                  processData: false,
-                  contentType: false,
-                  data:formData,
-                  beforeSend:function(){
-                    Swal.fire({
-                        title: 'Please Wait..!',
-                        text: "It's sending..",
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        allowEnterKey: false,
-                        customClass: {
-                            popup: 'border-radius-0',
-                        },
-                        didOpen: () => {
-                            Swal.showLoading()
-                        }
-                    })
-                  },
-                  success: function(result){
-                    Swal.close()
-                    var x = document.getElementsByClassName("tab-add");
-                    x[currentTab].style.display = "none";
-                    currentTab = currentTab + n;
-                    if (currentTab >= x.length) {
-                      x[n].style.display = "none";
-                      currentTab = 0;
-                    }
-                    addDraftPrPembanding(currentTab);
-                  }
-                })
-              }else{
-                var x = document.getElementsByClassName("tab-add");
-                x[currentTab].style.display = "none";
-                currentTab = currentTab + n;
-                if (currentTab >= x.length) {
-                  x[n].style.display = "none";
-                  currentTab = 0;
-                }
-                addDraftPrPembanding(currentTab);
-              }              
-            } 
+          })
+        },
+        success: function(result){
+          Swal.close()
+          let x = document.getElementsByClassName("tab-add");
+          x[currentTab].style.display = "none";
+          currentTab = currentTab + n;
+          if (currentTab >= x.length) {
+            x[n].style.display = "none";
+            currentTab = 0;
           }
+          addDraftPrPembanding(currentTab);
         }
       })
-    }else if (currentTab == 4) {
-      if ($("#textAreaTOP").val() == "") {
-        $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
-        $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
-      }else{
-        $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
-        $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
-        
+    }else if (currentTab == 3) {
+      if (n == 1) {
         $.ajax({
-          url: "{{'/admin/storePembandingTermPayment'}}",
-          type: 'post',
-          data:{
+          type: "GET",
+          url: "{{url('/admin/getPreviewPembanding')}}",
+          data: {
             no_pr:localStorage.getItem('no_pembanding'),
-            _token:"{{csrf_token()}}",
-            textAreaTOP:$("#textAreaTOP").val(),
-            status_tax:localStorage.getItem('status_tax')
-          },
-          success: function(data)
-          {
-            var x = document.getElementsByClassName("tab-add");
-            x[currentTab].style.display = "none";
-            currentTab = currentTab + n;
-            if (currentTab >= x.length) {
-              x[n].style.display = "none";
-              currentTab = 0;
+          },success:function(result){
+            if (result.pr.type_of_letter == 'IPR') {
+              if ($("#inputPenawaranHarga").val() == "") {
+                $("#inputPenawaranHarga").closest('.form-group').addClass('has-error')
+                $("#inputPenawaranHarga").closest('div').next('span').show();
+                $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red");
+              }else{
+                let formData = new FormData();
+                const filepenawaranHarga = $('#inputPenawaranHarga').prop('files')[0];
+                if (filepenawaranHarga!="") {
+                  formData.append('inputPenawaranHarga', filepenawaranHarga);
+                }
+
+                $(".tableDocPendukung_ipr").empty()
+
+                var arrInputDocPendukung = []
+                $('#tableDocPendukung_ipr .trDocPendukung').each(function() {
+                  var fileInput = $(this).find('#inputDocPendukung').val()
+                  if (fileInput && fileInput !== '') {   
+                    formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                    arrInputDocPendukung.push({
+                      nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                      no_pr:localStorage.getItem('no_pembanding'),
+                    })  
+                  }
+                });
+                formData.append('_token',"{{csrf_token()}}")
+                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+                formData.append('no_pr',localStorage.getItem('no_pembanding'))
+                formData.append('id_draft_pr',localStorage.getItem('id_draft_pr'))
+
+                if (n == 1) {
+                  $.ajax({
+                    type:"POST",
+                    url:"{{url('/admin/storePembandingDokumen')}}",
+                    processData: false,
+                    contentType: false,
+                    data:formData,
+                    beforeSend:function(){
+                      Swal.fire({
+                          title: 'Please Wait..!',
+                          text: "It's sending..",
+                          allowOutsideClick: false,
+                          allowEscapeKey: false,
+                          allowEnterKey: false,
+                          customClass: {
+                              popup: 'border-radius-0',
+                          },
+                          didOpen: () => {
+                              Swal.showLoading()
+                          }
+                      })
+                    },
+                    success: function(result){
+                      Swal.close()
+                      var x = document.getElementsByClassName("tab-add");
+                      x[currentTab].style.display = "none";
+                      currentTab = currentTab + n;
+                      if (currentTab >= x.length) {
+                        x[n].style.display = "none";
+                        currentTab = 0;
+                      }
+                      addDraftPrPembanding(currentTab);
+                    }
+                  }) 
+                }else{
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  addDraftPrPembanding(currentTab);
+                }
+              }
+            }else{
+              if ($("#selectLeadId").val() == "") {
+                $("#selectLeadId").closest('.col-md-6').addClass('has-error')
+                $("#selectLeadId").closest('select').next('span help-block').show();
+                $("#selectLeadId").prev('.col-md-6').css("background-color","red");
+              }else if ($("#selectPid").val() == "") {
+                $("#selectPid").closest('.col-md-6').addClass('has-error')
+                $("#selectPid").closest('select').next('span help-block').show();
+                $("#selectPid").prev('.col-md-6').css("background-color","red");
+              }else if ($("#inputQuoteSupplier").val() == "") {
+                $("#inputQuoteSupplier").closest('.col-md-6').addClass('has-error')
+                $("#inputQuoteSupplier").closest('div').next('span').show();
+                $("#inputQuoteSupplier").prev('.col-md-6').css("background-color","red");
+              }else if ($("#inputQuoteNumber").val() == "") {
+                $("#inputQuoteNumber").closest('.col-md-6').addClass('has-error')
+                $("#inputQuoteNumber").closest('input').next('span').show();
+                $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
+              }else{
+                let formData = new FormData();
+                const fileQuoteSupplier = $('#inputQuoteSupplier').prop('files')[0];
+                var nama_file_quote_supplier = $('#inputQuoteSupplier').val();
+                if (nama_file_quote_supplier!="" && fileQuoteSupplier!="") {
+                  formData.append('inputQuoteSupplier', fileQuoteSupplier);
+                }
+
+                var arrInputDocPendukung = []
+
+                if (result.dokumen.length > 0) {
+                  if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+                    $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
+                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                      arrInputDocPendukung.push({
+                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                        no_pr:localStorage.getItem('no_pembanding')
+                      })
+                    })
+
+                  }else{
+                    var fileInput = $(this).find('#inputDocPendukung').val()
+                    if (fileInput && fileInput !== '') { 
+                      formData.append('inputDocPendukung[]','-')
+                    }
+                  }                                 
+                }else{
+                  console.log("ada baru")
+                  $('#tableDocPendukung_epr .trDocPendukung').each(function() {
+                    var fileInput = $(this).find('#inputDocPendukung').val()
+                    if (fileInput && fileInput !== '') { 
+
+                      formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                      arrInputDocPendukung.push({
+                        nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                        no_pr:localStorage.getItem('no_pembanding')
+                      })
+
+                      console.log(arrInputDocPendukung)
+                    }
+                  })
+                }  
+
+                formData.append('_token',"{{csrf_token()}}")
+                formData.append('no_pr', localStorage.getItem('no_pembanding'))
+                formData.append('selectLeadId', $("#selectLeadId").val())
+                formData.append('selectPid', $("#selectPid").val())
+                formData.append('inputPid',$("#projectIdInputNew").val())
+                formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
+                formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+
+                if (n == 1) {
+                  $.ajax({
+                    type:"POST",
+                    url:"{{url('/admin/storePembandingDokumen')}}",
+                    processData: false,
+                    contentType: false,
+                    data:formData,
+                    beforeSend:function(){
+                      Swal.fire({
+                          title: 'Please Wait..!',
+                          text: "It's sending..",
+                          allowOutsideClick: false,
+                          allowEscapeKey: false,
+                          allowEnterKey: false,
+                          customClass: {
+                              popup: 'border-radius-0',
+                          },
+                          didOpen: () => {
+                              Swal.showLoading()
+                          }
+                      })
+                    },
+                    success: function(result){
+                      Swal.close()
+                      var x = document.getElementsByClassName("tab-add");
+                      x[currentTab].style.display = "none";
+                      currentTab = currentTab + n;
+                      if (currentTab >= x.length) {
+                        x[n].style.display = "none";
+                        currentTab = 0;
+                      }
+                      addDraftPrPembanding(currentTab);
+                    }
+                  })
+                }else{
+                  var x = document.getElementsByClassName("tab-add");
+                  x[currentTab].style.display = "none";
+                  currentTab = currentTab + n;
+                  if (currentTab >= x.length) {
+                    x[n].style.display = "none";
+                    currentTab = 0;
+                  }
+                  addDraftPrPembanding(currentTab);
+                }              
+              } 
             }
-            addDraftPrPembanding(currentTab);
           }
-        }); 
+        })
+      }else{
+        var x = document.getElementsByClassName("tab-add");
+        x[currentTab].style.display = "none";
+        currentTab = currentTab + n;
+        if (currentTab >= x.length) {
+          x[n].style.display = "none";
+          currentTab = 0;
+        }
+        addDraftPrPembanding(currentTab);
+      }
+    }else if (currentTab == 4) {
+      if (n == 1) {
+        if ($("#textAreaTOP").val() == "") {
+          $("#textAreaTOP").closest('textarea').closest('div').closest('form').addClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').show()
+        }else{
+          $("#textAreaTOP").closest('textarea').closest('div').closest('form').removeClass('has-error')
+          $("#textAreaTOP").closest('textarea').next('input').next('iframe').next('span').hide()
+          
+          $.ajax({
+            url: "{{'/admin/storePembandingTermPayment'}}",
+            type: 'post',
+            data:{
+              no_pr:localStorage.getItem('no_pembanding'),
+              _token:"{{csrf_token()}}",
+              textAreaTOP:$("#textAreaTOP").val(),
+            },
+            success: function(data)
+            {
+              var x = document.getElementsByClassName("tab-add");
+              x[currentTab].style.display = "none";
+              currentTab = currentTab + n;
+              if (currentTab >= x.length) {
+                x[n].style.display = "none";
+                currentTab = 0;
+              }
+              addDraftPrPembanding(currentTab);
+            }
+          }); 
+        }
+      }else{
+        var x = document.getElementsByClassName("tab-add");
+        x[currentTab].style.display = "none";
+        currentTab = currentTab + n;
+        if (currentTab >= x.length) {
+          x[n].style.display = "none";
+          currentTab = 0;
+        }
+        addDraftPrPembanding(currentTab);
       }
     }else{
       $(".divReasonRejectRevision").remove()
@@ -3805,6 +4440,7 @@
               _token:"{{csrf_token()}}",
               no_pr:localStorage.getItem('no_pembanding'),
               inputGrandTotalProduct:$("#inputFinalPageTotalPricePembandingModal").val(),
+              isRupiah:localStorage.getItem("isRupiah"),
             },beforeSend:function(){
               Swal.fire({
                   title: 'Please Wait..!',
@@ -3839,40 +4475,97 @@
     })
   } 
 
-  var tempVat = 0
-  var finalVat = 0
-  var tempGrand = 0
-  var finalGrand = 0
-  var tempTotal = 0
-  var btnVatStatus = true
-  localStorage.setItem("status_tax",'True')
+  // var tempVat = 0
+  // var finalVat = 0
+  // var tempGrand = 0
+  // var finalGrand = 0
+  // var tempTotal = 0
+  // var sum = 0
+  // var btnVatStatus = true
+  function changeVatValue(value=false){
+    var tempVat = 0
+    var finalVat = 0
+    var tempGrand = 0
+    var finalGrand = 0
+    var tempTotal = 0
+    var sum = 0
 
-  function changeVatValue(){
-    if($("#btn-vat").hasClass('btn-default')){
-      btnVatStatus = false
-      finalVat = 0
-      finalGrand = tempTotal
-      $("#btn-vat").removeClass('btn-default')
-      $("#btn-vat").addClass('btn-danger')
-      $("#btn-vat").text('✖')
-      $("#vat_tax").val(0)
-      $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
-      localStorage.setItem("status_tax",'False')
+    if (value == false) {
+      valueVat = 'false'
+    }else{
+      valueVat = value
+    }
+    console.log(valueVat)
+    // btnVatStatus = true
+    localStorage.setItem('status_tax',valueVat)
 
-    } else {
-      btnVatStatus = true
+    $('.inputTotalPriceEdit').each(function() {
+        var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        sum += temp;
+    });
+
+    $("#inputGrandTotalProduct").val(formatter.format(sum))
+
+    if (!isNaN(valueVat)) {
+      tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+
       finalVat = tempVat
+
+      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+
       finalGrand = tempGrand
-      $("#btn-vat").addClass('btn-default')
-      $("#btn-vat").removeClass('btn-danger')
-      $("#btn-vat").text('✓')
-      $("#vat_tax").val(formatter.format(tempVat))
-      $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
-      localStorage.setItem("status_tax",'True')
+
+      tempTotal = sum
+
+      $('.title_tax').text(valueVat + '%')
+    }else{
+      tempVat = 0
+
+      tempGrand = sum
+
+      $('.title_tax').text("")
+    }
+
+    $("#vat_tax").val(formatter.format(tempVat))
+
+    $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+
+    // if($("#btn-vat").hasClass('btn-default')){
+    //   btnVatStatus = false
+    //   finalVat = 0
+    //   finalGrand = tempTotal
+    //   $("#btn-vat").removeClass('btn-default')
+    //   $("#btn-vat").addClass('btn-danger')
+    //   $("#btn-vat").text('✖')
+    //   $("#vat_tax").val(0)
+    //   $("#inputGrandTotalProductFinal").val(formatter.format(tempTotal))
+    //   localStorage.setItem("status_tax",'False')
+
+    // } else {
+    //   btnVatStatus = true
+    //   finalVat = tempVat
+    //   finalGrand = tempGrand
+    //   $("#btn-vat").addClass('btn-default')
+    //   $("#btn-vat").removeClass('btn-danger')
+    //   $("#btn-vat").text('✓')
+    //   $("#vat_tax").val(formatter.format(tempVat))
+    //   $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+    //   localStorage.setItem("status_tax",'True')
+    // }
+  }
+
+  localStorage.setItem('isRupiah',true)
+  function changeCurreny(value){
+    if (value == "usd") {
+      $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+      localStorage.setItem('isRupiah',false)
+    }else{
+      $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+      localStorage.setItem('isRupiah',true)
     }
   }
 
-  function addTable(n){ 
+  function addTable(n,status){ 
     $.ajax({
         type: "GET",
         url: "{{url('/admin/getProductPembanding')}}",
@@ -3892,7 +4585,7 @@
                 append = append + '<span style="font-size: 12px; important">'+ i +'</span>'
               append = append + '</td>'
               append = append + '<td width="20%">'
-                append = append + '<input id="inputNameProductEdit" data-value="" readonly style="font-size: 12px;width:200px" class="form-control" type="" name="" value="'+ item.name_product +'">'
+                append = append + "<input id='inputNameProductEdit' data-value='' readonly style='font-size: 12px; important' class='form-control' type='' name='' value='"+ item.name_product + "'>"
               append = append + '</td>'
               append = append + '<td width="30%">'
                 append = append + '<textarea id="textAreaDescProductEdit" readonly data-value="" style="font-size: 12px; important;resize:none;height:150px;width:200px" class="form-control">'+ item.description.replaceAll("<br>","\n") + '&#10;&#10;SN : ' + item.serial_number + '&#10;PN : ' + item.part_number
@@ -3926,7 +4619,7 @@
         var appendBottom = ""
         appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="row">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 15px;">Total</span>'
           appendBottom = appendBottom + '      <input readonly="" type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProduct" id="inputGrandTotalProduct" name="inputGrandTotalProduct">'
@@ -3934,20 +4627,47 @@
           appendBottom = appendBottom + '  </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + ' <div class="col-md-12">'
-          appendBottom = appendBottom + '   <div class="pull-right">'
-            appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
-            appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
-              appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
-                appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
-              appendBottom = appendBottom + ' </span>'
-            appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
-            appendBottom = appendBottom + ' </div>'
-          appendBottom = appendBottom + ' </div>'
+          appendBottom = appendBottom + ' <div class="col-md-12 col-xs-12">'
+
+          appendBottom = appendBottom + ' <div class="pull-right">'
+          appendBottom = appendBottom + '  <span style="margin-right: 15px;">Vat <span class="title_tax"></span>'
+          appendBottom = appendBottom + '  </span>'
+          appendBottom = appendBottom + '  <div class="input-group" style="display: inline-flex;">'
+          appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax" id="vat_tax" name="vat_tax" style="width:217px;display:inline">'
+          appendBottom = appendBottom + '  <div class="input-group-btn">'
+          appendBottom = appendBottom + '       <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'
+          appendBottom = appendBottom + '         <span class="fa fa-caret-down"></span>'
+          appendBottom = appendBottom + '       </button>'
+          appendBottom = appendBottom + '       <ul class="dropdown-menu">'
+          appendBottom = appendBottom + '       <li>'
+          appendBottom = appendBottom + '        <a onclick="changeVatValue(false)">Without Vat</a>'
+          appendBottom = appendBottom + '       </li>'
+          appendBottom = appendBottom + '       <li>'
+          appendBottom = appendBottom + '        <a onclick="changeVatValue(11)">Vat 11%</a>'
+          appendBottom = appendBottom + '       </li>'
+          appendBottom = appendBottom + '       <li>'
+          appendBottom = appendBottom + '        <a onclick="changeVatValue('+ parseFloat(1.1) +')">Vat 1,1 %</a>'
+          appendBottom = appendBottom + '       </li>'
+          appendBottom = appendBottom + '      </ul>'
+          appendBottom = appendBottom + '     </div>'
+          appendBottom = appendBottom + '    </div>'
+          appendBottom = appendBottom + '  </div>'
+
+
+
+          // appendBottom = appendBottom + '   <div class="pull-right">'
+          //   appendBottom = appendBottom + '   <span style="margin-right: -36px;">Vat 11%</span>'
+          //   appendBottom = appendBottom + '     <div class="input-group margin" style="display: inline;">'
+          //     appendBottom = appendBottom + '   <span style="margin-right: 33px;" class="input-group-btn pull-right">'
+          //       appendBottom = appendBottom + ' <button type="button" class="btn btn-flat btn-default" id="btn-vat" onclick="changeVatValue()">✓</button>'
+          //     appendBottom = appendBottom + ' </span>'
+          //   appendBottom = appendBottom + '   <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax" name="vat_tax" style="width:215px;">'
+          //   appendBottom = appendBottom + ' </div>'
+          // appendBottom = appendBottom + ' </div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '</div>'
           appendBottom = appendBottom + '<div class="row" style="margin-top: 10px;">'
-          appendBottom = appendBottom + '  <div class="col-md-12">'
+          appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
           appendBottom = appendBottom + '    <div class="pull-right">'
           appendBottom = appendBottom + '      <span style="display: inline;margin-right: 10px;">Grand Total</span>'
           appendBottom = appendBottom + '      <input readonly type="text" style="width:250px;display: inline;" class="form-control inputGrandTotalProductFinal" id="inputGrandTotalProductFinal" name="inputGrandTotalProductFinal">'
@@ -3957,27 +4677,31 @@
 
         $("#bottomProducts").append(appendBottom) 
 
-        var sum = 0
-        $('.inputTotalPriceEdit').each(function() {
-            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-            sum += temp;
-        });
+        if (status != "") {
+          changeVatValue(status)
+        }
 
-        $("#inputGrandTotalProduct").val(formatter.format(sum))
+          // var sum = 0
+          // $('.inputTotalPriceEdit').each(function() {
+          //     var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          //     sum += temp;
+          // });
 
-        tempVat = (parseFloat(sum) * 11) / 100
+          // $("#inputGrandTotalProduct").val(formatter.format(sum))
 
-        finalVat = tempVat
+          // // tempVat = (parseFloat(sum) * 11) / 100
 
-        tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          // // finalVat = tempVat
 
-        finalGrand = tempGrand
+          // tempGrand = parseInt(sum)
 
-        tempTotal = sum
-        $("#vat_tax").val(formatter.format(tempVat))
+          // // finalGrand = tempGrand
 
+          // // tempTotal = sum
 
-        $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
+          // $("#vat_tax").val(0)
+
+          // $("#inputGrandTotalProductFinal").val(formatter.format(tempGrand))
       }
     })
   }
@@ -4029,32 +4753,47 @@
   })
 
   var incrementDoc = 0
-  function addDocPendukung(i){
-    incrementDoc++
-    $("#titleDoc").show()
+  function addDocPendukung(value){
+    // incrementDoc++
+    // $("#titleDoc").show()
+    // append = ""
+    //   append = append + "<tr style='height:10px' class='trDocPendukung'>"
+    //     append = append + "<td>"
+    //       append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
+    //       append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+    //     append = append + "</td>"
+    //     append = append + "<td>"
+    //       append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
+    //     append = append + "</td>"
+    //   append = append + "</tr>"
+    // $("#tableDocPendukung_"+value).append(append)
+    $("#titleDoc_"+value).show()
     append = ""
       append = append + "<tr style='height:10px' class='trDocPendukung'>"
         append = append + "<td>"
           append = append + '<button type="button" class="fa fa-times btnRemoveAddDocPendukung" style="display:inline;color:red;background-color:transparent;border:none"></button>&nbsp'
-          append = append + '<input style="display:inline;font-family: inherit;" class="fa fa-cloud-upload pull-right inputDocPendukung_'+incrementDoc+' files" type="file" name="inputDocPendukung[]" id="inputDocPendukung">'
+          append = append + '<label for="inputDocPendukung" style="margin-bottom:0px">'
+          append = append + '<span class="fa fa-cloud-upload" style="display:inline"></span>'
+          append = append + '<input style="display:inline;font-family: inherit;width: 90px;" class=" inputDocPendukung_'+ incrementDoc +' files" type="file" name="inputDocPendukung" id="inputDocPendukung" data-value="'+incrementDoc+'">'
+          append = append + '</label>'
         append = append + "</td>"
         append = append + "<td>"
-          append = append + '<input style="margin-left:20px" class="form-control" name="inputNameDocPendukung" id="inputNameDocPendukung">'
+          append = append + '<input style="width:250px;margin-left:20px" class="form-control inputNameDocPendukung_'+ incrementDoc+'" name="inputNameDocPendukung" id="inputNameDocPendukung" placeholder="ex : faktur pajak">'
         append = append + "</td>"
       append = append + "</tr>"
-    $("#tableDocPendukung").append(append)
+    $("#tableDocPendukung_"+value).append(append) 
+    incrementDoc++
   }  
 
   $(document).on('click', '.btnRemoveAddDocPendukung', function() {
     $(this).closest("tr").remove();
     if($('#tableDocPendukung tr').length == 0){
-      
       $("#titleDoc").hide()
     }
   });
 
   function refreshTable(){
-    addTable()
+    addTable(0,localStorage.getItem('status_tax'))
   }
 
   function next(n){
@@ -4082,43 +4821,49 @@
   }
 
   function rejectSirkulasi(){
-    $.ajax({
-      type: "POST",
-      url: "{{url('/admin/rejectCirculerPR')}}",
-      data: {
-        _token: "{{ csrf_token() }}",
-        no_pr:window.location.href.split("/")[6],
-        reasonRejectSirkular:$("#reasonRejectSirkular").val(),
-      },beforeSend:function(){
-        Swal.fire({
-            title: 'Please Wait..!',
-            text: "It's sending..",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            customClass: {
-                popup: 'border-radius-0',
-            },
-            didOpen: () => {
-                Swal.showLoading()
+    if ($("#reasonRejectSirkular").val() == "") {
+      $("#reasonRejectSirkular").closest('.form-group').addClass('has-error')
+      $("#reasonRejectSirkular").closest('textarea').next('span').show();
+      $("#reasonRejectSirkular").prev('.input-group-addon').css("background-color","red");
+    }else{
+      $.ajax({
+        type: "POST",
+        url: "{{url('/admin/rejectCirculerPR')}}",
+        data: {
+          _token: "{{ csrf_token() }}",
+          no_pr:window.location.href.split("/")[6],
+          reasonRejectSirkular:$("#reasonRejectSirkular").val(),
+        },beforeSend:function(){
+          Swal.fire({
+              title: 'Please Wait..!',
+              text: "It's sending..",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              customClass: {
+                  popup: 'border-radius-0',
+              },
+              didOpen: () => {
+                  Swal.showLoading()
+              }
+          })
+        },
+        success: function(result) {
+          Swal.hideLoading()
+          Swal.fire(
+              'Successfully!',
+              'success',
+              'success'
+          ).then((result) => {
+            if (result.value) {
+              location.replace("{{url('/admin/draftPR')}}/")
+              Swal.close()
             }
-        })
-      },
-      success: function(result) {
-        Swal.hideLoading()
-        Swal.fire(
-            'Successfully!',
-            'success',
-            'success'
-        ).then((result) => {
-          if (result.value) {
-            location.replace("{{url('/admin/draftPR')}}/")
-            Swal.close()
-          }
-        })
-        
-      }
-    }) 
+          })
+          
+        }
+      }) 
+    }
   }
 </script>
 @endsection

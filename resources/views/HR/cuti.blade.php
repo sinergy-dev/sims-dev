@@ -9,7 +9,6 @@ Leaving Permitte
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
-  
   <style type="text/css">
     .hari_libur {
       color: red !important;
@@ -306,7 +305,10 @@ Leaving Permitte
                 <div class="col-md-9">
                   <div class="form-group">
                       <label>Date</label>
-                      <input type="text" class="form-control" id="date_start" name="date_start" autocomplete="Off" required>
+                      <div class="input-group date form-group" id="datepicker">
+                        <input type="text" class="form-control" id="date_start" name="date_start" autocomplete="Off" required>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i><span class="count"></span></span>
+                      </div>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -325,7 +327,7 @@ Leaving Permitte
               </div>
 
               <div id="tooltip">
-              Kamu melewati batas sisa cuti.
+              Anda melewati batas sisa cuti!
               </div>
 
               <div class="form-group">
@@ -338,7 +340,7 @@ Leaving Permitte
                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class=" fa fa-times"></i>&nbspClose</button>
                <!--  <button type="submit" class="btn btn-primary" id="btn-save" value="add"  data-dismiss="modal" >Submit</button>
                 <input type="hidden" id="lead_id" name="lead_id" value="0"> -->
-                <button type="button" class="btn btn-primary btn-submit" disabled data-placement="top" id="btn-submit"><i class="fa fa-check"> </i>&nbspSubmit</button>
+                <button type="button" class="btn btn-primary btn-submit disabled" data-placement="top" id="btn-submit"><i class="fa fa-check"> </i>&nbspSubmit</button>
               </div>
               </form>
           </div>
@@ -635,6 +637,7 @@ Leaving Permitte
   {{-- <script src="{{asset('js/fullcalendar.js')}}"></script> --}}
   {{-- <script type='text/javascript' src="{{asset('js/gcal.js')}}"></script> --}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> 
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
@@ -705,7 +708,7 @@ Leaving Permitte
               // $.each(resultGoogle.items,function(key,value){
               //   if(value.description == "Public holiday" && value.start.date.includes(year_now) && !(value.summary.includes("Joint Holiday"))){
               //     if(!liburNasionalException.includes(value.start.date)){
-              //       swal_html = swal_html + '        <p style="font-weight:bold">' + value.summary + ' <br>(' + moment( value.start.date).format("MM/DD/YYYY") + ')</p>'
+              //       swal_html = swal_html + '        <p style="font-weight:bold">' + value.summary + ' <br>(' + moment( value.start.date).format("L") + ')</p>'
               //     }
               //   }
               // })
@@ -782,7 +785,7 @@ Leaving Permitte
 
           var disableDate = []
           $.each(result.allCutiDate,function(key,value){
-            disableDate.push(moment( value).format("MM/DD/YYYY"))
+            disableDate.push(moment(value).format("L"))
           })
 
           if(result.shiftingUser){
@@ -797,19 +800,19 @@ Leaving Permitte
             weekStart: 1,
             daysOfWeekDisabled: daysOfWeekDisabled,
             daysOfWeekHighlighted: daysOfWeekHighlighted,
-            startDate: moment().format("MM/DD/YYYY"),
+            startDate: moment().format("L"),
             todayHighlight: true,
             multidate: true,
             datesDisabled: disableDate,
             beforeShowDay: function(date){
-              var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+              var index = hari_libur_nasional.indexOf(moment(date).format("L"))
               if(index > 0){
                 return {
                   // enabled: false,
                   tooltip: hari_libur_nasional_tooltip[index],
                   classes: 'hari_libur'
                 };
-              } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
+              } else if(disableDate.indexOf(moment(date).format("L")) > 0) {
                 return {
                   enabled: false,
                   tooltip: 'Cuti Pribadi',
@@ -823,15 +826,20 @@ Leaving Permitte
             // console.log(cutis + " " + cutiss)
 
             $("#avaliableDays").val(result.parameterCuti.total_cuti - cutiss)
-            if (parseFloat(cutis) >= parseFloat(cutiss)) {
-              e.preventDefault();     
-              $(".btn-submit").prop('disabled', false);
-              $("#tooltip").hide();
-            } else if (parseFloat(cutis) < parseFloat(cutiss)) {
-              $(".btn-submit").prop('disabled', true);
+            if (e.dates.length > 0) {
+              if (parseFloat(cutis) >= parseFloat(cutiss)) {
+                e.preventDefault();     
+                $(".btn-submit").removeClass('disabled');
+                $("#tooltip").hide();
+              } else if (parseFloat(cutis) < parseFloat(cutiss)) {
+                $(".btn-submit").addClass('disabled');
+                $("#tooltip").show();
+              }
+            }else{
+              $(".btn-submit").addClass('disabled');
               $("#tooltip").show();
+              $("#tooltip").text("Mohon untuk menginput tanggal cuti Anda!")
             }
-
           }).on('changeMonth', function(e){
             console.log(moment(e.date).format("MM/YYYY"));
 
@@ -933,59 +941,6 @@ Leaving Permitte
           }
       })
     })
-
-   //  $(document).on('click',"button[class^='approve_date']",function(e) {
-   //      $.ajax({
-   //        type:"GET",
-   //        url:'{{url("/detilcuti")}}',
-   //        data:{
-   //          cuti:this.value,
-   //        },
-   //        success: function(result){
-   //          var table = "";
-
-   //          $.each(result[0], function(key, value){
-   //            $("#id_cuti_detil").val(value.id_cuti);
-   //            $("#nik_cuti").val(value.nik);
-   //            $("#date_request_detil").val(moment(value.date_req).format('LL'));
-   //            $("#reason_detil").val(value.reason_leave);
-   //            $("#time_off").val(value.days);
-   //            $('#tanggal_cuti').empty();
-   //            table = table + '<tr>';
-   //            table = table + '<td>' + '<input type="checkbox" class="check_date" checked name="check_date[]"' +'</td>';
-   //            table = table + '<td hidden>' + value.date_off +'</td>';
-   //            table = table + '<td>' + moment(value.date_off).format('LL'); +'</td>';
-   //            table = table + '</tr>';
-              
-   //          });
-
-   //          console.log(result[0].length);
-   //          var date_check = result[0].length;
-
-   //          $('#tanggal_cuti').append(table);
-
-   //          var countChecked = function() {
-			//   var n = $( ".check_date:checked" ).length;
-			//   console.log( n + (n === 1 ? " is" : " are") + " checked!")
-
-			//   if (date_check != $( ".check_date:checked" ).length) {
-			//   	$("#alasan_reject").css("display", "block");
-			//   	$("#reason_reject").prop('required',true);
-			//   }else{
-			//   	$("#alasan_reject").css("display", "none");
-			//   	$("#reason_reject").prop('required',false);
-			//   }
-
-			// };
-			// countChecked();
-			 
-			//  $( ".check_date" ).on( "click", countChecked );
-
-   //        }
-   //      });
-
-   //      $("#detail_cuti").modal("show");
-   //  });
 
     $(document).on('click',"button[class^='approve_date']",function(e) {
         $.ajax({
@@ -1096,7 +1051,7 @@ Leaving Permitte
 
               var disableDate = []
                 $.each(result.allCutiDate,function(key,value){
-                  disableDate.push(moment( value).format("MM/DD/YYYY"))
+                  disableDate.push(moment(value).format("L"))
               })
 
               $("#Dates").datepicker({
@@ -1110,14 +1065,14 @@ Leaving Permitte
                 multidate: true,
                 datesDisabled: disableDate,
                 beforeShowDay: function(date){
-                  var index = hari_libur_nasional.indexOf(moment(date).format("MM/DD/YYYY"))
+                  var index = hari_libur_nasional.indexOf(moment(date).format("L"))
                   if(index > 0){
                     return {
                       enabled: false,
                       tooltip: hari_libur_nasional_tooltip[index],
                       classes: 'hari_libur'
                     };
-                  } else if(disableDate.indexOf(moment(date).format("MM/DD/YYYY")) > 0) {
+                  } else if(disableDate.indexOf(moment(date).format("L")) > 0) {
                     return {
                       enabled: false,
                       tooltip: 'Cuti Pribadi',
@@ -1125,6 +1080,7 @@ Leaving Permitte
                   }
                 },
               }).datepicker('setDate', array).on('changeDate', function(e) {
+                if (e.dates.length > 0) {
                   if (parseFloat(array.length) >= parseFloat(e.dates.length)) {
                     e.preventDefault();     
                     $(".btn-submit-update").prop('disabled', false);
@@ -1133,6 +1089,14 @@ Leaving Permitte
                     $(".btn-submit-update").prop('disabled', true);
                     $('#Dates').tooltip("enable");
                   }
+                }else{
+                  $(".btn-submit-update").prop('disabled', true);
+                  $('#Dates').attr('title', 'Mohon untuk menginput tanggal cuti Anda!')
+                  .tooltip('fixTitle')
+                  .tooltip('enable');
+                  // $('#Dates').tooltip("enable");
+                  // $('#Dates').prop('tooltipText', 'Mohon untuk menginput tanggal cuti Anda!');
+                }
               });
             });
 
@@ -1450,19 +1414,20 @@ Leaving Permitte
           {
             render: function (data, type, row) {
               if({{Auth::User()->nik}} == row.nik){
+                console.log(row.nik)
                 if(row.status == 'n' || row.status == 'R'){
-                  return '<button type="button" class="btn btn-sm btn-primary" style="margin-left: 10px;width: 100px" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-edit" style="margin-right: 5px"></i>Edit</button>' 
-                  + ' ' +
-                  // '<button type="button" class="btn btn-sm btn-primary" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-edit" style="margin-right: 5px"> </i>Edit</button>'
+                  return '<button type="button" class="btn btn-xs btn-primary" style="width: 70px" id="btn-edit" data-toggle="tooltip" title="Edit" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-edit" style="margin-right: 5px"></i>Edit</button>' 
+                  +
+                  // '<button type="button" class="btn btn-xs btn-primary" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-edit" style="margin-right: 5px"> </i>Edit</button>'
 
-                  '<button type="button" class="btn btn-sm btn-danger btn_delete" style="margin-left: 10px;width: 100px" data-toggle="tooltip" title="Delete" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-trash" style="margin-right: 5px"></i>Delete</button>'
+                  '<button type="button" class="btn btn-xs btn-danger btn_delete" style="margin-left: 10px;width: 70px" data-toggle="tooltip" title="Delete" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-trash" style="margin-right: 5px"></i>Delete</button>'
 
-                  // '<button type="button" class="btn btn-sm btn-danger" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-trash" style="margin-right: 5px"> </i>Delete</button>'
-                   + ' ' +
+                  // '<button type="button" class="btn btn-xs btn-danger" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-trash" style="margin-right: 5px"> </i>Delete</button>'
+                   +
 
-                  '<button type="button" class="btn btn-sm btn-success btn_fu" style="margin-left: 10px;width: 100px" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-paper-plane" style="margin-right: 5px"></i>Follow Up</button>'
+                  '<button type="button" class="btn btn-xs btn-success btn_fu" style="margin-left: 10px;width: 80px" data-toggle="tooltip" title="Follow Up Cuti" data-placement="bottom" value="'+row.id_cuti+'" type="button"><i class="fa fa-paper-plane" style="margin-right: 5px"></i>Follow Up</button>'
 
-                  // '<button type="button" class="btn btn-sm btn-success" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-paper-plane" style="margin-right: 5px"> </i>Follow Up</button>'
+                  // '<button type="button" class="btn btn-xs btn-success" style="margin-left: 10px;width: 100px" value="'+row.id_cuti+'"><i class="fa fa-paper-plane" style="margin-right: 5px"> </i>Follow Up</button>'
                 }else{
                   return ''
                 }
@@ -1491,6 +1456,16 @@ Leaving Permitte
           }else{
             activeTab('cuti')
           }
+
+          // var accesable = @json($feature_item);
+          // console.log(accesable)
+          // if (accesable.length == 0) {
+          //   // Get the column API object
+          //   var columns = this.api().columns([5]);
+ 
+          //   // Toggle the visibility
+          //   columns.visible(!columns.visible());
+          // }
         },
         "searching": true,
         "lengthChange": true,
@@ -1787,9 +1762,12 @@ Leaving Permitte
                     table = table + '<td>' +'<label class="label label-success">Approved</label>'+ '</td>';
                   }else if (value.status == 'd') {
                     table = table + '<td>' +'<label class="label label-danger" onclick="decline('+value.id_cuti+')">Declined</label>'+ '</td>';
-                  }else{
+                  }else if (value.status == 'n') {
                     table = table + '<td>' +'<label class="label label-warning">Pending</label>'+ '</td>';
+                  }else {
+                    table = table + '<td>' +'<label class="label label-danger">Cancel</label>'+ '</td>';
                   }
+
                   // table = table + '<td>' +' '+ '</td>';
                   
                   table = table + '</tr>';
@@ -1802,13 +1780,13 @@ Leaving Permitte
 
     }
 
-    cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val());
+    cb(start_date,end_date,"{{url('/getFilterCom')}}?filter_com="+$("#filter_com").val(),$("#division_cuti").val());
 
     $('#datesReport').daterangepicker({
       startDate: start_date,
       endDate: end_date,
       locale: {
-        format: 'MM/DD/YYYY'
+        format: 'L'
       },
       }, function(start, end, label) {
         start_date  = moment(start).format("YYYY-MM-DD")
@@ -1870,8 +1848,10 @@ Leaving Permitte
                         table = table + '<td>' +'<label class="label-success">Approved</label>'+ '</td>';
                       }else if (value.status == 'd') {
                         table = table + '<td>' +'<label class="label-danger">Declined</label>'+ '</td>';
-                      }else{
+                      }else if (value.status == 'n'){
                         table = table + '<td>' +'<label class="label-warning">Pending</label>'+ '</td>';
+                      } else {
+                        table = table + '<td>' +'<label class="label-danger">Cancel</label>'+ '</td>';
                       }
                       
                       table = table + '<td>' +' '+ '</td>';
@@ -1945,8 +1925,10 @@ Leaving Permitte
                     table = table + '<td>' +'<label class="label-success">Approved</label>'+ '</td>';
                   }else if (value.status == 'd') {
                     table = table + '<td>' +'<label class="label-danger">Declined</label>'+ '</td>';
-                  }else{
+                  }else if (value.status == 'n'){
                     table = table + '<td>' +'<label class="label-warning">Pending</label>'+ '</td>';
+                  } else {
+                    table = table + '<td>' +'<label class="label-danger">Cance</label>'+ '</td>';
                   }
                   table = table + '<td>' +' '+ '</td>';
                   
@@ -2095,8 +2077,8 @@ Leaving Permitte
             $.each(result.items,function(key,value){
               if(value.description == "Public holiday"){
                 if(!liburNasionalException.includes(value.start.date)){
-                  hari_libur_nasional.push(moment( value.start.date).format("MM/DD/YYYY"))
-                  hari_libur_nasional_2.push(moment( value.start.date).format("DD/MM/YYYY"))
+                  hari_libur_nasional.push(moment(value.start.date).format("L"))
+                  hari_libur_nasional_2.push(moment(value.start.date).format("DD/MM/YYYY"))
                   hari_libur_nasional_tooltip.push(value.summary)
 
                 }
@@ -2140,9 +2122,6 @@ Leaving Permitte
         }
         
       } else {
-        // cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+filter_com+"&id=" + companyString,$("#division_cuti").val());
-
-        // $('#datatableq').DataTable().ajax.url("{{url('getFilterCom')}}?filter_com=1&id="+id).load();
         get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
         // $("#filter_com").val()
       }
@@ -2150,12 +2129,7 @@ Leaving Permitte
 
     $("#division_cuti").change(function(){
       var companyString = $(".tabs_item.active").children().attr('onclick').slice(12,19)
-      // var start_date = $('#datesReport').data('daterangepicker').startDate
-      // var end_date = $('#datesReport').data('daterangepicker').endDate
       get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
-
-      // $('#datatableq').DataTable().ajax.url("{{url('get_history_cuti')}}?filter_com=1&id="+companyString+"&division="+this.value).load();
-      // cb(start_date,end_date,"{{url('getFilterCom')}}?filter_com="+$("#filter_com").val()+"&id="+companyString,this.value);
     });
 
     function changeTabs(id) {
@@ -2179,9 +2153,6 @@ Leaving Permitte
           cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
         }
       } else {
-          // cb(moment().startOf('year'),moment().endOf('year'),"{{url('getFilterCom')}}?filter_com="+com+"&id="+id,$("#division_cuti").val());
-
-        // $('#datatableq').DataTable().ajax.url("{{url('get_history_cuti')}}?filter_com=1&id="+id).load();
         get_history_cuti($("#filter_com").val(),$("#division_cuti").val(),moment($('#datesReport').val().slice(0,10)).format("YYYY-MM-DD"),moment($('#datesReport').val().slice(13,23)).format("YYYY-MM-DD"))
       }
     }

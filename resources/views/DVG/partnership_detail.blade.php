@@ -384,6 +384,16 @@ Partnership
 	          	</table>
           	</form>
           	<a class="btn btn-primary btn-block" id="btn-edit" style="display: none;" type="button"><b>Edit</b></a>
+          	<div class="alert alert-warning alert-dismissible">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							<h4><i class="icon fa fa-warning"></i> Alert!</h4>
+							If u want to delete this partnership data, please contact developer, thankyou. <br><br>
+
+							or email : development@sinergy.co.id<br><br>
+
+							Best Regards,<br>
+							Tim Developer.
+						</div>
         		<!-- <a href="{{url('show_cuti')}}" class="btn btn-danger btn-block" id="btn-delete" type="button"><b>Delete</b></a> -->
           </div>
     		</div>

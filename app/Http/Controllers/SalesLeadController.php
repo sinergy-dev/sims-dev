@@ -227,7 +227,7 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
-            } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+            } else if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER' || $div == 'BCD' && $pos == 'ADMIN') {
                 $count_lead = $total_lead->where('users.id_company','1')
                             ->count('lead_id');
 
@@ -252,7 +252,11 @@ class SalesLeadController extends Controller
                 $count_initial = $total_initial->where('users.id_company','1')
                             ->count('lead_id');
 
-                $sum_amount_lead = $total_initial->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+                    $sum_amount_lead = $total_initial->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                } else {
+                    $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->where('users.id_company','1')->first();
+                }
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -263,9 +267,44 @@ class SalesLeadController extends Controller
                 $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
-            
-                $presales = true;
-            } else {
+
+                if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+                    $presales = true;
+                } else {
+                    $presales = false;
+                }
+                
+            } else if ($div == 'BCD' && $pos == 'MANAGER'){
+
+                $count_lead = $total_lead->count('lead_id');
+
+                $count_open = $total_open->count('lead_id');
+
+                $count_sd = $total_sd->count('lead_id');
+
+                $count_tp = $total_tp->count('lead_id');
+
+                $count_win = $total_win->count('lead_id');
+
+                $count_lose = $total_lose->count('lead_id');
+                
+                $count_cancel = $total_cancel->count('lead_id');
+                
+                $count_initial = $total_initial->count('lead_id');
+
+                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+
+                $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+                $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+                $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+                $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+                $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
+
+            }else {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                             ->where('id_company','1')
                             ->count('lead_id');
@@ -392,7 +431,7 @@ class SalesLeadController extends Controller
 
     public function getPresales()
     {
-        $getPresales = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','TECHNICAL PRESALES')->where('id_company','1')->get());
+        $getPresales = collect(User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','TECHNICAL PRESALES')->where('status_karyawan', '!=', 'dummy')->where('id_company','1')->get());
 
         return array("data" => $getPresales);
     }
@@ -523,8 +562,13 @@ class SalesLeadController extends Controller
                 // ->where('year', $year)
                 ->orderBy('created_at', 'desc');
 
+        if ($div == 'BCD') {
+            if ($div == 'BCD' && $pos == 'ADMIN') {
+                $leadsnow->where('u_sales.id_company', '1');
+            }
+        }
          
-        if($ter != null){
+        if($ter != null && $div != 'BCD'){
             $leadsnow->where('u_sales.id_company', '1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leadsnow->where('nik_presales', $nik);
@@ -532,7 +576,7 @@ class SalesLeadController extends Controller
                 $leadsnow->where('u_sales.id_territory', $ter);
             } else if ($div == 'SALES' && $pos == 'STAFF') {
                 $leadsnow->where('u_sales.nik', $nik);
-            }       
+            }
         }  
 
         return array("data"=>$leadsnow->get());
@@ -806,7 +850,7 @@ class SalesLeadController extends Controller
         }        
 
         // Year
-        if(isset($request->year)){
+        if(!in_array(null,$request->year)){
             $total_lead->whereIn('year',$request->year);
             $total_open->whereIn('year',$request->year);
             $total_sd->whereIn('year',$request->year);
@@ -818,7 +862,7 @@ class SalesLeadController extends Controller
         }
 
         // Territory
-        if(isset($request->territory)){
+        if(!in_array(null,$request->territory)){
             $total_lead->whereIn('id_territory',$request->territory);
             $total_open->whereIn('id_territory',$request->territory);
             $total_sd->whereIn('id_territory',$request->territory);
@@ -831,7 +875,7 @@ class SalesLeadController extends Controller
 
 
         // Company
-        if(isset($request->company)){
+        if(!in_array(null,$request->company)){
             $total_lead->whereIn('id_company',$request->company);
             $total_open->whereIn('id_company',$request->company);
             $total_sd->whereIn('id_company',$request->company);
@@ -842,7 +886,7 @@ class SalesLeadController extends Controller
             $total_cancel->whereIn('id_company',$request->company);
         }
 
-        if (isset($request->sales_name)) {
+        if (!in_array(null,$request->sales_name)) {
             $total_lead->whereIn('sales_lead_register.nik',$request->sales_name);
             $total_open->whereIn('sales_lead_register.nik',$request->sales_name);
             $total_sd->whereIn('sales_lead_register.nik',$request->sales_name);
@@ -854,7 +898,7 @@ class SalesLeadController extends Controller
             
         }
 
-        if (isset($request->presales_name)) {
+        if (!in_array(null,$request->presales_name)) {
             $total_lead->whereIn('nik_presales',$request->presales_name);
             $total_open->whereIn('nik_presales',$request->presales_name);
             $total_sd->whereIn('nik_presales',$request->presales_name);
@@ -865,7 +909,7 @@ class SalesLeadController extends Controller
             $total_cancel->whereIn('nik_presales',$request->presales_name);  
         }
 
-        if (isset($request->product_tag)) {
+        if (!in_array(null,$request->product_tag)) {
             $total_lead->whereIn('id_product_tag',$request->product_tag);
             $total_open->whereIn('id_product_tag',$request->product_tag);
             $total_sd->whereIn('id_product_tag',$request->product_tag);
@@ -876,7 +920,7 @@ class SalesLeadController extends Controller
             $total_cancel->whereIn('id_product_tag',$request->product_tag); 
         }
 
-        if (isset($request->tech_tag)) {
+        if (!in_array(null,$request->tech_tag)) {
             $total_lead->whereIn('id_tech',$request->tech_tag);
             $total_open->whereIn('id_tech',$request->tech_tag);
             $total_sd->whereIn('id_tech',$request->tech_tag);
@@ -887,7 +931,7 @@ class SalesLeadController extends Controller
             $total_cancel->whereIn('id_tech',$request->tech_tag);
         }
         
-        if (isset($request->customer)) {
+        if (!in_array(null,$request->customer)) {
             $total_lead->whereIn('tb_contact.id_customer',$request->customer);
             $total_open->whereIn('tb_contact.id_customer',$request->customer);
             $total_sd->whereIn('tb_contact.id_customer',$request->customer);
@@ -906,7 +950,7 @@ class SalesLeadController extends Controller
         $total_lose_unfiltered = $total_lose->where('sales_lead_register.result',"LOSE")->count();
         $total_cancel_unfiltered = $total_cancel->where('sales_lead_register.result',"CANCEL")->count();
 
-        if(isset($request->result)){
+        if(!in_array(null,$request->result)){
             if (in_array("null", $request->result)) {
                 $total_lead->whereNull('sales_lead_register.result');
             }
@@ -1381,7 +1425,7 @@ class SalesLeadController extends Controller
             $leads->where('u_sales.id_territory', $ter);
         }
 
-        if(isset($request->year)){
+        if(!in_array(null,$request->year)){
             if($request->search != ""){
                 $leads->where(function($leads) use($request, $searchFields){
                     $searchWildCard = '%'. $request->search . '%';
@@ -1392,19 +1436,19 @@ class SalesLeadController extends Controller
             }
         }
 
-        if(isset($request->year)){
+        if(!in_array(null,$request->year)){
             $leads->whereIn('year',$request->year);
         }
 
-        if(isset($request->territory)){
+        if(!in_array(null,$request->territory)){
             $leads->whereIn('u_sales.id_territory',$request->territory);
         }
 
-        if(isset($request->company)){
+        if(!in_array(null,$request->company)){
             $leads->whereIn('u_sales.id_company',$request->company);
         }
 
-        if(isset($request->result)){
+        if(!in_array(null,$request->result)){
             if(in_array("null", $request->result)){
                 $leads->whereIn('sales_lead_register.result',array_merge($request->result,['']));
             } else {
@@ -1412,30 +1456,30 @@ class SalesLeadController extends Controller
             }
         }
 
-        if (isset($request->sales_name)) {
+        if (!in_array(null,$request->sales_name)) {
             $leads->whereIn('u_sales.nik',$request->sales_name);
             
         }
 
-        if (isset($request->presales_name)) {
+        if (!in_array(null,$request->presales_name)) {
             $leads->whereIn('nik_presales',$request->presales_name);   
         }
 
-        if (isset($request->product_tag)) {
+        if (!in_array(null,$request->product_tag)) {
             foreach ($request->product_tag as $key => $value) {
                 $leads->selectRaw("FIND_IN_SET('" . $value . "', `product_lead`.`id_product_tag`) AS `found_product" . $key . "`");
                 $leads->havingRaw("`found_product" . $key . "` <> 0");
             }
         }
 
-        if (isset($request->tech_tag)) {
+        if (!in_array(null,$request->tech_tag)) {
             foreach ($request->tech_tag as $key => $value) {
                 $leads->selectRaw("FIND_IN_SET('" . $value . "', `tech_tag`.`id_tech_tag`) AS `found_tech" . $key . "`");
                 $leads->havingRaw("`found_tech" . $key . "` <> 0");
             }
         }
 
-        if (isset($request->customer)) {
+        if (!in_array(null,$request->customer)) {
             $leads->whereIn('tb_contact.id_customer',$request->customer);
         }
 

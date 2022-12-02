@@ -291,6 +291,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/admin/storeProductPr', 'PrDraftController@storeProductPr');
 	Route::post('/admin/storeDokumen', 'PrDraftController@storeDokumen');
 	Route::post('/admin/storeLastStepDraftPr', 'PrDraftController@storeLastStepDraftPr');
+	Route::post('/admin/cancelDraftPr', 'PrDraftController@cancelDraftPr');
 	Route::get('/admin/getQuote', 'PrDraftController@getQuote');
 	Route::post('/admin/storeTermPayment', 'PrDraftController@storeTermPayment');
 	Route::post('/admin/verifyDraft', 'PrDraftController@verifyDraft');
@@ -334,7 +335,13 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/admin/storeResolveNotes', 'PrDraftController@storeResolveNotes');
 	Route::get('/admin/getNotes', 'PrDraftController@getNotes');
 	Route::get('/admin/getProductById', 'PrDraftController@getProductById');
+	Route::get('/admin/getProductCompareById', 'PrDraftController@getProductCompareById');
 	Route::post('/admin/uploadCSV','PrDraftController@uploadCSV');
+	Route::get('/admin/getPidAll', 'PrDraftController@getPidAll');
+	Route::get('/admin/getLeadByPid', 'PrDraftController@getLeadByPid');
+	Route::get('/admin/getPerson', 'PrDraftController@getPerson');
+	Route::post('admin/storeTax', 'PrDraftController@storeTax');
+	Route::post('admin/storeTaxComparing', 'PrDraftController@storeTaxComparing');
 
 
 	Route::get('/po', 'PONumberController@index');

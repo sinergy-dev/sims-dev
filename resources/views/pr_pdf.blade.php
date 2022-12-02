@@ -136,8 +136,13 @@
 				<td>{!! nl2br($eachProduct->description) !!}</td>
 				<td style="text-align:center">{{$eachProduct->qty}}</td>
 				<td style="text-align:center">{{$eachProduct->unit}}</td>
+				@if($data->isRupiah == 'true')
 				<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->nominal_product,2)}}</td>
 				<td style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($eachProduct->grand_total,2)}}</td>
+				@else
+				<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->nominal_product,2)}}</td>
+				<td style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($eachProduct->grand_total,2)}}</td>
+				@endif
 			</tr>
 		@endforeach
 	</tbody>
@@ -166,9 +171,13 @@
 			<th></th>
 			<th></th>
 			<th></th>
+			@if($data->isRupiah == 'true')
 			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal,2)}}</th>
+			@else
+			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal,2)}}</th>
+			@endif
 		</tr>
-		@if($data->status_tax == 'True')
+		@if($data->status_tax != 'False')
 		<tr>
 			<th></th>
 			<th></th>
@@ -176,11 +185,27 @@
 			<th></th>
 			<th></th>
 			@endif
+			@if($data->status_tax == '11')
 			<th style="text-align:right" 11%>VAT 11%</th>
+			@elseif($data->status_tax == '1.1')
+			<th style="text-align:right" 11%>VAT 1.1%</th>
+			@else
+			<th style="text-align:right" 11%></th>
+			@endif
 			<th></th>
 			<th></th>
 			<th></th>
-			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($amount_tax,2)}}</th>
+			@if($data->isRupiah == 'true')
+				@if($data->status_tax == '11')
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal+$amount_tax,2)}}</th>
+				@elseif($data->status_tax == '1.1')
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal+$amount_tax,2)}}</th>
+				@else
+				<th style="text-align:right;font-family:Consolas, monaco, monospace;">0</th>
+				@endif
+			@else
+			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+$amount_tax,2)}}</th>
+			@endif
 		</tr>
 		<tr style="background-color:#c0c0c0">
 			<th></th>
@@ -193,7 +218,11 @@
 			<th></th>
 			<th></th>
 			<th></th>
+			@if($data->isRupiah == 'true')
 			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal + $amount_tax,2)}}</th>
+			@else
+			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal+ $amount_tax,2)}}</th>
+			@endif
 		</tr>
 		@else
 		<tr style="background-color:#c0c0c0">
@@ -207,7 +236,11 @@
 			<th></th>
 			<th></th>
 			<th></th>
+			@if($data->isRupiah == 'true')
 			<th style="text-align:right;font-family:Consolas, monaco, monospace;">Rp. {{number_format($sum_nominal,2)}}</th>
+			@else
+			<th style="text-align:right;font-family:Consolas, monaco, monospace;">USD {{number_format($sum_nominal,2)}}</th>
+			@endif
 		</tr>
 		@endif
 	</tfoot>

@@ -329,7 +329,9 @@ class HRController extends Controller
         $id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->select('nik','name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete')
+                ->join('role_user','users.nik','=','role_user.user_id')
+                ->join('roles','role_user.role_id','=','roles.id')
+                ->select('nik','users.name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete','roles.name as roles','roles.group', 'role_id')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -991,6 +993,10 @@ class HRController extends Controller
 
         // return $update;
 
+        $update->update();
+
+        $update = RoleUser::where('user_id', $nik)->first();
+        $update->role_id = $request['roles_update'];
         $update->update();
 
         // return redirect('hu_rec')->with('update', 'Updated Employee Data Successfully!');
