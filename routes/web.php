@@ -318,6 +318,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/admin/getEmailTemplate', 'PrDraftController@getEmailTemplate');
 	Route::get('/admin/getPdfPr', 'PrDraftController@getPdfPr');
 	Route::get('/admin/getPdfPRFromLink', 'PrDraftController@getPdfPRFromLink');
+	Route::get('/admin/getOnlyPdfPRFromLink', 'PrDraftController@getOnlyPdfPRFromLink');
 	Route::post('/admin/sendMailtoFinance', 'PrDraftController@sendMailtoFinance');
 	Route::post('/admin/deleteDokumen', 'PrDraftController@deleteDokumen');
 	Route::post('/admin/deleteProduct', 'PrDraftController@deleteProduct');
