@@ -1339,6 +1339,8 @@
                 // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
               }else{
                 isDisabled = "disabled"
+                console.log("")
+
                 // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
               } 
             }else if(row.status == 'UNAPPROVED'){
@@ -1358,20 +1360,21 @@
               title = "Detail"
               btnClass = "btn-primary"
               btnId = "btnDetail"
-              onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"
-              if (row.issuance == '{{Auth::User()->nik}}') {
-                if (row.status == 'CANCEL') {
-                  isDisabledCancel = 'disabled'
-                }else{
-                  isDisabledCancel = ''
-                }
-              }else{
-                isDisabledCancel = 'disabled'
-              }
-              
+              onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"              
               // return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
             } 
 
+            if (row.issuance == '{{Auth::User()->nik}}') {
+              if (row.status == 'CANCEL') {
+                isDisabledCancel = 'disabled'
+              }else{
+                isDisabledCancel = ''
+              }
+            }else{
+              isDisabledCancel = 'disabled'
+              console.log(row.issuance == '{{Auth::User()->nik}}')
+
+            }
             return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
           },
           className:'text-center'
