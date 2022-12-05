@@ -6,10 +6,13 @@ Report Purchase Request
   <!-- Select2 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
   <!-- DataTables -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap.css"> -->
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"> -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css"> -->
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css"> -->
 @endsection
 @section('content')
 
@@ -123,6 +126,7 @@ Report Purchase Request
                 <table class="table table-bordered display no-wrap" id="dataTablePid" width="100%" cellspacing="0">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>No</th>
                       <th>Project Id</th>
                       <th>Total</th>
@@ -199,8 +203,10 @@ Report Purchase Request
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap.min.js"></script>
+  <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script> -->
+  <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script> -->
 @endsection
 @section('script')
   <script type="text/javascript">
@@ -501,16 +507,22 @@ Report Purchase Request
       pageLength: 10,
     })
 
-    $('#dataTablePid').DataTable({
+    var table = $('#dataTablePid').DataTable({
       "ajax":{
           "type":"GET",
           "url":"{{url('getTotalNominalByPid')}}"
         },
         "columns": [
+          {
+            className: 'dt-control',
+            orderable: false,
+            data: null,
+            defaultContent: '',
+          },
           { 
             render: function (data, type, row, meta){
               return ++meta.row             
-            }
+            },
           },
           { "data": "project_id"},
           { "data": "total"},
@@ -529,6 +541,45 @@ Report Purchase Request
         "order":[],
       pageLength: 10,
     })
+
+    $('#dataTablePid tbody').on('click', 'td.dt-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+ 
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        } else {
+            // Open this row
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
+        }
+    });
+
+    /* Formatting function for row details - modify as you need */
+    function format(d) {
+        // `d` is the original data object for the row
+        return (
+            '<table class="table table-bordered table-striped" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+            '<tr>' +
+              '<td>No PR:</td>' +
+              '<td>Subject:</td>' +
+              '<td>Amount:</td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td>1313/SAL/EPR/XI/2022</td>' +
+              '<td>Test (Revisi 1)</td>' +
+              '<td>93,240,000</td>' +
+            '</tr>' +
+            '<tr>' +
+              '<td>1313/SAL/EPR/XI/2022</td>' +
+              '<td>Test (Revisi 1)</td>' +
+              '<td>93,240,000</td>' +
+            '</tr>' +
+            '</table>'
+        );
+    }
 
     $('#dataTableAmountIpr').DataTable({
       "ajax":{
