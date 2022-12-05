@@ -1071,16 +1071,16 @@
       var append = ""
       var colors = []
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:'NA',index: 0
         },
         {
-            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',index: 1
+            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:'OG',index: 1
         },
         {
-            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',index: 2
+            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:'DO',index: 2
         },
         {
-            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',index: 3
+            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:null,index: 3
         },
       ]
 
@@ -1091,10 +1091,12 @@
             append = append + '<div class="inner">'
               append = append + '<h3 style="'+ value.style +'" class="counter" id="count_pr_'+value.index+'"</h3>'
               append = append + '<h4 style="'+ value.style +'"><b>'+ value.name +'</b></h4>'
+
             append = append + '</div>'
             append = append + '<div class="icon">'
               append = append + '<i class="'+ value.icon +'" style="'+ value.style +';opacity:0.4"></i>'
             append = append + '</div>'
+            append = append + '<a href="#" onclick="sortingByDashboard('+ status +')" class="small-box-footer">Sorting <i class="fa fa-filter"></i></a>'
           append = append + '</div>'
         append = append + '</div>'
       id = "count_pr_"+value.index
@@ -1544,6 +1546,16 @@
         }
       })
     }  
+
+    function sortingByDashboard(value){
+      var tempstatus = 'status[]='
+      if (tempStatus == 'status[]=') {
+        tempStatus = tempStatus + value
+      }else{
+        tempStatus = tempStatus + '&status[]=' + value
+      }
+      showFilterData(tempstatus)
+    }
 
     function searchCustom(startDate,endDate){
       var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
