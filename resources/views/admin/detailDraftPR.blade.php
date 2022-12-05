@@ -1648,7 +1648,7 @@
 
           finalVat = tempVat
 
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+          tempGrand = parseInt(sum) +  tempVat
 
           finalGrand = tempGrand
 
@@ -1961,7 +1961,7 @@
 
           finalVat = tempVat
 
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+          tempGrand = parseInt(sum) +  tempVat
 
           finalGrand = tempGrand
 
@@ -2358,7 +2358,7 @@
 
       finalVat = tempVat
 
-      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+      tempGrand = parseInt(sum) +  tempVat
 
       finalGrand = tempGrand
 
@@ -3243,7 +3243,7 @@
 
             finalVat = tempVat
 
-            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+            tempGrand = parseInt(sum) +  tempVat
 
             finalGrand = tempGrand
 
@@ -4511,7 +4511,7 @@
 
       finalVat = tempVat
 
-      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+      tempGrand = parseInt(sum) +  tempVat
 
       finalGrand = tempGrand
 
