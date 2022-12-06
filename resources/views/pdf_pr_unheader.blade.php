@@ -585,7 +585,7 @@
 							
 						</td>
 					@else
-						@if($cek_role == 'bcd')
+						@if($cek_role == 'bcd' && $data->type_of_letter == 'IPR')
 							<td style="width: 50%">
 								@if($eachSign["signed"] == 'true')
 									<div>
