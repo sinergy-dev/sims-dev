@@ -276,6 +276,9 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getTotalNominalByCatIprYear', 'PrController@getTotalNominalByCatIprYear');
 	Route::get('/getTotalNominalByCatEprYear', 'PrController@getTotalNominalByCatEprYear');
 
+	
+	Route::get('/getPrByPid', 'PrController@getPrByPid');
+
 	//Draft PR
 	Route::get('/admin/draftPR', 'PrDraftController@draftPR');
 	Route::get('/admin/draftPR/{id}', 'PrDraftController@draftPR');
