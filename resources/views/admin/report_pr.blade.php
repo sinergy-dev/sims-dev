@@ -524,7 +524,7 @@ Report Purchase Request
               return ++meta.row             
             },
           },
-          { "data": "project_id"},
+          { "data": "id_project"},
           { "data": "total"},
           { 
             render: function ( data, type, row ) {
@@ -557,28 +557,32 @@ Report Purchase Request
         }
     });
 
+    var formatter = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
     /* Formatting function for row details - modify as you need */
     function format(d) {
         // `d` is the original data object for the row
-        return (
-            '<table class="table table-bordered table-striped" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-            '<tr>' +
-              '<td>No PR:</td>' +
-              '<td>Subject:</td>' +
-              '<td>Amount:</td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td>1313/SAL/EPR/XI/2022</td>' +
-              '<td>Test (Revisi 1)</td>' +
-              '<td>93,240,000</td>' +
-            '</tr>' +
-            '<tr>' +
-              '<td>1313/SAL/EPR/XI/2022</td>' +
-              '<td>Test (Revisi 1)</td>' +
-              '<td>93,240,000</td>' +
-            '</tr>' +
-            '</table>'
-        );
+      var append = ""
+      append = append +'<table class="table table-bordered table-striped" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' 
+      append = append +'<tr>' 
+      append = append +  '<td>No PR:</td>' 
+      append = append +  '<td>Subject:</td>' 
+      append = append +  '<td>Amount:</td>' 
+      d.get_pr.forEach((item) => {
+      //You can perform your desired function out here
+      console.log(item.no_pr)
+        append = append + '<tr>' 
+          append = append +   '<td>'+ item.no_pr +'</td>' 
+          append = append +   '<td>'+ item.title +'</td>' 
+          append = append +   '<td>'+ formatter.format(item.amount) +'</td>'
+        append = append + '</tr>'
+      })
+      append = append +'</table>' 
+
+      return append;
+
     }
 
     $('#dataTableAmountIpr').DataTable({
