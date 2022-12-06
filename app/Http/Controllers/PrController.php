@@ -28,6 +28,7 @@ class PrController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        set_time_limit(8000000);
     }
     
 
@@ -409,17 +410,55 @@ class PrController extends Controller
 
     public function getTotalNominalByPid()
     {
-        $data = PR::select(
-                DB::raw('COUNT(no_pr) as total'),
-                DB::raw('SUM(amount) as nominal'),
-                'project_id'
-            )
-            ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
-            ->whereYear('date', date('Y'))
-            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
-            ->groupBy('project_id');
+        // $data = PR::select(
+        //             DB::raw('COUNT(no_pr) as total'),
+        //             DB::raw('SUM(amount) as nominal'),
+        //             'project_id'
+        //         )
+        //         ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+        //         ->whereYear('date', date('Y'))
+        //         ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+        //         ->groupBy('project_id');
+
+        $data =  SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')
+                    ->join('users', 'users.nik', 'sales_lead_register.nik')
+                    ->join('tb_pr', 'tb_pr.project_id', 'tb_id_project.id_project')
+                    ->select(
+                        DB::raw('COUNT(no_pr) as total'),
+                        DB::raw('SUM(`tb_pr`.`amount`) as nominal'),
+                        'id_project'
+                    )
+                    ->whereYear('tb_pr.date', date('Y'))
+                    ->where('id_company', '1')
+                    ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+                    ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
+                    ->groupBy('project_id');
+
+        // $data = SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')
+        //         ->join('users', 'users.nik', 'sales_lead_register.nik')
+        //         ->join('tb_pr', 'tb_pr.project_id', 'tb_id_project.id_project')
+        //         ->select(
+        //             DB::raw('COUNT(no_pr) as total'),
+        //             DB::raw('SUM(`tb_pr`.`amount`) as nominal'),
+        //             'project_id'
+        //         )
+        //         ->where('id_company', '1')
+        //         ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+        //         ->whereYear('tb_pr.date', date('Y'))
+        //         ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
+        //         ->groupBy('project_id');
 
         return array("data" => $data->get());
+    }
+
+    public function getPrByPid(Request $request)
+    {
+        $data = PR::join('tb_id_project', 'tb_id_project.id_project', 'tb_pr.project_id')
+                ->select('tb_pr.title', 'tb_pr.no_pr', 'tb_pr.amount')
+                ->where('tb_id_project.id_project', $request->pid)
+                ->get();
+
+        return $data;
     }
 
     public function getTotalNominalByCatIpr()
