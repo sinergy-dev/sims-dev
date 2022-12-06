@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
+
 <style type="text/css">
   .modal { overflow: auto !important; }
   .textarea-scrollbar {
@@ -1007,8 +1009,8 @@
       })
 
       //box id
-      DashboardCounter()
-      InitiateFilterParam()
+        DashboardCounter()
+        InitiateFilterParam()
     })
 
     function select2TypeProduct(value){
@@ -1071,21 +1073,22 @@
       var append = ""
       var colors = []
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:'NA',index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:"NA",index: 0
         },
         {
-            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:'OG',index: 1
+            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:"OG",index: 1
         },
         {
-            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:'DO',index: 2
+            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:"DO",index: 2
         },
         {
-            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:null,index: 3
+            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:"ALL",index: 3
         },
       ]
 
       colors.push(ArrColors)
       $.each(colors[0], function(key, value){
+        var status = "'"+ value.status +"'"
         append = append + '<div class="col-lg-3 col-xs-12">'
           append = append + '<div class="small-box ' + value.color + '">'
             append = append + '<div class="inner">'
@@ -1104,7 +1107,7 @@
       })
 
       $("#BoxId").append(append)
-      
+  
       $.ajax({
         type:"GET",
         url:"{{url('/admin/getCount')}}",
@@ -1207,210 +1210,218 @@
       element.style.height = (25+element.scrollHeight)+"px";
     }
 
-    $("#draftPr").DataTable({
-      "ajax":{
-        "type":"GET",
-        "url":"{{url('/admin/getDraftPr')}}",
-        "dataSrc": function (json){
-          json.data.forEach(function(data,index){
-            if (data.status == 'REJECT') {
-              data.status_numerical = 1
-            }else if (data.status == 'UNAPPROVED') {
-              data.status_numerical = 2
-            }else if (data.status == 'SAVED') {
-              data.status_numerical = 3
-            }else if (data.status == 'DRAFT') {
-              data.status_numerical = 4
-            }else if (data.status == 'VERIFIED') {
-              data.status_numerical = 5
-            }else if (data.status == 'COMPARING') {
-              data.status_numerical = 6
-            }else if (data.status == 'CIRCULAR') {
-              data.status_numerical = 7
-            }else if (data.status == 'FINALIZED') {
-              data.status_numerical = 8
-            }else if (data.status == 'SENDED') {
-              data.status_numerical = 9
-            }else if (data.status == 'CANCEL') {
-              data.status_numerical = 10
+    Pace.restart();
+    Pace.track(function() {
+      $("#draftPr").DataTable({
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('/admin/getDraftPr')}}",
+            "dataSrc": function (json){
+              json.data.forEach(function(data,index){
+                if (data.status == 'REJECT') {
+                  data.status_numerical = 1
+                }else if (data.status == 'UNAPPROVED') {
+                  data.status_numerical = 2
+                }else if (data.status == 'SAVED') {
+                  data.status_numerical = 3
+                }else if (data.status == 'DRAFT') {
+                  data.status_numerical = 4
+                }else if (data.status == 'VERIFIED') {
+                  data.status_numerical = 5
+                }else if (data.status == 'COMPARING') {
+                  data.status_numerical = 6
+                }else if (data.status == 'CIRCULAR') {
+                  data.status_numerical = 7
+                }else if (data.status == 'FINALIZED') {
+                  data.status_numerical = 8
+                }else if (data.status == 'SENDED') {
+                  data.status_numerical = 9
+                }else if (data.status == 'CANCEL') {
+                  data.status_numerical = 10
+                }
+              })
+              return json.data
             }
-          })
-          return json.data
-        }
-      },
-      "columns": [
-        { 
-          render: function (data, type, row, meta){
-            if (row.status == "SAVED" || row.status == "DRAFT") {
-              return " - "           
-            }else{
-              return row.no_pr         
+          },
+          "columns": [
+            { 
+              render: function (data, type, row, meta){
+                if (row.status == "SAVED" || row.status == "DRAFT") {
+                  return " - "           
+                }else{
+                  return row.no_pr         
+                }
+              }
+            },
+            {
+              orderData:[8],
+              render: function (data, type, row, meta){
+               return moment(row.date).format("D MMM YYYY");   
+              }
+            },
+            { 
+              render: function (data, type, row, meta){
+                return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
+              },
+            },
+            { "data": "to"},
+            { 
+              render: function (data, type, row, meta){
+                if (isNaN(row.nominal) == true) {
+                  return '-'          
+                }else{
+                  return formatter.format(row.nominal)          
+                }
+              },
+              className:'text-right'
+            },
+            { 
+              orderData:[7],
+              render: function (data, type, row, meta){
+                if (row.status == 'SAVED') {
+                  return '<span class="label label-primary">'+row.status+'</span>'           
+                }else if (row.status == 'DRAFT') {
+                  return '<span class="label label-primary">'+row.status+'</span>'           
+                }else if (row.status == 'VERIFIED') {
+                  return '<span class="label label-success">'+row.status+'</span>'
+                }else if (row.status == 'COMPARING') {
+                  return '<span class="label bg-purple">'+row.status+'</span>'
+                }else if (row.status == 'CIRCULAR') {
+                  if (row.circularby == "-") {
+                    return '<span class="label label-warning">'+row.status+'</span><br><small>On Procurement<small>'
+                  }else{
+                    return '<span class="label label-warning">'+row.status+'</span><br><small>On '+ row.circularby +'<small>'
+                  }
+                }else if (row.status == 'FINALIZED') {
+                  return '<span class="label label-success">'+row.status+'</span>'           
+                }else if (row.status == 'SENDED') {
+                  return '<span class="label label-primary">'+row.status+'</span>'           
+                }else if (row.status == 'UNAPPROVED' || row.status == 'REJECT' || row.status == 'CANCEL') {
+                  return '<span class="label label-danger">'+row.status+'</span>' 
+                }
+              },
+              className:'text-center'
+            },
+            { 
+              render: function (data, type, row, meta){
+                let onclick = ""
+                let title = ""
+                let btnClass = ""
+                let isDisabled = ""
+                let isDisabledCancel = ""
+                let btnId = ""
+                let status = ""
+                let value = ""
+
+                if (row.status == 'DRAFT') {
+                  onclick = "cekByAdmin(0,"+ row.id +")"
+                  title = "Verify"
+                  btnClass = "btnCekDraft btn-primary"
+                  isDisabled = "disabled"
+                  btnId = "btnCekDraft"
+                  // return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
+                }else if (row.status == 'SAVED') {
+                  btnClass = "btn-warning"
+                  title = "Draft"
+                  btnId = "btnDraft"
+                  if (row.issuance == '{{Auth::User()->nik}}') {
+                    status = '"saved"'
+                    value = status
+                    onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
+                  }else{
+                    isDisabled = "disabled"
+                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
+                  } 
+                }else if (row.status == 'REJECT') {
+                  title = "Revision"
+                  btnClass = "btn-warning"
+                  btnId = "btnDraft"
+                  if (row.issuance == '{{Auth::User()->nik}}') {
+                    status = '"reject"'
+                    value = status
+                    onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
+                  }else{
+                    isDisabled = "disabled"
+                    console.log("")
+
+                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
+                  } 
+                }else if(row.status == 'UNAPPROVED'){
+                  title = "Revision"
+                  btnClass = "btn-warning"
+                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                    status = '"revision"'
+                    value = status
+                    onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+
+                    // return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
+                  }else{
+                    isDisabled = "disabled"
+                    // return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
+                  }
+                }else{
+                  title = "Detail"
+                  btnClass = "btn-primary"
+                  btnId = "btnDetail"
+                  onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"              
+                  // return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
+                } 
+
+                if (row.issuance == '{{Auth::User()->nik}}') {
+                  if (row.status == 'CANCEL') {
+                    isDisabledCancel = 'disabled'
+                  }else{
+                    isDisabledCancel = ''
+                  }
+                }else{
+                  isDisabledCancel = 'disabled'
+                  console.log(row.issuance == '{{Auth::User()->nik}}')
+
+                }
+                return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
+              },
+              className:'text-center'
+            },//action
+            {
+              "data":"status_numerical",
+              "visible":false,
+              "targets":[5]
+            },
+            {
+              "data":"created_at",
+              "visible":false,
+              "targets":[1],
+            },
+          ],
+          drawCallback: function(settings) {
+            if (accesable.includes("btnCekDraft")) {
+              $(".btnCekDraft").prop("disabled",false)
             }
+          },
+          "pageLength":100,
+          lengthChange:false,
+          // autoWidth:true,
+          scrollX:        true,
+          scrollCollapse: true,
+          // paging:         false,
+          fixedColumns:   {
+            left: 1,
+          },
+          processing:true,
+          'language': {
+              'loadingRecords': '&nbsp;',
+              'processing': 'Loading...'
+          },
+          initComplete: function () {
+            $.each($("#selectShowColumnTicket li input"),function(index,item){
+              var column = $("#draftPr").DataTable().column(index)
+              // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+              $(item).prop('checked', column.visible())
+            })
           }
-        },
-        {
-          orderData:[8],
-          render: function (data, type, row, meta){
-           return moment(row.date).format("D MMM YYYY");   
-          }
-        },
-        { 
-          render: function (data, type, row, meta){
-            return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
-          },
-        },
-        { "data": "to"},
-        { 
-          render: function (data, type, row, meta){
-            if (isNaN(row.nominal) == true) {
-              return '-'          
-            }else{
-              return formatter.format(row.nominal)          
-            }
-          },
-          className:'text-right'
-        },
-        { 
-          orderData:[7],
-          render: function (data, type, row, meta){
-            if (row.status == 'SAVED') {
-              return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'DRAFT') {
-              return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'VERIFIED') {
-              return '<span class="label label-success">'+row.status+'</span>'
-            }else if (row.status == 'COMPARING') {
-              return '<span class="label bg-purple">'+row.status+'</span>'
-            }else if (row.status == 'CIRCULAR') {
-              if (row.circularby == "-") {
-                return '<span class="label label-warning">'+row.status+'</span><br><small>On Procurement<small>'
-              }else{
-                return '<span class="label label-warning">'+row.status+'</span><br><small>On '+ row.circularby +'<small>'
-              }
-            }else if (row.status == 'FINALIZED') {
-              return '<span class="label label-success">'+row.status+'</span>'           
-            }else if (row.status == 'SENDED') {
-              return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'UNAPPROVED' || row.status == 'REJECT' || row.status == 'CANCEL') {
-              return '<span class="label label-danger">'+row.status+'</span>' 
-            }
-          },
-          className:'text-center'
-        },
-        { 
-          render: function (data, type, row, meta){
-            let onclick = ""
-            let title = ""
-            let btnClass = ""
-            let isDisabled = ""
-            let isDisabledCancel = ""
-            let btnId = ""
-            let status = ""
-            let value = ""
-
-            if (row.status == 'DRAFT') {
-              onclick = "cekByAdmin(0,"+ row.id +")"
-              title = "Verify"
-              btnClass = "btnCekDraft btn-primary"
-              isDisabled = "disabled"
-              btnId = "btnCekDraft"
-              // return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
-            }else if (row.status == 'SAVED') {
-              btnClass = "btn-warning"
-              title = "Draft"
-              btnId = "btnDraft"
-              if (row.issuance == '{{Auth::User()->nik}}') {
-                status = '"saved"'
-                value = status
-                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
-              }else{
-                isDisabled = "disabled"
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
-              } 
-            }else if (row.status == 'REJECT') {
-              title = "Revision"
-              btnClass = "btn-warning"
-              btnId = "btnDraft"
-              if (row.issuance == '{{Auth::User()->nik}}') {
-                status = '"reject"'
-                value = status
-                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
-              }else{
-                isDisabled = "disabled"
-                console.log("")
-
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
-              } 
-            }else if(row.status == 'UNAPPROVED'){
-              title = "Revision"
-              btnClass = "btn-warning"
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
-                status = '"revision"'
-                value = status
-                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-
-                // return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
-              }else{
-                isDisabled = "disabled"
-                // return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
-              }
-            }else{
-              title = "Detail"
-              btnClass = "btn-primary"
-              btnId = "btnDetail"
-              onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"              
-              // return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
-            } 
-
-            if (row.issuance == '{{Auth::User()->nik}}') {
-              if (row.status == 'CANCEL') {
-                isDisabledCancel = 'disabled'
-              }else{
-                isDisabledCancel = ''
-              }
-            }else{
-              isDisabledCancel = 'disabled'
-              console.log(row.issuance == '{{Auth::User()->nik}}')
-
-            }
-            return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
-          },
-          className:'text-center'
-        },//action
-        {
-          "data":"status_numerical",
-          "visible":false,
-          "targets":[5]
-        },
-        {
-          "data":"created_at",
-          "visible":false,
-          "targets":[1],
-        },
-      ],
-      drawCallback: function(settings) {
-        if (accesable.includes("btnCekDraft")) {
-          $(".btnCekDraft").prop("disabled",false)
-        }
-      },
-      "pageLength":100,
-      lengthChange:false,
-      // autoWidth:true,
-      scrollX:        true,
-      scrollCollapse: true,
-      // paging:         false,
-      fixedColumns:   {
-        left: 1,
-      },
-      initComplete: function () {
-        $.each($("#selectShowColumnTicket li input"),function(index,item){
-          var column = $("#draftPr").DataTable().column(index)
-          // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-          $(item).prop('checked', column.visible())
-        })
-      }
+      })
     })
 
     function changeColumnTable(data){
@@ -1419,145 +1430,156 @@
     }
 
     function InitiateFilterParam(){
-      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
+      Pace.restart();
+      Pace.track(function() {
+        var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
 
-      var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
-      
-      $.ajax({
-        url:"{{url('/admin/getFilterDraft')}}" + temp,
-        type:"GET",
-        success:function(result){
-          var arrStatus = result.dataStatus;
-          var selectOptionStatus = [];
-
-          var selectOptionStatus = [
-            {
-              text:"Grouped Status", 
-              children:[
-                {
-                  id:"NA",
-                  text:"Need Attention",
-                },
-                {
-                  id:"OG",
-                  text:"On Going",
-                },
-                {
-                  id:"DO",
-                  text:"Done",
-                }
-              ]
-            },{
-              text:"All Status", 
-              children:arrStatus
-            }
-          ]
-          $("#inputFilterStatus").select2({
-            placeholder: " Select Status",
-            allowClear: true,
-            multiple:true,
-            data:selectOptionStatus,
-          })
-
-          // $("#inputFilterUser").select2().val("");
-          var arrUser = result.dataUser
-          $("#inputFilterUser").select2({
-            placeholder: " Select User",
-            allowClear: true,
-            multiple:true,
-            data:arrUser,
-          })
-
-          $("#inputFilterTypePr").select2({
-            placeholder: "Select a Type",
-            allowClear: true,
-            data:result.data_type_letter,
-            multiple:true
-          })
-        }
-      })
-    }  
-
-    function showFilterData(temp){
-      $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
-
-      $.ajax({
-        url:"{{url('/admin/getFilterDraft')}}" + temp,
-        type:"GET",
-        success:function(result){
-          var parameterStatus = new URLSearchParams(temp);
-          if (parameterStatus.getAll('status[]')[0] == "") {
-            $("#inputFilterStatus").empty();
-
-            var arrGrouped = []
-            arrGrouped.push({
-              id:"NA",
-              text:"Need Attention",
-            },
-            {
-              id:"OG",
-              text:"On Going",
-            },
-            {
-              id:"DO",
-              text:"Done",
-            })
-
+        var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
+        
+        $.ajax({
+          url:"{{url('/admin/getFilterDraft')}}" + temp,
+          type:"GET",
+          success:function(result){
             var arrStatus = result.dataStatus;
             var selectOptionStatus = [];
 
             var selectOptionStatus = [
               {
                 text:"Grouped Status", 
-                children:arrGrouped
+                children:[
+                  {
+                    id:"NA",
+                    text:"Need Attention",
+                  },
+                  {
+                    id:"OG",
+                    text:"On Going",
+                  },
+                  {
+                    id:"DO",
+                    text:"Done",
+                  }
+                ]
               },{
                 text:"All Status", 
                 children:arrStatus
               }
             ]
-
             $("#inputFilterStatus").select2({
               placeholder: " Select Status",
-              // allowClear: true,
+              allowClear: true,
               multiple:true,
               data:selectOptionStatus,
             })
-          }
 
-          if (parameterStatus.getAll('user[]')[0] == "") {
-            $("#inputFilterUser").empty();
-
+            // $("#inputFilterUser").select2().val("");
+            var arrUser = result.dataUser
             $("#inputFilterUser").select2({
               placeholder: " Select User",
-              // allowClear: true,
+              allowClear: true,
               multiple:true,
-              data:result.dataUser,
+              data:arrUser,
             })
-          }
-
-          if (parameterStatus.getAll('type_of_letter[]')[0] == "") {
-            $("#inputFilterTypePr").empty();
 
             $("#inputFilterTypePr").select2({
-              placeholder: " Select User",
-              // allowClear: true,
-              multiple:true,
+              placeholder: "Select a Type",
+              allowClear: true,
               data:result.data_type_letter,
+              multiple:true
             })
           }
-          
-        }
+        })
+      })
+    }  
+
+    function showFilterData(temp){
+      Pace.restart();
+      Pace.track(function() {
+        $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
+
+        $.ajax({
+          url:"{{url('/admin/getFilterDraft')}}" + temp,
+          type:"GET",
+          success:function(result){
+            var parameterStatus = new URLSearchParams(temp);
+            if (parameterStatus.getAll('status[]')[0] == "") {
+              $("#inputFilterStatus").empty();
+
+              var arrGrouped = []
+              arrGrouped.push({
+                id:"NA",
+                text:"Need Attention",
+              },
+              {
+                id:"OG",
+                text:"On Going",
+              },
+              {
+                id:"DO",
+                text:"Done",
+              })
+
+              var arrStatus = result.dataStatus;
+              var selectOptionStatus = [];
+
+              var selectOptionStatus = [
+                {
+                  text:"Grouped Status", 
+                  children:arrGrouped
+                },{
+                  text:"All Status", 
+                  children:arrStatus
+                }
+              ]
+
+              $("#inputFilterStatus").select2({
+                placeholder: " Select Status",
+                // allowClear: true,
+                multiple:true,
+                data:selectOptionStatus,
+              })
+            }
+
+            if (parameterStatus.getAll('user[]')[0] == "") {
+              $("#inputFilterUser").empty();
+
+              $("#inputFilterUser").select2({
+                placeholder: " Select User",
+                // allowClear: true,
+                multiple:true,
+                data:result.dataUser,
+              })
+            }
+
+            if (parameterStatus.getAll('type_of_letter[]')[0] == "") {
+              $("#inputFilterTypePr").empty();
+
+              $("#inputFilterTypePr").select2({
+                placeholder: " Select User",
+                // allowClear: true,
+                multiple:true,
+                data:result.data_type_letter,
+              })
+            }
+            
+          }
+        })
       })
     }  
 
     function sortingByDashboard(value){
-      var tempstatus = 'status[]='
+      console.log(value)
+      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
+
       if (tempStatus == 'status[]=') {
         tempStatus = tempStatus + value
       }else{
-        tempStatus = tempStatus + '&status[]=' + value
+        tempStatus = tempStatus + 'status[]=' + value
       }
-      showFilterData(tempstatus)
+
+      var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
+      
+      showFilterData(temp)
     }
 
     function searchCustom(startDate,endDate){
@@ -2160,10 +2182,18 @@
                   success:function(result){
                     var selectedPid = result.pr.pid
 
+                    // $("#selectLeadId").val(result.pr.lead_id).trigger("change")
+                    // $("#selectQuoteNum").val(result.pr.quote_number).trigger("change")
+
                     $.ajax({
                       url: "{{url('/admin/getPidAll')}}",
                       type: "GET",
                       success: function(result) {
+
+                        if (selectedPid) {
+                          $("#selectPid").val(selectedPid).trigger("change")
+                        }
+
                         $("#selectPid").select2({
                             data: result.data,
                             placeholder: "Select Pid",
@@ -3639,9 +3669,8 @@
                 $("#formForPrInternalCek").hide()   
 
                 $("#formForPrExternalCek").find($("input[type=checkbox]")).attr('name','chk[]')
-
-                $("#selectLeadIdCek").val(result.pr.lead_id)
                 $("#selectPidCek").val(result.pr.pid)
+                $("#selectLeadIdCek").val(result.pr.lead_id)
                 $("#selectQuoteNumCek").val(result.pr.quote_number)
 
                 var pdf = "fa fa-fw fa-file-pdf-o"
@@ -5241,6 +5270,10 @@
                         storeEPR(urlDokumen,formData)
                       }  
                   }else{
+                    var arrInputDocPendukungEPR = []
+                    formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
+                    formData.append('inputDocPendukung[]','-')
+
                     console.log("ikiiilo")
                     storeEPR(urlDokumen,formData)
                   }
