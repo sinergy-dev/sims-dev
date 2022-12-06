@@ -1261,7 +1261,11 @@
             },
             { 
               render: function (data, type, row, meta){
-                return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
+                if (row.attention_notes == "True") {
+                  return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span>&nbsp<i title="Please Solve the Notes!" class="fa fa-warning" style="color:red"></i> ' + row.title         
+                }else{
+                  return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
+                }
               },
             },
             { "data": "to"},
