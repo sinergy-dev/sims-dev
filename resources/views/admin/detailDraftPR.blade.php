@@ -1018,7 +1018,7 @@
           appendResolve = appendResolve + '<div class="box-body" style="">'
           appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p><br>'
           appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" onclick="btnResolve('+ value.id +')" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
-          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
+          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +','+ '""' +  disableReply +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
           appendResolve = appendResolve + '</div>'
             if (value.reply.length > 0) {
               style = 'display:block'
@@ -1034,18 +1034,21 @@
               }
               appendResolve = appendResolve + '<div class="box-comment">'
               appendResolve = appendResolve + '<img class="img-circle img-sm" src="{{ asset("image")}}/'+ gambar +'" alt="User Image">'
-              appendResolve = appendResolve + '<div class="comment-text">'
-              const cal = moment(values.date_add)
-              .calendar(null, {
-                lastDay: '[Yesterday]',
-                sameDay: '[Today]',
-                nextDay: '[Tomorrow]',
-                lastWeek: '[last] dddd',
-                nextWeek: 'dddd',
-                sameElse: 'L'
-              })
-              appendResolve = appendResolve + '<span class="username">'+ values.operator +'<span class="text-muted pull-right">'+ cal + '&nbspat&nbsp' + moment(values.date_add).format('hh:mm A') +'</span>'
-              appendResolve = appendResolve + '</span><p>'+ values.reply +'</p></div>'
+                appendResolve = appendResolve + '<div class="comment-text">'
+                const cal = moment(values.date_add)
+                .calendar(null, {
+                  lastDay: '[Yesterday]',
+                  sameDay: '[Today]',
+                  nextDay: '[Tomorrow]',
+                  lastWeek: '[last] dddd',
+                  nextWeek: 'dddd',
+                  sameElse: 'L'
+                })
+                appendResolve = appendResolve + '<span class="username">'+ values.operator +'<span class="text-muted pull-right">'+ cal + '&nbspat&nbsp' + moment(values.date_add).format('hh:mm A') +'</span>'
+                appendResolve = appendResolve + '</span><p>'+ values.reply +'</p>'
+                appendResolve = appendResolve + '</div>'
+                appendResolve = appendResolve + '<button class="btn btn-xs btn-default" id="btnReplyBottom" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +','+"'"+ values.operator+"'" +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +'><i class="fa fa-reply"></i>&nbspReply</button>'
+                appendResolve = appendResolve + " "
               appendResolve = appendResolve + '</div>'
             })            
             appendResolve = appendResolve + '</div>'
@@ -1123,31 +1126,54 @@
     })
   }
 
-  function btnShowReply(no_pr,id){
+  function btnShowReply(no_pr,id,person,disableReply){
     if ("{{Auth::User()->gambar}}" != null && "{{Auth::User()->gambar}}" != '' && "{{Auth::User()->gambar}}" != '-') {
       gambar = "{{Auth::User()->gambar}}"
     }else{
       gambar = "place_profile_3.png"
     }
+     
+    personDiv = '<strong<span>' + person + '</span></strong>'
+    name = person
+    
+
+    console.log(person)
     var appendFooter = ''
+    $("#showFooter[data-value='"+ id +"']").empty("")
+
     appendFooter = appendFooter + '<img class="img-responsive img-circle img-sm" src="{{ asset("image/")}}/'+ gambar +'" alt="Alt Text">'
     appendFooter = appendFooter + '<div class="img-push">'
     appendFooter = appendFooter + '<div class="input-group">'
-      appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention form-control input-sm" placeholder="Type reply comment, @ mention member">'
+      appendFooter = appendFooter + '<textarea type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention_reply input-md" placeholder="Type reply comment, @ mention member" style="border-left:none;border-right:none;border-top:none;resize:none"></textarea>'
+      // appendFooter = appendFooter + '<span class="input-group-btn">'
+      // appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention_reply form-control input-sm" placeholder="Type reply comment, @ mention member" style="border-left:none;border-right:none;border-top:none;resize:none">'
       appendFooter = appendFooter + '<span class="input-group-btn">'
-        appendFooter = appendFooter + '<button onclick="pressReply('+ no_pr +','+ id +')" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-send"></i></button>'
+        appendFooter = appendFooter + '<button onclick="pressReply('+ no_pr +','+ id +','+"'"+name+"'"+')" style="background-color: transparent;background-repeat: no-repeat;border: none; cursor: pointer;overflow: hidden;outline: none;" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-send" style="color:#3c8dbc"></i></button>'
       appendFooter = appendFooter + '</span>'
+      appendFooter = appendFooter + '<span class="input-group-btn">'
+        appendFooter = appendFooter + '<button onclick="btnCloseReply('+ id +')" style="background-color: transparent;background-repeat: no-repeat;border: none; cursor: pointer;overflow: hidden;outline: none;" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-trash-o" style="color:#dd4b39"></i></button>'
+      appendFooter = appendFooter + '</span>'
+      
     appendFooter = appendFooter + '</div>'          
     appendFooter = appendFooter + '</div>'
     $("#showFooter[data-value='"+ id +"']").append(appendFooter)
     $("#showFooter[data-value='"+ id +"']").show()
 
-    if ($("#inputReply").length == 1) {
-      $("#btnReply[data-value='"+ id +"']").prop("disabled",true)
-    }else{
-      $("#btnReply[data-value='"+ id +"']").prop("disabled",false)
-    }
+    console.log(id)
+    $("#btnReply[data-value='"+ id +"']").prop("disabled",true)
+    $("#btnReplyBottom[data-value='"+ id +"']").prop("disabled",true)
 
+    mentionInput(name)
+  }
+
+  function btnCloseReply(id){
+    $("#btnCloseReplyBottom[data-value='"+ id +"']").hide("slow")
+    $("#btnReply[data-value='"+ id +"']").prop('disabled',false)
+    $("#btnReplyBottom[data-value='"+ id +"']").prop('disabled',false)
+    $("#showFooter[data-value='"+ id +"']").hide()
+  }
+
+  function mentionInput(){
     $.ajax({
       type:"GET",
       url:"{{url('/admin/getPerson')}}",
@@ -1157,21 +1183,22 @@
       success: function(result){
         var i = 0
         const results = result.map(item => {
-            const container = {};
+          const container = {};
+          container.id = i++;
+          container.name = item.name;
+          if (item.avatar == null) {
+            container.avatar = '{{ asset("image/place_profile_3.png")}}';
+          }else{
+            container.avatar = item.avatar;
+          }
+          container.type = item.email;
 
-            container.id = i++;
-            container.name = item.name;
-            if (item.avatar == null) {
-              container.avatar = '{{ asset("image/place_profile_3.png")}}';
-            }else{
-              container.avatar = item.avatar;
-            }
-            container.type = item.email;
+          return container;
+            
 
-            return container;
         })
 
-        $('.mention').mentionsInput({
+        $('.mention_reply').mentionsInput({
           onDataRequest:function (mode, query, callback) {
             var data = results
 
@@ -1180,21 +1207,33 @@
             callback.call(this, data);
           }
         });
-        
+
+        // $("#inputReply").closest("div").find(".mentions").find("div").html("<strong<span>Rily Janirawanty</span></strong>")     
       }
     })
   }
 
-  function pressReply(no_pr,id){
+  function pressReply(no_pr,id,name){
     var emailMention = []
     if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 1) {
       obj_notes = $("#inputReply").closest("div").find(".mentions").find("div").find("span").splice("span")
       for (var i = 0; i < obj_notes.length; i++) {
-        emailMention.push({'name':obj_notes[i].textContent})
+        if (obj_notes[i].textContent == name) {
+          emailMention.push({'name':obj_notes[i].textContent})
+        }else{
+          emailMention.push({'name':obj_notes[i].textContent})
+          emailMention.push({'name':name})
+        }
       }      
     }else{
-      emailMention.push({'name':$("#inputReply").closest("div").find(".mentions").find("div").find("strong").text()})
+      if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").text() == name) {
+        emailMention.push({'name':$("#inputReply").closest("div").find(".mentions").find("div").find("strong").text()})
+      }else{
+        emailMention.push({'name':name})
+      }
     }
+
+    console.log(emailMention)
     $.ajax({
       type: "POST",
       url: "{{url('/admin/storeReply')}}",
@@ -3011,6 +3050,7 @@
   const firstLaunch = localStorage.setItem('firstLaunch',true)
 
   function addDraftPrPembanding(n){
+    localStorage.setItem('status_tax',false)
     localStorage.setItem('isStoreSupplier',false)
     var x = document.getElementsByClassName("tab-add");
     x[n].style.display = "inline";
@@ -4565,7 +4605,8 @@
     }
   }
 
-  function addTable(n,status){ 
+  var status_tax = localStorage.getItem('status_tax')
+  function addTable(n,status_tax){ 
     $.ajax({
         type: "GET",
         url: "{{url('/admin/getProductPembanding')}}",
@@ -4677,8 +4718,8 @@
 
         $("#bottomProducts").append(appendBottom) 
 
-        if (status != "") {
-          changeVatValue(status)
+        if (status_tax != "") {
+          changeVatValue(status_tax)
         }
 
           // var sum = 0
