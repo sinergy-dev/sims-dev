@@ -77,9 +77,9 @@ class PRCompare extends Model
     			->select('dokumen_name', 'dokumen_location', 'link_drive')
     			->where('tb_pr_document_draft.id_draft_pr', $getIdDraft->id_draft_pr)
     			->where(function($query){
-		            $query->where('dokumen_name', 'SBE')
-		                ->orWhere('dokumen_name', 'SPK');
-		        })
+                    $query->where('dokumen_name', '!=','Quote Supplier');
+                })
+                ->orderBy('tb_pr_document.created_at','asc')
 		        ->get();
 
 		return array_merge($getAll->toArray(),$getDokumen->toArray());
