@@ -1522,8 +1522,8 @@
         appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
         appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
         if (type_of_letter == 'EPR') {
-          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
-          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Project Id</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.pid +'</div>'
           appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
           appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
         }
@@ -1818,8 +1818,8 @@
         appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
         appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
         if (type_of_letter == 'EPR') {
-          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
-          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Project Id</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.pid +'</div>'
           appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
           appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
         }
@@ -2095,8 +2095,8 @@
     append = append + '        <div>'+ item.request_method +'</div>'
     append = append + '        <div>'+ moment(item.created_at).format('DD MMMM') +'</div>'
     if (type_of_letter == 'EPR') {
-      append = append + '        <div><b>Lead Register</b></div>'
-      append = append + '        <div>'+ item.lead_id +'</div>'
+      append = append + '        <div><b>Project Id</b></div>'
+      append = append + '        <div>'+ item.pid +'</div>'
       append = append + '        <div><b>Quote Number</b></div>'
       append = append + '        <div>'+ item.quote_number +'</div>'
     }
@@ -3117,8 +3117,8 @@
           appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
           appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
           if (type_of_letter == 'EPR') {
-            appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
-            appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+            appendHeader = appendHeader + '        <div><b>Project Id</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.pid +'</div>'
             appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
             appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
           }
