@@ -124,7 +124,7 @@
   	 	for (var i = 0; i < keys.length; i++) {
   	 		if (snapshot_dump[keys[i]].status == "unread") {
   	 			if (!snapshot_dump[keys[i]].module == false) {
- 					console.log(snapshot_dump[keys[i]].result)
+ 					
  					if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
  						if (snapshot_dump[keys[i]].result == 'DRAFT') {
 				  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('admin/draftPR')}}/")
@@ -199,13 +199,13 @@
 	        			if (snapshot.val().to == "{{Auth::User()->email}}") {
     						pushNotify(snapshot.val().title,"{{url('admin/draftPR')}}/")
 	        			}
-	        			console.log("ini aja yg muncul")
+	        			
 						$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('admin/draftPR')}}/"))
 	        		}else{
 	        			if (snapshot.val().to == "{{Auth::User()->email}}") {
 	    					pushNotify(snapshot.val().title,"{{url('admin/detail/draftPR')}}/"+snapshot.val().id_pr);
 	    				}
-	        			console.log("napa ini ikutan")
+	        			
 
 	        			$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('admin/detail/draftPR')}}/"+snapshot.val().id_pr))
 	        		}
@@ -361,7 +361,7 @@
     		// checking if the user's browser supports web push Notification
     		alert("Web browser does not support desktop notification");
     	} else if (Notification.permission === "granted") {
-    		console.log("Permission to show web push notifications granted.");
+    		
     		// if notification permissions is granted,
     		// then create a Notification object
     		createNotification(title,url);
