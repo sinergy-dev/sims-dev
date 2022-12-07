@@ -58,12 +58,12 @@
 
   	 	for (var i = 0; i < keys.length; i++) {
   	 		if (snapshot_dump[keys[i]].to == "{{Auth::user()->email}}"){
-                 const oneday = 60 * 60 * 24 * 1000
+                const oneday = 60 * 60 * 24 * 1000
 
-                 var dates = moment(snapshot_dump[keys[i]].date_time)
+                var dates = moment(snapshot_dump[keys[i]].date_time)
 
 	 			if(snapshot_dump[keys[i]].status == "unread"){
-                    console.log(dates.diff(moment()))
+                    
                     addListUnRead(snapshot_dump[keys[i]],keys[i])
                 }else if(snapshot_dump[keys[i]].status == "read"){
                 	addListRead(snapshot_dump[keys[i]],keys[i])
@@ -104,83 +104,151 @@
 
 	function addListRead(data,index){
         var append = ""
-        append = append + '<tr class="MyClass" data-value="'+ data.status +'" data-value2="'+ data.company+'" data-value3="'+ data.lead_id+'" data-href="'+ "{{url('project/detailSales')}}/" + data.lead_id +'" value-id="'+index+'">'
+        if (data.date_time == null) {
+            date_time = ""
+        }else{
+            date_time = moment(data.date_time,"X").fromNow()
+        }
+
+
+        if (!data.opty_name == false) {
+            lead_id = data.lead_id + ' - '
+
+            lead_id = lead_id + ' - '
+            if (data.opty_name.length > 30) {
+                opty_name = data.opty_name.substring(0, 25) + '...'
+            }else{
+                opty_name = data.opty_name
+            }
+        }else{
+            opty_name = data.title
+            lead_id = ""
+        }
+
+        append = append + '<tr class="MyClass" data-value="'+ data.status +'" data-value2="'+ data.company+'" data-value4="'+ data.module +'" data-value3="'+ lead_id+'" data-href="'+ "{{url('project/detailSales')}}/" + lead_id +'" value-id="'+index+'" onclick="notifView('+ "'" + index +  "'" + ')">'
 		append = append + '<td class="cursor-pointer" style="color:grey">'
-		append = append +  '<i class="fa fa-envelope" aria-hidden="true"></i> '+ ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + data.lead_id + ' - ' +data.opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+moment(data.date_time,"X").fromNow()+'</span>'
+		append = append +  '<i class="fa fa-envelope" aria-hidden="true"></i> '+ ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + lead_id + opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+ date_time +'</span>'
 		append = append + '</td>'
 		append = append + '</tr>'
 	   
         $("#list-content").append(append)
 
-        $(".MyClass").click(function(){
-            if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
-                if ($(this).data("value") == 'INITIAL') { 
-                    window.location.href = "{{url('project')}}/"
+        // $(".MyClass[data-id='"+ index +"']").click(function(){
+        //     if ($(this).data("value4") == "draft") {
+        //         if (data.result == "DRAFT") {
+        //             window.location.href = "{{url('admin/draftPR')}}"
+        //         }else{
+        //             window.location.href = "{{url('admin/detail/draftPR')}}/"+data.id_pr
+        //         }
+        //     }else{
+        //         if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
+        //             if ($(this).data("value") == 'INITIAL') { 
+        //                 window.location.href = "{{url('project')}}/"
 
-                    localStorage.setItem("lead_id",$(this).data("value2"))
-                    localStorage.setItem("status","unread")
-                }else{
-                    localStorage.setItem("status","read")
- 
-                    // window.location.href = $(this).data("href")
-                }                        
-            }else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
-                window.location.href = "{{url('salesproject')}}"
-                localStorage.setItem("lead_id",$(this).data("value2"))
-                localStorage.setItem("status","read")
-            }else{
-                window.location.href = $(this).data("href")
-       
-            }
+        //                 localStorage.setItem("lead_id",$(this).data("value2"))
+        //                 localStorage.setItem("status","unread")
+        //             }else{
+        //                 localStorage.setItem("status","read")
+     
+        //                 window.location.href = $(this).data("href")
+        //             }                        
+        //         }else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
+        //             if ($(this).data("value") == 'read') {
+        //                 window.location.href = "{{url('salesproject')}}"
+        //                 localStorage.setItem("lead_id",$(this).data("value2"))
+        //                 localStorage.setItem("status","read")
+        //             }else{
+        //                  window.location.href = "{{url('salesproject')}}#submitIdProject/"+$(this).data("value3")
+        //             }
+        //         }else{
+        //             window.location.href = $(this).data("href")
+        //         }
+                
+        //     }
 
-             // window.location = $(this).data("href");
-             readNotification($(this).data("id"))
-        })
+        //      // window.location = $(this).data("href");
+        //      readNotification($(this).data("id"))
+        // })
 
     }
 
     function addListUnRead(data,index){
+        
+        var datas = data.module
+
         var append = ""
-        append = append + '<tr class="MyClass" data-value3="'+ data.id_pid+'" data-value2="'+data.lead_id+'" data-value="'+ data.result +'" data-id="'+ index +'" data-href="'+ "{{url('project/detailSales')}}/" + data.lead_id +'">'
+        if (data.date_time == null) {
+            date_time = ""
+        }else{
+            date_time = moment(data.date_time,"X").fromNow()
+        }
+
+        if (!data.opty_name == false) {
+            lead_id = data.lead_id + ' - '
+            if (data.opty_name.length > 30) {
+                opty_name = data.opty_name.substring(0, 25) + '...'
+            }else{
+                opty_name = data.opty_name
+            }
+        }else{
+            opty_name = data.title
+            lead_id = ""
+        }
+
+        append = append + '<tr class="MyClass" data-value3="'+ data.id_pid+'" data-value4="'+ data.module+'" data-value2="'+lead_id+'" data-value="'+ data.result +'" data-id="'+ index +'" data-href="'+ "{{url('project/detailSales')}}/" + lead_id +'" onclick="notifView('+ "'" + index +  "'" + ')">'
 		append = append + '<th class="list-item cursor-pointer" style="background-color: #7dc6e3;color:white">'
-        append = append + '<i class="fa fa-envelope" aria-hidden="true"></i> ' + ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + data.lead_id + ' - ' + data.opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+moment(data.date_time,"X").fromNow()+'</span>'
+        append = append + '<i class="fa fa-envelope" aria-hidden="true"></i> ' + ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + lead_id + opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+ date_time +'</span>'
         append = append + '</th>'
 		append = append + '</tr>'
         $("#list-content").append(append)
 
-        $(".MyClass").click(function(){
+        // $(".MyClass[data-id='"+ index +"']").click(function(){
+            
+        // })
+
+    } 
+
+    function notifView(index){
+        var data = snapshot_dump[index]
+        
+        
+        if (data.module == "draft") {
+            if (data.result == "DRAFT") {
+                window.location.href = "{{url('admin/draftPR')}}"
+            }else{
+                window.location.href = "{{url('admin/detail/draftPR')}}/"+data.id_pr
+            }
+        }else{
             if ("{{Auth::User()->id_division}}" == 'TECHNICAL PRESALES') {
                 if ($(this).data("value") == 'INITIAL') { 
                     window.location.href = "{{url('project')}}/"
 
-                    localStorage.setItem("lead_id",$(this).data("value2"))
+                    localStorage.setItem("lead_id",data.lead_id)
                     localStorage.setItem("status","unread")
                 }else{
                     localStorage.setItem("status","read")
  
-                    window.location.href = $(this).data("href")
+                    window.location.href = "{{url('project/detailSales')}}/"+ data.lead_id
                 }                        
             }else if ("{{Auth::User()->id_division}}" == 'FINANCE') {
                 if ($(this).data("value") == 'read') {
                     window.location.href = "{{url('salesproject')}}"
-                    localStorage.setItem("lead_id",$(this).data("value2"))
+                    localStorage.setItem("lead_id",data.lead_id)
                     localStorage.setItem("status","read")
                 }else{
-                     window.location.href = "{{url('salesproject')}}#submitIdProject/"+$(this).data("value3")
+                     window.location.href = "{{url('salesproject')}}#submitIdProject/"+data.id_pid
                 }
             }else{
-                window.location.href = $(this).data("href")
-       
+                window.location.href = "{{url('project/detailSales')}}/"+ data.lead_id
             }
+        }
+        
 
-             // window.location = $(this).data("href");
-             readNotification($(this).data("id"))
-        })
-
-    } 
+        // window.location = $(this).data("href");
+        readNotification(index)
+    }
 
     function readNotification(index){
-
         firebase.database().ref('notif/web-notif/' + index).once('value').then(function(snapshot) {
             var data = snapshot.val()
 
@@ -195,18 +263,33 @@
 
             }
 
-            firebase.database().ref('notif/web-notif/' + index).set({
-                date_time:date_time,
-                to: data.to,
-                lead_id: data.lead_id,
-                opty_name: data.opty_name,
-                heximal: data.heximal,
-                status: "read",
-                result : data.result,
-                showed : "true",
-                id_pid : id_pid,
-                company : company
-            });
+            if (!data.module == false) {
+                firebase.database().ref('notif/web-notif/' + index).set({
+                    to: data.to,
+                    id_pr: data.id_pr,
+                    title: data.title,
+                    heximal: data.heximal,
+                    status: "read",
+                    result : data.result,
+                    showed : "true",
+                    date_time : data.date_time,
+                    module:"draft"
+                });
+            }else{
+
+                firebase.database().ref('notif/web-notif/' + index).set({
+                    date_time:date_time,
+                    to: data.to,
+                    lead_id: data.lead_id,
+                    opty_name: data.opty_name,
+                    heximal: data.heximal,
+                    status: "read",
+                    result : data.result,
+                    showed : "true",
+                    id_pid : id_pid,
+                    company : company
+                });
+            }
         })
     
     }
@@ -222,7 +305,7 @@
                 var data = childSnapshot.val();
                 if(data.status == "unread"){
                     firebase.database().ref('notif/web-notif/' + key).once('value').then(function(snapshot) {
-                        // console.log(snapshot.val())
+                        // 
                         var data = snapshot.val()
                         if (data.id_pid == null || data.date_time == null) {
                             id_pid = ""
@@ -234,17 +317,31 @@
 
                         }
 
-                        firebase.database().ref('notif/web-notif/' + key).set({
-                            date_time:date_time,
-                            to: data.to,
-                            lead_id: data.lead_id,
-                            opty_name: data.opty_name,
-                            heximal: data.heximal,
-                            status: "read",
-                            result : data.result,
-                            showed : "true",
-                            id_pid : id_pid
-                        });
+                        if (!data.module == false) {
+                            firebase.database().ref('notif/web-notif/' + index).set({
+                                to: data.to,
+                                id_pr: data.id_pr,
+                                title: data.title,
+                                heximal: data.heximal,
+                                status: "read",
+                                result : data.result,
+                                showed : "true",
+                                date_time : data.date_time,
+                                module:"draft"
+                            });
+                        }else{
+                            firebase.database().ref('notif/web-notif/' + key).set({
+                                date_time:date_time,
+                                to: data.to,
+                                lead_id: data.lead_id,
+                                opty_name: data.opty_name,
+                                heximal: data.heximal,
+                                status: "read",
+                                result : data.result,
+                                showed : "true",
+                                id_pid : id_pid
+                            });
+                        }
                     })
                 }               
             });
