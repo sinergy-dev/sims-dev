@@ -1018,7 +1018,7 @@
           appendResolve = appendResolve + '<div class="box-body" style="">'
           appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p><br>'
           appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" onclick="btnResolve('+ value.id +')" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
-          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +','+ '""' +  disableReply +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
+          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +','+"'"+ value.operator+"'" +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
           appendResolve = appendResolve + '</div>'
             if (value.reply.length > 0) {
               style = 'display:block'
