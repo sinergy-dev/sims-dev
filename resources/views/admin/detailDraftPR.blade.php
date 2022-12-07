@@ -822,7 +822,7 @@
   function reasonReject(item,display,nameClass,typeCallout=""){
     $(".divReasonRejectRevision").remove()
     arrReason.push(item)
-    console.log(arrReason)
+    
 
     var textTitle = ""
     var className = ""
@@ -837,11 +837,11 @@
 
     var append = ""
 
-    console.log(item)
+    
     append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
       append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
       $.each(arrReason,function(item,value){
-        console.log(item)
+        
         append = append + '<p class="reason_reject_revision">'+ value.replaceAll("\n","<br>")+'</p>'
       })
     append = append + '</div>'
@@ -966,7 +966,7 @@
         $.each(result,function(item,value){
           no++
 
-          console.log(value.image)
+          
 
           if (value.image != '' && value.image != '-' && value.image != null) {
             image = value.image
@@ -1137,7 +1137,7 @@
     name = person
     
 
-    console.log(person)
+    
     var appendFooter = ''
     $("#showFooter[data-value='"+ id +"']").empty("")
 
@@ -1159,7 +1159,7 @@
     $("#showFooter[data-value='"+ id +"']").append(appendFooter)
     $("#showFooter[data-value='"+ id +"']").show()
 
-    console.log(id)
+    
     $("#btnReply[data-value='"+ id +"']").prop("disabled",true)
     $("#btnReplyBottom[data-value='"+ id +"']").prop("disabled",true)
 
@@ -1206,73 +1206,84 @@
 
             callback.call(this, data);
           }
-        });
-
-        // $("#inputReply").closest("div").find(".mentions").find("div").html("<strong<span>Rily Janirawanty</span></strong>")     
+        });    
       }
     })
   }
 
-  function pressReply(no_pr,id,name){
+  function pressReply(no_pr,id,person){
     var emailMention = []
-    if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 1) {
+    if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 0) {
       obj_notes = $("#inputReply").closest("div").find(".mentions").find("div").find("span").splice("span")
+
       for (var i = 0; i < obj_notes.length; i++) {
-        if (obj_notes[i].textContent == name) {
-          emailMention.push({'name':obj_notes[i].textContent})
+        var item = {}; 
+        
+        if (obj_notes.length == 1) {
+          if (obj_notes[i].textContent == person) {
+            item["name"] = name;
+            emailMention.push(item);
+            
+
+          }else{
+            emailMention[0] = {"name":person};
+            item["name"] = obj_notes[i].textContent;
+            emailMention.push(item);
+          }
         }else{
-          emailMention.push({'name':obj_notes[i].textContent})
-          emailMention.push({'name':name})
-        }
+          if (obj_notes[i].textContent != person) {
+            // obj_notes[i].textContent.remove()
+            
+            emailMention[0] = {"name":person};
+            item["name"] = obj_notes[i].textContent;
+            emailMention.push(item);
+          }
+        } 
       }      
     }else{
-      if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").text() == name) {
-        emailMention.push({'name':$("#inputReply").closest("div").find(".mentions").find("div").find("strong").text()})
-      }else{
-        emailMention.push({'name':name})
-      }
+      emailMention.push({'name':name})
     }
 
-    console.log(emailMention)
-    $.ajax({
-      type: "POST",
-      url: "{{url('/admin/storeReply')}}",
-      data: {
-        _token: "{{ csrf_token() }}",
-        id_notes:id,
-        inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
-        no_pr:no_pr,
-        emailMention:emailMention
-      },beforeSend:function(){
-        Swal.fire({
-            title: 'Please Wait..!',
-            text: "It's sending..",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            customClass: {
-                popup: 'border-radius-0',
-            },
-            didOpen: () => {
-                Swal.showLoading()
-            }
-        })
-      },
-      success: function(result) {
-        Swal.hideLoading()
-        Swal.fire(
-            'Successfully!',
-            'success',
-            'success'
-        ).then((result) => {
-          if (result.value) {
-            location.reload()
-            Swal.close()
-          }
-        })
+    
+    // $.ajax({
+    //   type: "POST",
+    //   url: "{{url('/admin/storeReply')}}",
+    //   data: {
+    //     _token: "{{ csrf_token() }}",
+    //     id_notes:id,
+    //     inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
+    //     no_pr:no_pr,
+    //     emailMention:emailMention
+    //   },beforeSend:function(){
+    //     Swal.fire({
+    //         title: 'Please Wait..!',
+    //         text: "It's sending..",
+    //         allowOutsideClick: false,
+    //         allowEscapeKey: false,
+    //         allowEnterKey: false,
+    //         customClass: {
+    //             popup: 'border-radius-0',
+    //         },
+    //         didOpen: () => {
+    //             Swal.showLoading()
+    //         }
+    //     })
+    //   },
+    //   success: function(result) {
+    //     Swal.hideLoading()
+    //     Swal.fire(
+    //         'Successfully!',
+    //         'success',
+    //         'success'
+    //     ).then((result) => {
+    //       if (result.value) {
+    //         location.reload()
+    //         Swal.close()
+    //       }
+    //     })
         
-      }
-    })
+    //   }
+    // })
   }
 
   function btnSubmitNotes(){
@@ -1500,11 +1511,11 @@
         {
             appendHeader = appendHeader + '    <div class="col-md-6">'
             // The viewport is less than 768 pixels wide
-            console.log("This is a mobile device.");
+            
         } else {
             appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
             // The viewport is at least 768 pixels wide
-            console.log("This is a tablet or desktop.");
+            
         }
         appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
         appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -1747,7 +1758,7 @@
               $("#btnSirkulasi").prop('disabled',true)
               reasonReject('Please Ask Admin / Procurement to resolve notes, to continue circular process!','block','tabGroup')
             }else{
-              console.log("true")
+              
               $("#btnSirkulasi").prop('disabled',false)
             }
           }
@@ -1772,7 +1783,7 @@
         }
 
         if (result.pr.isCommit == 'True') {
-          console.log("iki commit")
+          
           reasonReject("This supplier has been committed with us to supply this product.","block","tabGroup","warning")
         }
 
@@ -1793,11 +1804,11 @@
         {
             appendHeader = appendHeader + '    <div class="col-md-6">'
             // The viewport is less than 768 pixels wide
-            console.log("This is a mobile device.");
+            
         } else {
             appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
             // The viewport is at least 768 pixels wide
-            console.log("This is a tablet or desktop.");
+            
         }
         appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
         if (result.pr.no_pr != undefined) {
@@ -2073,11 +2084,11 @@
     {
         append = append + '    <div class="col-md-6">'
         // The viewport is less than 768 pixels wide
-        console.log("This is a mobile device.");
+        
     } else {
         append = append + '    <div class="col-md-6" style="text-align:end">'
         // The viewport is at least 768 pixels wide
-        console.log("This is a tablet or desktop.");
+        
     }
     append = append + '        <div>'+ PRType +'</div>'
     append = append + '        <div><b>Request Methode</b></div>'
@@ -2784,7 +2795,7 @@
   }
 
   function sendOpenEmail(status=''){
-    console.log(status)
+    
     if (status == 'sended') {
       text = 'PR has been processed'
     }else{
@@ -3095,11 +3106,11 @@
           {
               appendHeader = appendHeader + '    <div class="col-md-6">'
               // The viewport is less than 768 pixels wide
-              console.log("This is a mobile device.");
+              
           } else {
               appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
               // The viewport is at least 768 pixels wide
-              console.log("This is a tablet or desktop.");
+              
           }
           appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
           appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -3272,7 +3283,7 @@
           }else{
             valueVat = result.pr.status_tax
           }
-          console.log(valueVat)
+          
           // btnVatStatus = true
           finalVat = tempVat
           finalGrand = tempGrand
@@ -3499,7 +3510,7 @@
                     }
 
                     if(result.dokumen.splice(1).length > 0){
-                      console.log("kok muncul")
+                      
                       $("#tableDocPendukung_epr").empty()
                       
                       $("#titleDoc_epr").css("display",'block')
@@ -3825,7 +3836,7 @@
               $("#inputSerialNumber").val(item.serial_number)
               $("#inputPartNumber").val(item.part_number)
               $("#inputTotalPrice").val(formatter.format(item.grand_total))
-              console.log("okee"+item.isRupiah)
+              
               if (item.isRupiah == "false") {
                 $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
               }else{
@@ -4324,7 +4335,7 @@
                     }
                   }                                 
                 }else{
-                  console.log("ada baru")
+                  
                   $('#tableDocPendukung_epr .trDocPendukung').each(function() {
                     var fileInput = $(this).find('#inputDocPendukung').val()
                     if (fileInput && fileInput !== '') { 
@@ -4335,7 +4346,7 @@
                         no_pr:localStorage.getItem('no_pembanding')
                       })
 
-                      console.log(arrInputDocPendukung)
+                      
                     }
                   })
                 }  
@@ -4535,7 +4546,7 @@
     }else{
       valueVat = value
     }
-    console.log(valueVat)
+    
     // btnVatStatus = true
     localStorage.setItem('status_tax',valueVat)
 
