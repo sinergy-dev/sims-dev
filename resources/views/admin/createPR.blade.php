@@ -149,6 +149,7 @@
                   <th>No. PR</th>
                   <th>Created at</th>
                   <th>Subject</th>
+                  <th>Issued By</th>
                   <th>Supplier</th>
                   <th>Total Price</th>
                   <th style="text-align: center;vertical-align: middle;">Status</th>
@@ -956,7 +957,7 @@
         /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
         var ErrorText = []
-        // console.log(f.size);
+        // 
         if (f.size > 2000000|| f.fileSize > 2000000) {
           Swal.fire({
             icon: 'error',
@@ -1010,7 +1011,7 @@
 
       //box id
         DashboardCounter()
-        InitiateFilterParam()
+        // InitiateFilterParam()
     })
 
     function select2TypeProduct(value){
@@ -1268,6 +1269,7 @@
                 }
               },
             },
+            { "data": "name"},
             { "data": "to"},
             { 
               render: function (data, type, row, meta){
@@ -1323,7 +1325,6 @@
                   btnClass = "btnCekDraft btn-primary"
                   isDisabled = "disabled"
                   btnId = "btnCekDraft"
-                  // return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
                 }else if (row.status == 'SAVED') {
                   btnClass = "btn-warning"
                   title = "Draft"
@@ -1332,10 +1333,8 @@
                     status = '"saved"'
                     value = status
                     onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
                   }else{
                     isDisabled = "disabled"
-                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
                   } 
                 }else if (row.status == 'REJECT') {
                   title = "Revision"
@@ -1345,12 +1344,8 @@
                     status = '"reject"'
                     value = status
                     onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
                   }else{
                     isDisabled = "disabled"
-                    console.log("")
-
-                    // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
                   } 
                 }else if(row.status == 'UNAPPROVED'){
                   title = "Revision"
@@ -1359,18 +1354,14 @@
                     status = '"revision"'
                     value = status
                     onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-
-                    // return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
                   }else{
                     isDisabled = "disabled"
-                    // return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
                   }
                 }else{
                   title = "Detail"
                   btnClass = "btn-primary"
                   btnId = "btnDetail"
-                  onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"              
-                  // return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
+                  onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"  
                 } 
 
                 if (row.issuance == '{{Auth::User()->nik}}') {
@@ -1380,9 +1371,11 @@
                     isDisabledCancel = ''
                   }
                 }else{
-                  isDisabledCancel = 'disabled'
-                  console.log(row.issuance == '{{Auth::User()->nik}}')
-
+                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                    isDisabledCancel = ''
+                  }else{
+                    isDisabledCancel = 'disabled'
+                  }
                 }
                 return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
               },
@@ -1433,7 +1426,7 @@
       column.visible( ! column.visible() );
     }
 
-    function InitiateFilterParam(){
+    function InitiateFilterParam(arrStatusBack,arrTypeBack){
       Pace.restart();
       Pace.track(function() {
         var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
@@ -1474,7 +1467,7 @@
               allowClear: true,
               multiple:true,
               data:selectOptionStatus,
-            })
+            }).val(arrStatusBack).trigger("change")
 
             // $("#inputFilterUser").select2().val("");
             var arrUser = result.dataUser
@@ -1490,7 +1483,7 @@
               allowClear: true,
               data:result.data_type_letter,
               multiple:true
-            })
+            }).val(arrTypeBack).trigger("change")
           }
         })
       })
@@ -1556,10 +1549,10 @@
             }
 
             if (parameterStatus.getAll('type_of_letter[]')[0] == "") {
-              $("#inputFilterTypePr").empty();
+              // $("#inputFilterTypePr").empty();
 
               $("#inputFilterTypePr").select2({
-                placeholder: " Select User",
+                placeholder: " Select a Type",
                 // allowClear: true,
                 multiple:true,
                 data:result.data_type_letter,
@@ -1572,7 +1565,7 @@
     }  
 
     function sortingByDashboard(value){
-      console.log(value)
+      
       var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
 
       if (tempStatus == 'status[]=') {
@@ -1627,6 +1620,35 @@
 
       showFilterData(temp)
       DashboardCounterFilter(temp)
+
+      return localStorage.setItem("arrFilter", temp) 
+    }
+
+    window.onload = function() {
+      var returnArray = searchCustom()
+      localStorage.setItem("arrFilter", returnArray);
+      localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilterBack"))
+      if(localStorage.getItem("arrFilterBack") != 'undefined' && localStorage.getItem("arrFilterBack") != 'null'){
+        // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
+        showFilterData(localStorage.getItem("arrFilterBack")) 
+        DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
+        var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
+        var arrStatus = [], arrType = []
+
+        $.each(arr,function(item,value){
+          if(value.indexOf("status") != -1){
+              console.log(value.split("=")[1])
+              arrStatus.push(value.split("=")[1])
+              
+          }
+
+          if(value.indexOf("type") != -1){
+              console.log(value.split("=")[1])
+              arrType.push(value.split("=")[1])
+          }
+        })
+        InitiateFilterParam(arrStatus,arrType)
+      }      
     }
 
     $('#clearFilterTable').click(function(){
@@ -1635,6 +1657,7 @@
       $("#inputFilterStatus").empty();
       $("#inputFilterUser").empty();
       DashboardCounter()
+      localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
@@ -1648,6 +1671,7 @@
       $("#inputFilterStatus").empty();
       $("#inputFilterUser").empty();
       DashboardCounter()
+      localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
@@ -1783,11 +1807,11 @@
             {
                 appendHeader = appendHeader + '    <div class="col-md-6">'
                 // The viewport is less than 768 pixels wide
-                console.log("This is a mobile device.");
+                
             } else {
                 appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                 // The viewport is at least 768 pixels wide
-                console.log("This is a tablet or desktop.");
+                
             }
             appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
             appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -2142,7 +2166,7 @@
               $(".modal-dialog").addClass('modal-lg')
               localStorage.setItem('firstLaunch',false)
 
-              console.log("status tax kini"+result.pr.status_tax)
+              
 
               addTable(0,result.pr.status_tax)
               if (localStorage.getItem('firstLaunch') == 'false') {
@@ -2340,7 +2364,7 @@
                       $("#tableDocPendukung_epr").append(appendDocPendukung)
 
                       $('#inputNameDocPendukung').keydown(function(){
-                        console.log(this.value)
+                        
                         if ($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung')).data('value').val() == "") {
                           $("#btnAddDocPendukung_epr").prop("disabled",true)
                           $("#btnAddDocPendukung_ipr").prop("disabled",true)
@@ -2684,7 +2708,7 @@
 
     localStorage.setItem('status_pr','')
     function addDraftPr(n){
-      console.log(localStorage.getItem('status_tax')+"okeee")
+      
       localStorage.setItem('status_pr','')
       let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
@@ -2731,11 +2755,11 @@
             {
                 appendHeader = appendHeader + '    <div class="col-md-6">'
                 // The viewport is less than 768 pixels wide
-                console.log("This is a mobile device.");
+                
             } else {
                 appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                 // The viewport is at least 768 pixels wide
-                console.log("This is a tablet or desktop.");
+                
             }
             appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
             appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -3130,6 +3154,7 @@
       //   location.replace("{{url('/admin/draftPR')}}/")
       // }
       // localStorage.setItem('isEditProduct',false)
+      window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname)
       $(".tab-cek").css('display','none')
       currentTab = 0
       n = 0
@@ -3178,11 +3203,11 @@
             {
                 appendHeader = appendHeader + '    <div class="col-md-6">'
                 // The viewport is less than 768 pixels wide
-                console.log("This is a mobile device.");
+                
             } else {
                 appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                 // The viewport is at least 768 pixels wide
-                console.log("This is a tablet or desktop.");
+                
             }
             appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
             appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -3858,11 +3883,11 @@
               {
                   appendHeader = appendHeader + '    <div class="col-md-6">'
                   // The viewport is less than 768 pixels wide
-                  console.log("This is a mobile device.");
+                  
               } else {
                   appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                   // The viewport is at least 768 pixels wide
-                  console.log("This is a tablet or desktop.");
+                  
               }
               appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
               appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -4462,7 +4487,7 @@
       }else{
         valueVat = value
       }
-      console.log(valueVat)
+      
       // btnVatStatus = true
       localStorage.setItem('status_tax',valueVat)
 
@@ -4533,8 +4558,6 @@
 
     currentTab = 0
     function nextPrevUnFinished(n,valueEdit){
-      console.log(currentTab)
-
       if(localStorage.getItem('status_draft_pr') == 'pembanding'){
         url = "{{url('/admin/getDetailPr')}}"
         urlDokumen = "{{url('/admin/storePembandingDokumen')}}"
@@ -4947,11 +4970,11 @@
                         $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
                           var fileInput = $(this).find('#inputDocPendukung').prop('files').length
                           if (fileInput == 0) { 
-                            console.log("benar")
+                            
 
                             formData.append('inputDocPendukung[]','-')
                           }else{
-                          console.log("salah")
+                          
 
                             formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                             arrInputDocPendukung.push({
@@ -4962,7 +4985,7 @@
                         })
 
                       }else{
-                        console.log("benarrrr")
+                        
                         var fileInput = $(this).find('#inputDocPendukung').val()
                         if (fileInput && fileInput !== '') { 
                           formData.append('inputDocPendukung[]','-')
@@ -5053,15 +5076,15 @@
                     $("#inputPenawaranHarga").closest('div').next('span').show();
                     $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
                   }else if($("#tableDocPendukung_ipr .trDocPendukung").length > 0){
-                    console.log("okee")
+                    
                     if (result.dokumen[1] != undefined) {
                       if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
                         $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
                           if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                             if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                             }else{
                               storeIPR(urlDokumen,formData)
@@ -5071,7 +5094,7 @@
                           }
                         })
                       }else{
-                        console.log("benarrrr")
+                        
                         var fileInput = $(this).find('#inputDocPendukung').val()
                         if (fileInput && fileInput !== '') { 
                           formData.append('inputDocPendukung[]','-')
@@ -5083,9 +5106,9 @@
                       $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
                         if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                           if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            
                             $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            
                             $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                           }else{
                             storeIPR(urlDokumen,formData)
@@ -5237,15 +5260,15 @@
                   
 
                   if($("#tableDocPendukung_epr .trDocPendukung").length > 0){
-                    console.log("okee")
-                      console.log("tidak undefined")
+                    
+                      
                       if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
                         $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
                           if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                             if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                             }else{
                               var arrInputDocPendukungEPR = []
@@ -5257,8 +5280,8 @@
                               formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
                               formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                               
-                              console.log(arrInputDocPendukungEPR)
-                              console.log($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val())
+                              
+                              
                               storeEPR(urlDokumen,formData)
                             }
                           }else{
@@ -5266,7 +5289,7 @@
                           }
                         })
                       }else{
-                        console.log("benarrrr")
+                        
                         var arrInputDocPendukungEPR = []
                         formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
                         formData.append('inputDocPendukung[]','-')
@@ -5278,7 +5301,7 @@
                     formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
                     formData.append('inputDocPendukung[]','-')
 
-                    console.log("ikiiilo")
+                    
                     storeEPR(urlDokumen,formData)
                   }
 
@@ -5286,16 +5309,16 @@
                   // if (result.dokumen.length > 0) {
                   //   if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
                   //     $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
-                  //         console.log("ke 4")
+                  //         
 
                   //       if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                   //         if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           
                   //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           
                   //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                   //         }else{
-                  //           console.log("ada isinya")
+                  //           
                   //           formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                   //           arrInputDocPendukung.push({
                   //             nameDocPendukung:$(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val(),
@@ -5304,7 +5327,7 @@
                   //           storeEPR(urlDokumen,formData)
                   //         }
                   //       }else{
-                  //         console.log("aku disini")
+                  //         
                   //         storeEPR(urlDokumen,formData)
                   //       }
                         
@@ -5313,7 +5336,7 @@
                   //   }else{
                   //     var fileInput = $(this).find('#inputDocPendukung').prop('files').length
                   //     if (fileInput == 0) { 
-                  //       console.log("aku disiniii")
+                  //       
 
                   //       formData.append('inputDocPendukung[]','-')
                   //       storeEPR(urlDokumen,formData)
@@ -5352,7 +5375,7 @@
             x[n].style.display = "none";
             currentTab = 0;
           }
-          console.log(localStorage.getItem('no_pr'))
+          
           unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
         }
       }else if (currentTab == 4) {
@@ -5439,7 +5462,7 @@
     }
 
     function addTable(n,status){ 
-      console.log("status"+status)
+      
 
       if (window.location.href.split("/")[6] == undefined) {
         if (localStorage.getItem('status_pr') == 'revision') {
@@ -5607,7 +5630,7 @@
           })
 
           if (status != "") {
-            console.log(status)
+            
             changeVatValue(status)
           }
 
@@ -6818,9 +6841,9 @@
       $("#btnAddDocPendukung_ipr").prop("disabled",true)
 
       $("#tableDocPendukung_"+ value +" .trDocPendukung").each(function(){
-        console.log("hoeeee")
+        
         $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).keydown(function(){
-          console.log(this.value)
+          
           if (this.value == "") {
             $("#btnAddDocPendukung_epr").prop("disabled",true)
             $("#btnAddDocPendukung_ipr").prop("disabled",true)
