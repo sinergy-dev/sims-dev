@@ -881,7 +881,6 @@
                 append = append + '<div class="col-md-12">'
                   append = append + '<div id="headerPreview">'
                   append = append + '</div>'
-                  // append = append + '<hr style="margin-bottom:20px!important">'
                   append = append + '<div class="box" style="margin-top:10px">'
                     append = append + '<div class="box-header"><h3 class="box-title">Products</h3><div class="box-tools pull-right"><button type="button" class="btn btn-box-tool btnProductCollapse"><span class="fa fa-2x fa-angle-down" style="margin-top:-5px"></span></button></div></div>'
                     append = append + '<div class="box-body" id="bodyCollapseProduct">'
@@ -2444,7 +2443,6 @@
       },
       success: function(result) {
         if (result[2].isCircular == 'True' && result[3].position != "BCD Manager") {
-          console.log("okee")
           //btn pembanding di procurement disabled
           $("#btnAddPembanding").prop('disabled',true)
           $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
