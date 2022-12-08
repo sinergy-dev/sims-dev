@@ -210,11 +210,14 @@
 
     function notifView(index){
         var data = snapshot_dump[index]
-        
-        
         if (data.module == "draft") {
             if (data.result == "DRAFT") {
-                window.location.href = "{{url('admin/draftPR')}}"
+                var url = "{{url('admin/draftPR')}}"
+                if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                    url = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot.val().id_pr
+                }
+                window.location.href = url
+
             }else{
                 window.location.href = "{{url('admin/detail/draftPR')}}/"+data.id_pr
             }
