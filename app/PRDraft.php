@@ -38,7 +38,7 @@ class PRDraft extends Model
         'created_at'
 	];
 
-	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes'];
+	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name'];
 
     public function getToAttribute()
     {
@@ -102,6 +102,12 @@ class PRDraft extends Model
     {
         $data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.issuance')->where('tb_pr_draft.id', $this->id)->first();
         return empty($data->issuance)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->issuance) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->issuance):$data->issuance;
+    }
+
+    public function getNameAttribute()
+    {
+        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance', 'left')->select('users.name')->where('tb_pr_draft.id', $this->id)->first();
+        return $data->name;
     }
 
     public function getDateAttribute()
