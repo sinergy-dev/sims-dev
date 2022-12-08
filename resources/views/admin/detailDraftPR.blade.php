@@ -629,6 +629,10 @@
 <script type="text/javascript">
   $(".money").mask('000,000,000,000,000', {reverse: true})
 
+  window.onload = function(){
+    localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilter"))
+  }
+
   $.ajax({
     type:"GET",
     url:"{{url('/admin/getPerson')}}",
@@ -877,21 +881,29 @@
                 append = append + '<div class="col-md-12">'
                   append = append + '<div id="headerPreview">'
                   append = append + '</div>'
-                  append = append + '<hr>'
-                  append = append + '<div class="table-responsive">'
-                    append = append + '<table class="table no-wrap">'
-                      append = append + '<thead>'
-                        append = append + '<th>No</th>'
-                        append = append + '<th width="20%">Product</th>'
-                        append = append + '<th width="40%">Description</th>'
-                        append = append + '<th width="5%">Qty</th>'
-                        append = append + '<th width="5%">Type</th>'
-                        append = append + '<th width="10%">Price</th>'
-                        append = append + '<th width="10%">Total Price</th>'
-                      append = append + '</thead>'
-                      append = append + '<tbody id="bodyPreview">'
-                      append = append + '</tbody>'
-                    append = append + '</table>'
+                  // append = append + '<hr style="margin-bottom:20px!important">'
+                  append = append + '<div class="box" style="margin-top:10px">'
+                    append = append + '<div class="box-header"><h3 class="box-title">Products</h3><div class="box-tools pull-right"><button type="button" class="btn btn-box-tool btnProductCollapse"><span class="fa fa-2x fa-angle-down" style="margin-top:-5px"></span></button></div></div>'
+                    append = append + '<div class="box-body" id="bodyCollapseProduct">'
+                      append = append + '<div class="table-responsive">'
+                        append = append + '<table class="table no-wrap">'
+                          append = append + '<thead>'
+                            append = append + '<th>No</th>'
+                            append = append + '<th width="20%">Product</th>'
+                            append = append + '<th width="40%">Description</th>'
+                            append = append + '<th width="5%">Qty</th>'
+                            append = append + '<th width="5%">Type</th>'
+                            append = append + '<th width="10%">Price</th>'
+                            append = append + '<th width="10%">Total Price</th>'
+                          append = append + '</thead>'
+                          append = append + '<tbody id="bodyPreview">'
+                          append = append + '</tbody>'
+                        append = append + '</table>'
+                      append = append + '</div>'
+
+                      append = append + '<div id="bottomPreviewProduct">'
+                      append = append + '</div>'
+                    append = append + '</div>'
                   append = append + '</div>'
                   append = append + '<div id="bottomPreview">'
                   append = append + '</div>'
@@ -1245,45 +1257,45 @@
     }
 
     
-    // $.ajax({
-    //   type: "POST",
-    //   url: "{{url('/admin/storeReply')}}",
-    //   data: {
-    //     _token: "{{ csrf_token() }}",
-    //     id_notes:id,
-    //     inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
-    //     no_pr:no_pr,
-    //     emailMention:emailMention
-    //   },beforeSend:function(){
-    //     Swal.fire({
-    //         title: 'Please Wait..!',
-    //         text: "It's sending..",
-    //         allowOutsideClick: false,
-    //         allowEscapeKey: false,
-    //         allowEnterKey: false,
-    //         customClass: {
-    //             popup: 'border-radius-0',
-    //         },
-    //         didOpen: () => {
-    //             Swal.showLoading()
-    //         }
-    //     })
-    //   },
-    //   success: function(result) {
-    //     Swal.hideLoading()
-    //     Swal.fire(
-    //         'Successfully!',
-    //         'success',
-    //         'success'
-    //     ).then((result) => {
-    //       if (result.value) {
-    //         location.reload()
-    //         Swal.close()
-    //       }
-    //     })
+    $.ajax({
+      type: "POST",
+      url: "{{url('/admin/storeReply')}}",
+      data: {
+        _token: "{{ csrf_token() }}",
+        id_notes:id,
+        inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
+        no_pr:no_pr,
+        emailMention:emailMention
+      },beforeSend:function(){
+        Swal.fire({
+            title: 'Please Wait..!',
+            text: "It's sending..",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            customClass: {
+                popup: 'border-radius-0',
+            },
+            didOpen: () => {
+                Swal.showLoading()
+            }
+        })
+      },
+      success: function(result) {
+        Swal.hideLoading()
+        Swal.fire(
+            'Successfully!',
+            'success',
+            'success'
+        ).then((result) => {
+          if (result.value) {
+            location.reload()
+            Swal.close()
+          }
+        })
         
-    //   }
-    // })
+      }
+    })
   }
 
   function btnSubmitNotes(){
@@ -1731,6 +1743,19 @@
     
   })
 
+  $(document).on('click','.btnProductCollapse', function() {
+    if ($("#bodyCollapseProduct").is(':visible') == true) {
+      $("#bodyCollapseProduct").hide("slow")
+      $(this).find('span').removeClass("fa-angle-down").addClass("fa-angle-right")
+
+    }
+    if ($("#bodyCollapseProduct").is(':hidden') == true){
+      $("#bodyCollapseProduct").show('slow')
+      $(this).find('span').removeClass("fa-angle-right").addClass("fa-angle-down")
+    }
+    
+  })
+
   function loadDataSubmitted(){
     $.ajax({
       type: "GET",
@@ -1859,33 +1884,37 @@
         })
 
         $("#bodyPreview").append(append)
+        appendBottomProduct = ""
+        appendBottomProduct = appendBottomProduct + '<hr>'
+        appendBottomProduct = appendBottomProduct + '<div class="row">'
+        appendBottomProduct = appendBottomProduct + '  <div class="col-md-12 col-xs-12">'
+        appendBottomProduct = appendBottomProduct + '    <form class="form-horizontal">'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputEmail3" class="col-sm-offset-8 col-sm-2 control-label">Total</label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputEmail5" class="col-sm-offset-8 col-sm-2 control-label">Grand Total</label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '    </form>'
+        appendBottomProduct = appendBottomProduct + '  </div>'
+        appendBottomProduct = appendBottomProduct + '</div>'
+        appendBottomProduct = appendBottomProduct + '<hr>'
+
+        $("#bottomPreviewProduct").append(appendBottomProduct)    
+
         appendBottom = ""
-        appendBottom = appendBottom + '<hr>'
-        appendBottom = appendBottom + '<div class="row">'
-        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
-        appendBottom = appendBottom + '    <form class="form-horizontal">'
-        appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-8 col-sm-2 control-label">Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-2">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'">'
-        appendBottom = appendBottom + '        </div>'
-        appendBottom = appendBottom + '      </div>'
-        appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
-        appendBottom = appendBottom + '        <div class="col-sm-2">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
-        appendBottom = appendBottom + '        </div>'
-        appendBottom = appendBottom + '      </div>'
-        appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail5" class="col-sm-offset-8 col-sm-2 control-label">Grand Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-2">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
-        appendBottom = appendBottom + '        </div>'
-        appendBottom = appendBottom + '      </div>'
-        appendBottom = appendBottom + '    </form>'
-        appendBottom = appendBottom + '  </div>'
-        appendBottom = appendBottom + '</div>'
-        appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
             appendBottom = appendBottom + '<h3 class="box-title">Terms & Condition</h3>'
@@ -1992,14 +2021,6 @@
             var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
             sum += temp;
         });
-
-        // if (result.pr.status_tax == 'True') {
-        //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-        //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
-        // }else{
-        //   tempVat = tempVat
-        //   tempGrand = parseInt(sum)
-        // }
 
         if (result.pr.status_tax == false) {
           valueVat = 'false'
