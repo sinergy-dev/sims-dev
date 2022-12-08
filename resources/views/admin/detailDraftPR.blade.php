@@ -1406,6 +1406,7 @@
     $("#showDetail").empty()
     arrReason = []
     loadData()
+    getActivityTask()
     append = ""
     append = append + '<div class="col-md-6 tabGroup">'
       append = append + '<div class="box">'
@@ -1485,6 +1486,10 @@
 
     accesable.forEach(function(item,index){
       $("#" + item).show()
+    })
+
+    $('input[type="checkbox"].minimal').iCheck({
+      checkboxClass: 'icheckbox_minimal-blue',
     })
   }
 
@@ -2292,24 +2297,6 @@
     append = append + '</div>'
     $("#divPembanding").append(append)  
 
-    $.ajax({
-      type: "GET",
-      url: "{{url('/admin/getActivity')}}",
-      data: {
-        no_pr: window.location.href.split("/")[6],
-      },
-      success: function(result) {
-        if (result[2].isCircular == 'True') {
-          //btn pembanding di procurement disabled
-          $("#btnAddPembanding").prop('disabled',true)
-          $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
-          $(".cbDraft").prop('disabled',true)
-          $(".cbPriority").closest('div').css('cursor','not-allowed')
-          $(".cbDraft").closest('div').css('cursor','not-allowed') 
-        }     
-      }
-    })
-
     $('input[type="checkbox"].minimal').iCheck({
       checkboxClass: 'icheckbox_minimal-blue',
     })
@@ -2403,13 +2390,6 @@
         sum += temp;
     });
 
-    // if (item.status_tax == 'True') {
-    //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-    //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
-    // }else{
-    //   tempVat = tempVat
-    //   tempGrand = parseInt(sum)
-    // }
 
     if (item.status_tax == false) {
       valueVat = 'false'
@@ -2444,20 +2424,42 @@
       $('.title_tax_pembanding').text("")
     }
 
-    // finalVat = tempVat
-
-    // finalGrand = tempGrand
-
-    // tempTotal = sum
     $("#vat_tax_pembanding[data-value='" + i + "']").val(formatter.format(tempVat))
     $("#inputGrandTotalProductPembanding[data-value='" + i + "']").val(formatter.format(sum))
     $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(tempGrand))
 
     accesable.forEach(function(item,index){
-      
       $("." + item).show()
     })
+
+    getActivityTask(i)
   }
+
+  function getActivityTask(i){
+    $.ajax({
+      type: "GET",
+      url: "{{url('/admin/getActivity')}}",
+      data: {
+        no_pr: window.location.href.split("/")[6],
+      },
+      success: function(result) {
+        if (result[2].isCircular == 'True' && result[3].position != "BCD Manager") {
+          console.log("okee")
+          //btn pembanding di procurement disabled
+          $("#btnAddPembanding").prop('disabled',true)
+          $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
+          $(".cbDraft").prop('disabled',true)
+          $(".cbPriority").closest('div').css('cursor','not-allowed')
+          $(".cbDraft").closest('div').css('cursor','not-allowed') 
+        }
+
+        $('input[type="checkbox"].minimal').iCheck({
+          checkboxClass: 'icheckbox_minimal-blue',
+        })     
+      }
+    })
+  }
+  
 
   function btnTerm(i){
     if ($("#bodyCollapse[data-value='" + i + "']").is(':visible') == true) {
