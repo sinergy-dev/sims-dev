@@ -1426,7 +1426,10 @@
       column.visible( ! column.visible() );
     }
 
-    function InitiateFilterParam(arrStatusBack='',arrTypeBack=''){
+    function InitiateFilterParam(arrStatusBack,arrTypeBack){
+      console.log(arrStatusBack)
+
+
       Pace.restart();
       Pace.track(function() {
         var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
@@ -1462,12 +1465,23 @@
                 children:arrStatus
               }
             ]
-            $("#inputFilterStatus").select2({
-              placeholder: " Select Status",
-              allowClear: true,
-              multiple:true,
-              data:selectOptionStatus,
-            }).val(arrStatusBack).trigger("change")
+
+            if (arrStatusBack == undefined) {
+              $("#inputFilterStatus").select2({
+                placeholder: " Select Status",
+                allowClear: true,
+                multiple:true,
+                data:selectOptionStatus,
+              })
+            }else{
+              $("#inputFilterStatus").select2({
+                placeholder: " Select Status",
+                allowClear: true,
+                multiple:true,
+                data:selectOptionStatus,
+              }).val(arrStatusBack).change()
+            }
+            
 
             // $("#inputFilterUser").select2().val("");
             var arrUser = result.dataUser
@@ -1478,12 +1492,21 @@
               data:arrUser,
             })
 
-            $("#inputFilterTypePr").select2({
-              placeholder: "Select a Type",
-              allowClear: true,
-              data:result.data_type_letter,
-              multiple:true
-            }).val(arrTypeBack).trigger("change")
+            if (arrTypeBack == undefined) {
+              $("#inputFilterTypePr").select2({
+                placeholder: "Select a Type",
+                allowClear: true,
+                data:result.data_type_letter,
+                multiple:true
+              })
+            }else{
+              $("#inputFilterTypePr").select2({
+                placeholder: "Select a Type",
+                allowClear: true,
+                data:result.data_type_letter,
+                multiple:true
+              }).val(arrTypeBack).change()
+            }
           }
         })
       })
@@ -1621,19 +1644,23 @@
       showFilterData(temp)
       DashboardCounterFilter(temp)
 
-      localStorage.setItem('isTemp',true)
+      if (!tempStatus || !tempType ) {
+        localStorage.setItem('isTemp',true)
+        console.log('tru nih')
+      }
 
       return localStorage.setItem("arrFilter", temp) 
     }
 
     window.onload = function() {
-      if (localStorage.getItem('isTemp') ==  true) {
-        var returnArray = searchCustom()
+      localStorage.setItem('isTemp',false)
+      if (localStorage.getItem('isTemp') === 'true') {
+        // var returnArray = searchCustom()
         console.log("okee")
+        // localStorage.setItem("arrFilter", returnArray);
       }
       localStorage.setItem('isTemp',false)
 
-      localStorage.setItem("arrFilter", returnArray);
       localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilterBack"))
       if(localStorage.getItem("arrFilterBack") != 'undefined' && localStorage.getItem("arrFilterBack") != 'null'){
         // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
@@ -1655,11 +1682,12 @@
         })
         InitiateFilterParam(arrStatus,arrType)
       }else{
-        InitiateFilterParam()
+        InitiateFilterParam(arrStatus,arrType)
       }     
     }
 
     $('#clearFilterTable').click(function(){
+      localStorage.setItem('isTemp',false)
       $('#inputSearchAnything').val('')
       $("#inputFilterTypePr").empty();
       $("#inputFilterStatus").empty();
@@ -1667,7 +1695,6 @@
       DashboardCounter()
       localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
-      localStorage.setItem('isTemp',false)
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
       $('#inputRangeDate').html('<i class="fa fa-calendar"></i> <span> Date range picker <i class="fa fa-caret-down"></i></span>');
@@ -1675,6 +1702,7 @@
     });
 
     $('#reloadTable').click(function(){
+      localStorage.setItem('isTemp',false)  
       $('#inputSearchAnything').val('')
       $("#inputFilterTypePr").empty();
       $("#inputFilterStatus").empty();
@@ -1682,7 +1710,6 @@
       DashboardCounter()
       localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
-      localStorage.setItem('isTemp',false)  
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
       $('#inputRangeDate').html('<i class="fa fa-calendar"></i> <span> Date range picker <i class="fa fa-caret-down"></i></span>');
