@@ -1729,10 +1729,10 @@ class PrDraftController extends Controller
                     "date_time"=>Carbon::now()->timestamp,
                     "module"=>"draft"
                 );
+                $this->getNotifBadgeInsert($jsonInsert2);
             }
 
             $this->getNotifBadgeInsert($jsonInsert);
-            $this->getNotifBadgeInsert($jsonInsert2);
         
         }
     }
@@ -2760,12 +2760,14 @@ class PrDraftController extends Controller
 
         $isCircular = DB::table('tb_pr_draft')->select('isCircular')->where('id', $request->no_pr)->first();
 
+        $approver = $this->getSignStatusPR($request->no_pr, 'circular')->where('signed','false')->first();
+
         // return collect([
         //     'activity_group' => $getActivity->groupBy('date_format'),
         //     'last_activity' =>$lastActivity
         // ]);
 
-        return [$getActivity->groupBy('date_format'), $lastActivity, $isCircular];
+        return [$getActivity->groupBy('date_format'), $lastActivity, $isCircular, $approver];
 
     	// return $getActivity->groupBy('date_format');
     }
@@ -2942,7 +2944,9 @@ class PrDraftController extends Controller
 
         $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
         $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
-        $kirim_user = $detail_approver->pluck('email');
+        // $detail_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+        $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr, 'detail'))->first();
+        // $kirim_user = $detail_approver->pluck('email');
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -2984,7 +2988,9 @@ class PrDraftController extends Controller
 
         $next_approver = $this->getSignStatusPR($request->no_pr, 'detail');
         $detail_approver = $this->getSignStatusPR($request->no_pr, 'circular');
-        $kirim_user = $detail_approver->pluck('email');
+        // $detail_approver = $this->getSignStatusPR($request->no_pr, 'detail');
+        $kirim_user = User::select('email', 'name')->where('name', $this->getSignStatusPR($request->no_pr, 'detail'))->first();
+        // $kirim_user = $detail_approver->pluck('email');
 
         $territory = DB::table('users')->select('id_territory')->where('nik', $detail->issuance)->first()->id_territory;
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
@@ -4027,7 +4033,15 @@ class PrDraftController extends Controller
                 $dokumen_file = $service->files->listFiles($optParams)->getFiles()[0]->getWebContentLink();
 
                 if (explode(".", $dokumen->dokumen_location)[1] == 'pdf') {
-                    $page =  $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_file)));
+                    $context = stream_context_create(
+                        array(
+                            "http" => array(
+                                "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
+                            )
+                        )
+                    );
+
+                    $page =  $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_file, false, $context)));
 
                     for ($i=0; $i < $page; $i++) { 
                         // import a page then get the id and will be used in the template
@@ -4045,13 +4059,22 @@ class PrDraftController extends Controller
                     }
                 } else{
                     // echo $dokumen_file . '<br>';
+
+                    $context = stream_context_create(
+                        array(
+                            "http" => array(
+                                "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
+                            )
+                        )
+                    );
+
                     list($width,$height) = getimagesize($dokumen_file);
                     if ($width > $height) {
                         $pdf->AddPage('L');
-                        $pdf->MemImage(file_get_contents($dokumen_file),5,5,-300);
+                        $pdf->MemImage(file_get_contents($dokumen_file, false, $context),5,5,-300);
                     } else {
                         $pdf->AddPage('P');
-                        $pdf->MemImage(file_get_contents($dokumen_file),5,5,-300);
+                        $pdf->MemImage(file_get_contents($dokumen_file, false, $context),5,5,-300);
                     }
                 }
 
@@ -4060,7 +4083,16 @@ class PrDraftController extends Controller
             $dokumen_revisi = $this->getOnlyPdfPRFromLink($dokumen->id_draft_pr);
             if (strpos($data->title, 'Revisi') && $dokumen_revisi != '-') {
                 // return 'true';
-                $page_revisi =  $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_revisi)));
+
+                $context = stream_context_create(
+                    array(
+                        "http" => array(
+                            "header" => "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
+                        )
+                    )
+                );
+
+                $page_revisi =  $pdf->setSourceFile(StreamReader::createByString(file_get_contents($dokumen_revisi, false, $context)));
                 // for ($i=0; $i < $page; $i++) { 
                     $tplId = $pdf->importPage(1, '/MediaBox');
                     $size = $pdf->getTemplateSize($tplId);
