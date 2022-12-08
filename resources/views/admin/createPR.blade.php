@@ -1682,7 +1682,7 @@
       DashboardCounter()
       localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
-      localStorage.setItem('isTemp',false)
+      localStorage.setItem('isTemp',false)  
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
       $('#inputRangeDate').html('<i class="fa fa-calendar"></i> <span> Date range picker <i class="fa fa-caret-down"></i></span>');
