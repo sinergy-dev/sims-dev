@@ -1621,16 +1621,20 @@
       showFilterData(temp)
       DashboardCounterFilter(temp)
 
+      localStorage.setItem('isTemp',true)
+
       return localStorage.setItem("arrFilter", temp) 
     }
 
     window.onload = function() {
-      var returnArray = searchCustom()
+      if (localStorage.getItem('isTemp') ==  true) {
+        var returnArray = searchCustom()
+      }
+
       localStorage.setItem("arrFilter", returnArray);
       localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilterBack"))
       if(localStorage.getItem("arrFilterBack") != 'undefined' && localStorage.getItem("arrFilterBack") != 'null'){
         // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
-        showFilterData(localStorage.getItem("arrFilterBack")) 
         DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
         var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
         var arrStatus = [], arrType = []
@@ -1648,6 +1652,8 @@
           }
         })
         InitiateFilterParam(arrStatus,arrType)
+      }else{
+        InitiateFilterParam()
       }      
     }
 
