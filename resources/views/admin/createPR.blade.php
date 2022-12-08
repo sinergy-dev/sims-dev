@@ -1426,7 +1426,7 @@
       column.visible( ! column.visible() );
     }
 
-    function InitiateFilterParam(arrStatusBack,arrTypeBack){
+    function InitiateFilterParam(arrStatusBack='',arrTypeBack=''){
       Pace.restart();
       Pace.track(function() {
         var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
@@ -1629,7 +1629,9 @@
     window.onload = function() {
       if (localStorage.getItem('isTemp') ==  true) {
         var returnArray = searchCustom()
+        console.log("okee")
       }
+      localStorage.setItem('isTemp',false)
 
       localStorage.setItem("arrFilter", returnArray);
       localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilterBack"))
@@ -1654,7 +1656,7 @@
         InitiateFilterParam(arrStatus,arrType)
       }else{
         InitiateFilterParam()
-      }      
+      }     
     }
 
     $('#clearFilterTable').click(function(){
@@ -1665,6 +1667,7 @@
       DashboardCounter()
       localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
+      localStorage.setItem('isTemp',false)
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
       $('#inputRangeDate').html('<i class="fa fa-calendar"></i> <span> Date range picker <i class="fa fa-caret-down"></i></span>');
@@ -1679,6 +1682,7 @@
       DashboardCounter()
       localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
+      localStorage.setItem('isTemp',false)
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
       $('#inputRangeDate').html('<i class="fa fa-calendar"></i> <span> Date range picker <i class="fa fa-caret-down"></i></span>');
