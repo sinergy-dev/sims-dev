@@ -127,7 +127,11 @@
  					
  					if (snapshot_dump[keys[i]].to == "{{Auth::User()->email}}") {
  						if (snapshot_dump[keys[i]].result == 'DRAFT') {
-				  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('admin/draftPR')}}/")
+ 							URL = "{{url('admin/draftPR')}}"
+ 							if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+ 								URL = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot_dump[keys[i]].id_pr
+ 							}
+				  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread",URL)
 				  		}else{
 				  			append = append + makeNotificationHolder(snapshot_dump[keys[i]],keys[i],"unread","{{url('admin/detail/draftPR')}}/"+snapshot_dump[keys[i]].id_pr)
 				  		}
@@ -195,12 +199,18 @@
         if(!start){
         	if (!snapshot.val().module == false) {
         		if (snapshot.val().to == "{{Auth::User()->email}}") {
+        			var url = "{{url('admin/draftPR')}}"
 	        		if (snapshot.val().result == 'DRAFT') {
 	        			if (snapshot.val().to == "{{Auth::User()->email}}") {
-    						pushNotify(snapshot.val().title,"{{url('admin/draftPR')}}/")
+	        				if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+	        					url = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot.val().id_pr
+    							pushNotify(snapshot.val().title,url)
+	        				}else{
+    							pushNotify(snapshot.val().title,url)
+	        				}
 	        			}
 	        			
-						$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread","{{url('admin/draftPR')}}/"))
+						$("#notificationContent").prepend(makeNotificationHolder(snapshot.val(),snapshot.key,"unread",url))
 	        		}else{
 	        			if (snapshot.val().to == "{{Auth::User()->email}}") {
 	    					pushNotify(snapshot.val().title,"{{url('admin/detail/draftPR')}}/"+snapshot.val().id_pr);
