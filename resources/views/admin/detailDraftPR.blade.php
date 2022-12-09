@@ -1225,7 +1225,7 @@
   function pressReply(no_pr,id,person){
     var emailMention = []
     //user procurement
-    var user_proc = JSON.parse("{{App\RoleUser::join("users","users.nik","=","role_user.user_id")->join("roles","roles.id","=","role_user.role_id")->select('users.name')->where('roles.name',"BCD Procurement")->get()}}".replace(/&quot;/g,'"'))
+    var user_proc = JSON.parse("{{App\RoleUser::join('users','users.nik','=','role_user.user_id')->join('roles','roles.id','=','role_user.role_id')->select('users.name')->where('roles.name','BCD Procurement')->where('status_karyawan','!=','dummy')->get()}}".replace(/&quot;/g,'"'))
 
     $.each(user_proc,function(item,value){
       emailMention.push({"name":value.name})
