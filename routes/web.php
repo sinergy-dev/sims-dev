@@ -276,6 +276,9 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getTotalNominalByCatIprYear', 'PrController@getTotalNominalByCatIprYear');
 	Route::get('/getTotalNominalByCatEprYear', 'PrController@getTotalNominalByCatEprYear');
 
+	
+	Route::get('/getPrByPid', 'PrController@getPrByPid');
+
 	//Draft PR
 	Route::get('/admin/draftPR', 'PrDraftController@draftPR');
 	Route::get('/admin/draftPR/{id}', 'PrDraftController@draftPR');
@@ -318,6 +321,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/admin/getEmailTemplate', 'PrDraftController@getEmailTemplate');
 	Route::get('/admin/getPdfPr', 'PrDraftController@getPdfPr');
 	Route::get('/admin/getPdfPRFromLink', 'PrDraftController@getPdfPRFromLink');
+	Route::get('/admin/getOnlyPdfPRFromLink', 'PrDraftController@getOnlyPdfPRFromLink');
 	Route::post('/admin/sendMailtoFinance', 'PrDraftController@sendMailtoFinance');
 	Route::post('/admin/deleteDokumen', 'PrDraftController@deleteDokumen');
 	Route::post('/admin/deleteProduct', 'PrDraftController@deleteProduct');
@@ -1022,6 +1026,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/presence/report/getExportRerport', 'PresenceController@getExportReport');
 	Route::get('/presence/report/getData2', 'PresenceController@getDataReportPresence');
 	Route::get('/presence/report/getFilterReport', 'PresenceController@getDataReportPresence2');
+	Route::get('/presence/report/getReportPresenceDummy', 'PresenceController@getReportPresenceDummy');
 	
 	Route::get('/presence/setting', 'PresenceController@presenceSetting');
 	Route::get('/presence/setting/getListUser', 'PresenceController@presenceSettingGetListUser');

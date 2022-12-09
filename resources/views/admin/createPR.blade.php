@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-barber-shop.css">
+
 <style type="text/css">
   .modal { overflow: auto !important; }
   .textarea-scrollbar {
@@ -147,6 +149,7 @@
                   <th>No. PR</th>
                   <th>Created at</th>
                   <th>Subject</th>
+                  <th>Issued By</th>
                   <th>Supplier</th>
                   <th>Total Price</th>
                   <th style="text-align: center;vertical-align: middle;">Status</th>
@@ -954,7 +957,7 @@
         /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
         var ErrorText = []
-        // console.log(f.size);
+        // 
         if (f.size > 2000000|| f.fileSize > 2000000) {
           Swal.fire({
             icon: 'error',
@@ -1007,8 +1010,8 @@
       })
 
       //box id
-      DashboardCounter()
-      InitiateFilterParam()
+        DashboardCounter()
+        // InitiateFilterParam()
     })
 
     function select2TypeProduct(value){
@@ -1071,30 +1074,33 @@
       var append = ""
       var colors = []
       var ArrColors = [{
-            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',index: 0
+            name: 'Need Attention',style: 'color:white', color: 'bg-yellow', icon: 'fa fa-exclamation',status:"NA",index: 0
         },
         {
-            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',index: 1
+            name: 'Ongoing',style: 'color:white', color: 'bg-primary', icon: 'fa fa-edit',status:"OG",index: 1
         },
         {
-            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',index: 2
+            name: 'Done',style: 'color:white', color: 'bg-green', icon: 'fa fa-check',status:"DO",index: 2
         },
         {
-            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',index: 3
+            name: 'All',style: 'color:white', color: 'bg-purple', icon: 'fa fa-list-ul',status:"ALL",index: 3
         },
       ]
 
       colors.push(ArrColors)
       $.each(colors[0], function(key, value){
+        var status = "'"+ value.status +"'"
         append = append + '<div class="col-lg-3 col-xs-12">'
           append = append + '<div class="small-box ' + value.color + '">'
             append = append + '<div class="inner">'
               append = append + '<h3 style="'+ value.style +'" class="counter" id="count_pr_'+value.index+'"</h3>'
               append = append + '<h4 style="'+ value.style +'"><b>'+ value.name +'</b></h4>'
+
             append = append + '</div>'
             append = append + '<div class="icon">'
               append = append + '<i class="'+ value.icon +'" style="'+ value.style +';opacity:0.4"></i>'
             append = append + '</div>'
+            append = append + '<a href="#" onclick="sortingByDashboard('+ status +')" class="small-box-footer">Sorting <i class="fa fa-filter"></i></a>'
           append = append + '</div>'
         append = append + '</div>'
       id = "count_pr_"+value.index
@@ -1102,7 +1108,7 @@
       })
 
       $("#BoxId").append(append)
-      
+  
       $.ajax({
         type:"GET",
         url:"{{url('/admin/getCount')}}",
@@ -1205,207 +1211,214 @@
       element.style.height = (25+element.scrollHeight)+"px";
     }
 
-    $("#draftPr").DataTable({
-      "ajax":{
-        "type":"GET",
-        "url":"{{url('/admin/getDraftPr')}}",
-        "dataSrc": function (json){
-          json.data.forEach(function(data,index){
-            if (data.status == 'REJECT') {
-              data.status_numerical = 1
-            }else if (data.status == 'UNAPPROVED') {
-              data.status_numerical = 2
-            }else if (data.status == 'SAVED') {
-              data.status_numerical = 3
-            }else if (data.status == 'DRAFT') {
-              data.status_numerical = 4
-            }else if (data.status == 'VERIFIED') {
-              data.status_numerical = 5
-            }else if (data.status == 'COMPARING') {
-              data.status_numerical = 6
-            }else if (data.status == 'CIRCULAR') {
-              data.status_numerical = 7
-            }else if (data.status == 'FINALIZED') {
-              data.status_numerical = 8
-            }else if (data.status == 'SENDED') {
-              data.status_numerical = 9
-            }else if (data.status == 'CANCEL') {
-              data.status_numerical = 10
-            }
-          })
-          return json.data
-        }
-      },
-      "columns": [
-        { 
-          render: function (data, type, row, meta){
-            if (row.status == "SAVED" || row.status == "DRAFT") {
-              return " - "           
-            }else{
-              return row.no_pr         
-            }
-          }
-        },
-        {
-          orderData:[8],
-          render: function (data, type, row, meta){
-           return moment(row.date).format("D MMM YYYY");   
-          }
-        },
-        { 
-          render: function (data, type, row, meta){
-            return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
-          },
-        },
-        { "data": "to"},
-        { 
-          render: function (data, type, row, meta){
-            if (isNaN(row.nominal) == true) {
-              return '-'          
-            }else{
-              return formatter.format(row.nominal)          
-            }
-          },
-          className:'text-right'
-        },
-        { 
-          orderData:[7],
-          render: function (data, type, row, meta){
-            if (row.status == 'SAVED') {
-              return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'DRAFT') {
-              return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'VERIFIED') {
-              return '<span class="label label-success">'+row.status+'</span>'
-            }else if (row.status == 'COMPARING') {
-              return '<span class="label bg-purple">'+row.status+'</span>'
-            }else if (row.status == 'CIRCULAR') {
-              if (row.circularby == "-") {
-                return '<span class="label label-warning">'+row.status+'</span><br><small>On Procurement<small>'
-              }else{
-                return '<span class="label label-warning">'+row.status+'</span><br><small>On '+ row.circularby +'<small>'
-              }
-            }else if (row.status == 'FINALIZED') {
-              return '<span class="label label-success">'+row.status+'</span>'           
-            }else if (row.status == 'SENDED') {
-              return '<span class="label label-primary">'+row.status+'</span>'           
-            }else if (row.status == 'UNAPPROVED' || row.status == 'REJECT' || row.status == 'CANCEL') {
-              return '<span class="label label-danger">'+row.status+'</span>' 
-            }
-          },
-          className:'text-center'
-        },
-        { 
-          render: function (data, type, row, meta){
-            let onclick = ""
-            let title = ""
-            let btnClass = ""
-            let isDisabled = ""
-            let isDisabledCancel = ""
-            let btnId = ""
-            let status = ""
-            let value = ""
-
-            if (row.status == 'DRAFT') {
-              onclick = "cekByAdmin(0,"+ row.id +")"
-              title = "Verify"
-              btnClass = "btnCekDraft btn-primary"
-              isDisabled = "disabled"
-              btnId = "btnCekDraft"
-              // return "<td><button class='btn btn-sm btn-primary btnCekDraft btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' disabled id='btnCekDraft' onclick='cekByAdmin(0,"+ row.id +")'>Verify</button></td>"
-            }else if (row.status == 'SAVED') {
-              btnClass = "btn-warning"
-              title = "Draft"
-              btnId = "btnDraft"
-              if (row.issuance == '{{Auth::User()->nik}}') {
-                status = '"saved"'
-                value = status
-                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' value='saved' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Draft</button></td>" 
-              }else{
-                isDisabled = "disabled"
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' disabled>Draft</button></td>" 
-              } 
-            }else if (row.status == 'REJECT') {
-              title = "Revision"
-              btnClass = "btn-warning"
-              btnId = "btnDraft"
-              if (row.issuance == '{{Auth::User()->nik}}') {
-                status = '"reject"'
-                value = status
-                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' value='reject' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>" 
-              }else{
-                isDisabled = "disabled"
-                // return "<td><button class='btn btn-sm btn-warning' id='btnDraft' data-value='"+row.id+"' disabled>Revision</button></td>" 
-              } 
-            }else if(row.status == 'UNAPPROVED'){
-              title = "Revision"
-              btnClass = "btn-warning"
-              if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
-                status = '"revision"'
-                value = status
-                onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
-
-                // return "<td><button class='btn btn-sm btn-warning' data-value='"+row.id+"' onclick='unfinishedDraft(0,"+ row.id +","+ status +")'>Revision</button></td>"
-              }else{
-                isDisabled = "disabled"
-                // return "<td><button class='btn btn-sm btn-warning' disabled>Revision</button></td>" 
-              }
-            }else{
-              title = "Detail"
-              btnClass = "btn-primary"
-              btnId = "btnDetail"
-              onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"
-              if (row.issuance == '{{Auth::User()->nik}}') {
-                if (row.status == 'CANCEL') {
-                  isDisabledCancel = 'disabled'
-                }else{
-                  isDisabledCancel = ''
+    Pace.restart();
+    Pace.track(function() {
+      $("#draftPr").DataTable({
+          "ajax":{
+            "type":"GET",
+            "url":"{{url('/admin/getDraftPr')}}",
+            "dataSrc": function (json){
+              json.data.forEach(function(data,index){
+                if (data.status == 'REJECT') {
+                  data.status_numerical = 1
+                }else if (data.status == 'UNAPPROVED') {
+                  data.status_numerical = 2
+                }else if (data.status == 'SAVED') {
+                  data.status_numerical = 3
+                }else if (data.status == 'DRAFT') {
+                  data.status_numerical = 4
+                }else if (data.status == 'VERIFIED') {
+                  data.status_numerical = 5
+                }else if (data.status == 'COMPARING') {
+                  data.status_numerical = 6
+                }else if (data.status == 'CIRCULAR') {
+                  data.status_numerical = 7
+                }else if (data.status == 'FINALIZED') {
+                  data.status_numerical = 8
+                }else if (data.status == 'SENDED') {
+                  data.status_numerical = 9
+                }else if (data.status == 'CANCEL') {
+                  data.status_numerical = 10
                 }
-              }else{
-                isDisabledCancel = 'disabled'
-              }
-              
-              // return "<td><a href='{{url('admin/detail/draftPR')}}/"+row.id+"'><button id='btnDetail' class='btn btn-sm btn-primary btnDetailDusk_"+row.id+"'>Detail</button></a></td>" 
-            } 
-
-            return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
+              })
+              return json.data
+            }
           },
-          className:'text-center'
-        },//action
-        {
-          "data":"status_numerical",
-          "visible":false,
-          "targets":[5]
-        },
-        {
-          "data":"created_at",
-          "visible":false,
-          "targets":[1],
-        },
-      ],
-      drawCallback: function(settings) {
-        if (accesable.includes("btnCekDraft")) {
-          $(".btnCekDraft").prop("disabled",false)
-        }
-      },
-      "pageLength":100,
-      lengthChange:false,
-      // autoWidth:true,
-      scrollX:        true,
-      scrollCollapse: true,
-      // paging:         false,
-      fixedColumns:   {
-        left: 1,
-      },
-      initComplete: function () {
-        $.each($("#selectShowColumnTicket li input"),function(index,item){
-          var column = $("#draftPr").DataTable().column(index)
-          // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
-          $(item).prop('checked', column.visible())
-        })
-      }
+          "columns": [
+            { 
+              render: function (data, type, row, meta){
+                if (row.status == "SAVED" || row.status == "DRAFT") {
+                  return " - "           
+                }else{
+                  return row.no_pr         
+                }
+              }
+            },
+            {
+              orderData:[8],
+              render: function (data, type, row, meta){
+               return moment(row.date).format("D MMM YYYY");   
+              }
+            },
+            { 
+              render: function (data, type, row, meta){
+                if (row.attention_notes == "False") {
+                  return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span>&nbsp<i title="Pay Attention to the Notes!" class="fa fa-warning" style="color:red"></i> ' + row.title         
+                }else{
+                  return '<span class="label label-primary"><b><i>' + row.type_of_letter + '</i></b></span> ' + row.title         
+                }
+              },
+            },
+            { "data": "name"},
+            { "data": "to"},
+            { 
+              render: function (data, type, row, meta){
+                if (isNaN(row.nominal) == true) {
+                  return '-'          
+                }else{
+                  return formatter.format(row.nominal)          
+                }
+              },
+              className:'text-right'
+            },
+            { 
+              orderData:[7],
+              render: function (data, type, row, meta){
+                if (row.status == 'SAVED') {
+                  return '<span class="label label-primary">'+row.status+'</span>'           
+                }else if (row.status == 'DRAFT') {
+                  return '<span class="label label-primary">'+row.status+'</span>'           
+                }else if (row.status == 'VERIFIED') {
+                  return '<span class="label label-success">'+row.status+'</span>'
+                }else if (row.status == 'COMPARING') {
+                  return '<span class="label bg-purple">'+row.status+'</span>'
+                }else if (row.status == 'CIRCULAR') {
+                  if (row.circularby == "-") {
+                    return '<span class="label label-warning">'+row.status+'</span><br><small>On Procurement<small>'
+                  }else{
+                    return '<span class="label label-warning">'+row.status+'</span><br><small>On '+ row.circularby +'<small>'
+                  }
+                }else if (row.status == 'FINALIZED') {
+                  return '<span class="label label-success">'+row.status+'</span>'           
+                }else if (row.status == 'SENDED') {
+                  return '<span class="label label-primary">'+row.status+'</span>'           
+                }else if (row.status == 'UNAPPROVED' || row.status == 'REJECT' || row.status == 'CANCEL') {
+                  return '<span class="label label-danger">'+row.status+'</span>' 
+                }
+              },
+              className:'text-center'
+            },
+            { 
+              render: function (data, type, row, meta){
+                let onclick = ""
+                let title = ""
+                let btnClass = ""
+                let isDisabled = ""
+                let isDisabledCancel = ""
+                let btnId = ""
+                let status = ""
+                let value = ""
+
+                if (row.status == 'DRAFT') {
+                  onclick = "cekByAdmin(0,"+ row.id +")"
+                  title = "Verify"
+                  btnClass = "btnCekDraft btn-primary"
+                  isDisabled = "disabled"
+                  btnId = "btnCekDraft"
+                }else if (row.status == 'SAVED') {
+                  btnClass = "btn-warning"
+                  title = "Draft"
+                  btnId = "btnDraft"
+                  if (row.issuance == '{{Auth::User()->nik}}') {
+                    status = '"saved"'
+                    value = status
+                    onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                  }else{
+                    isDisabled = "disabled"
+                  } 
+                }else if (row.status == 'REJECT') {
+                  title = "Revision"
+                  btnClass = "btn-warning"
+                  btnId = "btnDraft"
+                  if (row.issuance == '{{Auth::User()->nik}}') {
+                    status = '"reject"'
+                    value = status
+                    onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                  }else{
+                    isDisabled = "disabled"
+                  } 
+                }else if(row.status == 'UNAPPROVED'){
+                  title = "Revision"
+                  btnClass = "btn-warning"
+                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                    status = '"revision"'
+                    value = status
+                    onclick = "unfinishedDraft(0,"+ row.id +","+ status +")"
+                  }else{
+                    isDisabled = "disabled"
+                  }
+                }else{
+                  title = "Detail"
+                  btnClass = "btn-primary"
+                  btnId = "btnDetail"
+                  onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"  
+                } 
+
+                if (row.issuance == '{{Auth::User()->nik}}') {
+                  if (row.status == 'CANCEL') {
+                    isDisabledCancel = 'disabled'
+                  }else{
+                    isDisabledCancel = ''
+                  }
+                }else{
+                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                    isDisabledCancel = ''
+                  }else{
+                    isDisabledCancel = 'disabled'
+                  }
+                }
+                return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
+              },
+              className:'text-center'
+            },//action
+            {
+              "data":"status_numerical",
+              "visible":false,
+              "targets":[5]
+            },
+            {
+              "data":"created_at",
+              "visible":false,
+              "targets":[1],
+            },
+          ],
+          drawCallback: function(settings) {
+            if (accesable.includes("btnCekDraft")) {
+              $(".btnCekDraft").prop("disabled",false)
+            }
+          },
+          "pageLength":100,
+          lengthChange:false,
+          // autoWidth:true,
+          scrollX:        true,
+          scrollCollapse: true,
+          // paging:         false,
+          fixedColumns:   {
+            left: 1,
+          },
+          processing:true,
+          'language': {
+              'loadingRecords': '&nbsp;',
+              'processing': 'Loading...'
+          },
+          initComplete: function () {
+            $.each($("#selectShowColumnTicket li input"),function(index,item){
+              var column = $("#draftPr").DataTable().column(index)
+              // column.visible() ? $(item).addClass('active') : $(item).removeClass('active')
+              $(item).prop('checked', column.visible())
+            })
+          }
+      })
     })
 
     function changeColumnTable(data){
@@ -1413,137 +1426,181 @@
       column.visible( ! column.visible() );
     }
 
-    function InitiateFilterParam(){
-      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
+    function InitiateFilterParam(arrStatusBack,arrTypeBack){
+      console.log(arrStatusBack)
 
-      var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
-      
-      $.ajax({
-        url:"{{url('/admin/getFilterDraft')}}" + temp,
-        type:"GET",
-        success:function(result){
-          var arrStatus = result.dataStatus;
-          var selectOptionStatus = [];
 
-          var selectOptionStatus = [
-            {
-              text:"Grouped Status", 
-              children:[
-                {
-                  id:"NA",
-                  text:"Need Attention",
-                },
-                {
-                  id:"OG",
-                  text:"On Going",
-                },
-                {
-                  id:"DO",
-                  text:"Done",
-                }
-              ]
-            },{
-              text:"All Status", 
-              children:arrStatus
-            }
-          ]
-          $("#inputFilterStatus").select2({
-            placeholder: " Select Status",
-            allowClear: true,
-            multiple:true,
-            data:selectOptionStatus,
-          })
+      Pace.restart();
+      Pace.track(function() {
+        var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
 
-          // $("#inputFilterUser").select2().val("");
-          var arrUser = result.dataUser
-          $("#inputFilterUser").select2({
-            placeholder: " Select User",
-            allowClear: true,
-            multiple:true,
-            data:arrUser,
-          })
-
-          $("#inputFilterTypePr").select2({
-            placeholder: "Select a Type",
-            allowClear: true,
-            data:result.data_type_letter,
-            multiple:true
-          })
-        }
-      })
-    }  
-
-    function showFilterData(temp){
-      $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
-
-      $.ajax({
-        url:"{{url('/admin/getFilterDraft')}}" + temp,
-        type:"GET",
-        success:function(result){
-          var parameterStatus = new URLSearchParams(temp);
-          if (parameterStatus.getAll('status[]')[0] == "") {
-            $("#inputFilterStatus").empty();
-
-            var arrGrouped = []
-            arrGrouped.push({
-              id:"NA",
-              text:"Need Attention",
-            },
-            {
-              id:"OG",
-              text:"On Going",
-            },
-            {
-              id:"DO",
-              text:"Done",
-            })
-
+        var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
+        
+        $.ajax({
+          url:"{{url('/admin/getFilterDraft')}}" + temp,
+          type:"GET",
+          success:function(result){
             var arrStatus = result.dataStatus;
             var selectOptionStatus = [];
 
             var selectOptionStatus = [
               {
                 text:"Grouped Status", 
-                children:arrGrouped
+                children:[
+                  {
+                    id:"NA",
+                    text:"Need Attention",
+                  },
+                  {
+                    id:"OG",
+                    text:"On Going",
+                  },
+                  {
+                    id:"DO",
+                    text:"Done",
+                  }
+                ]
               },{
                 text:"All Status", 
                 children:arrStatus
               }
             ]
 
-            $("#inputFilterStatus").select2({
-              placeholder: " Select Status",
-              // allowClear: true,
-              multiple:true,
-              data:selectOptionStatus,
-            })
-          }
+            if (arrStatusBack == undefined) {
+              $("#inputFilterStatus").select2({
+                placeholder: " Select Status",
+                allowClear: true,
+                multiple:true,
+                data:selectOptionStatus,
+              })
+            }else{
+              $("#inputFilterStatus").select2({
+                placeholder: " Select Status",
+                allowClear: true,
+                multiple:true,
+                data:selectOptionStatus,
+              }).val(arrStatusBack).change()
+            }
+            
 
-          if (parameterStatus.getAll('user[]')[0] == "") {
-            $("#inputFilterUser").empty();
-
+            // $("#inputFilterUser").select2().val("");
+            var arrUser = result.dataUser
             $("#inputFilterUser").select2({
               placeholder: " Select User",
-              // allowClear: true,
+              allowClear: true,
               multiple:true,
-              data:result.dataUser,
+              data:arrUser,
             })
-          }
 
-          if (parameterStatus.getAll('type_of_letter[]')[0] == "") {
-            $("#inputFilterTypePr").empty();
-
-            $("#inputFilterTypePr").select2({
-              placeholder: " Select User",
-              // allowClear: true,
-              multiple:true,
-              data:result.data_type_letter,
-            })
+            if (arrTypeBack == undefined) {
+              $("#inputFilterTypePr").select2({
+                placeholder: "Select a Type",
+                allowClear: true,
+                data:result.data_type_letter,
+                multiple:true
+              })
+            }else{
+              $("#inputFilterTypePr").select2({
+                placeholder: "Select a Type",
+                allowClear: true,
+                data:result.data_type_letter,
+                multiple:true
+              }).val(arrTypeBack).change()
+            }
           }
-          
-        }
+        })
       })
     }  
+
+    function showFilterData(temp){
+      Pace.restart();
+      Pace.track(function() {
+        $("#draftPr").DataTable().ajax.url("{{url('/admin/getFilterDraft')}}" + temp).load()
+
+        $.ajax({
+          url:"{{url('/admin/getFilterDraft')}}" + temp,
+          type:"GET",
+          success:function(result){
+            var parameterStatus = new URLSearchParams(temp);
+            if (parameterStatus.getAll('status[]')[0] == "") {
+              $("#inputFilterStatus").empty();
+
+              var arrGrouped = []
+              arrGrouped.push({
+                id:"NA",
+                text:"Need Attention",
+              },
+              {
+                id:"OG",
+                text:"On Going",
+              },
+              {
+                id:"DO",
+                text:"Done",
+              })
+
+              var arrStatus = result.dataStatus;
+              var selectOptionStatus = [];
+
+              var selectOptionStatus = [
+                {
+                  text:"Grouped Status", 
+                  children:arrGrouped
+                },{
+                  text:"All Status", 
+                  children:arrStatus
+                }
+              ]
+
+              $("#inputFilterStatus").select2({
+                placeholder: " Select Status",
+                // allowClear: true,
+                multiple:true,
+                data:selectOptionStatus,
+              })
+            }
+
+            if (parameterStatus.getAll('user[]')[0] == "") {
+              $("#inputFilterUser").empty();
+
+              $("#inputFilterUser").select2({
+                placeholder: " Select User",
+                // allowClear: true,
+                multiple:true,
+                data:result.dataUser,
+              })
+            }
+
+            if (parameterStatus.getAll('type_of_letter[]')[0] == "") {
+              // $("#inputFilterTypePr").empty();
+
+              $("#inputFilterTypePr").select2({
+                placeholder: " Select a Type",
+                // allowClear: true,
+                multiple:true,
+                data:result.data_type_letter,
+              })
+            }
+            
+          }
+        })
+      })
+    }  
+
+    function sortingByDashboard(value){
+      
+      var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
+
+      if (tempStatus == 'status[]=') {
+        tempStatus = tempStatus + value
+      }else{
+        tempStatus = tempStatus + 'status[]=' + value
+      }
+
+      var temp = '?' + tempType + '&' + tempStatus + '&' + tempUser + '&' + tempStartDate + '&' + tempEndDate + '&' + tempAnything
+      
+      showFilterData(temp)
+    }
 
     function searchCustom(startDate,endDate){
       var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
@@ -1586,14 +1643,57 @@
 
       showFilterData(temp)
       DashboardCounterFilter(temp)
+
+      if (!tempStatus || !tempType ) {
+        localStorage.setItem('isTemp',true)
+        console.log('tru nih')
+      }
+
+      return localStorage.setItem("arrFilter", temp) 
+    }
+
+    window.onload = function() {
+      localStorage.setItem('isTemp',false)
+      if (localStorage.getItem('isTemp') === 'true') {
+        // var returnArray = searchCustom()
+        console.log("okee")
+        // localStorage.setItem("arrFilter", returnArray);
+      }
+      localStorage.setItem('isTemp',false)
+
+      localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilterBack"))
+      if(localStorage.getItem("arrFilterBack") != 'undefined' && localStorage.getItem("arrFilterBack") != 'null'){
+        // window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname + localStorage.getItem("arrFilterBack"))
+        DashboardCounterFilter(localStorage.getItem("arrFilterBack"))
+        var arr = localStorage.getItem("arrFilterBack").split("?")[1].split("&")
+        var arrStatus = [], arrType = []
+
+        $.each(arr,function(item,value){
+          if(value.indexOf("status") != -1){
+              console.log(value.split("=")[1])
+              arrStatus.push(value.split("=")[1])
+              
+          }
+
+          if(value.indexOf("type") != -1){
+              console.log(value.split("=")[1])
+              arrType.push(value.split("=")[1])
+          }
+        })
+        InitiateFilterParam(arrStatus,arrType)
+      }else{
+        InitiateFilterParam(arrStatus,arrType)
+      }     
     }
 
     $('#clearFilterTable').click(function(){
+      localStorage.setItem('isTemp',false)
       $('#inputSearchAnything').val('')
       $("#inputFilterTypePr").empty();
       $("#inputFilterStatus").empty();
       $("#inputFilterUser").empty();
       DashboardCounter()
+      localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
@@ -1602,11 +1702,13 @@
     });
 
     $('#reloadTable').click(function(){
+      localStorage.setItem('isTemp',false)  
       $('#inputSearchAnything').val('')
       $("#inputFilterTypePr").empty();
       $("#inputFilterStatus").empty();
       $("#inputFilterUser").empty();
       DashboardCounter()
+      localStorage.removeItem("arrFilterBack");
       InitiateFilterParam()
       $("#inputRangeDate").val("")
       $('#inputRangeDate').html("")
@@ -1742,11 +1844,11 @@
             {
                 appendHeader = appendHeader + '    <div class="col-md-6">'
                 // The viewport is less than 768 pixels wide
-                console.log("This is a mobile device.");
+                
             } else {
                 appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                 // The viewport is at least 768 pixels wide
-                console.log("This is a tablet or desktop.");
+                
             }
             appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
             appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -2101,7 +2203,7 @@
               $(".modal-dialog").addClass('modal-lg')
               localStorage.setItem('firstLaunch',false)
 
-              console.log("status tax kini"+result.pr.status_tax)
+              
 
               addTable(0,result.pr.status_tax)
               if (localStorage.getItem('firstLaunch') == 'false') {
@@ -2145,10 +2247,18 @@
                   success:function(result){
                     var selectedPid = result.pr.pid
 
+                    // $("#selectLeadId").val(result.pr.lead_id).trigger("change")
+                    // $("#selectQuoteNum").val(result.pr.quote_number).trigger("change")
+
                     $.ajax({
                       url: "{{url('/admin/getPidAll')}}",
                       type: "GET",
                       success: function(result) {
+
+                        if (selectedPid) {
+                          $("#selectPid").val(selectedPid).trigger("change")
+                        }
+
                         $("#selectPid").select2({
                             data: result.data,
                             placeholder: "Select Pid",
@@ -2291,7 +2401,7 @@
                       $("#tableDocPendukung_epr").append(appendDocPendukung)
 
                       $('#inputNameDocPendukung').keydown(function(){
-                        console.log(this.value)
+                        
                         if ($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung')).data('value').val() == "") {
                           $("#btnAddDocPendukung_epr").prop("disabled",true)
                           $("#btnAddDocPendukung_ipr").prop("disabled",true)
@@ -2635,7 +2745,7 @@
 
     localStorage.setItem('status_pr','')
     function addDraftPr(n){
-      console.log(localStorage.getItem('status_tax')+"okeee")
+      
       localStorage.setItem('status_pr','')
       let x = document.getElementsByClassName("tab-add");
       x[n].style.display = "inline";
@@ -2682,11 +2792,11 @@
             {
                 appendHeader = appendHeader + '    <div class="col-md-6">'
                 // The viewport is less than 768 pixels wide
-                console.log("This is a mobile device.");
+                
             } else {
                 appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                 // The viewport is at least 768 pixels wide
-                console.log("This is a tablet or desktop.");
+                
             }
             appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
             appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -3081,6 +3191,7 @@
       //   location.replace("{{url('/admin/draftPR')}}/")
       // }
       // localStorage.setItem('isEditProduct',false)
+      window.history.pushState(null,null,location.protocol + '//' + location.host + location.pathname)
       $(".tab-cek").css('display','none')
       currentTab = 0
       n = 0
@@ -3129,11 +3240,11 @@
             {
                 appendHeader = appendHeader + '    <div class="col-md-6">'
                 // The viewport is less than 768 pixels wide
-                console.log("This is a mobile device.");
+                
             } else {
                 appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                 // The viewport is at least 768 pixels wide
-                console.log("This is a tablet or desktop.");
+                
             }
             appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
             appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -3624,9 +3735,8 @@
                 $("#formForPrInternalCek").hide()   
 
                 $("#formForPrExternalCek").find($("input[type=checkbox]")).attr('name','chk[]')
-
-                $("#selectLeadIdCek").val(result.pr.lead_id)
                 $("#selectPidCek").val(result.pr.pid)
+                $("#selectLeadIdCek").val(result.pr.lead_id)
                 $("#selectQuoteNumCek").val(result.pr.quote_number)
 
                 var pdf = "fa fa-fw fa-file-pdf-o"
@@ -3810,11 +3920,11 @@
               {
                   appendHeader = appendHeader + '    <div class="col-md-6">'
                   // The viewport is less than 768 pixels wide
-                  console.log("This is a mobile device.");
+                  
               } else {
                   appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
                   // The viewport is at least 768 pixels wide
-                  console.log("This is a tablet or desktop.");
+                  
               }
               appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
               appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
@@ -4414,7 +4524,7 @@
       }else{
         valueVat = value
       }
-      console.log(valueVat)
+      
       // btnVatStatus = true
       localStorage.setItem('status_tax',valueVat)
 
@@ -4485,8 +4595,6 @@
 
     currentTab = 0
     function nextPrevUnFinished(n,valueEdit){
-      console.log(currentTab)
-
       if(localStorage.getItem('status_draft_pr') == 'pembanding'){
         url = "{{url('/admin/getDetailPr')}}"
         urlDokumen = "{{url('/admin/storePembandingDokumen')}}"
@@ -4899,11 +5007,11 @@
                         $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
                           var fileInput = $(this).find('#inputDocPendukung').prop('files').length
                           if (fileInput == 0) { 
-                            console.log("benar")
+                            
 
                             formData.append('inputDocPendukung[]','-')
                           }else{
-                          console.log("salah")
+                          
 
                             formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                             arrInputDocPendukung.push({
@@ -4914,7 +5022,7 @@
                         })
 
                       }else{
-                        console.log("benarrrr")
+                        
                         var fileInput = $(this).find('#inputDocPendukung').val()
                         if (fileInput && fileInput !== '') { 
                           formData.append('inputDocPendukung[]','-')
@@ -5005,15 +5113,15 @@
                     $("#inputPenawaranHarga").closest('div').next('span').show();
                     $("#inputPenawaranHarga").prev('.input-group-addon').css("background-color","red"); 
                   }else if($("#tableDocPendukung_ipr .trDocPendukung").length > 0){
-                    console.log("okee")
+                    
                     if (result.dokumen[1] != undefined) {
                       if (!(result.dokumen.slice(1).length == $('#tableDocPendukung_ipr .trDocPendukung').length)) {
                         $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
                           if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                             if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                             }else{
                               storeIPR(urlDokumen,formData)
@@ -5023,7 +5131,7 @@
                           }
                         })
                       }else{
-                        console.log("benarrrr")
+                        
                         var fileInput = $(this).find('#inputDocPendukung').val()
                         if (fileInput && fileInput !== '') { 
                           formData.append('inputDocPendukung[]','-')
@@ -5035,9 +5143,9 @@
                       $('#tableDocPendukung_ipr .trDocPendukung').slice(result.dokumen.slice(1).length).each(function(){
                         if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                           if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            
                             $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                            console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                            
                             $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                           }else{
                             storeIPR(urlDokumen,formData)
@@ -5189,15 +5297,15 @@
                   
 
                   if($("#tableDocPendukung_epr .trDocPendukung").length > 0){
-                    console.log("okee")
-                      console.log("tidak undefined")
+                    
+                      
                       if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
                         $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
                           if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                             if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                              console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                              
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                             }else{
                               var arrInputDocPendukungEPR = []
@@ -5209,8 +5317,8 @@
                               formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
                               formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                               
-                              console.log(arrInputDocPendukungEPR)
-                              console.log($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val())
+                              
+                              
                               storeEPR(urlDokumen,formData)
                             }
                           }else{
@@ -5218,7 +5326,7 @@
                           }
                         })
                       }else{
-                        console.log("benarrrr")
+                        
                         var arrInputDocPendukungEPR = []
                         formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
                         formData.append('inputDocPendukung[]','-')
@@ -5226,7 +5334,11 @@
                         storeEPR(urlDokumen,formData)
                       }  
                   }else{
-                    console.log("ikiiilo")
+                    var arrInputDocPendukungEPR = []
+                    formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
+                    formData.append('inputDocPendukung[]','-')
+
+                    
                     storeEPR(urlDokumen,formData)
                   }
 
@@ -5234,16 +5346,16 @@
                   // if (result.dokumen.length > 0) {
                   //   if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
                   //     $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
-                  //         console.log("ke 4")
+                  //         
 
                   //       if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                   //         if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
-                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           
                   //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).next('span').show()
-                  //           console.log($('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')))
+                  //           
                   //           $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                   //         }else{
-                  //           console.log("ada isinya")
+                  //           
                   //           formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
                   //           arrInputDocPendukung.push({
                   //             nameDocPendukung:$(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val(),
@@ -5252,7 +5364,7 @@
                   //           storeEPR(urlDokumen,formData)
                   //         }
                   //       }else{
-                  //         console.log("aku disini")
+                  //         
                   //         storeEPR(urlDokumen,formData)
                   //       }
                         
@@ -5261,7 +5373,7 @@
                   //   }else{
                   //     var fileInput = $(this).find('#inputDocPendukung').prop('files').length
                   //     if (fileInput == 0) { 
-                  //       console.log("aku disiniii")
+                  //       
 
                   //       formData.append('inputDocPendukung[]','-')
                   //       storeEPR(urlDokumen,formData)
@@ -5300,7 +5412,7 @@
             x[n].style.display = "none";
             currentTab = 0;
           }
-          console.log(localStorage.getItem('no_pr'))
+          
           unfinishedDraft(currentTab,localStorage.getItem('no_pr'),localStorage.getItem("status_unfinished"));
         }
       }else if (currentTab == 4) {
@@ -5387,7 +5499,7 @@
     }
 
     function addTable(n,status){ 
-      console.log("status"+status)
+      
 
       if (window.location.href.split("/")[6] == undefined) {
         if (localStorage.getItem('status_pr') == 'revision') {
@@ -5555,7 +5667,7 @@
           })
 
           if (status != "") {
-            console.log(status)
+            
             changeVatValue(status)
           }
 
@@ -6766,9 +6878,9 @@
       $("#btnAddDocPendukung_ipr").prop("disabled",true)
 
       $("#tableDocPendukung_"+ value +" .trDocPendukung").each(function(){
-        console.log("hoeeee")
+        
         $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).keydown(function(){
-          console.log(this.value)
+          
           if (this.value == "") {
             $("#btnAddDocPendukung_epr").prop("disabled",true)
             $("#btnAddDocPendukung_ipr").prop("disabled",true)

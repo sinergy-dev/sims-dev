@@ -178,7 +178,7 @@
 			@elseif($next_approver == 'replyNotes')
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<center><b>Notes</b></center><br>
-				<center>{!!strip_tags($detail->reply)!!}</center>
+				<center>{!!$detail->reply!!}</center>
 			</div>
 			@else
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">

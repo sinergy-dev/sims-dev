@@ -629,6 +629,10 @@
 <script type="text/javascript">
   $(".money").mask('000,000,000,000,000', {reverse: true})
 
+  window.onload = function(){
+    localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilter"))
+  }
+
   $.ajax({
     type:"GET",
     url:"{{url('/admin/getPerson')}}",
@@ -822,7 +826,7 @@
   function reasonReject(item,display,nameClass,typeCallout=""){
     $(".divReasonRejectRevision").remove()
     arrReason.push(item)
-    console.log(arrReason)
+    
 
     var textTitle = ""
     var className = ""
@@ -837,11 +841,11 @@
 
     var append = ""
 
-    console.log(item)
+    
     append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
       append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
       $.each(arrReason,function(item,value){
-        console.log(item)
+        
         append = append + '<p class="reason_reject_revision">'+ value.replaceAll("\n","<br>")+'</p>'
       })
     append = append + '</div>'
@@ -877,21 +881,28 @@
                 append = append + '<div class="col-md-12">'
                   append = append + '<div id="headerPreview">'
                   append = append + '</div>'
-                  append = append + '<hr>'
-                  append = append + '<div class="table-responsive">'
-                    append = append + '<table class="table no-wrap">'
-                      append = append + '<thead>'
-                        append = append + '<th>No</th>'
-                        append = append + '<th width="20%">Product</th>'
-                        append = append + '<th width="40%">Description</th>'
-                        append = append + '<th width="5%">Qty</th>'
-                        append = append + '<th width="5%">Type</th>'
-                        append = append + '<th width="10%">Price</th>'
-                        append = append + '<th width="10%">Total Price</th>'
-                      append = append + '</thead>'
-                      append = append + '<tbody id="bodyPreview">'
-                      append = append + '</tbody>'
-                    append = append + '</table>'
+                  append = append + '<div class="box" style="margin-top:10px">'
+                    append = append + '<div class="box-header"><h3 class="box-title">Products</h3><div class="box-tools pull-right"><button type="button" class="btn btn-box-tool btnProductCollapse"><span class="fa fa-2x fa-angle-down" style="margin-top:-5px"></span></button></div></div>'
+                    append = append + '<div class="box-body" id="bodyCollapseProduct">'
+                      append = append + '<div class="table-responsive">'
+                        append = append + '<table class="table no-wrap">'
+                          append = append + '<thead>'
+                            append = append + '<th>No</th>'
+                            append = append + '<th width="20%">Product</th>'
+                            append = append + '<th width="40%">Description</th>'
+                            append = append + '<th width="5%">Qty</th>'
+                            append = append + '<th width="5%">Type</th>'
+                            append = append + '<th width="10%">Price</th>'
+                            append = append + '<th width="10%">Total Price</th>'
+                          append = append + '</thead>'
+                          append = append + '<tbody id="bodyPreview">'
+                          append = append + '</tbody>'
+                        append = append + '</table>'
+                      append = append + '</div>'
+
+                      append = append + '<div id="bottomPreviewProduct">'
+                      append = append + '</div>'
+                    append = append + '</div>'
                   append = append + '</div>'
                   append = append + '<div id="bottomPreview">'
                   append = append + '</div>'
@@ -966,7 +977,7 @@
         $.each(result,function(item,value){
           no++
 
-          console.log(value.image)
+          
 
           if (value.image != '' && value.image != '-' && value.image != null) {
             image = value.image
@@ -1018,7 +1029,7 @@
           appendResolve = appendResolve + '<div class="box-body" style="">'
           appendResolve = appendResolve + '<p style="display:inline">'+ value.notes +'</p><br>'
           appendResolve = appendResolve + '<button type="button" value="'+ value.id +'" id="btnResolve" onclick="btnResolve('+ value.id +')" '+ disableResolve +' class="pull-right btn btn-success btn-xs" style="margin-top:10px"><i class="fa fa-check"></i> Resolve</button>'
-          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
+          appendResolve = appendResolve + '<button type="button" id="btnReply" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +','+"'"+ value.operator+"'" +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +' class="btn btn-default btn-xs" style="margin-top:10px"><i class="fa fa-reply"></i> Reply</button>'
           appendResolve = appendResolve + '</div>'
             if (value.reply.length > 0) {
               style = 'display:block'
@@ -1034,18 +1045,21 @@
               }
               appendResolve = appendResolve + '<div class="box-comment">'
               appendResolve = appendResolve + '<img class="img-circle img-sm" src="{{ asset("image")}}/'+ gambar +'" alt="User Image">'
-              appendResolve = appendResolve + '<div class="comment-text">'
-              const cal = moment(values.date_add)
-              .calendar(null, {
-                lastDay: '[Yesterday]',
-                sameDay: '[Today]',
-                nextDay: '[Tomorrow]',
-                lastWeek: '[last] dddd',
-                nextWeek: 'dddd',
-                sameElse: 'L'
-              })
-              appendResolve = appendResolve + '<span class="username">'+ values.operator +'<span class="text-muted pull-right">'+ cal + '&nbspat&nbsp' + moment(values.date_add).format('hh:mm A') +'</span>'
-              appendResolve = appendResolve + '</span><p>'+ values.reply +'</p></div>'
+                appendResolve = appendResolve + '<div class="comment-text">'
+                const cal = moment(values.date_add)
+                .calendar(null, {
+                  lastDay: '[Yesterday]',
+                  sameDay: '[Today]',
+                  nextDay: '[Tomorrow]',
+                  lastWeek: '[last] dddd',
+                  nextWeek: 'dddd',
+                  sameElse: 'L'
+                })
+                appendResolve = appendResolve + '<span class="username">'+ values.operator +'<span class="text-muted pull-right">'+ cal + '&nbspat&nbsp' + moment(values.date_add).format('hh:mm A') +'</span>'
+                appendResolve = appendResolve + '</span><p>'+ values.reply +'</p>'
+                appendResolve = appendResolve + '</div>'
+                appendResolve = appendResolve + '<button class="btn btn-xs btn-default" id="btnReplyBottom" onclick="btnShowReply('+ value.id_draft_pr +','+ value.id +','+"'"+ values.operator+"'" +')" data-id="'+ value.id_draft_pr +'" data-value="'+ value.id +'" '+ disableReply +'><i class="fa fa-reply"></i>&nbspReply</button>'
+                appendResolve = appendResolve + " "
               appendResolve = appendResolve + '</div>'
             })            
             appendResolve = appendResolve + '</div>'
@@ -1123,31 +1137,54 @@
     })
   }
 
-  function btnShowReply(no_pr,id){
+  function btnShowReply(no_pr,id,person,disableReply){
     if ("{{Auth::User()->gambar}}" != null && "{{Auth::User()->gambar}}" != '' && "{{Auth::User()->gambar}}" != '-') {
       gambar = "{{Auth::User()->gambar}}"
     }else{
       gambar = "place_profile_3.png"
     }
+     
+    personDiv = '<strong<span>' + person + '</span></strong>'
+    name = person
+    
+
+    
     var appendFooter = ''
+    $("#showFooter[data-value='"+ id +"']").empty("")
+
     appendFooter = appendFooter + '<img class="img-responsive img-circle img-sm" src="{{ asset("image/")}}/'+ gambar +'" alt="Alt Text">'
     appendFooter = appendFooter + '<div class="img-push">'
     appendFooter = appendFooter + '<div class="input-group">'
-      appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention form-control input-sm" placeholder="Type reply comment, @ mention member">'
+      appendFooter = appendFooter + '<textarea type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention_reply input-md" placeholder="Type reply comment, @ mention member" style="border-left:none;border-right:none;border-top:none;resize:none"></textarea>'
+      // appendFooter = appendFooter + '<span class="input-group-btn">'
+      // appendFooter = appendFooter + '<input type="text" id="inputReply" data-id="'+ no_pr +'" data-value="'+ id +'" class="mention_reply form-control input-sm" placeholder="Type reply comment, @ mention member" style="border-left:none;border-right:none;border-top:none;resize:none">'
       appendFooter = appendFooter + '<span class="input-group-btn">'
-        appendFooter = appendFooter + '<button onclick="pressReply('+ no_pr +','+ id +')" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-send"></i></button>'
+        appendFooter = appendFooter + '<button onclick="pressReply('+ no_pr +','+ id +','+"'"+name+"'"+')" style="background-color: transparent;background-repeat: no-repeat;border: none; cursor: pointer;overflow: hidden;outline: none;" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-send" style="color:#3c8dbc"></i></button>'
       appendFooter = appendFooter + '</span>'
+      appendFooter = appendFooter + '<span class="input-group-btn">'
+        appendFooter = appendFooter + '<button onclick="btnCloseReply('+ id +')" style="background-color: transparent;background-repeat: no-repeat;border: none; cursor: pointer;overflow: hidden;outline: none;" class="btn btn-flat btn-sm btn-primary"><i class="fa fa-trash-o" style="color:#dd4b39"></i></button>'
+      appendFooter = appendFooter + '</span>'
+      
     appendFooter = appendFooter + '</div>'          
     appendFooter = appendFooter + '</div>'
     $("#showFooter[data-value='"+ id +"']").append(appendFooter)
     $("#showFooter[data-value='"+ id +"']").show()
 
-    if ($("#inputReply").length == 1) {
-      $("#btnReply[data-value='"+ id +"']").prop("disabled",true)
-    }else{
-      $("#btnReply[data-value='"+ id +"']").prop("disabled",false)
-    }
+    
+    $("#btnReply[data-value='"+ id +"']").prop("disabled",true)
+    $("#btnReplyBottom[data-value='"+ id +"']").prop("disabled",true)
 
+    mentionInput(name)
+  }
+
+  function btnCloseReply(id){
+    $("#btnCloseReplyBottom[data-value='"+ id +"']").hide("slow")
+    $("#btnReply[data-value='"+ id +"']").prop('disabled',false)
+    $("#btnReplyBottom[data-value='"+ id +"']").prop('disabled',false)
+    $("#showFooter[data-value='"+ id +"']").hide()
+  }
+
+  function mentionInput(){
     $.ajax({
       type:"GET",
       url:"{{url('/admin/getPerson')}}",
@@ -1157,21 +1194,22 @@
       success: function(result){
         var i = 0
         const results = result.map(item => {
-            const container = {};
+          const container = {};
+          container.id = i++;
+          container.name = item.name;
+          if (item.avatar == null) {
+            container.avatar = '{{ asset("image/place_profile_3.png")}}';
+          }else{
+            container.avatar = item.avatar;
+          }
+          container.type = item.email;
 
-            container.id = i++;
-            container.name = item.name;
-            if (item.avatar == null) {
-              container.avatar = '{{ asset("image/place_profile_3.png")}}';
-            }else{
-              container.avatar = item.avatar;
-            }
-            container.type = item.email;
+          return container;
+            
 
-            return container;
         })
 
-        $('.mention').mentionsInput({
+        $('.mention_reply').mentionsInput({
           onDataRequest:function (mode, query, callback) {
             var data = results
 
@@ -1179,22 +1217,64 @@
 
             callback.call(this, data);
           }
-        });
-        
+        });    
       }
     })
   }
 
-  function pressReply(no_pr,id){
+  function pressReply(no_pr,id,person){
     var emailMention = []
-    if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 1) {
+    //user procurement
+    var user_proc = JSON.parse("{{App\RoleUser::join('users','users.nik','=','role_user.user_id')->join('roles','roles.id','=','role_user.role_id')->select('users.name')->where('roles.name','BCD Procurement')->where('status_karyawan','!=','dummy')->get()}}".replace(/&quot;/g,'"'))
+
+    $.each(user_proc,function(item,value){
+      emailMention.push({"name":value.name})
+    })
+
+    if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 0) {
       obj_notes = $("#inputReply").closest("div").find(".mentions").find("div").find("span").splice("span")
+
       for (var i = 0; i < obj_notes.length; i++) {
-        emailMention.push({'name':obj_notes[i].textContent})
+        var item = {}; 
+        
+        if (obj_notes.length == 1) {
+          if (obj_notes[i].textContent == person) {
+            item["name"] = name;
+            emailMention.push(item);
+            
+
+          }else{
+            emailMention[0] = {"name":person};
+            item["name"] = obj_notes[i].textContent;
+            emailMention.push(item);
+          }
+        }else{
+          if (obj_notes[i].textContent != person) {
+            // obj_notes[i].textContent.remove()
+            
+            emailMention[0] = {"name":person};
+            item["name"] = obj_notes[i].textContent;
+            emailMention.push(item);
+          }
+        } 
       }      
     }else{
-      emailMention.push({'name':$("#inputReply").closest("div").find(".mentions").find("div").find("strong").text()})
+      emailMention.push({'name':name})
     }
+
+    const uniqueIds = [];
+
+    const filteredEmailMention = emailMention.filter(element => {
+      const isDuplicate = uniqueIds.includes(element.name);
+
+      if (!isDuplicate) {
+        uniqueIds.push(element.name);
+
+        return true;
+      }
+      return false;
+    });
+    
     $.ajax({
       type: "POST",
       url: "{{url('/admin/storeReply')}}",
@@ -1203,7 +1283,7 @@
         id_notes:id,
         inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
         no_pr:no_pr,
-        emailMention:emailMention
+        emailMention:filteredEmailMention
       },beforeSend:function(){
         Swal.fire({
             title: 'Please Wait..!',
@@ -1344,6 +1424,7 @@
     $("#showDetail").empty()
     arrReason = []
     loadData()
+    getActivityTask()
     append = ""
     append = append + '<div class="col-md-6 tabGroup">'
       append = append + '<div class="box">'
@@ -1424,6 +1505,10 @@
     accesable.forEach(function(item,index){
       $("#" + item).show()
     })
+
+    $('input[type="checkbox"].minimal').iCheck({
+      checkboxClass: 'icheckbox_minimal-blue',
+    })
   }
 
   function loadData(){
@@ -1461,19 +1546,19 @@
         {
             appendHeader = appendHeader + '    <div class="col-md-6">'
             // The viewport is less than 768 pixels wide
-            console.log("This is a mobile device.");
+            
         } else {
             appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
             // The viewport is at least 768 pixels wide
-            console.log("This is a tablet or desktop.");
+            
         }
         appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
         appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
         appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
         appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
         if (type_of_letter == 'EPR') {
-          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
-          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Project Id</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.pid +'</div>'
           appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
           appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
         }
@@ -1648,7 +1733,7 @@
 
           finalVat = tempVat
 
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+          tempGrand = parseInt(sum) +  tempVat
 
           finalGrand = tempGrand
 
@@ -1681,6 +1766,19 @@
     
   })
 
+  $(document).on('click','.btnProductCollapse', function() {
+    if ($("#bodyCollapseProduct").is(':visible') == true) {
+      $("#bodyCollapseProduct").hide("slow")
+      $(this).find('span').removeClass("fa-angle-down").addClass("fa-angle-right")
+
+    }
+    if ($("#bodyCollapseProduct").is(':hidden') == true){
+      $("#bodyCollapseProduct").show('slow')
+      $(this).find('span').removeClass("fa-angle-right").addClass("fa-angle-down")
+    }
+    
+  })
+
   function loadDataSubmitted(){
     $.ajax({
       type: "GET",
@@ -1708,7 +1806,7 @@
               $("#btnSirkulasi").prop('disabled',true)
               reasonReject('Please Ask Admin / Procurement to resolve notes, to continue circular process!','block','tabGroup')
             }else{
-              console.log("true")
+              
               $("#btnSirkulasi").prop('disabled',false)
             }
           }
@@ -1733,7 +1831,7 @@
         }
 
         if (result.pr.isCommit == 'True') {
-          console.log("iki commit")
+          
           reasonReject("This supplier has been committed with us to supply this product.","block","tabGroup","warning")
         }
 
@@ -1754,11 +1852,11 @@
         {
             appendHeader = appendHeader + '    <div class="col-md-6">'
             // The viewport is less than 768 pixels wide
-            console.log("This is a mobile device.");
+            
         } else {
             appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
             // The viewport is at least 768 pixels wide
-            console.log("This is a tablet or desktop.");
+            
         }
         appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
         if (result.pr.no_pr != undefined) {
@@ -1768,8 +1866,8 @@
         appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
         appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
         if (type_of_letter == 'EPR') {
-          appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
-          appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+          appendHeader = appendHeader + '        <div><b>Project Id</b></div>'
+          appendHeader = appendHeader + '        <div>'+ result.pr.pid +'</div>'
           appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
           appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
         }
@@ -1809,33 +1907,37 @@
         })
 
         $("#bodyPreview").append(append)
+        appendBottomProduct = ""
+        appendBottomProduct = appendBottomProduct + '<hr>'
+        appendBottomProduct = appendBottomProduct + '<div class="row">'
+        appendBottomProduct = appendBottomProduct + '  <div class="col-md-12 col-xs-12">'
+        appendBottomProduct = appendBottomProduct + '    <form class="form-horizontal">'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputEmail3" class="col-sm-offset-8 col-sm-2 control-label">Total</label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '      <div class="form-group">'
+        appendBottomProduct = appendBottomProduct + '        <label for="inputEmail5" class="col-sm-offset-8 col-sm-2 control-label">Grand Total</label>'
+        appendBottomProduct = appendBottomProduct + '        <div class="col-sm-2">'
+        appendBottomProduct = appendBottomProduct + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
+        appendBottomProduct = appendBottomProduct + '        </div>'
+        appendBottomProduct = appendBottomProduct + '      </div>'
+        appendBottomProduct = appendBottomProduct + '    </form>'
+        appendBottomProduct = appendBottomProduct + '  </div>'
+        appendBottomProduct = appendBottomProduct + '</div>'
+        appendBottomProduct = appendBottomProduct + '<hr>'
+
+        $("#bottomPreviewProduct").append(appendBottomProduct)    
+
         appendBottom = ""
-        appendBottom = appendBottom + '<hr>'
-        appendBottom = appendBottom + '<div class="row">'
-        appendBottom = appendBottom + '  <div class="col-md-12 col-xs-12">'
-        appendBottom = appendBottom + '    <form class="form-horizontal">'
-        appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail3" class="col-sm-offset-8 col-sm-2 control-label">Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-2">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputGrandTotalProductPreview" id="inputGrandTotalProductPreview" data-value="'+i+'">'
-        appendBottom = appendBottom + '        </div>'
-        appendBottom = appendBottom + '      </div>'
-        appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail4" class="col-sm-offset-8 col-sm-2 control-label">Vat <span class="title_tax"></span></label>'
-        appendBottom = appendBottom + '        <div class="col-sm-2">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control vat_tax pull-right" id="vat_tax_preview" data-value="'+i+'">'
-        appendBottom = appendBottom + '        </div>'
-        appendBottom = appendBottom + '      </div>'
-        appendBottom = appendBottom + '      <div class="form-group">'
-        appendBottom = appendBottom + '        <label for="inputEmail5" class="col-sm-offset-8 col-sm-2 control-label">Grand Total</label>'
-        appendBottom = appendBottom + '        <div class="col-sm-2">'
-        appendBottom = appendBottom + '          <input readonly="" type="text" class="form-control inputFinalPageTotalPrice" id="inputFinalPageTotalPrice" data-value="'+i+'">'
-        appendBottom = appendBottom + '        </div>'
-        appendBottom = appendBottom + '      </div>'
-        appendBottom = appendBottom + '    </form>'
-        appendBottom = appendBottom + '  </div>'
-        appendBottom = appendBottom + '</div>'
-        appendBottom = appendBottom + '<hr>'
         appendBottom = appendBottom + '<div class="box">'
           appendBottom = appendBottom + '<div class="box-header with-border">'
             appendBottom = appendBottom + '<h3 class="box-title">Terms & Condition</h3>'
@@ -1943,14 +2045,6 @@
             sum += temp;
         });
 
-        // if (result.pr.status_tax == 'True') {
-        //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-        //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
-        // }else{
-        //   tempVat = tempVat
-        //   tempGrand = parseInt(sum)
-        // }
-
         if (result.pr.status_tax == false) {
           valueVat = 'false'
         }else{
@@ -1961,7 +2055,7 @@
 
           finalVat = tempVat
 
-          tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+          tempGrand = parseInt(sum) +  tempVat
 
           finalGrand = tempGrand
 
@@ -2034,19 +2128,19 @@
     {
         append = append + '    <div class="col-md-6">'
         // The viewport is less than 768 pixels wide
-        console.log("This is a mobile device.");
+        
     } else {
         append = append + '    <div class="col-md-6" style="text-align:end">'
         // The viewport is at least 768 pixels wide
-        console.log("This is a tablet or desktop.");
+        
     }
     append = append + '        <div>'+ PRType +'</div>'
     append = append + '        <div><b>Request Methode</b></div>'
     append = append + '        <div>'+ item.request_method +'</div>'
     append = append + '        <div>'+ moment(item.created_at).format('DD MMMM') +'</div>'
     if (type_of_letter == 'EPR') {
-      append = append + '        <div><b>Lead Register</b></div>'
-      append = append + '        <div>'+ item.lead_id +'</div>'
+      append = append + '        <div><b>Project Id</b></div>'
+      append = append + '        <div>'+ item.pid +'</div>'
       append = append + '        <div><b>Quote Number</b></div>'
       append = append + '        <div>'+ item.quote_number +'</div>'
     }
@@ -2221,24 +2315,6 @@
     append = append + '</div>'
     $("#divPembanding").append(append)  
 
-    $.ajax({
-      type: "GET",
-      url: "{{url('/admin/getActivity')}}",
-      data: {
-        no_pr: window.location.href.split("/")[6],
-      },
-      success: function(result) {
-        if (result[2].isCircular == 'True') {
-          //btn pembanding di procurement disabled
-          $("#btnAddPembanding").prop('disabled',true)
-          $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
-          $(".cbDraft").prop('disabled',true)
-          $(".cbPriority").closest('div').css('cursor','not-allowed')
-          $(".cbDraft").closest('div').css('cursor','not-allowed') 
-        }     
-      }
-    })
-
     $('input[type="checkbox"].minimal').iCheck({
       checkboxClass: 'icheckbox_minimal-blue',
     })
@@ -2332,13 +2408,6 @@
         sum += temp;
     });
 
-    // if (item.status_tax == 'True') {
-    //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-    //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
-    // }else{
-    //   tempVat = tempVat
-    //   tempGrand = parseInt(sum)
-    // }
 
     if (item.status_tax == false) {
       valueVat = 'false'
@@ -2358,7 +2427,7 @@
 
       finalVat = tempVat
 
-      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+      tempGrand = parseInt(sum) +  tempVat
 
       finalGrand = tempGrand
 
@@ -2373,20 +2442,41 @@
       $('.title_tax_pembanding').text("")
     }
 
-    // finalVat = tempVat
-
-    // finalGrand = tempGrand
-
-    // tempTotal = sum
     $("#vat_tax_pembanding[data-value='" + i + "']").val(formatter.format(tempVat))
     $("#inputGrandTotalProductPembanding[data-value='" + i + "']").val(formatter.format(sum))
     $("#inputFinalPageTotalPricePembanding[data-value='" + i + "']").val(formatter.format(tempGrand))
 
     accesable.forEach(function(item,index){
-      
       $("." + item).show()
     })
+
+    getActivityTask(i)
   }
+
+  function getActivityTask(i){
+    $.ajax({
+      type: "GET",
+      url: "{{url('/admin/getActivity')}}",
+      data: {
+        no_pr: window.location.href.split("/")[6],
+      },
+      success: function(result) {
+        if (result[2].isCircular == 'True' && result[3].position != "BCD Manager") {
+          //btn pembanding di procurement disabled
+          $("#btnAddPembanding").prop('disabled',true)
+          $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
+          $(".cbDraft").prop('disabled',true)
+          $(".cbPriority").closest('div').css('cursor','not-allowed')
+          $(".cbDraft").closest('div').css('cursor','not-allowed') 
+        }
+
+        $('input[type="checkbox"].minimal').iCheck({
+          checkboxClass: 'icheckbox_minimal-blue',
+        })     
+      }
+    })
+  }
+  
 
   function btnTerm(i){
     if ($("#bodyCollapse[data-value='" + i + "']").is(':visible') == true) {
@@ -2745,7 +2835,7 @@
   }
 
   function sendOpenEmail(status=''){
-    console.log(status)
+    
     if (status == 'sended') {
       text = 'PR has been processed'
     }else{
@@ -3011,6 +3101,7 @@
   const firstLaunch = localStorage.setItem('firstLaunch',true)
 
   function addDraftPrPembanding(n){
+    localStorage.setItem('status_tax',false)
     localStorage.setItem('isStoreSupplier',false)
     var x = document.getElementsByClassName("tab-add");
     x[n].style.display = "inline";
@@ -3055,19 +3146,19 @@
           {
               appendHeader = appendHeader + '    <div class="col-md-6">'
               // The viewport is less than 768 pixels wide
-              console.log("This is a mobile device.");
+              
           } else {
               appendHeader = appendHeader + '    <div class="col-md-6" style="text-align:end">'
               // The viewport is at least 768 pixels wide
-              console.log("This is a tablet or desktop.");
+              
           }
           appendHeader = appendHeader + '        <div>'+ PRType +'</div>'
           appendHeader = appendHeader + '        <div><b>Request Methode</b></div>'
           appendHeader = appendHeader + '        <div>'+ result.pr.request_method +'</div>'
           appendHeader = appendHeader + '        <div>'+ moment(result.pr.created_at).format('DD MMMM') +'</div>'
           if (type_of_letter == 'EPR') {
-            appendHeader = appendHeader + '        <div><b>Lead Register</b></div>'
-            appendHeader = appendHeader + '        <div>'+ result.pr.lead_id +'</div>'
+            appendHeader = appendHeader + '        <div><b>Project Id</b></div>'
+            appendHeader = appendHeader + '        <div>'+ result.pr.pid +'</div>'
             appendHeader = appendHeader + '        <div><b>Quote Number</b></div>'
             appendHeader = appendHeader + '        <div>'+ result.pr.quote_number +'</div>'
           }
@@ -3232,7 +3323,7 @@
           }else{
             valueVat = result.pr.status_tax
           }
-          console.log(valueVat)
+          
           // btnVatStatus = true
           finalVat = tempVat
           finalGrand = tempGrand
@@ -3243,7 +3334,7 @@
 
             finalVat = tempVat
 
-            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+            tempGrand = parseInt(sum) +  tempVat
 
             finalGrand = tempGrand
 
@@ -3459,7 +3550,7 @@
                     }
 
                     if(result.dokumen.splice(1).length > 0){
-                      console.log("kok muncul")
+                      
                       $("#tableDocPendukung_epr").empty()
                       
                       $("#titleDoc_epr").css("display",'block')
@@ -3785,7 +3876,7 @@
               $("#inputSerialNumber").val(item.serial_number)
               $("#inputPartNumber").val(item.part_number)
               $("#inputTotalPrice").val(formatter.format(item.grand_total))
-              console.log("okee"+item.isRupiah)
+              
               if (item.isRupiah == "false") {
                 $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
               }else{
@@ -4284,7 +4375,7 @@
                     }
                   }                                 
                 }else{
-                  console.log("ada baru")
+                  
                   $('#tableDocPendukung_epr .trDocPendukung').each(function() {
                     var fileInput = $(this).find('#inputDocPendukung').val()
                     if (fileInput && fileInput !== '') { 
@@ -4295,7 +4386,7 @@
                         no_pr:localStorage.getItem('no_pembanding')
                       })
 
-                      console.log(arrInputDocPendukung)
+                      
                     }
                   })
                 }  
@@ -4495,7 +4586,7 @@
     }else{
       valueVat = value
     }
-    console.log(valueVat)
+    
     // btnVatStatus = true
     localStorage.setItem('status_tax',valueVat)
 
@@ -4511,7 +4602,7 @@
 
       finalVat = tempVat
 
-      tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+      tempGrand = parseInt(sum) +  tempVat
 
       finalGrand = tempGrand
 
@@ -4565,7 +4656,8 @@
     }
   }
 
-  function addTable(n,status){ 
+  var status_tax = localStorage.getItem('status_tax')
+  function addTable(n,status_tax){ 
     $.ajax({
         type: "GET",
         url: "{{url('/admin/getProductPembanding')}}",
@@ -4677,8 +4769,8 @@
 
         $("#bottomProducts").append(appendBottom) 
 
-        if (status != "") {
-          changeVatValue(status)
+        if (status_tax != "") {
+          changeVatValue(status_tax)
         }
 
           // var sum = 0

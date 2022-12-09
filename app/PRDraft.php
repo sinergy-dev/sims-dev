@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\PRCompare;
 use App\PR;
 use DB;
+use Auth;
 
 class PRDraft extends Model
 {
@@ -37,7 +38,7 @@ class PRDraft extends Model
         'created_at'
 	];
 
-	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to'];
+	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name'];
 
     public function getToAttribute()
     {
@@ -51,7 +52,7 @@ class PRDraft extends Model
         $data = PRCompare::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr_compare.id_draft_pr')
         		// ->join('tb_pr', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')
         		->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
-        		->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.fax', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'tb_pr_compare.term_payment', 'tb_pr_compare.nominal', 'tb_pr_compare.note_pembanding', 'tb_pr_compare.id', 'tb_pr_compare.id_draft_pr', 'tb_pr_draft.type_of_letter', 'tb_pr_draft.request_method', 'tb_pr_draft.quote_number', 'tb_pr_draft.pid', 'tb_pr_draft.lead_id', 'name as issuance', 'tb_pr_compare.status', 'tb_pr_compare.status_tax', 'users.name')
+        		->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'tb_pr_compare.term_payment', 'tb_pr_compare.nominal', 'tb_pr_compare.note_pembanding', 'tb_pr_compare.id', 'tb_pr_compare.id_draft_pr', 'tb_pr_draft.type_of_letter', 'tb_pr_draft.request_method', 'tb_pr_draft.pid', 'tb_pr_draft.lead_id', 'name as issuance', 'tb_pr_compare.status', 'tb_pr_compare.status_tax', 'users.name', DB::raw("(CASE WHEN (tb_pr_draft.quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"))
         		->where('tb_pr_compare.id_draft_pr', $this->id)
         		->orderByRaw('FIELD(tb_pr_draft.status, "SAVED", "DRAFT", "REJECT", "VERIFIED", "COMPARING", "CIRCULAR", "DISAPPROVE", "FINALIZED", "SENDED", "REJECTED")')
         		->get();
@@ -101,6 +102,12 @@ class PRDraft extends Model
     {
         $data = PR::join('tb_pr_draft', 'tb_pr.id_draft_pr', '=', 'tb_pr_draft.id', 'left')->select('tb_pr.issuance')->where('tb_pr_draft.id', $this->id)->first();
         return empty($data->issuance)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->issuance) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->issuance):$data->issuance;
+    }
+
+    public function getNameAttribute()
+    {
+        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance', 'left')->select('users.name')->where('tb_pr_draft.id', $this->id)->first();
+        return $data->name;
     }
 
     public function getDateAttribute()
@@ -223,5 +230,29 @@ class PRDraft extends Model
         }
 
         return empty($sign->get()->where('signed','false')->first()->name)?'-':$sign->get()->where('signed','false')->first()->name;
+    }
+
+    public function getAttentionNotesAttribute()
+    {
+        $notes = DB::table('tb_pr_notes')->select('id', 'resolve')->where('id_draft_pr', $this->id)->get();
+
+        $nik = Auth::User()->nik;
+        $roles_manager = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('user_id')->orWhere('name', 'like', '%MANAGER%')->where('user_id', $nik)->first(); 
+
+        foreach ($notes as $key => $value) {
+            if (isset($roles_manager)) {
+                if ($roles_manager->user_id == $nik && $value->resolve == 'False') {
+                    $notes = 'False';
+                } else {
+                    $notes = 'True';
+                }
+            }else{
+                $notes = 'True';
+            }
+        }
+
+        // return $notes;
+        return empty($notes)?"-":$notes;
     }
 }
