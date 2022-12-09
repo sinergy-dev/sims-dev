@@ -387,7 +387,7 @@ Partnership
           	<div class="alert alert-warning alert-dismissible">
 							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 							<h4><i class="icon fa fa-warning"></i> Alert!</h4>
-							If u want to delete this partnership data, please contact developer, thankyou. <br><br>
+							If you want to delete this partnership data, please contact developer, thank you. <br><br>
 
 							or email : development@sinergy.co.id<br><br>
 
