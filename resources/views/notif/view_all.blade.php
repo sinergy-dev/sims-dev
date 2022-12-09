@@ -14,13 +14,18 @@
     	text-decoration: none !important;
         color: none!important;
 	}
+
+    .callout {
+        margin: 0px!important;
+    }
 </style>
 <link rel="stylesheet" type="text/css" href="{{asset('css/pagination-custom.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 @endsection
 @section('content')
 <section class="content">
 	<div class="row">
-        <div class="col-md-6 col-xs-12">
+        <div class="col-md-9 col-xs-12">
           <div class="box">
             <div class="box-header">
               <h3 class="box-title">Notification <i class="fa fa-bell" aria-hidden="true"></i></h3>
@@ -63,9 +68,9 @@
                 var dates = moment(snapshot_dump[keys[i]].date_time)
 
 	 			if(snapshot_dump[keys[i]].status == "unread"){
-                    
                     addListUnRead(snapshot_dump[keys[i]],keys[i])
-                }else if(snapshot_dump[keys[i]].status == "read"){
+                }
+                else if(snapshot_dump[keys[i]].status == "read"){
                 	addListRead(snapshot_dump[keys[i]],keys[i])
                 }
 
@@ -125,11 +130,23 @@
             lead_id = ""
         }
 
-        append = append + '<tr class="MyClass" data-value="'+ data.status +'" data-value2="'+ data.company+'" data-value4="'+ data.module +'" data-value3="'+ lead_id+'" data-href="'+ "{{url('project/detailSales')}}/" + lead_id +'" value-id="'+index+'" onclick="notifView('+ "'" + index +  "'" + ')">'
-		append = append + '<td class="cursor-pointer" style="color:grey">'
-		append = append +  '<i class="fa fa-envelope" aria-hidden="true"></i> '+ ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + lead_id + opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+ date_time +'</span>'
-		append = append + '</td>'
-		append = append + '</tr>'
+        if (data.result != 'DRAFT') {
+            append = append + '<tr class="MyClass" data-value="'+ data.status +'" data-value2="'+ data.company+'" data-value4="'+ data.module +'" data-value3="'+ lead_id+'" data-href="'+ "{{url('project/detailSales')}}/" + lead_id +'" value-id="'+index+'" onclick="notifView('+ "'" + index +  "'" + ')">'
+            append = append + '<td class="cursor-pointer" style="color:grey">'
+            append = append + '<div class="callout callout-default">'
+            append = append + '<div class="user-block">'
+            append = append + '    <img class="img-circle" src="{{asset("img/logopng.png")}}" alt="User Image">'
+            append = append + '    <span class="username">'+ lead_id + opty_name 
+            append = append + '<span class="label pull-right" style="background-color:'+ data.heximal +'">'+ data.result +'</span>'
+            append = append + '     </span>'
+
+            append = append + '    <span class="description">'+ date_time +'</span>'
+            append = append + '</div>'
+            append = append + '</div>'
+            append = append + '</td>'
+            append = append + '</tr>'   
+        }
+        
 	   
         $("#list-content").append(append)
 
@@ -195,11 +212,21 @@
             lead_id = ""
         }
 
-        append = append + '<tr class="MyClass" data-value3="'+ data.id_pid+'" data-value4="'+ data.module+'" data-value2="'+lead_id+'" data-value="'+ data.result +'" data-id="'+ index +'" data-href="'+ "{{url('project/detailSales')}}/" + lead_id +'" onclick="notifView('+ "'" + index +  "'" + ')">'
-		append = append + '<th class="list-item cursor-pointer" style="background-color: #7dc6e3;color:white">'
-        append = append + '<i class="fa fa-envelope" aria-hidden="true"></i> ' + ' <span class="label" style="background-color:'+ data.heximal +'">'+ data.result +'</span> ' + lead_id + opty_name + '<span style="font-size: 12px;text-align: center;align-content: center;float:right">'+ date_time +'</span>'
-        append = append + '</th>'
-		append = append + '</tr>'
+        append = append + '<tr class="MyClass" data-value="'+ data.status +'" data-value2="'+ data.company+'" data-value4="'+ data.module +'" data-value3="'+ lead_id+'" data-href="'+ "{{url('project/detailSales')}}/" + lead_id +'" value-id="'+index+'" onclick="notifView('+ "'" + index +  "'" + ')">'
+        append = append + '<td class="cursor-pointer" style="color:grey">'
+        append = append + '<div class="callout callout-info" style="background-color: #7dc6e3!important;color:white">'
+        append = append + '<div class="user-block">'
+        append = append + '    <img class="img-circle" src="{{asset("img/logopng.png")}}" alt="User Image">'
+        append = append + '    <span class="username">'+ lead_id + opty_name 
+        append = append + '<span class="label pull-right" style="background-color:'+ data.heximal +'">'+ data.result +'</span>'
+        append = append + '     </span>'
+
+        append = append + '    <span class="description" style="color:white!important">'+ date_time +'</span>'
+        append = append + '</div>'
+        append = append + '</div>'
+        append = append + '</td>'
+        append = append + '</tr>'
+
         $("#list-content").append(append)
 
         // $(".MyClass[data-id='"+ index +"']").click(function(){
@@ -212,12 +239,13 @@
         var data = snapshot_dump[index]
         if (data.module == "draft") {
             if (data.result == "DRAFT") {
-                var url = "{{url('admin/draftPR')}}"
                 if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
-                    url = "{{url('admin/draftPR')}}?status=draft&no_pr="+snapshot.val().id_pr
+                    var url = "{{url('admin/draftPR')}}?status=draft&no_pr="+data.id_pr
+                }else{
+                    var url = "{{url('admin/draftPR')}}"
+
                 }
                 window.location.href = url
-
             }else{
                 window.location.href = "{{url('admin/detail/draftPR')}}/"+data.id_pr
             }
