@@ -1224,6 +1224,13 @@
 
   function pressReply(no_pr,id,person){
     var emailMention = []
+    //user procurement
+    var user_proc = JSON.parse("{{App\RoleUser::join("users","users.nik","=","role_user.user_id")->join("roles","roles.id","=","role_user.role_id")->select('users.name')->where('roles.name',"BCD Procurement")->get()}}".replace(/&quot;/g,'"'))
+
+    $.each(user_proc,function(item,value){
+      emailMention.push({"name":value.name})
+    })
+
     if ($("#inputReply").closest("div").find(".mentions").find("div").find("strong").length > 0) {
       obj_notes = $("#inputReply").closest("div").find(".mentions").find("div").find("span").splice("span")
 
@@ -1255,6 +1262,18 @@
       emailMention.push({'name':name})
     }
 
+    const uniqueIds = [];
+
+    const filteredEmailMention = emailMention.filter(element => {
+      const isDuplicate = uniqueIds.includes(element.name);
+
+      if (!isDuplicate) {
+        uniqueIds.push(element.name);
+
+        return true;
+      }
+      return false;
+    });
     
     $.ajax({
       type: "POST",
@@ -1264,7 +1283,7 @@
         id_notes:id,
         inputReply:$("#inputReply[data-value='"+ id +"']").prev('.mentions').find("div").html(),
         no_pr:no_pr,
-        emailMention:emailMention
+        emailMention:filteredEmailMention
       },beforeSend:function(){
         Swal.fire({
             title: 'Please Wait..!',
