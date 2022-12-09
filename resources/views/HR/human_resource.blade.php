@@ -293,7 +293,7 @@ Human Resources
 					                                  Staff. Call Center Operator
 					                                @elseif($data->id_position == 'HELP DESK')
 					                                  Staff. Dedicated Help Desk
-					                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+					                                @elseif($data->id_position == 'SUPPORT ENGINEER')
 					                                  Dept. Technical Support
 					                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
 					                                  Staff. Support Engineer
@@ -490,7 +490,7 @@ Human Resources
 							                                  Staff. Call Center Operator
 							                                @elseif($data->id_position == 'HELP DESK')
 							                                  Staff. Dedicated Help Desk
-							                                @elseif($data->id_position == 'SUPPORT ENGINEER(HEAD)')
+							                                @elseif($data->id_position == 'SUPPORT ENGINEER')
 							                                  Dept. Technical Support
 							                                @elseif($data->id_position == 'SUPPORT ENGINEER(STAFF)')
 							                                  Staff. Support Engineer
@@ -1153,7 +1153,7 @@ Human Resources
 
 						                      <!-- <td><img src="{{ asset('image/'.$data->npwp_file) }}" style="max-height:200px;max-width:200px;margin-top:10px;"></td> -->
 						                      <td>
-						                        <button class="btn btn-xs btn-primary btn-editan" id="btnEdit" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
+						                        <button class="btn btn-xs btn-primary btn-editan" onclick="showEditTab(this.value,0)"  id="btnEdit" value="{{$data->nik}}" name="edit_hurec" style="vertical-align: top; width: 60px"><i class="fa fa-search"></i>&nbspEdit</button>
 
 						                        <a href="{{ url('delete_hr', $data->nik) }}"><button class="btn btn-xs btn-danger" style="vertical-align: top; width: 60px" onclick="return confirm('Are you sure want to delete this data? And this data is not used in other table')">
 						                        <i class="fa fa-trash"></i>&nbspDelete</button></a>
@@ -1822,15 +1822,16 @@ Human Resources
 		                <!-- MSP -->
 
 		                <div class="form-group"  style="display:none;"  id="company-msp">
-		                    <label for="division-msp" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Division') }}</label>
+		                    <label for="division-msp" class="col-md-4 control-label" style="margin-bottom: 15px;">{{ __('Division') }}</label>
 
-		                    <div class="col-md-8 margin-bottom">
+		                    <div class="col-md-8">
 		                        <select id="division-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="division_msp" value="{{ old('division') }}" autofocus>
 		                            <option value="">-- Select Division --</option>
 		                            <option value="SALES_MSP" data-target="sales_msp" id="sales_msp">SALES</option>
 		                            <option value="TECHNICAL" data-target="TECHNICAL_MSP" id="TECHNICAL_MSP">TECHNICAL</option>
 		                            <option value="WAREHOUSE_MSP" data-target="sales_msp" id="warehouse_msp">WAREHOUSE</option>
 		                            <option value="OPERATION_MSP" data-target="sales_msp" id="operation_msp">OPERATION</option>
+		                            <option value="HUMAN_RESOURCE" data-target="sales_msp" id="operation_msp">HUMAN RESOURCE</option>
 		                            <option value="ADMIN_MSP" data-target="sales_msp">NONE</option>
 		                        </select>
 		                        @if ($errors->has('division'))
@@ -1842,7 +1843,7 @@ Human Resources
 		                </div>
 
 		                <div class="form-group"  style="display:none;"  id="division-msp-sales_msp">
-		                  <label for="position" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Position') }}</label>
+		                  <label for="position" class="col-md-4 control-label" style="margin-bottom: 15px;">{{ __('Position') }}</label>
 
 		                    <div class="col-md-8">
 		                        <select id="position-sales-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_sales_msp" value="{{ old('division') }}" autofocus>
@@ -1856,7 +1857,7 @@ Human Resources
 		                </div>
 
 		                <div class="form-group"  style="display:none;"  id="division-msp-TECHNICAL_MSP">
-		                    <label for="division" class="col-md-4 control-label margin-bottom" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
+		                    <label for="division" class="col-md-4 control-label" style="margin-bottom: 15px;">{{ __('Sub Division') }}</label>
 
 		                    <div class="col-md-8 margin-bottom">
 		                        <select id="subdivision-tech-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="id_sub_division_tech_msp" value="{{ old('division') }}" autofocus>
@@ -1871,7 +1872,7 @@ Human Resources
 		                        @endif
 		                    </div>
 
-		                    <label for="position" class="col-md-4 margin-top">{{ __('Position') }}</label>
+		                    <label for="position" class="col-md-4 control-label margin-top">{{ __('Position') }}</label>
 
 		                    <div class="col-md-8 margin-top">
 		                        <select id="position-tech-msp" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="pos_tech_msp" value="{{ old('division') }}" autofocus>
@@ -2238,7 +2239,7 @@ Human Resources
 		                </div>
 
 		                <!--tampilkan roles berdasarkan user-->
-		                <div class="form-group row">
+		                <div class="form-group row" id="div_roles">
 		                	<label for="roles_user" class="col-md-4 control-label margin-top">{{ __('Roles') }}</label>
 
 		                	<div class="col-md-4" id="div_roles_view_update">
@@ -2246,7 +2247,7 @@ Human Resources
 		                	</div>
 
 		                    <div class="col-md-4 margin-top">
-		                        <select id="roles_user_update" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="roles_user" autofocus>
+		                        <select id="roles_user_update" onchange="roleSelect(this)" class="form-control{{ $errors->has('division') ? ' is-invalid' : '' }}" name="roles_user" autofocus>
 		                            <option value="">-- Select Roles --</option>
 		                            @foreach($roles as $data)
 		                            <option value="{{$data->id}}">{{$data->name}}</option>
@@ -2647,7 +2648,7 @@ Human Resources
 
     var currentTab = 0
     function showEditTab(value,n){ 
-    	console.log("currentTab"+currentTab)
+    	console.log(value)
     	if (n == 0) {
 		document.getElementById("prevBtn").style.display = "none";
 		} else {
@@ -2655,7 +2656,6 @@ Human Resources
 		}
 		var x = document.getElementsByClassName("tab");
 		x[n].style.display = "inline";
-		console.log(n)
 		if (n == (x.length - 1)) {
 			document.getElementById("nextBtn").innerHTML = "Update";
 			$("#nextBtn").attr('onclick','submitBtnEmp()');				
@@ -2677,8 +2677,14 @@ Human Resources
             'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
           },
           success: function(result){
-          	   // window.localStorage.clear()
-          	   $.each(result[0], function(key, value){
+          	$.each(result[0], function(key, value){
+          		console.log(value.id_company)
+          	   if (value.id_company == '2') {
+          	   	$("#div_roles").hide()
+          	   }else{
+          	   	$("#div_roles").show()
+          	   }
+
                if (value.status_delete == "D") {
                	 	if (n == 2) {
 						document.getElementById("nextBtn").style.display = "none";
@@ -2925,15 +2931,6 @@ Human Resources
 			            }
 	               	}
 		            
-	       //          localStorage.setItem("divisi_update", $("#divisi_update").val())
-					   // if (localStorage.getItem("divisi_update") != 'null') {
-	       //         		$("#divisi_view_update").val(localStorage.getItem('divisi_update'));
-	       //          	localStorage.setItem("divisi_update", localStorage.getItem("divisi_update"))
-		      //          }else{
-		      //          	$("#divisi_view_update").val(value.id_division);
-	       //          	localStorage.setItem("divisi_update", value.id_division)
-		      //          }
-
 		      		$("#sub_divisi_view_update").val(value.id_territory).prop("readonly", true);
 	              	if (!localStorage.getItem("sub_divisi_update") == true) {
 	               		if ($("#sub_divisi_update").val() != "") {
@@ -2941,16 +2938,7 @@ Human Resources
 			            }else{
 			            	localStorage.setItem("sub_divisi_update",value.id_division)
 			            }
-	               	}
-
-		       //      $("#sub_divisi_view_update").val(value.id_territory).prop("readonly", true);
-		       //      if (localStorage.getItem("sub_divisi_update") != 'null') {
-					   	// $("#sub_divisi_view_update").val(localStorage.getItem('sub_divisi_update'));
-	        //         	localStorage.setItem("sub_divisi_update", localStorage.getItem("sub_divisi_update"))
-		       //      }else{
-	        //        		$("#sub_divisi_view_update").val(value.id_territory);
-	        //         	localStorage.setItem("sub_divisi_update", value.id_territory)
-		       //      }	      
+	               	}	      
 
 		       		$("#posisi_view_update").val(value.id_position).prop("readonly", true);
 	              	if (!localStorage.getItem("posisi_update") == true) {
@@ -2959,17 +2947,7 @@ Human Resources
 			            }else{
 			            	localStorage.setItem("posisi_update",value.id_position)
 			            }
-	               	}
-
-		      //       $("#posisi_view_update").val(value.id_position).prop("readonly", true);         	
-	       //         	localStorage.setItem("posisi_update", $("#posisi_update").val())
-					   // if (localStorage.getItem("posisi_update") != 'null') {
-					   // 	$("#posisi_view_update").val(localStorage.getItem('posisi_update'));
-	       //          	localStorage.setItem("posisi_update", localStorage.getItem("posisi_update"))
-		      //          } else{
-	       //         		$("#posisi_view_update").val(value.id_position);
-		      //          	localStorage.setItem("posisi_update", value.id_position)
-		      //          }              
+	               	}           
                
                }
                
@@ -3586,6 +3564,11 @@ Human Resources
               /*console.log(value);*/
               append = append + "<option>" + value.name_position + "</option>";
             });
+            } else {
+              $.each(result[0], function(key, value){
+              /*console.log(value);*/
+              append = append + "<option>" + value.name_position + "</option>";
+            });
             }
 
             $('#position-sales-msp').html(append);
@@ -4053,9 +4036,10 @@ Human Resources
 
 	function statusSelect(id)
 	{
-		if (id.value == 'tetap') {
+		console.log(id.value)
+		if (id.value == 'Tetap') {
 			$("#status_karyawan_update").val("Karyawan Tetap");
-		}else if (id.value == 'kontrak') {
+		}else if (id.value == 'Kontrak') {
 			$("#status_karyawan_update").val("Karyawan Kontrak");
 		}else{
 			$("#status_karyawan_update").val("");
@@ -4184,7 +4168,7 @@ Human Resources
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
             // append = append + "<option value='SERVICE PROJECT(HEAD)'>" + "SERVICE PROJECT (HEAD)" + "</option>";
             //append = append + "<option value='SERVICE PROJECT(STAFF)'>" + "SERVICE PROJECT (STAFF)" + "</option>";
-            append = append + "<option value='SUPPORT ENGINEER(HEAD)'>" + "SUPPORT ENGINEER" + "</option>";
+            append = append + "<option value='SUPPORT ENGINEER'>" + "SUPPORT ENGINEER" + "</option>";
             append = append + "<option value='HELP DESK'>" + "HELP DESK" + "</option>";
             append = append + "<option value='CALL SO'>" + "CALL SO" + "</option>";
 
@@ -4226,6 +4210,13 @@ Human Resources
     	$("#posisi_view_update").val($("#posisi_update").val());
 
 		localStorage.setItem("posisi_update", $("#posisi_update").val())
+    }
+
+    function roleSelect(id){
+    	console.log(id)
+    	$("#roles_view_update").val($("#roles_user_update option:selected").text());
+
+		localStorage.setItem("roles_update", $("#roles_user_update").val())
     }
 
     function readURL(input) {
@@ -4291,5 +4282,9 @@ Human Resources
   	$('#inputgambarbpjs_ket_update').change(function () {
   		readURL(this);
   	});
+
+  	$("select").select2({
+  		placeholder:"Select Option"
+  	})
 </script>
 @endsection
