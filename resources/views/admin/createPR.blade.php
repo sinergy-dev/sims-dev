@@ -1336,10 +1336,11 @@
                   }else{
                     isDisabled = "disabled"
                   } 
-                }else if (row.status == 'REJECT') {
+                }
+                else if (row.status == 'REJECT') {
                   title = "Revision"
                   btnClass = "btn-warning"
-                  btnId = "btnDraft"
+                  // btnId = "btnDraft"
                   if (row.issuance == '{{Auth::User()->nik}}') {
                     status = '"reject"'
                     value = status
@@ -1347,7 +1348,8 @@
                   }else{
                     isDisabled = "disabled"
                   } 
-                }else if(row.status == 'UNAPPROVED'){
+                }
+                else if(row.status == 'UNAPPROVED'){
                   title = "Revision"
                   btnClass = "btn-warning"
                   if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
@@ -1361,7 +1363,7 @@
                   title = "Detail"
                   btnClass = "btn-primary"
                   btnId = "btnDetail"
-                  onclick = "location.href='{{url('admin/detail/draftPR')}}/"+row.id+"'"  
+                  onclick = "{{url('admin/detail/draftPR')}}/"+row.id
                 } 
 
                 if (row.issuance == '{{Auth::User()->nik}}') {
@@ -1377,7 +1379,13 @@
                     isDisabledCancel = 'disabled'
                   }
                 }
-                return "<td><a onclick="+ onclick +"><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"'>"+ title +"</button> </a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
+
+                if (title == 'Detail') {
+                  return "<td><a href="+ onclick +" class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
+                }else {
+                  return "<td><a onclick='"+ onclick +"' class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
+                }
+                                    
               },
               className:'text-center'
             },//action
