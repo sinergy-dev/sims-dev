@@ -70,7 +70,7 @@
 	 			if(snapshot_dump[keys[i]].status == "unread"){
                     addListUnRead(snapshot_dump[keys[i]],keys[i])
                 }
-                else if(snapshot_dump[keys[i]].status == "read"){
+                else if(snapshot_dump[keys[i]].status == "read" && Math.round(moment().diff(moment.unix(snapshot_dump[keys[i]].date_time).format("YYYY-MM-DD"), 'month', true)) < 3){
                 	addListRead(snapshot_dump[keys[i]],keys[i])
                 }
 
@@ -147,7 +147,6 @@
             append = append + '</tr>'   
         }
         
-	   
         $("#list-content").append(append)
 
         // $(".MyClass[data-id='"+ index +"']").click(function(){
