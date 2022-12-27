@@ -868,7 +868,7 @@
               append = append + '<div class="row">'
                 append = append + '<div class="col-md-12">'
                   append = append + '<span><b>Action</b></span><br>'
-                   append = append + '<button class="btn btn-sm bg-purple" id="btnPembanding" onclick="pembanding()" style="margin-right:5px">Comparison</button>'
+                   append = append + '<button onclick="pembanding()" class="btn btn-sm bg-purple" id="btnPembanding" style="margin-right:5px">Comparison</button>'
                       append = append + '<button disabled class="btn btn-sm btn-warning" id="btnSirkulasi" style="margin-right:5px" onclick="sirkulasi(0)">Circular</button>'
                   append = append + '<button class="btn btn-sm btn-success" style="margin-right:5px" id="btnFinalize" disabled>Finalize</button>'
                   append = append + '<button class="btn btn-sm btn-danger" id="btnRevision" style="display:none" disabled>Revision</button>'
@@ -1069,7 +1069,19 @@
       $(".modal-dialog").removeClass('modal-lg')
       $("#ModalAddNote").modal("show")
     })
+
+    document.getElementById("btnPembanding").onmousedown = function(event) {
+      if (event.which == 3) {
+        window.open("{{url('/admin/detail/draftPR')}}/"+window.location.href.split("/")[6],"_blank")
+        localStorage.setItem('isLastStorePembanding',true)
+        // pembanding()
+      }
+    }
   }  
+
+  function num(value){
+    alert("Number " + value);
+  }
 
   function btnResolve(id){
     Swal.fire({
@@ -1404,7 +1416,7 @@
     $(".timeline").append(append)
   }
 
-  function pembanding(){    
+  function pembanding(){   
     localStorage.setItem('status_tax',false)
     localStorage.setItem('isPembanding',true)
     $("#showDetail").empty()
