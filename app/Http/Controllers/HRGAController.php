@@ -1130,7 +1130,7 @@ class HRGAController extends Controller
                 ->orWhere('tb_cuti.status','R')
                 ->groupby('nik')
                 ->get();
-        }elseif($pos == 'STAFF'|| $pos == 'ADMIN' || $pos == 'STAFF GA' || $pos == 'HR STAFF'){
+        }elseif($pos == 'STAFF'|| $pos == 'ADMIN' || $pos == 'STAFF GA' || $pos == 'HR STAFF' || $pos == 'STAFF HR'){
         	$cuti = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
@@ -3023,7 +3023,7 @@ class HRGAController extends Controller
                         ->where('tb_cuti_detail.status','=','NEW')
                         ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null)")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
                         ->get();
-                } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF'){
+                } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
                             ->where('users.nik',$nik)
@@ -3145,7 +3145,7 @@ class HRGAController extends Controller
                         ->where('users.id_company',$request->filter_com)
                         // ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES')")->orWhereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null) ")
                         ->get();
-                } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF'){
+                } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
                             ->where('users.nik',$nik)
@@ -3188,13 +3188,13 @@ class HRGAController extends Controller
         $tb_cuti_filtered = DB::table('tb_cuti_detail');
 
         $cuti = Cuti::join('users','users.nik','=','tb_cuti.nik')
-                    ->joinSub($tb_cuti_filtered, 'tb_cuti_detail_filterd', function ($join) {
-                        $join->on('tb_cuti_detail_filterd.id_cuti','=','tb_cuti.id_cuti');
-                    })
-                    // ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    // ->joinSub($tb_cuti_filtered, 'tb_cuti_detail_filterd', function ($join) {
+                    //     $join->on('tb_cuti_detail_filterd.id_cuti','=','tb_cuti.id_cuti');
+                    // })
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail_filterd`.`id_cuti`) as days'))
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail`.`id_cuti`) as days'))
                     ->orderByRaw('FIELD(tb_cuti.status, "n", "v", "c", "d")')               
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->where('users.id_company',$com)
@@ -3239,7 +3239,7 @@ class HRGAController extends Controller
                     ->where('date_off', '>=', $request->start_date)
                     ->where('date_off', '<=', $request->end_date)
                     ->get();
-            } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF'){
+            } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
                     $cuti = $cuti
                         ->where('users.nik',$nik)
                         ->get();
@@ -3651,7 +3651,7 @@ class HRGAController extends Controller
                     ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null)")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")                   
                     ->get());
             
-        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF'){
+        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
             return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('tb_position','tb_position.id_position','=','users.id_position')
@@ -3850,7 +3850,7 @@ class HRGAController extends Controller
             ->groupby('tb_cuti.id_cuti')
             ->orderBy('id_cuti','desc')
             ->get();
-        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF'){
+        } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
                 $cuti = DB::table('tb_cuti')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('users','users.nik','=','tb_cuti.nik')
