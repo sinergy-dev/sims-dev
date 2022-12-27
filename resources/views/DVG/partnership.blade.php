@@ -715,13 +715,26 @@ Partnership
                   appendList = appendList + '   <i class="fa fa-ellipsis-v"></i>'
                     appendList = appendList + '   <i class="fa fa-ellipsis-v"></i>'
                     appendList = appendList + ' </span>'
-                    appendList = appendList + ' <input style="display:inline" type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
+                    appendList = appendList + ' <input style="display:inline" id="checklistBox" type="checkbox" class="checked-'+ key + '" data-value="'+ value.id +'">'
                     appendList = appendList + ' <span style="display:inline-block;word-wrap:break-word;width:1060px" class="text" id="textList" data-value='+key+'>' + '<b>[' + value.partner + ']</b> - ' + value.target + ' - ' + value.countable + '</span>'
                     appendList = appendList + ' <br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span > '+ ' created at ' + value.created_at +' </span> '
                   appendList = appendList + ' <small class="label label-warning status-'+ key + ' pull-right">'+ value.status +'</small>'
               appendList = appendList + '</li>'
+
+              return value.id
           })            
           $('.todo-list').append(appendList)
+
+          var accesable = @json($feature_item);
+
+          $.each(result.data, function(key,value){
+            if(accesable.includes('checklistBox')){
+              $("#checklistBox[data-value='"+ value.id +"']").prop('disabled',false)
+
+            }else{
+              $("#checklistBox[data-value='"+ value.id +"']").prop('disabled',true)
+            }
+          })
 
           $.each(result.data,function(key,value){
             if(value.status == "Done"){

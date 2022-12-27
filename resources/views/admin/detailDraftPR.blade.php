@@ -2461,18 +2461,30 @@
         no_pr: window.location.href.split("/")[6],
       },
       success: function(result) {
-        if (result[2].isCircular == 'True' && result[3].position != "BCD Manager") {
-          //btn pembanding di procurement disabled
-          $("#btnAddPembanding").prop('disabled',true)
-          $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
-          $(".cbDraft").prop('disabled',true)
-          $(".cbPriority").closest('div').css('cursor','not-allowed')
-          $(".cbDraft").closest('div').css('cursor','not-allowed') 
-        }
+        if (result[2].isCircular == 'True') {
+          if (result[3] != null) {
+            if (result[3].position != "BCD Manager") {
+              //btn pembanding di procurement disabled
+              $("#btnAddPembanding").prop('disabled',true)
+              $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
+              $(".cbDraft").prop('disabled',true)
+              $(".cbPriority").closest('div').css('cursor','not-allowed')
+              $(".cbDraft").closest('div').css('cursor','not-allowed') 
 
-        $('input[type="checkbox"].minimal').iCheck({
-          checkboxClass: 'icheckbox_minimal-blue',
-        })     
+              $('input[type="checkbox"].minimal').iCheck({
+                checkboxClass: 'icheckbox_minimal-blue',
+              })     
+            }
+          }else{
+            //btn pembanding di procurement disabled
+              $("#btnAddPembanding").prop('disabled',true)
+              $("#cbPriority[data-value='" + i + "']").prop('disabled',true)
+              $(".cbDraft").prop('disabled',true)
+              $(".cbPriority").closest('div').css('cursor','not-allowed')
+              $(".cbDraft").closest('div').css('cursor','not-allowed') 
+          }
+          
+        }  
       }
     })
   }
@@ -2708,10 +2720,10 @@
   }
 
   function finalize(reqMethode){
-    localStorage.setItem('isEmail',true)
-    if (reqMethode != 'Payment') {
+    if (reqMethode == 'Purchase Order') {
       $("#showDetail").empty()
       showEmail(reqMethode)
+      localStorage.setItem('isEmail',true)
     }else{
       sendOpenEmail('sended')
     }
