@@ -958,11 +958,11 @@
 
         var ErrorText = []
         // 
-        if (f.size > 2000000|| f.fileSize > 2000000) {
+        if (f.size > 30000000|| f.fileSize > 30000000) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Invalid file size, just allow file with size less than 2MB!',
+            text: 'Invalid file size, just allow file with size less than 30MB!',
           }).then((result) => {
             this.value = ''
           })
@@ -1377,7 +1377,7 @@
                     isDisabledCancel = 'disabled'
                   }
                 }
-                return "<td><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"' onclick="+ onclick +">"+ title +"</button> " + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
+                return "<td><a onclick="+ onclick +"><button class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+ isDisabled +" id='"+ btnId +"'>"+ title +"</button> </a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"                    
               },
               className:'text-center'
             },//action
@@ -4233,9 +4233,7 @@
 
             finalVat = tempVat
 
-            tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
-
-            finalGrand = tempGrand
+            tempGrand = sum + finalVat
 
             tempTotal = sum
 
