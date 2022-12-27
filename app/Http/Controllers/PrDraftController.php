@@ -662,7 +662,10 @@ class PrDraftController extends Controller
         $cek_status = PR::join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->select('status_draft_pr')->get();
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director' || $cek_role->name == 'PMO Manager' || $cek_role->name == 'SOL Manager') {
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('status', '!=', 'SAVED')->get();
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')
+            // ->where('status', '!=', 'SAVED')
+            ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
+            ->get();
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
             $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->get();
@@ -671,7 +674,10 @@ class PrDraftController extends Controller
         }
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
-            $getData = PRDraft::where('type_of_letter', 'IPR')->where('status', '!=', 'SAVED')->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')
+            // ->where('status', '!=', 'SAVED')
+            ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
+            ->get();
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
             $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->get();
@@ -855,6 +861,28 @@ class PrDraftController extends Controller
         $update->save();
 
         $no_akhir = $update->id;
+
+        $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
+        if (!empty($update_pr)) {
+            $update_pr->type_of_letter = $request['selectType'];
+            $update_pr->to = $request['inputTo'];
+            $update_pr->attention = $request['inputAttention'];
+            $update_pr->title = $request['inputSubject'];
+            $update_pr->email = $request['inputEmail'];
+            $update_pr->phone = $request['inputPhone'];
+            $update_pr->address = $request['inputAddress'];
+            $update_pr->fax = $request['inputFax'];
+            // $update->issuance = Auth::User()->nik;
+            $update_pr->category = $request['selectCategory'];
+            if ($request['selectMethode'] == 'purchase_order') {
+                $update_pr->request_method = 'Purchase Order';
+            } elseif ($request['selectMethode'] == 'payment') {
+                $update_pr->request_method = 'Payment';
+            } elseif ($request['selectMethode'] = 'reimbursement') {
+                $update_pr->request_method = 'Reimbursement';
+            }
+            $update_pr->save();
+        }
 
         return $no_akhir;
     }
@@ -1756,9 +1784,9 @@ class PrDraftController extends Controller
         $activity->status = 'CANCEL';
         $activity->operator = Auth::User()->name;
         if (PR::where('id_draft_pr', $request->no_pr)->first() != "") {
-            $activity->activity = substr($update_pr->title, -10) . ' - Cancelled PR with subject ' . $request->notes;
+            $activity->activity = 'Cancelled PR with subject ' . $request->notes;
         } else {
-            $activity->activity = substr($update->title, -10) . ' - Cancelled PR with subject ' . $request->notes;
+            $activity->activity = 'Cancelled PR with subject ' . $request->notes;
         }
         $activity->save();
 
@@ -2482,7 +2510,7 @@ class PrDraftController extends Controller
                     $tambah_dok->save();
 
                     $tambah_dok_draft = new PRDocumentCompare();
-                    $tambah_dok_draft->id_draft_pr = $request['no_pr'];
+                    $tambah_dok_draft->id_compare_pr = $request['no_pr'];
                     $tambah_dok_draft->id_document = $tambah_dok->id;
                     $tambah_dok_draft->added = Carbon::now()->toDateTimeString();
                     $tambah_dok_draft->save();
@@ -2967,6 +2995,20 @@ class PrDraftController extends Controller
         }
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
+
+        $jsonInsertCreate = array(
+            "heximal" => "#f39c12", //diisi warna sesuai status
+            "id_pr" => $detail->id,
+            "title" => $detail->title, //diisi subject
+            "result"=> 'CIRCULAR',
+            "showed"=>"true",
+            "status"=>"unread",
+            "to"=> $kirim_user->email, 
+            "date_time"=>Carbon::now()->timestamp,
+            "module"=>"draft"
+        );
+
+        $this->getNotifBadgeInsert($jsonInsertCreate);
     }
 
     public function circulerPr(Request $request)
@@ -3011,6 +3053,20 @@ class PrDraftController extends Controller
         }
 
         Mail::to($kirim_user)->cc($email_cc)->send(new DraftPR($detail,$kirim_user,'[SIMS-APP] PR '.$detail->no_pr.' Ready to Approve', $detail_approver,$next_approver));
+
+        $jsonInsertCreate = array(
+            "heximal" => "#f39c12", //diisi warna sesuai status
+            "id_pr" => $detail->id,
+            "title" => $detail->title, //diisi subject
+            "result"=> 'CIRCULAR',
+            "showed"=>"true",
+            "status"=>"unread",
+            "to"=> $kirim_user->email, 
+            "date_time"=>Carbon::now()->timestamp,
+            "module"=>"draft"
+        );
+
+        $this->getNotifBadgeInsert($jsonInsertCreate);
     }
 
     public function submitTtdApprovePR(Request $request)
@@ -3413,9 +3469,9 @@ class PrDraftController extends Controller
 
         // $amount_tax = $sum_nominal * 11/100;
         if ($data->status_tax == '1.1') {
-            $amount_tax = round(($sum_nominal * 11/1000));
-        } elseif ($data->status == '11') {
-            $amount_tax = round(($sum_nominal * 11/100));
+            $amount_tax = round(($sum_nominal * 11)/1000);
+        } elseif ($data->status_tax == '11') {
+            $amount_tax = round(($sum_nominal * 11)/100);
         } else {
             $amount_tax = 0;
         }
@@ -3477,11 +3533,16 @@ class PrDraftController extends Controller
         $update->status = 'SENDED';
         $update->save();
 
+        $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
+        $update_pr->status = 'Done';
+        $update_pr->save();
+
         if ($request->status != 'sended') {
             $this->sendEmail($request->to,$request->cc,$request->subject,$request->body);
         }
 
         $get_status = PR::select('status_draft_pr')->where('id_draft_pr', $request->no_pr)->first();
+        $activity = PRActivity::select('activity','operator','id_draft_pr')->where('tb_pr_activity.id_draft_pr', $request->no_pr)->where('status', 'SENDED')->orderBy('date_time', 'desc')->take(1);
 
         if ($get_status->status_draft_pr == 'pembanding') {
             $detail = PR::join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')
@@ -3993,14 +4054,16 @@ class PrDraftController extends Controller
 
             if ($data->type_of_letter == 'IPR') {
                 $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`, MAX(`temp`.`id_draft_pr`) as `id_draft_pr`');
-                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('id','desc')->get();
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive', 'id_draft_pr')->orderBy('id','desc')->get();
             } else {
                 $get_id_max = DB::table($dokumen, 'temp')->groupBy('dokumen_name')->selectRaw('MAX(`temp`.`id_dokumen`) as `id_dokumen`, MAX(`temp`.`id_draft_pr`) as `id_draft_pr`');
-                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive')->orderBy('created_at', 'asc')->get();
+                $getAll = DB::table($get_id_max, 'temp2')->join('tb_pr_document', 'tb_pr_document.id', '=', 'temp2.id_dokumen')->select('dokumen_name', 'dokumen_location', 'temp2.id_dokumen', 'link_drive', 'id_draft_pr')->orderBy('created_at', 'asc')->get();
             }
 
             $getAll = array_merge($getAll->toArray(),$getDokumen->toArray());
         }
+
+        // return $getAll;
 
         $pdf = new Fpdi();
 
@@ -4081,6 +4144,7 @@ class PrDraftController extends Controller
             }
 
             $dokumen_revisi = $this->getOnlyPdfPRFromLink($dokumen->id_draft_pr);
+            // return $dokumen_revisi;
             if (strpos($data->title, 'Revisi') && $dokumen_revisi != '-') {
                 // return 'true';
 
