@@ -21,6 +21,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Carbon\Carbon;
 
+use Maatwebsite\Excel\Facades\Excel;
+
+
 class AssetHRController extends Controller
 {
     public function index()
@@ -200,7 +203,8 @@ class AssetHRController extends Controller
                     ) as tb_asset_hr_transaction"),function($join){
                     $join->on("tb_asset_hr.id_barang","=","tb_asset_hr_transaction.id_barang");
                 })
-                ->select('nama_barang', 'tb_asset_hr.id_barang','status','description','code_name', 'serial_number','name','lokasi','kategori')
+                ->leftJoin('users', 'users.name', '=', 'tb_asset_hr_transaction.name')
+                ->select('nama_barang', 'tb_asset_hr.id_barang','status','description','code_name', 'serial_number','users.name','lokasi','kategori', DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'), 'users.status_kerja')
                 // ->where('availability',1)
                 ->get();
 
@@ -240,7 +244,7 @@ class AssetHRController extends Controller
 
         $current_borrowed = DB::table('tb_asset_hr_transaction')
                         ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
-                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction')
+                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction', 'keterangan')
                         ->where('nik_peminjam',Auth::User()->nik)
                         ->where('tb_asset_hr_transaction.status','ACCEPT')
                         ->where('tgl_pengembalian',NULL)
@@ -266,7 +270,7 @@ class AssetHRController extends Controller
 
             $current_borrowed = DB::table('tb_asset_hr_transaction')
                         ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
-                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction')
+                        ->select('tb_asset_hr.description','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr.note','no_transac','nama_barang','code_name','id_transaction', 'keterangan')
                         ->where('tb_asset_hr_transaction.status','ACCEPT')
                         ->where('tgl_pengembalian',NULL)
                         ->get();
@@ -332,6 +336,93 @@ class AssetHRController extends Controller
     	return view('HR/asset_hr',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman','users','nomor','user_pinjam','kategori_asset','current_borrowed','request_asset','current_request','pinjam_request','historyCancel','sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_hr')]);
     }
 
+    public function import(Request $request) 
+    {
+        // $path = $request->file('file')->getRealPath();
+        // $data = Excel::import($path)->get();
+        $directory = "draft_pr";
+        // $nameFile = "template asset hr.csv";
+        $nameFile = "template asset hr peminjam.csv";
+        $folderName = 'Test Draft PR 2';
+
+        $this->uploadToLocal($request->file('file'),$directory,$nameFile);
+
+        $result = $this->readCSV($directory . "/" . $nameFile);
+        // return $result;
+ 
+        // if(count($result) >= 1){
+        //     foreach ($result as $key => $value) {
+        //         $arr[] = [
+        //             'id_barang' => $value[0], 
+        //             'nik' => '1220985100', 
+        //             'nama_barang' => $value[1], 
+        //             'code_name' => $value[2], 
+        //             'serial_number' => $value[3], 
+        //             'status' => $value[4], 
+        //             'merk' => $value[6], 
+        //             'type' => $value[7], 
+        //             'description' => $value[8],
+        //             'kategori' => $value[9],
+        //             'lokasi' => $value[10],
+        //             'tgl_tambah' => $value[5]
+        //         ];
+        //     }
+ 
+        //     if(!empty($arr)){
+        //         AssetHR::insert($arr);
+        //     }
+        // }
+
+
+        if(count($result) >= 1){
+            foreach ($result as $key => $value) {
+                $arr[] = [
+                    'id_transaction' => $value[0], 
+                    'id_barang' => $value[1], 
+                    'nik_peminjam' => $value[2], 
+                    'status' => $value[3], 
+                    'keterangan' => $value[4], 
+                    'tgl_peminjaman' => $value[5],
+                    'no_transac' => $value[6]
+                ];
+            }
+ 
+            if(!empty($arr)){
+                DetailAssetHR::insert($arr);
+            }
+        }
+ 
+        return back()->with('success', 'Insert Record successfully.');
+    }
+
+    public function uploadToLocal($file,$directory,$nameFile){
+        $file->move($directory,$nameFile);
+    }
+
+    public function readCSV($locationFile){
+
+        if (($open = fopen($locationFile, "r")) !== FALSE) {
+
+            $i = 0;
+            $array = [];
+            while (($data = fgetcsv($open, 1000, ";")) !== FALSE) {
+                if($i != 0){
+                    $array[] = $data;
+                } else {
+                    array_shift($data);                    
+                }
+                $i++;     
+            }
+            // if ($i == 1) {
+            //     return 'Tidak ada produk';
+            // }
+            fclose($open);
+        }
+
+        return $array;
+        // return array_shift($array);
+    }
+
     public function getRequestAssetBy(Request $request){
     	if ($request->status == 'pinjam') {
     		return $current_request = DB::table('tb_asset_hr_transaction')
@@ -352,7 +443,7 @@ class AssetHRController extends Controller
     public function getDetailBorrowed(Request $request){
         return DB::table('tb_asset_hr_transaction')
                 ->join('tb_asset_hr','tb_asset_hr.id_barang','=','tb_asset_hr_transaction.id_barang')
-                ->select('keterangan','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr_transaction.note','no_transac','nama_barang','code_name','id_transaction')->where('id_transaction',$request->id_transaction)->get();
+                ->select('keterangan','serial_number','tgl_peminjaman','tgl_pengembalian','tb_asset_hr_transaction.note','no_transac','nama_barang','code_name','id_transaction', 'merk')->where('id_transaction',$request->id_transaction)->get();
     }
 
     public function getPengembalian(Request $request){
@@ -628,7 +719,7 @@ class AssetHRController extends Controller
                 ->get();
 
         $detailAsset = DB::table('tb_asset_hr')
-                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(tgl_tambah,NOW()) AS umur_asset'),'lokasi','tgl_tambah','merk','description','note','harga_beli')
+                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(NOW(),tgl_tambah) AS umur_asset'),'lokasi','tgl_tambah','merk','description','note','harga_beli')
                 ->where('tb_asset_hr.id_barang',$id_barang)                
                 ->first();
 
