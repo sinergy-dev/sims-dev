@@ -292,10 +292,13 @@ class LetterController extends Controller
             }elseif($lastnumber > 9 && $lastnumber < 100){
                $akhirnomor = '00' . $lastnumber;
                $akhirnomor9 = '00' . $lastnumber9;
-            }elseif($lastnumber >= 100){
+            }elseif($lastnumber >= 100 && $lastnumber < 1000){
                $akhirnomor = '0' . $lastnumber;
                $akhirnomor9 = '0' . $lastnumber9;
-            }            
+            } elseif ($lastnumber >= 1000) {
+                $akhirnomor = $lastnumber;
+                $akhirnomor9 = $lastnumber9;
+            }      
 
             if (substr($getnumber, -1) == '4') {
                 $no   = $akhirnomor9.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
@@ -526,8 +529,10 @@ class LetterController extends Controller
                $akhirnomor = '000' . $lastnumber;
             }elseif($lastnumber > 9 && $lastnumber < 100){
                $akhirnomor = '00' . $lastnumber;
-            }elseif($lastnumber >= 100){
+            }elseif($lastnumber >= 100 && $lastnumber < 1000){
                $akhirnomor = '0' . $lastnumber;
+            } elseif ($lastnumber >= 1000) {
+                $akhirnomor = $lastnumber;
             }
 
             $noReset = $akhirnomor.'/'.$posti .'/'. $type.'/' . $bln .'/'. $year_pr;
@@ -639,9 +644,11 @@ class LetterController extends Controller
            $akhirnomor  = '000' . $getnumber;
         }elseif($getnumber > 9 && $getnumber < 100){
            $akhirnomor = '00' . $getnumber;
-        }elseif($getnumber >= 100){
+        }elseif($getnumber >= 100 && $getnumber < 1000){
            $akhirnomor = '0' . $getnumber;
-        }     
+        } elseif ($getnumber >= 1000) {
+            $akhirnomor = $getnumber;
+        }
 
         $edate = strtotime($_POST['date_backdate']); 
         $edate = date("Y-m-d",$edate);
