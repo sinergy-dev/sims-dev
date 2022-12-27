@@ -541,7 +541,7 @@
         "dataSrc": function (json){
 
           json.data.forEach(function(data,index){
-            if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done') {
+            if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done' || "{{Auth::User()->id_position}}" == "PROCUREMENT") {
               var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date+ '","' + data.position + '"'
               data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
             } else {
