@@ -1978,8 +1978,13 @@ Lead Register
 				type:"GET",
 				url:"{{url('/project/filterCountLead')}}" + temp,
 				success:function(result){
-					$.each(result,function(){						
-						$("#"+countLead[0]).text(result.lead)
+					$.each(result,function(){	
+						if(result.presales){
+							$("#"+countLead[0]).prev().html("<b>Lead - Unassigned </b>")
+							$("#"+countLead[0]).text(result.initial)
+						} else {
+							$("#"+countLead[0]).text(result.lead)
+						}
 						$("#"+countLead[1]).text(result.open)
 						$("#"+countLead[2]).text(result.sd)
 						$("#"+countLead[3]).text(result.tp)
