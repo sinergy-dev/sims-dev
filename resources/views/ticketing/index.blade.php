@@ -3363,7 +3363,7 @@ Ticketing
 							client:$("#inputClient").val()
 						},
 						success: function(result){
-							console.log(result.open_to)
+							console.log(result)
 							if($("#inputTemplateEmail").val() != "Wincor Template"){
 								if($("#inputClient option:selected").text().includes("Absensi")){
 									var subject = "Open Tiket " + $("#inputAbsenLocation").select2('data')[0].text + " [" + $("#inputProblem").val() +"]"
@@ -3694,6 +3694,7 @@ Ticketing
 					url:"{{url('ticketing/getPerformanceAll')}}",
 					dataSrc: function (json){
 						json.data.forEach(function(data,idex){
+							console.log(data.first_activity_ticket.date)
 							data.open_time = moment(data.first_activity_ticket.date,'YYYY-MM-DD, HH:mm:ss').format('D MMMM YYYY HH:mm')
 							data.pic = data.pic + ' - ' + data.contact_pic
 							if(data.lastest_activity_ticket.activity == "OPEN"){
@@ -3713,7 +3714,8 @@ Ticketing
 								data.lastest_status = '<span class="label label-success">' + data.lastest_activity_ticket.activity + '</span>'
 							} 
 							data.lastest_operator = data.lastest_activity_ticket.operator
-							data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="showTicket(' + data.id_detail.id + ')">Detail</button>'
+							data.action = '<button class="btn btn-default btn-flat btn-sm" onclick="showTicket(' + data.id_detail.id + ')">Detail</button>'	
+
 							data.problem = "<b>" + data.location + "</b> - " + data.problem
 
 							if(data.type_ticket == "TT"){
@@ -4017,6 +4019,7 @@ Ticketing
 	}
 
 	function showTicket(id){
+		console.log(id+"okebos")
 		$.ajax({
 			type:"GET",
 			url:"{{url('/ticketing/getPerformanceByTicket')}}",
@@ -4895,83 +4898,85 @@ Ticketing
 						type:"GET",
 						success: function (result){
 							$("#bodyCloseMail").html(result);
+
+							$.ajax({
+								url:"{{url('/ticketing/mail/getEmailData')}}",
+								type:"GET",
+								data:{
+									id_ticket:$('#ticketID').val()
+								},
+								success: function (result){
+									// Holder Close
+									console.log(result.ticket_data.id_ticket)
+									if(result.ticket_data.type_ticket == "PM"){
+										$(".holderCloseProblem").siblings().first().text("Action")
+									}
+
+									$(".holderCloseID").text(result.ticket_data.id_ticket);
+									$(".holderCloseRefrence").text(result.ticket_data.refrence);
+									$(".holderClosePIC").text(result.ticket_data.pic);
+									$(".holderCloseContact").text(result.ticket_data.contact_pic);
+									$(".holderCloseLocation").text(result.ticket_data.location);
+									$(".holderCloseProblem").text(result.ticket_data.problem);
+									$(".holderCloseSerial").html(result.ticket_data.serial_device);
+									if(result.ticket_data.severity_detail != null){
+										$(".holderCloseSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+									}
+									
+									$(".holderCloseIDATM").text(result.ticket_data.id_atm);
+
+									$(".holderCloseNote").text("");
+									$(".holderCloseEngineer").text(result.ticket_data.engineer);
+
+									var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
+
+									$(".holderCloseDate").text(waktu);
+
+									$(".holderCloseStatus").html("<b>CLOSE</b>");
+									$(".holderNumberTicket").text($("#ticketNumber").val());
+
+									// Email Reciver
+									$('.emailMultiSelector ').remove()
+									$("#emailCloseTo").val(result.ticket_reciver.close_to)
+									$("#emailCloseTo").emailinput({ onlyValidValue: true, delim: ';' });
+									$("#emailCloseCc").val(result.ticket_reciver.close_cc)
+									$("#emailCloseCc").emailinput({ onlyValidValue: true, delim: ';' });
+
+									$("#emailCloseSubject").val("Close Tiket " + $(".holderCloseLocation").text() + " [" + $(".holderCloseProblem").text() +"]");
+									$("#emailCloseHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Close Tiket untuk <b>" + $(".holderCloseLocation").text() + "</b> : ");
+									$(".holderCloseCustomer").text(result.ticket_reciver.client_name);
+
+									if(result.ticket_reciver.banking == 1){
+										$(".holderCloseIDATM2").show();
+										$(".holderNumberTicket2").show();
+									} else {
+										$(".holderCloseIDATM2").hide();
+										$(".holderNumberTicket2").hide();
+									}
+
+									if(result.ticket_reciver.client_name.includes("UPS")) {
+										$(".holderCloseIDATM2").show();
+										$(".holderCloseUPSSerial2").show()
+										$(".holderCloseUPSSerial").text(result.ticket_data.atm_detail.serial_number)
+										$(".holderCloseUPSType2").show()
+										$(".holderCloseUPSType").text(result.ticket_data.atm_detail.machine_type)
+										$(".holderCloseSerial").parent().hide()	
+									} else if (result.ticket_reciver.client_name.includes("CCTV")) {
+
+									}
+
+									$(".holderCloseCounter").text($("#saveCloseCouter").val());
+									$(".holderCloseRoot").text($("#saveCloseRoute").val());
+									$(".holderCloseWaktu").html("<b>" + moment($("#dateClose").val(),'DD/MM/YYYY').format("DD MMMM YYYY") + " " + moment($("#timeClose").val(),'HH:mm:ss').format("(HH:mm)") + "</b>");
+								},
+								complete: function(){
+									$("#modal-next-close").modal('toggle');
+								}
+							})
 						}
 					})
 
-					$.ajax({
-						url:"{{url('/ticketing/mail/getEmailData')}}",
-						type:"GET",
-						data:{
-							id_ticket:$('#ticketID').val()
-						},
-						success: function (result){
-							// Holder Close
-
-							if(result.ticket_data.type_ticket == "PM"){
-								$(".holderCloseProblem").siblings().first().text("Action")
-							}
-
-							$(".holderCloseID").text(result.ticket_data.id_ticket);
-							$(".holderCloseRefrence").text(result.ticket_data.refrence);
-							$(".holderClosePIC").text(result.ticket_data.pic);
-							$(".holderCloseContact").text(result.ticket_data.contact_pic);
-							$(".holderCloseLocation").text(result.ticket_data.location);
-							$(".holderCloseProblem").text(result.ticket_data.problem);
-							$(".holderCloseSerial").html(result.ticket_data.serial_device);
-							if(result.ticket_data.severity_detail != null){
-								$(".holderCloseSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
-							}
-							
-							$(".holderCloseIDATM").text(result.ticket_data.id_atm);
-
-							$(".holderCloseNote").text("");
-							$(".holderCloseEngineer").text(result.ticket_data.engineer);
-
-							var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
-
-							$(".holderCloseDate").text(waktu);
-
-							$(".holderCloseStatus").html("<b>CLOSE</b>");
-							$(".holderNumberTicket").text($("#ticketNumber").val());
-
-							// Email Reciver
-							$('.emailMultiSelector ').remove()
-							$("#emailCloseTo").val(result.ticket_reciver.close_to)
-							$("#emailCloseTo").emailinput({ onlyValidValue: true, delim: ';' });
-							$("#emailCloseCc").val(result.ticket_reciver.close_cc)
-							$("#emailCloseCc").emailinput({ onlyValidValue: true, delim: ';' });
-
-							$("#emailCloseSubject").val("Close Tiket " + $(".holderCloseLocation").text() + " [" + $(".holderCloseProblem").text() +"]");
-							$("#emailCloseHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Close Tiket untuk <b>" + $(".holderCloseLocation").text() + "</b> : ");
-							$(".holderCloseCustomer").text(result.ticket_reciver.client_name);
-
-							if(result.ticket_reciver.banking == 1){
-								$(".holderCloseIDATM2").show();
-								$(".holderNumberTicket2").show();
-							} else {
-								$(".holderCloseIDATM2").hide();
-								$(".holderNumberTicket2").hide();
-							}
-
-							if(result.ticket_reciver.client_name.includes("UPS")) {
-								$(".holderCloseIDATM2").show();
-								$(".holderCloseUPSSerial2").show()
-								$(".holderCloseUPSSerial").text(result.ticket_data.atm_detail.serial_number)
-								$(".holderCloseUPSType2").show()
-								$(".holderCloseUPSType").text(result.ticket_data.atm_detail.machine_type)
-								$(".holderCloseSerial").parent().hide()	
-							} else if (result.ticket_reciver.client_name.includes("CCTV")) {
-
-							}
-
-							$(".holderCloseCounter").text($("#saveCloseCouter").val());
-							$(".holderCloseRoot").text($("#saveCloseRoute").val());
-							$(".holderCloseWaktu").html("<b>" + moment($("#dateClose").val(),'DD/MM/YYYY').format("DD MMMM YYYY") + " " + moment($("#timeClose").val(),'HH:mm:ss').format("(HH:mm)") + "</b>");
-						},
-						complete: function(){
-							$("#modal-next-close").modal('toggle');
-						}
-					})
+					
 				}
 			})
 		}

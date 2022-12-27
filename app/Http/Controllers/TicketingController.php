@@ -1732,8 +1732,8 @@ class TicketingController extends Controller
 					->from('ticketing__activity')
 					->groupBy('id_ticket');
 				})
-			->where('activity','<>','CANCEL')
-			->where('activity','<>','CLOSE')
+			// ->where('activity','<>','CANCEL')
+			// ->where('activity','<>','CLOSE')
 			->whereRaw('`id_ticket` LIKE "%' . $acronym_client . '%"')
 			->get()
 			->pluck('id_ticket');
@@ -1745,8 +1745,55 @@ class TicketingController extends Controller
 				'resolve',
 				'absen_machine'
 			])
-			->whereNotIn('id_ticket',$occurring_ticket)
+			// ->whereNotIn('id_ticket',$occurring_ticket)
+			->whereIn('id_ticket',$occurring_ticket)
 			->whereRaw("`id_ticket` LIKE '%/" . $acronym_client . "/" . $period . "'")
+			->orderBy('id','ASC')
+			->get();
+
+		return $residual_ticket_result;
+	}
+
+	public function getReportTicket(){
+		$occurring_ticket = DB::table('ticketing__activity')
+			->select('id_ticket','activity')
+			->whereIn('id',function ($query) {
+				$query->select(DB::raw("MAX(id) AS activity"))
+					->from('ticketing__activity')
+					->groupBy('id_ticket');
+				})
+			// ->where('activity','<>','CANCEL')
+			->where('activity','<>','CLOSE')
+			->whereRaw('`id_ticket` LIKE "%BTNI%"')
+			->get()
+			->pluck('id_ticket');
+
+		// return $occurring_ticket;
+
+		// return $occurring_ticket;
+
+		// $result = TicketingDetail::whereHas('id_detail', function($query) use ($idTicket){
+		// 		$query->where('id','=',$idTicket);
+		// 	})
+		// 	->with([
+		// 		'lastest_activity_ticket:id_ticket,date,activity,operator',
+		// 		'resolve',
+		// 		'all_activity_ticket',
+		// 		'first_activity_ticket',
+		// 		'id_detail:id_ticket,id,id_client'
+		// 	])
+		// 	->first();
+
+		$residual_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+				'resolve',
+				'absen_machine'
+			])
+			// ->whereNotIn('id_ticket',$occurring_ticket)
+			->whereIn('id_ticket',$occurring_ticket)
+			->whereRaw("`id_ticket` LIKE '%/BTNI/NOV/2022'")
 			->orderBy('id','ASC')
 			->get();
 
