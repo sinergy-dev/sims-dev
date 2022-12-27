@@ -700,11 +700,11 @@
       /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
       var ErrorText = []
-      if (f.size > 2000000|| f.fileSize > 2000000) {
+      if (f.size > 30000000|| f.fileSize > 30000000) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Invalid file size, just allow file with size less than 2MB!',
+          text: 'Invalid file size, just allow file with size less than 30MB!',
         }).then((result) => {
           this.value = ''
         })
@@ -937,21 +937,7 @@
                   $("#ModalRejectSirkulasi").modal("show")
                 })
               }
-            }        
-
-            if (accesable.includes('btnSirkulasi','btnPembanding','btnShowPdf') || accesable.includes('btnShowPdf')) {
-              $.each(accesable,function(value,item){
-                
-                if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
-                  if(result[1][0].status == 'FINALIZED'){
-                    $("#btnFinalize").prop('disabled',false)
-                    $("#btnSirkulasi").prop('disabled',true)
-                  }else{
-                    $("#btnFinalize").prop('disabled',true)
-                  }
-                }
-              })
-            }         
+            }               
             
             $.each(result[0],function(value,item){
               loadActivity(value,item)
@@ -1789,6 +1775,19 @@
       success: function(result) {
         //initiate btn finalize
         $("#btnFinalize").attr("onclick","finalize("+ '"' +result.pr.request_method+ '"' +")")
+
+        if (accesable.includes('btnSirkulasi','btnPembanding','btnShowPdf') || accesable.includes('btnShowPdf')) {
+          $.each(accesable,function(value,item){
+            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              if(result.pr.status == 'FINALIZED'){
+                $("#btnFinalize").prop('disabled',false)
+                $("#btnSirkulasi").prop('disabled',true)
+              }else{
+                $("#btnFinalize").prop('disabled',true)
+              }
+            }
+          })
+        }  
 
         type_of_letter = result.pr.type_of_letter
         if (type_of_letter == 'IPR') {
