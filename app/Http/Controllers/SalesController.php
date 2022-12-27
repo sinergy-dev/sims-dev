@@ -4121,7 +4121,7 @@ class SalesController extends Controller{
         $tambah->save();
 
         $kirim = User::join('role_user','users.nik','=','role_user.user_id')
-                ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'BCD Procurement')->first();
+                ->join('roles','role_user.role_id','=','roles.id')->select('email')->where('roles.name', 'BCD Procurement')->where('status_karyawan', '!=', 'dummy')->first();
 
         $data = TB_Contact::join('users', 'users.nik', '=', 'tb_contact.nik_request')
                     ->select('id_customer', 'customer_legal_name', 'code', 'brand_name', 'office_building', 'street_address', 'province', 'postal', 'tb_contact.phone', 'city', 'tb_contact.created_at', 'name', 'tb_contact.status')
