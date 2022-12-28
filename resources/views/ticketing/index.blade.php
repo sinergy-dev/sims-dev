@@ -4522,68 +4522,71 @@ Ticketing
 						type:"GET",
 						success: function (result){
 							$("#bodyCancelMail").html(result);
+
+							$.ajax({
+								url:"{{url('/ticketing/mail/getEmailData')}}",
+								type:"GET",
+								data:{
+									id_ticket:$('#ticketID').val()
+								},
+								success: function (result){
+									// Holder Cancel
+									console.log(result)
+									$(".holderCancelID").text($('#ticketID').val());
+									$(".holderCancelRefrence").text(result.ticket_data.refrence);
+									$(".holderCancelPIC").text(result.ticket_data.pic);
+									$(".holderCancelContact").text(result.ticket_data.contact_pic);
+									$(".holderCancelLocation").text(result.ticket_data.location);
+									$(".holderCancelProblem").text(result.ticket_data.problem);
+									$(".holderCancelSerial").text(result.ticket_data.serial_device);
+									$(".holderCancelSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+
+									$(".holderCancelIDATM").text(result.ticket_data.id_atm);
+
+									$(".holderCancelNote").text("");
+									$(".holderCancelEngineer").text(result.ticket_data.engineer);
+
+									var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
+
+									$(".holderCancelDate").text(waktu);
+
+									$(".holderCancelStatus").html("<b>CANCEL</b>");
+									$(".holderNumberTicket").text($("#ticketNumber").val());
+
+									// Email Reciver
+									$('.emailMultiSelector ').remove()
+									$("#emailCancelTo").val(result.ticket_reciver.close_to)
+									$("#emailCancelTo").emailinput({ onlyValidValue: true, delim: ';' });
+									$("#emailCancelCc").val(result.ticket_reciver.close_cc)
+									$("#emailCancelCc").emailinput({ onlyValidValue: true, delim: ';' });
+
+									$("#emailCancelSubject").val("Cancel Tiket " + $(".holderCancelLocation").text() + " [" + $(".holderCancelProblem").text() +"]");
+									$("#emailCancelHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Cancel Tiket untuk <b>" + $(".holderCancelLocation").text() + "</b> : ");
+									$(".holderCancelCustomer").text(result.ticket_reciver.client_name);
+
+									if(
+										result.ticket_reciver.client_acronym  == "BJBR" || 
+										result.ticket_reciver.client_acronym  == "BSBB" || 
+										result.ticket_reciver.client_acronym  == "BRKR" || 
+										result.ticket_reciver.client_acronym  == "BPRKS" || 
+										result.ticket_reciver.client_acronym  == "BDIY"
+										){
+										$(".holderCancelIDATM2").show();
+										$(".holderNumberTicket2").show();
+									} else {
+										$(".holderCancelIDATM2").hide();
+										$(".holderNumberTicket2").hide();
+									}
+									$(".holderCancelNote").text($("#saveReasonCancel").val());
+								},
+								complete: function(){
+									$("#modal-next-cancel").modal('toggle');
+								}
+							})
 						}
 					})
 
-					$.ajax({
-						url:"{{url('/ticketing/mail/getEmailData')}}",
-						type:"GET",
-						data:{
-							id_ticket:$('#ticketID').val()
-						},
-						success: function (result){
-							// Holder Cancel
-							$(".holderCancelID").text($('#ticketID').val());
-							$(".holderCancelRefrence").text(result.ticket_data.refrence);
-							$(".holderCancelPIC").text(result.ticket_data.pic);
-							$(".holderCancelContact").text(result.ticket_data.contact_pic);
-							$(".holderCancelLocation").text(result.ticket_data.location);
-							$(".holderCancelProblem").text(result.ticket_data.problem);
-							$(".holderCancelSerial").text(result.ticket_data.serial_device);
-							$(".holderCancelSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
-
-							$(".holderCancelIDATM").text(result.ticket_data.id_atm);
-
-							$(".holderCancelNote").text("");
-							$(".holderCancelEngineer").text(result.ticket_data.engineer);
-
-							var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
-
-							$(".holderCancelDate").text(waktu);
-
-							$(".holderCancelStatus").html("<b>CANCEL</b>");
-							$(".holderNumberTicket").text($("#ticketNumber").val());
-
-							// Email Reciver
-							$('.emailMultiSelector ').remove()
-							$("#emailCancelTo").val(result.ticket_reciver.close_to)
-							$("#emailCancelTo").emailinput({ onlyValidValue: true, delim: ';' });
-							$("#emailCancelCc").val(result.ticket_reciver.close_cc)
-							$("#emailCancelCc").emailinput({ onlyValidValue: true, delim: ';' });
-
-							$("#emailCancelSubject").val("Cancel Tiket " + $(".holderCancelLocation").text() + " [" + $(".holderCancelProblem").text() +"]");
-							$("#emailCancelHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Cancel Tiket untuk <b>" + $(".holderCancelLocation").text() + "</b> : ");
-							$(".holderCancelCustomer").text(result.ticket_reciver.client_name);
-
-							if(
-								result.ticket_reciver.client_acronym  == "BJBR" || 
-								result.ticket_reciver.client_acronym  == "BSBB" || 
-								result.ticket_reciver.client_acronym  == "BRKR" || 
-								result.ticket_reciver.client_acronym  == "BPRKS" || 
-								result.ticket_reciver.client_acronym  == "BDIY"
-								){
-								$(".holderCancelIDATM2").show();
-								$(".holderNumberTicket2").show();
-							} else {
-								$(".holderCancelIDATM2").hide();
-								$(".holderNumberTicket2").hide();
-							}
-							$(".holderCancelNote").text($("#saveReasonCancel").val());
-						},
-						complete: function(){
-							$("#modal-next-cancel").modal('toggle');
-						}
-					})
+					
 				}
 			})
 		}
@@ -4697,70 +4700,72 @@ Ticketing
 						type:"GET",
 						success: function (result){
 							$("#bodyPendingMail").html(result);
+
+							$.ajax({
+								url:"{{url('/ticketing/mail/getEmailData')}}",
+								type:"GET",
+								data:{
+									id_ticket:$('#ticketID').val()
+								},
+								success: function (result){
+									// Holder Pending
+
+									$(".holderPendingID").text(result.ticket_data.id_ticket);
+									$(".holderPendingRefrence").text(result.ticket_data.refrence);
+									$(".holderPendingPIC").text(result.ticket_data.pic);
+									$(".holderPendingContact").text(result.ticket_data.contact_pic);
+									$(".holderPendingLocation").text(result.ticket_data.location);
+									$(".holderPendingProblem").text(result.ticket_data.problem);
+									$(".holderPendingSerial").text(result.ticket_data.serial_device);
+									$(".holderPendingSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+
+									$(".holderPendingIDATM").text(result.ticket_data.id_atm);
+
+									$(".holderPendingNote").text("");
+									$(".holderPendingEngineer").text(result.ticket_data.engineer);
+
+									var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
+
+									$(".holderPendingDate").text(waktu);
+
+									$(".holderPendingStatus").html("<b>PENDING</b>");
+									$(".holderNumberTicket").text($("#ticketNumber").val());
+
+									// Email Reciver
+									$('.emailMultiSelector ').remove()
+									$("#emailPendingTo").val(result.ticket_reciver.close_to)
+									$("#emailPendingTo").emailinput({ onlyValidValue: true, delim: ';' });
+									$("#emailPendingCc").val(result.ticket_reciver.close_cc)
+									$("#emailPendingCc").emailinput({ onlyValidValue: true, delim: ';' });
+
+									$("#emailPendingSubject").val("Pending Tiket " + $(".holderPendingLocation").text() + " [" + $(".holderPendingProblem").text() +"]");
+									$("#emailPendingHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Pending Tiket untuk <b>" + $(".holderPendingLocation").text() + "</b> : ");
+									$(".holderPendingCustomer").text(result.ticket_reciver.client_name);
+
+									if(
+										result.ticket_reciver.client_acronym  == "BJBR" || 
+										result.ticket_reciver.client_acronym  == "BSBB" || 
+										result.ticket_reciver.client_acronym  == "BRKR" || 
+										result.ticket_reciver.client_acronym  == "BPRKS"  || 
+										result.ticket_reciver.client_acronym  == "BDIY" 
+										){
+										$(".holderPendingIDATM2").show();
+										$(".holderNumberTicket2").show();
+									} else {
+										$(".holderPendingIDATM2").hide();
+										$(".holderNumberTicket2").hide();
+									}
+									$(".holderCancelNote").text($("#saveReasonCancel").val());
+									$(".holderPendingNote").text($("#saveReasonPending").val());
+								},
+								complete: function(){
+									$("#modal-next-pending").modal('toggle');
+								}
+							})
 						}
 					})
 
-					$.ajax({
-						url:"{{url('/ticketing/mail/getEmailData')}}",
-						type:"GET",
-						data:{
-							id_ticket:$('#ticketID').val()
-						},
-						success: function (result){
-							// Holder Pending
-
-							$(".holderPendingID").text(result.ticket_data.id_ticket);
-							$(".holderPendingRefrence").text(result.ticket_data.refrence);
-							$(".holderPendingPIC").text(result.ticket_data.pic);
-							$(".holderPendingContact").text(result.ticket_data.contact_pic);
-							$(".holderPendingLocation").text(result.ticket_data.location);
-							$(".holderPendingProblem").text(result.ticket_data.problem);
-							$(".holderPendingSerial").text(result.ticket_data.serial_device);
-							$(".holderPendingSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
-
-							$(".holderPendingIDATM").text(result.ticket_data.id_atm);
-
-							$(".holderPendingNote").text("");
-							$(".holderPendingEngineer").text(result.ticket_data.engineer);
-
-							var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
-
-							$(".holderPendingDate").text(waktu);
-
-							$(".holderPendingStatus").html("<b>PENDING</b>");
-							$(".holderNumberTicket").text($("#ticketNumber").val());
-
-							// Email Reciver
-							$('.emailMultiSelector ').remove()
-							$("#emailPendingTo").val(result.ticket_reciver.close_to)
-							$("#emailPendingTo").emailinput({ onlyValidValue: true, delim: ';' });
-							$("#emailPendingCc").val(result.ticket_reciver.close_cc)
-							$("#emailPendingCc").emailinput({ onlyValidValue: true, delim: ';' });
-
-							$("#emailPendingSubject").val("Pending Tiket " + $(".holderPendingLocation").text() + " [" + $(".holderPendingProblem").text() +"]");
-							$("#emailPendingHeader").html("Dear <b>" + result.ticket_reciver.close_dear + "</b><br>Berikut terlampir Pending Tiket untuk <b>" + $(".holderPendingLocation").text() + "</b> : ");
-							$(".holderPendingCustomer").text(result.ticket_reciver.client_name);
-
-							if(
-								result.ticket_reciver.client_acronym  == "BJBR" || 
-								result.ticket_reciver.client_acronym  == "BSBB" || 
-								result.ticket_reciver.client_acronym  == "BRKR" || 
-								result.ticket_reciver.client_acronym  == "BPRKS"  || 
-								result.ticket_reciver.client_acronym  == "BDIY" 
-								){
-								$(".holderPendingIDATM2").show();
-								$(".holderNumberTicket2").show();
-							} else {
-								$(".holderPendingIDATM2").hide();
-								$(".holderNumberTicket2").hide();
-							}
-							$(".holderCancelNote").text($("#saveReasonCancel").val());
-							$(".holderPendingNote").text($("#saveReasonPending").val());
-						},
-						complete: function(){
-							$("#modal-next-pending").modal('toggle');
-						}
-					})
+					
 				}
 			})
 		}
@@ -5066,74 +5071,76 @@ Ticketing
 						type:"GET",
 						success: function (result){
 							$("#bodyEscalateMail").html(result);
+
+							$.ajax({
+								url:"{{url('/ticketing/mail/getEmailData')}}",
+								type:"GET",
+								data:{
+									id_ticket:$('#ticketID').val()
+								},
+								success: function (result){
+									// Holder Escalate
+
+									$(".holderEscalateID").text(result.ticket_data.id_ticket);
+									$(".holderEscalateRefrence").text(result.ticket_data.refrence);
+									$(".holderEscalatePIC").text(result.ticket_data.pic);
+									$(".holderEscalateContact").text(result.ticket_data.contact_pic);
+									$(".holderEscalateLocation").text(result.ticket_data.location);
+									$(".holderEscalateLocationHeader").text(result.ticket_data.location);
+									$(".holderEscalateProblem").text(result.ticket_data.problem);
+									$(".holderEscalateProblemHeader").text(result.ticket_data.problem);
+									$(".holderEscalateSerial").text(result.ticket_data.serial_device);
+									$(".holderEscalateSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
+									
+									$(".holderEscalateIDATM").text(result.ticket_data.id_atm);
+
+									$(".holderEscalateNote").text("");
+									$(".holderEscalateEngineer").text(result.ticket_data.engineer);
+
+									var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
+
+									$(".holderEscalateDate").text(waktu);
+
+									$(".holderEscalateStatus").html("<b>ESCALATE</b>");
+									$(".holderNumberTicket").text($("#ticketNumber").val());
+
+									// Email Reciver
+									$('.emailMultiSelector ').remove()
+									// $("#emailEscalateTo").val(result.ticket_reciver.close_to)
+									$("#emailEscalateTo").emailinput({ onlyValidValue: true, delim: ';' });
+									// $("#emailEscalateCc").val(result.ticket_reciver.close_cc)
+									$("#emailEscalateCc").emailinput({ onlyValidValue: true, delim: ';' });
+
+									$("#emailEscalateSubject").val("Escalate Tiket " + $(".holderEscalateProblem").text() + " [" + $(".holderEscalateLocation").text() +"]");
+									
+									$(".emailEscalateHeader").html($("#escalateNameEngineer").val());
+									$(".holderEscalateNote").html("-");
+									$(".holderEscalateRCA").html($("#escalateRCA").val());
+
+									$(".holderEscalateCustomer").text(result.ticket_reciver.client_name);
+
+									if(result.ticket_reciver.client_acronym  == "BJBR" || 
+										result.ticket_reciver.client_acronym  == "BSBB" || 
+										result.ticket_reciver.client_acronym  == "BRKR" || 
+										result.ticket_reciver.client_acronym  == "BPRKS"
+										){
+										$(".holderEscalateIDATM2").show();
+										$(".holderNumberTicket2").show();
+									} else {
+										$(".holderEscalateIDATM2").hide();
+										$(".holderNumberTicket2").hide();
+									}
+
+									$(".holderEscalateWaktu").html("<b>" + moment().format("DD MMMM YYYY (HH:mm)") + "</b>");
+								},
+								complete: function(){
+									$("#modal-next-escalate").modal('toggle');
+								}
+							})
 						}
 					})
 
-					$.ajax({
-						url:"{{url('/ticketing/mail/getEmailData')}}",
-						type:"GET",
-						data:{
-							id_ticket:$('#ticketID').val()
-						},
-						success: function (result){
-							// Holder Escalate
-
-							$(".holderEscalateID").text(result.ticket_data.id_ticket);
-							$(".holderEscalateRefrence").text(result.ticket_data.refrence);
-							$(".holderEscalatePIC").text(result.ticket_data.pic);
-							$(".holderEscalateContact").text(result.ticket_data.contact_pic);
-							$(".holderEscalateLocation").text(result.ticket_data.location);
-							$(".holderEscalateLocationHeader").text(result.ticket_data.location);
-							$(".holderEscalateProblem").text(result.ticket_data.problem);
-							$(".holderEscalateProblemHeader").text(result.ticket_data.problem);
-							$(".holderEscalateSerial").text(result.ticket_data.serial_device);
-							$(".holderEscalateSeverity").text(result.ticket_data.severity_detail.id + " (" + result.ticket_data.severity_detail.name + ")")
-							
-							$(".holderEscalateIDATM").text(result.ticket_data.id_atm);
-
-							$(".holderEscalateNote").text("");
-							$(".holderEscalateEngineer").text(result.ticket_data.engineer);
-
-							var waktu = moment((result.ticket_data.first_activity_ticket.date), "YYYY-MM-DD HH:mm:ss").format("D MMMM YYYY (HH:mm)");
-
-							$(".holderEscalateDate").text(waktu);
-
-							$(".holderEscalateStatus").html("<b>ESCALATE</b>");
-							$(".holderNumberTicket").text($("#ticketNumber").val());
-
-							// Email Reciver
-							$('.emailMultiSelector ').remove()
-							// $("#emailEscalateTo").val(result.ticket_reciver.close_to)
-							$("#emailEscalateTo").emailinput({ onlyValidValue: true, delim: ';' });
-							// $("#emailEscalateCc").val(result.ticket_reciver.close_cc)
-							$("#emailEscalateCc").emailinput({ onlyValidValue: true, delim: ';' });
-
-							$("#emailEscalateSubject").val("Escalate Tiket " + $(".holderEscalateProblem").text() + " [" + $(".holderEscalateLocation").text() +"]");
-							
-							$(".emailEscalateHeader").html($("#escalateNameEngineer").val());
-							$(".holderEscalateNote").html("-");
-							$(".holderEscalateRCA").html($("#escalateRCA").val());
-
-							$(".holderEscalateCustomer").text(result.ticket_reciver.client_name);
-
-							if(result.ticket_reciver.client_acronym  == "BJBR" || 
-								result.ticket_reciver.client_acronym  == "BSBB" || 
-								result.ticket_reciver.client_acronym  == "BRKR" || 
-								result.ticket_reciver.client_acronym  == "BPRKS"
-								){
-								$(".holderEscalateIDATM2").show();
-								$(".holderNumberTicket2").show();
-							} else {
-								$(".holderEscalateIDATM2").hide();
-								$(".holderNumberTicket2").hide();
-							}
-
-							$(".holderEscalateWaktu").html("<b>" + moment().format("DD MMMM YYYY (HH:mm)") + "</b>");
-						},
-						complete: function(){
-							$("#modal-next-escalate").modal('toggle');
-						}
-					})
+					
 				} else if (result.isDenied) {
 					 var dataAjax = {
 						id_ticket:$("#ticketID").val(),
