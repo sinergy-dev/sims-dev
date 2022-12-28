@@ -125,7 +125,7 @@ class SalesLeadController extends Controller
                             ->where('sales_solution_design.nik', $nik)
                             ->count('sales_lead_register.lead_id');
 
-                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -170,7 +170,7 @@ class SalesLeadController extends Controller
                         ->where('id_company','1')
                         ->count('lead_id');
 
-                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -215,7 +215,7 @@ class SalesLeadController extends Controller
                         ->where('id_company','1')
                         ->count('lead_id');
 
-                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -253,9 +253,9 @@ class SalesLeadController extends Controller
                             ->count('lead_id');
 
                 if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-                    $sum_amount_lead = $total_initial->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                    $sum_amount_lead = $total_initial->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
                 } else {
-                    $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->where('users.id_company','1')->first();
+                    $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->where('users.id_company','1')->first();
                 }
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
@@ -292,7 +292,7 @@ class SalesLeadController extends Controller
                 
                 $count_initial = $total_initial->count('lead_id');
 
-                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -337,7 +337,7 @@ class SalesLeadController extends Controller
                             ->where('id_company','1')
                             ->count('lead_id');
 
-                $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+                $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
 
                 $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -368,7 +368,7 @@ class SalesLeadController extends Controller
             
             $count_initial = $total_initial->count('lead_id');
 
-            $sum_amount_lead = $total_lead->select(DB::raw('SUM(amount) as amount_lead'))->first();
+            $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
 
             $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
 
@@ -802,6 +802,8 @@ class SalesLeadController extends Controller
                     ->join('users', 'users.nik', '=', 'sales_lead_register.nik');
                     // ->where('sales_lead_register.result','CANCEL');
 
+        $presales = false;
+
         if ($div == 'SALES' && $pos == 'STAFF') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('sales_lead_register.nik',$nik);
             $total_open->where('sales_lead_register.result',"")->where('sales_lead_register.nik',$nik);
@@ -812,7 +814,7 @@ class SalesLeadController extends Controller
             $total_lose->where('sales_lead_register.result',"LOSE")->where('sales_lead_register.nik',$nik);
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('sales_lead_register.nik',$nik);
         } elseif ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
-            $total_lead->where('sales_lead_register.result',"!=","hmm")->where('users.id_company','1');
+            $total_lead->where('sales_lead_register.result',"OPEN")->where('users.id_company','1');
             $total_open->where('sales_lead_register.result',"")->where('users.id_company','1');
             $total_initial->where('sales_lead_register.result',"OPEN")->where('users.id_company','1');
             $total_sd->where('sales_lead_register.result',"SD")->where('users.id_company','1');
@@ -820,6 +822,11 @@ class SalesLeadController extends Controller
             $total_win->where('sales_lead_register.result',"WIN")->where('users.id_company','1');
             $total_lose->where('sales_lead_register.result',"LOSE")->where('users.id_company','1');
             $total_cancel->where('sales_lead_register.result',"CANCEL")->where('users.id_company','1');
+            if ($div == 'TECHNICAL PRESALES' && $pos == 'MANAGER') {
+                $presales = true;
+            } else {
+                $presales = false;
+            }
         } elseif ($div == 'SALES' && $pos == 'MANAGER') {
             $total_lead->where('sales_lead_register.result',"!=","hmm")->where('users.id_territory',$ter);
             $total_open->where('sales_lead_register.result',"")->where('users.id_territory',$ter);
@@ -1084,7 +1091,8 @@ class SalesLeadController extends Controller
             'amount_sd'=>$sum_amount_sd->amount_sd,
             'amount_tp'=>$sum_amount_tp->amount_tp,
             'amount_win'=>$sum_amount_win->amount_win,
-            'amount_lose'=>$sum_amount_lose->amount_lose
+            'amount_lose'=>$sum_amount_lose->amount_lose,
+            'presales'=>$presales
         ]);
     }
 

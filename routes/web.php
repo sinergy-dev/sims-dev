@@ -976,6 +976,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/AddNoteReq','AssetHRController@AddNoteReq');
 	Route::get('/batalkanReq','AssetHRController@batalkanReq');
 	Route::get('/getListAsset','AssetHRController@getListAsset');
+	Route::post('/importAssetHR','AssetHRController@import');
 
 
 	Route::get('asset_atk', 'AssetAtkController@index');
@@ -1152,6 +1153,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/ticketing/report/new','TicketingController@getReportNew');
 	Route::get('/ticketing/report/newDeny','TicketingController@getReportNewDeny');
 	Route::get('/changeNominal/testRequestChange','TestController@testRequestChange');
+
+	Route::get('/report_ticketing','TicketingController@getReportTicket');
 
 	Route::get('/requestChange','RequestChangeController@index');
 

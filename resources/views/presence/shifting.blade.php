@@ -764,8 +764,10 @@ Presence Shifting
 				// url: "{{url('schedule/changeMonth')}}",
 				url: "{{url('presence/shifting/getSummaryThisMonth')}}",
 				data: {
-					start:moment(view.intervalStart).format("YYYY-MM-DD"),
-					end:moment(view.intervalEnd).format("YYYY-MM-DD")
+					// start:moment(view.intervalStart).format("YYYY-MM-DD"),
+					start:moment(view.intervalStart).startOf('month').format('YYYY-MM-DD'),
+					// end:moment(view.intervalEnd).format("YYYY-MM-DD")
+					end:moment(view.intervalStart).endOf('month').format('YYYY-MM-DD')
 				},
 				beforeSend:function(){
 					$("#calendar").fullCalendar('removeEventSources');

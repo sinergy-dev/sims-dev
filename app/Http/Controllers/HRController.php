@@ -219,7 +219,7 @@ class HRController extends Controller
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
-                ->where('roles.name', '!=', 'PMO Admin')
+                // ->whereRaw("(`roles`.`name` != 'PMO Admin' AND `users`.`name` != 'Novia Chandra')")
                 ->get();
 
         $data_resign = DB::table('users')
@@ -329,8 +329,8 @@ class HRController extends Controller
         $id_hu = $request['edit_hurec'];
 
         return array(DB::table('users')
-                ->join('role_user','users.nik','=','role_user.user_id')
-                ->join('roles','role_user.role_id','=','roles.id')
+                ->join('role_user','users.nik','=','role_user.user_id', 'left')
+                ->join('roles','role_user.role_id','=','roles.id', 'left')
                 ->select('nik','users.name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete','roles.name as roles','roles.group', 'role_id')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
@@ -995,9 +995,9 @@ class HRController extends Controller
 
         $update->update();
 
-        $update = RoleUser::where('user_id', $nik)->first();
-        $update->role_id = $request['roles_update'];
-        $update->update();
+        $update_role = RoleUser::where('user_id', $nik)->first();
+        $update_role->role_id = $request['roles_update'];
+        $update_role->update();
 
         // return redirect('hu_rec')->with('update', 'Updated Employee Data Successfully!');
         

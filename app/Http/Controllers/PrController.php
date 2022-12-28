@@ -7,6 +7,7 @@ use Auth;
 use DB;
 use App\PR;
 use App\SalesProject;
+use App\PrIdProject;
 use App\User;
 use Illuminate\Support\Facades\Route;
 // use Excel;
@@ -420,7 +421,7 @@ class PrController extends Controller
         //         ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
         //         ->groupBy('project_id');
 
-        $data =  SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')
+        $data =  PrIdProject::join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')
                     ->join('users', 'users.nik', 'sales_lead_register.nik')
                     ->join('tb_pr', 'tb_pr.project_id', 'tb_id_project.id_project')
                     ->select(

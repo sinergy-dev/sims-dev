@@ -106,8 +106,9 @@ class PRDraft extends Model
 
     public function getNameAttribute()
     {
-        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance', 'left')->select('users.name')->where('tb_pr_draft.id', $this->id)->first();
-        return $data->name;
+        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->select('users.name')->where('tb_pr_draft.id', $this->id)->first();
+        // return $data->name;
+        return empty($data->name)?(empty($data->name) ? "-" : $data->name):$data->name;
     }
 
     public function getDateAttribute()
@@ -238,11 +239,11 @@ class PRDraft extends Model
 
         $nik = Auth::User()->nik;
         $roles_manager = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    ->select('user_id')->orWhere('name', 'like', '%MANAGER%')->where('user_id', $nik)->first(); 
+                    ->select('user_id')->where('user_id', $nik)->orWhere('name', 'like', '%MANAGER%')->first(); 
 
         foreach ($notes as $key => $value) {
             if (isset($roles_manager)) {
-                if ($roles_manager->user_id == $nik && $value->resolve == 'False') {
+                if ($value->resolve == 'False') {
                     $notes = 'False';
                 } else {
                     $notes = 'True';

@@ -700,11 +700,11 @@
       /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
       var ErrorText = []
-      if (f.size > 2000000|| f.fileSize > 2000000) {
+      if (f.size > 30000000|| f.fileSize > 30000000) {
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'Invalid file size, just allow file with size less than 2MB!',
+          text: 'Invalid file size, just allow file with size less than 30MB!',
         }).then((result) => {
           this.value = ''
         })
@@ -868,7 +868,7 @@
               append = append + '<div class="row">'
                 append = append + '<div class="col-md-12">'
                   append = append + '<span><b>Action</b></span><br>'
-                   append = append + '<button class="btn btn-sm bg-purple" id="btnPembanding" onclick="pembanding()" style="margin-right:5px">Comparison</button>'
+                   append = append + '<button onclick="pembanding()" class="btn btn-sm bg-purple" id="btnPembanding" style="margin-right:5px">Comparison</button>'
                       append = append + '<button disabled class="btn btn-sm btn-warning" id="btnSirkulasi" style="margin-right:5px" onclick="sirkulasi(0)">Circular</button>'
                   append = append + '<button class="btn btn-sm btn-success" style="margin-right:5px" id="btnFinalize" disabled>Finalize</button>'
                   append = append + '<button class="btn btn-sm btn-danger" id="btnRevision" style="display:none" disabled>Revision</button>'
@@ -937,21 +937,7 @@
                   $("#ModalRejectSirkulasi").modal("show")
                 })
               }
-            }        
-
-            if (accesable.includes('btnSirkulasi','btnPembanding','btnShowPdf') || accesable.includes('btnShowPdf')) {
-              $.each(accesable,function(value,item){
-                
-                if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
-                  if(result[1][0].status == 'FINALIZED'){
-                    $("#btnFinalize").prop('disabled',false)
-                    $("#btnSirkulasi").prop('disabled',true)
-                  }else{
-                    $("#btnFinalize").prop('disabled',true)
-                  }
-                }
-              })
-            }         
+            }               
             
             $.each(result[0],function(value,item){
               loadActivity(value,item)
@@ -1083,7 +1069,19 @@
       $(".modal-dialog").removeClass('modal-lg')
       $("#ModalAddNote").modal("show")
     })
+
+    document.getElementById("btnPembanding").onmousedown = function(event) {
+      if (event.which == 3) {
+        window.open("{{url('/admin/detail/draftPR')}}/"+window.location.href.split("/")[6],"_blank")
+        localStorage.setItem('isLastStorePembanding',true)
+        // pembanding()
+      }
+    }
   }  
+
+  function num(value){
+    alert("Number " + value);
+  }
 
   function btnResolve(id){
     Swal.fire({
@@ -1418,7 +1416,7 @@
     $(".timeline").append(append)
   }
 
-  function pembanding(){    
+  function pembanding(){   
     localStorage.setItem('status_tax',false)
     localStorage.setItem('isPembanding',true)
     $("#showDetail").empty()
@@ -1789,6 +1787,19 @@
       success: function(result) {
         //initiate btn finalize
         $("#btnFinalize").attr("onclick","finalize("+ '"' +result.pr.request_method+ '"' +")")
+
+        if (accesable.includes('btnSirkulasi','btnPembanding','btnShowPdf') || accesable.includes('btnShowPdf')) {
+          $.each(accesable,function(value,item){
+            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}") {
+              if(result.pr.status == 'FINALIZED'){
+                $("#btnFinalize").prop('disabled',false)
+                $("#btnSirkulasi").prop('disabled',true)
+              }else{
+                $("#btnFinalize").prop('disabled',true)
+              }
+            }
+          })
+        }  
 
         type_of_letter = result.pr.type_of_letter
         if (type_of_letter == 'IPR') {

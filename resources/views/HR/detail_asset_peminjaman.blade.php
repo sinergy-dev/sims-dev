@@ -59,7 +59,7 @@ Detail Asset Transaction
           <tr>
             <th>Umur</th>
             <th> : </th>
-            <td>{{$detailAsset->umur_asset}}</td>
+            <td>{{$detailAsset->umur_asset}} Hari</td>
           </tr>
           <tr>
             <th>Nama</th>

@@ -69,6 +69,11 @@
 					<th>:</th>
 					<td>{{$data->name}}</td>
 				</tr>
+				<tr>
+					<th style="text-align: left;">Subject</th>
+					<th>:</th>
+					<td>{{$data->title}}</td>
+				</tr>
 			</table>
 		</td>
 		<td style="width:40%; border: solid black;">

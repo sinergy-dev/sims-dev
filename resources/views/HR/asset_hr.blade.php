@@ -101,6 +101,16 @@ GA Asset
           <!--     <button class="btn btn-sm btn-primary pull-right" style="display: none;width: 120px;margin-left: 5px;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  --> 
               <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
               <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+              <!-- <button href="" id="btnImport" onclick="importData()" class="btn btn-warning btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button> -->
+
+              <!-- <div class="box-body">
+                <form action="{{ url('import') }}" method="POST" enctype="multipart/form-data">
+                  @csrf
+                  <input type="file" name="file" class="form-control">
+                  <br>
+                  <button class="btn btn-warning btn-sm pull-right">Import Data</button>
+                </form>
+              </div> -->
               <li class="nav-item">
                 <a class="nav-link" id="my_asset" style="display: none;" data-toggle="tab" href="#current_asset" role="tab" aria-controls="current" aria-selected="false"><i class="fa fa-archive"></i> Occurance</a>
               </li>          
@@ -119,7 +129,7 @@ GA Asset
                   <thead>
                     <tr>
                       <th>Code</th>
-                      <th width="15%">Name</th>
+                      <th width="15%">Product Name</th>
                       <th width="25%">Specification</th>
                       <th>Latest person</th>
                       <th>Status</th>
@@ -139,7 +149,17 @@ GA Asset
                           <td>
                               @foreach(explode(',', $data->name) as $key => $latest_pinjam) 
                                 {{$latest_pinjam}}
-                              @endforeach
+                              @endforeach<br>
+                              @if($data->date_of_entrys > 365)
+                                <label class="label label-info"><litle>Masa kerja : {{floor($data->date_of_entrys / 365)}} Tahun {{floor($data->date_of_entrys % 365 / 30)}} Bulan </litle></label>
+                                <label class="label label-warning" style="margin-left: 5px;"><litle>Status karyawan : {{$data->status_kerja}}</litle></label>
+                              @elseif($data->date_of_entrys > 31)
+                                <label class="label label-info"><litle>Masa kerja : {{floor($data->date_of_entrys / 30)}} Bulan</litle></label>
+                                <label class="label label-warning" style="margin-left: 5px;"><litle>Status karyawan : {{$data->status_kerja}}</litle></label>
+                              @else
+                                <label class="label label-info"><litle>Masa kerja : {{floor($data->date_of_entrys)}} Hari </litle></label>
+                                <label class="label label-warning" style="margin-left: 5px;"><litle>Status karyawan : {{$data->status_kerja}}</litle></label>
+                              @endif
                           </td>
                           <td>
                             @if($data->status == "UNAVAILABLE")
@@ -348,7 +368,7 @@ GA Asset
                         <td>{{$data->code_name}}</td>
                         <td>{{$data->nama_barang}}</td>
                         <td>{{$data->description}}</td>
-                        <td>{{$data->note}}</td> 
+                        <td>{{$data->keterangan}}</td> 
                         <td><label class="label label-success">BORROWING</label></td>                     
                         <td>
                           <button class="btn btn-xs" style="width:35px;height:30px;border-radius: 25px!important;outline: none;background-color: black" id="btn_info_asset_transac" value="{{$data->id_transaction}}"><i class="fa fa-info" style="color: white" aria-hidden="true"></i></button>
@@ -842,6 +862,29 @@ GA Asset
       </div>
   </div>
 
+
+  <div class="modal fade" id="importAsset" role="dialog">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Import Asset</h4>           
+          </div>
+          <div class="modal-body">
+            <form action="{{ url('importAssetHR') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group">
+              <input type="file" name="file" class="form-control">
+              <br>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning btn-sm">Import Data</button>
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbspClose</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
   <div class="modal fade" id="penghapusan" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -1169,6 +1212,12 @@ GA Asset
         }
     })
 
+    // $('#btnImport').onclick(function({
+    function importData(){
+      $("#importAsset").modal('show');
+    // }))
+  }
+
     $.ajax({
       type:"GET",
       url: "/testgetCalendarList",
@@ -1464,27 +1513,24 @@ GA Asset
             }                
             append = append + '</tr>'
             append = append + '<tr>' 
-            append = append + '<th>Keterangan:</th>'  
-            append = append + '<td>'
+            append = append + '<th>Serial Number: </th>'  
+            // append = append + '<td>'
             if (result[0].serial_number != null) {
-              append = append + 'Serial Number: '+ result[0].serial_number 
+              append = append + ' <td> '+ result[0].serial_number +'</td>'
             }
+            append = append + '</tr>'
+            append = append + '<tr>'
+            append = append + '<th>Merk: </th>'  
             if (result[0].merk != null) {
-              append = append + '<br>Merk:'+ result[0].merk  
+              append = append + '<td>'+ result[0].merk  +'</td>'
             } 
+            append = append + '</tr>'
+            append = append + '<tr>'
+            append = append + '<th>Keterangan: </th>'  
             if (result[0].keterangan != null) {
-              append = append + '<br>'+ result[0].keterangan +'</td>' 
+              append = append + '<td>'+ result[0].keterangan +'</td>' 
             }                   
-            append = append + '</tr>' 
-            append = append + '<tr>' 
-            append = append + '<th>Note:</th>' 
-            if (result[0].note == null) {
-              append = append + '<td> - </td>'  
-            }else{
-              append = append + '<td>'+ result[0].note +'</td>'  
-            }         
-                  
-            append = append + '</tr>'   
+            append = append + '</tr>'
             append = append + '</table>'
 
             $("#detailInfo").html(append)
@@ -1995,7 +2041,7 @@ GA Asset
         // { orderable: false, targets: 0},
         { targets: 8, "visible": false}
       ],
-      order: [[8, 'asc']]
+      order: [[0, 'asc']]
       // "scrollX":true,
     });
     

@@ -45,7 +45,7 @@ class FollowUpCuti extends Command
                     ->join("tb_cuti_detail",'tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->select(DB::raw('MAX(date_off) as date_off'),'users.nik','tb_cuti.id_cuti','users.id_territory','users.id_division')
                     ->groupby('tb_cuti.id_cuti')
-                    ->where("status","n")
+                    ->where("tb_cuti.status","n")
                     ->having(DB::raw("DATEDIFF(now(), date_off)"), '=', '-3')
                     ->orhaving(DB::raw("DATEDIFF(now(), date_off)"), '=', '-1')
                     ->get();
