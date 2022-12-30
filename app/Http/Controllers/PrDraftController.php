@@ -1368,17 +1368,17 @@ class PrDraftController extends Controller
         if ($get_pr->type_of_letter == 'IPR') {
             // return $request->inputDocPendukung[0];
 
-            if ($get_pr->parent_id_drive == null) {
-                $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
-            } else {
-                $parentID = [];
-                $parent_id = explode('"', $get_pr->parent_id_drive)[1];
-                array_push($parentID,$parent_id);
-            }
+            // if ($get_pr->parent_id_drive == null) {
+            //     $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+            // } else {
+            //     $parentID = [];
+            //     $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+            //     array_push($parentID,$parent_id);
+            // }
 
-            $update_parent = PRDraft::where('id', $request['no_pr'])->first();
-            $update_parent->parent_id_drive = $parentID;
-            $update_parent->save();
+            // $update_parent = PRDraft::where('id', $request['no_pr'])->first();
+            // $update_parent->parent_id_drive = $parentID;
+            // $update_parent->save();
 
             if ($request->inputPenawaranHarga != '-') {
                 $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
@@ -1409,27 +1409,35 @@ class PrDraftController extends Controller
                         $pdf_name = 'pdf_lampiran';
                     }
 
-                    $data = PR::where('id_draft_pr', $request->no_pr)->first();
-                    if (empty($data)) {
-                        $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
-                                ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
-                                ->where("tb_pr_document.dokumen_name","=","Penawaran Harga")
-                                ->orderBy('tb_pr_document_draft.id','desc')
-                                ->first();
-                        if (!empty($data_dokumen)) {
-                            if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
-                                $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
-                                $pdf_name = explode('/', $pdf_name)[1];
+                    if ($get_pr->parent_id_drive == null) {
+                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+                    } else {
+                        $parentID = [];
+                        $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                        array_push($parentID,$parent_id);
+
+                        $data = PR::where('id_draft_pr', $request->no_pr)->first();
+                        if (empty($data)) {
+                            $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
+                                    ->join("tb_pr_document","tb_pr_document.id","tb_pr_document_draft.id_document")
+                                    ->where("tb_pr_document.dokumen_name","=","Penawaran Harga")
+                                    ->orderBy('tb_pr_document_draft.id','desc')
+                                    ->first();
+                            if (!empty($data_dokumen)) {
+                                if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                                    $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
+                                    $pdf_name = explode('/', $pdf_name)[1];
+                                } else {
+                                    $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
+                                }
+                            }
+                        } else{
+                            
+                            if (strpos($data->title, 'Revisi')) {
+                                $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
                             } else {
                                 $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
                             }
-                        }
-                    } else{
-                        
-                        if (strpos($data->title, 'Revisi')) {
-                            $pdf_name = explode(".",$pdf_name)[0] . "" . "(Revisi" . ((int)substr($data->title,strpos($data->title,"Revisi ") + 7,1)+1) . ")." . explode(".",$pdf_name)[1];
-                        } else {
-                            $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
                         }
                     }
 
@@ -1462,6 +1470,14 @@ class PrDraftController extends Controller
                         $pdf_name = 'pdf_lampiran';
                     }
 
+                    if ($get_pr->parent_id_drive == null) {
+                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+                    } else {
+                        $parentID = [];
+                        $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                        array_push($parentID,$parent_id);
+                    }
+
                     $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
 
                     $update->dokumen_location         = "draft_pr/".$pdf_name;
@@ -1474,8 +1490,14 @@ class PrDraftController extends Controller
                     $tambah_draft->added = Carbon::now()->toDateTimeString();
                     $tambah_draft->save();
                 }
+
+                $update_parent = PRDraft::where('id', $request['no_pr'])->first();
+                $update_parent->parent_id_drive = $parentID;
+                $update_parent->save();
                 
             }
+
+            $get_pr = PRDraft::select('type_of_letter', 'parent_id_drive')->where('id', $request['no_pr'])->first();
 
             $dataAll = json_decode($request->arrInputDocPendukung,true);
             foreach ($dataAll as $key => $data) {
@@ -1507,6 +1529,10 @@ class PrDraftController extends Controller
                         $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
                         $pdf_name = 'pdf_lampiran';
                     }
+
+                    $parentID = [];
+                    $parent_id = explode('"', $get_pr->parent_id_drive)[1];
+                    array_push($parentID,$parent_id);
 
                     $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
                     // $data = PR::where('id_draft_pr', $request->no_pr)->first();
