@@ -1323,7 +1323,7 @@
                   onclick = "cekByAdmin(0,"+ row.id +")"
                   title = "Verify"
                   btnClass = "btnCekDraft btn-primary"
-                  isDisabled = "disabled"
+                  isDisabled = ""
                   btnId = "btnCekDraft"
                 }else if (row.status == 'SAVED') {
                   btnClass = "btn-warning"
@@ -1427,6 +1427,10 @@
             })
           }
       })
+
+      if ("{{Auth::User()->id_territory}}" == 'TERRITORY 4') {
+        $("#addDraftPr").show()
+      }
     })
 
     function changeColumnTable(data){
@@ -5167,11 +5171,15 @@
                 }
             })
           }else{
-            if ($("#selectPid").val() == "") {
-              $("#selectPid").closest('.form-group').addClass('has-error')
-              $("#selectPid").closest('select').next('span').next("span").show(); 
-              $("#selectPid").prev('.col-md-6').css("background-color","red");
-            }else if ($("#selectLeadId").val() == "") {
+            if ($("#projectIdInputNew").is(":visible") == false) {
+              if ($("#selectPid").val() == "") {
+                $("#selectPid").closest('.form-group').addClass('has-error')
+                $("#selectPid").closest('select').next('span').next("span").show(); 
+                $("#selectPid").prev('.col-md-6').css("background-color","red");
+              }
+            }
+
+            if ($("#selectLeadId").val() == "") {
               $("#selectLeadId").closest('.form-group').addClass('has-error')
               $("#selectLeadId").closest('select').next('span').next("span").show(); 
               $("#selectLeadId").prev('.col-md-6').css("background-color","red");
@@ -7024,6 +7032,10 @@
     $('#makeId').click(function(){
       $('#project_idNew').show()
       $('#project_id').val("").select2().trigger("change")
+
+      $("#selectPid").closest('.form-group').removeClass('has-error')
+      $("#selectPid").closest('select').next('span').next("span").hide(); 
+      $("#selectPid").prev('.col-md-6').css("background-color","red");
     })
 
     $('#removeNewId').click(function(){
