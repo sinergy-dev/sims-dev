@@ -2281,9 +2281,9 @@ class HRGAController extends Controller
                     $update = User::where('nik',$data->nik)->first();
                     if ($data->status_karyawan == 'cuti') {
                         if ($data->date_of_entrys < 365) {
-                            $update->cuti = NULL;
+                            $update->cuti2 = NULL;
                         }else{
-                            $update->cuti = $request['set_cuti'];
+                            $update->cuti2 = $request['set_cuti'];
                         } 
                     }else{
                         $update->cuti = NULL;
@@ -2450,7 +2450,7 @@ class HRGAController extends Controller
             ->pluck('date_off');
 
         return collect([
-            "parameterCuti" => $getcuti[0],
+            "parameterCuti" => $getcuti,
             "allCutiDate" => $getAllCutiDate,
             "shiftingUser" => $getShifingUser
         ]);
