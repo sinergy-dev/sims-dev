@@ -983,7 +983,7 @@ class PrDraftController extends Controller
                     }
 
                     if ($get_pr->parent_id_drive == null) {
-                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR ' . date('Y'), $request->no_pr);
                     } else {
                         $parentID = [];
                         $parent_id = explode('"', $get_pr->parent_id_drive)[1];
@@ -1044,14 +1044,14 @@ class PrDraftController extends Controller
                         $pdf_name = 'pdf_lampiran';
                     }
 
-                    if ($get_pr->parent_id_drive == null) {
-                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
-                    } else {
+                    // if ($get_pr->parent_id_drive == null) {
+                    //     $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR ' . date('Y'), $request->no_pr);
+                    // } else {
                         $parentID = [];
                         $parent_id = explode('"', $get_pr->parent_id_drive)[1];
                         array_push($parentID,$parent_id);
                         $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
-                    }
+                    // }
 
                     $update_quote->dokumen_location         = "draft_pr/" . $pdf_name;
                     $update_quote->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
@@ -1410,7 +1410,7 @@ class PrDraftController extends Controller
                     }
 
                     if ($get_pr->parent_id_drive == null) {
-                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
+                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR ' . date('Y'), $request->no_pr);
                     } else {
                         $parentID = [];
                         $parent_id = explode('"', $get_pr->parent_id_drive)[1];
@@ -1470,13 +1470,13 @@ class PrDraftController extends Controller
                         $pdf_name = 'pdf_lampiran';
                     }
 
-                    if ($get_pr->parent_id_drive == null) {
-                        $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR', $request->no_pr);
-                    } else {
+                    // if ($get_pr->parent_id_drive == null) {
+                    //     $parentID = $this->googleDriveMakeFolder($request->no_pr . ' Draft PR ' . date('Y'), $request->no_pr);
+                    // } else {
                         $parentID = [];
                         $parent_id = explode('"', $get_pr->parent_id_drive)[1];
                         array_push($parentID,$parent_id);
-                    }
+                    // }
 
                     $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
 
@@ -2206,7 +2206,7 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')
                 // ->leftJoin('tb_pr_draft_verify', 'tb_pr_draft_verify.id_draft_pr', '=', 'tb_pr_draft.id')
                 ->join('tb_pr_activity', 'tb_pr_activity.id_draft_pr', '=', 'tb_pr_draft.id')
-                ->select('tb_pr_draft.to','tb_pr_draft.email', 'tb_pr_draft.phone', 'attention', 'title', 'tb_pr_draft.address', 'request_method', 'tb_pr_draft.created_at', 'lead_id', DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'term_payment','type_of_letter', 'users.name','tb_pr_draft.id', DB::raw("(CASE WHEN (fax is null) THEN '-' ELSE fax END) as fax"), 'pid', 'category','status_used', 'status_tax', 'isCommit', 'isRupiah')
+                ->select('tb_pr_draft.to','tb_pr_draft.email', 'tb_pr_draft.phone', 'attention', 'title', 'tb_pr_draft.address', 'request_method', 'tb_pr_draft.created_at', DB::raw("(CASE WHEN (lead_id = 'null') THEN '-' ELSE lead_id END) as lead_id"), DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'term_payment','type_of_letter', 'users.name','tb_pr_draft.id', DB::raw("(CASE WHEN (fax is null) THEN '-' ELSE fax END) as fax"), 'pid', 'category','status_used', 'status_tax', 'isCommit', 'isRupiah')
                 ->where('tb_pr_draft.id', $request->no_pr)
                 ->first();
 
@@ -2259,7 +2259,7 @@ class PrDraftController extends Controller
             ->leftJoinSub($getActivityComparing,'temp_tb_pr_activity',function($join){
                 $join->on("temp_tb_pr_activity.id_draft_pr","tb_pr_draft.id");
             })
-            ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'pid', 'tb_pr.category', 'status_draft_pr', 'tb_pr_draft.status', 'activity', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr_draft.isCommit', 'tb_pr.isRupiah')
+            ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', DB::raw("(CASE WHEN (`tb_pr`.`lead_id` = 'null') THEN '-' ELSE `tb_pr`.`lead_id` END) as lead_id"), DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'pid', 'tb_pr.category', 'status_draft_pr', 'tb_pr_draft.status', 'activity', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr_draft.isCommit', 'tb_pr.isRupiah')
             ->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
 
@@ -2674,7 +2674,7 @@ class PrDraftController extends Controller
     public function getPreviewPembanding(Request $request)
     {
 
-        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', 'lead_id', DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category', 'tb_pr_compare.status_tax')->where('tb_pr_compare.id', $request->no_pr)->first();
+        $data = DB::table('tb_pr_draft')->join('users', 'users.nik', '=', 'tb_pr_draft.issuance')->join('tb_pr_compare', 'tb_pr_compare.id_draft_pr', '=', 'tb_pr_draft.id')->select('tb_pr_compare.to', 'tb_pr_compare.email', 'tb_pr_compare.phone', 'tb_pr_compare.attention', 'tb_pr_compare.title', 'tb_pr_compare.address', 'request_method', 'tb_pr_compare.created_at', DB::raw("(CASE WHEN (lead_id = 'null') THEN '-' ELSE lead_id END) as lead_id"), DB::raw("(CASE WHEN (quote_number = 'null') THEN '-' ELSE quote_number END) as quote_number"), 'tb_pr_compare.term_payment','type_of_letter', 'users.name','tb_pr_compare.id', DB::raw("(CASE WHEN (tb_pr_compare.fax is null) THEN '-' ELSE tb_pr_compare.fax END) as fax"), 'pid', 'category', 'tb_pr_compare.status_tax')->where('tb_pr_compare.id', $request->no_pr)->first();
 
         $product = PrProduct::join('tb_pr_product_compare', 'tb_pr_product_compare.id_product', '=', 'tb_pr_product.id')
         		->join('tb_pr_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
@@ -3459,7 +3459,7 @@ class PrDraftController extends Controller
     }
 
     public function getEmailTemplate(Request $request){
-        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax', 'tb_pr.isRupiah', 'parent_id_drive')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+        $data = PR::join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', 'tb_pr.id_draft_pr')->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', DB::raw("(CASE WHEN (`tb_pr`.`lead_id` = 'null') THEN '-' ELSE `tb_pr`.`lead_id` END) as lead_id"), DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'amount', DB::raw('IF(`tb_pr`.`date` >= "2022-04-01", (`tb_pr`.`amount`*100)/111, (`tb_pr`.`amount`*10)/11) as `amount_pr_before_tax`'), DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'status_draft_pr', 'tb_pr.no_pr', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax` '), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid', 'tb_pr.status_tax', 'tb_pr.isRupiah', 'parent_id_drive')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
 
         if ($data->status_draft_pr == 'draft') {
             $product = PrProduct::join('tb_pr_product_draft', 'tb_pr_product_draft.id_product', '=', 'tb_pr_product.id')
@@ -3620,9 +3620,11 @@ class PrDraftController extends Controller
         $data = DB::table('tb_pr')->join('users', 'users.nik', '=', 'tb_pr.issuance')->join('tb_pr_draft', 'tb_pr_draft.id', '=', 'tb_pr.id_draft_pr')
                 ->join('tb_id_project', 'tb_id_project.id_project', '=', 'tb_pr.project_id', 'left')
                 ->join('tb_contact', 'tb_contact.customer_legal_name', '=', 'tb_id_project.customer_name', 'left')
-                ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', 'tb_pr.lead_id', DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr.isRupiah',
+                ->select('tb_pr.to', 'tb_pr.email', 'tb_pr.phone as phone_pr', 'tb_pr.attention', 'tb_pr.title', 'tb_pr.address', 'tb_pr.request_method', 'tb_pr.created_at', DB::raw("(CASE WHEN (`tb_pr`.`lead_id` = 'null') THEN '-' ELSE `tb_pr`.`lead_id` END) as lead_id"), DB::raw("(CASE WHEN (`tb_pr`.`quote_number` = 'null') THEN '-' ELSE `tb_pr`.`quote_number` END) as quote_number"), 'tb_pr.term_payment','tb_pr.type_of_letter', 'users.name','tb_pr.id_draft_pr', 'tb_pr.no_pr', 'tb_pr.status_tax', 'tb_pr.isRupiah',
                 DB::raw("(CASE WHEN (tb_pr.fax is null) THEN '-' ELSE tb_pr.fax END) as fax"), 'project_id', 'tb_pr.category', 'customer_name as to_customer', 'amount_idr as grand_total', 'name_project as subject', 'tb_pr.issuance', 'parent_id_drive', 'status_draft_pr',
                 DB::raw('IF(`tb_id_project`.`date` >= "2022-04-01", (`tb_id_project`.`amount_idr`*100)/111, (`tb_id_project`.`amount_idr`*10)/11) as `amount_idr_before_tax`'), 'street_address as address_customer', 'sales_name as from', 'tb_contact.phone', 'no_po_customer', 'city', 'province', 'postal', 'office_building', 'tb_id_project.created_at as tgl_pid', 'tb_id_project.date as date_pid')->where('tb_pr.id_draft_pr', $request->no_pr)->first();
+
+        // return $data->amount_idr_before_tax;
 
         $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'group')->where('user_id', $data->issuance)->first()->group;
