@@ -1318,7 +1318,12 @@ class TicketingController extends Controller
 		// Create new Spreadsheet object
 		$spreadsheet = new Spreadsheet();
 		$client = TicketingClient::find($req->client)->client_acronym;
-		$bulan = Carbon::createFromDate($req->year, $req->month + 1, 1)->format('M');
+		if (isset($req->month)) {
+			$bulan = Carbon::createFromDate($req->year, $req->month + 1, 1)->format('M');
+		} else {
+			$bulan = '';
+		}
+		
 
 		// return $client . "/" . $bulan . "/" . $req->year;
 		// return $bulan . "/" . $req->year;

@@ -215,10 +215,12 @@ class HRController extends Controller
                 ->join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
                 ->join('role_user','users.nik','=','role_user.user_id')
                 ->join('roles','role_user.role_id','=','roles.id')
-                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja','roles.name as roles','roles.group')
+                ->select('users.nik', 'users.name', 'users.id_position', 'users.id_division', 'users.id_territory', 'tb_company.code_company','users.email','users.date_of_entry','users.date_of_birth','users.address','users.phone','users.password','users.id_company','users.gambar','status_karyawan','users.no_ktp','users.no_kk','users.no_npwp','users.npwp_file','users.bpjs_kes','users.bpjs_ket','users.ktp_file','status_kerja','roles.name as roles','roles.group', DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'))
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','1')
+                // ->orderBy('users.date_of_entry', 'asc')
+                ->orderBy('date_of_entrys', 'desc')
                 // ->whereRaw("(`roles`.`name` != 'PMO Admin' AND `users`.`name` != 'Novia Chandra')")
                 ->get();
 
@@ -239,6 +241,7 @@ class HRController extends Controller
                 ->where('users.status_karyawan','!=','dummy')
                 ->where('users.email','!=','dev@sinergy.co.id')
                 ->where('tb_company.id_company','2')
+                ->orderBy('users.date_of_entry', 'asc')
                 ->get();
 
         $data_resign_msp = DB::table('users')
@@ -1749,7 +1752,11 @@ class HRController extends Controller
         $sheet->fromArray($headerContent,NULL,'A2');  
 
         $datas = User::join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
-                    ->select('nik', 'name', 'status_kerja', 'id_division', 'id_position', 'id_territory', 'date_of_entry', 'tempat_lahir', 'date_of_birth', 'jenis_kelamin', 'no_ktp', 'alamat_ktp', 'no_kk', 'no_npwp', 'bpjs_kes', 'bpjs_ket', 'pend_terakhir', 'email_pribadi', 'phone', 'email', 'name_ec', 'phone_ec', 'hubungan_ec')
+                    ->select('nik', 'name', 'status_kerja', 
+                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN '' WHEN (id_position = 'ENGINEER STAFF') THEN 'SID' WHEN (id_division = 'TECHNICAL PRESALES') THEN 'SOL' WHEN (id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE id_division END) as id_division"), 
+                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN 'DIRECTOR' WHEN (id_position = 'ENGINEER STAFF') THEN 'STAFF' WHEN (id_position = 'ENGINEER MANAGER') THEN 'MANAGER' ELSE id_position END) as id_position"),  
+                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN 'OPERATION' WHEN (id_territory = 'DPG') THEN 'OPERATION' WHEN (id_territory = 'PRESALES') THEN 'OPERATION' WHEN (id_territory = 'ACC') THEN 'FINANCE' WHEN (id_division = 'HR') THEN 'OPERATION' ELSE id_territory END) as id_territory"), 
+                    'date_of_entry', 'tempat_lahir', 'date_of_birth', 'jenis_kelamin', 'no_ktp', 'alamat_ktp', 'no_kk', 'no_npwp', 'bpjs_kes', 'bpjs_ket', 'pend_terakhir', 'email_pribadi', 'phone', 'email', 'name_ec', 'phone_ec', 'hubungan_ec')
                     // ->where('status_karyawan', 'cuti')
                     ->where('status_karyawan', '<>','dummy')
                     ->where('users.id_company', '1')

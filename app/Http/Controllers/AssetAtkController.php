@@ -480,6 +480,7 @@ class AssetAtkController extends Controller
             ->selectRaw('LEFT(`created_at`, 7) AS `month`')
             ->where('id_barang', $request->id_barang)
             ->groupBy('month')
+            ->whereYear('created_at', date('Y'))
             ->get();        
 
         return array("data"=>$summary);
@@ -492,6 +493,7 @@ class AssetAtkController extends Controller
             ->selectRaw('LEFT(`created_at`, 7) AS `month`')
             ->where('id_barang', $request->id_barang)
             ->groupBy('month')
+            ->whereYear('created_at', date('Y'))
             ->get();        
 
         return array("data"=>$summary);
@@ -509,7 +511,7 @@ class AssetAtkController extends Controller
 
     public function getMostRequest(Request $request)
     {
-        $getData = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select(DB::raw('SUM(qty_akhir) as qty'), 'name')->where('tb_asset_atk_transaction.id_barang', $request->id_barang)->where('tb_asset_atk_transaction.status', 'ACCEPT')->whereMonth('tb_asset_atk_transaction.updated_at', date('m'))->groupBy('nik_peminjam')->orderBy('qty', 'desc')->get();
+        $getData = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select(DB::raw('SUM(qty_akhir) as qty'), 'name')->where('tb_asset_atk_transaction.id_barang', $request->id_barang)->where('tb_asset_atk_transaction.status', 'ACCEPT')->whereMonth('tb_asset_atk_transaction.updated_at', date('m'))->whereYear('tb_asset_atk_transaction.updated_at', date('Y'))->groupBy('nik_peminjam')->orderBy('qty', 'asc')->get();
 
         return array("data"=>$getData);
     }

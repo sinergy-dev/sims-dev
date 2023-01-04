@@ -1323,7 +1323,11 @@
                   onclick = "cekByAdmin(0,"+ row.id +")"
                   title = "Verify"
                   btnClass = "btnCekDraft btn-primary"
-                  isDisabled = "disabled"
+                  if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+                    isDisabled = ""
+                  }else{
+                    isDisabled = "disabled"
+                  }
                   btnId = "btnCekDraft"
                 }else if (row.status == 'SAVED') {
                   btnClass = "btn-warning"
@@ -1427,6 +1431,10 @@
             })
           }
       })
+
+      if ("{{Auth::User()->id_territory}}" == 'TERRITORY 4') {
+        $("#addDraftPr").show()
+      }
     })
 
     function changeColumnTable(data){
@@ -2037,16 +2045,16 @@
             var valueVat = ""
 
             $('.grandTotalPreview').each(function() {
-                var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                 sum += temp;
             });
 
             // if (result.pr.status_tax == 'True') {
             //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-            //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+            //   tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * 11) / 100)
             // }else{
             //   tempVat = tempVat
-            //   tempGrand = parseInt(sum)
+            //   tempGrand = parseFloat(sum)
             // }
 
             if (result.pr.status_tax == false) {
@@ -2059,7 +2067,7 @@
 
               finalVat = tempVat
 
-              tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+              tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
               finalGrand = tempGrand
 
@@ -2972,16 +2980,16 @@
             var sum = 0
 
             $('.grandTotalPreviewFinalPage').each(function() {
-                var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                 sum += temp;
             });
 
             if (result.pr.status_tax == 'True') {
               tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-              tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+              tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * 11) / 100)
             }else{
               tempVat = tempVat
-              tempGrand = parseInt(sum)
+              tempGrand = parseFloat(sum)
             }
 
             finalVat = tempVat
@@ -3394,7 +3402,7 @@
 
             var sum = 0
             $('#grandTotalPreview').each(function() {
-                var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                 sum += temp;
             });
            
@@ -4093,14 +4101,14 @@
               var valueVat = ""
               // if (result.pr.status_tax == 'True') {
               //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-              //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+              //   tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * 11) / 100)
               // }else{
               //   tempVat = tempVat
-              //   tempGrand = parseInt(sum)
+              //   tempGrand = parseFloat(sum)
               // }
 
               $('.grandTotalCek').each(function() {
-                var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
                 sum += temp;
               });
 
@@ -4115,7 +4123,7 @@
 
                 finalVat = tempVat
 
-                tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+                tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
                 finalGrand = tempGrand
 
@@ -4218,10 +4226,10 @@
 
           // if (result.pr.status_tax == 'True') {
           //   tempVat = formatter.format((parseFloat(sum) * 11) / 100)
-          //   tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * 11) / 100)
+          //   tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * 11) / 100)
           // }else{
           //   tempVat = tempVat
-          //   tempGrand = parseInt(sum)
+          //   tempGrand = parseFloat(sum)
           // }
 
           if (result.pr.status_tax == false) {
@@ -4231,7 +4239,7 @@
           }
 
           $('.inputTotalPriceEditCek').each(function() {
-            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+            var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
             sum += temp;
           });
 
@@ -4447,7 +4455,7 @@
         $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
       }
       if (val == "qty_product") {
-        $("#inputTotalPrice").val(formatter.format(parseInt($("#inputQtyProduct").val()) * parseInt($("#inputPriceProduct").val().replace(/\,/g,''))))
+        $("#inputTotalPrice").val(formatter.format(parseFloat($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\,/g,''))))
         $("#inputQtyProduct").closest('.col-md-4').removeClass('has-error')
         $("#inputQtyProduct").closest('input').next('span').hide();
         $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
@@ -4461,7 +4469,7 @@
 
       if (val == "price_product") {
         formatter.format($("#inputPriceProduct").val())
-        $("#inputTotalPrice").val(formatter.format(parseInt($("#inputQtyProduct").val()) * parseInt($("#inputPriceProduct").val().replace(/\,/g,''))))
+        $("#inputTotalPrice").val(formatter.format(parseFloat($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\,/g,''))))
         $("#inputPriceProduct").closest('.col-md-4').removeClass('has-error')
         $("#inputPriceProduct").closest('input').closest('.input-group').next('span').hide();
         $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
@@ -4535,7 +4543,7 @@
       localStorage.setItem('status_tax',valueVat)
 
       $('.inputTotalPriceEdit').each(function() {
-          var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
           sum += temp;
       });
       $("#inputGrandTotalProduct").val(formatter.format(sum))
@@ -4545,7 +4553,7 @@
 
         finalVat = tempVat
 
-        tempGrand = parseInt(sum) +  parseInt((parseInt(sum) * parseFloat(valueVat)) / 100)
+        tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
         finalGrand = tempGrand
 
@@ -4627,7 +4635,7 @@
         }else if (valueEdit == false) {
           valueEdit = 'false'
         }else{
-          valueEdit = parseInt(valueEdit)
+          valueEdit = parseFloat(valueEdit)
         }
 
         //ini false kalau nilainya angka
@@ -5167,11 +5175,15 @@
                 }
             })
           }else{
-            if ($("#selectPid").val() == "") {
-              $("#selectPid").closest('.form-group').addClass('has-error')
-              $("#selectPid").closest('select').next('span').next("span").show(); 
-              $("#selectPid").prev('.col-md-6').css("background-color","red");
-            }else if ($("#selectLeadId").val() == "") {
+            if ($("#projectIdInputNew").is(":visible") == false) {
+              if ($("#selectPid").val() == "") {
+                $("#selectPid").closest('.form-group').addClass('has-error')
+                $("#selectPid").closest('select').next('span').next("span").show(); 
+                $("#selectPid").prev('.col-md-6').css("background-color","red");
+              }
+            }
+
+            if ($("#selectLeadId").val() == "") {
               $("#selectLeadId").closest('.form-group').addClass('has-error')
               $("#selectLeadId").closest('select').next('span').next("span").show(); 
               $("#selectLeadId").prev('.col-md-6').css("background-color","red");
@@ -5679,7 +5691,7 @@
 
           // var sum = 0
           // $('.inputTotalPriceEdit').each(function() {
-          //     var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+          //     var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
           //     sum += temp;
           // });
 
@@ -5691,7 +5703,7 @@
 
           // // finalVat = tempVat
 
-          // tempGrand = parseInt(sum)
+          // tempGrand = parseFloat(sum)
 
           // // finalGrand = tempGrand
 
@@ -5725,7 +5737,7 @@
         }else if (valueEdit == false) {
           valueEdit = 'false'
         }else{
-          valueEdit = parseInt(valueEdit)
+          valueEdit = parseFloat(valueEdit)
         }
         if (!isNaN(valueEdit)) {
           $(".tabGroupInitiateAdd").hide()
@@ -7024,6 +7036,10 @@
     $('#makeId').click(function(){
       $('#project_idNew').show()
       $('#project_id').val("").select2().trigger("change")
+
+      $("#selectPid").closest('.form-group').removeClass('has-error')
+      $("#selectPid").closest('select').next('span').next("span").hide(); 
+      $("#selectPid").prev('.col-md-6').css("background-color","red");
     })
 
     $('#removeNewId').click(function(){

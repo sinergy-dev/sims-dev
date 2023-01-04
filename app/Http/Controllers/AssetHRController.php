@@ -1331,7 +1331,7 @@ class AssetHRController extends Controller
         $sheet->getStyle('A1:I1')->applyFromArray($titleStyle);
         $sheet->setCellValue('A1','LAPORAN PENGGUNAAN ASET KANTOR');
         $sheet->setCellValue('B2','Bulan ' . $dateReport->format("F"));
-        $sheet->setCellValue('B3','Tahun ' . $request->year);
+        $sheet->setCellValue('B3','Tahun ' . date('Y'));
         $sheet->setCellValue('B4','Report Pada ' . date('Y-m-d'));
 
         $headerStyle = $normalStyle;

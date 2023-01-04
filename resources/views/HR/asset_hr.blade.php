@@ -100,7 +100,8 @@ GA Asset
               </li>
           <!--     <button class="btn btn-sm btn-primary pull-right" style="display: none;width: 120px;margin-left: 5px;" id="addEvents"><i class="fa fa-plus"></i>&nbsp Calendar event</button>  --> 
               <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
-              <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a>
+              <!-- <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a> -->
+              <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
               <!-- <button href="" id="btnImport" onclick="importData()" class="btn btn-warning btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button> -->
 
               <!-- <div class="box-body">
@@ -178,11 +179,11 @@ GA Asset
                           <td>                      
                             @if($data->status == "UNAVAILABLE")
                             <button class="btn btn-xs btn-default btn-pengembalian" value="{{$data->id_barang}}" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
-                            <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" disabled><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
+                            <button class="btn btn-xs btn-warning barang_asset_edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
                             <button class="btn btn-xs btn-danger btn-hapus" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
                             @elseif($data->status == "AVAILABLE")                      
                             <button class="btn btn-xs btn-success btn-peminjaman" onclick="pinjam('{{$data->id_barang}}','{{$data->nama_barang}}')" data-toggle="tooltip" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" title="Peminjaman" data-placement="bottom"><i class="fa fa-history"></i></button>
-                            <button class="btn btn-xs btn-warning" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
+                            <button class="btn btn-xs btn-warning barang_asset_edit" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" id="barang_asset_edit" value="{{$data->id_barang}}"><i class="fa fa-edit" data-toggle="tooltip" title="Edit Asset" data-placement="bottom"></i></button>
                             <button class="btn btn-xs btn-danger btn-hapus" onclick="hapus('{{$data->id_barang}}','{{$data->nama_barang}}')" style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Hapus" data-placement="bottom"><i class="fa fa-trash-o"></i></button>
                             @elseif($data->status == "PENDING" || $data->status == "RUSAK" || $data->status == "SERVICE")
                             <button class="btn btn-xs btn-default" disabled style="width:35px;height:30px;border-radius: 25px!important;outline: none;" data-toggle="tooltip" title="Pengembalian" data-placement="bottom"><i class="fa fa-history"></i></button>
@@ -1133,7 +1134,7 @@ GA Asset
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>  
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="{{asset('js/select2.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.min.js')}}"></script>
   <script type="text/javascript" src="{{asset('js/jquery.mask.js')}}"></script>
@@ -1291,6 +1292,13 @@ GA Asset
       $("#cat_pinjam_id").val($('#category_pinjam').select2('data')[0].text)
     })
 
+    var url = {!! json_encode(url('/')) !!}
+
+    function exportExcel() {
+      myUrl       = url+"/exportExcelAsset"
+      location.assign(myUrl)
+    }
+
     function initCategory(){
       var datas_kat = [];
       var datas_katPinjam = [];
@@ -1430,7 +1438,7 @@ GA Asset
 
     $('#tanggal_kembali').val(today);
 
-    $(document).on('click',"#barang_asset_edit",function(e) { 
+    $(document).on('click',".barang_asset_edit",function(e) { 
         $.ajax({
             type:"GET",
             url:"{{url('/getEditAsset')}}",

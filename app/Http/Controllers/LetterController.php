@@ -30,9 +30,9 @@ class LetterController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position; 
 
-        $pops = letter::select('no_letter')->where('status','A')->orderBy('created_at','desc')->first();
+        $pops = letter::select('no_letter')->where('status','A')->orderBy('no','desc')->first();
 
-        $pops2 = Letter::select('no_letter')->where('status', 'F')->orderBy('updated_at', 'desc')->first();
+        $pops2 = Letter::select('no_letter')->where('status', 'F')->orderBy('no', 'desc')->first();
 
         $tahun = date("Y");
 
