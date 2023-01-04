@@ -89,6 +89,7 @@ class ResetAwalTahun extends Command
             // $data->cuti2 = 12 - $total_cuti;
             // $update->cuti2 = $total_cuti;
             // $update->update();
+            $data->cuti  = $data->cuti2;
             $data->cuti2 = $total_cuti;
             syslog(LOG_ERR, "after reset cuti : " . $data->cuti);
             syslog(LOG_ERR, "after reset cuti2 : " . $data->cuti2);
