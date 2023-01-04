@@ -155,9 +155,9 @@ Leaving Permitte
               <i class="fa fa-file-pdf-o" style="margin-right: 5px"></i>Preview PDF
             </button>
           </a>  -->
-          <!-- <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
+          <button class="btn btn-sm bg-purple" id="btnSetCuti" style="margin-left: 10px; display: none;" data-toggle="modal" data-target="#setting_cuti">
             <i class="fa fa-wrench" style="margin-right: 5px"></i>Total Cuti
-          </button> -->
+          </button>
           <select class="btn btn-sm bg-blue pull-left" style="width: 70px; margin-right: 10px; display: none;" id="filter_com">
             <option value="all">All</option>
             <option value="1">SIP</option>
