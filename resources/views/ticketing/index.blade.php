@@ -6414,6 +6414,8 @@ Ticketing
 			moment.months().forEach(function(data,index){
 				if(index < moment().format('M')){
 					$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+				}else{
+					$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
 				}
 			})
 		}
@@ -6436,33 +6438,41 @@ Ticketing
 		}
 	})
 
-	$("#selectReportingClient, #selectReportingYear, #selectReportingMonth").change(function(){
+	$("#selectReportingClient, #selectReportingYear").change(function(){
+		$("#selectReportingMonth").empty()
+
 		if($("#selectReportingClient").val() !== "Select Client" && $("#selectReportingYear").val() !== "Select Year"  && $("#selectReportingMonth").val() !== "Select Month"){
 			console.log($("#selectReportingClient").val())
 			console.log($("#selectReportingYear").val())
 			console.log($("#selectReportingMonth").val())
+			$("#ReportingButtonGo").show()			
 
-			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month='
+
 			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
-			$("#ReportingButtonGo").show()
+
 		}
-		// if ($("#selectReportingYear").val() !== moment().format('YYYY') && $("#selectReportingYear").val() !== "Select Year"){
-		// 	console.log('true')
-		// 	$("#selectReportingMonth").empty()
-		// 	$("#selectReportingMonth").append("<option>Select Month</option>")
-		// 	moment.months().forEach(function(data,index){
-		// 		$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
-		// 	})
-		// } else if ($("#selectReportingYear").val() === moment().format('YYYY')){
-		// 	console.log('false')
-		// 	$("#selectReportingMonth").empty()
-		// 	$("#selectReportingMonth").append("<option>Select Month</option>")
-		// 	moment.months().forEach(function(data,index){
-		// 		if(index < moment().format('M')){
-		// 			$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
-		// 		}
-		// 	})
-		// }
+		if ($("#selectReportingYear").val() !== moment().format('YYYY') && $("#selectReportingYear").val() !== "Select Year"){
+			$("#selectReportingMonth").append("<option>Select Month</option>")
+			moment.months().forEach(function(data,index){
+				$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+			})
+		} else if ($("#selectReportingYear").val() === moment().format('YYYY')){
+			$("#selectReportingMonth").append("<option>Select Month</option>")
+			moment.months().forEach(function(data,index){
+				if(index < moment().format('M')){
+					$("#selectReportingMonth").append("<option value='" + index + "'>" + data + "</option>")
+				}
+			})
+		}
+
+		$("#selectReportingMonth").change(function(){
+			var urlAjax = '{{url("/ticketing/report/make")}}?client=' + $("#selectReportingClient").val() + '&year=' + $("#selectReportingYear").val() + '&month=' + $("#selectReportingMonth").val()
+
+			$("#ReportingButtonGo").attr('onclick',"getReport('" + urlAjax + "')")
+
+			$("#ReportingButtonGo").show()			
+		})
 	})
 
 	function getReport(urlAjax){
