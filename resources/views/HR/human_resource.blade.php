@@ -624,6 +624,8 @@ Human Resources
 		                      <th>Employees Name</th>
 		                      <th>Position</th>
 		                      <th>Mulai Bekerja</th>
+		                      <th hidden></th>
+		                      <th>Lama Bekerja</th>
 		                      <th>Status Karyawan</th>
 		                      <th>KTP</th>
 		                      <th>KK</th>
@@ -644,7 +646,17 @@ Human Resources
 			                      @else
 			                      <td>&#8212</td>
 			                      @endif
-			                      <td>{{date('d-m-Y', strtotime($data->date_of_entry))}}</td>
+			                      <td>{{date('Y-m-d', strtotime($data->date_of_entry))}}</td>
+			                      <td hidden>{{$data->date_of_entrys}}</td>
+			                      <td>
+			                      	@if($data->date_of_entrys > 365)
+			                      		Masa kerja : {{floor($data->date_of_entrys / 365)}} Tahun {{floor($data->date_of_entrys % 365 / 30)}} Bulan
+			                      	@elseif($data->date_of_entrys > 31)
+			                      		Masa kerja : {{floor($data->date_of_entrys / 30)}} Bulan
+			                      	@else
+			                      		Masa kerja : {{floor($data->date_of_entrys)}} Hari 
+			                      	@endif
+			                      </td>
 			                      <td>
 			                      	@if($data->status_kerja == 'Tetap')
 			                      	Karyawan Tetap 
@@ -1130,7 +1142,7 @@ Human Resources
 						                      @else
 						                      <td>&#8212</td>
 						                      @endif
-						                      <td>{{date('d-m-Y', strtotime($data->date_of_entry))}}</td>
+						                      <td>{{date('Y-m-d', strtotime($data->date_of_entry))}}</td>
 						                      <td>
 						                      	@if($data->status_kerja == 'Tetap')
 						                      	Karyawan Tetap 
@@ -3867,7 +3879,11 @@ Human Resources
     var table1 = $('#data_all').DataTable({
     	"lengthChange": false,
         "paging": true,
+        "order": [],
         sDom: 'lrtip',
+        "columnDefs": [
+	    	{ "orderData": [ 4 ], "targets": 5},
+	  	]
     });
 
   	var table2 = $('#data_all_msp').DataTable({
