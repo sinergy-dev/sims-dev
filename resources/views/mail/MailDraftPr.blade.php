@@ -214,7 +214,7 @@
 					<tr>
 						<th>Grand Total</th>
 						<th> : </th>
-						<td>Rp{{number_format($detail->nominal, 2, ',', '.')}}</td>
+						<td>Rp{{number_format($detail->nominal, 2, '.', ',')}}</td>
 					</tr>
 					@endif
 				</table>
