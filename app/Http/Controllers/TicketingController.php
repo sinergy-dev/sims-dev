@@ -1460,7 +1460,13 @@ class TicketingController extends Controller
 				->setCellValue('R4','OPEN BY');
 		}
 		
-		$value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year);
+		// $value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year);
+
+		if (isset($req->month)) {
+			$value1 = $this->getPerformanceByFinishTicket($client,$bulan . "/" . $req->year);
+		} else {
+			$value1 = $this->getPerformanceByFinishTicket($client,$req->year);
+		}
 		// return $value1;
 
 		if($client == "BTNI"){
@@ -1730,6 +1736,7 @@ class TicketingController extends Controller
 	}
 
 	public function getPerformanceByFinishTicket($acronym_client,$period){
+		// return $period;
 		$occurring_ticket = DB::table('ticketing__activity')
 			->select('id_ticket','activity')
 			->whereIn('id',function ($query) {
@@ -1743,7 +1750,8 @@ class TicketingController extends Controller
 			->get()
 			->pluck('id_ticket');
 
-		$residual_ticket_result = TicketingDetail::with([
+		if (preg_match("(/)", $period)) {
+			$residual_ticket_result = TicketingDetail::with([
 				'first_activity_ticket:id_ticket,date,operator',
 				'lastest_activity_ticket',
 				'id_detail:id_ticket,id',
@@ -1755,6 +1763,24 @@ class TicketingController extends Controller
 			->whereRaw("`id_ticket` LIKE '%/" . $acronym_client . "/" . $period . "'")
 			->orderBy('id','ASC')
 			->get();
+		} else {
+			$residual_ticket_result = TicketingDetail::with([
+				'first_activity_ticket:id_ticket,date,operator',
+				'lastest_activity_ticket',
+				'id_detail:id_ticket,id',
+				'resolve',
+				'absen_machine'
+			])
+			// ->whereNotIn('id_ticket',$occurring_ticket)
+			->whereIn('id_ticket',$occurring_ticket)
+			// ->whereRaw("`id_ticket` LIKE '%/" . $acronym_client . "/%'")
+			->where('id_ticket', 'like', '%' . $acronym_client . '%')
+			->where('id_ticket', 'like', '%' . $period . '%')
+			->orderBy('id','ASC')
+			->get();
+		}
+
+		
 
 		return $residual_ticket_result;
 	}

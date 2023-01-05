@@ -669,10 +669,7 @@
     }
   })  
 
-  var formatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
+  var formatter = new Intl.NumberFormat(['ban', 'id']);
 
   var accesable = @json($feature_item);
 
@@ -1727,11 +1724,11 @@
           valueVat = result.pr.status_tax
         }
         if (!isNaN(valueVat)) {
-          tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+          tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
           finalVat = tempVat
 
-          tempGrand = parseInt(sum) +  tempVat
+          tempGrand = Math.round(parseInt(sum) +  tempVat)
 
           finalGrand = tempGrand
 
@@ -2062,11 +2059,11 @@
           valueVat = result.pr.status_tax
         }
         if (!isNaN(valueVat)) {
-          tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+          tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
           finalVat = tempVat
 
-          tempGrand = parseInt(sum) +  tempVat
+          tempGrand = Math.round(parseInt(sum) +  tempVat)
 
           finalGrand = tempGrand
 
@@ -2434,11 +2431,11 @@
     });
 
     if (!isNaN(valueVat)) {
-      tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+      tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
       finalVat = tempVat
 
-      tempGrand = parseInt(sum) +  tempVat
+      tempGrand = Math.round(parseInt(sum) +  tempVat)
 
       finalGrand = tempGrand
 

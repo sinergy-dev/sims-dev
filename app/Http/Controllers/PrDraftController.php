@@ -1659,7 +1659,7 @@ class PrDraftController extends Controller
         if ($request->status_revision == 'revision') {
             $update = PRDraft::where('id', $request->no_pr)->first();
             $update->status = 'COMPARING';
-            $update->nominal = str_replace(',', '', $request['inputGrandTotalProduct']);
+            $update->nominal = str_replace('.', '', $request['inputGrandTotalProduct']);
             $update->save();
 
             $update_pr = PR::where('id_draft_pr', $request->no_pr)->first();
@@ -1668,7 +1668,7 @@ class PrDraftController extends Controller
             } else {
                 $update_pr->title = $update_pr->title . ' (Revisi 1)';
             }
-            $update_pr->amount = str_replace(',', '', $request['inputGrandTotalProduct']);
+            $update_pr->amount = str_replace('.', '', $request['inputGrandTotalProduct']);
             $update_pr->save();
 
             $activity = new PRActivity();
@@ -1704,7 +1704,7 @@ class PrDraftController extends Controller
 
         } else {
             $update = PRDraft::where('id', $request->no_pr)->first();
-            $update->nominal = str_replace(',', '', $request['inputGrandTotalProduct']);
+            $update->nominal = str_replace('.', '', $request['inputGrandTotalProduct']);
             if (strpos($update->title, 'Revisi')) {
                 $update->title = substr_replace($update->title,"(Revisi " . ((int)substr($update->title,strpos($update->title,"Revisi ") + 7,1)+1) . ")",strpos($update->title,"Revisi") - 1);
             } else {
