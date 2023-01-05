@@ -944,7 +944,9 @@
 @endsection
 @section('script')
   <script type="text/javascript">
-    $(".money").mask('000,000,000,000,000', {reverse: true})
+    $('.money').mask('#.##0,00', {reverse: true})
+
+    // $(".money").mask('000,000,000,000,000', {reverse: true})
 
     $(document).ready(function(){ 
       currentTab = 0     
@@ -1201,10 +1203,7 @@
       $("#" + item).show()
     })
 
-    var formatter = new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
+    var formatter = new Intl.NumberFormat(['ban', 'id']);
 
     function textAreaAdjust(element) {
       element.style.height = "1px";
@@ -2063,11 +2062,11 @@
               valueVat = result.pr.status_tax
             }
             if (!isNaN(valueVat)) {
-              tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+              tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
               finalVat = tempVat
 
-              tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)
+              tempGrand = Math.round((parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)))
 
               finalGrand = tempGrand
 
@@ -4119,11 +4118,11 @@
               }
               if (!isNaN(valueVat)) {
 
-                tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+                tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
                 finalVat = tempVat
 
-                tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)
+                tempGrand = Math.round(parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100))
 
                 finalGrand = tempGrand
 
@@ -4187,7 +4186,7 @@
               append = append + '</select>' 
               append = append + '</td>'
               append = append + '<td width="15%">'
-                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control" type="" name="" value="'+ formatter.format(value.nominal_product) +'">'
+                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control money" type="" name="" value="'+ formatter.format(value.nominal_product) +'">'
               append = append + '</td>'
               append = append + '<td width="15%">'
                 append = append + '<input id="inputTotalPriceEditCek" readonly data-value="" style="font-size: 12px;width:100px" class="form-control inputTotalPriceEditCek" type="" name="" value="'+ formatter.format(value.grand_total) +'">'
@@ -4245,7 +4244,7 @@
 
           if (!isNaN(valueVat)) {
 
-            tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+            tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
             finalVat = tempVat
 
@@ -4455,7 +4454,11 @@
         $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
       }
       if (val == "qty_product") {
-        $("#inputTotalPrice").val(formatter.format(parseFloat($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\,/g,''))))
+        if (localStorage.getItem('isRupiah') == 'true') {
+          $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+        }else{
+          $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+        }
         $("#inputQtyProduct").closest('.col-md-4').removeClass('has-error')
         $("#inputQtyProduct").closest('input').next('span').hide();
         $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
@@ -4468,8 +4471,12 @@
       }
 
       if (val == "price_product") {
-        formatter.format($("#inputPriceProduct").val())
-        $("#inputTotalPrice").val(formatter.format(parseFloat($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\,/g,''))))
+        // formatter.format($("#inputPriceProduct").val())
+        if (localStorage.getItem('isRupiah') == 'true') {
+          $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+        }else{
+          $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+        }
         $("#inputPriceProduct").closest('.col-md-4').removeClass('has-error')
         $("#inputPriceProduct").closest('input').closest('.input-group').next('span').hide();
         $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
@@ -4549,11 +4556,11 @@
       $("#inputGrandTotalProduct").val(formatter.format(sum))
 
       if (!isNaN(valueVat)) {
-        tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+        tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
         finalVat = tempVat
 
-        tempGrand = parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)
+        tempGrand = Math.round((parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)))
 
         finalGrand = tempGrand
 
@@ -4600,10 +4607,12 @@
         $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
         localStorage.setItem("isRupiah",false)
 
+        $(".money").mask('000.000.000.000.000', {reverse: true})
       }else{
         $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
         localStorage.setItem("isRupiah",true)
 
+        $('.money').mask('#.##0,00', {reverse: true})
       }
     }
 
@@ -4831,8 +4840,8 @@
                    inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
                    inputQtyProduct:$("#inputQtyProduct").val(),
                    selectTypeProduct:$("#selectTypeProduct").val(),
-                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''),
+                   inputTotalPrice:$("#inputTotalPrice").val().replace(/\./g,'').replace(',','.').replace(' ',''),
                    inputSerialNumber:$("#inputSerialNumber").val(),
                    inputPartNumber:$("#inputPartNumber").val(),
                    inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
@@ -4886,8 +4895,8 @@
                    selectTypeProduct:$("#selectTypeProduct").val(),
                    inputSerialNumber:$("#inputSerialNumber").val(),
                    inputPartNumber:$("#inputPartNumber").val(),
-                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''),
+                   inputTotalPrice:$("#inputTotalPrice").val().replace(/\./g,'').replace(',','.').replace(' ',''),
                    inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
                   },beforeSend:function(){
                     Swal.fire({
@@ -5565,7 +5574,7 @@
               append = append + '</select>' 
               append = append + '</td>'
               append = append + '<td width="15%">'
-                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
+                append = append + '<input id="inputPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control money" type="" name="" value="'+ formatter.format(item.nominal_product) +'">'
               append = append + '</td>'
               append = append + '<td width="15%">'
                 append = append + '<input id="inputTotalPriceEdit" readonly data-value="" style="font-size: 12px;width:100px" class="form-control inputTotalPriceEdit" type="" name="" value="'+ formatter.format(item.grand_total) +'">'
@@ -5946,8 +5955,8 @@
                    inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
                    inputQtyProduct:$("#inputQtyProduct").val(),
                    selectTypeProduct:$("#selectTypeProduct").val(),
-                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''),
+                   inputTotalPrice:$("#inputTotalPrice").val().replace(/\./g,'').replace(',','.').replace(' ',''),
                    inputSerialNumber:$("#inputSerialNumber").val(),
                    inputPartNumber:$("#inputPartNumber").val(),
                    inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
@@ -6003,8 +6012,8 @@
                    inputPartNumber:$("#inputPartNumber").val(),
                    inputQtyProduct:$("#inputQtyProduct").val(),
                    selectTypeProduct:$("#selectTypeProduct").val(),
-                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                   inputTotalPrice:$("#inputTotalPrice").val(),
+                   inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''),
+                   inputTotalPrice:$("#inputTotalPrice").val().replace(/\./g,'').replace(',','.').replace(' ',''),
                    inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
                   },
                   beforeSend:function(){
@@ -6822,8 +6831,8 @@
            inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
            inputQtyProduct:$("#inputQtyProduct").val(),
            selectTypeProduct:$("#selectTypeProduct").val(),
-           inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-           inputTotalPrice:$("#inputTotalPrice").val(),
+           inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''),
+           inputTotalPrice:$("#inputTotalPrice").val().replace(/\./g,'').replace(',','.').replace(' ',''),
            inputSerialNumber:$("#inputSerialNumber").val(),
            inputPartNumber:$("#inputPartNumber").val(),
            inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
