@@ -1272,11 +1272,11 @@ class PrDraftController extends Controller
 
             // return gettype($request->arrInputDocPendukung);
             $dataAll = json_decode($request->arrInputDocPendukung,true);
-            // return $dataAll;
+            // return count($dataAll);
             foreach ($dataAll as $key => $data) {
                 // if (in_array("", $request->inputDocPendukung)) {
                 if($request->inputDocPendukung[0] != '-'){
-                    // return "abc";
+                    // return $request->inputDocPendukung[0];
                     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG', 'pdf', 'PDF'];
                     $file                   = $request->file('inputDocPendukung')[$key];
                     $fileName               = $file->getClientOriginalName();
@@ -1306,6 +1306,7 @@ class PrDraftController extends Controller
                     $parent_id = explode('"', $get_pr->parent_id_drive)[1];
                     array_push($parentID,$parent_id);
 
+                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
                     // $data = PR::where('id_draft_pr', $request->no_pr)->first();
                     // if (empty($data)) {
                     //     $data_dokumen =  PRDocumentDraft::where('id_draft_pr', $request->no_pr)
@@ -1314,11 +1315,15 @@ class PrDraftController extends Controller
                     //         ->orderBy('tb_pr_document_draft.id','desc')
                     //         ->first();
 
+                    //     // return $data_dokumen;
+
                     //     if (!empty($data_dokumen)) {
                     //         if (strpos($data_dokumen->dokumen_location, 'Revisi')) {
+                    //             // return 'disini1';
                     //             $pdf_name = explode("(",$data_dokumen->dokumen_location)[0] . "" . "(Revisi_" . ((int)substr($data_dokumen->dokumen_location,strpos($data_dokumen->dokumen_location,"Revisi")+ 7,1)+1) . ")." . explode(".",$data_dokumen->dokumen_location)[1];
                     //             $pdf_name = explode('/', $pdf_name)[1];
                     //         } else {
+                    //             // return 'disini2';
                     //             $pdf_name = explode(".",$pdf_name)[0] . "_" . "(Revisi_1)." . explode(".",$pdf_name)[1];
                     //         }
                     //     }
@@ -1330,11 +1335,12 @@ class PrDraftController extends Controller
                     //     }
                     // }
 
-                    $pdf_name = explode(".",$pdf_name)[0] . "." . explode(".",$pdf_name)[1];
-
                     $tambah_dok->dokumen_location         = "draft_pr/".$pdf_name;
-                    $tambah_dok->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
                     $tambah_dok->save();
+
+                    $update_link = PrDokumen::where('id', $tambah_dok->id)->first();
+                    $update_link->link_drive = $this->googleDriveUploadCustom($pdf_name,$directory . $pdf_name,$parentID);
+                    $update_link->save();
 
                     $tambah_dok_draft = new PRDocumentDraft();
                     $tambah_dok_draft->id_draft_pr = $request['no_pr'];
