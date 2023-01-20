@@ -2644,7 +2644,7 @@ class PrDraftController extends Controller
     {
         // return $request['inputGrandTotalProduct'];
         $update = PRCompare::where('id', $request->no_pr)->first();
-        $update->nominal = str_replace(',', '', $request['inputGrandTotalProduct']);
+        $update->nominal = str_replace('.', '', $request['inputGrandTotalProduct']);
         $update->save();
     }
 
