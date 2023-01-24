@@ -5322,8 +5322,8 @@
                     }
                   }
                   
+                  arrInputDocPendukungEPR = []
                   if($("#tableDocPendukung_epr .trDocPendukung").length > 0){
-                      arrInputDocPendukungEPR = []
                       if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
 
                         $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
