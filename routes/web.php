@@ -484,6 +484,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/profile/delete_pict','HRController@delete_pict');
 	Route::get('/hu_rec/get_hu','HRController@getdatahu');
 	Route::get('/exportExcelEmployee', 'HRController@exportExcelEmployee');
+	Route::get('/exportExcelResignEmployee', 'HRController@exportExcelResignEmployee');
 	Route::get('/guideLine','HRController@GuideLineIndex');
 	Route::get('/storeGuide','HRController@storeGuideLine');
 	Route::get('/updateGuide','HRController@updateGuideLine');
