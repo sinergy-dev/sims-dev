@@ -91,6 +91,48 @@ Human Resources
 	    .select2{
 		    width: 100%!important;
 		}
+
+		.dropbtn {
+	      background-color: #f0ad4e;
+	      color: white;
+	      padding: 5px;
+	      font-size: 13px;
+	      width: 120px;
+	      border: none;
+	    }
+
+	    /* The container <div> - needed to position the dropdown content */
+	    .dropdown {
+	      position: relative;
+	      display: inline-block;
+	    }
+
+	    /* Dropdown Content (Hidden by Default) */
+	    .dropdown-content {
+	      display: none;
+	      position: absolute;
+	      background-color: #f1f1f1;
+	      min-width: 120px;
+	      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	      z-index: 1;
+	    }
+
+	    /* Links inside the dropdown */
+	    .dropdown-content a {
+	      color: black;
+	      padding: 12px 16px;
+	      text-decoration: none;
+	      display: block;
+	    }
+
+	    /* Change color of dropdown links on hover */
+	    .dropdown-content a:hover {background-color: #ddd;}
+
+	    /* Show the dropdown menu on hover */
+	    .dropdown:hover .dropdown-content {display: block;}
+
+	    /* Change the background color of the dropdown button when the dropdown content is shown */
+	    .dropdown:hover .dropbtn {background-color: #f0ad4e;}
 	</style>
 @endsection
 @section('content')
@@ -563,7 +605,12 @@ Human Resources
 		      <div class="row">
 		      	<div class="col-md-12">
 		      		<div class="pull-right" style="margin-right:10px">
-		      			<a href="{{action('HRController@exportExcelEmployee')}}"><button class="btn btn-sm btn-warning" style=" margin-bottom: 5px;" id="btnExport"><i class="fa fa-print"></i> EXCEL </button></a>
+		      			<!-- <a href="{{action('HRController@exportExcelEmployee')}}"><button class="btn btn-sm btn-warning" style=" margin-bottom: 5px;" id="btnExport"><i class="fa fa-print"></i> EXCEL </button></a> -->
+		      			<button class="btnExport btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown" id="btnExport" aria-haspopup="true" aria-expanded="false" style=" margin-bottom: 5px;"><i class="fa fa-print"> </i>&nbspExcel<span class="caret"></span></button>
+			            <ul class="dropdown-menu">
+						    <li><a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}">All</a></li>
+						    <li><a class="dropdown-item" href="{{action('HRController@exportExcelResignEmployee')}}">Resign</a></li>
+						</ul>
 			        	<button class="btn btn-sm btn-primary" onclick="showTabAdd(0)" style="margin-bottom: 5px"><i class="fa fa-plus"></i>&nbsp Employee</button>
 		      		</div>			        
 			    </div>
