@@ -1871,4 +1871,12 @@ class PresenceController extends Controller
             } 
         }
     }
+
+    public function addProject(Request $request)
+    {
+        $store = new PresenceShiftingProject();
+        $store->project_name = $request->name;
+        $store->project_location = $request->location;
+        $store->save();
+    }
 }
