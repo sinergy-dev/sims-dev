@@ -552,7 +552,7 @@ class PresenceController extends Controller
             ->first()
             ->presence_setting;
 
-        if (PresenceShiftingUser::where('nik',$req->nik)->exists()){
+        if (PresenceShiftingUser::join('presence__shifting','presence__shifting.nik','presence__shifting_user.nik')->where('presence__shifting_user.nik',$req->nik)->where('tanggal_shift',date('Y-m-d'))->exists()){
             $setting_schedule = $this->makeShiftingSchedule($req->nik,"15");
         }
 
@@ -581,7 +581,7 @@ class PresenceController extends Controller
             ->first()
             ->presence_setting;
 
-        if (PresenceShiftingUser::where('nik',$req->nik)->exists()){
+        if (PresenceShiftingUser::join('presence__shifting','presence__shifting.nik','presence__shifting_user.nik')->where('presence__shifting_user.nik',$req->nik)->where('tanggal_shift',date('Y-m-d'))->exists()){
             $setting_schedule = $this->makeShiftingSchedule($req->nik,"15");
         }
 
@@ -642,7 +642,7 @@ class PresenceController extends Controller
     }
 
     public function shiftingGetProject(){
-        return PresenceShiftingProject::orderBy('id','DESC')->get();
+        return PresenceShiftingProject::orderBy('id','DESC')->where('project_name','!=','PASPAMPRES')->get();
     }
 
     public function shiftingGetOption(){
