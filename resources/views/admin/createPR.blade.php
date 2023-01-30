@@ -1326,7 +1326,6 @@
                     isDisabled = ""
                     onclick = "cekByAdmin(0,"+ row.id +")"
                   }else{
-                    console.log("aku sales")
                     isDisabled = "disabled"
                   }
                   btnId = "btnCekDraft"
@@ -1388,7 +1387,6 @@
                 if (title == 'Detail') {
                   return "<td><a href="+ onclick +" class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
                 }else {
-                  console.log(isDisabled)
                   return "<td><a onclick='"+ onclick +"' "+isDisabled+" class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
                 }
                                     
@@ -1664,7 +1662,6 @@
 
       if (!tempStatus || !tempType ) {
         localStorage.setItem('isTemp',true)
-        console.log('tru nih')
       }
 
       return localStorage.setItem("arrFilter", temp) 
@@ -1674,7 +1671,6 @@
       localStorage.setItem('isTemp',false)
       if (localStorage.getItem('isTemp') === 'true') {
         // var returnArray = searchCustom()
-        console.log("okee")
         // localStorage.setItem("arrFilter", returnArray);
       }
       localStorage.setItem('isTemp',false)
@@ -1688,13 +1684,10 @@
 
         $.each(arr,function(item,value){
           if(value.indexOf("status") != -1){
-              console.log(value.split("=")[1])
               arrStatus.push(value.split("=")[1])
-              
           }
 
           if(value.indexOf("type") != -1){
-              console.log(value.split("=")[1])
               arrType.push(value.split("=")[1])
           }
         })
