@@ -1319,12 +1319,14 @@
                 let value = ""
 
                 if (row.status == 'DRAFT') {
-                  onclick = "cekByAdmin(0,"+ row.id +")"
+                  onClick = ""
                   title = "Verify"
                   btnClass = "btnCekDraft btn-primary"
                   if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                     isDisabled = ""
+                    onclick = "cekByAdmin(0,"+ row.id +")"
                   }else{
+                    console.log("aku sales")
                     isDisabled = "disabled"
                   }
                   btnId = "btnCekDraft"
@@ -1386,7 +1388,8 @@
                 if (title == 'Detail') {
                   return "<td><a href="+ onclick +" class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
                 }else {
-                  return "<td><a onclick='"+ onclick +"' class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
+                  console.log(isDisabled)
+                  return "<td><a onclick='"+ onclick +"' "+isDisabled+" class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
                 }
                                     
               },
