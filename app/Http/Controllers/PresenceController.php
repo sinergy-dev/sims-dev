@@ -687,7 +687,7 @@ class PresenceController extends Controller
             ->orderBy('start','DESC')
             ->get()
             ->map(function($data){
-                if(!in_array($data->className,["Libur","Pagi","Sore","Malam","HO","Helpdesk"])){
+                if(!in_array($data->className,["Libur","Pagi","Sore","Malam","HO","Helpdesk","On-Site","Off-Site"])){
                     $data->className = "Custom";
                 }
                 return $data;
@@ -786,7 +786,7 @@ class PresenceController extends Controller
             ->orderBy('start','DESC')
             ->get()
             ->map(function($data){
-                if(!in_array($data->className,["Libur","Pagi","Sore","Malam","HO","Helpdesk"])){
+                if(!in_array($data->className,["Libur","Pagi","Sore","Malam","HO","Helpdesk","On-Site","Off-Site"])){
                     $data->className = "Custom";
                 }
                 return $data;
@@ -1332,6 +1332,7 @@ class PresenceController extends Controller
         $client = new Client();
         // $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
         $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
 
@@ -1878,5 +1879,35 @@ class PresenceController extends Controller
         $store->project_name = $request->name;
         $store->project_location = $request->location;
         $store->save();
+
+        $add_option = new PresenceShiftingOption();
+        $add_option->name_option = 'Pagi';
+        $add_option->start_shifting = '07:00';
+        $add_option->end_shifting = '15:00';
+        $add_option->class_shifting = 'red';
+        $add_option->id_project = $store->id;
+        $add_option->id_project = 'NON-ACTIVE';
+        $add_option->save();
+
+
+        $add_option2 = new PresenceShiftingOption();
+        $add_option2->name_option = 'Sore';
+        $add_option2->start_shifting = '14:00';
+        $add_option2->end_shifting = '22:00';
+        $add_option2->class_shifting = 'yellow';
+        $add_option2->id_project = $store->id;
+        $add_option2->id_project = 'NON-ACTIVE';
+        $add_option2->save();
+
+
+        $add_option3 = new PresenceShiftingOption();
+        $add_option3->name_option = 'Libur';
+        $add_option3->start_shifting = '00:00';
+        $add_option3->end_shifting = '23:59';
+        $add_option3->class_shifting = 'green';
+        $add_option3->id_project = $store->id;
+        $add_option3->id_project = 'NON-ACTIVE';
+        $add_option3->save();
+
     }
 }
