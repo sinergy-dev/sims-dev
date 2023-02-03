@@ -1,0 +1,169 @@
+﻿id_barang;nama_barang;code_name;serial_number;status;tgl_tambah;merk;type;description;kategori;lokasi
+90;Webcam;090/OFC/SIP/I/2015;;UNAVAILABLE ;2015-01-28;;Office;Webcam Prolink PIC1007WP;6;Gedung (Total 4)
+91;Printer;091/OFC/SIP/I/2015;;UNAVAILABLE ;2015-01-29;;Office;Printer Fuji Laser Xerox Docuprint 305D;6;Gedung (Total 2)
+92;Projector;092/OFC/SIP/I/2015;;UNAVAILABLE ;2015-01-30;;Office;Projector ;6;Gedung
+93;Electric;093/OFC/SIP/I/2015;;UNAVAILABLE ;2015-01-31;;Office;Electric Lock & Adpator (ruang server);6;Gedung
+94;Projector;094/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-01;;Office;Epson Projector EB 1776W;6;Gedung
+95;Scanner;095/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-02;;Office;Brother Scanner ADS1100W;6;Gedung
+96;Telepon;096/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-03;;Office;Telepon Panasonic Wireless Hitam;6;Gedung (Total 3)
+97;Telepon;097/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-04;;Office;Telepon Digital Putih;6;Gedung (Total 3)
+98;Shelves;098/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-05;;Office;Dramer 4 Shelves  (Brankas);6;Gedung
+99;Projector;099/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-06;;Office;LG- Projector PB60G;6;Gedung
+100;Locker;100/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-07;;Office;Locker 6 door;6;Gedung
+101;AC;101/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-08;;Office;AC Daikin 2pk;6;Gedung
+102;Dispenser;102/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-09;;Office;Dispenser Denpoo;6;Gedung
+103;Fingerspot;103/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-10;;Office;Fingerspot (Mesin absen di ruko);6;Gedung
+104;Wifi Radio;104/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-11;;Office;Wifi Radio;6;Gedung
+105;Locker;105/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-12;;Office;Locker 6 door;6;Gedung
+106;Printer;106/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-13;;Office;Printer & Scan di ruko;6;Gedung
+107;Dispenser;107/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-14;;Office;Stand Water Dispenser;6;Gedung
+108;DTS;108/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-15;;Office;DTS 20 KVA;6;Gedung
+109;Printer;109/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-16;;Office;Printer HP 8620;6;Gedung
+110;Pompa Air;110/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-17;;Office;Pompa Air;6;Gedung
+111;Indoor Dome Camera;111/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-18;;Office;Indoor Dome Camera & Adaptor;6;Gedung (Total 3)
+112;PABX Panasonic;112/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-19;;Office;PABX Panasonic;6;Gedung
+113;Almari;113/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-20;;Office;Lemari Besi;6;Gedung
+114;Foldable Platform;114/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-21;;Office;Foldable Platform Handtruck (Trolly);6;Gedung
+115;Telepon;115/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-22;;Office;Telepon Wireless_GA;6;Gedung
+116;Air Cooler;116/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-23;;Office;Air Cooler_blok F;6;Gedung
+117;Printer;117/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-24;;Office;Printer HP_GA;6;Gedung
+118;Almari;118/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-25;;Office;Skype Almari Arsip;6;Gedung (Total 2)
+119;Dispenser;119/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-26;;Office;Denpoo Dispenser;6;Gedung
+120;Printer;120/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-27;;Office;Printer Canon_Pak Rony;6;Gedung
+121;Telepon;121/OFC/SIP/II/2015;;UNAVAILABLE ;2015-02-28;;Office;Panasonic Single Line Telephone;6;Gedung
+122;Telepon;122/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-01;;Office;Telephone Wireless Panasonic;6;Gedung
+123;Papan Tulis;123/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-02;;Office;White board ;6;Gedung
+124;Shredder;124/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-03;;Office;Kozure Shredder;6;Gedung
+125;Telepon;125/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-04;;Office;Telepon untuk ruko;6;Gedung
+126;Printer;126/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-05;;Office;HP Deksjet Ultra 429_Printer Suci;6;Gedung
+127;Scanner;127/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-06;;Office;Fujitsu Scan Partner;6;Gedung
+128;TP Link;128/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-07;;Office;TP Link TL 150S;6;Gedung (Total 5)
+129;Printer;129/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-08;;Office;Printer HP M177FW_Finance ;6;Gedung
+130;AC;130/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-09;;Office;AC Daikin 1/2 PK Standard Thailand;6;Gedung
+131;Domain Cisco;131/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-10;;Office;"802.11ac CAP,3x3:2SS;Int Ant, F Reg Domain";6;Gedung (Total 5)
+132;Mesin Cuci;132/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-11;;Office;Mesin Cuci Sharp Front Load;6;Gedung
+133;Printer;133/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-12;;Office;Printer HP M177FW;6;Gedung
+134;Printer;134/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-13;;Office;Printer HP Deskjet 2135 ;6;Gedung
+135;AC;135/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-14;;Office;AC Daikin 2 PK;6;Gedung
+136;NVR;136/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-15;;Office;NVR DS-7608NI-K2/8P, CCTV Hikvision, HDD;6;Gedung
+137;Printer;137/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-16;;Office;Printer HP 4729;6;Gedung
+138;Printer;138/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-17;;Office;Printer HP LaserJet Pro M402n;6;Gedung
+139;Printer;139/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-18;;Office;Printer HP OfficeJet Pro 8720;6;Gedung
+140;Printer;140/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-19;;Office;Printer HP 4729;6;Gedung
+141;Handphone;141/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-20;;Office;HP Nokia 105 Black;6;Gedung
+142;Printer;142/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-21;;Office;Printer HP OfficeJet Pro 8720 All In One;6;Gedung
+143;Printer;143/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-22;;Office;Printer HP OfficeJet Pro 8720 All In One;6;Gedung
+144;Printer;144/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-23;;Office;Printer LaserJet Pro 400 Color M45;6;Gedung
+145;Fingerprint;145/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-24;;Office;Neo A-152NC Plus+Electric Bolt;6;Gedung
+146;TV;146/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-25;;Office;Bracket LED TV Standing ;6;Gedung
+147;TV;147/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-26;;Office;"LED TV Sharp 50"" LC LE275X";6;Gedung
+148;IP Phone;148/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-27;;Office;X4 - IP Phone;6;Gedung
+149;IP Phone;149/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-28;;Office;X3s - IP Phone;6;Gedung (Total 3)
+150;HT;150/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-29;;Office;HT 101;6;Gedung (Total 28)
+151;Speaker;151/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-30;;Office;Speaker Behringer (For Project Suci);6;Gedung (Total 3)
+152;Docuprint;152/OFC/SIP/III/2015;;UNAVAILABLE ;2015-03-31;;Office;Fuji Xerox Docuprint (for TTNI);6;Gedung
+153;Epson;153/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-01;;Office;Epson Printer LQ 2190 (For TTNI);6;Gedung
+154;Printer;154/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-02;;Office;HP Printer 8730 ( For Anne);6;Gedung
+155;Printer;155/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-03;;Office;HP OfficeJet Pro 8720 (For TTNI/Yuni);6;Gedung
+156;Printer;156/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-04;;Office;HP OfficeJet Pro 8720 (For PMO/Angger);6;Gedung
+157;IP Phone;157/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-05;;Office;IP Phone Newrock NRP 2000W (Nabil + R.Operator);6;Gedung (Total 2)
+158;Printer;158/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-06;;Office;Printer HP Officejet Pro 8720 (utk ruang HRD);6;Gedung
+159;AC;159/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-07;;Office;AC Daikin 2PK (Ruangan Technical di Inlingua);6;Gedung
+160;Printer;160/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-08;;Office;Printer Triza HP 8720;6;Gedung
+161;Printer;161/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-09;;Office;Printer HP 8720 for Admin Sales (Evira dan Feliyana);6;Gedung
+162;AC;162/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-10;;Office;AC Split Daikin 2 PK Malay (Ruang Baru PMO);6;Gedung
+163;Dispenser;163/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-11;;Office;Dispenser Cosmos CWD 5601;6;Gedung (Total 2)
+164;AC;164/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-12;;Office;AC Daikin 2PK utk Ruangan Finance;6;Gedung
+165;Polisher;165/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-13;;Office;Polisher Viper;6;Gedung
+166;AC;166/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-14;;Office;AC Daikin 1.5 PK untuk Ruang MSM;6;Gedung
+167;Printer;167/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-15;;Office;Printer Canon Multifunction (Ci Anne);6;Gedung
+168;Printer;168/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-16;;Office;Printer Canon Fixma E410 (Divisi Finance);6;Gedung
+169;Printer;169/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-17;;Office;Printer Canon Fixma E410 (Divisi Warehouse);6;Gedung
+170;Printer;170/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-18;;Office;HP Officejet Pro 8710 All-in-One Printer (Ruang Finance);6;Gedung
+171;Printer;171/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-19;;Office;HP Officejet Pro 8710 All-in-One Printer (Tim Admin Sales Ruko);6;Gedung
+172;Bracket;172/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-20;;Office;Bracket Standing TV 65 Inch (R. Meeting Kecil);6;Gedung
+173;Bracket;173/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-21;;Office;Bracket Standing TV 65 Inch (R. Meeting & R. Engineer Ruko);6;Gedung
+174;Dispenser;174/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-22;;Office;Dispenser Denpoo untuk Ruang Engineer Ruko;6;Gedung
+175;Printer;175/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-23;;Office;HP Officejet 200 Mobile Printer CZ993A (Divisi Sales);6;Gedung
+176;Printer;176/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-24;;Office;HP Officejet 200 Mobile Printer CZ993A (M. Harianto);6;Gedung
+177;Kulkas;177/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-25;;Office;Kulkas Sharp Ruko;6;Gedung
+178;Printer;178/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-26;;Office;HP Officejet 200 Mobile Printer CZ993A (Divisi MSM);6;Gedung (Total 2)
+179;Handphone;179/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-27;;Office;Handphone Xiaomi Redmi 10C 4/64 GB (Helpdesk);6;Gedung
+180;Printer;180/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-28;;Office;HP Officejet Pro 8710 Printer (Finance);6;Gedung
+181;Logitech;181/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-29;;Office;Logitech BCC950 Conference Webcam (Tim MSM);6;Gedung
+182;Dispenser;182/OFC/SIP/IV/2015;;UNAVAILABLE ;2015-04-30;;Office;Dispenser Denpoo Aquazone Filter (Pak Rony);6;Gedung
+183;Hand Pallet;183/OFC/SIP/V/2015;;UNAVAILABLE ;2015-05-01;;Office;Hand Pallet Truck J (Warehouse);6;Gedung
+184;Staff Desk;184/FNT/SIP/III/2015;;UNAVAILABLE ;2015-03-05;;Furniture;Malca Staff Desk;7;Gedung (Total 3)
+185;Staff Chair;185/FNT/SIP/III/2015;;UNAVAILABLE ;2015-03-05;;Furniture;Livorno Staff Chair Black;7;Gedung (Total 10)
+186;Monaco;186/FNT/SIP/III/2015;;UNAVAILABLE ;2015-03-24;;Furniture;Monaco Desk;7;Gedung
+187;Staff Desk;187/FNT/SIP/III/2015;;UNAVAILABLE ;2015-03-24;;Furniture;Malca Staff Desk;7;Gedung (Total 2)
+188;Kursi;188/FNT/SIP/V/2015;;UNAVAILABLE ;2015-05-04;;Furniture;Winston Swivel Chair Black;7;Gedung
+189;Almari;189/FNT/SIP/V/2015;;UNAVAILABLE ;2015-05-06;;Furniture;Paprika Base Cabinet (lemari pantry);7;Gedung
+190;Coffe Table;190/FNT/SIP/V/2015;;UNAVAILABLE ;2015-05-22;;Furniture;Coffe Table Beige;7;Gedung
+191;Bunkbed;191/FNT/SIP/VI/2015;;UNAVAILABLE ;2015-06-22;;Furniture;Harold Bunkbed & Howel Cabinet;7;Gedung (Total 3)
+192;Bunkbed;192/FNT/SIP/VI/2015;;UNAVAILABLE ;2015-06-23;;Furniture;Harold Bunkbed & Howel Cabinet;7;Gedung (Total 3)
+193;Kursi;193/FNT/SIP/VII/2015;;UNAVAILABLE ;2015-07-13;;Furniture;Wizard Multipurpose Chair Black;7;Gedung (Total 8)
+194;Meja;194/FNT/SIP/III/2016;;UNAVAILABLE ;2016-03-30;;Furniture;Sieben Table (untuk di ruko);7;Gedung (Total 2)
+195;Kursi;195/FNT/SIP/X/2016;;UNAVAILABLE ;2016-10-27;;Furniture;Kursi Savello Vergo Gto;7;Gedung (Total 14)
+196;Kursi;196/FNT/SIP/X/2016;;UNAVAILABLE ;2016-10-27;;Furniture;Kursi Savello Vergo Ht1;7;Gedung
+197;Meja;197/FNT/SIP/X/2016;;UNAVAILABLE ;2016-10-27;;Furniture;Meja Manager GBL 04;7;Gedung (Total 2)
+198;Almari;198/FNT/SIP/X/2016;;UNAVAILABLE ;2016-10-27;;Furniture;Lemari file MTB 3182;7;Gedung
+199;Almari;199/FNT/SIP/X/2016;;UNAVAILABLE ;2016-10-27;;Furniture;Lemari file MTB 3090;7;Gedung
+200;Meja;200/FNT/SIP/XI/2016;;UNAVAILABLE ;2016-11-09;;Furniture;Malca Staff Desk_Meja Suci;7;Gedung
+201;Kursi;201/FNT/SIP/XI/2016;;UNAVAILABLE ;2016-11-09;;Furniture;Livorno Satff Chair Black_Suci;7;Gedung
+202;Meja;202/FNT/SIP/XII/2016;;UNAVAILABLE ;2016-12-06;;Furniture;Meja Kony KN-410;7;Gedung
+203;Meja;203/FNT/SIP/XII/2016;;UNAVAILABLE ;2016-12-06;;Furniture;Meja Kony KN-430;7;Gedung
+204;Meja;204/FNT/SIP/II/2017;;UNAVAILABLE ;2017-02-03;;Furniture;Malca Staff Desk (GA);7;Gedung
+205;shelves;205/FNT/SIP/II/2017;;UNAVAILABLE ;2017-02-06;;Furniture;Drawer 4 shelves (HRD);7;Gedung
+206;London;206/FNT/SIP/III/2017;;UNAVAILABLE ;2017-03-06;;Furniture;London Satff Chair black (FA & Warehouse);7;Gedung (Total 3)
+207;Meja;207/FNT/SIP/III/2017;;UNAVAILABLE ;2017-03-06;;Furniture;Malca Staff Desk (FA & Warehouse);7;Gedung (Total 3)
+208;Meja;208/FNT/SIP/III/2017;;UNAVAILABLE ;2017-03-10;;Furniture;Meja samping accouning;7;Gedung
+209;Lemari;209/FNT/SIP/XII/2017;;UNAVAILABLE ;2017-12-11;;Furniture;Lemari Odner;7;Gedung
+210;Meja;210/FNT/SIP/XII/2017;;UNAVAILABLE ;2017-12-15;;Furniture;Meja and Kursi Finance;7;Gedung
+211;Lemari;211/FNT/SIP/IV/2018;;UNAVAILABLE ;2018-04-24;;Furniture;Lemari Morgan Book Case utk Finance ;7;Gedung
+212;Shelving;212/FNT/SIP/VI/2018;;UNAVAILABLE ;2018-06-05;;Furniture;Shelving Steel 5 Tier (2 utk finance, 1 utk tim Nabil, 1 utk tim Denny);7;Gedung (Total 4)
+213;Kursi;213/FNT/SIP/VII/2018;;UNAVAILABLE ;2018-07-05;;Furniture;Kursi Savello warna Ungu (4 utk utk tim Nabil & 15 utk tim Denny);7;Gedung (Total 19)
+214;Desktop;214/FNT/SIP/VII/2018;;UNAVAILABLE ;2018-07-25;;Furniture;Desktop + Leg + Beam Sieben Rect MTG 2412 CO (2 utk MSM, 1 Technical SIP);7;Gedung (Total 3)
+215;Board;215/FNT/SIP/VII/2018;;UNAVAILABLE ;2018-07-25;;Furniture;Board + Leg Standing White 150 x 90 cm (1 utk Technical Ruko, 1 utk Technical Gedung, 1 utk PM, 1 MSM);7;Gedung (Total 4)
+216;Filling;216/FNT/SIP/VII/2018;;UNAVAILABLE ;2018-07-23;;Furniture;Filling Cabinet 4 Drwr White w/Lock Bar (utk finance - Anne );7;Gedung
+217;Bookcase;217/FNT/SIP/VII/2018;;UNAVAILABLE ;2018-07-24;;Furniture;Skyla Bookcase White (utk finance);7;Gedung (Total 2)
+218;Bookcase;218/FNT/SIP/X/2018;;UNAVAILABLE ;2018-10-10;;Furniture;Core Bookcase 218 (utk finance);7;Gedung (Total 2)
+219;Locker;219/FNT/SIP/VI/2019;;UNAVAILABLE ;2019-06-23;;Furniture;Left Side Locker 9DRS D54 WHT-GRN (Ruang Baru PMO);7;Gedung
+220;Locker;220/FNT/SIP/VI/2019;;UNAVAILABLE ;2019-06-23;;Furniture;RHT Side Locker 9DRS D54 WHT-GRN (Ruang Baru PMO);7;Gedung
+221;Almari;221/FNT/SIP/VI/2019;;UNAVAILABLE ;2019-06-23;;Furniture;Body Disegno High BKCase Oak (Ruang Baru PMO);7;Gedung
+222;Almari;222/FNT/SIP/VI/2019;;UNAVAILABLE ;2019-06-23;;Furniture;Shelf Disegno High BkCase Oak (Ruang Baru PMO);7;Gedung
+223;Almari;223/FNT/SIP/VII/2019;;UNAVAILABLE ;2019-07-07;;Furniture;Body Disegno High BKCase Oak (Ruang Baru PMO);7;Gedung
+224;Almari;224/FNT/SIP/VII/2019;;UNAVAILABLE ;2019-07-07;;Furniture;Shelf Disegno High BkCase Oak (Ruang Baru PMO);7;Gedung
+225;Meja;225/FNT/SIP/II/2020;;UNAVAILABLE ;2020-02-28;;Furniture;Sieben Rect Meeting Table (Untuk Ruko);7;Gedung
+226;Kursi;226/FNT/SIP/II/2020;;UNAVAILABLE ;2020-02-28;;Furniture;Livorno Staff Chair Black (Untuk Ruko);7;Gedung (Total 8)
+227;Kursi;227/FNT/SIP/I/2021;;UNAVAILABLE ;2021-01-29;;Furniture;Kursi Jaring Midway (Ruang Meeting kecil);7;Gedung (Total 6)
+228;Meja;228/FNT/SIP/III/2021;;UNAVAILABLE ;2021-03-10;;Furniture;Meja Meeting Uno New Modern 240 cm (Ruang Meeting Kecil);7;Gedung
+229;Laci;229/FNT/SIP/IV/2021;;UNAVAILABLE ;2021-04-28;;Furniture;Krisbow Laci Kantor 4 Tingkat uk 26 x 62 x 133cm- Biru;7;Gedung
+230;Sofa;230/FNT/SIP/X/2021;;UNAVAILABLE ;2021-10-25;;Furniture;Berwick Corner Sofa Black utk Ruang Pak Rony;7;Gedung
+231;Coffe Table;231/FNT/SIP/X/2021;;UNAVAILABLE ;2021-10-25;;Furniture;Tinma Coffee Table utk Ruang Pak Rony;7;Gedung
+232;Sofa;232/FNT/SIP/XI/2021;;UNAVAILABLE ;2021-11-01;;Furniture;Berwick Corner Sofa Black utk Ruang Pak Rony;7;Gedung
+233;Kursi;233/FNT/SIP/IV/2022;;UNAVAILABLE ;2022-04-19;;Furniture;Kursi Kerja Kantor Jaring Midway AA;7;Gedung
+234;Meja;234/FNT/SIP/VI/2022;;UNAVAILABLE ;2022-06-08;;Furniture;Sieben 2 Meeting Table - utk Endraw Denny & Team;7;Gedung (Total 12)
+235;Metal Rack;235/FNT/SIP/X/2022;;UNAVAILABLE ;2022-10-16;;Furniture;Libie Metal Rack - Ruangan Pak Rony;7;Gedung
+236;Kursi;236/FNT/SIP/X/2022;;UNAVAILABLE ;2022-10-16;;Furniture;Council Working Chair High - Ruangan Pak Rony;7;Gedung (Total 2)
+237;Kursi;237/FNT/SIP/X/2022;;UNAVAILABLE ;2022-10-16;;Furniture;President 9103 DIR Chairbrown - Ruangan Pak Rony;7;Gedung (Total 2)
+238;Mobility;238/NWD/SIP/VI/2015;;UNAVAILABLE ;2015-06-10;;Network Device;Mobility Express Bundle;8;Gedung
+239;Cisco;239/NWD/SIP/VIII/2015;;UNAVAILABLE ;2015-08-18;;Network Device;Cisco Modul (Pirantech);8;Gedung (Total 2)
+240;Catalyst;240/NWD/SIP/XI/2016;;UNAVAILABLE ;2016-11-04;;Network Device;Catalyst WS-C3750G;8;Gedung
+241;Cisco;241/NWD/SIP/XI/2016;;UNAVAILABLE ;2016-11-04;;Network Device;Cisco Catalyst WS-C3560E;8;Gedung (Total 2)
+242;Catalyst;242/NWD/SIP/XI/2016;;UNAVAILABLE ;2016-11-04;;Network Device;Catalyst WS-C2960g;8;Gedung (Total 2)
+243;HW;243/NWD/SIP/XI/2016;;UNAVAILABLE ;2016-11-14;;Network Device;IEC 4650 HW Client;8;Gedung (Total 2)
+244;IEP;244/NWD/SIP/XI/2016;;UNAVAILABLE ;2016-11-14;;Network Device;IEP 4600 Software;8;Gedung (Total 2)
+245;Cisco;245/NWD/SIP/II/2017;;UNAVAILABLE ;2017-02-22;;Network Device;Cisco DMP-4400DG-52-K9;8;Gedung
+246;Cisco;246/NWD/SIP/III/2017;;UNAVAILABLE ;2017-03-06;;Network Device;Cisco DMP-4400DG-52-K9;8;Gedung
+247;Cisco;247/NWD/SIP/III/2017;;UNAVAILABLE ;2017-03-29;;Network Device;Cisco ISR 4321 + 4 Port Layer 2 GE;8;Gedung (Total 6)
+248;Cisco;248/NWD/SIP/V/2017;;UNAVAILABLE ;2017-05-03;;Network Device;Cisco 4400G DMP-4400G-52-K9;8;Gedung
+249;IP;249/NWD/SIP/I/2018;;UNAVAILABLE ;2018-01-25;;Network Device;Cisco IP Phone 8845;8;Gedung (Total 3)
+250;NVR;250/NWD/SIP/VII/2020;;UNAVAILABLE ;2020-07-17;;Network Device;NVR Hyperflex;8;Gedung
+251;Palo;251/NWD/SIP/XI/2022;;UNAVAILABLE ;2022-11-21;;Network Device;Palo Alto Networks PA-450 NFR Unit;8;Gedung (Total 2)
+252;50W;252/NWD/SIP/XI/2022;;UNAVAILABLE ;2022-11-21;;Network Device;50W AC Power Adapter for PA-440, PA-450 and PA-460;8;Gedung (Total 2)
+253;Palo;253/NWD/SIP/XI/2022;;UNAVAILABLE ;2022-11-21;;Network Device;Palo Alto Networks PA-460 NFR Unit;8;Gedung (Total 2)
+254;50W;254/NWD/SIP/XI/2022;;UNAVAILABLE ;2022-11-21;;Network Device;50W AC Power Adapter for PA-440, PA-450 and PA-460;8;Gedung (Total 2)
+255;Wiseasy;255/NWD/SIP/XI/2022;;UNAVAILABLE ;2022-11-25;;Network Device;Wiseasy P5;8;Gedung (Total 2)
+256;Wiseasy;256/NWD/SIP/XI/2022;;UNAVAILABLE ;2022-11-25;;Network Device;Wiseasy BOT 3;8;Gedung (Total 2)
+257;NUC;257/NWD/SIP/XII/2022;;UNAVAILABLE ;2022-12-13;;Network Device;NUC Equipment;8;Gedung
