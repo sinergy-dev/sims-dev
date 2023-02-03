@@ -3584,6 +3584,14 @@ Human Resources
               	$.each(result[0], function(key, value){
 	              append = append + "<option>" + value.name_position + "</option>";
 	            });
+            } else if (result[1] == 'SID') {
+             //  	$.each(result[0], function(key, value){
+	            //   append = append + "<option>" + value.name_position + "</option>";
+	            // });
+	            append = append + "<option value='MANAGER'> MANAGER </option>";
+            	append = append + "<option value='ENGINEER SPV'> ENGINEER SPV </option>";
+            	append = append + "<option value='ENGINEER CO-SPV'> ENGINEER CO-SPV </option>";
+            	append = append + "<option value='ENGINEER STAFF'> ENGINEER STAFF </option>";
             } else if (result[1] == 'DIR') {
               	$.each(result[0], function(key, value){
 	              append = append + "<option>" + value.name_position + "</option>";
@@ -4267,12 +4275,17 @@ Human Resources
             // append = append + "<option value='SERVICE PROJECT(HEAD)'>" + "SERVICE PROJECT (HEAD)" + "</option>";
             //append = append + "<option value='SERVICE PROJECT(STAFF)'>" + "SERVICE PROJECT (STAFF)" + "</option>";
             append = append + "<option value='SUPPORT ENGINEER'>" + "SUPPORT ENGINEER" + "</option>";
+            append = append + "<option value='SUPPORT ENGINEER SPV'>" + " SUPPORT ENGINEER SPV" + "</option>";
+            append = append + "<option value='SUPPORT ENGINEER CO-SPV'>" + " SUPPORT ENGINEER CO-SPV" + "</option>";
+            append = append + "<option value='HELP DESK SPV'>" + "HELP DESK SPV" + "</option>";
             append = append + "<option value='HELP DESK'>" + "HELP DESK" + "</option>";
             append = append + "<option value='CALL SO'>" + "CALL SO" + "</option>";
 
     	}else if (id.value == 'PMO') {
     		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+            append = append + "<option value='PM SPV'>" + "PM SPV" + "</option>";
             append = append + "<option value='PM'>" + "PM" + "</option>";
+    		append = append + "<option value='SERVICE PROJECT SPV'>" + "SERVICE PROJECT SPV" + "</option>"
     		append = append + "<option value='SERVICE PROJECT'>" + "SERVICE PROJECT" + "</option>"
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
 
@@ -4285,6 +4298,14 @@ Human Resources
             append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
             append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
             append = append + "<option value='PROCUREMENT'>" + "PROCUREMENT" + "</option>";
+            append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+
+        } else if (id.value == 'SID'){
+        
+            append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+            append = append + "<option value='ENGINEER SPV'>" + "ENGINEER SPV" + "</option>";
+            append = append + "<option value='ENGINEER CO-SPV'>" + "ENGINEER CO-SPV" + "</option>";
+            append = append + "<option value='ENGINEER STAFF'>" + " ENGINEER STAFF" + "</option>";
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
 
         }else{

@@ -449,19 +449,19 @@ class HRController extends Controller
             if($request['id_sub_division_operation'] == 'PMO'){
                 $tambah->id_division = 'PMO';
                 $tambah->id_territory = 'OPERATION';
-                if ($request['pos_operation'] == 'SERVICE PROJECT') {
-                    $tambah->id_position = 'SERVICE PROJECT(STAFF)';
-                } else {
+                // if ($request['pos_operation'] == 'SERVICE PROJECT') {
+                //     $tambah->id_position = 'SERVICE PROJECT';
+                // } else {
                     $tambah->id_position = $request['pos_operation'];
-                }
+                // }
             } elseif($request['id_sub_division_operation'] == 'MSM'){
                 $tambah->id_division = 'MSM';
                 $tambah->id_territory = 'OPERATION';
-                if ($request['pos_operation'] == 'SUPPORT ENGINEER') {
-                    $tambah->id_position = 'SUPPORT ENGINEER(STAFF)';
-                } else {
+                // if ($request['pos_operation'] == 'SUPPORT ENGINEER') {
+                //     $tambah->id_position = 'SUPPORT ENGINEER';
+                // } else {
                     $tambah->id_position = $request['pos_operation'];
-                }
+                // }
             } elseif($request['id_sub_division_operation'] == 'SOL'){
                 $tambah->id_division = 'TECHNICAL PRESALES';
                 $tambah->id_territory = 'PRESALES';
@@ -471,7 +471,11 @@ class HRController extends Controller
                 $tambah->id_territory = 'DPG';
                 if($request['pos_operation'] == 'MANAGER'){
                     $tambah->id_position = 'ENGINEER MANAGER';  
-                } elseif($request['pos_operation'] == 'STAFF'){
+                } elseif($request['pos_operation'] == 'ENGINEER SPV'){
+                    $tambah->id_position = 'ENGINEER SPV';
+                }elseif($request['pos_operation'] == 'ENGINEER CO-SPV'){
+                    $tambah->id_position = 'ENGINEER CO-SPV';
+                }elseif($request['pos_operation'] == 'ENGINEER STAFF'){
                     $tambah->id_position = 'ENGINEER STAFF';
                 }
             } elseif($request['id_sub_division_operation'] == 'BCD') {
@@ -862,7 +866,11 @@ class HRController extends Controller
                     $update->id_territory = 'DPG';
                     if($request['posisi_update'] == 'MANAGER'){
                         $update->id_position = 'ENGINEER MANAGER';  
-                    } elseif($request['posisi_update'] == 'STAFF'){
+                    } elseif($request['posisi_update'] == 'ENGINEER SPV'){
+                        $update->id_position = 'ENGINEER SPV';
+                    }elseif($request['posisi_update'] == 'ENGINEER CO-SPV'){
+                        $update->id_position = 'ENGINEER CO-SPV';
+                    }elseif($request['posisi_update'] == 'ENGINEER STAFF'){
                         $update->id_position = 'ENGINEER STAFF';
                     }
                 } elseif($request['sub_divisi_update'] == 'BCD') {
@@ -1582,7 +1590,9 @@ class HRController extends Controller
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
-                ->orWhere('id_position','STAFF')
+                ->orWhere('id_position','ENGINEER STAFF SPV')
+                ->orWhere('id_position','ENGINEER STAFF CO-SPV')
+                ->orWhere('id_position','ENGINEER STAFF')
                 ->get(),$request->id_assign);
         } else if ($request->id_assign == 'PRESALES') {
             return array(DB::table('tb_position')
@@ -1634,9 +1644,12 @@ class HRController extends Controller
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
+                ->orWhere('id_position','SUPPORT ENGINEER SPV')
+                ->orWhere('id_position','SUPPORT ENGINEER CO-SPV')
+                ->orWhere('id_position','SUPPORT ENGINEER')
+                ->orWhere('id_position','HELP DESK SPV')
                 ->orWhere('id_position','HELP DESK')
                 ->orWhere('id_position','CALL SO')
-                ->orWhere('id_position','SUPPORT ENGINEER')
                 ->orWhere('id_position','ADMIN')
                 ->get(),$request->id_assign);
         } else if ($request->id_assign == 'BCD') {
@@ -1651,9 +1664,11 @@ class HRController extends Controller
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
+                ->orWhere('id_position','SERVICE PROJECT SPV')
                 ->orWhere('id_position','SERVICE PROJECT')
-                ->orWhere('id_position','ADMIN')
+                ->orWhere('id_position','PM SPV')
                 ->orWhere('id_position','PM')
+                ->orWhere('id_position','ADMIN')
                 ->get(),$request->id_assign);
         }else if ($request->id_assign == 'DIR') {
             return array(DB::table('tb_position')
@@ -1711,7 +1726,15 @@ class HRController extends Controller
                 ->select('name_position')
                 ->orWhere('id_position','PM')
                 ->get(),$request->id_assign);
-        } else {
+        } else if($request->id_assign=='SID'){
+            return array(DB::table('tb_position')
+                ->select('name_position')
+                ->where('id_position','MANAGER')
+                ->orWhere('id_position','ENGINEER SPV')
+                ->orWhere('id_position','ENGINEER CO-SPV')
+                ->orWhere('id_position','ENGINEER STAFF')
+                ->get(),$request->id_assign);
+        }else {
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
