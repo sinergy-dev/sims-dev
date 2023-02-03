@@ -102,7 +102,7 @@ GA Asset
               <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
               <!-- <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a> -->
               <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-              <!-- <button href="" id="btnImport" onclick="importData()" class="btn btn-warning btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button> -->
+              <button href="" id="btnImport" onclick="importData()" class="btn btn-warning btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button>
 
               <!-- <div class="box-body">
                 <form action="{{ url('import') }}" method="POST" enctype="multipart/form-data">
@@ -1450,6 +1450,7 @@ GA Asset
               $('#nama_barang_asset_edit').val(result[0].nama_barang);
               $('#asset_sn_edit').val(result[0].serial_number);
               $('#keterangan_edit').val(result[0].description);
+              $('#lokasi_edit').val(result[0].lokasi);
               $("#select-status").val(result[0].status).trigger("change");  
               // $('#select-status').select2().val(result[0].status)
             },
