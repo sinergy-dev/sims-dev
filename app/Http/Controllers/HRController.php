@@ -334,7 +334,9 @@ class HRController extends Controller
         return array(DB::table('users')
                 ->join('role_user','users.nik','=','role_user.user_id', 'left')
                 ->join('roles','role_user.role_id','=','roles.id', 'left')
-                ->select('nik','users.name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete','roles.name as roles','roles.group', 'role_id')
+                ->select('nik','users.name','email','date_of_entry','date_of_birth','address','phone','password',
+                    DB::raw("(CASE WHEN (id_division = 'WAREHOUSE') THEN 'HUMAN RESOURCE' ELSE id_division END) as id_division"),
+                    'id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete','roles.name as roles','roles.group', 'role_id')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
