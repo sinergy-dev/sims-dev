@@ -2822,26 +2822,35 @@ Human Resources
 				   if (!localStorage.getItem("name_update") == true) {
 	               	$("#name_update").val(value.name);
 				   	localStorage.setItem("name_update", $("#name_update").val())
+				   }else{
+				   	localStorage.setItem("name_update", $("#name_update").val())
 				   }
-				   console.log(value.name)
 
 				   if (!localStorage.getItem("email_update") == true) {
 	               	$("#email_update").val(value.email);
+				   	localStorage.setItem("email_update", $("#email_update").val())
+				   }else{
 				   	localStorage.setItem("email_update", $("#email_update").val())
 				   }
 
 				   if (!localStorage.getItem("date_of_entry_update") == true) {
 	               	$("#date_of_entry_update").val(value.date_of_entry).prop("readonly",true);
 				   	localStorage.setItem("date_of_entry_update", $("#date_of_entry_update").val())
+				   }else{
+				   	localStorage.setItem("date_of_entry_update", $("#date_of_entry_update").val())
 				   }
 
 				   if (!localStorage.getItem("date_of_birth_update") == true) {
 	               	$("#date_of_birth_update").val(value.date_of_birth).prop("readonly",true);
 				   	localStorage.setItem("date_of_birth_update", $("#date_of_birth_update").val())
+				   }else{
+				   	localStorage.setItem("date_of_birth_update", $("#date_of_birth_update").val())
 				   }
 
 				   if (!localStorage.getItem("akhir_kontrak_update") == true) {
 	               	$("#akhir_kontrak_update").val(value.akhir_kontrak);
+				   	localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
+				   }else{
 				   	localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
 				   }
 
@@ -2853,65 +2862,91 @@ Human Resources
 				   if (!localStorage.getItem("phone_number_update") == true) {
 	               	$("#phone_number_update").val(value.phone);
 				   	localStorage.setItem("phone_number_update", $("#phone_number_update").val())
+				   }else{
+				   	localStorage.setItem("phone_number_update", $("#phone_number_update").val())
 				   }
 
 				   if (!localStorage.getItem("no_ktp_update") == true) {
 	               	$("#no_ktp_update").val(value.no_ktp);
+				   	localStorage.setItem("no_ktp_update", $("#no_ktp_update").val())
+				   }else{
 				   	localStorage.setItem("no_ktp_update", $("#no_ktp_update").val())
 				   }
 
 				   if (!localStorage.getItem("no_kk_update") == true) {
 	               	$("#no_kk_update").val(value.no_kk);
 				   	localStorage.setItem("no_kk_update", $("#no_kk_update").val())
+				   }else{
+				   	localStorage.setItem("no_kk_update", $("#no_kk_update").val())
 				   }
 
 				   if (!localStorage.getItem("no_npwp_update") == true) {
 	               	$("#no_npwp_update").val(value.no_npwp);
+				   	localStorage.setItem("no_npwp_update", $("#no_npwp_update").val())
+				   }else{
 				   	localStorage.setItem("no_npwp_update", $("#no_npwp_update").val())
 				   }
 
 				   if (!localStorage.getItem("tempat_lahir_update") == true) {
 	               	$("#tempat_lahir_update").val(value.tempat_lahir);
 				   	localStorage.setItem("tempat_lahir_update", $("#tempat_lahir_update").val())
+				   }else{
+				   	localStorage.setItem("tempat_lahir_update", $("#tempat_lahir_update").val())
 				   }
 
 				   if (!localStorage.getItem("email_personal_update") == true) {
 	               	$("#email_personal_update").val(value.email_pribadi);
+				   	localStorage.setItem("email_personal_update", $("#email_personal_update").val())
+				   }else{
 				   	localStorage.setItem("email_personal_update", $("#email_personal_update").val())
 				   }
 
 				   if (!localStorage.getItem("bpjs_ket_update") == true) {
 	               	$("#bpjs_ket_update").val(value.bpjs_ket);
 				   	localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
+				   }else{
+				   	localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
 				   }
 
 				   if (!localStorage.getItem("bpjs_kes_update") == true) {
 	               	$("#bpjs_kes_update").val(value.bpjs_kes);
+				   	localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
+				   }else{
 				   	localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
 				   }
 
 				   if (!localStorage.getItem("address_ktp_update") == true) {
 	               	$("#address_ktp_update").val(value.alamat_ktp);
 				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
+				   }else{
+				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
 				   }
 
 				   if (!localStorage.getItem("pend_terakhir_update") == true) {
 	               	$("#pend_terakhir_update").val(value.pend_terakhir);
+				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
+				   }else{
 				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
 				   }
 
 				   if (!localStorage.getItem("name_ec_update") == true) {
 	               	$("#name_ec_update").val(value.name_ec);
 				   	localStorage.setItem("name_ec_update", $("#name_ec_update").val())
+				   }else{
+				   	localStorage.setItem("name_ec_update", $("#name_ec_update").val())
 				   }
 
 				   if (!localStorage.getItem("phone_ec_update") == true) {
 	               	$("#phone_ec_update").val(value.phone_ec);
 				   	localStorage.setItem("phone_ec_update", $("#phone_ec_update").val())
+				   }else{
+				   	localStorage.setItem("phone_ec_update", $("#phone_ec_update").val())
 				   }
 
 				   if (!localStorage.getItem("hubungan_ec_update") == true) {
 	               	$("#hubungan_ec_update").val(value.hubungan_ec);
+				   	localStorage.setItem("hubungan_ec_update", $("#hubungan_ec_update").val())
+				   }else{
 				   	localStorage.setItem("hubungan_ec_update", $("#hubungan_ec_update").val())
 				   }
 
