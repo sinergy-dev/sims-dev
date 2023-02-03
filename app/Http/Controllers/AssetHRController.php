@@ -341,8 +341,8 @@ class AssetHRController extends Controller
         // $path = $request->file('file')->getRealPath();
         // $data = Excel::import($path)->get();
         $directory = "draft_pr";
-        $nameFile = "template asset hr.csv";
-        // $nameFile = "template asset hr peminjam.csv";
+        $nameFile = "template_asset_hr.csv";
+        // $nameFile = "template_asset_hr_peminjam.csv";
         $folderName = 'Test Draft PR 2';
 
         $this->uploadToLocal($request->file('file'),$directory,$nameFile);
