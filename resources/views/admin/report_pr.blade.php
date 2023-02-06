@@ -143,7 +143,32 @@ Report Purchase Request
     </div>
 
     <div class="row">
-      <div class="col-lg-6 col-xs-12">
+      <div class="col-lg-4 col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+          <h3 class="box-title">Top 5 Supplier</h3>
+          </div>
+
+          <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered display no-wrap" id="dataTableSupplierPr" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Supplier</th>
+                      <th>Total</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-list" name="products-list">
+                  </tbody>
+                </table>
+            </div>  
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-xs-12">
         <div class="box box-primary">
           <div class="box-header with-border">
           <h3 class="box-title">Total Amount Internal PR (By Category)</h3>
@@ -168,7 +193,7 @@ Report Purchase Request
         </div>
       </div>
 
-      <div class="col-lg-6 col-xs-12">
+      <div class="col-lg-4 col-xs-12">
         <div class="box box-primary">
           <div class="box-header with-border">
           <h3 class="box-title">Total Amount External PR (By Category)</h3>
@@ -193,6 +218,33 @@ Report Purchase Request
         </div>
       </div>
     </div>
+
+    <!-- <div class="row">
+      <div class="col-lg-6 col-xs-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+          <h3 class="box-title">Top 5 Supplier</h3>
+          </div>
+
+          <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-bordered display no-wrap" id="dataTableSupplierPr" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Supplier</th>
+                      <th>Total</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-list" name="products-list">
+                  </tbody>
+                </table>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </div> -->
       
   </section>
 
@@ -643,11 +695,41 @@ Report Purchase Request
       pageLength: 10,
     })
 
+    $('#dataTableSupplierPr').DataTable({
+      "ajax":{
+          "type":"GET",
+          "url":"{{url('getTopFiveSupplier')}}"
+        },
+        "columns": [
+          { 
+            render: function (data, type, row, meta){
+              return ++meta.row             
+            }
+          },
+          { "data": "to"},
+          { "data": "total"},
+          { 
+            render: function ( data, type, row ) {
+              return new Intl.NumberFormat('id').format(row.nominal)
+            },
+            "orderData" : [4],
+          },
+          {
+            "data":"nominal",
+            "targets":[3],
+            "visible":false
+          }
+        ],
+        "order":[],
+      pageLength: 10,
+    })
+
     $("#year_filter").change(function(){
       $('#dataTableCat').DataTable().ajax.url("{{url('getTotalNominalByCatYear')}}?year=" + this.value).load();
       $('#dataTablePid').DataTable().ajax.url("{{url('getTotalNominalByPidYear')}}?year=" + this.value).load();
       $('#dataTableAmountIpr').DataTable().ajax.url("{{url('getTotalNominalByCatIprYear')}}?year=" + this.value).load();
       $('#dataTableAmountEpr').DataTable().ajax.url("{{url('getTotalNominalByCatEprYear')}}?year=" + this.value).load();
+      $('#dataTableSupplierPr').DataTable().ajax.url("{{url('getTopFiveSupplierYear')}}?year=" + this.value).load();
 
       myPieChartpr.data.labels = [];
       myPieChartpr.data.datasets.forEach((dataset) => {

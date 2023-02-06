@@ -269,12 +269,14 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getTotalNominalByPid', 'PrController@getTotalNominalByPid');
 	Route::get('/getTotalNominalByCatIpr', 'PrController@getTotalNominalByCatIpr');
 	Route::get('/getTotalNominalByCatEpr', 'PrController@getTotalNominalByCatEpr');
+	Route::get('/getTopFiveSupplier', 'PrController@getTopFiveSupplier');
 
 	Route::get('/getTotalPrbyTypeYear', 'PrController@getTotalPrYear');
 	Route::get('/getTotalNominalByCatYear', 'PrController@getTotalNominalByCatYear');
 	Route::get('/getTotalNominalByPidYear', 'PrController@getTotalNominalByPidYear');
 	Route::get('/getTotalNominalByCatIprYear', 'PrController@getTotalNominalByCatIprYear');
 	Route::get('/getTotalNominalByCatEprYear', 'PrController@getTotalNominalByCatEprYear');
+	Route::get('/getTopFiveSupplierYear', 'PrController@getTopFiveSupplierYear');
 
 	
 	Route::get('/getPrByPid', 'PrController@getPrByPid');

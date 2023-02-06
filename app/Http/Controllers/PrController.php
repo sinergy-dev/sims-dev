@@ -494,6 +494,23 @@ class PrController extends Controller
         return array("data" => $data->get());
     }
 
+    public function getTopFiveSupplier()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'to'
+            )
+            ->whereYear('date', date('Y'))
+            // ->whereYear('date', '2022')
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->orderBy('nominal', 'desc')
+            ->groupBy('to')
+            ->take(5);
+
+        return array("data" => $data->get());
+    }
+
     public function getTotalPrYear(Request $request)
     {
         $pie = 0;
@@ -566,6 +583,22 @@ class PrController extends Controller
             ->orderBy('nominal', 'desc')
             ->whereYear('date', $request->year)
             ->groupBy('category');
+
+        return array("data" => $data->get());
+    }
+
+    public function getTopFiveSupplierYear(Request $request)
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                'to'
+            )
+            ->whereYear('date', $request->year)
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->orderBy('nominal', 'desc')
+            ->groupBy('to')
+            ->take(5);
 
         return array("data" => $data->get());
     }
