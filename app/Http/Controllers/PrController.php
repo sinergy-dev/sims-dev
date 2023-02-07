@@ -10,6 +10,7 @@ use App\SalesProject;
 use App\PrIdProject;
 use App\User;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 // use Excel;
 use Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -499,13 +500,14 @@ class PrController extends Controller
         $data = PR::select(
                 DB::raw('COUNT(no_pr) as total'),
                 DB::raw('SUM(amount) as nominal'),
-                'to'
+                // 'to'
+                DB::raw("REPLACE(`to`,'.','') as `to_replace`") 
             )
             ->whereYear('date', date('Y'))
             // ->whereYear('date', '2022')
             ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->orderBy('nominal', 'desc')
-            ->groupBy('to')
+            ->groupBy('to_replace')
             ->take(5);
 
         return array("data" => $data->get());
@@ -592,12 +594,13 @@ class PrController extends Controller
         $data = PR::select(
                 DB::raw('COUNT(no_pr) as total'),
                 DB::raw('SUM(amount) as nominal'),
-                'to'
+                // 'to'
+                DB::raw("REPLACE(`to`,'.','') as `to_replace`") 
             )
             ->whereYear('date', $request->year)
             ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
             ->orderBy('nominal', 'desc')
-            ->groupBy('to')
+            ->groupBy('to_replace')
             ->take(5);
 
         return array("data" => $data->get());
