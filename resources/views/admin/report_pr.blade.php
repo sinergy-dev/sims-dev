@@ -706,7 +706,7 @@ Report Purchase Request
               return ++meta.row             
             }
           },
-          { "data": "to"},
+          { "data": "to_replace"},
           { "data": "total"},
           { 
             render: function ( data, type, row ) {
