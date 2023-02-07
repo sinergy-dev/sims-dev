@@ -722,6 +722,9 @@ Report Purchase Request
         ],
         "order":[],
       pageLength: 10,
+      searching: false,
+      paging: false,
+      info: false
     })
 
     $("#year_filter").change(function(){
