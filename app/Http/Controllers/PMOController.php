@@ -18,6 +18,7 @@ use App\PMO_detail;
 use App\PMO_changelog;
 use App\PMO_problem;
 use App\GanttTaskPmo;
+use App\GanttLink;
 
 use Excel;
 
@@ -888,11 +889,13 @@ class PMOController extends Controller
 
     }
 
-    public function getGantt($id_pmo){
+    public function getGantt(Request $request){
         $tasks = new GanttTaskPmo();
+        $links = new GanttLink();
  
         return response()->json([
-            "data" => $tasks->where('id_pmo', $id_pmo)->get(),
+            "data" => $tasks->where('id_pmo', $request->id_pmo)->get(),
+            "links" => $links->all(),
         ]);
     }
 
