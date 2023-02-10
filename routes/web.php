@@ -47,6 +47,10 @@ Route::get('permissionConfig','PermissionConfigController@testPermissionConfig')
 Route::get('/admin/getPdf', 'PrDraftController@getPdf');
 Route::get('/admin/mergePdf', 'PrDraftController@mergePdf');
 
+Route::get('/PMO/downloadProjectCharterPdf','PMProjectController@downloadProjectCharterPdf');
+Route::get('/PMO/downloadProgressMeetingPdf','PMProjectController@downloadProgressMeetingPdf');
+Route::get('/PMO/downloadFinalProjectPdf','TestController@downloadFinalProjectPdf');
+
 
 // Route::get('testPermissionConfigFeature','TestController@testPermissionConfigFeature');
 
@@ -156,7 +160,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('permission/getFeatureItemParameterByFeatureItem','TestController@getFeatureItemParameterByFeatureItem');
 
 	Route::get('/data/{id}', 'ImplementationController@get');
-	Route::get('/data_pmo/{id_pmo}', 'PMOController@getGantt');
+	Route::get('/data_pmo', 'PMOController@getGantt');
 	Route::get('/exportGantt', 'PMOController@exportGantt');
 
 	// Route::get('custom-login', 'LOGINController@showLoginForm')->name('custom.login');
@@ -1013,6 +1017,79 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('update/leader','PMOController@update_leader');
 	Route::post('add/problem','PMOController@add_problem');
 
+	//PM
+	Route::get('/PMO/project','PMProjectController@pmoPmIndex');
+	Route::get('/PMO/project/detail/{id_pmo}','PMProjectController@pmoPmDetail');
+	Route::get('/PMO/dashboard','PMProjectController@pmoPmDashboard');
+	Route::get('/PMO/getListDataProject','PMProjectController@getListDataProject');
+	Route::get('/PMO/getListDataPid','PMProjectController@getListDataPid');
+	Route::get('/PMO/getPMStaff','PMProjectController@getPMStaff');
+	Route::get('/PMO/getPCStaff','PMProjectController@getPCStaff');
+	Route::post('/PMO/assignProject','PMProjectController@assignProject');
+	Route::get('/PMO/getListforProjectCharterById','PMProjectController@getListforProjectCharterById');
+	Route::get('/PMO/getDefaultTask','PMProjectController@getDefaultTask');
+	Route::get('/PMO/showProjectCharter','PMProjectController@showProjectCharter');
+	Route::get('/PMO/getUser','PMProjectController@getUser');
+	Route::post('/PMO/storeProjectCharter','PMProjectController@storeProjectCharter');
+	Route::post('/PMO/updateProjectCharter','PMProjectController@updateProjectCharter');
+	Route::get('/PMO/getSignProjectCharter','PMProjectController@getSignProjectCharter');
+	Route::post('/PMO/approveProjectCharter','PMProjectController@approveProjectCharter');
+	Route::post('/PMO/rejectProjectCharter','PMProjectController@rejectProjectCharter');
+	Route::post('/PMO/rejectFinalReport','PMProjectController@rejectFinalReport');
+	Route::post('/PMO/storeApproveFinalReport','PMProjectController@storeApproveFinalReport');
+	Route::post('/PMO/updateInternalStakholder','PMProjectController@updateInternalStakholder');
+	Route::post('/PMO/updateIdentifiedRisk','PMProjectController@updateIdentifiedRisk');
+	Route::get('/PMO/getIssue','PMProjectController@getIssue');
+	Route::get('/PMO/getRisk','PMProjectController@getRisk');
+	Route::get('/PMO/getDetailIssue','PMProjectController@getDetailIssue');
+	Route::get('/PMO/getDetailRisk','PMProjectController@getDetailRisk');
+	Route::get('/PMO/getMilestone','PMProjectController@getMilestone');
+	Route::get('/PMO/getStageWeekly','TestController@getStageWeekly');
+	Route::get('/PMO/getGantt', 'PMProjectController@getGantt');
+	Route::get('/PMO/getMilestoneById','PMProjectController@getMilestoneById');
+	Route::post('/PMO/postIssueProblems','PMProjectController@postIssueProblems');
+	Route::post('/PMO/postRisk','PMProjectController@postRisk');
+	Route::get('/PMO/getShowDocument','PMProjectController@getShowDocument');
+	Route::post('/PMO/storeMilestone','PMProjectController@storeMilestone');
+	Route::post('/PMO/storeWeeklyReport','PMProjectController@storeWeeklyReport');
+	Route::post('/PMO/storeFinalReport','PMProjectController@storeFinalReport');
+	Route::post('/PMO/storeScheduleRemarksFinalReport','PMProjectController@storeScheduleRemarksFinalReport');
+	Route::post('/PMO/updateCustomerInfoProjectCharter','PMProjectController@updateCustomerInfoProjectCharter');
+	Route::post('/PMO/updateProjectInformationProjectCharter','PMProjectController@updateProjectInformationProjectCharter');
+	Route::post('/PMO/updateStatusTask','PMProjectController@updateStatusTask');
+	Route::get('/PMO/getProgressBar','PMProjectController@getProgressBar');
+	Route::post('/PMO/storeCustomerInfoProjectCharter','PMProjectController@storeCustomerInfoProjectCharter');
+	Route::get('/PMO/mailPMO','TestController@mailPMO');
+	Route::get('/PMO/getFinalReportById','TestController@getFinalReportById');
+	Route::get('/PMO/getDeliverableDocument','PMProjectController@getDeliverableDocument');
+	Route::post('/PMO/storeDocument','PMProjectController@storeDocument');
+	Route::get('/PMO/getProjectDocument','PMProjectController@getProjectDocument');
+	Route::post('/PMO/sendMailCss','PMProjectController@sendMailCss');
+	Route::get('/PMO/uploadPdfPC','PMProjectController@uploadPdfPC');
+	Route::get('/PMO/uploadPdfFinalReport','PMProjectController@uploadPdfFinalReport');
+	Route::get('/PMO/uploadPdfWeekly','PMProjectController@uploadPdfWeekly');
+	Route::get('/PMO/getCountDashboard','PMProjectController@getCountDashboard');
+	Route::get('/PMO/getTotalProjectType','PMProjectController@getTotalProjectType');
+	Route::get('/PMO/getMarketSegment','PMProjectController@getMarketSegment');
+	Route::get('/PMO/getProjectValue','PMProjectController@getProjectValue');
+	Route::get('/PMO/getProjectStatus','PMProjectController@getProjectStatus');
+	Route::get('/PMO/getNominalByPeople','PMProjectController@getNominalByPeople');
+	Route::get('/PMO/getProjectPhase','PMProjectController@getProjectPhase');
+	Route::get('/PMO/getHandoverProject','PMProjectController@getHandoverProject');
+	Route::get('/PMO/getTotalProject','PMProjectController@getTotalProject');
+	Route::get('/PMO/getProjectHealth','PMProjectController@getProjectHealth');
+	Route::post('/PMO/deleteAssign','TestController@deleteAssign');
+
+	
+
+	// Route::get('/PMO/getDeliverableDocument','TestController@getDeliverableDocument');
+
+
+	//Gantt
+	Route::post('/PMO/createBaseline','GanttTaskPMOController@createBaseline');
+	
+
+
 	//getLeadByCustpmer
 	Route::get('/getLeadByCompany','SalesController@getLeadByCompany');
 	//presence
@@ -1180,6 +1257,9 @@ Route::get('testDnsCrypt',function(){
 Route::get('testPdfPR','TestController@testPdfPR');
 Route::get('testPdfPRLink','TestController@getLatestPDF');
 Route::get('getSignStatusPR','TestController@getSignStatusPR');
+Route::get('getLatestPDF','TestController@getLatestPDF');
+Route::get('testPdfPRLink','TestController@testPdfPRLink');
+Route::get('getListDriveId','TestController@getListDriveId');
 
 Route::post('testUploadDocument','TestController@testUploadDocument');
 Route::get('showUploadDocument','TestController@showUploadDocument');
