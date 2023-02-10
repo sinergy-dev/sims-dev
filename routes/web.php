@@ -348,6 +348,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/admin/getPerson', 'PrDraftController@getPerson');
 	Route::post('admin/storeTax', 'PrDraftController@storeTax');
 	Route::post('admin/storeTaxComparing', 'PrDraftController@storeTaxComparing');
+	Route::get('admin/getSupplier', 'PrDraftController@getSupplier');
 
 
 	Route::get('/po', 'PONumberController@index');

@@ -4346,4 +4346,9 @@ class PrDraftController extends Controller
             $error['error'] = $e->getMessage();
         }
     }
+
+    public function getSupplier()
+    {
+        return $data = DB::table('tb_pr')->select(DB::raw('`to` AS `id`,`to` AS `text`'))->whereRaw("(`to` != '' OR `to` != NULL)")->groupBy('to')->get();
+    }
 }
