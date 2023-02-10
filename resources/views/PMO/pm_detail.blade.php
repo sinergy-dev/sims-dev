@@ -3744,7 +3744,7 @@ PMO
               		if (row.deliverable_document == "true") {
               			isDisable = 'disabled'
               		}
-                	return '<input type="checkbox" class="minimal" '+ isDisable +' name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
+                	return '<input type="checkbox" class="minimal" '+ isDisable +' name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'" disabled> Task Done'
               	}
             },
         ],
@@ -3755,10 +3755,9 @@ PMO
 		    // }
 		},
         drawCallback: function(settings) {
-	        if (accesable.includes("btnRejectFinal")) {
-	          $("input[name='cbTaskDone']").prop("disabled",true)	 
+	        if (accesable.includes("btnAddIssue")) {
+	          $("input[name='cbTaskDone']").prop("disabled",false)	 
 	          $("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
-
 	        }
 
 	        $('input[type="checkbox"].minimal').iCheck({
@@ -5916,9 +5915,7 @@ PMO
     	$(".content-title").text("Send Customer Satisfaction Survey")
     	$(".detail_project").hide()
     	$(".showEmail").show()
-
     	$(".showEmail").empty("")
-
 	    append = ""
 	    append = append + '<div class="row">'
 		    append = append + '<div class="col-md-12">'
