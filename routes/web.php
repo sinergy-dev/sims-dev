@@ -1044,7 +1044,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/getDetailIssue','PMProjectController@getDetailIssue');
 	Route::get('/PMO/getDetailRisk','PMProjectController@getDetailRisk');
 	Route::get('/PMO/getMilestone','PMProjectController@getMilestone');
-	Route::get('/PMO/getStageWeekly','TestController@getStageWeekly');
+	Route::get('/PMO/getStageWeekly','PMProjectController@getStageWeekly');
 	Route::get('/PMO/getGantt', 'PMProjectController@getGantt');
 	Route::get('/PMO/getMilestoneById','PMProjectController@getMilestoneById');
 	Route::post('/PMO/postIssueProblems','PMProjectController@postIssueProblems');
