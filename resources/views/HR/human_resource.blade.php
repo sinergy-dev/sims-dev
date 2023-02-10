@@ -91,6 +91,48 @@ Human Resources
 	    .select2{
 		    width: 100%!important;
 		}
+
+		.dropbtn {
+	      background-color: #f0ad4e;
+	      color: white;
+	      padding: 5px;
+	      font-size: 13px;
+	      width: 120px;
+	      border: none;
+	    }
+
+	    /* The container <div> - needed to position the dropdown content */
+	    .dropdown {
+	      position: relative;
+	      display: inline-block;
+	    }
+
+	    /* Dropdown Content (Hidden by Default) */
+	    .dropdown-content {
+	      display: none;
+	      position: absolute;
+	      background-color: #f1f1f1;
+	      min-width: 120px;
+	      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	      z-index: 1;
+	    }
+
+	    /* Links inside the dropdown */
+	    .dropdown-content a {
+	      color: black;
+	      padding: 12px 16px;
+	      text-decoration: none;
+	      display: block;
+	    }
+
+	    /* Change color of dropdown links on hover */
+	    .dropdown-content a:hover {background-color: #ddd;}
+
+	    /* Show the dropdown menu on hover */
+	    .dropdown:hover .dropdown-content {display: block;}
+
+	    /* Change the background color of the dropdown button when the dropdown content is shown */
+	    .dropdown:hover .dropbtn {background-color: #f0ad4e;}
 	</style>
 @endsection
 @section('content')
@@ -563,7 +605,12 @@ Human Resources
 		      <div class="row">
 		      	<div class="col-md-12">
 		      		<div class="pull-right" style="margin-right:10px">
-		      			<a href="{{action('HRController@exportExcelEmployee')}}"><button class="btn btn-sm btn-warning" style=" margin-bottom: 5px;" id="btnExport"><i class="fa fa-print"></i> EXCEL </button></a>
+		      			<!-- <a href="{{action('HRController@exportExcelEmployee')}}"><button class="btn btn-sm btn-warning" style=" margin-bottom: 5px;" id="btnExport"><i class="fa fa-print"></i> EXCEL </button></a> -->
+		      			<button class="btnExport btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown" id="btnExport" aria-haspopup="true" aria-expanded="false" style=" margin-bottom: 5px;"><i class="fa fa-print"> </i>&nbspExcel<span class="caret"></span></button>
+			            <ul class="dropdown-menu">
+						    <li><a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}">All</a></li>
+						    <li><a class="dropdown-item" href="{{action('HRController@exportExcelResignEmployee')}}">Resign</a></li>
+						</ul>
 			        	<button class="btn btn-sm btn-primary" onclick="showTabAdd(0)" style="margin-bottom: 5px"><i class="fa fa-plus"></i>&nbsp Employee</button>
 		      		</div>			        
 			    </div>
@@ -2775,26 +2822,35 @@ Human Resources
 				   if (!localStorage.getItem("name_update") == true) {
 	               	$("#name_update").val(value.name);
 				   	localStorage.setItem("name_update", $("#name_update").val())
+				   }else{
+				   	localStorage.setItem("name_update", $("#name_update").val())
 				   }
-				   console.log(value.name)
 
 				   if (!localStorage.getItem("email_update") == true) {
 	               	$("#email_update").val(value.email);
+				   	localStorage.setItem("email_update", $("#email_update").val())
+				   }else{
 				   	localStorage.setItem("email_update", $("#email_update").val())
 				   }
 
 				   if (!localStorage.getItem("date_of_entry_update") == true) {
 	               	$("#date_of_entry_update").val(value.date_of_entry).prop("readonly",true);
 				   	localStorage.setItem("date_of_entry_update", $("#date_of_entry_update").val())
+				   }else{
+				   	localStorage.setItem("date_of_entry_update", $("#date_of_entry_update").val())
 				   }
 
 				   if (!localStorage.getItem("date_of_birth_update") == true) {
 	               	$("#date_of_birth_update").val(value.date_of_birth).prop("readonly",true);
 				   	localStorage.setItem("date_of_birth_update", $("#date_of_birth_update").val())
+				   }else{
+				   	localStorage.setItem("date_of_birth_update", $("#date_of_birth_update").val())
 				   }
 
 				   if (!localStorage.getItem("akhir_kontrak_update") == true) {
 	               	$("#akhir_kontrak_update").val(value.akhir_kontrak);
+				   	localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
+				   }else{
 				   	localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
 				   }
 
@@ -2806,65 +2862,91 @@ Human Resources
 				   if (!localStorage.getItem("phone_number_update") == true) {
 	               	$("#phone_number_update").val(value.phone);
 				   	localStorage.setItem("phone_number_update", $("#phone_number_update").val())
+				   }else{
+				   	localStorage.setItem("phone_number_update", $("#phone_number_update").val())
 				   }
 
 				   if (!localStorage.getItem("no_ktp_update") == true) {
 	               	$("#no_ktp_update").val(value.no_ktp);
+				   	localStorage.setItem("no_ktp_update", $("#no_ktp_update").val())
+				   }else{
 				   	localStorage.setItem("no_ktp_update", $("#no_ktp_update").val())
 				   }
 
 				   if (!localStorage.getItem("no_kk_update") == true) {
 	               	$("#no_kk_update").val(value.no_kk);
 				   	localStorage.setItem("no_kk_update", $("#no_kk_update").val())
+				   }else{
+				   	localStorage.setItem("no_kk_update", $("#no_kk_update").val())
 				   }
 
 				   if (!localStorage.getItem("no_npwp_update") == true) {
 	               	$("#no_npwp_update").val(value.no_npwp);
+				   	localStorage.setItem("no_npwp_update", $("#no_npwp_update").val())
+				   }else{
 				   	localStorage.setItem("no_npwp_update", $("#no_npwp_update").val())
 				   }
 
 				   if (!localStorage.getItem("tempat_lahir_update") == true) {
 	               	$("#tempat_lahir_update").val(value.tempat_lahir);
 				   	localStorage.setItem("tempat_lahir_update", $("#tempat_lahir_update").val())
+				   }else{
+				   	localStorage.setItem("tempat_lahir_update", $("#tempat_lahir_update").val())
 				   }
 
 				   if (!localStorage.getItem("email_personal_update") == true) {
 	               	$("#email_personal_update").val(value.email_pribadi);
+				   	localStorage.setItem("email_personal_update", $("#email_personal_update").val())
+				   }else{
 				   	localStorage.setItem("email_personal_update", $("#email_personal_update").val())
 				   }
 
 				   if (!localStorage.getItem("bpjs_ket_update") == true) {
 	               	$("#bpjs_ket_update").val(value.bpjs_ket);
 				   	localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
+				   }else{
+				   	localStorage.setItem("bpjs_ket_update", $("#bpjs_ket_update").val())
 				   }
 
 				   if (!localStorage.getItem("bpjs_kes_update") == true) {
 	               	$("#bpjs_kes_update").val(value.bpjs_kes);
+				   	localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
+				   }else{
 				   	localStorage.setItem("bpjs_kes_update", $("#bpjs_kes_update").val())
 				   }
 
 				   if (!localStorage.getItem("address_ktp_update") == true) {
 	               	$("#address_ktp_update").val(value.alamat_ktp);
 				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
+				   }else{
+				   	localStorage.setItem("address_ktp_update", $("#address_ktp_update").val())
 				   }
 
 				   if (!localStorage.getItem("pend_terakhir_update") == true) {
 	               	$("#pend_terakhir_update").val(value.pend_terakhir);
+				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
+				   }else{
 				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
 				   }
 
 				   if (!localStorage.getItem("name_ec_update") == true) {
 	               	$("#name_ec_update").val(value.name_ec);
 				   	localStorage.setItem("name_ec_update", $("#name_ec_update").val())
+				   }else{
+				   	localStorage.setItem("name_ec_update", $("#name_ec_update").val())
 				   }
 
 				   if (!localStorage.getItem("phone_ec_update") == true) {
 	               	$("#phone_ec_update").val(value.phone_ec);
 				   	localStorage.setItem("phone_ec_update", $("#phone_ec_update").val())
+				   }else{
+				   	localStorage.setItem("phone_ec_update", $("#phone_ec_update").val())
 				   }
 
 				   if (!localStorage.getItem("hubungan_ec_update") == true) {
 	               	$("#hubungan_ec_update").val(value.hubungan_ec);
+				   	localStorage.setItem("hubungan_ec_update", $("#hubungan_ec_update").val())
+				   }else{
 				   	localStorage.setItem("hubungan_ec_update", $("#hubungan_ec_update").val())
 				   }
 
@@ -3502,6 +3584,14 @@ Human Resources
               	$.each(result[0], function(key, value){
 	              append = append + "<option>" + value.name_position + "</option>";
 	            });
+            } else if (result[1] == 'SID') {
+             //  	$.each(result[0], function(key, value){
+	            //   append = append + "<option>" + value.name_position + "</option>";
+	            // });
+	            append = append + "<option value='MANAGER'> MANAGER </option>";
+            	append = append + "<option value='ENGINEER SPV'> ENGINEER SPV </option>";
+            	append = append + "<option value='ENGINEER CO-SPV'> ENGINEER CO-SPV </option>";
+            	append = append + "<option value='ENGINEER STAFF'> ENGINEER STAFF </option>";
             } else if (result[1] == 'DIR') {
               	$.each(result[0], function(key, value){
 	              append = append + "<option>" + value.name_position + "</option>";
@@ -4185,12 +4275,17 @@ Human Resources
             // append = append + "<option value='SERVICE PROJECT(HEAD)'>" + "SERVICE PROJECT (HEAD)" + "</option>";
             //append = append + "<option value='SERVICE PROJECT(STAFF)'>" + "SERVICE PROJECT (STAFF)" + "</option>";
             append = append + "<option value='SUPPORT ENGINEER'>" + "SUPPORT ENGINEER" + "</option>";
+            append = append + "<option value='SUPPORT ENGINEER SPV'>" + " SUPPORT ENGINEER SPV" + "</option>";
+            append = append + "<option value='SUPPORT ENGINEER CO-SPV'>" + " SUPPORT ENGINEER CO-SPV" + "</option>";
+            append = append + "<option value='HELP DESK SPV'>" + "HELP DESK SPV" + "</option>";
             append = append + "<option value='HELP DESK'>" + "HELP DESK" + "</option>";
             append = append + "<option value='CALL SO'>" + "CALL SO" + "</option>";
 
     	}else if (id.value == 'PMO') {
     		append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+            append = append + "<option value='PM SPV'>" + "PM SPV" + "</option>";
             append = append + "<option value='PM'>" + "PM" + "</option>";
+    		append = append + "<option value='SERVICE PROJECT SPV'>" + "SERVICE PROJECT SPV" + "</option>"
     		append = append + "<option value='SERVICE PROJECT'>" + "SERVICE PROJECT" + "</option>"
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
 
@@ -4203,6 +4298,14 @@ Human Resources
             append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
             append = append + "<option value='STAFF'>" + "STAFF" + "</option>";
             append = append + "<option value='PROCUREMENT'>" + "PROCUREMENT" + "</option>";
+            append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
+
+        } else if (id.value == 'SID'){
+        
+            append = append + "<option value='MANAGER'>" + "MANAGER" + "</option>";
+            append = append + "<option value='ENGINEER SPV'>" + "ENGINEER SPV" + "</option>";
+            append = append + "<option value='ENGINEER CO-SPV'>" + "ENGINEER CO-SPV" + "</option>";
+            append = append + "<option value='ENGINEER STAFF'>" + " ENGINEER STAFF" + "</option>";
             append = append + "<option value='ADMIN'>" + "ADMIN" + "</option>";
 
         }else{

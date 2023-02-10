@@ -341,8 +341,8 @@ class AssetHRController extends Controller
         // $path = $request->file('file')->getRealPath();
         // $data = Excel::import($path)->get();
         $directory = "draft_pr";
-        // $nameFile = "template asset hr.csv";
-        $nameFile = "template asset hr peminjam.csv";
+        $nameFile = "template_asset_hr.csv";
+        // $nameFile = "template_asset_hr_peminjam.csv";
         $folderName = 'Test Draft PR 2';
 
         $this->uploadToLocal($request->file('file'),$directory,$nameFile);
@@ -350,47 +350,47 @@ class AssetHRController extends Controller
         $result = $this->readCSV($directory . "/" . $nameFile);
         // return $result;
  
-        // if(count($result) >= 1){
-        //     foreach ($result as $key => $value) {
-        //         $arr[] = [
-        //             'id_barang' => $value[0], 
-        //             'nik' => '1220985100', 
-        //             'nama_barang' => $value[1], 
-        //             'code_name' => $value[2], 
-        //             'serial_number' => $value[3], 
-        //             'status' => $value[4], 
-        //             'merk' => $value[6], 
-        //             'type' => $value[7], 
-        //             'description' => $value[8],
-        //             'kategori' => $value[9],
-        //             'lokasi' => $value[10],
-        //             'tgl_tambah' => $value[5]
-        //         ];
-        //     }
- 
-        //     if(!empty($arr)){
-        //         AssetHR::insert($arr);
-        //     }
-        // }
-
-
         if(count($result) >= 1){
             foreach ($result as $key => $value) {
                 $arr[] = [
-                    'id_transaction' => $value[0], 
-                    'id_barang' => $value[1], 
-                    'nik_peminjam' => $value[2], 
-                    'status' => $value[3], 
-                    'keterangan' => $value[4], 
-                    'tgl_peminjaman' => $value[5],
-                    'no_transac' => $value[6]
+                    'id_barang' => $value[0], 
+                    'nik' => '1220985100', 
+                    'nama_barang' => $value[1], 
+                    'code_name' => $value[2], 
+                    'serial_number' => $value[3], 
+                    'status' => $value[4], 
+                    'merk' => $value[6], 
+                    'type' => $value[7], 
+                    'description' => $value[8],
+                    'kategori' => $value[9],
+                    'lokasi' => $value[10],
+                    'tgl_tambah' => $value[5]
                 ];
             }
  
             if(!empty($arr)){
-                DetailAssetHR::insert($arr);
+                AssetHR::insert($arr);
             }
         }
+
+
+        // if(count($result) >= 1){
+        //     foreach ($result as $key => $value) {
+        //         $arr[] = [
+        //             'id_transaction' => $value[0], 
+        //             'id_barang' => $value[1], 
+        //             'nik_peminjam' => $value[2], 
+        //             'status' => $value[3], 
+        //             'keterangan' => $value[4], 
+        //             'tgl_peminjaman' => $value[5],
+        //             'no_transac' => $value[6]
+        //         ];
+        //     }
+ 
+        //     if(!empty($arr)){
+        //         DetailAssetHR::insert($arr);
+        //     }
+        // }
  
         return back()->with('success', 'Insert Record successfully.');
     }
@@ -461,7 +461,7 @@ class AssetHRController extends Controller
 
     public function getEditAsset(Request $request){
         $asset = DB::table('tb_asset_hr')
-                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(tgl_tambah,created_at) AS umur_asset'))
+                ->select('nama_barang', 'tb_asset_hr.id_barang', 'description','code_name','status','serial_number',DB::raw('DATEDIFF(tgl_tambah,created_at) AS umur_asset'),'lokasi')
                 ->where('tb_asset_hr.id_barang',$request->id_barang)
                 ->get();
 

@@ -38,7 +38,7 @@ class PRDraft extends Model
         'created_at'
 	];
 
-	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name'];
+	protected $appends = ['comparison', 'no_pr', 'title', 'status', 'type_of_letter', 'date', 'issuance', 'status_tax', 'nominal', 'circularby', 'to', 'attention_notes', 'name','status_pr'];
 
     public function getToAttribute()
     {
@@ -88,6 +88,13 @@ class PRDraft extends Model
     public function getStatusAttribute()
     {
         $data = DB::table('tb_pr_draft')->select('tb_pr_draft.status')->where('tb_pr_draft.id', $this->id)->first();
+        return empty($data->status)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->status) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->status):$data->status;
+        // return $data->status;
+    }
+
+    public function getStatusPrAttribute()
+    {
+        $data = PR::join('tb_pr_draft','tb_pr_draft.id','tb_pr.id_draft_pr')->select('tb_pr.status')->where('tb_pr_draft.id', $this->id)->first();
         return empty($data->status)?(empty(DB::table('tb_pr_draft')->where('id',$this->id)->first()->status) ? "-" : DB::table('tb_pr_draft')->where('id',$this->id)->first()->status):$data->status;
         // return $data->status;
     }

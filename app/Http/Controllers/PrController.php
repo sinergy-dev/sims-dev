@@ -10,6 +10,7 @@ use App\SalesProject;
 use App\PrIdProject;
 use App\User;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 // use Excel;
 use Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -494,6 +495,24 @@ class PrController extends Controller
         return array("data" => $data->get());
     }
 
+    public function getTopFiveSupplier()
+    {
+        $data = PR::select(
+                DB::raw('COUNT(no_pr) as total'),
+                DB::raw('SUM(amount) as nominal'),
+                // 'to'
+                DB::raw("REPLACE(`to`,'.','') as `to_replace`") 
+            )
+            ->whereYear('date', date('Y'))
+            // ->whereYear('date', '2022')
+            ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+            ->orderBy('nominal', 'desc')
+            ->groupBy('to_replace')
+            ->take(5);
+
+        return array("data" => $data->get());
+    }
+
     public function getTotalPrYear(Request $request)
     {
         $pie = 0;
@@ -570,17 +589,49 @@ class PrController extends Controller
         return array("data" => $data->get());
     }
 
-    public function getTotalNominalByPidYear(Request $request)
+    public function getTopFiveSupplierYear(Request $request)
     {
         $data = PR::select(
                 DB::raw('COUNT(no_pr) as total'),
                 DB::raw('SUM(amount) as nominal'),
-                'project_id'
+                // 'to'
+                DB::raw("REPLACE(`to`,'.','') as `to_replace`") 
             )
-            ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
             ->whereYear('date', $request->year)
             ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
-            ->groupBy('project_id');
+            ->orderBy('nominal', 'desc')
+            ->groupBy('to_replace')
+            ->take(5);
+
+        return array("data" => $data->get());
+    }
+
+    public function getTotalNominalByPidYear(Request $request)
+    {
+        // $data = PR::select(
+        //         DB::raw('COUNT(no_pr) as total'),
+        //         DB::raw('SUM(amount) as nominal'),
+        //         'project_id as id_project'
+        //     )
+        //     ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+        //     ->whereYear('date', $request->year)
+        //     ->whereRaw("(`status` is NULL OR `status` != 'Cancel')")
+        //     ->groupBy('project_id');
+
+
+        $data = PrIdProject::join('sales_lead_register', 'sales_lead_register.lead_id', 'tb_id_project.lead_id')
+                    ->join('users', 'users.nik', 'sales_lead_register.nik')
+                    ->join('tb_pr', 'tb_pr.project_id', 'tb_id_project.id_project')
+                    ->select(
+                        DB::raw('COUNT(no_pr) as total'),
+                        DB::raw('SUM(`tb_pr`.`amount`) as nominal'),
+                        'id_project'
+                    )
+                    ->whereYear('tb_pr.date', $request->year)
+                    ->where('id_company', '1')
+                    ->whereRaw("(`project_id` != 'internal' AND `project_id` != '-')")
+                    ->whereRaw("(`tb_pr`.`status` is NULL OR `tb_pr`.`status` != 'Cancel')")
+                    ->groupBy('project_id');
 
         return array("data" => $data->get());
     }

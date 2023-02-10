@@ -627,7 +627,9 @@
 @endsection
 @section('script')
 <script type="text/javascript">
-  $(".money").mask('000,000,000,000,000', {reverse: true})
+  // $(".money").mask('000,000,000,000,000', {reverse: true})
+  $('.money').mask('#.##0,00', {reverse: true})
+
 
   window.onload = function(){
     localStorage.setItem("arrFilterBack", localStorage.getItem("arrFilter"))
@@ -2412,7 +2414,7 @@
     var sum = 0
 
     $("#grandTotalPricePembanding[data-value='" + i + "']").each(function() {
-        var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
         sum += temp;
     });
 
@@ -2426,7 +2428,7 @@
     localStorage.setItem('status_tax',valueVat)
 
     $('.inputTotalPriceEdit').each(function() {
-        var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
         sum += temp;
     });
 
@@ -2435,7 +2437,7 @@
 
       finalVat = tempVat
 
-      tempGrand = Math.round(parseInt(sum) +  tempVat)
+      tempGrand = Math.round((parseFloat(sum) +  parseFloat((parseFloat(sum) * parseFloat(valueVat)) / 100)))
 
       finalGrand = tempGrand
 
@@ -3805,14 +3807,22 @@
       $("#inputDescProduct").prev('.input-group-addon').css("background-color","red");
     }
     if (val == "qty_product") {
-      $("#inputTotalPrice").val(formatter.format(parseInt($("#inputQtyProduct").val()) * parseInt($("#inputPriceProduct").val().replace(/\,/g,''))))
+      if (localStorage.getItem('isRupiah') == 'true') {
+        $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+      }else{
+        $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+      }
       $("#inputQtyProduct").closest('.col-md-4').removeClass('has-error')
       $("#inputQtyProduct").closest('input').next('span').hide();
       $("#inputQtyProduct").prev('.input-group-addon').css("background-color","red");
     }
     if (val == "price_product") {
       formatter.format($("#inputPriceProduct").val())
-      $("#inputTotalPrice").val(formatter.format(parseInt($("#inputQtyProduct").val()) * parseInt($("#inputPriceProduct").val().replace(/\,/g,''))))
+      if (localStorage.getItem('isRupiah') == 'true') {
+        $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+      }else{
+        $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+      }
       $("#inputPriceProduct").closest('.col-md-4').removeClass('has-error')
       $("#inputPriceProduct").closest('input').closest('.input-group').next('span').hide();
       $("#inputPriceProduct").prev('.col-md-4').css("background-color","red");
@@ -4067,8 +4077,8 @@
                  inputDescProduct:$("#inputDescProduct").val().replaceAll("\n","<br>"),
                  inputQtyProduct:$("#inputQtyProduct").val(),
                  selectTypeProduct:$("#selectTypeProduct").val(),
-                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                 inputTotalPrice:$("#inputTotalPrice").val(),
+                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''),
+                 inputTotalPrice:$("#inputTotalPrice").val().replace(/\./g,'').replace(',','.').replace(' ',''),
                  inputSerialNumber:$("#inputSerialNumber").val(),
                  inputPartNumber:$("#inputPartNumber").val(),
                  inputGrandTotalProduct:$("#inputFinalPageTotalPrice").val(),
@@ -4124,8 +4134,8 @@
                  inputPartNumber:$("#inputPartNumber").val(),
                  inputQtyProduct:$("#inputQtyProduct").val(),
                  selectTypeProduct:$("#selectTypeProduct").val(),
-                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,''),
-                 inputTotalPrice:$("#inputTotalPrice").val(),
+                 inputPriceProduct:$("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''),
+                 inputTotalPrice:$("#inputTotalPrice").val().replace(/\./g,'').replace(',','.').replace(' ',''),
                  inputGrandTotalProduct:$("#inputGrandTotalProduct").val(),
                 },beforeSend:function(){
                   Swal.fire({
@@ -4611,18 +4621,18 @@
     localStorage.setItem('status_tax',valueVat)
 
     $('.inputTotalPriceEdit').each(function() {
-        var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
         sum += temp;
     });
 
     $("#inputGrandTotalProduct").val(formatter.format(sum))
 
     if (!isNaN(valueVat)) {
-      tempVat = (parseFloat(sum) * parseFloat(valueVat)) / 100
+      tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
 
       finalVat = tempVat
 
-      tempGrand = parseInt(sum) +  tempVat
+      tempGrand = sum +  tempVat
 
       finalGrand = tempGrand
 

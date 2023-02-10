@@ -37,6 +37,24 @@ Presence Shifting
 			color: #fff !important;
 		}
 
+		.Off-Site {
+			background-color: #b5bbc8 !important;
+			border-color: #b5bbc8 !important;
+			color: black !important;
+		}
+
+		.On-Site {
+			background-color: #f39c12 !important;
+			border-color: #f39c12 !important;
+			color: #fff !important;
+		}
+
+		.pagi, .Pagi {
+			background-color: #dd4b39 !important;
+			border-color: #dd4b39 !important;
+			color: #fff !important;
+		}
+
 		.Helpdesk, .ho, .HO {
 			background-color: #ca195a !important;
 			border-color: #ca195a !important;
@@ -568,11 +586,16 @@ Presence Shifting
 			$('#external-events div.external-event').each(function () {
 				var str = $(this).text();
 				var shift = str.substr(0,str.indexOf(" "));
-				var strip = str.indexOf("-");
-				var start1 = strip - 6;
-				var end1 = strip + 2;
-				var start = str.substr(start1,5);
-				var end = str.substr(end1,5);
+				if (shift == "Off-Site" || shift == "On-Site" ) {
+					var start = str.split(" ")[1];
+					var end = str.split(" ")[3];
+				}else{
+					var strip = str.indexOf("-");
+					var start1 = strip - 6;
+					var end1 = strip + 2;
+					var start = str.substr(start1,5);
+					var end = str.substr(end1,5);
+				}
 				
 				if(shift == "Libur"){
 					var eventObject = {
@@ -589,6 +612,11 @@ Presence Shifting
 						Shift: shift,
 					};
 				}
+
+				console.log(str)
+				console.log(end)
+				// console.log(end)
+
 
 				$(this).data('eventObject', eventObject);
 
@@ -656,6 +684,7 @@ Presence Shifting
 		drop: function (date, allDay) { 
 
 			var originalEventObject = $(this).data('eventObject');
+			console.log(originalEventObject)
 			var name3 = $("#nickname").val();
 			var copiedEventObject = $.extend({}, originalEventObject);
 
@@ -668,6 +697,10 @@ Presence Shifting
 			var endShift2 = moment(waktu).format('YYYY-MM-DD') + "T" + originalEventObject.endShift + ":00.000Z";
 			var start_before = moment(waktu).format('YYYY-MM-DD') + " " + originalEventObject.startShift + ":00";
 			var end_before = moment(waktu).format('YYYY-MM-DD') + " " + originalEventObject.endShift + ":00";
+
+			// console.log(startShift2)
+						
+			// console.log(endShift2)
 			
 			var ketemu = 0;
 
@@ -698,6 +731,7 @@ Presence Shifting
 						alert("tanggal sama");
 					} else {
 						var idEvent = 0;
+
 
 						$.ajax({
 							type: "GET",

@@ -296,7 +296,7 @@ Leaving Permitte
           <div class="modal-body">
               @csrf
               <form id="form-submit-cuti">
-              <div class="form-group hidden">
+              <div class="form-group" style="display: none">
                 <label>Sisa Cuti : </label>
                 <span name="sisa_cuti" id="sisa_cuti"></span><!-- 
                 <input type="text" name="sisa_cuti" id="sisa_cuti" style="width: 50px;color: black;text-decoration: bold" class="form-control sisa_cuti" value="" readonly=""> -->
@@ -670,6 +670,7 @@ Leaving Permitte
     $.ajax({
       type:"GET",
       url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key={{env('GOOGLE_API_KEY_APP')}}",
+      // url:"https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key=AIzaSyB0MWK6KLjhJlY7cL7G6STOCVGnxzjapXU",
       success: function(resultGoogle){
         $(".show-sisa-cuti").click(function(){
           $.ajax({
@@ -772,11 +773,11 @@ Leaving Permitte
         },
         success: function(result){
           $("#form-submit-cuti").trigger("reset");
-          if (result.parameterCuti.total_cuti == 0) {
+          if (result.parameterCuti[0].total_cuti == 0) {
             $("#sisa_cuti").text(0).style.color = "#ff0000";
           } else {
-            $("#sisa_cuti").text(result.parameterCuti.total_cuti);
-            if (result.parameterCuti.total_cuti > 5) {
+            $("#sisa_cuti").text(result.parameterCuti[0].total_cuti);
+            if (result.parameterCuti[0].total_cuti > 5) {
               document.getElementById("sisa_cuti").style.color = "blue";
             } else {
               document.getElementById("sisa_cuti").style.color = "#ff0000";
@@ -823,9 +824,10 @@ Leaving Permitte
             $('#lihat_hasil').val(' ' + e.dates.length)
             var cutis = $("#sisa_cuti").text();
             var cutiss = $(".lihat_hasil").val();
-            // console.log(cutis + " " + cutiss)
+            // console.log(cutis)
+            console.log(result.parameterCuti[0].total_cuti)
 
-            $("#avaliableDays").val(result.parameterCuti.total_cuti - cutiss)
+            $("#avaliableDays").val(result.parameterCuti[0].total_cuti - cutiss)
             if (e.dates.length > 0) {
               if (parseFloat(cutis) >= parseFloat(cutiss)) {
                 e.preventDefault();     

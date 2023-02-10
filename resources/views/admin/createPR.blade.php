@@ -1319,11 +1319,12 @@
                 let value = ""
 
                 if (row.status == 'DRAFT') {
-                  onclick = "cekByAdmin(0,"+ row.id +")"
+                  onClick = ""
                   title = "Verify"
                   btnClass = "btnCekDraft btn-primary"
                   if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
                     isDisabled = ""
+                    onclick = "cekByAdmin(0,"+ row.id +")"
                   }else{
                     isDisabled = "disabled"
                   }
@@ -1386,7 +1387,7 @@
                 if (title == 'Detail') {
                   return "<td><a href="+ onclick +" class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
                 }else {
-                  return "<td><a onclick='"+ onclick +"' class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' "+isDisabled+" id='"+ btnId +"'>"+ title +"</a>" + " " + "<button class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
+                  return "<td><a onclick='"+ onclick +"' "+isDisabled+" class='btn btn-sm "+ btnClass +" btnCekDraftDusk_"+row.id+"' data-value='"+row.id+"' id='"+ btnId +"'>"+ title +"</a>" + " " + "<button "+isDisabled+" class='btn btn-sm btn-danger' "+ isDisabledCancel +" onclick='btnCancel("+ row.id +")' value='"+ value +"'>Cancel</button></td>"
                 }
                                     
               },
@@ -1661,7 +1662,6 @@
 
       if (!tempStatus || !tempType ) {
         localStorage.setItem('isTemp',true)
-        console.log('tru nih')
       }
 
       return localStorage.setItem("arrFilter", temp) 
@@ -1671,7 +1671,6 @@
       localStorage.setItem('isTemp',false)
       if (localStorage.getItem('isTemp') === 'true') {
         // var returnArray = searchCustom()
-        console.log("okee")
         // localStorage.setItem("arrFilter", returnArray);
       }
       localStorage.setItem('isTemp',false)
@@ -1685,13 +1684,10 @@
 
         $.each(arr,function(item,value){
           if(value.indexOf("status") != -1){
-              console.log(value.split("=")[1])
               arrStatus.push(value.split("=")[1])
-              
           }
 
           if(value.indexOf("type") != -1){
-              console.log(value.split("=")[1])
               arrType.push(value.split("=")[1])
           }
         })
@@ -5322,11 +5318,10 @@
                     }
                   }
                   
-
+                  arrInputDocPendukungEPR = []
                   if($("#tableDocPendukung_epr .trDocPendukung").length > 0){
-                    
-                      
                       if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
+
                         $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
                           if ($(this).find('.inputDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() != "") {
                             if ($(this).find('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).val() == "") {
@@ -5335,41 +5330,43 @@
                               
                               $('.inputNameDocPendukung_'+$(this).find('#inputDocPendukung').data('value')).css("border-color","red");
                             }else{
-                              var arrInputDocPendukungEPR = []
                               arrInputDocPendukungEPR.push({
                                 nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
                                 no_pr:no_pr
                               })
 
                               formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
-                              formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-                              
-                              
-                              
-                              storeEPR(urlDokumen,formData)
+                              formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0]) 
+                              // arrInputDocPendukungEPR.push({
+                              //   nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                              //   no_pr:no_pr
+                              // })
+
+                              // formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
+                              // formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+                              // storeEPR(urlDokumen,formData)
                             }
                           }else{
-                            storeEPR(urlDokumen,formData)
+                            // storeEPR(urlDokumen,formData)
                           }
                         })
                       }else{
-                        
-                        var arrInputDocPendukungEPR = []
+                        // arrInputDocPendukungEPR.push({
+                        //   nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                        //   no_pr:no_pr
+                        // })
                         formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
                         formData.append('inputDocPendukung[]','-')
 
-                        storeEPR(urlDokumen,formData)
-                      }  
+                        // storeEPR(urlDokumen,formData)
+                      } 
+
+
                   }else{
-                    var arrInputDocPendukungEPR = []
                     formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
-                    formData.append('inputDocPendukung[]','-')
-
-                    
-                    storeEPR(urlDokumen,formData)
+                    formData.append('inputDocPendukung[]','-')                    
                   }
-
-
+                  storeEPR(urlDokumen,formData)
                   // if (result.dokumen.length > 0) {
                   //   if (!(result.dokumen.slice(3).length == $('#tableDocPendukung_epr .trDocPendukung').length)) {
                   //     $('#tableDocPendukung_epr .trDocPendukung').slice(result.dokumen.slice(3).length).each(function(){
@@ -6251,11 +6248,9 @@
               $("#inputQuoteNumber").prev('.col-md-6').css("background-color","red");
             }else{
               let formData = new FormData();
+              arrInputDocPendukungEPR = []
 
-              const fileSpk = $('#inputSPK').prop('files')[0];
-
-              arrInputDocPendukung = []
-              
+              const fileSpk = $('#inputSPK').prop('files')[0];              
               if ($('#inputSPK').val() !="") {
                 if(nama_file_spk == ""){
                   nama_file_spk = $('#inputSPK').val();
@@ -6285,15 +6280,27 @@
                 }
               }
 
+              // $('#tableDocPendukung .trDocPendukung').each(function() {
+              //   var fileInput = $(this).find('#inputDocPendukung').val()
+              //   if (fileInput && fileInput !== '') {
+              //     formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
+
+              //     arrInputDocPendukung.push({
+              //       nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+              //       no_pr:localStorage.getItem('no_pr')
+              //     })
+              //   }                  
+              // });
               $('#tableDocPendukung_epr .trDocPendukung').each(function() {
                 var fileInput = $(this).find('#inputDocPendukung').val()
                 if (fileInput && fileInput !== '') {
                   formData.append('inputDocPendukung[]',$(this).find('#inputDocPendukung').prop('files')[0])
-
-                  arrInputDocPendukung.push({
-                    nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
-                    no_pr:localStorage.getItem('no_pr')
-                  })
+                  formData.append('nameDocPendukung[]',$(this).find('#inputNameDocPendukung').val())
+                  formData.append('no_pr',localStorage.getItem('no_pr'))
+                  // arrInputDocPendukungEPR.push({
+                  //   nameDocPendukung:$(this).find('#inputNameDocPendukung').val(),
+                  //   no_pr:localStorage.getItem('no_pr')
+                  // })
                 }                  
               });
 
@@ -6303,7 +6310,7 @@
               formData.append('selectPid', $("#selectPid").val())
               formData.append('inputPid',$("#projectIdInputNew").val())
               formData.append('selectQuoteNumber', $("#selectQuoteNumber").val())
-              formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukung))
+              // formData.append('arrInputDocPendukung',JSON.stringify(arrInputDocPendukungEPR))
 
               $.ajax({
                   type:"POST",

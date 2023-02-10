@@ -334,7 +334,9 @@ class HRController extends Controller
         return array(DB::table('users')
                 ->join('role_user','users.nik','=','role_user.user_id', 'left')
                 ->join('roles','role_user.role_id','=','roles.id', 'left')
-                ->select('nik','users.name','email','date_of_entry','date_of_birth','address','phone','password','id_division','id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete','roles.name as roles','roles.group', 'role_id')
+                ->select('nik','users.name','email','date_of_entry','date_of_birth','address','phone','password',
+                    DB::raw("(CASE WHEN (id_division = 'WAREHOUSE') THEN 'HUMAN RESOURCE' ELSE id_division END) as id_division"),
+                    'id_position','id_territory','id_company','no_ktp','no_kk','no_npwp','npwp_file','bpjs_kes','bpjs_ket','ktp_file','status_kerja','akhir_kontrak','pend_terakhir','tempat_lahir','alamat_ktp','email_pribadi', 'name_ec', 'phone_ec', 'hubungan_ec','status_delete','roles.name as roles','roles.group', 'role_id')
                 ->where('nik',$request->id_hu)
                 ->get(),$request->id_hu);
     }
@@ -447,19 +449,19 @@ class HRController extends Controller
             if($request['id_sub_division_operation'] == 'PMO'){
                 $tambah->id_division = 'PMO';
                 $tambah->id_territory = 'OPERATION';
-                if ($request['pos_operation'] == 'SERVICE PROJECT') {
-                    $tambah->id_position = 'SERVICE PROJECT(STAFF)';
-                } else {
+                // if ($request['pos_operation'] == 'SERVICE PROJECT') {
+                //     $tambah->id_position = 'SERVICE PROJECT';
+                // } else {
                     $tambah->id_position = $request['pos_operation'];
-                }
+                // }
             } elseif($request['id_sub_division_operation'] == 'MSM'){
                 $tambah->id_division = 'MSM';
                 $tambah->id_territory = 'OPERATION';
-                if ($request['pos_operation'] == 'SUPPORT ENGINEER') {
-                    $tambah->id_position = 'SUPPORT ENGINEER(STAFF)';
-                } else {
+                // if ($request['pos_operation'] == 'SUPPORT ENGINEER') {
+                //     $tambah->id_position = 'SUPPORT ENGINEER';
+                // } else {
                     $tambah->id_position = $request['pos_operation'];
-                }
+                // }
             } elseif($request['id_sub_division_operation'] == 'SOL'){
                 $tambah->id_division = 'TECHNICAL PRESALES';
                 $tambah->id_territory = 'PRESALES';
@@ -469,7 +471,11 @@ class HRController extends Controller
                 $tambah->id_territory = 'DPG';
                 if($request['pos_operation'] == 'MANAGER'){
                     $tambah->id_position = 'ENGINEER MANAGER';  
-                } elseif($request['pos_operation'] == 'STAFF'){
+                } elseif($request['pos_operation'] == 'ENGINEER SPV'){
+                    $tambah->id_position = 'ENGINEER SPV';
+                }elseif($request['pos_operation'] == 'ENGINEER CO-SPV'){
+                    $tambah->id_position = 'ENGINEER CO-SPV';
+                }elseif($request['pos_operation'] == 'ENGINEER STAFF'){
                     $tambah->id_position = 'ENGINEER STAFF';
                 }
             } elseif($request['id_sub_division_operation'] == 'BCD') {
@@ -860,7 +866,11 @@ class HRController extends Controller
                     $update->id_territory = 'DPG';
                     if($request['posisi_update'] == 'MANAGER'){
                         $update->id_position = 'ENGINEER MANAGER';  
-                    } elseif($request['posisi_update'] == 'STAFF'){
+                    } elseif($request['posisi_update'] == 'ENGINEER SPV'){
+                        $update->id_position = 'ENGINEER SPV';
+                    }elseif($request['posisi_update'] == 'ENGINEER CO-SPV'){
+                        $update->id_position = 'ENGINEER CO-SPV';
+                    }elseif($request['posisi_update'] == 'ENGINEER STAFF'){
                         $update->id_position = 'ENGINEER STAFF';
                     }
                 } elseif($request['sub_divisi_update'] == 'BCD') {
@@ -1580,7 +1590,9 @@ class HRController extends Controller
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
-                ->orWhere('id_position','STAFF')
+                ->orWhere('id_position','ENGINEER STAFF SPV')
+                ->orWhere('id_position','ENGINEER STAFF CO-SPV')
+                ->orWhere('id_position','ENGINEER STAFF')
                 ->get(),$request->id_assign);
         } else if ($request->id_assign == 'PRESALES') {
             return array(DB::table('tb_position')
@@ -1632,9 +1644,12 @@ class HRController extends Controller
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
+                ->orWhere('id_position','SUPPORT ENGINEER SPV')
+                ->orWhere('id_position','SUPPORT ENGINEER CO-SPV')
+                ->orWhere('id_position','SUPPORT ENGINEER')
+                ->orWhere('id_position','HELP DESK SPV')
                 ->orWhere('id_position','HELP DESK')
                 ->orWhere('id_position','CALL SO')
-                ->orWhere('id_position','SUPPORT ENGINEER')
                 ->orWhere('id_position','ADMIN')
                 ->get(),$request->id_assign);
         } else if ($request->id_assign == 'BCD') {
@@ -1649,9 +1664,11 @@ class HRController extends Controller
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
+                ->orWhere('id_position','SERVICE PROJECT SPV')
                 ->orWhere('id_position','SERVICE PROJECT')
-                ->orWhere('id_position','ADMIN')
+                ->orWhere('id_position','PM SPV')
                 ->orWhere('id_position','PM')
+                ->orWhere('id_position','ADMIN')
                 ->get(),$request->id_assign);
         }else if ($request->id_assign == 'DIR') {
             return array(DB::table('tb_position')
@@ -1709,7 +1726,15 @@ class HRController extends Controller
                 ->select('name_position')
                 ->orWhere('id_position','PM')
                 ->get(),$request->id_assign);
-        } else {
+        } else if($request->id_assign=='SID'){
+            return array(DB::table('tb_position')
+                ->select('name_position')
+                ->where('id_position','MANAGER')
+                ->orWhere('id_position','ENGINEER SPV')
+                ->orWhere('id_position','ENGINEER CO-SPV')
+                ->orWhere('id_position','ENGINEER STAFF')
+                ->get(),$request->id_assign);
+        }else {
             return array(DB::table('tb_position')
                 ->select('name_position')
                 ->where('id_position','MANAGER')
@@ -1803,6 +1828,98 @@ class HRController extends Controller
         $sheet->getColumnDimension('X')->setAutoSize(true);
 
         $fileName = 'SIP Employee ' . date('Y') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+    }
+
+    public function exportExcelResignEmployee(Request $request){
+
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'SIP Resign Employee');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:X1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:X1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','SIP Resign Employee');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['fill'] = ['fillType' => Fill::FILL_SOLID, 'startColor' => ["argb" => "FFFCD703"]];
+        $head['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $sheet->getStyle('A2:X2')->applyFromArray($headerStyle);;
+
+        $headerContent = ["No", "NIK", "Nama Lengkap", "Status Karyawan" ,"Divisi", "Jabatan" , "Territory", "Tanggal Mulai Tugas", "Tempat Lahir", "Tanggal Lahir", "Jenis Kelamin", "KTP", "Alamat KTP", "KK", "NPWP", "BPJS Kesehatan", "BPJS Ketenagakerjaan", "Pendidikan Terakhir", "Email Pribadi", "Telepon", "Email Kantor", "Nama Emergency Contact", "Telepon Emergency Contact", "Hubungan Emergency Contact"];
+        $sheet->fromArray($headerContent,NULL,'A2');  
+
+        $datas = User::join('tb_company', 'tb_company.id_company', '=', 'users.id_company')
+                    ->select('nik', 'name', 'status_kerja', 
+                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN '' WHEN (id_position = 'ENGINEER STAFF') THEN 'SID' WHEN (id_division = 'TECHNICAL PRESALES') THEN 'SOL' WHEN (id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE id_division END) as id_division"), 
+                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN 'DIRECTOR' WHEN (id_position = 'ENGINEER STAFF') THEN 'STAFF' WHEN (id_position = 'ENGINEER MANAGER') THEN 'MANAGER' ELSE id_position END) as id_position"),  
+                        DB::raw("(CASE WHEN (id_division = 'TECHNICAL' and id_territory is null) THEN 'OPERATION' WHEN (id_territory = 'DPG') THEN 'OPERATION' WHEN (id_territory = 'PRESALES') THEN 'OPERATION' WHEN (id_territory = 'ACC') THEN 'FINANCE' WHEN (id_division = 'HR') THEN 'OPERATION' ELSE id_territory END) as id_territory"), 
+                    'date_of_entry', 'tempat_lahir', 'date_of_birth', 'jenis_kelamin', 'no_ktp', 'alamat_ktp', 'no_kk', 'no_npwp', 'bpjs_kes', 'bpjs_ket', 'pend_terakhir', 'email_pribadi', 'phone', 'email', 'name_ec', 'phone_ec', 'hubungan_ec')
+                    ->where('status_delete','D')
+                    ->where('users.id_company', '1')
+                    ->where('nik', '<>', '1100463060')
+                    ->where('nik', '<>', '1100881060')
+                    ->where('nik', '<>', '1050165120')
+                    ->where('nik', '<>', '1171294021')
+                    ->get();      
+                    // return $datas;
+
+        $datas =  $datas->map(function($item,$key) use ($sheet){
+            $item->phone = "0" . $item->phone;
+            $sheet->fromArray(array_merge([$key + 1],array_values($item->toArray())),NULL,'A' . ($key + 3));
+            $sheet->setCellValueExplicit('L'.($key + 3),$item->no_ktp,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('N'.($key + 3),$item->no_kk,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('O'.($key + 3),$item->no_npwp,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('P'.($key + 3),$item->bpjs_kes,DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('Q'.($key + 3),$item->bpjs_ket,DataType::TYPE_STRING);
+        });
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setAutoSize(true);
+        $sheet->getColumnDimension('K')->setAutoSize(true);
+        $sheet->getColumnDimension('L')->setAutoSize(true);
+        $sheet->getColumnDimension('M')->setAutoSize(true);
+        $sheet->getColumnDimension('N')->setAutoSize(true);
+        $sheet->getColumnDimension('O')->setAutoSize(true);
+        $sheet->getColumnDimension('P')->setAutoSize(true);
+        $sheet->getColumnDimension('Q')->setAutoSize(true);
+        $sheet->getColumnDimension('R')->setAutoSize(true);
+        $sheet->getColumnDimension('S')->setAutoSize(true);
+        $sheet->getColumnDimension('T')->setAutoSize(true);
+        $sheet->getColumnDimension('U')->setAutoSize(true);
+        $sheet->getColumnDimension('V')->setAutoSize(true);
+        $sheet->getColumnDimension('W')->setAutoSize(true);
+        $sheet->getColumnDimension('X')->setAutoSize(true);
+
+        $fileName = 'SIP Resign Employee ' . date('Y') . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
         header('Cache-Control: max-age=0');

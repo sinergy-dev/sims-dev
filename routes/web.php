@@ -273,12 +273,14 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/getTotalNominalByPid', 'PrController@getTotalNominalByPid');
 	Route::get('/getTotalNominalByCatIpr', 'PrController@getTotalNominalByCatIpr');
 	Route::get('/getTotalNominalByCatEpr', 'PrController@getTotalNominalByCatEpr');
+	Route::get('/getTopFiveSupplier', 'PrController@getTopFiveSupplier');
 
 	Route::get('/getTotalPrbyTypeYear', 'PrController@getTotalPrYear');
 	Route::get('/getTotalNominalByCatYear', 'PrController@getTotalNominalByCatYear');
 	Route::get('/getTotalNominalByPidYear', 'PrController@getTotalNominalByPidYear');
 	Route::get('/getTotalNominalByCatIprYear', 'PrController@getTotalNominalByCatIprYear');
 	Route::get('/getTotalNominalByCatEprYear', 'PrController@getTotalNominalByCatEprYear');
+	Route::get('/getTopFiveSupplierYear', 'PrController@getTopFiveSupplierYear');
 
 	
 	Route::get('/getPrByPid', 'PrController@getPrByPid');
@@ -350,6 +352,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/admin/getPerson', 'PrDraftController@getPerson');
 	Route::post('admin/storeTax', 'PrDraftController@storeTax');
 	Route::post('admin/storeTaxComparing', 'PrDraftController@storeTaxComparing');
+	Route::get('admin/getSupplier', 'PrDraftController@getSupplier');
 
 
 	Route::get('/po', 'PONumberController@index');
@@ -488,6 +491,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/profile/delete_pict','HRController@delete_pict');
 	Route::get('/hu_rec/get_hu','HRController@getdatahu');
 	Route::get('/exportExcelEmployee', 'HRController@exportExcelEmployee');
+	Route::get('/exportExcelResignEmployee', 'HRController@exportExcelResignEmployee');
 	Route::get('/guideLine','HRController@GuideLineIndex');
 	Route::get('/storeGuide','HRController@storeGuideLine');
 	Route::get('/updateGuide','HRController@updateGuideLine');
