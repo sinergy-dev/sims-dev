@@ -261,7 +261,7 @@ GA ATK
                       @elseif($data->status == 'ACCEPT')
                         <label class="label label-primary" style="width: 90px">ACCEPTED</label>
                       @elseif($data->status == 'REJECT')
-                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                        <button class=" btn btn-sm btn-danger" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @elseif($data->status == 'PROSES')
                         <label class="label label-default" style="width: 90px">PROSES PR</label>
                       @elseif($data->status == 'DONE')
@@ -299,7 +299,7 @@ GA ATK
                         @elseif($data->status == 'ACCEPT')
                           <label class="label label-primary" style="width: 90px">ACCEPTED</label>
                         @elseif($data->status == 'REJECT')
-                          <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" > REJECTED</button>
+                          <button class=" btn btn-sm btn-danger" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" > REJECTED</button>
                         @endif
                       </td>
                       <td>
@@ -367,7 +367,7 @@ GA ATK
                       @elseif($data->status == 'ACCEPT')
                         <label class="label label-primary" style="width: 90px">ACCEPTED</label>
                       @elseif($data->status == 'REJECT')
-                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                        <button class=" btn btn-sm btn-danger" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @elseif($data->status == 'PROSES')
                         <label class="label label-default" style="width: 90px">PROSES PR</label>
                       @elseif($data->status == 'DONE')
@@ -389,7 +389,7 @@ GA ATK
                       @elseif($data->status == 'DONE')
                         <label class="label label-primary">DONE</label>
                       @elseif($data->status == 'REJECT')
-                        <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                        <button class=" btn btn-sm btn-danger" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                       @endif
                     </td>
                   </tr>
@@ -438,7 +438,7 @@ GA ATK
                         @elseif($data->status == 'ACCEPT')
                           <label class="status-win" style="width: 90px">ACCEPTED</label>
                         @elseif($data->status == 'REJECT')
-                          <button class=" btn btn-sm status-lose" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
+                          <button class=" btn btn-sm btn-danger" data-target="#reject_note_modal" data-toggle="modal" style="width: 90px; color: white;" onclick="reject_note('{{$data->id_transaction}}', '{{$data->note}}')"> REJECTED</button>
                         @elseif($data->status == 'PROSES')
                           <label class="status-sd" style="width: 90px">PROSES PR</label>
                         @elseif($data->status == 'DONE')
