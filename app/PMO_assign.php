@@ -8,6 +8,6 @@ class PMO_assign extends Model
 {
 	protected $table = 'tb_pmo_assign';
     protected $primaryKey = 'id';
-    protected $fillable = ['id_pmo','role','nik'];
+    protected $fillable = ['id_project','role','nik'];
     public $timestamps = false;
 }

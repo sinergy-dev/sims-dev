@@ -6,14 +6,15 @@ use Illuminate\Http\Request;
 
 use App\GanttTaskPmo;
 use App\PMO;
+use Carbon\Carbon;
 
 class GanttTaskPMOController extends Controller
 {
 
 
-    public function store(Request $request, $id_pmo){
+    public function store(Request $request){
 
-        $id_pmo = PMO::select('id_pmo')->where('id_pmo',$id_pmo)->first();
+        $id_pmo = PMO::select('id_pmo')->where('id_pmo',$request->id_pmo)->first();
  
         $task = new GanttTaskPmo();
  
@@ -32,11 +33,14 @@ class GanttTaskPMOController extends Controller
         ]);
     }
  
-    public function update($id, Request $request, $id_pmo){
-        $task = GanttTaskPmo::find($id_pmo);
+    public function update($id, Request $request){
+        $task = GanttTaskPmo::find($id);
  
         $task->text = $request->text;
         $task->start_date = $request->start_date;
+        $task->end_date = $request->end_date;
+        $task->baseline_start = $request->baseline_start;
+        $task->baseline_end = $request->baseline_end;
         $task->duration = $request->duration;
         $task->progress = $request->has("progress") ? $request->progress : 0;
         $task->parent = $request->parent;
@@ -48,12 +52,29 @@ class GanttTaskPMOController extends Controller
         ]);
     }
  
-    public function destroy($id, $id_pmo){
-        $task = GanttTaskPmo::find($id_pmo);
+    public function destroy(R$id, equest $request){
+        $task = GanttTaskPmo::find($id);
         $task->delete();
  
         return response()->json([
             "action"=> "deleted"
+        ]);
+    }
+
+    public function createBaseline(Request $request){
+        $getTask = GanttTaskPmo::where('id_pmo',$request->id_pmo)->get();
+
+        foreach($getTask as $loop){
+            GanttTaskPmo::where('id', $loop->id)->update(['baseline_start'=>$loop->start_date]);
+        }
+
+        foreach($getTask as $loop){
+            // GanttTaskPmo::where('id', $loop->id)->update(['baseline_end'=> (new Carbon( $loop->start_date))->addDays((int) $loop->duration)]);
+            GanttTaskPmo::where('id', $loop->id)->update(['baseline_end'=> $loop->end_date]);
+        }
+
+        return response()->json([
+            "action"=> "updated"
         ]);
     }
 }

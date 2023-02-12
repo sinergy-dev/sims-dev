@@ -470,14 +470,14 @@
                         <h3 class="box-title">Sign File</h3>
                       </div>
                       <div class="box-body">
-                        @if($user_profile->ttd == null)
-                          <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @if($user_profile->ttd_digital == null)
+                          <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarsign" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @else
-                          <img class="entry" src="{{url($user_profile->ttd)}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;"/>
+                          <img class="entry" src="{{url($user_profile->ttd_digital)}}" id="showgambarsign" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @endif
                       </div>
                       <div class="box-footer">
-                          <input type="file" id="inputSign" name="inputSign" value="{{$user_profile->ttd}}">
+                          <input type="file" id="inputSign" name="inputSign">
                       </div>
                     </div>
                   </div>
@@ -1031,6 +1031,8 @@
           $('#showgambarbpjs_kes').attr('src', e.target.result);
 
           $('#showgambarbpjs_ket').attr('src', e.target.result);
+          
+          $('#showgambarsign').attr('src', e.target.result);
           
         }
 
