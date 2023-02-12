@@ -1082,7 +1082,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/getHandoverProject','PMProjectController@getHandoverProject');
 	Route::get('/PMO/getTotalProject','PMProjectController@getTotalProject');
 	Route::get('/PMO/getProjectHealth','PMProjectController@getProjectHealth');
-	Route::post('/PMO/deleteAssign','TestController@deleteAssign');
+	Route::post('/PMO/deleteAssign','PMProjectController@deleteAssign');
 
 	
 

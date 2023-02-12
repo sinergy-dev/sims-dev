@@ -110,6 +110,14 @@ class PMProjectController extends Controller
 		]);
 	}
 
+    public function deleteAssign(Request $request){
+
+        $delete = PMO::where('id',$request->id_pmo)->first();
+        $delete->delete();
+
+        return 'deleted';
+    }
+
 	public function getListDataProject(){
 		$getListLeadRegister = DB::table('sales_lead_register')->join('tb_id_project', 'tb_id_project.lead_id', '=', 'sales_lead_register.lead_id')
                         ->select('opp_name as name_project','tb_id_project.id_project as project_id', 'sales_lead_register.nik');
