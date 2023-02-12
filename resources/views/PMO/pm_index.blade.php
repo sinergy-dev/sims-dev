@@ -73,7 +73,11 @@ PMO
         <ol class="breadcrumb">
             <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active">PMO Dashboard</li>
-        </ol>
+        </ol><br>
+        <div class="alert alert-warning alert-dismissible" id="alert" style="display:none">
+			<h4><i class="icon fa fa-warning"></i> Alert!</h4>
+			Please upload your sign on <a href="{{url('/profile_user')}} target='_blank' style='color:blue'>profile page</a> first, for enable project charter button!
+		</div>
     </section>
 
     <section class="content">
@@ -856,9 +860,16 @@ PMO
                           return '<button class="btn btn-sm bg-purple disabled" style="width:110px"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                         }else{
                           if (row.status == 'Approve') {
-                            return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+	                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+	                          		$("#alert").show()
+	                          		$("button[name='btnShowProjectCharter']").prop("disabled",true)
+	                          		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
+	                          		console.log("{{Auth::User()->ttd_digital}}")
+	                          	}
+
+	                          	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
                           }else if (row.status == 'Reject') {
-                            return '<button class="btn btn-sm btn-danger disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-wrench"></i>&nbsp Revision</button>'                            
+                            return '<button class="btn btn-sm btn-danger disabled" style="width:110px;"><i class="fa fa-wrench"></i>&nbsp Revision</button>'                            
                           }else if (row.status == 'Done'){
                             return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                           }else{
@@ -881,17 +892,31 @@ PMO
                         }
                       }else{
                         if (row.status == null) {
-                          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button> <button onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px"><i class="fa fa-trash"></i> Delete</button>'
-                          }else{
-                            return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +',' + "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
-                          }  
+	                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+	                          		$("#alert").show()
+	                          		$("button[name='btnAddProjectCharter']").prop("disabled",true)
+	                          		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
+	                          	}
+	                          		console.log("{{Auth::User()->ttd_digital}}" == "")
+
+
+                          		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                            		return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button> <button onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px"><i class="fa fa-trash"></i> Delete</button>'
+                          		}else{
+                            		return "<button class='btn btn-sm btn-primary' style='width:110px' id='btnAddProjectCharter' name='btnAddProjectCharter' onclick='btnAddProjectCharter(0," + "'" + row.id + "'" +',' + "'create'" +")><i class='fa fa-plus'></i>&nbsp Project Charter</button>"
+                          		}  
                         }else if(row.status == 'New'){
-                          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          }else{
-                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          }                          
+                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+	                          	$("#alert").show()
+                          		$("button[name='btnShowProjectCharter']").prop("disabled",true)
+                          		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
+                          	}
+
+                          	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                            	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                          	}else{
+                            	return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnAddProjectCharter" 	name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                          	}                          
                         }else if(row.status == 'Reject'){
                           if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
                             return '<button class="btn btn-sm btn-danger disabled" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
@@ -899,11 +924,18 @@ PMO
                             return '<button class="btn btn-sm btn-danger" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'revision'" +')"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
                           }                                 
                         }else if(row.status == 'Draft'){
-                          if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
-                          }else{
-                            return '<button class="btn btn-sm btn-primary" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'draft'" +')"><i class="fa fa-wrench"></i>&nbsp Project Charter</button>'
-                          } 
+                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+	                          	$("#alert").show()
+                          		$("button[name='btnAddProjectCharter']").prop("disabled",true)
+                          		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
+	                          		console.log("uwoo")
+                          	}
+
+                          	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
+                            	return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
+                          	}else{
+                            	return '<button class="btn btn-sm btn-primary" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'draft'" +')"><i class="fa fa-wrench"></i>&nbsp Project Charter</button>'
+                          	} 
                         }else if (row.status == 'Approve') {
                           if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
                             return '<button class="btn btn-sm btn-primary disabled" style="width:110px;" id="btnAddProjectCharter" name="btnAddProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
@@ -1411,8 +1443,8 @@ PMO
                 append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
                 append = append + ' <option value="Legal">Legal</option>'
                 append = append +'</select></td>'
-                append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control disabled" data-value="'+ index +'"/></td>'
-                append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control disabled" data-value="'+ index +'"/></td>'
+                append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ index +'"/></td>'
+                append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ index +'"/></td>'
                 append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ index +'"/></td>'
                 append = append +'</tr>'
 
@@ -2683,8 +2715,8 @@ PMO
       append = append + ' <option value="WH Delivery Team">WH Delivery Team</option>'
       append = append + ' <option value="Legal">Legal</option>'
       append = append +'</select></td>'
-      append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control" data-value="'+ incIstakeholder +'"/></td>'
-      append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control"data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input id="inputEmailStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ incIstakeholder +'"/></td>'
+      append = append +'  <td><input id="inputPhoneStakeholder" style="width:90px" class="form-control disabled" disabled data-value="'+ incIstakeholder +'"/></td>'
       append = append +'  <td><button type="button" class="fa fa-trash" style="color:red;background-color:transparent;border:none;margin-top:10px" id="btnDeleteRowIStakeholder" class="form-control"data-value="'+ incIstakeholder +'"/></td>'
       append = append +'</tr>'
 
