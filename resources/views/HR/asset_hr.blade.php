@@ -102,7 +102,7 @@ GA Asset
               <button class="btn btn-sm btn-success pull-right" data-toggle="modal" id="btnAdd" style="display: none;"><i class="fa fa-plus"> </i>&nbsp Asset</button>
               <!-- <a href="{{action('AssetHRController@export')}}" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</a> -->
               <button onclick="exportExcel()" id="btnExport" class="btn btn-info btn-sm pull-right" style="margin-right: 5px;display: none;"><i class="fa fa-cloud-download"></i>&nbsp&nbspExport</button>
-              <button href="" id="btnImport" onclick="importData()" class="btn btn-warning btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button>
+              <button id="btnImport" onclick="importData()" class="btn btn-warning btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-cloud-upload"></i>&nbsp&nbspImport</button>
 
               <!-- <div class="box-body">
                 <form action="{{ url('import') }}" method="POST" enctype="multipart/form-data">
@@ -1164,6 +1164,7 @@ GA Asset
             activeTab('request_asset')  
             $('#btnAdd').hide()
             $('#btnExport').hide() 
+            $('#btnImport').hide()
           }else{
             activeTab('asset_list') 
             $('#asset_list').addClass('active')
@@ -1197,9 +1198,11 @@ GA Asset
               // $("#btnAdd").attr('data-target','#add_kategori');
               $("#btnAdd").attr('onclick','addKategori()');
               $("#btnAdd").removeAttr('data-toggle');
+              $('#btnImport').hide();
             }else if ($(e.target).attr("id") == "request_list") {
               $("#btnAdd").hide();
               $("#btnExport").hide();
+              $('#btnImport').hide();
             }
           })
         }else{
@@ -1210,6 +1213,7 @@ GA Asset
           $('#request_asset').removeClass('active')
           $('#btnAdd').hide()
           $('#btnExport').hide() 
+          $('#btnImport').hide();
         }
     })
 
