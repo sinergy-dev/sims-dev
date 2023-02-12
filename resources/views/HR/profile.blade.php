@@ -392,12 +392,13 @@
                     <div class="box box-primary" style="background-color: #F7F7F7;">
                       <div class="box-header">
                         <h3 class="box-title">NPWP File</h3>
+                        <button type="button" class="btn btn-sm btnRotateNpwp" style="color:black;float: right;background-color: transparent;" onclick="rotateImage('npwp','showgambarnpwp')" name=""><i class="fa  fa-rotate-right"></i></button>
                       </div>
                       <div class="box-body">
                         @if($user_profile->npwp_file == "-" )
                         <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarnpwp" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @else
-                          <img class="entry" src="{{url('image') . "/" . $user_profile->npwp_file}}" id="showgambarnpwp" style="max-width: 300px;max-height: 400px;float: left;"/>
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->npwp_file}}" id="showgambarnpwp" style="max-width: 200px;max-height: 200px;border-radius:5px;margin:0px auto;display:block"/>
                         @endif
                       </div>
                       <div class="box-footer">
@@ -410,12 +411,13 @@
                     <div class="box box-primary" style="background-color: #F7F7F7;">
                       <div class="box-header">
                         <h3 class="box-title">KTP File</h3>
+                        <button type="button" class="btn btn-sm btnRotateKtp" style="color:black;float: right;background-color: transparent;" onclick="rotateImage('npwp','showgambarktp')" name=""><i class="fa  fa-rotate-right"></i></button>
                       </div>
                       <div class="box-body">
                         @if($user_profile->ktp_file == "-" || $user_profile->ktp_file == null || $user_profile->ktp_file == "")
                           <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarktp" style="max-width: 200px;max-height: 200px; align-items: center;"/>
                         @else
-                          <img class="entry" src="{{url('image') . "/" . $user_profile->ktp_file}}" id="showgambarktp" style="max-width: 400px;max-height: 400px;float: left;"/>
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->ktp_file}}" id="showgambarktp"  style="max-width: 200px;max-height: 200px;border-radius:5px;margin:0px auto;display:block"/>
                         @endif
                       </div>
                       <div class="box-footer">
@@ -433,10 +435,10 @@
                         @if($user_profile->bpjs_ket == "-")
                           <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @else
-                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_ket}}" id="showgambarbpjs_ket" style="max-width: 400px;max-height: 400px;float: left;"/>
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_ket}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;border-radius:5px"/>
                         @endif
                       </div>
-                      <div class="box-footer">
+                      <div class="box-footer" style="display:none;">
                           <input type="file" id="inputgambarbpjs_ket" name="bpjs_ket" value="{{$user_profile->bpjs_ket}}">
                       </div>
                     </div>
@@ -456,7 +458,7 @@
                           <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_kes}}" id="showgambarbpjs_kes" style="max-width: 400px;max-height: 400px;float: left;"/>
                         @endif
                       </div>
-                      <div class="box-footer">
+                      <div class="box-footer" style="display:none;">
                           <input type="file" id="inputgambarbpjs_kes" name="bpjs_kes" value="{{$user_profile->bpjs_kes}}">
                       </div>
                     </div>
@@ -712,6 +714,19 @@
 @section('script')
 <script type="text/javascript">
   $(document).ready(function(){
+    if ($("#showgambarnpwp").attr("src").split("/")[4] == "") {
+      $(".btnRotateNpwp").prop("disabled",true)
+    }else{
+      $(".btnRotateNpwp").prop("disabled",false)
+    }
+
+    if ($("#showgambarktp").attr("src").split("/")[4] == "") {
+      $(".btnRotateKtp").prop("disabled",true)
+    }else{
+      $(".btnRotateKtp").prop("disabled",false)
+    }
+
+
     $("[data-mask]").inputmask();
 
     $("#phone").val("{{'0' . $user_profile->phone}}")
@@ -728,6 +743,32 @@
       format: 'dd/mm/yyyy',
     })
   })
+
+  let degree = 90
+  let count = 0
+  function rotateImage(checkFile,id) {
+    count++
+    console.log(count)
+    if (count == 0) {
+      degree += 0
+    }else if (count == 1) {
+      degree += 90
+    }else if (count == 2) {
+      degree += 90
+    }else if (count == 3) {
+      degree += 90
+      count = 0
+    }
+    $('#'+id).animate({  transform: degree }, {
+      step: function(now,fx) {
+          $(this).css({
+              '-webkit-transform':'rotate('+now+'deg)', 
+              '-moz-transform':'rotate('+now+'deg)',
+              'transform':'rotate('+now+'deg)'
+          });
+      }
+      });
+  }
 
   $('#inputgambar').on('change', function() { 
 
