@@ -49,7 +49,7 @@ Route::get('/admin/mergePdf', 'PrDraftController@mergePdf');
 
 Route::get('/PMO/downloadProjectCharterPdf','PMProjectController@downloadProjectCharterPdf');
 Route::get('/PMO/downloadProgressMeetingPdf','PMProjectController@downloadProgressMeetingPdf');
-Route::get('/PMO/downloadFinalProjectPdf','TestController@downloadFinalProjectPdf');
+Route::get('/PMO/downloadFinalProjectPdf','PMProjectController@downloadFinalProjectPdf');
 
 
 // Route::get('testPermissionConfigFeature','TestController@testPermissionConfigFeature');

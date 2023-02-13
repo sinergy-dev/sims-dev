@@ -242,9 +242,14 @@ class PMProjectController extends Controller
     }
 
     public function downloadFinalProjectPdf(Request $request){
-    	$pdf = PDF::loadView('PMO.Pdf.finalProject');
-        // return $pdf;
-        return $pdf->download('final_project.pdf');
+        $data = PMOFinalReport::join('tb_pmo', 'tb_pmo.id','tb_pmo_final_report.id_project')->where('tb_pmo_final_report.id_project', $request->id_pmo)->first();
+        $data = json_decode($data,true);
+
+        // return $data;
+
+        $pdf = PDF::loadView('PMO.Pdf.finalProject', compact('data'));
+        $fileName = ' Project Charter.pdf';
+        return $pdf->stream($fileName);
     }
 
     public function getPMStaff()
