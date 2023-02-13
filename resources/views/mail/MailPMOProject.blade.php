@@ -146,7 +146,7 @@
 				Best Regard,
 			</p><br>
 			<p style="font-size: 16px">
-				Tech - Dev
+				BCD - Dev
 			</p>
 		</div>
 	</div>

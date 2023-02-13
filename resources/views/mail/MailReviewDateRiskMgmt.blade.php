@@ -57,7 +57,7 @@
 		<img src="{{ asset('image/sims_sangar_2.png')}}" style="width: 10%; height: 10%">
 	</div>
 	<div style="line-height: 1.5em">
-		<center><img src="{{asset('image/project_charter.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
+		<center><img src="{{asset('image/risk_review.png')}}" href="https://app.sinergy.co.id/login" style="width: 50%; height: 50%" readonly></center>
 	</div>
 	<div style="line-height: 1.5em;padding: 10px;">
 		<div style="color: #141414; font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
