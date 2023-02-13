@@ -34,6 +34,12 @@ use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -3052,5 +3058,137 @@ class PMProjectController extends Controller
 
         // return array("data" => $dataOnGoing);
         // return array("data"=>collect([["count"=>$dataOnGoing->on_going,"label"=>"WIP"],["count"=>$sum,"label"=>"Done"]]));
+    }
+
+    public function exportRiskExcel(Request $request)
+    {
+        $getIdProject = PMO::where('id',$request->id_pmo)->first()->project_id;
+
+        // return $getIdProject;
+
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Risk Management');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:J1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:J1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Project Risk Management - Id Project [ '. $getIdProject.' ]');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER];
+        $sheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+
+        $headerContent = ["No", "Risk Description", "Risk Owner", "Impact", "Likelihood",  "Impact Rank", "Risk Response", "Due Date", "Review Date", "Status"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $risks = PMORisk::select('risk_description','risk_owner','impact','likelihood','impact_rank','risk_response','due_date','review_date','status')->where('id_project',$request->id_pmo)->get();
+
+        foreach ($risks as $key => $data) {
+            $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 3));
+        }
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+        $sheet->getColumnDimension('I')->setAutoSize(true);
+        $sheet->getColumnDimension('J')->setAutoSize(true);
+
+
+
+        $fileName = 'Project Risk Management - Id Project [ '. $getIdProject. ' ] '. '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+
+    }
+
+    public function exportIssueExcel(Request $request)
+    {
+        $getIdProject = PMO::where('id',$request->id_pmo)->first()->project_id;
+
+        // return $getIdProject;
+
+        $spreadsheet = new Spreadsheet();
+
+        $prSheet = new Worksheet($spreadsheet,'Issue Management');
+        $spreadsheet->addSheet($prSheet);
+        $spreadsheet->removeSheetByIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->mergeCells('A1:H1');
+        $normalStyle = [
+            'font' => [
+                'name' => 'Calibri',
+                'size' => 11
+            ],
+        ];
+
+        $titleStyle = $normalStyle;
+        $titleStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER];
+        $titleStyle['borders'] = ['outline' => ['borderStyle' => Border::BORDER_THIN]];
+        $titleStyle['fill'] = ['fillType' => Fill::FILL_SOLID];
+        $titleStyle['font']['bold'] = true;
+
+        $sheet->getStyle('A1:H1')->applyFromArray($titleStyle);
+        $sheet->setCellValue('A1','Project Issue Management - Id Project [ '. $getIdProject.' ]');
+
+        $headerStyle = $normalStyle;
+        $headerStyle['font']['bold'] = true;
+        $headerStyle['alignment'] = ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER];
+        $sheet->getStyle('A2:J2')->applyFromArray($headerStyle);
+
+        $headerContent = ["No", "Issue Description", "Solution Plan", "Owner", "Rating Severity",  "Expected Date", "Actual Date", "Status"];
+        $sheet->fromArray($headerContent,NULL,'A2');
+
+        $risks = PMOIssue::select('issue_description','solution_plan','owner','rating_severity','expected_date','actual_date','status')->where('id_project',$request->id_pmo)->get();
+
+        foreach ($risks as $key => $data) {
+            $sheet->fromArray(array_merge([$key + 1],array_values($data->toArray())),NULL,'A' . ($key + 3));
+        }
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
+        $sheet->getColumnDimension('H')->setAutoSize(true);
+
+
+
+        $fileName = 'Project Issue Management - Id Project [ '. $getIdProject. ' ] '. '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = new Xlsx($spreadsheet);
+        return $writer->save("php://output");
+
     }
 }

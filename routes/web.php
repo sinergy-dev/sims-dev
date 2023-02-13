@@ -1083,6 +1083,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/getTotalProject','PMProjectController@getTotalProject');
 	Route::get('/PMO/getProjectHealth','PMProjectController@getProjectHealth');
 	Route::post('/PMO/deleteAssign','PMProjectController@deleteAssign');
+	Route::get('/PMO/exportRiskExcel','PMProjectController@exportRiskExcel');
+	Route::get('/PMO/exportIssueExcel','PMProjectController@exportIssueExcel');
 
 	
 

@@ -343,6 +343,7 @@ PMO
 	            <div class="box-header">
 	            	<h3 class="box-title">Issue & Problems</h3>
 	                <div class="box-tools">
+	                	<button class="btn btn-sm btn-success" onclick="exportExcelIssue()"><i class="fa fa-file-excel-o"></i> Issue</button>
 	                	<button class="btn btn-sm btn-primary" id="btnAddIssue" style="display:none;" onclick="btnAddIssue()"><i class="fa fa-plus"></i>&nbspIssue</button>
 	                </div>
 	            </div>
@@ -363,6 +364,7 @@ PMO
 	            <div class="box-header">
 	            	<h3 class="box-title">Risk</h3>
 	                <div class="box-tools">
+	                	<button class="btn btn-sm btn-success" onclick="exportExcelRisk()"><i class="fa fa-file-excel-o"></i> Excel</button>
 	                	<button class="btn btn-sm btn-primary" id="btnAddRisk" style="display:none" onclick="btnAddRisk()"><i class="fa fa-plus"></i>&nbspRisk</button>
 	                </div>
 	            </div>
@@ -658,9 +660,9 @@ PMO
                         <div class="form-group">
                           <label>Status*</label>
                           <select class="form-control select2" id="selectStatusRisk" name="selectStatusRisk">
-                            <option value="active">Active</option>
-                            <option value="obsolete">Obsolete</option>
-                            <option value="accepted">Accepted</option>
+                            <option value="Active">Active</option>
+                            <option value="Obsolete">Obsolete</option>
+                            <option value="Accepted">Accepted</option>
                           </select>
                           <span class="help-block" style="display:none;">Please fill Status!</span>
                         </div>
@@ -6042,5 +6044,15 @@ PMO
 	    })
   	}
 
+  	var url = {!! json_encode(url('/')) !!}
+  	function exportExcelRisk(){
+      	myUrl       = url+"/PMO/exportRiskExcel?id_pmo="+window.location.href.split("/")[6].split("?")[0]
+      	location.assign(myUrl)
+  	}
+
+  	function exportExcelIssue(){
+  		myUrl       = url+"/PMO/exportIssueExcel?id_pmo="+window.location.href.split("/")[6].split("?")[0]
+      	location.assign(myUrl)
+  	}
 </script>
 @endsection
