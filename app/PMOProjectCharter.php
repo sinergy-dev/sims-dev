@@ -190,10 +190,10 @@ class PMOProjectCharter extends Model
 
         if ($data->project_type == 'maintenance') {
            $sign->whereRaw("(`users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "PMO Project Coordinator","PMO Manager","Sales Staff","Sales Manager","BCD Manager")');
+            ->orderByRaw('FIELD(position, "PMO Project Coordinator","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
         } else {
             $sign->whereRaw("(`users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "PMO Staff","PMO Manager","Sales Staff","Sales Manager","BCD Manager")');
+            ->orderByRaw('FIELD(position, "PMO Staff","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
         }
 
         return empty($sign->get()->where('signed','false')->first()->name)?'-':$sign->get()->where('signed','false')->first()->name;
@@ -264,10 +264,10 @@ class PMOProjectCharter extends Model
 
         if ($data->project_type == 'maintenance') {
            $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "Project Coordinator","PMO Manager","Account Manager","Sales Manager","BCD Manager")');
+            ->orderByRaw('FIELD(position, "Project Coordinator","PMO Manager","Account Manager","Sales Manager","BCD Manager","Operations Director")');
         } else {
             $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "Project Manager","PMO Manager","Account Manager","Sales Manager","BCD Manager")');
+            ->orderByRaw('FIELD(position, "Project Manager","PMO Manager","Account Manager","Sales Manager","BCD Manager","Operations Director")');
         }
 
         return empty($sign->get())?'-':$sign->get();
