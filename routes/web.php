@@ -1063,8 +1063,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/PMO/updateStatusTask','PMProjectController@updateStatusTask');
 	Route::get('/PMO/getProgressBar','PMProjectController@getProgressBar');
 	Route::post('/PMO/storeCustomerInfoProjectCharter','PMProjectController@storeCustomerInfoProjectCharter');
-	Route::get('/PMO/mailPMO','TestController@mailPMO');
-	Route::get('/PMO/getFinalReportById','TestController@getFinalReportById');
+	Route::get('/PMO/mailPMO','PMProjectController@mailPMO');
+	Route::get('/PMO/getFinalReportById','PMProjectController@getFinalReportById');
 	Route::get('/PMO/getDeliverableDocument','PMProjectController@getDeliverableDocument');
 	Route::post('/PMO/storeDocument','PMProjectController@storeDocument');
 	Route::get('/PMO/getProjectDocument','PMProjectController@getProjectDocument');

@@ -110,6 +110,14 @@ class PMProjectController extends Controller
 		]);
 	}
 
+    public function mailPMO(Request $request){
+        return view('mail/MailPMOProject');
+    }
+
+    public function getFinalReportById(Request $request){
+        return PMOFinalReport::where('id_project',$request->id_pmo)->get();
+    }
+
     public function deleteAssign(Request $request){
 
         $delete = PMO::where('id',$request->id_pmo)->first();
