@@ -218,7 +218,17 @@
           <div class="tab-add" style="display:none;">
             <div class="form-group">
               <label for="">To*</label>
-              <input autocomplete="off" type="" class="form-control" placeholder="ex. eSmart Solution" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
+              <select id="selectTo" name="selectTo" class="form-control select2" style="width:100%!important" onchange="fillInput('selectTo')"><option></option></select>
+              <a id="otherTo" style="cursor:pointer;">Other</a>
+              <div id="divInputTo" class="divInputTo" style="display: none;">
+                <button type="button" class="close" aria-hidden="true" style="color:red">×</button>
+                <input autocomplete="off" type="" class="form-control" placeholder="ex. PT Multi Solusindo Perkasa" id="inputTo" name="inputTo" onkeyup="fillInput('to')">
+                <small>
+                  *Sertakan bentuk usaha/badan hukum dari supplier apabila ada (PT/CV)<br>
+                  *PT/CV ditulis capital<br>
+                  *Nama perusahaan ditulis dengan Capital diawal suku kata(Multi Solusindo Perkasa)
+                </small>
+              </div>
               <span class="help-block" style="display:none;">Please fill To!</span>
             </div>      
 
@@ -3379,6 +3389,26 @@
                     
     } else {
       if (n == 0) {
+        $.ajax({
+          url:"{{url('/admin/getSupplier')}}",
+          type:"GET",
+          success:function(result){
+            console.log(result)
+            $("#selectTo").select2({
+              data:result,
+              placeholder:"Select Supplier"
+            })
+          }
+        })
+
+        $("#otherTo").click(function(){
+          $("#divInputTo").show("slow")
+        })
+
+        $(".close").click(function(){
+          $("#divInputTo").hide("slow")
+        })
+
         $("#divNotePembanding").show()
         $("#selectType").attr("disabled",true)
         $("#selectCategory").attr("disabled",true)
@@ -3719,9 +3749,13 @@
   }
 
   function fillInput(val){
-    if (val == "to") {
-      $("#inputTo").closest('.form-group').removeClass('has-error')
-      $("#inputTo").closest('input').next('span').hide();
+    if (val == "selectTo") {
+        $("#selectTo").closest('.form-group').removeClass('has-error')
+        $("#selectTo").closest('.form-group').find('.help-block').hide();
+        $("#selectTo").prev('.input-group-addon').css("background-color","red");
+    }else if (val == "to") {
+      $("#inputTo").closest('.divInputTo').closest('.form-group').removeClass('has-error')
+      $("#inputTo").closest('.divInputTo').find('.help-block').hide();
       $("#inputTo").prev('.input-group-addon').css("background-color","red");
     }else if (val == "email") {
       const validateEmail = (email) => {
@@ -3918,10 +3952,15 @@
       }
     }
     if (currentTab == 0) {
-      if ($("#inputTo").val() == "") {
-        $("#inputTo").closest('.form-group').addClass('has-error')
-        $("#inputTo").closest('input').next('span').show();
-        $("#inputTo").prev('.input-group-addon').css("background-color","red");
+      if ($("#selectTo").val() == "") {
+          $("#selectTo").closest('.form-group').addClass('has-error')
+          $("#selectTo").closest('.form-group').find('.help-block').show()
+          $("#selectTo").css("background-color","red");
+        if ($("#inputTo").val() == "") {
+          $("#inputTo").closest('.form-group').addClass('has-error')
+          $("#inputTo").closest('input').next('span').show();
+          $("#inputTo").prev('.input-group-addon').css("background-color","red");
+        }
       }else if ($("#inputEmail").val() == "") {
         $("#inputEmail").closest('.form-group').addClass('has-error')
         $("#inputEmail").closest('input').next('span').show();
@@ -3953,6 +3992,13 @@
         $("#inputAddress").closest('textarea').next('span').show();
         $("#inputAddress").prev('.input-group-addon').css("background-color","red");
       }else{
+        let inputTo = ""
+        if ($("#selectTo").val() == "") {
+          inputTo = $("#inputTo").val()
+        }else{
+          inputTo = $("#selectTo").val()
+        }
+
         if (value == 'true') {
           isStoreSupplier = localStorage.getItem('isStoreSupplier')
           if (isStoreSupplier == 'false') {            
@@ -3973,7 +4019,7 @@
                       url:"{{url('/admin/storePembandingSupplier')}}",
                       data:{
                         _token: "{{ csrf_token() }}",
-                        inputTo:$("#inputTo").val(),
+                        inputTo:inputTo,
                         selectType:$("#selectType").val(),
                         inputEmail:$("#inputEmail").val(),
                         inputPhone:$("#inputPhone").val(),
