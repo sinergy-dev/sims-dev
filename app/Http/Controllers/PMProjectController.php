@@ -114,10 +114,6 @@ class PMProjectController extends Controller
         return view('mail/MailPMOProject');
     }
 
-    public function getFinalReportById(Request $request){
-        return PMOFinalReport::where('id_project',$request->id_pmo)->get();
-    }
-
     public function deleteAssign(Request $request){
 
         $delete = PMO::where('id',$request->id_pmo)->first();
@@ -139,7 +135,7 @@ class PMProjectController extends Controller
 				->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
 				->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','tb_pmo_project_charter.status','implementation_type');
 
-        if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff') {
+        if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
         	$data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array']);
             // $data = PMO::get();
         } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
