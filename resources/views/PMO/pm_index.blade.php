@@ -76,7 +76,7 @@ PMO
         </ol><br>
         <div class="alert alert-warning alert-dismissible" id="alert" style="display:none">
 			<h4><i class="icon fa fa-warning"></i> Alert!</h4>
-			Please upload your sign on <a href="{{url('/profile_user')}} target='_blank' style='color:blue'>profile page</a> first, for enable project charter button!
+			Please upload your sign on <a href="{{url('/profile_user')}}" target='_blank' style='color:navy!important'>profile page</a> first, for enable project charter button!
 		</div>
     </section>
 
@@ -886,7 +886,7 @@ PMO
                     if (row.current_phase == 'New') {
                       if (row.type_project == 'Supply Only') {
                         if (row.status == null) {
-                          return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button><button onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px"><i class="fa fa-trash"></i> Delete</button>'
+                          return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px"><i class="fa fa-trash"></i> Delete</button>'
                         }else{
                           return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                         }
