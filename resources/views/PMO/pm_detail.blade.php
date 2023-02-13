@@ -2420,39 +2420,60 @@ PMO
 				})	
 
 				function validationMilestone(values,inputValue,x){
+					console.log(values)
+					console.log(inputValue)
+
+					console.log(values - inputValue)
+
 					if (values > inputValue) {
 						if (x == "weight_0") {
-							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!")
+							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>")
 						}else if (x == "weight_1") {
-							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!")
+							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>")
 						}else if (x == 'weight_2') {
-							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!")
+							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>")
 						}else if (x == 'weight_3') {
-							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!")
+							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>").show()
 						}
 					}else if(values < inputValue){
 						if (x == "weight_0") {
-							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!")
+							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}else if (x == "weight_1") {
-							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!")
+							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}else if (x == 'weight_2') {
-							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!")
+							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}else if (x == 'weight_3') {
-							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!")
+							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}
 					}else{
 						if (x == "weight_0") {
 							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").hide()
+							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").next("span").hide()
+
 							// $("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").text("")
 						}else if (x == "weight_1") {
 							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").hide()
+							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").next("span").hide()
+
 							// $("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").text("")
 						}else if (x == 'weight_2') {
 							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").hide()
+							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").next("span").hide()
+
 							// $("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").text("")
 						}else if (x == 'weight_3') {
 							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").hide()
-							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").text("")
+							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").next("span").hide()
+
+							// $("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").text("")
 						}
 					}
 				}
