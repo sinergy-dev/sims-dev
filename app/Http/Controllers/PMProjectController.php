@@ -1346,12 +1346,12 @@ class PMProjectController extends Controller
         $datas = PMO::where('id',$request->id_pmo)->first();
 
         $mail = new MailPMProject(collect([
-                "image"         => 'sirkulasi_pr.png',
+                "image"         => 'project_charter_approved.png',
                 "subject_email" => $subject_email,
                 "subject"       => $subject,
                 "pid"           => $data->project_id,
                 "to"            => $user,
-                "name_project"  => DB::table('tb_id_project')->where('id_project',$data->id_project)->first()->name_project,
+                "name_project"  => DB::table('tb_id_project')->where('id_project',$datas->project_id)->first()->name_project,
                 "project_type"  => $datas->type_project,
                 "sales_owner"   => $data->name,
                 "project_pm"    => $user_pm . "/" . $user_pc,
@@ -1450,8 +1450,10 @@ class PMProjectController extends Controller
             $email_user = DB::table('users')->where('name',$data->project_pc)->first()->email;
         }
 
-        $user_pm = $update_pc->project_pm;
-        $user_pc = $update_pc->project_pc;
+        $user_pm = $data->project_pm;
+        $user_pc = $data->project_pc;
+
+        // return [$user_pc,$user_pm];
 
         // if ($data->project_type == 'supply_only') {
         //     $type_project = 'Supply Only';
@@ -1467,9 +1469,9 @@ class PMProjectController extends Controller
                 "image"         => 'sirkulasi_pr.png',
                 "subject_email" => 'Reject Final Report',
                 "subject"       => 'Final Report has been rejected,',
-                "pid"           => $data->project_id,
+                "pid"           => $datas->project_id,
                 "to"            => $user,
-                "name_project"  => DB::table('tb_id_project')->where('id_project',$data->project_id)->first()->name_project,
+                "name_project"  => DB::table('tb_id_project')->where('id_project',$datas->project_id)->first()->name_project,
                 "project_type"  => $datas->type_project,
                 "sales_owner"   => $data->owner,
                 "project_pm"    => $user_pm . "/" . $user_pc,
@@ -2153,10 +2155,17 @@ class PMProjectController extends Controller
         // $get_id = PMOFinalReport::where('id_project', $request->id_pmo)->first()->id_project;
 
         // $update = PMOFinalReport::where('id_project',$request->id_pmo)->first();
-        $update = new PMOFinalReport();
-        $update->schedule_summary        = $request->selectScheduleSummaryFinal;
-        $update->schedule_remarks        = $request->textareaScheduleRemarks;
-        $update->save();
+        if (PMOFinalReport::where('id_project', $request->id_pmo)->exists()) {
+            $update = PMOFinalReport::where('id_project',$request->id_pmo)->first();
+            $update->schedule_summary        = $request->selectScheduleSummaryFinal;
+            $update->schedule_remarks        = $request->textareaScheduleRemarks;
+            $update->save();
+        } else {
+            $update = new PMOFinalReport();
+            $update->schedule_summary        = $request->selectScheduleSummaryFinal;
+            $update->schedule_remarks        = $request->textareaScheduleRemarks;
+            $update->save();
+        }
     }
 
     public function storeFinalReport(Request $request){
@@ -2361,9 +2370,9 @@ class PMProjectController extends Controller
                 "image"         => 'sirkulasi_pr.png',
                 "subject_email" => 'Approve Final Report',
                 "subject"       => 'Final Report has been approved,',
-                "pid"           => $data->project_id,
+                "pid"           => $datas->project_id,
                 "to"            => $user,
-                "name_project"  => DB::table('tb_id_project')->where('id_project',$data->project_id)->first()->name_project,
+                "name_project"  => DB::table('tb_id_project')->where('id_project',$datas->project_id)->first()->name_project,
                 "project_type"  => $datas->type_project,
                 "sales_owner"   => $data->owner,
                 "project_pm"    => $user_pm . "/" . $user_pc,
