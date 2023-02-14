@@ -1495,7 +1495,7 @@ PMO
 	            		$("#btnAddMilestone").prop("disabled",true)
 		            	$("#btnAddWeekly").prop("disabled",true)
 		            	$("#btnFinalProject").attr("disabled")
-
+		            	console.log("lohh")
 	            	}else{
 	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
 	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
@@ -1905,7 +1905,7 @@ PMO
 										// append = append +'				</div>'
 										append = append +' 				<div class="input-group">'
 										append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-										append = append +'					<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'">'
+										append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
 										append = append +'				</div>'
 										append = append +' 			</div>'
 										append = append +' 			<div class="col-md-2">'
@@ -1968,7 +1968,7 @@ PMO
 											// append = append +'				</div>'
 											append = append +' 				<div class="input-group">'
 											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-											append = append +'					<input value="" style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'">'
+											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+idx+'" value="">'
 											append = append +'				</div>'
 											append = append +' 			</div>'
 											append = append +' 			<div class="col-md-2">'
