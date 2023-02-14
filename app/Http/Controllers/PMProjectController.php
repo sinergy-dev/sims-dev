@@ -1174,7 +1174,7 @@ class PMProjectController extends Controller
         $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'PMO Manager')->first()->email;
 
         $mail = new MailPMProject(collect([
-                "image"         => 'sirkulasi_pr.png',
+                "image"         => 'project_charter.png',
                 "subject_email" => 'New Project Charter',
                 "subject"       => 'There is new project charter,',
                 "pid"           => $datas->project_id,
