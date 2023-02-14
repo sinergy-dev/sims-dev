@@ -4756,16 +4756,17 @@
       }
 
       if (currentTab == 0) {
-        if ($("#selectTo").val() == "") {
-          $("#selectTo").closest('.form-group').addClass('has-error')
-          $("#selectTo").closest('.form-group').find('.help-block').show()
-          $("#selectTo").css("background-color","red");
-          if ($("#inputTo").val() == "") {
-            $("#inputTo").closest('.form-group').addClass('has-error')
-            $("#inputTo").closest('input').next('span').show();
-            $("#inputTo").prev('.input-group-addon').css("background-color","red");
-          }
-        }else if ($("#selectType").val() == "") {
+        // if ($("#selectTo").val() == "") {
+        //   $("#selectTo").closest('.form-group').addClass('has-error')
+        //   $("#selectTo").closest('.form-group').find('.help-block').show()
+        //   $("#selectTo").css("background-color","red");
+        //   if ($("#inputTo").val() == "") {
+        //     $("#inputTo").closest('.form-group').addClass('has-error')
+        //     $("#inputTo").closest('input').next('span').show();
+        //     $("#inputTo").prev('.input-group-addon').css("background-color","red");
+        //   }
+        // }else 
+        if ($("#selectType").val() == "") {
           $("#selectType").closest('.form-group').addClass('has-error')
           $("#selectType").closest('select').next('span').show();
           $("#selectType").prev('.input-group-addon').css("background-color","red");
@@ -5847,16 +5848,20 @@
       }
 
       if (currentTab == 0) {
-        if ($("#selectTo").val() == "") {
-          $("#selectTo").closest('.form-group').addClass('has-error')
-          $("#selectTo").closest('.form-group').find('.help-block').show()
-          $("#selectTo").css("background-color","red");
-          if ($("#inputTo").val() == "") {
-            $("#inputTo").closest('.form-group').addClass('has-error')
-            $("#inputTo").closest('input').next('span').show();
-            $("#inputTo").prev('.input-group-addon').css("background-color","red");
-          }
-        }else if ($("#selectType").val() == "") {
+        // if ($("#selectTo").val() == "") {
+        //   if ($("#inputTo").val() != "") {
+        //     if ($("#inputTo").val() == "") {
+        //       $("#inputTo").closest('.form-group').addClass('has-error')
+        //       $("#inputTo").closest('input').next('span').show();
+        //       $("#inputTo").prev('.input-group-addon').css("background-color","red");
+        //     }
+        //   }else{
+        //     $("#selectTo").closest('.form-group').addClass('has-error')
+        //     $("#selectTo").closest('.form-group').find('.help-block').show()
+        //     $("#selectTo").css("background-color","red");
+        //   }
+        // }else 
+        if ($("#selectType").val() == "") {
           $("#selectType").closest('.form-group').addClass('has-error')
           $("#selectType").closest('select').next('span').show();
           $("#selectType").prev('.input-group-addon').css("background-color","red");
