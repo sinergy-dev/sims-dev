@@ -2367,7 +2367,7 @@ class PMProjectController extends Controller
         $datas = PMO::where('id',$request->id_pmo)->first();
 
         $mail = new MailPMProject(collect([
-                "image"         => 'sirkulasi_pr.png',
+                "image"         => 'final_report_approved.png',
                 "subject_email" => 'Approve Final Report',
                 "subject"       => 'Final Report has been approved,',
                 "pid"           => $datas->project_id,
