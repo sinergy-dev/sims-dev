@@ -343,7 +343,7 @@ PMO
 	            <div class="box-header">
 	            	<h3 class="box-title">Issue & Problems</h3>
 	                <div class="box-tools">
-	                	<button class="btn btn-sm btn-success" onclick="exportExcelIssue()"><i class="fa fa-file-excel-o"></i> Issue</button>
+	                	<button class="btn btn-sm btn-success" onclick="exportExcelIssue()"><i class="fa fa-file-excel-o"></i> Excel</button>
 	                	<button class="btn btn-sm btn-primary" id="btnAddIssue" style="display:none;" onclick="btnAddIssue()"><i class="fa fa-plus"></i>&nbspIssue</button>
 	                </div>
 	            </div>
@@ -790,7 +790,7 @@ PMO
 		                      <label>Reporting Date*</label>
 		                      <div class="input-group">
 		                      	<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-		                      	<input type="text" class="form-control" id="date_report_date" name="date_report_date" placeholder="Select report date" onkeyup="validationCheck(this)">
+		                      	<input type="text" class="form-control" id="date_report_date" name="date_report_date" placeholder="Select report date" onchange="validationCheck(this)">
 		                      </div>
 		                      <span class="help-block" style="display:none;">Please fill Reporting Date!</span>
 		                    </div>
@@ -1487,33 +1487,39 @@ PMO
             	}
 
             	if (result.data.finalreport == 'true') {
-            		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
-	            		$("#btnFinalProject").attr("disabled")
+            		if (result.data.approveFinalReport == 'true') {
+	            		$("#btnAddIssue").prop("disabled",true)
+	            		$("#btnAddRisk").prop("disabled",true)
+	            		$("#btnAddBaseline").prop("disabled",true)
+	            		$("#btnUploadDocument").prop("disabled",true)
+	            		$("#btnAddMilestone").prop("disabled",true)
+		            	$("#btnAddWeekly").prop("disabled",true)
+		            	$("#btnFinalProject").attr("disabled")
+
 	            	}else{
-	            		$("#btnFinalProject").removeAttr("disabled")
-	            		$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"verify")')
+	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
+	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
+	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
+	            		}
+
+	            		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
+		            		$("#btnFinalProject").attr("disabled")
+		            	}else{
+		            		$("#btnFinalProject").removeAttr("disabled")
+		            		$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"verify")')
+		            	}
 	            	}
 
-	            	if (result.data.approveFinalReport == 'false') {
-	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-	            		}
-	            	}else if (result.data.approveFinalReport == 'true') {
-		            	$("#btnFinalProject").attr("disabled")
-		            	$("#btnAddWeekly").prop("disabled",true)
-	            	}else{
-	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
-	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
-	            		}
-	            	}
+	            	
             	}else{
             		if (accesable.includes('btnAddIssue')) { //yg punya btnAddIssue kecuali pmo manager
 	            		// $("#btnFinalProject").prop("disabled",false)
 	            		if (result.data.approveFinalReport == 'false') {
 	            			$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"update")')
 	            			$("#btnFinalProject").find("i").removeClass("fa fa-plus").addClass("fa fa-wrench")
+	            			$("#btnFinalProject").removeAttr("disabled")
+
+	            			console.log("aku disini")
 
 	            			if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
 		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
@@ -2430,29 +2436,43 @@ PMO
 					if (values > inputValue) {
 						if (x == "weight_0") {
 							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").next("span").text("")
+
 							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>")
 						}else if (x == "weight_1") {
 							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").next("span").text("")
+
 							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>")
 						}else if (x == 'weight_2') {
 							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").next("span").text("")
+
 							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>")
 						}else if (x == 'weight_3') {
 							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").next("span").text("")
+
 							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight More than "+ parseInt(values - inputValue)  +" point</span>").show()
 						}
 					}else if(values < inputValue){
 						if (x == "weight_0") {
 							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").next("span").text("")
 							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}else if (x == "weight_1") {
 							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").next("span").text("")
 							$("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}else if (x == 'weight_2') {
 							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").next("span").text("")
+
 							$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}else if (x == 'weight_3') {
 							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").show().text("Weight child is less than Weight Total!").css("display","inline")
+							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").next("span").text("")
+
 							$("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").after("<span style='display:inline;float:right;color:red'>Weight less than "+ - (parseInt(values - inputValue))  +" point</span>").show()
 						}
 					}else{
@@ -3513,6 +3533,7 @@ PMO
 
     let arrReason = []
   	function reasonReject(item,display,nameClass,typeCallout=""){
+  		console.log(arrReason.length)
 	    $(".divReasonRejectRevision").remove()
 	      arrReason.push(item)
 
@@ -3525,14 +3546,15 @@ PMO
 	      }
 
 	      var append = ""
-
 	      
 	      append = append + '<div class="callout callout-danger divReasonRejectRevision" style="display:none">'
 	        append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
-	        $.each(arrReason,function(item,value){
-	          
-	          append = append + '<p class="reason_reject_revision">'+ value.split(":")[0] + ":<br>" + "- " + value.split(":")[1].replaceAll("\n","<br>")+'</p>'
-	        })
+	        if (arrReason.length > 0) {
+	        	$.each(arrReason,function(item,value){
+		          append = append + '<p class="reason_reject_revision">'+ value.split(":")[0] + ":<br>" + "- " + value.split(":")[1].replaceAll("\n","<br>")+'</p>'
+		        })
+	        }
+	        
 	      append = append + '</div>'
 
 	      $("." + nameClass).prepend(append)
@@ -3763,11 +3785,12 @@ PMO
             { 
             	title:"Action",
               	render: function (data, type, row, meta){
-              		let isDisable = ''
+              		// let isDisable = ''
               		if (row.deliverable_document == "true") {
-              			isDisable = 'disabled'
+              			// isDisable = 'disabled'
+              			$("input[name='cbTaskDone'][value="+ row.id_gantt +"]").prop("disabled",true).closest("div").css("cursor","not-allowed")
               		}
-                	return '<input type="checkbox" class="minimal" '+ isDisable +' name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'" disabled> Task Done'
+                	return '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
               	}
             },
         ],
@@ -4438,6 +4461,8 @@ PMO
 
 					if (minimalCount == radioCountDefine) {
 						if((jQuery.inArray("R", arrRadio)) != -1 || (jQuery.inArray("Y", arrRadio)) != -1){
+						    $("#cbProjectHealthStatus").next("div .form-group").text("")
+
 							$("#cbProjectHealthStatus").after("<div class='form-group'><label>Note Summary Health Status</label><textarea placeholder='Give explanation if there is any yellow / red status' class='form-control' id='textareaNoteSummaryHealth' name=areaNoteSummaryHealth'></textarea></div>")
 						}else if (countG == 6) {
 						    $("#cbProjectHealthStatus").next("div .form-group").text("")
@@ -4448,6 +4473,8 @@ PMO
 							$("#cbProjectHealthStatus").next("div .form-group").text("")
 						}else{
 							if ($("#textareaNoteSummaryHealth").length == 0) {
+						    	$("#cbProjectHealthStatus").next("div .form-group").text("")
+
 								$("#cbProjectHealthStatus").after("<div class='form-group'><label>Note Summary Health Status</label><textarea class='form-control' id='textareaNoteSummaryHealth' name=areaNoteSummaryHealth'></textarea></div>")
 							}
 						}	
@@ -4475,6 +4502,8 @@ PMO
 	    }else{
 	    	x[1].style.display = "inline";
 	    	x[0].style.display = "none";
+
+		    $("input[name='date_report_date']").datepicker({autoclose:true})
 
 		    document.getElementById("nextBtnWeekly").innerHTML = "Save";
 		    $("#nextBtnWeekly").attr('onclick','saveWeekly()');  
@@ -4553,7 +4582,38 @@ PMO
     }
 
     function saveWeekly(){
-    	let arrDisti = [], arrWeeklyIssue = [], arrWeeklyRisk = []
+    	if($("#date_report_date").val() == ""){
+          $("#date_report_date").closest("div .form-group").addClass("has-error")
+          $("#date_report_date").closest("div .form-group").find(".help-block").show()
+        }else if($("#overall_progress").val() == ""){
+          $("#overall_progress").closest("div").addClass("has-error")
+          $("#overall_progress").next("span").show()
+        }else if($("input[name='radioProjectIndicator']:checked").length == 0){
+          $("#radioProjectIndicator:last").closest("div .form-group").addClass('has-error')
+          $("#radioProjectIndicator:last").closest("div .form-group").find(".help-block").show()
+        }else if($("#textareaStatusSummary").val() == ""){
+          $("#textareaStatusSummary").closest("div").addClass("has-error")
+          $("#textareaStatusSummary").next("span").show()
+        }else if($("input[name='radioProject_Project']:checked").length == 0){
+          $("input[name='radioProject_Project']:last").closest("div .form-group").addClass("has-error")
+          $("input[name='radioProject_Project']:last").closest("div .form-group").find(".help-block").show()
+        }else if($("input[name='radioProject_Schedule']:checked").length == 0){
+          $("input[name='radioProject_Schedule']:last").closest("div .form-group").addClass("has-error")
+          $("input[name='radioProject_Schedule']:last").closest("div .form-group").find(".help-block").show()
+        }else if($("input[name='radioProject_Technical']:checked").length == 0){
+          $("input[name='radioProject_Technical']:last").closest("div .form-group").addClass("has-error")
+          $("input[name='radioProject_Technical']:last").closest("div .form-group").find(".help-block").show()
+        }else if($("input[name='radioProject_Scope']:checked").length == 0){
+          $("input[name='radioProject_Scope']:last").closest("div .form-group").addClass("has-error")
+          $("input[name='radioProject_Scope']:last").closest("div .form-group").find(".help-block").show()
+        }else if($("input[name='radioProject_Resource']:checked").length == 0){
+          $("input[name='radioProject_Resource']:last").closest("div .form-group").addClass("has-error")
+          $("input[name='radioProject_Resource']:last").closest("div .form-group").find(".help-block").show()
+        }else if($("input[name='radioProject_Partner']:checked").length == 0){
+          $("input[name='radioProject_Partner']:last").closest("div .form-group").addClass("has-error")
+          $("input[name='radioProject_Partner']:last").closest("div .form-group").find(".help-block").show()
+        }else{
+        	let arrDisti = [], arrWeeklyIssue = [], arrWeeklyRisk = []
 	    	let cbProjectIndicator = '', cbProject = '', cbSchedule = '', cbTechnical = '', cbScope = '', cbResource = '', cbPartner = ''
 	    	$("#tbodyWeeklyDistiInformation tr").each(function(){
 	          	arrDisti.push({
@@ -4652,6 +4712,9 @@ PMO
 	        }
 
 		    createPost(swalFireCustom,formData,swalSuccess,url="/PMO/storeWeeklyReport") 
+
+        }
+    		
     	// $("#tbodyRiskWeekly tr").each(function() {
      //      if ($("#textareaDescriptionRisk[data-value='"+ $(this).find('#textareaDescriptionRisk').data("value") +"']").val() == "") {
      //        $("#textareaDescriptionRisk[data-value='"+ $(this).find('#textareaDescriptionRisk').data("value") +"']").closest("div").addClass("has-error")
@@ -4854,20 +4917,6 @@ PMO
 			      	}
 			        
 			      	let type = window.location.search.split("=")[1]
-			      	// let dataFix = []
-			      	// let datas = ""
-
-			      	// if (type == 'supply_only') {
-			      	// 	datas = ["PO/SPK/PKS Customer","PO to Supplier/Distributor","Project Charter","Delivery Order (approved)","BAST / Acceptance Letter (optional)","Customer Satisfication Survey (CSS)","Final Project Report"]
-			      	// }else if (type == 'implementation') {
-			      	// 	datas = ["Quotation to Customer / Proposal","Cost Sheet","SPK / PO PKS Customer","Quotation Supplier / Distributor","Purchase Request","Project Charter","Hand-Over Project","Project Management Plan & Kick Off Meeting","WBS Project Timeline (.mpp)","Risk Management Plan","Minutes of Meeting & Attendance List","Delivery Order","Project Progress Report","Change Request (If Any)","LLD Document","Migration Plan Document","UAT Document","Technical Documentation","Training Material","Attendance List of Training","BAST / Acceptance Letter","Customer Satisfaction Survey","Closing Project Meeting Presentation","Handover Document to Maintenance Division","Invoice Request to Finance","Post-Project Review and Lesson Learnt","Final Project Report"]
-			      	// }else{
-			      	// 	datas = ["SPK / PO / PKS Customer","PO to Supplier / Distributor","Project Charter Maintenance & Managed Service","Hand-Over Project","Project Management Plan & Kick Off Meeting","WBS Project Timeline (Gantt Chart)","Risk Management Plan","Minutes of Meeting & Attendance List","Delivery Order","Project Progress Report (optional)","Change Request (If Any)","BAST / Acceptance Letter","PM Report - XXX","CM Report","Customer Satisfaction Survey","Final Project Report"]
-			      	// }
-
-			      	// datas.forEach((item) => {
-			      	// 	dataFix.push(item)
-			      	// })
 
 			      	$.ajax({
 			    		url:"{{url('/PMO/getProjectDocument')}}",
@@ -4949,23 +4998,29 @@ PMO
 
 					$("#divAddTerms").append(append3)
 					if (status == 'verify') {
+						console.log("sini")
 						$("#btnAddTerms").hide()
 						let arrTerms = [], arrPayment = []
 		        		
 
-						$.each(JSON.parse(result[0].term_payment),function(idx,item){
+						// $.each(JSON.parse(result[0].term_payment),function(idx,item){
+		    //     			arrTerms.push({"termPayment":item.termPayment.replace("\n","")})
+		    //     		})
+
+		    //     		$.each(JSON.parse(result[0].payment_date),function(idx,item){
+		    //     			arrPayment.push({"payDate":item.payDate.replace("\n","")})
+		    //     		})
+
+		    			$.each(result[0].term_payment,function(idx,item){
 		        			arrTerms.push({"termPayment":item.termPayment.replace("\n","")})
 		        		})
 
-		        		$.each(JSON.parse(result[0].payment_date),function(idx,item){
+		        		$.each(result[0].payment_date,function(idx,item){
 		        			arrPayment.push({"payDate":item.payDate.replace("\n","")})
 		        		})
 						
-						
-
 						let arrCombine = arrTerms.map((item, i) => Object.assign({}, item, arrPayment[i]))
 						
-
 						$("#tbodyTermsPayment").empty()
 						$.each(arrCombine,function(idx,item){
 		        			
@@ -4990,24 +5045,11 @@ PMO
 							$("#tbodyTermsPayment").append(append4)
 		        		})
 						$("#link_css").remove()
-						if (result.length > 0) {
-		        			
-		        			
-		        			$("#link_feedback").val(result[0].css).prop("readonly",true).after("<a target='_blank' id='link_css' href="+ result[0].css +"><i class='fa fa-link'></i> Link Feedback Css</a>")
-							$("#textareaAdditionalNote").val(result[0].additional_notes).prop("disabled",true)
-							$("#textareaRecomendation").val(result[0].recommendation_future).prop("disabled",true)
-							$("#textareaLessonLearn").val(result[0].lesson_learn).prop("disabled",true)
-						}
-		    //     		function delete_row(id, given_value) {
-						//   var td = $("#" + id + " td");
-						//   $.each(td, function(i) {
-						//     if ($(td[i]).find("input").val() === given_value) {
-						//       $(td[i]).parent().remove();
-						//     } 
-						//   });
-						// }
-
-						// delete_row('tbodyTermsPayment', 'undefined');
+						// if (result.length > 0) {
+	        			$("#link_feedback").val(result[0].css).prop("readonly",true).after("<a target='_blank' id='link_css' href="+ result[0].css +"><i class='fa fa-link'></i> Link Feedback Css</a>")
+						$("#textareaAdditionalNote").val(result[0].additional_notes).prop("disabled",true)
+						$("#textareaRecommendation").val(result[0].recommendation_future).prop("disabled",true)
+						$("#textareaLessonLearn").val(result[0].lesson_learn).prop("disabled",true)
 
 						
 					}else if (status == 'update') {
@@ -5015,15 +5057,13 @@ PMO
               			let arrTerms = [], arrPayment = []
 		        		
 
-						$.each(JSON.parse(result[0].term_payment),function(idx,item){
+						$.each(result[0].term_payment,function(idx,item){
 		        			arrTerms.push({"termPayment":item.termPayment.replace("\n","")})
 		        		})
 
-		        		$.each(JSON.parse(result[0].payment_date),function(idx,item){
+		        		$.each(result[0].payment_date,function(idx,item){
 		        			arrPayment.push({"payDate":item.payDate.replace("\n","")})
 		        		})
-						
-						
 
 						let arrCombine = arrTerms.map((item, i) => Object.assign({}, item, arrPayment[i]))
 						
@@ -5058,43 +5098,7 @@ PMO
 		    
 
 						// $.each(JSON.parse(result[0].term_payment),function(idx,item){
-		    //     			arrCombine.push({"termPayment":item.termPayment})
-		    //     		})
-
-		    //     		$.each(JSON.parse(result[0].payment_date),function(idx,item){
-		    //     			arrCombine.push({"payDate":item.termPayment})
-		    //     		})
-
-						
-						// $.each(arrCombine,function(idx,item){
-		    
-		    //     			append4 = ''
-
-						// 	append4 = append4 + '<tr>'
-						// 	append4 = append4 + '<td>'
-						// 	append4 = append4 + '<input class="form-control" value="'+ item.termPayment +'" id="inputTermsPayment" readonly />'
-						// 	append4 = append4 + '</td>'
-						// 	append4 = append4 + '<td>'
-						// 	append4 = append4 + '<input readonly class="form-control" id="inputDatePayment" value="'+ moment(item.payDate).format("DD-MM-YYYY") +'"/>'
-						// 	append4 = append4 + '</td>'
-						// 	append4 = append4 + '<td>'
-						// 	append4 = append4 + '<button type="button" id="btnRemoveTermsPayment" style="background-color:transparent;border:none"><i class="fa fa-trash-o" style="color:red"></i></button>'
-						// 	append4 = append4 + '</td>'
-						// 	append4 = append4 + '</tr>'
-
-						// 	$("#tbodyTermsPayment").append(append4)
-		    //     		})
-
-		    //     		function delete_row(id, given_value) {
-						//   var td = $("#" + id + " td");
-						//   $.each(td, function(i) {
-						//     if ($(td[i]).find("input").val() === given_value) {
-						//       $(td[i]).parent().remove();
-						//     } 
-						//   });
-						// }
-
-						// delete_row('tbodyTermsPayment', 'undefined');
+	
 
 						$("#link_css").remove()
 						if (result.length > 0) {
@@ -5106,7 +5110,8 @@ PMO
 						}
 					}				
 
-			    }else{
+			    }else {
+			    	console.log(status)
 			      	if (n == 0) {
 			      		$(".modal-title").text('Project Information')
 				        document.getElementById("prevBtnFinal").innerHTML = "Cancel";
@@ -5132,7 +5137,7 @@ PMO
 				        	}
 				        })
 
-				        if (result.length > 0) {
+				        if (result[0].status == "Reject") {
               				reasonReject(result[0].note_reject,"block","tabGroup")
 				        }
 				    }else if (n == 1) {
@@ -5242,10 +5247,6 @@ PMO
 					   	$("input[name='actual_date']:last").change(function(){
 					   		let planned = Date.parse($("input[name='planned_date']:last").val())
 						   	let actual = Date.parse($("input[name='actual_date']:last").val())
-
-						   	
-						   	
-
 
 						   	if (planned > actual) {
 						   		selectScheduleSummary("AheadSchedule")
@@ -5394,7 +5395,7 @@ PMO
 			formData.append("link_feedback",$("#link_feedback").val())
 			formData.append("textareaLessonLearn",$("#textareaLessonLearn").val())
 			formData.append("textareaAdditionalNote",$("#textareaAdditionalNote").val())
-			formData.append("textareaRecomendation",$("#textareaRecomendation").val())
+			formData.append("textareaRecomendation",$("#textareaRecommendation").val())
 			formData.append("arrPayDate",JSON.stringify(arrPayDate))
 			formData.append("arrToP",JSON.stringify(arrToP))
 			formData.append("arrMilestoneFinal",JSON.stringify(arrMilestoneFinal))
