@@ -886,7 +886,7 @@ PMO
                     if (row.current_phase == 'New') {
                       if (row.type_project == 'Supply Only') {
                         if (row.status == null) {
-                          return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px"><i class="fa fa-trash"></i> Delete</button>'
+                          return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
                         }else{
                           return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                         }
