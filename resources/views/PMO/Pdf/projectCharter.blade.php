@@ -1209,7 +1209,7 @@
               @endif
             </p>
           </td>
-          <td width=184 valign=top style='width:137.65pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:37.3pt'>
+          <td width=189 valign=top style='width:141.75pt;border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:37.3pt'>
             <p class=MsoNormal align=center style='text-align:center'>
               <!-- <span lang=EN-GB style='font-size:10.0pt'></span> -->
               @if($data['get_all_sign'][2]['signed'] == 'true')
