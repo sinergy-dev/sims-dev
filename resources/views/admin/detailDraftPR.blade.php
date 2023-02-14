@@ -3952,16 +3952,17 @@
       }
     }
     if (currentTab == 0) {
-      if ($("#selectTo").val() == "") {
-          $("#selectTo").closest('.form-group').addClass('has-error')
-          $("#selectTo").closest('.form-group').find('.help-block').show()
-          $("#selectTo").css("background-color","red");
-        if ($("#inputTo").val() == "") {
-          $("#inputTo").closest('.form-group').addClass('has-error')
-          $("#inputTo").closest('input').next('span').show();
-          $("#inputTo").prev('.input-group-addon').css("background-color","red");
-        }
-      }else if ($("#inputEmail").val() == "") {
+      // if ($("#selectTo").val() == "") {
+      //     $("#selectTo").closest('.form-group').addClass('has-error')
+      //     $("#selectTo").closest('.form-group').find('.help-block').show()
+      //     $("#selectTo").css("background-color","red");
+      //   if ($("#inputTo").val() == "") {
+      //     $("#inputTo").closest('.form-group').addClass('has-error')
+      //     $("#inputTo").closest('input').next('span').show();
+      //     $("#inputTo").prev('.input-group-addon').css("background-color","red");
+      //   }
+      // }else 
+      if ($("#inputEmail").val() == "") {
         $("#inputEmail").closest('.form-group').addClass('has-error')
         $("#inputEmail").closest('input').next('span').show();
         $("#inputEmail").prev('.input-group-addon').css("background-color","red");
