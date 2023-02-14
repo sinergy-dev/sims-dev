@@ -899,11 +899,20 @@ PMO
 	                          	}
 	                          		console.log("{{Auth::User()->ttd_digital}}" == "")
 
-
                           		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
-                            		return '<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter"><i class="fa fa-eye"></i>&nbsp Project Charter</button> <button onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px"><i class="fa fa-trash"></i> Delete</button>'
+                                if (row.type_project == "Implementation + Maintenance & Managed Service") {
+                                  return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                                }else{
+                                  return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                                }
+                            		
                           		}else{
-                            		return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                                if (row.type_project == "Implementation + Maintenance & Managed Service") {
+                                  return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                                }else{
+                                  return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                                }
+                            		
                           		}  
                         }else if(row.status == 'New'){
                           	if ("{{Auth::User()->ttd_digital}}" == "") {
@@ -911,6 +920,8 @@ PMO
                           		$("button[name='btnShowProjectCharter']").prop("disabled",true)
                           		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
                           	}
+
+
 
                           	if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
                             	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
