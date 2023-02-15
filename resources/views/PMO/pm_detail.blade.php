@@ -3788,12 +3788,19 @@ PMO
             { 
             	title:"Action",
               	render: function (data, type, row, meta){
-              		// let isDisable = ''
-              		if (row.deliverable_document == "true") {
-              			// isDisable = 'disabled'
-              			$("input[name='cbTaskDone'][value="+ row.id_gantt +"]").prop("disabled",true).closest("div").css("cursor","not-allowed")
+              		let isDisable = ''
+              		if (accesable.includes("cbTaskDone")) {
+              			console.log(row)
+	              		if (row.deliverable_document == "true") {
+	              			isDisable = 'disabled'
+	              			$("input[name='cbTaskDone']").prop("disabled",true).closest("div").css("cursor","not-allowed")
+	              		}
+              		}else{
+              			isDisable = 'disabled'
+	              		$("input[name='cbTaskDone']").prop("disabled",true).closest("div").css("cursor","not-allowed")
+
               		}
-                	return '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
+                	return '<input type="checkbox" '+ isDisable +' class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
               	}
             },
         ],
@@ -3804,9 +3811,14 @@ PMO
 		    // }
 		},
         drawCallback: function(settings) {
-	        if (accesable.includes("btnAddIssue")) {
-	          $("input[name='cbTaskDone']").prop("disabled",false)	 
+        	console.log(accesable)
+	        if (!accesable.includes("cbTaskDone")) {
+	          // $("input[name='cbTaskDone']").prop("disabled",false)	 
 	          $("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
+	        }else{
+	        	if ($("input[name='cbTaskDone']").prop("disabled") == true) {
+	          		$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
+	        	}
 	        }
 
 	        $('input[type="checkbox"].minimal').iCheck({
