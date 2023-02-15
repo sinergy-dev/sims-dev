@@ -44,7 +44,11 @@
 	<div style="line-height: 1.5em;padding-left: 13px;">
 		<div style="font-family: 'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;">
 			<p style="font-size: 20px">
-				Dear {{$pid_info->sales_name}}, Berikut kami lampirkan permohonan Project ID yang sudah kami siapkan:
+				@if($status == 'sales')
+					Dear {{$pid_info->sales_name}}, Berikut kami lampirkan permohonan Project ID yang sudah kami siapkan:
+				@else
+					Dear {{$getPmManager->name}}, Berikut kami lampirkan Project ID terbaru:
+				@endif
 			</p>
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<center><b>{{$pid_info->lead_id}} - {{$pid_info->name_project}}</b></center>
