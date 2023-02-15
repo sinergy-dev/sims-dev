@@ -1269,10 +1269,10 @@ class PMProjectController extends Controller
 
         if ($data->project_type == 'maintenance') {
            $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-           ->orderByRaw('FIELD(position, "PMO Project Coordinator","PMO Manager","Sales Staff","Sales Manager","BCD Manager")');
+           ->orderByRaw('FIELD(position, "PMO Project Coordinator","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
         } else {
             $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
-            ->orderByRaw('FIELD(position, "PMO Staff","PMO Manager","Sales Staff","Sales Manager","BCD Manager")');
+            ->orderByRaw('FIELD(position, "PMO Staff","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
         }
 
         $status = 'all';
@@ -1295,8 +1295,15 @@ class PMProjectController extends Controller
 
         $data = PMO::join("tb_id_project","tb_id_project.id_project","=","tb_pmo.project_id")->join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')->join('users','users.nik','=','sales_lead_register.nik')->where('tb_pmo.id',$request->id_pmo)->first();
 
+        $store_activity = new PMOActivity();
+        $store_activity->id_project = $request['id_pmo'];
+        $store_activity->phase = 'Approve Project Charter';
+        $store_activity->operator = Auth::User()->name;
+        $store_activity->activity = 'Approve Project Charter ';
+        $store_activity->date_time = Carbon::now()->toDateTimeString();
+        $store_activity->save();
+
         if ($cek_role->group == 'sales') {
-            $this->uploadPdfPC($request->id_pmo);
             $update->status = 'Done';
             $subject_email = 'Approve Project Charter';
             $subject = 'Your project is available to run,';
@@ -1312,6 +1319,8 @@ class PMProjectController extends Controller
             }
                 $user_pm = $update->project_pm;
                 $user_pc = $update->project_pc;
+            $this->uploadPdfPC($request->id_pmo);
+
         } else {
             $update->status = 'Approve';
             $subject_email = 'Approve Project Charter';
@@ -1325,16 +1334,6 @@ class PMProjectController extends Controller
             // }
         }
         $update->save();
-
-        
-
-        $store_activity = new PMOActivity();
-        $store_activity->id_project = $request['id_pmo'];
-        $store_activity->phase = 'Approve Project Charter';
-        $store_activity->operator = Auth::User()->name;
-        $store_activity->activity = 'Approve Project Charter ';
-        $store_activity->date_time = Carbon::now()->toDateTimeString();
-        $store_activity->save();
 
         // if ($data->project_type == 'supply_only') {
         //     $type_project = 'Supply Only';
@@ -1699,10 +1698,10 @@ class PMProjectController extends Controller
                     ->select(DB::raw("CONCAT(format_date_task.`start_date_format`,' - ',format_date_task.`end_date_format`) AS periode"),'text as milestone','format_date_task.id_gantt','parent_text.text_parent', 'deliverable_document')
                     ->where('id_pmo',$request->id_pmo)
                     ->where('status','!=','Done')
-                    ->where(function($query) use ($startOfWeek, $endOfWeek){
-                      $query->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
-                            ->orWhereBetween('baseline_end', [$startOfWeek,$endOfWeek]);
-                    })
+                    // ->where(function($query) use ($startOfWeek, $endOfWeek){
+                    //   $query->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
+                    //         ->orWhereBetween('baseline_end', [$startOfWeek,$endOfWeek]);
+                    // })
                     ->get();
 
          // $dataMilestone = GanttTaskPmo::where('id_pmo',$request->id_pmo)->get();
@@ -2395,7 +2394,8 @@ class PMProjectController extends Controller
 
         $update = GanttTaskPmo::where('id', $request->id_task)->first();
         $update->status = 'Done';
-        $update->end_date = date('Y-m-d');
+        // $update->end_date = date('Y-m-d');
+        // $update->end_date = $update->end_date;
         $update->save();
 
         // $isKickOff = GanttTaskPmo::where('id', $request->id_task)->first()->text;
