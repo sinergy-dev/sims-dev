@@ -3063,12 +3063,16 @@ PMO
 							
 							if (item.position == 'PMO Staff') {
 								position = 'Project Manager'
+								label = 'Prepared By'
 							}else if (item.position == 'PMO Manager') {
-								position = 'PMO Manager'							
+								position = 'PMO Manager'	
+								label = 'Approved By'						
 							}else if (item.position == 'PMO Project Coordinator') {
-								position = 'Project Coordinator'							
+								position = 'Project Coordinator'	
+								label = 'Prepared By'						
 							}else{
-								position = 'Project Owner'							
+								position = 'Project Owner'	
+								label = 'Approved By'						
 							}
 
 							if (item.signed == 'false') {
@@ -3079,7 +3083,7 @@ PMO
 
 							appendSign = appendSign + '            <div class="col-md-4 col-xs-12">'
 							appendSign = appendSign + '           		<div style="display: flex;">'
-							appendSign = appendSign + '            		<label style="margin: 0 auto;vertical-align: middle;">Prepared By</label>'
+							appendSign = appendSign + '            		<label style="margin: 0 auto;vertical-align: middle;">'+ label +'</label>'
 							appendSign = appendSign + '           		</div>'
 							appendSign = appendSign + '           		<div style="display: flex;padding-top:40px ;">'
 							appendSign = appendSign + '           			<img src="{{asset("/")}}'+ ttd +'" style="width:100px;height:50px;margin:0 auto;object-fit:contain" />'
@@ -3097,7 +3101,7 @@ PMO
 					}
 				})
 				append = append + '	                  </div>  '
-				append = append + '				    </fieldset>  '
+				append = append + '				    </fieldset disabled>  '
 				append = append + '				    <button class="btn btn-sm bg-purple pull-right" style="display:none;margin-top:20px" type="button" id="btnApproveSign" style="margin-top:20px">Approve</button>'
 				append = append + '				    </div>'
 				append = append + '			  	</div>'
@@ -3181,20 +3185,20 @@ PMO
 				// append = append + '                            <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" class="minimal form-control" id="" value="ATM/CRM"> ATM/CRM</label>'
 				// append = append + '                            <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" class="minimal form-control" id="" value="Application Development"> Application Development</label>'
 				// append = append + '                          </div>'
-				append = append + '<div class="col-md-12 col-xs-12" style="border:solid 1px #cccc;padding-left:5px!important;padding: 10px;margin-bottom: 15px;">'
+				append = append + '<div class="col-md-12 col-xs-12" style="border:solid 1px #cccc;padding-left:5px!important;padding: 10px;margin-bottom: 15px;background-color: #eee;">'
 				append = append + '  <div class="col-md-3 col-xs-12" style="padding-left:5px!important;">'
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="Data Center" class="minimal form-control" id=""> Data Center</label><br>'
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="Security" class="minimal form-control" id=""> Security</label><br>'
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="IoT" class="minimal form-control" id=""> IoT</label>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="Data Center" class="minimal form-control" id=""> Data Center</label><br>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="Security" class="minimal form-control" id=""> Security</label><br>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="IoT" class="minimal form-control" id=""> IoT</label>'
 				append = append + '  </div>'
 				append = append + '  <div class="col-md-5 col-xs-12" style="padding-left:5px!important">   '
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="ATM/CRM" class="minimal form-control" id=""> ATM/CRM</label><br>'
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="Application Development" class="minimal form-control" id=""> Application Development</label><br>'
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="Cloud Computing" class="minimal form-control"id=""> Cloud Computing</label>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="ATM/CRM" class="minimal form-control" id=""> ATM/CRM</label><br>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="Application Development" class="minimal form-control" id=""> Application Development</label><br>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="Cloud Computing" class="minimal form-control"id=""> Cloud Computing</label>'
 				append = append + '  </div>'
 				append = append + '  <div class="col-md-4 col-xs-12" style="padding-left:5px!important;">'
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="Borderless Network" class="minimal form-control" id=""> Borderless Network</label><br>'
-				append = append + '    <label><input autocomplete="off" type="checkbox" name="cbShowProjectCharterTechUse" value="Collaboration" class="minimal form-control" id=""> Collaboration</label>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="Borderless Network" class="minimal form-control" id=""> Borderless Network</label><br>'
+				append = append + '    <label><input autocomplete="off" readonly type="checkbox" name="cbShowProjectCharterTechUse" value="Collaboration" class="minimal form-control" id=""> Collaboration</label>'
 				append = append + '  </div>'
 				append = append + '</div>'
 				append = append + '                        </div>'
@@ -3222,29 +3226,29 @@ PMO
 				append = append + '                    <div class="col-md-4">'
 				append = append + '                      <div class="form-group">'
 				append = append + '                        <label>Flexibility*</label>'
-				append = append + '                        <input type="text" name="flexibility" id="flexibility" class="form-control" value="'+ result[0].flexibility +'">'
+				append = append + '                        <input type="text" readonly name="flexibility" id="flexibility" class="form-control" value="'+ result[0].flexibility +'">'
 				append = append + '                      </div>'
 				append = append + '                    </div>'
 				append = append + '                 	</div>'
 				append = append + '                 	<div class="form-group">'
 				append = append + '                    <label>Market Segment*</label>'
-				append = append + '                    <input type="text" name="market_segment" id="market_segment" class="form-control" value="'+ result[0].market_segment +'">'
+				append = append + '                    <input type="text" readonly name="market_segment" id="market_segment" class="form-control" value="'+ result[0].market_segment +'">'
 				append = append + '                </div>'
 				append = append + '                 	<div class="form-group">'
 				append = append + '                    <label>Scope of Work*</label>'
-				append = append + '                    <textarea class="form-control" id="" name="" placeholder="Scope of Work">'+ result[0].scope_of_work +'</textarea>'
+				append = append + '                    <textarea readonly class="form-control" id="" name="" placeholder="Scope of Work">'+ result[0].scope_of_work +'</textarea>'
 				append = append + '                </div>'
 				append = append + '                <div class="form-group">'
 				append = append + '                    <label>Out Of Scope*</label> '
-				append = append + '                    <textarea class="form-control" id="" name="" placeholder="Out of Work">'+ result[0].out_of_scope +'</textarea>'
+				append = append + '                    <textarea readonly class="form-control" id="" name="" placeholder="Out of Work">'+ result[0].out_of_scope +'</textarea>'
 				append = append + '                </div>'
 				append = append + '                <div class="form-group">'
 				append = append + '                    <label>Customer Requirement*</label> '
-				append = append + '                    <textarea class="form-control" id="" name="" placeholder="Customer Requirement">'+ result[0].customer_requirement +'</textarea>'
+				append = append + '                    <textarea readonly class="form-control" id="" name="" placeholder="Customer Requirement">'+ result[0].customer_requirement +'</textarea>'
 				append = append + '                </div>'
 				append = append + '                <div class="form-group">'
 				append = append + '                    <label>Term of Payment*</label>'
-				append = append + '                    <textarea class="form-control" id="" name="" placeholder="Customer Requirement">'+ result[0].terms_of_payment +'</textarea>'
+				append = append + '                    <textarea readonly class="form-control" id="" name="" placeholder="Customer Requirement">'+ result[0].terms_of_payment +'</textarea>'
 				append = append + '                </div>'
 				append = append + '                <div class="form-group">'
 				append = append + '                    <label>Internal Stakeholder Register*</label>'
@@ -3269,7 +3273,6 @@ PMO
 
 				$("#showBodyProjectCharter").append(append)
     			
-
     			$('input[type="checkbox"].minimal').iCheck({
 			      checkboxClass: 'icheckbox_minimal-blue',
 			    })
@@ -3370,10 +3373,10 @@ PMO
 
 				$.each(result[0].internal_stakeholder,function(idx,item){
 					appendTbody = appendTbody + ' <tr>'
-					appendTbody = appendTbody + '  <td><input type="text" name="" class="form-control" value="'+ item.name +'"></td>'
-					appendTbody = appendTbody + '  <td><input type="text" name="" class="form-control" value="'+ item.role +'"></td>'
-					appendTbody = appendTbody + '  <td><input type="text" name="" class="form-control" value="'+ item.email +'"></td>'
-					appendTbody = appendTbody + '  <td><input type="text" name="" class="form-control" value="'+ item.phone +'"></td>'
+					appendTbody = appendTbody + '  <td><input readonly type="text" name="" class="form-control" value="'+ item.name +'"></td>'
+					appendTbody = appendTbody + '  <td><input readonly type="text" name="" class="form-control" value="'+ item.role +'"></td>'
+					appendTbody = appendTbody + '  <td><input readonly type="text" name="" class="form-control" value="'+ item.email +'"></td>'
+					appendTbody = appendTbody + '  <td><input readonly type="text" name="" class="form-control" value="'+ item.phone +'"></td>'
 					appendTbody = appendTbody + ' </tr>'
 
 				})
