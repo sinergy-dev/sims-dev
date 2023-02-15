@@ -1876,8 +1876,9 @@ Detail Lead Register
       		$("#btn-addTagging").attr('onclick',addTagging(i++))
 				})
 
+				console.log($('#tbtagging tr').length)
       	if (result.length > 0){
-      		if ($('#tbtagging tr').length < 0) {
+      		if ($('#tbtagging tr').length <= 0) {
 		  			$("#btnRaiseTP").prop("disabled",true)
 		  		}else{
 		  			$("#btnRaiseTP").prop("disabled",false)
@@ -1888,7 +1889,7 @@ Detail Lead Register
     })
 		
   	function addTagging(i){
-  		if ($('#tbtagging tr').length < 0) {
+  		if ($('#tbtagging tr').length <= 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
   			$("#btnRaiseTP").prop("disabled",true)
@@ -1974,12 +1975,15 @@ Detail Lead Register
 	    			idExist.push(value.id)
 	      		++i
 	      	})
+
 	      	if (result.length > 0){
-	      		if ($('#tbtagging tr').length < 0) {
+	      		if ($('#tbtagging tr').length <= 0) {
 			  			$("#btnRaiseTP").prop("disabled",true)
 			  		}else{
 			  			$("#btnRaiseTP").prop("disabled",false)
 			  		}
+	      	}else{
+			  		$("#btnRaiseTP").prop("disabled",true)
 	      	}	
 
 	      }
