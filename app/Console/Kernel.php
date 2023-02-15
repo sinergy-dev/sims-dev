@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('closedate:mail')->dailyAt('02:10');
 
+        $schedule->command('ReviewDateRiskPM:daily')->daily('07:10');
+
         $schedule->command('SalesRemainder:weekly')
             ->weekly()
             ->thursdays()
