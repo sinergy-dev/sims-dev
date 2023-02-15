@@ -5146,7 +5146,7 @@ class SalesController extends Controller{
             if($pid_info->lead_id == "MSPQUO"){
               $pid_info->no_quote = $pid_info->no_po_customer;
               $pid_info->no_po_customer = "-";
-            }else {
+            } else {
               $pid_info->no_quote = "-";
             }
 
@@ -5156,8 +5156,11 @@ class SalesController extends Controller{
                 ->where('tb_id_project.id_pro',$tambah->id_pro)
                 ->first();
 
-            Mail::to($users->email)->send(new mailPID($pid_info,$users));
-            Mail::to("hellosinergy@gmail.com")->send(new mailPID($pid_info,$users));
+            $getPmManager = User::join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('email','users.name')->where('roles.name','PMO Manager')->first();
+
+            Mail::to($users->email)->send(new mailPID($pid_info,$users,'getPmManager','sales'));
+            Mail::to($getPmManager->email)->send(new mailPID($pid_info,$users,$getPmManager,'pm'));
+            // Mail::to("hellosinergy@gmail.com")->send(new mailPID($pid_info,$users));
 
         }else if($cek_sip->id_company == '2'){
 
@@ -5236,8 +5239,8 @@ class SalesController extends Controller{
                 ->where('tb_id_project.id_pro',$tambah->id_pro)
                 ->first();
 
-            Mail::to($users->email)->send(new mailPID($pid_info,$users));
-            Mail::to("hellosinergy@gmail.com")->send(new mailPID($pid_info,$users));
+            Mail::to($users->email)->send(new mailPID($pid_info,$users,'getPmManager','sales'));
+            Mail::to("hellosinergy@gmail.com")->send(new mailPID($pid_info,$users,'getPmManager','sales'));
         
         }
         // Mail::to('agastya@sinergy.co.id')->send(new mailPID($pid_info));
