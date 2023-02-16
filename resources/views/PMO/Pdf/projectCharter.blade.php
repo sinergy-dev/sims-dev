@@ -750,7 +750,7 @@
             </td>
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_description']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['project_description'])!!}</span>
               </p>
               <p class=Table>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
@@ -996,7 +996,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'> <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['scope_of_work']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['scope_of_work'])!!}</span>
               </p>
             </td>
           </tr>
@@ -1010,7 +1010,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['out_of_scope']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['out_of_scope'])!!}</span>
               </p>
             </td>
           </tr>
@@ -1024,7 +1024,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['customer_requirement']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['customer_requirement'])!!}</span>
               </p>
             </td>
           </tr>
@@ -1038,7 +1038,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:#A6A6A6'>{{$data['terms_of_payment']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:#A6A6A6'>{!! nl2br($data['terms_of_payment'])!!}</span>
               </p>
             </td>
           </tr>
