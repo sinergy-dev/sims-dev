@@ -3788,24 +3788,25 @@ PMO
             { 
             	title:"Action",
               	render: function (data, type, row, meta){
-              		let isDisable = ''
-              		if (accesable.includes("cbTaskDone")) {
-              			console.log(row)
-	              		if (row.deliverable_document == "true") {
-	              			isDisable = 'disabled'
-	              			$("input[name='cbTaskDone']").prop("disabled",true).closest("div").css("cursor","not-allowed")
-	              		}
-              		}else{
-              			isDisable = 'disabled'
-	              		$("input[name='cbTaskDone']").prop("disabled",true).closest("div").css("cursor","not-allowed")
-
-              		}
-                	return '<input type="checkbox" '+ isDisable +' class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
+                	return '<input type="checkbox" disabled class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ row.id_gantt +'"> Task Done'
               	}
             },
         ],
         "rowCallback": function( row, data ) {
-        	
+      		if (accesable.includes("cbTaskDone")) {
+      			console.log(data.deliverable_document)
+          		if (data.deliverable_document != "true") {
+          			$('td:eq(4)', row).html( '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ data.id_gantt +'"> Task Done');
+          			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").prop("disabled",false)
+          			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").closest("div").removeClass("disabled").prop("disabled",false)
+          		}else{
+          			console.log($('td:eq(4)', row)[0])
+          			$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
+          		}
+      		}else{
+          		$("#cbTaskDone").closest("div").css("cursor","not-allowed")
+
+      		}
 		    // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
 		    //   $("#btnFinalProject").prop("disabled",false)
 		    // }
@@ -3816,9 +3817,9 @@ PMO
 	          // $("input[name='cbTaskDone']").prop("disabled",false)	 
 	          $("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
 	        }else{
-	        	if ($("input[name='cbTaskDone']").prop("disabled") == true) {
-	          		$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
-	        	}
+	        	// if ($("input[name='cbTaskDone']").prop("disabled") == true) {
+	         //  		$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
+	        	// }
 	        }
 
 	        $('input[type="checkbox"].minimal').iCheck({
@@ -5144,7 +5145,7 @@ PMO
 				        		$("#customer_name_final_project").val(item[0].customer_name)
 				        		$("#PID_final_project").val(item[0].project_id.project_id)
 				        		$("#projectValueFinal").val(formatter.format(item[0].project_id.amount))
-				        		$("#projectNameFinal").val(item[0].project_description)
+				        		$("#projectNameFinal").val(item[0].project_id.name_project)
 				        		$("#projectManagerFinal").val(item[0].project_pm)
 				        		$("#projectCoordinatorFinal").val(item[0].project_pc)
 				        		$("#textareaProjectDescFinal").val(item[0].project_description)

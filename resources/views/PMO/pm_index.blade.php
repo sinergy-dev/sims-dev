@@ -1052,8 +1052,6 @@ PMO
           }
         }
       }else{
-        console.log(data)
-        console.log(data.className.split(" ")[1])
         if (data.className.split(" ")[1] == "document" || data.className == "document") {
           var f=data.files[0]
           var filePath = f;
@@ -1149,9 +1147,7 @@ PMO
         
       }   
 
-      console.log($(data))
       if (value == 'logo') {
-        console.log(value)
         var f=data.files[0]
         var filePath = f;
      
@@ -1202,19 +1198,31 @@ PMO
           text: "Accepted"
         },
       ];
+      $("#selectStatusProjectCharter[data-value='"+ inc +"']").select2({
+          data:data,
+        placeholder:"Select Status"
+      })
+      // if (inc != 0) {
+      //   console.log(item+"piyee")
 
-      if (item) {
-        $("#selectStatusProjectCharter[data-value='"+ inc +"']").select2({
-          data:data,
-          placeholder:"Select Status"
-        }).val(item).trigger("change")
-      }else{
-        $("#selectStatusProjectCharter[data-value='"+ inc +"']").select2({
-          data:data,
-          placeholder:"Select Status"
-        })
-      }
-      
+      //   if (item) {
+      //     console.log("increment"+inc)
+
+      //     $("#selectStatusProjectCharter[data-value='"+ inc +"']").select2({
+      //       data:data,
+      //       placeholder:"Select Status"
+      //     }).val(item).trigger("change")
+      //   }else{
+      //     $("#selectStatusProjectCharter[data-value='"+ inc +"']").select2({
+      //       data:data,
+      //       placeholder:"Select Status"
+      //     })
+      //   }
+      // }else{
+      //   console.log(item+"piyee")
+
+        
+      // }
     }
 
     let currentTab = 0;
@@ -1356,7 +1364,6 @@ PMO
                 if (item > 2) {
                   incrementDoc++
                   appendDoc = ""
-                  console.log(value)
                   appendDoc = appendDoc + '<tr class="trDoc" style="margin-top:5px">'
                   appendDoc = appendDoc + '  <td><span style="'
                   appendDoc = appendDoc + '    display: inline;'
@@ -1419,16 +1426,12 @@ PMO
                     $("#btnAddDoc").prop("disabled",false)
                   }
                 })
-
-              })  
-              
-              
+              }) 
             }
 
             var append = ''
             $.each(result[0].internal_stakeholder,function(index,item){
                 $('#tbodyInternalStakeholderRegister').empty("")
-                console.log(index)
                 // incIstakeholder = ++index
                 append = append +'<tr>'
                 append = append +'  <td><select id="selectNameStakeholder" name="selectNameStakeholder" class="select2 form-control selectNameStakeholder" data-value="'+ index +'"><option></option></select></td>'
@@ -1521,6 +1524,7 @@ PMO
 
             var appendRisk = ''
             $.each(result[0].risk,function(idx,item){
+
                 if (idx == 0) {
                   $('#textAreaRisk[data-value='+ idx +']').val(item.risk_description)
                   $('#inputOwner[data-value='+ idx +']').val(item.risk_owner)
@@ -1529,9 +1533,25 @@ PMO
                   $('#textareaResponse[data-value='+ idx +']').val(item.risk_response)
                   $('#due_date[data-value='+ idx +']').val(moment(item.due_date).format('MM/DD/YYYY'))
                   $('#review_date[data-value='+ idx +']').val(moment(item.review_date).format('MM/DD/YYYY'))
-                  selectStatusProjectCharter(idx,item.status)
-                  // $('#selectStatusProjectCharter[data-value='+ idx +']').select2().val(item.status).trigger('change')
+                  $('#selectStatusProjectCharter[data-value='+ idx +']').select2({
+                    data:[
+                      {
+                        id: "Active",
+                        text: "Active"
+                      },
+                      {
+                        id: "Obsolete",
+                        text: "Obsolete"
+                      },
+                      {
+                        id: "Accepted",
+                        text: "Accepted"
+                      },
+                    ],
+                    placeholder:"Select Status"
+                  }).val(item.status).trigger('change')
                 }else{
+                  console.log(idx)
                   $("#tbodyIdentifiedRisk tr:not(:first-child").remove("")
 
                   appendRisk = appendRisk + '<tr>'
@@ -1596,8 +1616,10 @@ PMO
                   appendRisk = appendRisk + '      <div class="col-md-4 col-xs-12">'      
                   appendRisk = appendRisk + '        <div class="form-group">'      
                   appendRisk = appendRisk + '          <label>Status*</label>'      
-                  appendRisk = appendRisk + '          <select class="form-control select2" id="selectStatusProjectCharter" data-value="'+ idx +'" onkeyup="validationCheck(this)">'      
-                  appendRisk = appendRisk + '            <option></option>'      
+                  appendRisk = appendRisk + '          <select class="form-control select2" id="selectStatusProjectCharter_'+ idx +'" data-value="'+ idx +'" onchange="validationCheck(this)">'      
+                  appendRisk = appendRisk + '            <option value="Active">Active</option>'
+                  appendRisk = appendRisk + '            <option value="Obsolete">Obsolete</option>'      
+                  appendRisk = appendRisk + '            <option value="Accepted">Accepted</option>'            
                   appendRisk = appendRisk + '          </select><span class="help-block" style="display:none;">Please fill Status!</span>'      
                   appendRisk = appendRisk + '        </div>'      
                   appendRisk = appendRisk + '      </div>'      
@@ -1606,8 +1628,10 @@ PMO
                   appendRisk = appendRisk + '</tr>'
 
                   $("#tbodyIdentifiedRisk").append(appendRisk)
+                  $('#selectStatusProjectCharter_'+idx).select2().val(item.status).trigger('change')
+                  // selectStatusProjectCharter(idx,item.status)
 
-                  selectStatusProjectCharter(idx,item.status)
+
                 }
             })
           }else{
@@ -1745,14 +1769,12 @@ PMO
               $(".modal-dialog").removeClass('modal-lg')
 
               $("#inputImpact").keyup(function(){
-                console.log(this)
                 if (this.value > 5) {
                   $("#inputImpact").val("")
                 }
               })
 
               $("#inputLikelihood").keyup(function(){
-                console.log(this)
                 if (this.value > 5) {
                   $("#inputLikelihood").val("")
                 }
@@ -2306,6 +2328,7 @@ PMO
                   currentTab = 0;
                 }
                 btnAddProjectCharter(currentTab,id_project,status);
+                console.log(status)
               }
             })
           }
@@ -2747,8 +2770,6 @@ PMO
           }).on('select2:select', function (e) {
             let filteredEmailPhone = filterByStakeholderName(e.params.data.id)
             // let filteredPhone = filterByStakeholderName(e.params.data.id)
-            console.log(e.params)
-            console.log($(this).closest("td"))
             $(this).closest("td").next("td:nth-child(2)").next("td:nth-child(3)").find("input").val(filteredEmailPhone[0])
             $(this).closest("td").next("td:nth-child(2)").next("td:nth-child(3)").next("td:nth-child(4)").find("input").val(filteredEmailPhone[1])
 
@@ -2771,7 +2792,6 @@ PMO
             $.each(data,function(index,result){
               email = result[0].email
               phone = result[0].phone
-              console.log(result[0].email)
             })
           }      
         })
@@ -2884,7 +2904,6 @@ PMO
 
       $(".help-btn-likelihood[data-value='"+ incIdentifiedRisk +"'],.help-btn-impact[data-value='"+ incIdentifiedRisk +"']").click(function() {
       // Animation complete.
-        console.log($(this).next("input").data("value"))
         if ($("#divInfoRisk").length == 0 || $("#divInfoImpact").length == 0) {
             if ($("#divInfoImpact").length == 0) {
               $("#selectStatusProjectCharter[data-value='"+ incIdentifiedRisk +"']").closest(".row").after("<div class='form-group' id='divInfoImpact'> (5) <b>Critical</b> - Disaster with potential to lead to business failure.<br>(4) <b>Major</b> - Major event which will be endured with proper management.<br>(3) <b>Moderate</b> - Significant event which can be managed under normal circumstances.<br>(2) <b>Minor</b> - Event with consequences which can be readily absorbed but requires management effort to minimise the impact.<br>(1) <b>Insignificant</b> - Low level risk. Existing controls and procedures will cope with event.</div>")
@@ -2977,7 +2996,6 @@ PMO
 
     $(".help-btn-likelihood,.help-btn-impact").click(function() {
     // Animation complete.
-      console.log($(this).next("input").data("value"))
       if ($("#divInfoRisk").length == 0 || $("#divInfoImpact").length == 0) {
           if ($("#divInfoImpact").length == 0) {
             $("#selectStatusProjectCharter[data-value='"+ $(this).closest("label").closest(".form-group").find("input").data("value")+"']").closest(".row").after("<div class='form-group' id='divInfoImpact'> (5) <b>Critical</b> - Disaster with potential to lead to business failure.<br>(4) <b>Major</b> - Major event which will be endured with proper management.<br>(3) <b>Moderate</b> - Significant event which can be managed under normal circumstances.<br>(2) <b>Minor</b> - Event with consequences which can be readily absorbed but requires management effort to minimise the impact.<br>(1) <b>Insignificant</b> - Low level risk. Existing controls and procedures will cope with event.</div>")
