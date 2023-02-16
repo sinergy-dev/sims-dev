@@ -257,9 +257,39 @@
       ul {
         margin-bottom: 0in;
       }
+
+      footer {
+        position: fixed; 
+        bottom: -60px; 
+        left: 0px; 
+        right: 0px;
+        height: 50px; 
+        font-size: 12px !important;
+        color: gray;
+        /** Extra personal styles **/
+        /*background-color: #008B8B;*/
+        /*color: black;*/
+        text-align: center;
+        line-height: 35px;
+      }
+
+      @page {
+        margin-bottom: 100px;
+        margin-left:  25px;
+        margin-right:  25px;
+        counter-increment: pages;
+      }
+
+      #pageNumber::after {
+        content: "Pages " counter(page);
+      }
       
     </style>
   </head>
+  <footer>
+      <span style="float:left;" id="pageNumber"></span>
+      Final Project Report<br><small style="background-color:yellow;">{{$data['customer_info']['customer_name']}} - {{$data['customer_info']['name_project']}}</small> 
+  </footer>
   <body lang=EN-US link="#3F4243" vlink="#3F4243" style='word-wrap:break-word'>
     <div>
       <h1 style="font-family: 'Arial', sans-serif;color: darkblue;font-size: 40pt;">Final Project Report</h1>
@@ -274,7 +304,7 @@
       <h2 style="font-family: 'Arial', sans-serif;color: darkblue;">version 1.0</h2>
     </div>
     <div style="margin-top: 40px;">
-      <img src="{{$data['customer_info']['logo_company']}}" width="250" height=250 style="object-fit:cover;">
+      <img src="{{$data['customer_info']['logo_company']}}" width="250" height=75 style="object-fit:cover;">
     </div>
     <div style="margin-top: 50px;">
       <span style="font-size:12.0pt;font-family: 'Arial',sans-serif;color: darkblue;">Author</span>
@@ -783,15 +813,6 @@
       <p class=MsoBodyText>
         <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span>
       </p>
-      <p class=MsoBodyText>
-        <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span>
-      </p>
-      <p class=MsoBodyText>
-        <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span>
-      </p>
-      <p class=MsoBodyText>
-        <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif'>&nbsp;</span>
-      </p>
 
       <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=659 style='border-collapse:collapse;border:none'>
         <tr style='height:4.0pt'>
@@ -877,7 +898,7 @@
       </table>
     </div>
     <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:#3F4243'>
-      <br clear=all style='page-break-before:auto'>
+      <!-- <br clear=all style='page-break-before:auto'> -->
     </span>
     <div class=WordSection2>
       <p class=MsoNormal style='margin-right:184.15pt'>

@@ -257,9 +257,40 @@
       ul {
         margin-bottom: 0in;
       }
+
+      footer {
+        position: fixed; 
+        bottom: -60px; 
+        left: 0px; 
+        right: 0px;
+        height: 50px; 
+        font-size: 12px !important;
+        color: gray;
+        /** Extra personal styles **/
+        /*background-color: #008B8B;*/
+        /*color: black;*/
+        text-align: center;
+        line-height: 35px;
+      }
+
+      @page {
+        margin-bottom: 100px;
+        margin-left:  25px;
+        margin-right:  25px;
+        counter-increment: pages;
+
+      }
+
+      #pageNumber::after {
+        content: "Pages " counter(page);
+      }
       
     </style>
   </head>
+  <footer>
+      <span style="float:left;" id="pageNumber"></span>
+      Project Progress Report<br><small style="background-color:yellow;">{{$data['customer_info']['customer_name']}} - {{$data['customer_info']['name_project']}}</small> 
+  </footer>
   <body lang=EN-US link="#3F4243" vlink="#3F4243" style='word-wrap:break-word'>
     <div>
       <h1 style="font-family: 'Arial', sans-serif;color: darkblue;font-size: 40pt;">Project Progress Report</h1>
@@ -275,7 +306,7 @@
       <h2 style="font-family: 'Arial', sans-serif;color: darkblue;">version 1.0</h2>
     </div>
     <div style="margin-top: 40px;">
-      <img src="{{$data['customer_info']['logo_company']}}" style="object-fit: cover;" width="250" height=250>
+      <img src="{{$data['customer_info']['logo_company']}}" width="250" height=75 style="object-fit: cover;">
     </div>
     <div style="margin-top: 50px;">
       <span style="font-size:12.0pt;font-family: 'Arial',sans-serif;color: darkblue;">Author</span>
@@ -833,7 +864,7 @@
         <span lang=EN-GB>&nbsp;</span>
       </p>
 
-      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=619 style='border-collapse:collapse;border:none'>
+      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=619 style='border-collapse:collapse;border:none;'>
         <tr style='height:4.0pt'>
           <td  colspan=4 vertical-align=top style='border:solid windowtext 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
@@ -1558,14 +1589,6 @@
       </table>
       <p class=MsoNormal>
         <span lang=EN-GB>&nbsp;</span>
-      </p>
-    </div>
-    <span lang=EN-GB style='font-size:11.0pt;font-family:"Arial",sans-serif;color:#3F4243'>
-      <br clear=all style='page-break-before:auto'>
-    </span>
-    <div class=WordSection2>
-      <p class=MsoNormal style='margin-right:184.15pt'>
-        <span lang=EN-GB style='color:black'>&nbsp;</span>
       </p>
     </div>
   </body>

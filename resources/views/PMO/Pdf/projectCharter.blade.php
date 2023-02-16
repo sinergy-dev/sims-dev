@@ -257,9 +257,39 @@
       ul {
         margin-bottom: 0in;
       }
-      
+
+      footer {
+        position: fixed; 
+        bottom: -60px; 
+        left: 0px; 
+        right: 0px;
+        height: 50px; 
+        font-size: 12px !important;
+        color: gray;
+        /** Extra personal styles **/
+        /*background-color: #008B8B;*/
+        /*color: black;*/
+        text-align: center;
+        line-height: 35px;
+      }
+
+      @page {
+          margin-bottom: 100px;
+          margin-left:  25px;
+          margin-right:  25px;
+          counter-increment: pages;
+      }
+
+      #pageNumber::after {
+        content: "Pages " counter(page);
+      }
+
     </style>
   </head>
+  <footer>
+      <span style="float:left;" id="pageNumber"></span>
+      Project Charter<br><small style="background-color:yellow;">{{$data['customer_name']}} - {{$data['project_id']['name_project']}}</small> 
+  </footer>
   <body lang=EN-US link="#3F4243" vlink="#3F4243" style='word-wrap:break-word'>
     <div style="line-height: 1.5em">
       <img src="{{ asset('image/project_charter.png')}}" style="width: 50%; height: 50%">
@@ -425,7 +455,7 @@
           <span lang=EN-AU style='font-size:10.0pt;color: black;'>DOCUMENT DISTRIBUTION</span>
         </b>
       </p>
-      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=619 style='border-collapse:collapse;border:none'>
+      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=619 style='border-collapse:collapse;border:none;'>
         <tr>
           <td width=84 valign=top style='width:63.0pt;border:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=Introtext>
@@ -474,15 +504,15 @@
         @endforeach
       </table>
 
-      <p class=MsoNormal align=center style='text-align:center'>
+  <!--     <p class=MsoNormal align=center style='text-align:center'>
         <span lang=EN-GB>&nbsp;</span>
       </p>
-      <p class=MsoNormal style='text-align:justify'>
+      <p class=MsoNormal style='text-align:justify;'>
         <span lang=EN-GB style='font-size:12.0pt;color:#548DD4'>&nbsp;</span>
       </p>
-
-      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none;' width=619>
-          <tr style='page-break-inside:avoid;height:18.6pt'>
+ -->
+      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none;page-break-before:always;' width=619>
+          <tr style='height:18.6pt'>
             <td colspan=10 style='border:solid;background:#1F497D;height:18.6pt'>
               <p class=Table align=center style='text-align:center'>
                 <b>
@@ -942,7 +972,7 @@
             <td colspan=4 style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
                 <b>
-                  <span style='font-size:9.0pt;font-family:"Arial",sans-serif'>Estimated Finish Date: </span>
+                  <span style='font-size:9.0pt;font-family:"Arial",sans-serif;sans-serif;color:black'>Estimated Finish Date: </span>
                 </b>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['estimated_end_date']}}</span>
               </p>
@@ -950,7 +980,7 @@
             <td colspan=3 style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
                 <b>
-                  <span style='font-size:9.0pt;font-family:"Arial",sans-serif'>Flexibility: </span>
+                  <span style='font-size:9.0pt;font-family:"Arial",sans-serif;sans-serif;color:black'>Flexibility: </span>
                 </b>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['flexibility']}}</span>
               </p>
@@ -1059,7 +1089,7 @@
       <p class=MsoBodyText>
         <span lang=EN-GB>&nbsp;</span>
       </p>
-      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none' width=619>
+      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none' width=564>
         <tr style='height:17.5pt'>
           <td colspan=6 style='border:solid windowtext 1.0pt;background:#1F497D;padding:0in 5.4pt 0in 5.4pt;height:17.5pt'>
             <p class=MsoBodyText align=center style='text-align:center'>
@@ -1070,42 +1100,42 @@
           </td>
         </tr>
         <tr style='height:18.7pt'>
-          <td style='width:27.0pt;border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
                 <span lang=EN-GB style='font-size:9.0pt;color:gray'>No</span>
               </b>
             </p>
           </td>
-          <td style='width:157.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
                 <span lang=EN-GB style='font-size:9.0pt;color:gray'>Risk Description</span>
               </b>
             </p>
           </td>
-          <td style='width:72.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
                 <span lang=EN-GB style='font-size:9.0pt;color:gray'>Owner</span>
               </b>
             </p>
           </td>
-          <td style='width:44.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
                 <span lang=EN-GB style='font-size:9.0pt;color:gray'>Impact</span>
               </b>
             </p>
           </td>
-          <td style='width:58.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
                 <span lang=EN-GB style='font-size:9.0pt;color:gray'>Probability</span>
               </b>
             </p>
           </td>
-          <td style='width:118.0pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
                 <span lang=EN-GB style='font-size:9.0pt;color:gray'>Risk Response</span>
@@ -1115,32 +1145,32 @@
         </tr>
         @foreach($data['risk'] as $key => $risk)
         <tr style='height:18.7pt'>
-          <td style='width:27.0pt;border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <span lang=EN-GB style='font-size:9.0pt;color:gray'>1.</span>
             </p>
           </td>
-          <td style='width:157.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['risk_description']}}</span>
             </p>
           </td>
-          <td style='width:72.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['risk_owner']}}</span>
             </p>
           </td>
-          <td style='width:44.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['impact']}}</span>
             </p>
           </td>
-          <td style='width:58.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['likelihood']}}</span>
             </p>
           </td>
-          <td style='width:118.0pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['risk_response']}}</span>
             </p>
@@ -1310,4 +1340,5 @@
       </p>
     </div>
   </body>
+  
 </html>
