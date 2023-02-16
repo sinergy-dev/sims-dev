@@ -29,6 +29,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('ReviewDateRiskPM:daily')->daily('07:10');
 
+        $schedule->command('ReminderCreateProjectCharter:daily')->daily('07:30');
+
         $schedule->command('SalesRemainder:weekly')
             ->weekly()
             ->thursdays()
