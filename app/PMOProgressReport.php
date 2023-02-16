@@ -28,18 +28,14 @@ class PMOProgressReport extends Model
 
     public function getProjectPmAttribute()
     {
-        $get_id_pmo = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->select('tb_pmo.id','project_id')->where('tb_pmo.id', $this->id_project)->first();
-
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm')->where('role', 'Project Manager')->where('tb_pmo.project_id', $get_id_pmo->id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pm')->where('role', 'Project Manager')->where('tb_pmo.id', $this->id)->first();
 
         return empty($data->project_pm)?'-':$data->project_pm;
     }
 
     public function getProjectPcAttribute()
     {
-        $get_id_pmo = DB::table('tb_pmo_project_charter')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->select('tb_pmo.id','project_id')->where('tb_pmo.id', $this->id_project)->first();
-
-        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Project Coordinator')->where('tb_pmo.project_id', $get_id_pmo->project_id)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')->join('users', 'users.nik','tb_pmo_assign.nik')->select('users.name as project_pc')->where('role', 'Project Coordinator')->where('tb_pmo.id', $this->id)->first();
 
         return empty($data->project_pc)?'-':$data->project_pc;
     }
