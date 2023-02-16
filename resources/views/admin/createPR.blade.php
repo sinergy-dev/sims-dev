@@ -1053,6 +1053,18 @@
           {
             "id": "kg",
             "text": "Kg"
+          },
+          {
+            "id": "meter",
+            "text": "Meter"
+          },
+          {
+            "id": "paket",
+            "text": "Paket"
+          },
+          {
+            "id": "tahun",
+            "text": "Tahun"
           }
         ]
       }
