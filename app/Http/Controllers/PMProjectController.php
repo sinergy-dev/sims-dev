@@ -1255,7 +1255,7 @@ class PMProjectController extends Controller
                     'users.name', 
                     'roles.name as position', 
                     'roles.group as group',
-                    'users.ttd_digital',
+                    'users.ttd as ttd_digital',
                     'users.email',
                     'users.avatar',
                     DB::raw("IFNULL(SUBSTR(`temp_tb_pmo_activity`.`date_time`,1,10),'-') AS `date_sign`"),

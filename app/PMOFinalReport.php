@@ -123,7 +123,7 @@ class PMOFinalReport extends Model
                     'users.name', 
                     DB::raw("(CASE WHEN (`roles`.`name` = 'PMO Project Coordinator') THEN 'Project Coordinator' WHEN (`roles`.`name` = 'PMO Staff') THEN 'Project Manager' ELSE `roles`.`name` END) as position"), 
                     'roles.group as group',
-                    'users.ttd_digital',
+                    'users.ttd as ttd_digital',
                     'users.email',
                     'users.avatar',
                     DB::raw("IFNULL(SUBSTR(`temp_tb_pmo_activity`.`date_time`,1,10),'-') AS `date_sign`"),
