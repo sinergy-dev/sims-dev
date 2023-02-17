@@ -1289,5 +1289,7 @@ Route::post('testCSVUploadPost','TestController@testCSVUploadPost');
 
 Route::get('testCSVUploadGetFile','TestController@testCSVUploadGetFile');
 
+Route::get('testGCal','TestController@testGCal');
+
 
 
