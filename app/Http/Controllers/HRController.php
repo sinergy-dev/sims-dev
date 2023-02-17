@@ -1525,6 +1525,28 @@ class HRController extends Controller
             
         // }
 
+        // if($req->file('inputSign') == null) {
+        //     $update->ttd_digital = $update->inputSign;
+        // } else {
+        //     $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+        //     $file                   = $req->file('inputSign');
+        //     $fileName               = $file->getClientOriginalName();
+        //     $strfileName            = explode('.', $fileName);
+        //     $lastElement            = end($strfileName);
+        //     $nameDoc                = 'image/tanda_tangan/Tanda_tangan_digital_' . Auth::User()->nik . '.' . $lastElement;
+        //     $extension              = $file->getClientOriginalExtension();
+        //     $check                  = in_array($extension,$allowedfileExtension);
+
+        //     if ($check) {
+        //         $req->file('inputSign')->move("image/tanda_tangan/", $nameDoc);
+        //         $update->ttd_digital        = $nameDoc;
+        //     } else {
+        //         return redirect()->back()->with('alert','Oops! Only jpg, png');
+        //     }
+            
+        // }
+
+
         if($req->file('inputSign') == null) {
             $update->ttd_digital = $update->inputSign;
         } else {
@@ -1533,13 +1555,13 @@ class HRController extends Controller
             $fileName               = $file->getClientOriginalName();
             $strfileName            = explode('.', $fileName);
             $lastElement            = end($strfileName);
-            $nameDoc                = 'image/tanda_tangan/Tanda_tangan_digital_' . Auth::User()->nik . '.' . $lastElement;
+            $nameDoc                = 'image/tanda_tangan/Tanda_tangan_' . Auth::User()->nik . '.' . $lastElement;
             $extension              = $file->getClientOriginalExtension();
             $check                  = in_array($extension,$allowedfileExtension);
 
             if ($check) {
                 $req->file('inputSign')->move("image/tanda_tangan/", $nameDoc);
-                $update->ttd_digital        = $nameDoc;
+                $update->ttd        = $nameDoc;
             } else {
                 return redirect()->back()->with('alert','Oops! Only jpg, png');
             }
