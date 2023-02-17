@@ -831,6 +831,8 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         $cek = User::join('tb_cuti','tb_cuti.nik','=','users.nik','left')
                 ->select('users.nik','cuti','cuti2','status_karyawan','status')->where('users.nik',$nik)->first();
 
@@ -1063,6 +1065,40 @@ class HRGAController extends Controller
                     ->where('users.id_division','FINANCE')
                     ->groupby('nik')
                     
+                    ->get();
+            }else if($cek_role->name_role == 'Operations Director'){
+                $cuti = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    // ->where('users.id_division','TECHNICAL')
+                    // ->where('users.id_position','MANAGER')
+                    // ->orwhere('users.id_position','ENGINEER MANAGER')
+                    ->whereRaw("(`users`.`id_division` = 'TECHNICAL' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_division` = 'TECHNICAL PRESALES' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_territory` = 'OPERATION' AND `users`.`id_position` = 'MANAGER' OR `users`.`id_position` = 'HR MANAGER')")
+                    ->groupby('id_cuti')
+                    ->orderBy('id_cuti','desc')
+                    ->get();
+
+
+                $cuti2 = DB::table('tb_cuti')
+                    ->join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory')
+                    ->where('users.id_division','TECHNICAL')
+                    ->where('users.id_position','MANAGER')
+                    ->orwhere('users.id_position','ENGINEER MANAGER')
+                    ->orwhere('users.id_position','MANAGER')
+                    ->orwhere('users.id_division','WAREHOUSE')
+                    ->orWhere('users.id_position', 'HR MANAGER')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->where('tb_cuti.status','n')
+                    ->orWhere('tb_cuti.status','R')
+                    ->groupby('nik')
                     ->get();
             }else{
                 $cuti = DB::table('tb_cuti')
@@ -1575,6 +1611,8 @@ class HRGAController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         $nik = Auth::User()->nik;
         $date_now = date('Y-m-d');
         
@@ -1616,6 +1654,8 @@ class HRGAController extends Controller
                 $kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
             }else if ($div == 'WAREHOUSE'){
                 $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+            }else if ($cek_role->name_role == 'Operations Director'){
+                $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
             }else{
                 $kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
@@ -2072,6 +2112,10 @@ class HRGAController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         $id_cuti = $request['id_cuti'];
 
         $dates_after = $request['dates_after'];
@@ -2133,6 +2177,8 @@ class HRGAController extends Controller
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
                 }else if ($div == 'WAREHOUSE'){
                     $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+                }else if ($cek_role->name_role == 'Operations Director'){
+                    $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
                 }else{
                     $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
                 }
@@ -2207,6 +2253,8 @@ class HRGAController extends Controller
         $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
         $com = $company->id_company;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         if ($ter != NULL) {
             if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
                 if ($div == 'PMO') {
@@ -2220,6 +2268,8 @@ class HRGAController extends Controller
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_position','ENGINEER MANAGER')->where('id_company','1')->first();
             }else if ($div == 'WAREHOUSE'){
                 $nik_kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
+            }else if ($cek_role->name_role == 'Operations Director'){
+                $nik_kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first()->email;
             }else{
                 $nik_kirim = DB::table('users')->select('users.email')->where('id_territory',Auth::User()->id_territory)->where('status_karyawan', '!=', 'dummy')->where('id_position','MANAGER')->where('id_division',Auth::User()->id_division)->where('id_company','1')->first();
             }
@@ -2902,6 +2952,8 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         if ($request->id == 'all_lis') {
             $cuti_index = DB::table('users')
                 ->join('tb_cuti','tb_cuti.nik','=','users.nik')
@@ -3003,7 +3055,14 @@ class HRGAController extends Controller
                             ->where('tb_cuti_detail.status','=','NEW')
                             ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
                             ->get();
-                    } else{
+                    } else if($cek_role->name_role == 'Operations Director'){
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com) 
+                            ->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")
+                            ->where('tb_cuti_detail.status','NEW')
+                            ->whereRaw("(`tb_cuti`.`status` = 'R' OR `tb_cuti`.`status` = 'n')")
+                            ->get();
+                    }else{
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
                             ->where('users.nik',$nik)
@@ -3129,7 +3188,11 @@ class HRGAController extends Controller
                             ->where('users.id_company',$request->filter_com)
                             ->where('users.id_division','FINANCE')
                             ->get();
-                    } else{
+                    }  else if($cek_role->name_role == 'Operations Director'){
+                        $cuti = $cuti
+                            ->where('users.id_company',$request->filter_com)
+                            ->get();
+                    }else{
                         $cuti = $cuti
                             ->where('users.id_company',$request->filter_com)
                             ->where('users.nik',$nik)
@@ -3178,6 +3241,8 @@ class HRGAController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
 
         if ($request->com == 'all') {
             $com = ['1','2'];
@@ -3229,7 +3294,10 @@ class HRGAController extends Controller
                     $cuti = $cuti
                         ->where('users.id_division','FINANCE')
                         ->get();
-                } else{
+                } else if($cek_role->name_role == 'Operations Director'){
+                     $cuti = $cuti
+                        ->get();
+                }else{
                     $cuti = $cuti
                         ->where('users.nik',$nik)
                         ->get();
@@ -3492,6 +3560,8 @@ class HRGAController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         if ($ter != NULL) {
             if($div == 'SALES' && $pos == 'MANAGER'){
                 return array("data"=>Cuti::join('users','users.nik','=','tb_cuti.nik')
@@ -3609,7 +3679,21 @@ class HRGAController extends Controller
                     ->where('tb_cuti_detail.status','NEW')                    
                     ->groupby('nik')
                     ->get());
-            } else{
+            } elseif ($cek_role->name_role == 'Operations Director') {
+                return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
+                    ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                    ->join('tb_position','tb_position.id_position','=','users.id_position')
+                    ->join('tb_division','tb_division.id_division','=','users.id_division')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->orderBy('date_req','DESC')
+                    ->groupby('tb_cuti.id_cuti')
+                    ->whereYear('date_req',date('Y'))   
+                    ->whereRaw("(`users`.`id_position` = 'ENGINEER MANAGER' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'DVG' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'PRESALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_territory` = 'OPERATION' OR `users`.`id_position` = 'HR MANAGER')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
+                    ->where('tb_cuti_detail.status','NEW')
+                    ->where('users.id_company', '1')
+                    ->groupby('nik')
+                    ->get());
+            }else{
                 return array("data" => Cuti::join('users','users.nik','=','tb_cuti.nik')
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
@@ -3706,6 +3790,8 @@ class HRGAController extends Controller
         $div = $division->id_division;
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
+
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
 
         if ($ter != NULL) {
             if($div == 'SALES' && $pos == 'MANAGER'){
@@ -3820,7 +3906,19 @@ class HRGAController extends Controller
                 ->groupby('tb_cuti.id_cuti')
                 ->orderBy('id_cuti','desc')
                 ->get();
-            } else{
+            } elseif($cek_role->name_role == 'Operations Director') {
+                $cuti = DB::table('tb_cuti')
+                        ->join('users','users.nik','=','tb_cuti.nik')
+                        ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
+                        ->join('tb_position','tb_position.id_position','=','users.id_position')
+                        ->join('tb_division','tb_division.id_division','=','users.id_division')
+                        ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                        ->groupby('tb_cuti.id_cuti')
+                        ->where('date_off', '>=', $request->start)
+                        ->where('date_off', '<=', $request->end)
+                        ->orderBy('id_cuti','desc')
+                        ->get();
+            }else{
                 $cuti = DB::table('tb_cuti')
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('users','users.nik','=','tb_cuti.nik')
