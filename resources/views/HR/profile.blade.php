@@ -464,7 +464,7 @@
                     </div>
                   </div>
 
-                  <div class="col-md-4">
+                  <!-- <div class="col-md-4">
                     <div class="box box-primary" style="background-color: #F7F7F7;">
                       <div class="box-header">
                         <h3 class="box-title">Sign File</h3>
@@ -474,6 +474,24 @@
                           <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarsign" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @else
                           <img class="entry" src="{{url($user_profile->ttd_digital)}}" id="showgambarsign" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @endif
+                      </div>
+                      <div class="box-footer">
+                          <input type="file" id="inputSign" name="inputSign">
+                      </div>
+                    </div>
+                  </div> -->
+
+                  <div class="col-md-4">
+                    <div class="box box-primary" style="background-color: #F7F7F7;">
+                      <div class="box-header">
+                        <h3 class="box-title">Sign File</h3>
+                      </div>
+                      <div class="box-body">
+                        @if($user_profile->ttd == null)
+                          <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarsign" style="max-width: 200px;max-height: 200px;float: left;"/>
+                        @else
+                          <img class="entry" src="{{url($user_profile->ttd)}}" id="showgambarsign" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @endif
                       </div>
                       <div class="box-footer">
