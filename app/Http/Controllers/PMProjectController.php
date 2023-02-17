@@ -1303,7 +1303,7 @@ class PMProjectController extends Controller
         $store_activity->date_time = Carbon::now()->toDateTimeString();
         $store_activity->save();
 
-        if ($cek_role->group == 'sales') {
+        if ($cek_role->group == 'sales' || $cek_role->name == 'Operations Director') {
             $update->status = 'Done';
             $subject_email = 'Approve Project Charter';
             $subject = 'Your project is available to run,';
