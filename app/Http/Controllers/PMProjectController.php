@@ -873,9 +873,55 @@ class PMProjectController extends Controller
         $update->save();
     }
 
+    public function postEventCalendar($name_project,$end_date,$email){
+        // $calenderId = "kfo8st45f546hr112s6ia4mgmo@group.calendar.google.com";
+        $calenderId = "primary";
+
+        $client = new Client();
+        $url = "https://www.googleapis.com/calendar/v3/calendars/".$calenderId."/events?key=".env('GCALENDAR_API_KEY')."&sendNotifications=true";
+        $token = $this->getOauth2AccessToken();
+
+        $response =  $client->request(
+                    'POST', 
+                    $url,        
+                    [
+                        // 'form_params' => [
+                        //     'sendNotifications' => true,
+                        // ],
+                        'headers' => [
+                            'Content-Type'=>'application/json',
+                            'Authorization'=>$token
+                        ],'json' => [
+                                "summary" => $name_project,
+                                "start" => array(
+                                    'dateTime' => Carbon::parse($end_date . "08:00:00")->toISOString(),
+                                ),
+                                "end" => array(
+                                    'dateTime' => Carbon::parse($end_date . "08:00:00")->toISOString(),
+                                ),
+                                "description" => $name_project,
+                                'reminders' => array(
+                                    'useDefault' => FALSE,
+                                    'overrides' => array(
+                                        array('method' => 'email', 'minutes' => 24 * 60),
+                                        array('method' => 'popup', 'minutes' => 10),
+                                    ),
+                                ),
+                                'attendees'=> array(
+                                    array('email'=> $email),
+                                ),
+                        ]
+                    ]
+        );
+
+        return $response->getBody();
+    }
+    
     public function updateProjectInformationProjectCharter(Request $request)
     {
         $update = PMOProjectCharter::where('id_project', $request->id_pmo)->first();
+
+        // return $update->name_project;
         $update->project_description = $request['textAreaProjectDesc'];
         $update->project_objectives = $request['textAreaProjectObj'];
 
@@ -886,6 +932,14 @@ class PMProjectController extends Controller
         $end_date = strtotime($_POST['inputFinishDate']); 
         $end_date = date("Y-m-d",$end_date);
         $update->estimated_end_date = $end_date;
+
+        $getNameProject = PMOProjectCharter::join('tb_pmo','tb_pmo.id','=','tb_pmo_project_charter.id_project')
+                        ->join('tb_id_project','tb_id_project.id_project','=','tb_pmo.project_id')
+                        ->first();
+
+        $name_project_calendar = "Estimated Finish Date ".$getNameProject->name_project;
+
+        $this->postEventCalendar($name_project_calendar,$end_date,Auth::User()->email);
 
         $update->flexibility = $request['selectFlexibility'];
         $update->market_segment = $request['selectMarketSegment'];
@@ -906,6 +960,62 @@ class PMProjectController extends Controller
             $store_technology->save();
         }
 
+    }
+
+    public function getOauth2AccessToken(){
+        $client = new Client();
+
+        $response = $client->request(
+                'POST',
+                'https://oauth2.googleapis.com/token',
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/x-www-form-urlencoded',
+                    ],
+                    'form_params' => [
+                        'grant_type' => 'refresh_token',
+                        'client_id' => env('GCALENDER_CLIENT_ID'),
+                        'client_secret' => env('GCALENDAR_CLIENT_SECRET'),
+                        'refresh_token' => env('GCALENDAR_REFRESH_TOKEN')
+                    ]
+                ]
+            );
+
+        $response = json_decode($response->getBody());
+
+        return "Bearer " . $response->access_token;
+        // if(Cache::store('file')->has('webex_access_token')){
+        //   Log::info('Webex Access Token still falid');
+        //   return "Bearer " . Cache::store('file')->get('webex_access_token');
+        // } else {
+        //   Log::error('Webex Access Token not falid. Try to refresh token');
+        //   $client = new Client();
+        //   $response = $client->request(
+        //     'POST',
+        //     'https://webexapis.com/v1/access_token',
+        //     [
+        //       'headers' => [
+        //         'Content-Type' => 'application/x-www-form-urlencoded',
+        //       ],
+        //       'form_params' => [
+        //         'grant_type' => 'refresh_token',
+        //         'client_id' => env('WEBEX_CLIENT_ID'),
+        //         'client_secret' => env('WEBEX_CLIENT_SECRET'),
+        //         'refresh_token' => env('WEBEX_REFRESH_TOKEN')
+        //       ]
+        //     ]
+        //   );
+
+        //   $response = json_decode($response->getBody());
+
+        //   if(isset($response->access_token)){
+        //     Log::info('Refresh Token success. Save token to cache file');
+        //     Cache::store('file')->put('webex_access_token',$response->access_token,now()->addSeconds($response->expires_in));
+        //     return "Bearer " . Cache::store('file')->get('webex_access_token');
+        //   } else {
+        //     Log::error('Refresh Token failed. Please to try change "refresh token"');
+        //   }
+        // }
     }
 
     public function updateProjectCharter(Request $request)
