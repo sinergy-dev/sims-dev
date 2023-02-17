@@ -5681,7 +5681,7 @@ class SalesController extends Controller{
         $dataPID = Salesproject::join('sales_lead_register','sales_lead_register.lead_id','=','tb_id_project.lead_id')
             ->join('users','users.nik','=','sales_lead_register.nik')
             ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
-            ->whereYear('tb_id_project.created_at',$request->year)
+            ->whereYear('tb_id_project.date',$request->year)
             ->orderBy('tb_id_project.id_project','asc')
             ->where('id_company','1');
             
@@ -5795,7 +5795,7 @@ class SalesController extends Controller{
                     'sales_lead_register.lead_id'
                 )
                 ->where('id_company','2')
-                ->whereYear('tb_id_project.created_at',$request->year)
+                ->whereYear('tb_id_project.date',$request->year)
                 ->where('tb_id_project.status','!=','WO')
                 ->orderBy('tb_id_project.id_project','asc')
                 ->get();
