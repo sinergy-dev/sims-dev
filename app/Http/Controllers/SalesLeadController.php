@@ -47,6 +47,8 @@ class SalesLeadController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         // return $request->year;
 
         $total_lead = DB::table('sales_lead_register')
@@ -304,6 +306,34 @@ class SalesLeadController extends Controller
 
                 $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
 
+            } else if ($cek_role->name_role == 'Operations Director' ){
+                $count_lead = $total_lead->count('lead_id');
+
+                $count_open = $total_open->count('lead_id');
+
+                $count_sd = $total_sd->count('lead_id');
+
+                $count_tp = $total_tp->count('lead_id');
+
+                $count_win = $total_win->count('lead_id');
+
+                $count_lose = $total_lose->count('lead_id');
+                
+                $count_cancel = $total_cancel->count('lead_id');
+                
+                $count_initial = $total_initial->count('lead_id');
+
+                $sum_amount_lead = $total_lead->select(DB::raw('case WHEN SUM(amount) IS NOT NULL THEN SUM(amount) ELSE 0 END as amount_lead'))->first();
+
+                $sum_amount_open = $total_open->select(DB::raw('SUM(amount) as amount_open'))->first();
+
+                $sum_amount_sd = $total_sd->select(DB::raw('SUM(amount) as amount_sd'))->first();
+
+                $sum_amount_tp = $total_tp->select(DB::raw('SUM(amount) as amount_tp'))->first();
+
+                $sum_amount_win = $total_win->select(DB::raw('SUM(amount) as amount_win'))->first();
+
+                $sum_amount_lose = $total_lose->select(DB::raw('SUM(amount) as amount_lose'))->first();
             }else {
                 $count_lead = $total_lead->where('users.id_territory',$ter)
                             ->where('id_company','1')
@@ -445,7 +475,7 @@ class SalesLeadController extends Controller
 
     public function getSalesByTerritory(Request $request)
     {
-        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `id_division` = 'SALES' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN')")->orWhereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'BCD' AND `id_company` = '1')");
+        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `id_division` = 'SALES' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN')")->orWhereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'BCD' AND `id_company` = '1')")->orWhereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'TECHNICAL' AND `id_company` = '1'  AND `id_territory` = 'OPERATION')")->where('status_karyawan','!=','dummy');
 
         if (isset($request->territory)) {
             $getSales->whereIn('id_territory', $request->territory);
@@ -543,6 +573,8 @@ class SalesLeadController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         // $year = date('Y');
         $year = [date('Y'), date('Y')-1];
 
@@ -568,7 +600,7 @@ class SalesLeadController extends Controller
             }
         }
          
-        if($ter != null && $div != 'BCD'){
+        if($ter != null && $div != 'BCD' || $cek_role->name_role == 'Operations Director'){
             $leadsnow->where('u_sales.id_company', '1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leadsnow->where('nik_presales', $nik);
@@ -576,7 +608,7 @@ class SalesLeadController extends Controller
                 $leadsnow->where('u_sales.id_territory', $ter);
             } else if ($div == 'SALES' && $pos == 'STAFF') {
                 $leadsnow->where('u_sales.nik', $nik);
-            }
+            } 
         }  
 
         return array("data"=>$leadsnow->get());
@@ -1368,6 +1400,8 @@ class SalesLeadController extends Controller
         $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
         $pos = $position->id_position;
 
+        $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
         $getPresales = DB::table('sales_solution_design')->join('users', 'users.nik', '=','sales_solution_design.nik')->selectRaw('GROUP_CONCAT(`users`.`name`) AS `name_presales`, GROUP_CONCAT(`sales_solution_design`.`nik`) AS `nik_presales`')->selectRaw('lead_id')->groupBy('lead_id');
 
         $getListProductLead = DB::table('tb_product_tag')->join('tb_product_tag_relation', 'tb_product_tag_relation.id_product_tag', '=', 'tb_product_tag.id')
@@ -1418,7 +1452,7 @@ class SalesLeadController extends Controller
 
         $searchFields = ['sales_lead_register.lead_id', 'opp_name', 'brand_name', 'name', 'id_territory', 'deal_price', 'amount', 'name_presales'];
 
-        if($ter != null){
+        if($ter != null || $cek_role->name_role != 'Operations Director'){
             $leads->where('u_sales.id_company','1');
             if ($div == 'TECHNICAL PRESALES' && $pos == 'STAFF') {
                 $leads = $leads->where('nik_presales', $nik);

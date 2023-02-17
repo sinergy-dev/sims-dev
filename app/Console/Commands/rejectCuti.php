@@ -81,6 +81,8 @@ class rejectCuti extends Command
             $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
             $com = $company->id_company;
 
+            $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+
             if ($ter != NULL) {
                 if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {
                     if ($div == 'PMO' || $div == 'MSM') {
@@ -96,6 +98,8 @@ class rejectCuti extends Command
                     $kirim = DB::table('users')->select('users.email')->where('email','elfi@sinergy.co.id')->where('id_company','1')->first();
                 }else if ($div == 'BCD'){
                     $kirim = DB::table('users')->select('users.email')->where('id_position','MANAGER')->where('id_territory', 'BCD')->where('id_company','1')->first();
+                }else if($cek_role->name_role == 'Operations Director'){
+                    $kirim = DB::table('users')->select('users.email')->where('email','rony@sinergy.co.id')->where('id_company','1')->first();
                 }else{
                     $kirim = DB::table('users')->select('users.email')->where('id_territory',$ter)->where('id_position','MANAGER')->where('id_division',$div)->where('id_company','1')->where('status_karyawan', '!=', 'dummy')->first();
                 }     
