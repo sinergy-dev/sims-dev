@@ -854,7 +854,7 @@ PMO
                 "data": null,
                 render:function(data, type, row)
                 {
-                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','sales')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','BCD Manager')->exists()}}") {
+                  if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.group','sales')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','BCD Manager')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','Operations Director')->exists()}}" || "{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','President Director')->exists()}}") {
                       if (row.current_phase == 'New') {
                         if (row.project_type == 'supply_only') {
                           return '<button class="btn btn-sm bg-purple disabled" style="width:110px"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
@@ -1002,6 +1002,19 @@ PMO
             }
           ],
           order: [[0, 'asc']],
+          "rowCallback": function( row, data ) {
+              if (data.status == "Approve") {
+                console.log("testtt")
+                if ("{{Auth::User()->name}}" != data.sign) {
+                  $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary disabled" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" disabled><i class="fa fa-eye"></i>&nbsp Project Charter</button>');
+                }else{
+                  $('td:eq(7)', row).html('<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + data.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>');           
+                }
+              }
+              // if (table.row(0).data().milestone == "Submit Final Project Closing Report") {
+              //   $("#btnFinalProject").prop("disabled",false)
+              // }
+          },
           drawCallback: function(settings) {
             if (accesable.includes("btnAddProjectCharter")) {
               $("button[name='btnAddProjectCharter']").prop("disabled",false)
