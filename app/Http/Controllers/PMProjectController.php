@@ -221,7 +221,7 @@ class PMProjectController extends Controller
         $data = PMOProjectCharter::join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->where('tb_pmo_project_charter.id_project',$request->id_pmo)->first();
         $data = json_decode($data,true);
 
-        // return $data;
+        return $data;
 
         $pdf = PDF::loadView('PMO.Pdf.projectCharter', compact('data'));
         $fileName =  $data['project_id']['project_id']  . ' Project Charter.pdf';
@@ -1372,7 +1372,8 @@ class PMProjectController extends Controller
                     DB::raw('IF(ISNULL(`temp_tb_pmo_activity`.`date_time`),"false","true") AS `signed`')
                 )
             ->leftJoinSub($activity,'temp_tb_pmo_activity',function($join){
-                $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                // $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                $join->on("users.name","LIKE",DB::raw("CONCAT('%', temp_tb_pmo_activity.operator, '%')"));
             })
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy');
@@ -1409,7 +1410,7 @@ class PMProjectController extends Controller
         $store_activity->id_project = $request['id_pmo'];
         $store_activity->phase = 'Approve Project Charter';
         $store_activity->operator = Auth::User()->name;
-        $store_activity->activity = 'Approve Project Charter ';
+        $store_activity->activity = 'Approve Project Charter';
         $store_activity->date_time = Carbon::now()->toDateTimeString();
         $store_activity->save();
 
@@ -1954,9 +1955,9 @@ class PMProjectController extends Controller
 
         $getpid = DB::table('tb_pmo')->where('id',$request->id_pmo)->first()->project_id;
 
-        $docProj = DB::table('tb_pmo_doc_project')->join('tb_pmo_document','tb_pmo_document.id','=','tb_pmo_doc_project.id_document')->leftJoin('gantt_tasks_pmo','gantt_tasks_pmo.id',"=","tb_pmo_doc_project.sub_task")->join('tb_pmo','tb_pmo.id','tb_pmo_doc_project.id_project')->where("project_id",$getpid)->orderBy('id_document','desc')->get();
+        $docProj = DB::table('tb_pmo_doc_project')->join('tb_pmo_document','tb_pmo_document.id','=','tb_pmo_doc_project.id_document')->leftJoin('gantt_tasks_pmo','gantt_tasks_pmo.id',"=","tb_pmo_doc_project.sub_task")->join('tb_pmo','tb_pmo.id','tb_pmo_doc_project.id_project')->where("project_id",$getpid)->orderBy('tb_pmo_doc_project.date_time','desc')->get();
 
-        $docProjCharter = DB::table('tb_pmo_document')->join('tb_pmo_doc_project_charter', 'tb_pmo_doc_project_charter.id_document', 'tb_pmo_document.id')->join('tb_pmo_project_charter','tb_pmo_project_charter.id','tb_pmo_doc_project_charter.id_project_charter')->join('tb_pmo','tb_pmo.id','tb_pmo_project_charter.id_project')->where('tb_pmo.project_id',$getpid)->orderBy('id_document','desc')->get();
+        $docProjCharter = DB::table('tb_pmo_document')->join('tb_pmo_doc_project_charter', 'tb_pmo_doc_project_charter.id_document', 'tb_pmo_document.id')->join('tb_pmo_project_charter','tb_pmo_project_charter.id','tb_pmo_doc_project_charter.id_project_charter')->join('tb_pmo','tb_pmo.id','tb_pmo_project_charter.id_project')->where('tb_pmo.project_id',$getpid)->orderBy('tb_pmo_doc_project_charter.date_time','desc')->get();
 
         return array("data"=>$docProj->merge($docProjCharter));
 

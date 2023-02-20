@@ -180,10 +180,11 @@ class PMOProjectCharter extends Model
                     'users.email',
                     'users.avatar',
                     DB::raw("IFNULL(SUBSTR(`temp_tb_pmo_activity`.`date_time`,1,10),'-') AS `date_sign`"),
-                    DB::raw('IF(ISNULL(`temp_tb_pmo_activity`.`date_time`),"false","true") AS `signed`')
+                    DB::raw('IF(ISNULL(`temp_tb_pmo_activity`.`date_time`),"false","true") AS `signed`'),
                 )
             ->leftJoinSub($activity,'temp_tb_pmo_activity',function($join){
-                $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                // $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                $join->on("users.name","LIKE",DB::raw("CONCAT('%', temp_tb_pmo_activity.operator, '%')"));
             })
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy');
@@ -241,7 +242,8 @@ class PMOProjectCharter extends Model
         $activity->where(function($query){
             $query->where('tb_pmo_activity.phase', 'Approve Project Charter')
             ->orWhere('tb_pmo_activity.phase', 'Update Project Charter')
-            ->orWhere('tb_pmo_activity.phase', 'New Project Charter');
+            ->orWhere('tb_pmo_activity.phase', 'New Project Charter')
+            ->orWhere('tb_pmo_activity.activity', 'Create New Project Charter');
         });
 
         $sign = User::join('role_user', 'role_user.user_id', '=', 'users.nik')
@@ -257,7 +259,8 @@ class PMOProjectCharter extends Model
                     DB::raw('IF(ISNULL(`temp_tb_pmo_activity`.`date_time`),"false","true") AS `signed`')
                 )
             ->leftJoinSub($activity,'temp_tb_pmo_activity',function($join){
-                $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                // $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                $join->on("users.name","LIKE",DB::raw("CONCAT('%', temp_tb_pmo_activity.operator, '%')"));
             })
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy');
