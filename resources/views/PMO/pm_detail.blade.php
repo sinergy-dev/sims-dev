@@ -424,6 +424,19 @@ PMO
 	                <div id="gantt_here" style='width:100%;height: 500px;'></div>
 	            </div>
 	        </div>
+
+	        <div class="box">
+	            <div class="box-header">
+	            	<h3 class="box-title">Change log</h3>
+	            </div>
+
+	            <div class="box-body">
+	                <div class="table-responsive">
+	                    <table class="table table-striped" width="100%" id="tbChangeLog">
+	                    </table>
+	                </div>
+	            </div>
+	        </div>
     	</div>
 
     	<div class="show_project_charter" style="display:none">
@@ -491,7 +504,7 @@ PMO
 	          </div>                            
 	          <div class="modal-footer">
 	              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-	              <button type="button" class="btn btn-danger" onclick="saveReasonReject()" id="saveReasonReject" >Reject</button>
+	              <button type="button" class="btn btn-danger" id="saveReasonReject" >Reject</button>
 	          </div>
 	        </form>
 	      </div>
@@ -1363,6 +1376,16 @@ PMO
                 render:function(data, type, row)
                 {	
                 	return '<a href="'+ row.link_drive +'" target="_blank"><button class="btn btn-sm bg-purple"><i class="fa fa-file-pdf-o"></i>&nbspShow Pdf</button></a>'
+                    
+                },
+            },
+            {
+                "title":"Action",
+                "data": null,
+                render:function(data, type, row)
+                {	
+                	console.log(row)
+                	return '<button class="btn btn-sm btn-danger" onclick="deleteDoc('+ row.id_document +')"><i class="fa fa-trash-o"></i>&nbspDelete</button>'
                     
                 },
             },
@@ -3086,7 +3109,7 @@ PMO
 							appendSign = appendSign + '            		<label style="margin: 0 auto;vertical-align: middle;">'+ label +'</label>'
 							appendSign = appendSign + '           		</div>'
 							appendSign = appendSign + '           		<div style="display: flex;padding-top:40px ;">'
-							appendSign = appendSign + '           			<img src="{{asset("/")}}'+ ttd +'" style="width:100px;height:50px;margin:0 auto;object-fit:contain" />'
+							appendSign = appendSign + '           			<img src="{{asset("/")}}'+ ttd +'" style="width:150px;height:150px;margin:0 auto;object-fit:contain" />'
 							appendSign = appendSign + '           		</div>'
 							appendSign = appendSign + '   				<div style="display:flex;padding-top: 40px;">'
 							appendSign = appendSign + '   					<label style="margin: 0 auto;font-size:12px">'+ item.name +'</label>'
@@ -6071,5 +6094,54 @@ PMO
   		myUrl       = url+"/PMO/exportIssueExcel?id_pmo="+window.location.href.split("/")[6].split("?")[0]
       	location.assign(myUrl)
   	}
+
+  	function deleteDoc(id_document){
+		swalFireCustom = {
+          title: 'Are you sure?',
+          text: "Delete this document",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        }
+
+        formData = new FormData
+        formData.append("_token","{{ csrf_token() }}")
+        formData.append("id_doc",id_document)
+        formData.append("id_pmo",window.location.href.split("/")[6].split("?")[0])
+
+        swalSuccess = {
+        	icon: 'success',
+	        title: 'Document has been deleted!',
+	        text: 'Click Ok to reload page',
+        }	        
+
+        createPost(swalFireCustom,formData,swalSuccess,url="/PMO/deleteDoc")
+  	}
+
+  	$('#tbChangeLog').DataTable({
+		ajax:{
+        	url:"{{url('PMO/getAllActivity')}}",
+        	data:{
+        		id_pmo:window.location.href.split("/")[6].split("?")[0]
+        	},
+        	dataSrc:"data"
+      	},
+        "columns": [
+            {title: "No",width:"5%",
+            	render:function(data, type, row,meta)
+                {	
+                	return ++meta.row                     
+                },
+        	},
+            {title: "Activity",data:"activity"},
+            {title: "Operator",data:"operator"},
+            {title: "Date",data:"date_time"},
+        ],
+	})
+  	
+  	
 </script>
 @endsection

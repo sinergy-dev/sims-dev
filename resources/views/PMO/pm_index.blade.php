@@ -1302,7 +1302,7 @@ PMO
 
             const companyLogo = document.querySelector('input[type="file"][name="inputCompanyLogo"]');
 
-            const myFileLogo = new File(['{{asset("/")}}"'+ result[0].logo_company +'"'], '/'+ result[0].logo_company,{
+            const myFileLogo = new File(['{{asset("/")}}"'+ result[0].logo_company +'"'], "/" + result[0].logo_company,{
                 type: 'text/plain',
                 lastModified: new Date(),
             });
@@ -1311,7 +1311,7 @@ PMO
             const dataTransferLogo = new DataTransfer();
             dataTransferLogo.items.add(myFileLogo);
             companyLogo.files = dataTransferLogo.files;
-            $('#inputCompanyLogo').attr("href",result[0].logo_company)
+            $('#inputCompanyLogo').attr("href","/" + result[0].logo_company)
             
 
             if (result[0].dokumen[0] !== undefined) {
@@ -1829,7 +1829,7 @@ PMO
         append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
         $.each(arrReason,function(item,value){
           
-          append = append + '<p class="reason_reject_revision">'+ value.split(":")[0] + ":<br>" + "- " + value.split(":")[1].replaceAll("\n","<br>")+'</p>'
+          append = append + '<p class="reason_reject_revision">'+ value.split(":")[0] + ":<br> - " + value.split(":")[1].replaceAll("\n","<br> - ")+'</p>'
         })
       append = append + '</div>'
 
@@ -2185,8 +2185,8 @@ PMO
                 type:"POST",
                 processData: false,
                 contentType: false,
-                data:formData
-                ,success:function(){
+                data:formData,
+                success:function(){
                   localStorage.setItem("isStoreProject",true)
 
                   let x = document.getElementsByClassName("tab-add");
@@ -2264,8 +2264,10 @@ PMO
               type:"POST",
               processData: false,
               contentType: false,
-              data:formData
-              ,success:function(){
+              data:formData,
+              beforeSend:function(){
+                $("#nextBtnAdd").prop("disabled",true)
+              },success:function(){
                 let x = document.getElementsByClassName("tab-add");
                 x[currentTab].style.display = "none";
                 currentTab = currentTab + n;
@@ -2274,6 +2276,8 @@ PMO
                   currentTab = 0;
                 }
                 btnAddProjectCharter(currentTab,id_project,status);
+                $("#nextBtnAdd").prop("disabled",false)
+
               }
             })
           }         
