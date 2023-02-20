@@ -165,6 +165,34 @@ class PMProjectController extends Controller
         return array("data" => $data);
 	}
 
+    public function deleteDoc(Request $request)
+    {
+        $deleteDoc = PMODocument::where('id',$request->id_doc)->first();
+
+        $deleteDocProjectCharter = PMODocumentProjectCharter::where('id_document',$request->id_doc)->delete();
+
+        $deleteDocProject = PMODocumentProject::where('id_document',$request->id_doc)->delete();
+
+        $store_activity = new PMOActivity();
+        $store_activity->id_project = $request['id_pmo'];
+        $store_activity->phase = 'Delete document';
+        $store_activity->operator = Auth::User()->name;
+        $store_activity->activity = 'Delete Document' . $deleteDoc->document_name;
+        $store_activity->date_time = Carbon::now()->toDateTimeString();
+        $store_activity->save();
+
+        $deleteDoc->delete();
+
+        return 'deleted';
+    }
+
+    public function getAllActivity(Request $request)
+    {
+        $data = PMOActivity::where('id_project',$request->id_pmo)->orderby('date_time','desc')->get();
+
+        return array("data"=>$data);
+    }
+
 	public function getUser(Request $request)
 	{
 		$getUser = User::selectRaw('`users`.`nik` AS `id`,`users`.`name` AS `text`, `users`.`email`, `users`.`phone`')->where('status_karyawan', '!=', 'dummy')->where('id_company','1');
@@ -776,6 +804,7 @@ class PMProjectController extends Controller
     {
         $update = PMOProjectCharter::where('id_project', $request->id_pmo)->first();
         
+        // return $request->id_pmo;
         $update->scope_of_work = $request['textAreaSOW'];
         $update->out_of_scope = $request['textAreaOutOfScope'];
         $update->customer_requirement = $request['textAreaCustomerRequirement'];
@@ -786,8 +815,9 @@ class PMProjectController extends Controller
         $dataStakeholder = json_decode($request->arrInternalStakeHolder,true);
         $cek_role = PMOInternalStakeholder::where('id_project', $request->id_pmo)->get();
         if (isset($cek_role)) {
+            // return $cek_role;
             foreach ($cek_role as $key => $value) {
-                PMOInternalStakeholder::where('id_project_charter',$value->id_project_charter)->delete(); 
+                PMOInternalStakeholder::where('id_project',$value->id_project)->delete(); 
             }
         }
         foreach ($dataStakeholder as $key => $value) {
@@ -847,19 +877,18 @@ class PMProjectController extends Controller
         $update->customer_email = $request['inputEmail'];
         $update->customer_cp_phone = $request['inputCpPhone'];
         // return $request->file('inputCompanyLogo');
-        if($request->file('inputCompanyLogo') === null) {
+        $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
+        $file                   = $request->file('inputCompanyLogo');
+        $fileName               = $file->getClientOriginalName();
+        // return $fileName;
+        $imageName              = 'image/customer_logo/'.$fileName;
+        $extension              = $file->getClientOriginalExtension();
+        $check                  = in_array($extension,$allowedfileExtension);
+
+        if($request->file('inputCompanyLogo') === null || $imageName === $update->logo_company) {
             // $store->logo_company = $update->gambar;
         } else {
-            $allowedfileExtension   = ['jpg','png', 'jpeg', 'JPG', 'PNG'];
-            $file                   = $request->file('inputCompanyLogo');
-            $fileName               = $file->getClientOriginalName();
-            // return $fileName;
-            $imageName              = 'image/customer_logo/'.$fileName;
-            $extension              = $file->getClientOriginalExtension();
-            $check                  = in_array($extension,$allowedfileExtension);
-
             if ($check) {
-
                 // Image::make($file->getRealPath())->resize(1024, 1024)->save('image/customer_logo'.$fileName);
                 $request->file('inputCompanyLogo')->move("image/customer_logo", $imageName);
 
@@ -875,6 +904,8 @@ class PMProjectController extends Controller
 
     public function postEventCalendar($name_project,$end_date,$email){
         // $calenderId = "kfo8st45f546hr112s6ia4mgmo@group.calendar.google.com";
+
+        // return $email;
         $calenderId = "primary";
 
         $client = new Client();
@@ -908,7 +939,8 @@ class PMProjectController extends Controller
                                     ),
                                 ),
                                 'attendees'=> array(
-                                    array('email'=> $email),
+                                    array('email'=> $email[0]),
+                                    array('email'=> $email[1]),
                                 ),
                         ]
                     ]
@@ -919,27 +951,31 @@ class PMProjectController extends Controller
     
     public function updateProjectInformationProjectCharter(Request $request)
     {
+        // return User::where('id_division','BCD')->where('id_position','STAFF')->first()->email;
         $update = PMOProjectCharter::where('id_project', $request->id_pmo)->first();
-
-        // return $update->name_project;
-        $update->project_description = $request['textAreaProjectDesc'];
-        $update->project_objectives = $request['textAreaProjectObj'];
 
         $start_date = strtotime($_POST['inputStartDate']); 
         $start_date = date("Y-m-d",$start_date);
-        $update->estimated_start_date = $start_date;
 
         $end_date = strtotime($_POST['inputFinishDate']); 
         $end_date = date("Y-m-d",$end_date);
-        $update->estimated_end_date = $end_date;
-
         $getNameProject = PMOProjectCharter::join('tb_pmo','tb_pmo.id','=','tb_pmo_project_charter.id_project')
                         ->join('tb_id_project','tb_id_project.id_project','=','tb_pmo.project_id')
                         ->first();
 
         $name_project_calendar = "Estimated Finish Date ".$getNameProject->name_project;
 
-        $this->postEventCalendar($name_project_calendar,$end_date,Auth::User()->email);
+        // return $end_date . $update->estimated_end_date;
+        if ($end_date != $update->estimated_end_date) {
+            $this->postEventCalendar($name_project_calendar,$end_date,array(Auth::User()->email,User::where('id_division','PMO')->where('id_position','MANAGER')->first()->email));
+        }
+        // return $update->name_project;
+        $update->project_description = $request['textAreaProjectDesc'];
+        $update->project_objectives = $request['textAreaProjectObj'];       
+        $update->estimated_start_date = $start_date;        
+        $update->estimated_end_date = $end_date;
+        // $this->postEventCalendar($name_project_calendar,$end_date,array(Auth::User()->email,Auth::User()->where('id_division','PMO')->where('id_position','MANAGER')->email));
+       
 
         $update->flexibility = $request['selectFlexibility'];
         $update->market_segment = $request['selectMarketSegment'];
