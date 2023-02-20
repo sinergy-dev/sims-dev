@@ -172,7 +172,8 @@ class PRDraft extends Model
                     DB::raw('IF(ISNULL(`temp_tb_pr_activity`.`date_time`),"false","true") AS `signed`')
                 )
                 ->leftJoinSub($tb_pr_activity,'temp_tb_pr_activity',function($join){
-                    $join->on("temp_tb_pr_activity.operator","=","users.name");
+                    // $join->on("temp_tb_pr_activity.operator","=","users.name");
+                    $join->on("users.name","LIKE",DB::raw("CONCAT('%', temp_tb_pr_activity.operator, '%')"));
                 })
                 ->where('id_company', '1')
                 ->where('status_karyawan', '!=', 'dummy');
