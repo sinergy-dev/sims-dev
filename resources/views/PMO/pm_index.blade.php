@@ -897,12 +897,12 @@ PMO
                         }
                       }else{
                         if (row.status == null) {
-	                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+	                          	if ("{{Auth::User()->ttd}}" == "") {
 	                          		$("#alert").show()
 	                          		$("button[name='btnAddProjectCharter']").prop("disabled",true)
 	                          		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
 	                          	}
-	                          		console.log("{{Auth::User()->ttd_digital}}" == "")
+	                          		console.log("{{Auth::User()->ttd}}" == "")
 
                           		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
                                 if (row.type_project == "Implementation + Maintenance & Managed Service") {
@@ -920,7 +920,7 @@ PMO
                             		
                           		}  
                         }else if(row.status == 'New'){
-                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+                          	if ("{{Auth::User()->ttd}}" == "") {
 	                          	$("#alert").show()
                           		$("button[name='btnShowProjectCharter']").prop("disabled",true)
                           		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
@@ -938,7 +938,7 @@ PMO
                             return '<button class="btn btn-sm btn-danger" style="width:110px;" id="btnRevisionProjectCharter" name="btnRevisionProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'revision'" +')"><i class="fa fa-wrench"></i>&nbsp Revision</button>'
                           }                                 
                         }else if(row.status == 'Draft'){
-                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+                          	if ("{{Auth::User()->ttd}}" == "") {
 	                          	$("#alert").show()
                           		$("button[name='btnAddProjectCharter']").prop("disabled",true)
                           		$("button[name='btnAddProjectCharter']").attr("title","Please upload your sign on profile page first, for enable this project charter button!")
