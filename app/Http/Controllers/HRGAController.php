@@ -3296,6 +3296,8 @@ class HRGAController extends Controller
                         ->get();
                 } else if($cek_role->name_role == 'Operations Director'){
                      $cuti = $cuti
+                        ->where('date_off', '>=', $request->start_date)
+                        ->where('date_off', '<=', $request->end_date)
                         ->get();
                 }else{
                     $cuti = $cuti
