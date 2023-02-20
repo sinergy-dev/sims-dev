@@ -164,7 +164,8 @@ class PMOProgressReport extends Model
                     DB::raw('IF(ISNULL(`temp_tb_pmo_activity`.`date_time`),"false","true") AS `signed`')
                 )
             ->leftJoinSub($activity,'temp_tb_pmo_activity',function($join){
-                $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                // $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                $join->on("users.name","LIKE",DB::raw("CONCAT('%', temp_tb_pmo_activity.operator, '%')"));
             })
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy');

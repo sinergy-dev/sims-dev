@@ -155,7 +155,8 @@ class PMO extends Model
                     DB::raw('IF(ISNULL(`temp_tb_pmo_activity`.`date_time`),"false","true") AS `signed`')
                 )
             ->leftJoinSub($activity,'temp_tb_pmo_activity',function($join){
-                $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                // $join->on("temp_tb_pmo_activity.operator","=","users.name");
+                $join->on("users.name","LIKE",DB::raw("CONCAT('%', temp_tb_pmo_activity.operator, '%')"));
             })
             ->where('users.id_company', '1')
             ->where('users.status_karyawan', '!=', 'dummy');
@@ -167,6 +168,8 @@ class PMO extends Model
             $sign->whereRaw("(`users`.`name` = '" . $get_name_pm->name . "' OR `users`.`id_division` = 'PMO' AND `users`.`id_position` = 'MANAGER' OR `users`.`name` = '" . $get_name_sales->name . "')")
             ->orderByRaw('FIELD(position, "PMO Staff","PMO Manager","Sales Staff","Sales Manager","BCD Manager","Operations Director")');
         }
+
+        // return $sign->get();
 
         if ($this->project_type != 'supply_only') {
             if (empty($sign->get()->where('signed','false')->first()->name)?'-':$sign->get()->where('signed','false')->first()->name == $get_name_pm->name) {
