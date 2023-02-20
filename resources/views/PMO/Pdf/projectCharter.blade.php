@@ -789,7 +789,7 @@
             </td>
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_objectives']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['project_objectives'])!!}</span>
               </p>
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
@@ -1143,11 +1143,14 @@
             </p>
           </td>
         </tr>
+        <?php
+          $no=1;$noRisk=1
+        ?>
         @foreach($data['risk'] as $key => $risk)
         <tr style='height:18.7pt'>
           <td style='border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:gray'>1.</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$no++}}</span>
             </p>
           </td>
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
