@@ -860,11 +860,11 @@ PMO
                           return '<button class="btn btn-sm bg-purple disabled" style="width:110px"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
                         }else{
                           if (row.status == 'Approve') {
-	                          	if ("{{Auth::User()->ttd_digital}}" == "") {
+	                          	if ("{{Auth::User()->ttd}}" == "") {
 	                          		$("#alert").show()
 	                          		$("button[name='btnShowProjectCharter']").prop("disabled",true)
-	                          		$("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
-	                          		console.log("{{Auth::User()->ttd_digital}}")
+	                          		// $("button[name='btnShowProjectCharter']").attr("title","Please upload your sign on profile page first, for show this project charter!")
+	                          		// console.log("{{Auth::User()->ttd_digital}}")
 	                          	}
 
 	                          	return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnShowProjectCharter" name="btnShowProjectCharter" onclick="btnShowProjectCharter('+ "'" + row.id + "'" +')"><i class="fa fa-eye"></i>&nbsp Project Charter</button>'
