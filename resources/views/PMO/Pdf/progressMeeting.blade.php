@@ -289,7 +289,7 @@
   </head>
   <footer>
       <span style="float:left;" id="pageNumber"></span>
-      Project Progress Report<br><small style="background-color:yellow;">{{$data['customer_info']['customer_name']}} - {{$data['customer_info']['name_project']}}</small> 
+      Project Progress Report<br><small>{{$data['customer_info']['customer_name']}} - {{$data['customer_info']['name_project']}}</small> 
   </footer>
   <body lang=EN-US link="#3F4243" vlink="#3F4243" style='word-wrap:break-word'>
     <div>
@@ -493,7 +493,7 @@
           </td>
           <td  colspan=10 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray;font-weight:normal'>{{$data['reporting_date']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;font-weight:normal'>{{$data['reporting_date']}}</span>
             </p>
           </td>
         </tr>
@@ -505,7 +505,7 @@
           </td>
           <td  colspan=10 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray;font-weight:normal'>{{$data['overall_progress']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;font-weight:normal'>{{$data['overall_progress']}}</span>
             </p>
           </td>
         </tr>
@@ -518,12 +518,12 @@
           </td>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>V</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>V</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>Schedule on track, no major issue(s), no high risk(s)</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Schedule on track, no major issue(s), no high risk(s)</span>
             </p>
           </td>
         </tr>
@@ -536,7 +536,7 @@
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
               <i>
-                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>Schedule might delay, some issue(s), potential risk(s)</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Schedule might delay, some issue(s), potential risk(s)</span>
               </i>
             </p>
           </td>
@@ -544,13 +544,13 @@
         <tr style='height:4.0pt'>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>&nbsp;</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
               <i>
-                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:gray'>Schedule is delayed, major issue(s) and/or potential risk(s)</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:black;'>Schedule is delayed, major issue(s) and/or potential risk(s)</span>
               </i>
             </p>
           </td>
@@ -559,30 +559,30 @@
         <tr style='height:4.0pt'>
           <td  colspan=4 rowspan=3 vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>Project Indicator</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Project Indicator</span>
             </p>
           </td>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>&nbsp;</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>Schedule on track, no major issue(s), no high risk(s)</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Schedule on track, no major issue(s), no high risk(s)</span>
             </p>
           </td>
         </tr>
         <tr>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>V</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>V</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
               <i>
-                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:gray'>Schedule might delay, some issue(s), potential risk(s)</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:black;'>Schedule might delay, some issue(s), potential risk(s)</span>
               </i>
             </p>
           </td>
@@ -590,13 +590,13 @@
         <tr style='height:4.0pt'>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>&nbsp;</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
               <i>
-                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:gray'>Schedule is delayed, major issue(s) and/or potential risk(s)</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:black;'>Schedule is delayed, major issue(s) and/or potential risk(s)</span>
               </i>
             </p>
           </td>
@@ -605,30 +605,30 @@
         <tr style='height:4.0pt'>
           <td  colspan=4 rowspan=3 vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>Project Indicator</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Project Indicator</span>
             </p>
           </td>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading align=center style='margin-top:0in;text-align:center'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>&nbsp;</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>Schedule on track, no major issue(s), no high risk(s)</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Schedule on track, no major issue(s), no high risk(s)</span>
             </p>
           </td>
         </tr>
         <tr>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>&nbsp;</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
               <i>
-                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:gray'>Schedule might delay, some issue(s), potential risk(s)</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Schedule might delay, some issue(s), potential risk(s)</span>
               </i>
             </p>
           </td>
@@ -636,13 +636,13 @@
         <tr style='height:4.0pt'>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>V</span>
+              <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>V</span>
             </p>
           </td>
           <td  colspan=8 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
               <i>
-                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;;color:gray'>Schedule is delayed, major issue(s) and/or potential risk(s)</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;'>Schedule is delayed, major issue(s) and/or potential risk(s)</span>
               </i>
             </p>
           </td>
@@ -658,7 +658,7 @@
         <tr style='height:4.0pt'>
           <td  colspan=14 vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal>
-              <span lang=EN-GB style='font-size:10.0pt;color:#BFBFBF'>{{$data['project_summary']}}</span>
+              <span lang=EN-GB style='font-size:10.0pt;color:black;'>{{$data['project_summary']}}</span>
             </p>
           </td>
         </tr>
@@ -827,7 +827,7 @@
               <span lang=EN-GB style='font-size:9.0pt'>Notes:</span>
             </p>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-              <span lang=EN-GB style='font-size:9.0pt;color:#BFBFBF'>{{$data['note']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:black;'>{{$data['note']}}</span>
             </p>
           </td>
         </tr>
@@ -835,10 +835,10 @@
           <td  colspan=14 vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
               <i>
-                <span lang=EN-GB style='font-size:8.0pt;color:gray'>Note: Tick the applicable project status (</span>
+                <span lang=EN-GB style='font-size:8.0pt;color:black;'>Note: Tick the applicable project status (</span>
               </i>
               <i>
-                <span lang=EN-GB style='font-size:8.0pt;color:gray'> ) with the following information: R for Red, Y for Yellow, and G for Green.</span>
+                <span lang=EN-GB style='font-size:8.0pt;color:black;'> ) with the following information: R for Red, Y for Yellow, and G for Green.</span>
               </i>
             </p>
           </td>
@@ -917,17 +917,17 @@
           </td>
           <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-              <span lang=EN-GB style='font-size:8.0pt'>{{$milestone['milestone']}}</span>
+              <span lang=EN-GB style='font-size:8.0pt;color:black'>{{$milestone['milestone']}}</span>
             </p>
           </td>
           <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
-              <span lang=EN-GB style='font-size:8.0pt'>{{$milestone['baseline_end']}}</span>
+              <span lang=EN-GB style='font-size:8.0pt;color:black'>{{$milestone['baseline_end']}}</span>
             </p>
           </td>
           <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
-              <span lang=EN-GB style='font-size:8.0pt'>{{$milestone['end_date']}}</span>
+              <span lang=EN-GB style='font-size:8.0pt;color:black'>{{$milestone['end_date']}}</span>
             </p>
           </td>
         </tr>
@@ -1100,7 +1100,7 @@
       <p class=MsoBodyText>
         <span lang=EN-GB>&nbsp;</span>
       </p>
-      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=659 style='border-collapse:collapse;border:none'>
+      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width=659 style='border-collapse:collapse;border:none;page-break-before: always;'>
         <tr style='height:4.0pt'>
           <td  colspan=7 vertical-align=top style='border:solid windowtext 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
@@ -1120,7 +1120,7 @@
           </td>
         </tr>
         <tr style='height:4.0pt'>
-          <td  style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          <td  style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt;width: 15px;'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:8.0pt;color:black'>No<span>
@@ -1141,14 +1141,14 @@
               </b>
             </p>
           </td>
-          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt;width: 40px;'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:8.0pt;color:black'>Owner</span>
               </b>
             </p>
           </td>
-          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt;width: 60px;'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:8.0pt;color:black'>Rating / Severity</span>
@@ -1162,7 +1162,7 @@
               </b>
             </p>
           </td>
-          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt;width: 60px;'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:8.0pt;color:black'>Status</span>
