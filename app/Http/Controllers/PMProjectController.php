@@ -47,6 +47,10 @@ use Illuminate\Http\Request;
 
 class PMProjectController extends Controller
 {
+    public function __construct()
+    {
+        set_time_limit(8000000);
+    }
 
 	public function getClient()
     {
@@ -249,7 +253,7 @@ class PMProjectController extends Controller
         $data = PMOProjectCharter::join('tb_pmo', 'tb_pmo.id', 'tb_pmo_project_charter.id_project')->where('tb_pmo_project_charter.id_project',$request->id_pmo)->first();
         $data = json_decode($data,true);
 
-        return $data;
+        // return $data;
 
         $pdf = PDF::loadView('PMO.Pdf.projectCharter', compact('data'));
         $fileName =  $data['project_id']['project_id']  . ' Project Charter.pdf';
@@ -2699,13 +2703,13 @@ class PMProjectController extends Controller
         });
     }
 
-    public function uploadPdfPC($id_pmo)
+    public function uploadPdfPC(Request $request)
     {
         $client = $this->getClient();
         $service = new Google_Service_Drive($client);
         $directory = '';
 
-        $data = DB::table('tb_pmo')->join('tb_pmo_project_charter', 'tb_pmo_project_charter.id_project', '=', 'tb_pmo.id')->select('parent_id_drive','project_id')->where('tb_pmo_project_charter.id_project', $id_pmo)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_project_charter', 'tb_pmo_project_charter.id_project', '=', 'tb_pmo.id')->select('parent_id_drive','project_id')->where('tb_pmo_project_charter.id_project', $request->id_pmo)->first();
 
         $parent_id = explode('"', $data->parent_id_drive)[1];
 
@@ -2721,7 +2725,7 @@ class PMProjectController extends Controller
         $nameFileFix = str_replace(' ', '_', $fileName);
 
         if(isset($fileName)){
-            $pdf_url = urldecode(url("/PMO/downloadProjectCharterPdf?id_pmo=" . $id_pmo));
+            $pdf_url = urldecode(url("/PMO/downloadProjectCharterPdf?id_pmo=" . $request->id_pmo));
             $pdf_name = $nameFileFix;
         } else {
             $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
@@ -2761,7 +2765,7 @@ class PMProjectController extends Controller
         $tambah->save();
 
         $tambah_doc = new PMODocumentProject();
-        $tambah_doc->id_project = $id_pmo;
+        $tambah_doc->id_project = $request->id_pmo;
         $tambah_doc->id_document = $tambah->id;
         $tambah_doc->sub_task = '';
         $tambah_doc->date_time = Carbon::now()->toDateTimeString();
