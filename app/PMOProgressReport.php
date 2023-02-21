@@ -80,7 +80,7 @@ class PMOProgressReport extends Model
                     ->where('status','Done')
                     // ->whereRaw("(`text` !=  'Initiating' OR `text` != 'Planning' OR `text` != 'Executing' OR `text` != 'Done')")
                     ->where('parent','!=','0')
-                    ->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
+                    // ->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
                     ->get();
 
     	return $dataMilestone;
@@ -103,7 +103,7 @@ class PMOProgressReport extends Model
                     })->leftJoinSub($dataParent, 'parent_text',function($join){
                         $join->on("gantt_tasks_pmo.parent", '=', 'parent_text.id_parent');
                     })
-                    ->select(DB::raw("CONCAT(format_date_task.`start_date_format`,' - ',format_date_task.`end_date_format`) AS periode"),'text as milestone','format_date_task.id_gantt','parent_text.text_parent', 'deliverable_document', 'baseline_end', 'end_date','start_date')
+                    ->select(DB::raw("CONCAT(format_date_task.`start_date_format`,' - ',format_date_task.`end_date_format`) AS periode"),'text as milestone','format_date_task.id_gantt','parent_text.text_parent', 'deliverable_document', 'baseline_end', 'end_date',DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d') as start_date"))
                     ->where('id_pmo',$this->id_project)
                     ->where('status','!=','Done')
                     // ->whereBetween('baseline_start', [$nextWeek,$endNextWeek])
