@@ -1829,7 +1829,8 @@ PMO
         append = append + '<h4><i class="icon fa fa-cross"></i>'+ textTitle +'</h4>'
         $.each(arrReason,function(item,value){
           
-          append = append + '<p class="reason_reject_revision">'+ value.split(":")[0] + ":<br> - " + value.split(":")[1].replaceAll("\n","<br> - ")+'</p>'
+          // append = append + '<p class="reason_reject_revision">'+ value.split(":")[0] + ":<br> - " + value.split(":")[1].replaceAll("\n","<br> - ")+'</p>'
+          append = append + '<p class="reason_reject_revision">'+ value.replaceAll(":","<br>").replaceAll("\n","<br>") + '</p>'
         })
       append = append + '</div>'
 
