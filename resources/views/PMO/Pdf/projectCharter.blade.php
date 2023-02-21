@@ -288,7 +288,7 @@
   </head>
   <footer>
       <span style="float:left;" id="pageNumber"></span>
-      Project Charter<br><small style="background-color:yellow;">{{$data['customer_name']}} - {{$data['project_id']['name_project']}}</small> 
+      Project Charter<br><small>{{$data['customer_name']}} - {{$data['project_id']['name_project']}}</small> 
   </footer>
   <body lang=EN-US link="#3F4243" vlink="#3F4243" style='word-wrap:break-word'>
     <div style="line-height: 1.5em">
@@ -482,7 +482,7 @@
         <tr style='height:28.85pt'>
           <td width=84 style='width:63.0pt;border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:28.85pt'>
             <p class=Introtext>
-              <span lang=EN-AU style='font-size:9.0pt;color:gray'>{{date('d-m-Y')}}</span>
+              <span lang=EN-AU style='font-size:9.0pt;color:black;'>{{date('d-m-Y')}}</span>
             </p>
           </td>
           <td width=234 style='width:175.5pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:28.85pt'>
@@ -529,7 +529,7 @@
             </td>
             <td colspan=9 valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['customer_name']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['customer_name']}}</span>
               </p>
             </td>
           </tr>
@@ -541,7 +541,7 @@
             </td>
             <td colspan=9 valign=top style='width:378.3pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['customer_address']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['customer_address']}}</span>
               </p>
             </td>
           </tr>
@@ -553,7 +553,7 @@
             </td>
             <td colspan=9 valign=top style='width:378.3pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;color:gray'>{{$data['customer_phone']}}</span>
+                <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['customer_phone']}}</span>
               </p>
             </td>
           </tr>
@@ -565,7 +565,7 @@
             </td>
             <td colspan=4 valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['customer_cp']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['customer_cp']}}</span>
               </p>
             </td>
             <td colspan=2 valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
@@ -577,7 +577,7 @@
             </td>
             <td colspan=3 valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['customer_email']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['customer_email']}}</span>
               </p>
             </td>
           </tr>
@@ -589,7 +589,7 @@
             </td>
             <td colspan=4 valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['customer_cp_phone']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['customer_cp_phone']}}</span>
               </p>
             </td>
             <td colspan=2 valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
@@ -601,7 +601,7 @@
             </td>
             <td colspan=3 valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['customer_cp_title']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['customer_cp_title']}}</span>
               </p>
             </td>
           </tr>
@@ -622,7 +622,7 @@
             </td>
             <td colspan=3 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_id']['no_po_customer']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['project_id']['no_po_customer']}}</span>
               </p>
             </td>
             <td colspan=3 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
@@ -634,7 +634,7 @@
             </td>
             <td colspan=3 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_id']['project_id']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['project_id']['project_id']}}</span>
               </p>
             </td>
           </tr>
@@ -646,7 +646,7 @@
             </td>
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_id']['name_project']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['project_id']['name_project']}}</span>
               </p>
             </td>
           </tr>
@@ -710,7 +710,7 @@
             </td>
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_id']['owner']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['project_id']['owner']}}</span>
               </p>
             </td>
           </tr>
@@ -725,7 +725,7 @@
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
                 <!-- <s> -->
-                  <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_pm']}}</span>
+                  <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['project_pm']}}</span>
                 <!-- </s> -->
               </p>
             </td>
@@ -738,7 +738,7 @@
             </td>
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['project_pc']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['project_pc']}}</span>
               </p>
             </td>
           </tr>
@@ -750,34 +750,34 @@
             </td>
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['project_description'])!!}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{!! nl2br($data['project_description'])!!}</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
             </td>
           </tr>
@@ -789,38 +789,38 @@
             </td>
             <td colspan=9 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
               <p class=Table>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['project_objectives'])!!}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{!! nl2br($data['project_objectives'])!!}</span>
               </p>
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'></span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'></span>
               </p>
               <p class=Table style='margin-left:.5in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'></span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'></span>
               </p>
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'></span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'></span>
               </p>
               <p class=Table style='margin-left:.5in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'></span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'></span>
               </p>
               <p class=Table style='margin-left:.5in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table style='margin-left:.5in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table style='margin-left:.5in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table style='margin-left:.5in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
               <p class=Table style='margin-left:.5in'>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>&nbsp;</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>&nbsp;</span>
               </p>
             </td>
           </tr>
@@ -966,7 +966,7 @@
                 <b>
                   <span lang=EN-GB style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>Estimated Start Date: </span>
                 </b>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['estimated_start_date']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['estimated_start_date']}}</span>
               </p>
             </td>
             <td colspan=4 style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
@@ -974,7 +974,7 @@
                 <b>
                   <span style='font-size:9.0pt;font-family:"Arial",sans-serif;sans-serif;color:black'>Estimated Finish Date: </span>
                 </b>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['estimated_end_date']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['estimated_end_date']}}</span>
               </p>
             </td>
             <td colspan=3 style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:18.6pt'>
@@ -982,7 +982,7 @@
                 <b>
                   <span style='font-size:9.0pt;font-family:"Arial",sans-serif;sans-serif;color:black'>Flexibility: </span>
                 </b>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{{$data['flexibility']}}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{{$data['flexibility']}}</span>
               </p>
             </td>
           </tr>
@@ -996,7 +996,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'> <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['scope_of_work'])!!}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{!! nl2br($data['scope_of_work'])!!}</span>
               </p>
             </td>
           </tr>
@@ -1010,7 +1010,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['out_of_scope'])!!}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{!! nl2br($data['out_of_scope'])!!}</span>
               </p>
             </td>
           </tr>
@@ -1024,7 +1024,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:gray'>{!! nl2br($data['customer_requirement'])!!}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{!! nl2br($data['customer_requirement'])!!}</span>
               </p>
             </td>
           </tr>
@@ -1038,7 +1038,7 @@
               <p class=Table style='margin-left:.5in;text-indent:-.25in'>
                 <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span>
                 </span>
-                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:#A6A6A6'>{!! nl2br($data['terms_of_payment'])!!}</span>
+                <span style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black'>{!! nl2br($data['terms_of_payment'])!!}</span>
               </p>
             </td>
           </tr>
@@ -1054,7 +1054,7 @@
                 </span>
                 <ul style="list-style-type: none;">
                   @foreach($data['internal_stakeholder'] as $key => $eachName)
-                    <li style='font-size:9.0pt;font-family:"Arial",sans-serif;color:#A6A6A6;list-style:none;'>{{$eachName['name']}}</li>
+                    <li style='font-size:9.0pt;font-family:"Arial",sans-serif;color:black;list-style:none;'>{{$eachName['name']}}</li>
                   @endforeach
                 </ul>
               </p>
@@ -1103,42 +1103,42 @@
           <td style='border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
-                <span lang=EN-GB style='font-size:9.0pt;color:gray'>No</span>
+                <span lang=EN-GB style='font-size:9.0pt;color:black'>No</span>
               </b>
             </p>
           </td>
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
-                <span lang=EN-GB style='font-size:9.0pt;color:gray'>Risk Description</span>
+                <span lang=EN-GB style='font-size:9.0pt;color:black'>Risk Description</span>
               </b>
             </p>
           </td>
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
-                <span lang=EN-GB style='font-size:9.0pt;color:gray'>Owner</span>
+                <span lang=EN-GB style='font-size:9.0pt;color:black'>Owner</span>
               </b>
             </p>
           </td>
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
-                <span lang=EN-GB style='font-size:9.0pt;color:gray'>Impact</span>
+                <span lang=EN-GB style='font-size:9.0pt;color:black'>Impact</span>
               </b>
             </p>
           </td>
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
-                <span lang=EN-GB style='font-size:9.0pt;color:gray'>Probability</span>
+                <span lang=EN-GB style='font-size:9.0pt;color:black'>Probability</span>
               </b>
             </p>
           </td>
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
               <b>
-                <span lang=EN-GB style='font-size:9.0pt;color:gray'>Risk Response</span>
+                <span lang=EN-GB style='font-size:9.0pt;color:black'>Risk Response</span>
               </b>
             </p>
           </td>
@@ -1148,34 +1148,34 @@
         ?>
         @foreach($data['risk'] as $key => $risk)
         <tr style='height:18.7pt'>
-          <td style='border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border:solid windowtext 1.0pt;border-top:none;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt;width:20px'>
             <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$no++}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$no++}}</span>
             </p>
           </td>
           <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
             <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['risk_description']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$risk['risk_description']}}</span>
             </p>
           </td>
-          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt;width:40px'>
             <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['risk_owner']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$risk['risk_owner']}}</span>
             </p>
           </td>
-          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt;width:40px'>
             <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['impact']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$risk['impact']}}</span>
             </p>
           </td>
-          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt;width:65px'>
             <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['likelihood']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$risk['likelihood']}}</span>
             </p>
           </td>
-          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt'>
+          <td style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:transparent;padding:0in 5.4pt 0in 5.4pt;height:18.7pt;'>
             <p class=MsoBodyText>
-              <span lang=EN-GB style='font-size:9.0pt;color:gray'>{{$risk['risk_response']}}</span>
+              <span lang=EN-GB style='font-size:9.0pt;color:black'>{{$risk['risk_response']}}</span>
             </p>
           </td>
         </tr>
@@ -1301,18 +1301,14 @@
           <td width=191 valign=top style='width:143.25pt;border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0.2in 5.4pt;height:13.0pt'>
             <p class=MsoNormal align=center style='margin:0in;line-height:normal'>
               <b>
-                <u>
-                  <span style='font-size:10.0pt'>PMO Manager</span>
-                </u>
+                <span style='font-size:10.0pt'>PMO Manager</span>
               </b>
             </p>
           </td>
           <td width=191 valign=top style='width:143.25pt;border:solid black 1.0pt;border-top:none;padding:0in 5.4pt 0.2in 5.4pt;height:13.0pt'>
             <p class=MsoNormal align=center style='margin:0in;line-height:normal'>
               <b>
-                <u>
-                  <span style='font-size:10.0pt'>Project Owner</span>
-                </u>
+                <span style='font-size:10.0pt'>Project Owner</span>
               </b>
             </p>
           </td>
