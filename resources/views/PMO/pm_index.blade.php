@@ -906,11 +906,14 @@ PMO
 
                           		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
                                 if (row.type_project == "Implementation + Maintenance & Managed Service") {
-                                  return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                                  if (row.project_type == "maintenance") {
+                                    return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                                  }else{
+                                    return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                                  }
                                 }else{
-                                  return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                                 return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
                                 }
-                            		
                           		}else{
                                 if (row.type_project == "Implementation + Maintenance & Managed Service") {
                                   return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
@@ -2570,12 +2573,12 @@ PMO
             append = append + "    <label style='margin-right: 15px;'><input checked autocomplete='off' type='checkbox' name='cbImpelementType' class='minimal' id='' value='hardware'>Hardware</label>"
             append = append + "    <label style='margin-right: 15px;'><input checked autocomplete='off' type='checkbox' name='cbImpelementType' class='minimal' id='' value='service'>Service</label>"
             append = append + "  </div>"
-            append = append + "  <span class='help-block' style='display:none;'>Please SelectImplementation Type!</span>"
+            append = append + "  <span class='help-block' style='display:none;'>Please Select Implementation Type!</span>"
             append = append + "</div>"
 
             $(this).closest("div .form-group").after(append)
 
-            if ($(this).closest("div .form-group").next("div .form-group").length > 1) {
+            if ($(this).closest(".form-group").siblings('.form-group').length > 1) {
               $(this).closest("div .form-group").next("div .form-group:last").remove()
             }
 
