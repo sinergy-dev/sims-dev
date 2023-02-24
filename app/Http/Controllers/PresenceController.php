@@ -652,8 +652,8 @@ class PresenceController extends Controller
     }
 
     public function shiftingGetUsers(){
-        return User::where('status_karyawan','<>','dummy')
-            ->select('nik','name')
+        return User::select('nik','name')
+            ->where('status_karyawan','<>','dummy')
             ->where('id_company','=','1')
             ->orderBy('nik')
             ->get();
@@ -1330,8 +1330,8 @@ class PresenceController extends Controller
 
     public function getWorkDays($startDate,$endDate){
         $client = new Client();
-        // $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
-        $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
+        $api_response = $client->get('https://www.googleapis.com/calendar/v3/calendars/en.indonesian%23holiday%40group.v.calendar.google.com/events?key='.env('GOOGLE_API_KEY'));
+        // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key='.env('GOOGLE_API_KEY'));
         // $api_response = $client->get('https://aws-cron.sifoma.id/holiday.php?key=AIzaSyBNVCp8lA_LCRxr1rCYhvFIUNSmDsbcGno');
         $json = (string)$api_response->getBody();
         $holiday_indonesia = json_decode($json, true);
