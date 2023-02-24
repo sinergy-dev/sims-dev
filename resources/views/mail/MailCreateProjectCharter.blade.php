@@ -85,7 +85,7 @@
 							<td>{{$project->name_project}}</td>
 							@if($project->project_type == 'implementation')
 								<td>Implementation</td>
-							@else if($project->project_type == 'maintenance')
+							@elseif($project->project_type == 'maintenance')
 								<td>Maintenance</td>
 							@endif
 							<td>{{$project->sales_name}}</td>
