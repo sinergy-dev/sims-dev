@@ -172,7 +172,7 @@ Dashboard
               <tr>
                 <th width="5%"><center>No.</center></th>
                 <th><center>Sales Name</center></th>
-                <th width="20%"><center>Total Amount</center></th>
+                <th width="20%" align="right"><center>Total Amount</center></th>
                 <th width="10%"><center>Total</center></th>
               </tr>
             </thead>
@@ -518,7 +518,7 @@ Dashboard
 		    	  territory = value.id_territory
             append = append + '<tr style="background-color:dodgerblue;color: white;">'
                 append = append + '<td colspan="2">'+ value.id_territory +'</td>'
-                append = append + '<td>Rp.<i class="money">'+ new Intl.NumberFormat('id').format(value.sum_total)+'</i></td>'
+                append = append + '<td align="right">Rp.<i class="money">'+ new Intl.NumberFormat('id').format(value.sum_total)+'</i></td>'
                 append = append + '<td style="text-align:center;">'+value.leads_total+'</td>'
             append = append + '</tr>'
           if(value.id_territory != "TOTAL"){
