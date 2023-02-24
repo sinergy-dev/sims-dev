@@ -963,8 +963,10 @@ class PMProjectController extends Controller
 
         $end_date = strtotime($_POST['inputFinishDate']); 
         $end_date = date("Y-m-d",$end_date);
+        // $end_date = '2023-07-27';
         $getNameProject = PMOProjectCharter::join('tb_pmo','tb_pmo.id','=','tb_pmo_project_charter.id_project')
                         ->join('tb_id_project','tb_id_project.id_project','=','tb_pmo.project_id')
+                        ->where('tb_pmo.id',$request->id_pmo)
                         ->first();
 
         $name_project_calendar = "Estimated Finish Date ".$getNameProject->name_project;
@@ -1785,7 +1787,7 @@ class PMProjectController extends Controller
         }
 
         $isIssueRiskClear = 'true';
-        if (DB::table('tb_pmo_identified_risk')->where('id_project',$request->id_pmo)->where('status','!=', 'Accepted')->exists() || DB::table('tb_pmo_issue')->where('id_project',$request->id_pmo)->where('status','Open')->exists()) {
+        if (DB::table('tb_pmo_identified_risk')->where('id_project',$request->id_pmo)->whereRaw("(`status` = 'Active' OR `status` = 'Obsolete')")->exists() || DB::table('tb_pmo_issue')->where('id_project',$request->id_pmo)->where('status','Open')->exists()) {
             $isIssueRiskClear = 'false';
         }
 
