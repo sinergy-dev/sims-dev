@@ -658,7 +658,7 @@
         <tr style='height:4.0pt'>
           <td  colspan=14 vertical-align=top style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal>
-              <span lang=EN-GB style='font-size:10.0pt;color:black;'>{{$data['project_summary']}}</span>
+              <span lang=EN-GB style='font-size:10.0pt;color:black;'>{!! nl2br($data['project_summary'])!!}</span>
             </p>
           </td>
         </tr>
@@ -991,9 +991,9 @@
         <span lang=EN-GB>&nbsp;</span>
       </p>
 
-      <!-- <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width="619" style='border-collapse:collapse;border:none'>
+      <table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0 width="619" style='border-collapse:collapse;border:none'>
         <tr style='height:4.0pt'>
-          <td  colspan=6 vertical-align=top style='border:solid windowtext 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          <td  colspan=5 vertical-align=top style='border:solid windowtext 1.0pt;background:#0F243E;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:10.0pt;color:white'>Milestone Progress</span>
@@ -1002,14 +1002,14 @@
           </td>
         </tr>
         <tr style='height:4.0pt'>
-          <td  rowspan=2 style='border:solid windowtext 1.0pt;border-top:none;background:#BFBFBF;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          <!-- <td  rowspan=2 style='border:solid windowtext 1.0pt;border-top:none;background:#BFBFBF;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:8.0pt;color:black'>WBS</span>
               </b>
             </p>
-          </td>
-          <td  rowspan=2 style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;background:#BFBFBF;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          </td> -->
+          <td  rowspan=2 style='border:solid windowtext 1.0pt;border-top:none;background:#BFBFBF;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:8.0pt;color:black'>Milestone Description</span>
@@ -1059,30 +1059,41 @@
             </p>
           </td>
         </tr>
+        @foreach($data['milestone_progess'] as $milestone)
         <tr style='height:4.0pt'>
-          <td  style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          <!-- <td  style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
               <span lang=EN-GB style='font-size:8.0pt;color:black'>0</span>
             </p>
-          </td>
-          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
+          </td> -->
+          <td  style='border:solid windowtext 1.0pt;border-top:none;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-              <span lang=EN-GB style='font-size:8.0pt;color:#BFBFBF'>[Task from Microsoft Project – Timeline]</span>
+              <span lang=EN-GB style='font-size:8.0pt;color:black'>{{$milestone['milestone']}}</span>
             </p>
           </td>
           <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
-              <span lang=EN-GB style='font-size:8.0pt;color:#BFBFBF'>[DD/MM/YYYY]</span>
+              <span lang=EN-GB style='font-size:8.0pt;color:black'>{{$milestone['baseline_end']}}</span>
             </p>
           </td>
           <td  vertical-align=top style='width:59.45pt;border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
-              <span lang=EN-GB style='font-size:8.0pt;color:#BFBFBF'>[DD/MM/YYYY]</span>
+              @if($milestone['status'] == 'On-Going')
+                <span lang=EN-GB style='font-size:8.0pt;color:black'>N/A</span>
+              @else
+                <span lang=EN-GB style='font-size:8.0pt;color:black'>{{$milestone['end_date']}}</span>
+              @endif
             </p>
           </td>
           <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
             <p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'>
-              <span lang=EN-GB style='font-size:8.0pt;color:#BFBFBF'>[status]</span>
+              @if($milestone['status'] == 'Done')
+                <span lang=EN-GB style='font-size:8.0pt;color:black'>Completed</span>
+              @elseif($milestone['status'] == 'On-Going')
+                <span lang=EN-GB style='font-size:8.0pt;color:black'>On Progress</span>
+              @else
+                <span lang=EN-GB style='font-size:8.0pt;color:black'>Future Work</span>
+              @endif
             </p>
           </td>
           <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt'>
@@ -1093,7 +1104,8 @@
             </p>
           </td>
         </tr>
-      </table> -->
+        @endforeach
+      </table>
       <p class=MsoNormal>
         <span lang=EN-GB>&nbsp;</span>
       </p>

@@ -16,7 +16,7 @@ class PMOProgressReport extends Model
     protected $fillable = ['id_project'];
     public $timestamps = false;
 
-    protected $appends = ['doc_distribution', 'customer_info', 'get_milestone_reached', 'get_milestone_to_be_reached', 'get_issue', 'get_risk', 'get_sign','cp_name','project_pm','project_pc', 'periode'];
+    protected $appends = ['doc_distribution', 'customer_info', 'get_milestone_reached', 'get_milestone_to_be_reached', 'get_issue', 'get_risk', 'get_sign','cp_name','project_pm','project_pc', 'periode','milestone_progess'];
 
     public function getPeriodeAttribute()
     {
@@ -80,6 +80,10 @@ class PMOProgressReport extends Model
                     ->where('status','Done')
                     // ->whereRaw("(`text` !=  'Initiating' OR `text` != 'Planning' OR `text` != 'Executing' OR `text` != 'Done')")
                     ->where('parent','!=','0')
+                    ->where(function($query) use ($startOfWeek, $endOfWeek){
+                      $query->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
+                            ->orWhereBetween('baseline_end', [$startOfWeek,$endOfWeek]);
+                    })
                     // ->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
                     ->get();
 
@@ -106,6 +110,10 @@ class PMOProgressReport extends Model
                     ->select(DB::raw("CONCAT(format_date_task.`start_date_format`,' - ',format_date_task.`end_date_format`) AS periode"),'text as milestone','format_date_task.id_gantt','parent_text.text_parent', 'deliverable_document', 'baseline_end', 'end_date',DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d') as start_date"))
                     ->where('id_pmo',$this->id_project)
                     ->where('status','!=','Done')
+                    ->where(function($query) use ($startOfWeek, $endOfWeek){
+                      $query->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
+                            ->orWhereBetween('baseline_end', [$startOfWeek,$endOfWeek]);
+                    })
                     // ->whereBetween('baseline_start', [$nextWeek,$endNextWeek])
                     ->get();
 
@@ -179,5 +187,32 @@ class PMOProgressReport extends Model
         }
 
         return $sign->get();
+    }
+
+    public function getMilestoneProgessAttribute()
+    {
+        $dateFormat = DB::table('gantt_tasks_pmo')->select(DB::raw("DATE_FORMAT(baseline_start, '%d %M %Y') as start_date_format"),DB::raw("DATE_FORMAT(baseline_end, '%d %M %Y') as end_date_format"),'gantt_tasks_pmo.id as id_gantt')->where('parent','!=',0); 
+
+        $dataParent = DB::table('gantt_tasks_pmo')->select('id as id_parent','text as text_parent')->where('parent','==',0); 
+
+        $startOfWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $endOfWeek = Carbon::now()->endOfWeek()->format('Y-m-d');
+
+        $dataMilestone = GanttTaskPmo::leftJoinSub($dateFormat, 'format_date_task',function($join){
+                        $join->on("gantt_tasks_pmo.id", '=', 'format_date_task.id_gantt');
+                    })->leftJoinSub($dataParent, 'parent_text',function($join){
+                        $join->on("gantt_tasks_pmo.parent", '=', 'parent_text.id_parent');
+                    })
+                    // ->select(DB::raw("CONCAT(format_date_task.`start_date_format`,' - ',format_date_task.`end_date_format`) AS periode"),'text as milestone','format_date_task.id_gantt','parent_text.text_parent')->where('id_pmo',$request->id_pmo)->where('status','!=','Done')->whereBetween('start_date', [Carbon::now()->startOfWeek()->format("Y-m-d"),Carbon::now()->endOfWeek()->format("Y-m-d")])->get();
+                    ->select(DB::raw("CONCAT(format_date_task.`start_date_format`,' - ',format_date_task.`end_date_format`) AS periode"),'text as milestone','format_date_task.id_gantt','parent_text.text_parent', 'deliverable_document','status','baseline_end','end_date')
+                    ->where('parent','!=',0)
+                    ->where('id_pmo',$this->id_project)
+                    // ->where(function($query) use ($startOfWeek, $endOfWeek){
+                    //   $query->whereBetween('baseline_start', [$startOfWeek,$endOfWeek])
+                    //         ->orWhereBetween('baseline_end', [$startOfWeek,$endOfWeek]);
+                    // })
+                    ->get();
+
+        return $dataMilestone;
     }
 }
