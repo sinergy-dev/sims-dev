@@ -74,7 +74,7 @@
 	                    <th>Project Id</th>
 	                    <th>Risk Description</th>
 	                    <th>Risk Owner</th>
-	                    <th>Review Data</th>
+	                    <th>Review Date</th>
 	                  </tr>
 	                </thead>
 					<center><b></b></center>
