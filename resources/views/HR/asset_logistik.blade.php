@@ -163,15 +163,17 @@ GA Logistik
           </li>
           @endif -->
           <button class="btn btn-sm btn-success pull-right tambah_asset_logistik" data-toggle="modal" id="tambah_asset_logistik" data-target="#add_asset" style="display: none"><i class="fa fa-plus"> </i>&nbsp Asset</button>
-          <button class="btn btn-sm btn-warning pull-right btnExport" id="btnExport" style="margin-right: 5px; display: none;" onclick="exportExcel('{{action('AssetLogistikController@reportExcel')}}')"><i class="fa fa-download"> </i>&nbsp Excel</button>
-          <div class="input-group-btn pull-right dropdownBln" style="margin-right: 100px; display: none;">
-            <button type="button" id="btnShowMonth" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+
+          <button class="btn btn-sm btn-warning pull-right btnExport" id="btnExport" style="margin-right: 5px;display: none;" onclick="exportExcel('{{action('AssetLogistikController@reportExcel')}}')"><i class="fa fa-download"> </i>&nbsp Excel</button>
+
+          <div class="pull-right dropdown dropdownBln" style="margin-right: 5px">
+            <button type="button" id="btnShowMonth" class="btn btn-sm btn-default dropdown-toggle" style="width:120px" data-toggle="dropdown" aria-expanded="false">
               Select Month
               <span class="fa fa-caret-down"></span>
             </button>
             <ul class="dropdown-menu" id="selectShowMonth">
               @foreach($month_formatted as $value)
-                <li><a onclick="reportExcel(this)">{{$value}}</a></li>
+                <li style="cursor:pointer; padding-top: 5px;padding-bottom: 5px;text-align: center;" onclick="reportExcel(this)">{{$value}}</li>
               @endforeach
             </ul>
           </div>
