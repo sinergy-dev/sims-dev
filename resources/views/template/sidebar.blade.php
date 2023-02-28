@@ -21,23 +21,47 @@
 		</div>
 		<ul class="sidebar-menu tree" data-widget="tree">
 			<li class="header">MAIN NAVIGATION</li>
-			@foreach($initView['listMenu'] as $group)
+			@foreach($initView['listMenu'] as $key => $group)
 				<li class="treeview activeable_group">
 					<a href="#">
-						<i class="{{$group['icon_group']}}"></i>
-						<span>{{$group['text']}}</span>
+						<i class="{{$group[0]->icon_group}}"></i>
+						<span>{{$key}}</span>
 						<span class="pull-right-container">
-							<small class="label pull-right bg-red" id="{!! str_replace(' ', '_', $group['name']) !!}"></small>
-							<i class="fa fa-angle-left pull-right" id="{!! str_replace(' ', '_', $group['name']) !!}_arrow-angle"></i>
+							<small class="label pull-right bg-red" id=""></small>
+							<i class="fa fa-angle-left pull-right" id=""></i>
 						</span>
 					</a>
 					<ul class="treeview-menu">
-						@foreach($group['children'] as $chid)
-							<li class="activeable_menu">
-								<a href="{{url($chid->url)}}">
-									<i class="fa fa-circle-o"></i>{{$chid->name}}									
-								</a>
-							</li>
+						@foreach($group as $keys => $childGroup)
+							@if($group[$keys]->count == 0)
+								<li class="activeable_menu">
+									<a href="{{url($group[$keys]->url)}}">
+										<i class="fa fa-circle-o"></i>{{$group[$keys]->name}}
+									</a>
+								</li>
+							@else
+								<li class="treeview">
+									<a href="#">
+										<i class="fa fa-circle-o"></i>
+										<span>{{$group[$keys]->name}}</span>
+										<span class="pull-right-container">
+											<small class="label pull-right bg-red" id=""></small>
+											<i class="fa fa-angle-left pull-right" id=""></i>
+										</span>
+									</a>
+									<ul class="treeview-menu">
+									@foreach($group[$keys]->child as $childRow)
+										@foreach($childRow as $childRowData)
+										<li class="activeable_menu">
+											<a href="{{url($childRowData->url)}}">
+												<i class="fa fa-circle-o"></i>{{$childRowData->name}}
+											</a>
+										</li>
+										@endforeach
+									@endforeach
+									</ul>
+								</li>
+							@endif
 						@endforeach
 					</ul>
 				</li>
