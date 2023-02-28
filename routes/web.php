@@ -1009,6 +1009,28 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('asset_atk/getMostRequest', 'AssetAtkController@getMostRequest');
 	Route::get('asset_atk/reportExcel', 'AssetAtkController@reportExcel');
 
+	Route::get('asset_logistik', 'AssetLogistikController@index');
+	Route::post('asset_logistik/store_asset_logistik', 'AssetLogistikController@store');
+	Route::get('asset_logistik/get_qty_logistik','AssetLogistikController@getqtylogistik');
+	Route::post('asset_logistik/request_logistik', 'AssetLogistikController@request_logistik');
+	Route::get('asset_logistik/accept_request', 'AssetLogistikController@accept_request');
+	Route::post('asset_logistik/edit_logistik', 'AssetLogistikController@edit_logistik');
+	Route::get('asset_logistik/reject_request', 'AssetLogistikController@reject_request');
+	Route::get('asset_logistik/detail_asset_logistik/{id_barang}','AssetLogistikController@detail');
+	Route::post('asset_logistik/update_stok', 'AssetLogistikController@update_stok');
+	Route::post('asset_logistik/done_request_pr', 'AssetLogistikController@done_request_pr');
+	Route::get('asset_logistik/getAssetLogistik', 'AssetLogistikController@getLogistik');
+	Route::post('asset_logistik/store_request_logistik', 'AssetLogistikController@store_request_logistik');
+	Route::get('asset_logistik/accept_request_logistik', 'AssetLogistikController@accept_request_logistik');
+	Route::post('asset_logistik/done_request_logistik', 'AssetLogistikController@request_done');
+	Route::get('asset_logistik/reject_request_logistik', 'AssetLogistikController@reject_request_logistik');
+	Route::get('asset_logistik/detail_produk_request', 'AssetLogistikController@detail_produk_request');
+	Route::get('asset_logistik/getSummaryLogistik', 'AssetLogistikController@getSummaryLogistik');
+	Route::get('asset_logistik/getSummaryQty', 'AssetLogistikController@getSummaryQty');
+	Route::get('asset_logistik/getSaldoLogistik', 'AssetLogistikController@getSaldoLogistik');
+	Route::get('asset_logistik/getMostRequest', 'AssetLogistikController@getMostRequest');
+	Route::get('asset_logistik/reportExcel', 'AssetLogistikController@reportExcel');
+
 	//PMO
 	Route::get('PMO/detail/{lead_id}','PMOController@detail');
 	Route::get('PMO/index','PMOController@index');
@@ -1292,6 +1314,6 @@ Route::post('testCSVUploadPost','TestController@testCSVUploadPost');
 Route::get('testCSVUploadGetFile','TestController@testCSVUploadGetFile');
 
 Route::get('testGCal','TestController@testGCal');
-
+// Route::get('testSidebar','TestController@testSidebar');
 
 

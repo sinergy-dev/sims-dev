@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Auth;
-use App\AssetAtk;
-use App\AssetAtkTransaction;
+use App\AssetLogistik;
+use App\AssetLogistikTransaction;
 use App\User;
 use App\Mail\RequestATK;
 use Mail;
-use App\AssetAtkChangelog;
-use App\AssetAtkRequest;
+use App\AssetLogistikChangeLog;
+use App\AssetLogistikRequest;
 use Carbon\Carbon;
 
 use Validator;
@@ -22,7 +22,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class AssetAtkController extends Controller
+class AssetLogistikController extends Controller
 {
     public function index()
     {
@@ -186,61 +186,60 @@ class AssetAtkController extends Controller
             ->get();
         }
 
-        $asset = DB::table('tb_asset_atk')->join('users', 'users.nik', '=', 'tb_asset_atk.nik')
-                ->select('nama_barang', 'tb_asset_atk.id_barang', 'name', 'qty', 'description','status', 'unit', 'merk')
+        $asset = DB::table('tb_asset_logistik')->join('users', 'users.nik', '=', 'tb_asset_logistik.nik')
+                ->select('nama_barang', 'tb_asset_logistik.id_barang', 'name', 'qty', 'description','status', 'unit', 'merk')
                 ->get();
 
-        $assetsd    = DB::table('tb_asset_atk_transaction')
-                    ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
-                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','tb_asset_atk.nama_barang','tb_asset_atk_transaction.qty_akhir','tb_asset_atk.description','users.name','tb_asset_atk.qty','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.status', 'tb_asset_atk_transaction.keterangan','no_transac', 'tb_asset_atk_transaction.created_at', 'tb_asset_atk_transaction.note', 'qty_request')
-                    ->where('tb_asset_atk_transaction.status', 'PENDING')
+        $assetsd    = DB::table('tb_asset_logistik_transaction')
+                    ->join('users','users.nik','=','tb_asset_logistik_transaction.nik_peminjam')
+                    ->join('tb_asset_logistik','tb_asset_logistik.id_barang','=','tb_asset_logistik_transaction.id_barang')
+                    ->select('tb_asset_logistik_transaction.id_transaction','tb_asset_logistik_transaction.id_barang','tb_asset_logistik.nama_barang','tb_asset_logistik_transaction.qty_akhir','tb_asset_logistik.description','users.name','tb_asset_logistik.qty','tb_asset_logistik_transaction.nik_peminjam','tb_asset_logistik_transaction.status', 'tb_asset_logistik_transaction.keterangan','no_transac', 'tb_asset_logistik_transaction.created_at', 'tb_asset_logistik_transaction.note', 'qty_request')
+                    ->where('tb_asset_logistik_transaction.status', 'PENDING')
                     ->orderBy('created_at', 'desc')
                     ->get();
 
-        $pr_request    = DB::table('tb_asset_atk_transaction')
-                    ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
-                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','tb_asset_atk.nama_barang','tb_asset_atk_transaction.qty_akhir','tb_asset_atk.description','users.name','tb_asset_atk.qty','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.status', 'tb_asset_atk_transaction.keterangan','no_transac', 'tb_asset_atk_transaction.created_at', 'tb_asset_atk_transaction.note', 'qty_request')
-                    ->where('tb_asset_atk_transaction.status', 'PROSES')
-                    ->orWhere('tb_asset_atk_transaction.status', 'DONE')
+        $pr_request    = DB::table('tb_asset_logistik_transaction')
+                    ->join('users','users.nik','=','tb_asset_logistik_transaction.nik_peminjam')
+                    ->join('tb_asset_logistik','tb_asset_logistik.id_barang','=','tb_asset_logistik_transaction.id_barang')
+                    ->select('tb_asset_logistik_transaction.id_transaction','tb_asset_logistik_transaction.id_barang','tb_asset_logistik.nama_barang','tb_asset_logistik_transaction.qty_akhir','tb_asset_logistik.description','users.name','tb_asset_logistik.qty','tb_asset_logistik_transaction.nik_peminjam','tb_asset_logistik_transaction.status', 'tb_asset_logistik_transaction.keterangan','no_transac', 'tb_asset_logistik_transaction.created_at', 'tb_asset_logistik_transaction.note', 'qty_request')
+                    ->where('tb_asset_logistik_transaction.status', 'PROSES')
+                    ->orWhere('tb_asset_logistik_transaction.status', 'DONE')
                     ->orderBy('created_at', 'desc')
                     ->get();
 
-        $pinjaman = DB::table('tb_asset_atk_transaction')
-                    ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
-                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note', 'qty_request', 'qty_awal')
-                    ->where('tb_asset_atk_transaction.nik_peminjam',Auth::User()->nik)
+        $pinjaman = DB::table('tb_asset_logistik_transaction')
+                    ->join('users','users.nik','=','tb_asset_logistik_transaction.nik_peminjam')
+                    ->join('tb_asset_logistik','tb_asset_logistik.id_barang','=','tb_asset_logistik_transaction.id_barang')
+                    ->select('tb_asset_logistik.description','tb_asset_logistik_transaction.nik_peminjam','tb_asset_logistik_transaction.id_transaction','tb_asset_logistik_transaction.id_barang','users.name','tb_asset_logistik_transaction.qty_akhir','tb_asset_logistik_transaction.created_at','tb_asset_logistik_transaction.updated_at','tb_asset_logistik.nama_barang','tb_asset_logistik_transaction.status', 'no_transac', 'tb_asset_logistik_transaction.keterangan', 'tb_asset_logistik_transaction.note', 'qty_request', 'qty_awal')
+                    ->where('tb_asset_logistik_transaction.nik_peminjam',Auth::User()->nik)
                     ->orderBy('created_at', 'desc')
                     ->get();
 
-        $request = DB::table('tb_asset_atk_request')
-                    ->join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')
-                    ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_atk_request.created_at', 'name', 'link', 'id_barang','tb_asset_atk_request.nik')
-                    ->orderBy('tb_asset_atk_request.created_at','desc')
+        $request = DB::table('tb_asset_logistik_request')
+                    ->join('users', 'users.nik', '=', 'tb_asset_logistik_request.nik')
+                    ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_logistik_request.created_at', 'name', 'link', 'id_barang','tb_asset_logistik_request.nik')
+                    ->orderBy('tb_asset_logistik_request.created_at','desc')
                     ->where('status', 'PROCESS')
                     ->orWhere('status', 'REQUEST')
                     ->get();
 
-        $request2 = DB::table('tb_asset_atk_request')
-                    ->join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')
-                    ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_atk_request.created_at', 'name', 'link', 'id_barang','tb_asset_atk_request.nik')
-                    ->orderBy('tb_asset_atk_request.created_at','desc')
-                    ->where('tb_asset_atk_request.nik', Auth::User()->nik)
+        $request2 = DB::table('tb_asset_logistik_request')
+                    ->join('users', 'users.nik', '=', 'tb_asset_logistik_request.nik')
+                    ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_logistik_request.created_at', 'name', 'link', 'id_barang','tb_asset_logistik_request.nik')
+                    ->orderBy('tb_asset_logistik_request.created_at','desc')
+                    ->where('tb_asset_logistik_request.nik', Auth::User()->nik)
                     ->get();
 
-        $pr_request2 = DB::table('tb_asset_atk_transaction')
-                    ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
-                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note', 'qty_request')
-                    ->where('tb_asset_atk_transaction.nik_peminjam',Auth::User()->nik)
+        $pr_request2 = DB::table('tb_asset_logistik_transaction')
+                    ->join('users','users.nik','=','tb_asset_logistik_transaction.nik_peminjam')
+                    ->join('tb_asset_logistik','tb_asset_logistik.id_barang','=','tb_asset_logistik_transaction.id_barang')
+                    ->select('tb_asset_logistik.description','tb_asset_logistik_transaction.nik_peminjam','tb_asset_logistik_transaction.id_transaction','tb_asset_logistik_transaction.id_barang','users.name','tb_asset_logistik_transaction.qty_akhir','tb_asset_logistik_transaction.created_at','tb_asset_logistik_transaction.updated_at','tb_asset_logistik.nama_barang','tb_asset_logistik_transaction.status', 'no_transac', 'tb_asset_logistik_transaction.keterangan', 'tb_asset_logistik_transaction.note', 'qty_request')
+                    ->where('tb_asset_logistik_transaction.nik_peminjam',Auth::User()->nik)
                     ->get();
 
-        $atk = AssetAtk::select('id_barang','nama_barang')->get();
+        $logistik = AssetLogistik::select('id_barang','nama_barang')->get();
 
-        $month = AssetAtkChangelog::selectRaw('LEFT(`created_at`, 7) AS `month`')->groupBy('month')->limit(10)->orderBy('month', 'desc')->get()->pluck('month');
-        // return $month;
+        $month = AssetLogistikChangeLog::selectRaw('LEFT(`created_at`, 7) AS `month`')->groupBy('month')->limit(10)->orderBy('month', 'desc')->get()->pluck('month');
 
         $month_formatted = [];
 
@@ -248,18 +247,18 @@ class AssetAtkController extends Controller
             array_push($month_formatted, Carbon::parse($data . "-01")->format("F Y"));
         }
 
-        $unit_assets = AssetAtk::select('unit')->where('unit', '<>', null)->groupBy('unit')->get();
+        $unit_assets = AssetLogistik::select('unit')->where('unit', '<>', null)->groupBy('unit')->get();
 
         $sidebar_collapse = true;
 
-        $cek = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk_transaction.id_barang', '=', 'tb_asset_atk.id_barang', 'left')->select('tb_asset_atk_transaction.id_barang')->get();
+        $cek = AssetLogistik::join('tb_asset_logistik_transaction', 'tb_asset_logistik_transaction.id_barang', '=', 'tb_asset_logistik.id_barang', 'left')->select('tb_asset_logistik_transaction.id_barang')->get();
 
-    	return view('HR/asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'atk', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request', 'request2', 'month', 'month_formatted','sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_atk')]);
+    	return view('HR/asset_logistik',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'assetsd', 'pinjaman', 'logistik', 'cek', 'pr_request', 'pr_request2', 'unit_assets', 'request', 'request2', 'month', 'month_formatted','sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('asset_logistik')]);
     }
 
-    public function getAtk(Request $request){
+    public function getLogistik(Request $request){
 
-        return array("results" => DB::table('tb_asset_atk')->select(DB::raw("`id_barang` AS `id`,`nama_barang` AS `text`"))->get());
+        return array("results" => DB::table('tb_asset_logistik')->select(DB::raw("`id_barang` AS `id`,`nama_barang` AS `text`"))->get());
     }
 
     public function detail($id_barang)
@@ -424,28 +423,28 @@ class AssetAtkController extends Controller
             ->get();
         }
 
-        $asset = DB::table('tb_asset_atk_transaction')
-                    ->join('users','users.nik','=','tb_asset_atk_transaction.nik_peminjam')
-                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_transaction.id_barang')
-                    ->select('tb_asset_atk.description','tb_asset_atk_transaction.nik_peminjam','tb_asset_atk_transaction.id_transaction','tb_asset_atk_transaction.id_barang','users.name','tb_asset_atk_transaction.qty_akhir','tb_asset_atk_transaction.created_at','tb_asset_atk_transaction.updated_at','tb_asset_atk.nama_barang','tb_asset_atk_transaction.status', 'no_transac', 'tb_asset_atk_transaction.keterangan', 'tb_asset_atk_transaction.note')
-                    ->where('tb_asset_atk.id_barang',$id_barang)
-                    ->orderBy('tb_asset_atk_transaction.created_at', 'desc')
+        $asset = DB::table('tb_asset_logistik_transaction')
+                    ->join('users','users.nik','=','tb_asset_logistik_transaction.nik_peminjam')
+                    ->join('tb_asset_logistik','tb_asset_logistik.id_barang','=','tb_asset_logistik_transaction.id_barang')
+                    ->select('tb_asset_logistik.description','tb_asset_logistik_transaction.nik_peminjam','tb_asset_logistik_transaction.id_transaction','tb_asset_logistik_transaction.id_barang','users.name','tb_asset_logistik_transaction.qty_akhir','tb_asset_logistik_transaction.created_at','tb_asset_logistik_transaction.updated_at','tb_asset_logistik.nama_barang','tb_asset_logistik_transaction.status', 'no_transac', 'tb_asset_logistik_transaction.keterangan', 'tb_asset_logistik_transaction.note')
+                    ->where('tb_asset_logistik.id_barang',$id_barang)
+                    ->orderBy('tb_asset_logistik_transaction.created_at', 'desc')
                     ->get();
 
-        $last_update = AssetAtkChangelog::join('users', 'users.nik', '=', 'tb_asset_atk_changelog.nik')->select('status','tb_asset_atk_changelog.created_at', 'name')->where('id_barang',$id_barang)->orderBy('tb_asset_atk_changelog.id','desc')->first();
+        $last_update = AssetLogistikChangeLog::join('users', 'users.nik', '=', 'tb_asset_logistik_changelog.nik')->select('status','tb_asset_logistik_changelog.created_at', 'name')->where('id_barang',$id_barang)->orderBy('tb_asset_logistik_changelog.id','desc')->first();
 
-        $data = AssetAtk::select('qty','unit','nama_barang')->where('id_barang',$id_barang)->first();
+        $data = AssetLogistik::select('qty','unit','nama_barang')->where('id_barang',$id_barang)->first();
 
-        return view('HR/detail_asset_atk',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'data', 'last_update'))->with(['initView'=> $this->initMenuBase()]);
+        return view('HR/detail_asset_logistik',compact('notif', 'notifc', 'notifsd', 'notiftp', 'notifOpen', 'notifClaim', 'asset', 'data', 'last_update'))->with(['initView'=> $this->initMenuBase()]);
     }
 
-    public function getSaldoAtk(Request $request)
+    public function getSaldoLogistik(Request $request)
     {
-        $detail = AssetAtkChangelog::join('users', 'users.nik', '=', 'tb_asset_atk_changelog.nik')
-                    ->join('tb_asset_atk', 'tb_asset_atk.id_barang', '=', 'tb_asset_atk_changelog.id_barang')
-                    ->select('users.name', 'tb_asset_atk_changelog.created_at', 'tb_asset_atk_changelog.status', 'tb_asset_atk_changelog.qty', 'nama_barang', 'unit')
-                    ->where('tb_asset_atk.id_barang', $request->id_barang)
-                    ->orderBy('tb_asset_atk_changelog.id', 'desc')
+        $detail = AssetLogistikChangeLog::join('users', 'users.nik', '=', 'tb_asset_logistik_changelog.nik')
+                    ->join('tb_asset_logistik', 'tb_asset_logistik.id_barang', '=', 'tb_asset_logistik_changelog.id_barang')
+                    ->select('users.name', 'tb_asset_logistik_changelog.created_at', 'tb_asset_logistik_changelog.status', 'tb_asset_logistik_changelog.qty', 'nama_barang', 'unit')
+                    ->where('tb_asset_logistik.id_barang', $request->id_barang)
+                    ->orderBy('tb_asset_logistik_changelog.id', 'desc')
                     ->get();
 
         return array("data"=>$detail);
@@ -453,7 +452,7 @@ class AssetAtkController extends Controller
 
     public function store(Request $request)
     {
-    	$tambah                 = new AssetAtk();
+    	$tambah                 = new AssetLogistik();
         $tambah->nik            = Auth::User()->nik;
         $tambah->nama_barang    = $request['nama_barang'];
         $tambah->qty            = $request['qty'];
@@ -463,9 +462,9 @@ class AssetAtkController extends Controller
         $tambah->merk 			= $request['merk'];
         $tambah->save();
 
-        $cek_id = AssetAtk::orderBy('id_barang','desc')->first();
+        $cek_id = AssetLogistik::orderBy('id_barang','desc')->first();
 
-        $tambah_changelog   = new AssetAtkChangelog();
+        $tambah_changelog   = new AssetLogistikChangeLog();
         $tambah_changelog->nik = Auth::User()->nik;
         $tambah_changelog->id_barang = $cek_id->id_barang;
         $tambah_changelog->qty = $request['qty'];
@@ -475,9 +474,9 @@ class AssetAtkController extends Controller
         return redirect()->back()->with('update', 'Successfully!');
     }
 
-    public function getSummaryAtk(Request $request)
+    public function getSummaryLogistik(Request $request)
     {
-        $summary = AssetAtkChangelog::selectRaw('SUM(CASE WHEN `status` = "In" THEN 1 ELSE 0 END) AS `sum_in`')
+        $summary = AssetLogistikChangeLog::selectRaw('SUM(CASE WHEN `status` = "In" THEN 1 ELSE 0 END) AS `sum_in`')
             ->selectRaw('SUM(CASE WHEN `status` = "Out" THEN 1 ELSE 0 END) AS `sum_out`')
             ->selectRaw('LEFT(`created_at`, 7) AS `month`')
             ->where('id_barang', $request->id_barang)
@@ -490,7 +489,7 @@ class AssetAtkController extends Controller
 
     public function getSummaryQty(Request $request)
     {
-        $summary = AssetAtkChangelog::selectRaw('SUM(CASE WHEN `status` = "In" THEN qty ELSE 0 END) AS `sum_in`')
+        $summary = AssetLogistikChangeLog::selectRaw('SUM(CASE WHEN `status` = "In" THEN qty ELSE 0 END) AS `sum_in`')
             ->selectRaw('SUM(CASE WHEN `status` = "Out" THEN qty ELSE 0 END) AS `sum_out`')
             ->selectRaw('LEFT(`created_at`, 7) AS `month`')
             ->where('id_barang', $request->id_barang)
@@ -504,16 +503,16 @@ class AssetAtkController extends Controller
     public function detail_produk_request(Request $request)
     {
         $id_barang = $request->id_barang;
-        return array(DB::table('tb_asset_atk_request')
-                ->join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')
-                ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_atk_request.created_at', 'name', 'link', 'id_barang','tb_asset_atk_request.nik')
-                ->where('tb_asset_atk_request.id_barang',$id_barang)
+        return array(DB::table('tb_asset_logistik_request')
+                ->join('users', 'users.nik', '=', 'tb_asset_logistik_request.nik')
+                ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_logistik_request.created_at', 'name', 'link', 'id_barang','tb_asset_logistik_request.nik')
+                ->where('tb_asset_logistik_request.id_barang',$id_barang)
                 ->first());
     }
 
     public function getMostRequest(Request $request)
     {
-        $getData = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select(DB::raw('SUM(qty_akhir) as qty'), 'name')->where('tb_asset_atk_transaction.id_barang', $request->id_barang)->where('tb_asset_atk_transaction.status', 'ACCEPT')->whereMonth('tb_asset_atk_transaction.updated_at', date('m'))->whereYear('tb_asset_atk_transaction.updated_at', date('Y'))->groupBy('nik_peminjam')->orderBy('qty', 'asc')->get();
+        $getData = AssetLogistikTransaction::join('users', 'users.nik', '=', 'tb_asset_logistik_transaction.nik_peminjam')->select(DB::raw('SUM(qty_akhir) as qty'), 'name')->where('tb_asset_logistik_transaction.id_barang', $request->id_barang)->where('tb_asset_logistik_transaction.status', 'ACCEPT')->whereMonth('tb_asset_logistik_transaction.updated_at', date('m'))->whereYear('tb_asset_logistik_transaction.updated_at', date('Y'))->groupBy('nik_peminjam')->orderBy('qty', 'asc')->get();
 
         return array("data"=>$getData);
     }
@@ -521,13 +520,13 @@ class AssetAtkController extends Controller
     public function update_stok(Request $request)
     {
         $id_barang = $request['id_barang_restok'];
-        $qty_awal = AssetAtk::select('qty')->where('id_barang', $id_barang)->first();
+        $qty_awal = AssetLogistik::select('qty')->where('id_barang', $id_barang)->first();
 
-        $update = AssetAtk::where('id_barang', $id_barang)->first();
+        $update = AssetLogistik::where('id_barang', $id_barang)->first();
         $update->qty = $qty_awal->qty + $request['qty_masuk_restok'];
         $update->update();
 
-        $tambah_changelog   = new AssetAtkChangelog();
+        $tambah_changelog   = new AssetLogistikChangeLog();
         $tambah_changelog->nik = Auth::User()->nik;
         $tambah_changelog->id_barang = $id_barang;
         $tambah_changelog->qty = $request['qty_masuk_restok'];
@@ -537,13 +536,13 @@ class AssetAtkController extends Controller
         return redirect()->back()->with('update', 'Successfully!');
     }
 
-    public function accept_request_atk(Request $request)
+    public function accept_request_logistik(Request $request)
     {
-        $update = AssetAtkRequest::where('id_barang', $request->id_barang)->first();
+        $update = AssetLogistikRequest::where('id_barang', $request->id_barang)->first();
         $update->status = 'PROCESS';
         $update->update();
 
-        $kirim = AssetAtkRequest::join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')->select('users.email', 'id_position')->where('id_barang',$request->id_barang)->first();
+        $kirim = AssetLogistikRequest::join('users', 'users.nik', '=', 'tb_asset_logistik_request.nik')->select('users.email', 'id_position')->where('id_barang',$request->id_barang)->first();
 
         $get_email_user = collect([$kirim]);
 
@@ -554,14 +553,14 @@ class AssetAtkController extends Controller
         // $receiver_final = $receiver->all();
         $receiver_final = $get_email_user;
 
-        $req_atk = AssetAtkRequest::join('users', 'tb_asset_atk_request.nik', '=', 'users.nik')
-                    ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'tb_asset_atk_request.created_at')
-                    ->where('tb_asset_atk_request.id_barang', $request->id_barang)
+        $req_logistik = AssetLogistikRequest::join('users', 'tb_asset_logistik_request.nik', '=', 'users.nik')
+                    ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'tb_asset_logistik_request.created_at')
+                    ->where('tb_asset_logistik_request.id_barang', $request->id_barang)
                     ->first();
-        // return $req_atk;
+        // return $req_logistik;
 
         // foreach ($receiver_final as $final) {
-            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request ATK sedang diproses', $req_atk,$kirim->id_position,$kirim->id_division,$get_email_user, 'PROCESS','ATK'));
+            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request Logistik sedang diproses', $req_logistik,$kirim->id_position,$kirim->id_division,$get_email_user, 'PROCESS','LOGISTIK'));
         // }
 
         return redirect()->back()->with('update', 'Successfully!');
@@ -569,33 +568,33 @@ class AssetAtkController extends Controller
 
     public function request_done(Request $request)
     {
-        $update = AssetAtkRequest::where('id_barang', $request['id_barang_done2'])->first();
+        $update = AssetLogistikRequest::where('id_barang', $request['id_barang_done2'])->first();
         $update->status = 'DONE';
         $update->update();
 
-        $qty_restock = $request['qty_restock_atk'];
+        $qty_restock = $request['qty_restock_logistik'];
         $qty_request = $request['qty_request_done2'];
 
-        $tambah = new AssetAtk();
+        $tambah = new AssetLogistik();
         $tambah->nik            = Auth::User()->nik;
         $tambah->nama_barang    = $request['nama_barang_done'];
-        $tambah->qty            = $request['qty_restock_atk'];
+        $tambah->qty            = $request['qty_restock_logistik'];
         $tambah->description    = $request['keterangan_request'];
         $tambah->status         = 'NEW';
         $tambah->unit           = $request['unit_request'];
         $tambah->merk           = $request['merk_request'];
         $tambah->save();
 
-        // $cek_id = AssetAtk::orderBy('id_barang','desc')->first();
+        // $cek_id = AssetLogistik::orderBy('id_barang','desc')->first();
 
-        $tambah_changelog   = new AssetAtkChangelog();
+        $tambah_changelog   = new AssetLogistikChangeLog();
         $tambah_changelog->nik = Auth::User()->nik;
         $tambah_changelog->id_barang = $tambah->id_barang;
-        $tambah_changelog->qty = $request['qty_restock_atk'];
+        $tambah_changelog->qty = $request['qty_restock_logistik'];
         $tambah_changelog->status = 'In';
         $tambah_changelog->save();
 
-        $inc = DB::table('tb_asset_atk_transaction')->select('id_transaction')->get();
+        $inc = DB::table('tb_asset_logistik_transaction')->select('id_transaction')->get();
         $increment = count($inc);
         $nomor = $increment+1;
         if($nomor < 10){
@@ -604,7 +603,7 @@ class AssetAtkController extends Controller
 
         $no_peminjaman = date('ymd').$nomor;
 
-        $tambah_transac                   = new AssetAtkTransaction();
+        $tambah_transac                   = new AssetLogistikTransaction();
         $tambah_transac->no_transac       = $no_peminjaman;
         $tambah_transac->id_barang        = $tambah->id_barang;
         $tambah_transac->nik_peminjam     = $request['nik_request2'];
@@ -614,18 +613,18 @@ class AssetAtkController extends Controller
         $tambah_transac->status           = 'ACCEPT';
         $tambah_transac->save();
 
-        $tambah_changelog2   = new AssetAtkChangelog();
+        $tambah_changelog2   = new AssetLogistikChangeLog();
         $tambah_changelog2->nik = $request['nik_request2'];
         $tambah_changelog2->id_barang = $tambah->id_barang;
         $tambah_changelog2->qty = $qty_request;
         $tambah_changelog2->status = 'Out';
         $tambah_changelog2->save();
 
-        $update_qty = AssetAtk::where('id_barang', $tambah->id_barang)->first();
+        $update_qty = AssetLogistik::where('id_barang', $tambah->id_barang)->first();
         $update_qty->qty = $qty_restock - $qty_request;
         $update_qty->update();
 
-        $kirim = AssetAtkRequest::join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')->select('users.email', 'id_position')->where('id_barang',$request['id_barang_done2'])->first();
+        $kirim = AssetLogistikRequest::join('users', 'users.nik', '=', 'tb_asset_logistik_request.nik')->select('users.email', 'id_position')->where('id_barang',$request['id_barang_done2'])->first();
 
         $get_email_user = collect([$kirim]);
 
@@ -637,31 +636,31 @@ class AssetAtkController extends Controller
 
         $receiver_final = $get_email_user;
 
-        $req_atk = AssetAtkRequest::join('users', 'tb_asset_atk_request.nik', '=', 'users.nik')
-                    ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'note_reject', 'tb_asset_atk_request.created_at')
-                    ->where('tb_asset_atk_request.id_barang', $request['id_barang_done2'])
+        $req_logistik = AssetLogistikRequest::join('users', 'tb_asset_logistik_request.nik', '=', 'users.nik')
+                    ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'note_reject', 'tb_asset_logistik_request.created_at')
+                    ->where('tb_asset_logistik_request.id_barang', $request['id_barang_done2'])
                     ->first();
 
         // foreach ($receiver_final as $final) {
-            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request ATK Sudah Datang', $req_atk,$kirim->id_position,$kirim->id_division,$get_email_user, 'DONE','ATK'));
+            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request Logistik Sudah Datang', $req_logistik,$kirim->id_position,$kirim->id_division,$get_email_user, 'DONE','LOGISTIK'));
         // }
 
         return redirect()->back()->with('update', 'Successfully!');
     }
 
-    public function getqtyatk(Request $request)
+    public function getqtylogistik(Request $request)
     {
-    	$atk = $request['atk'];
+    	$logistik = $request['logistik'];
 
-        return array(DB::table('tb_asset_atk')
+        return array(DB::table('tb_asset_logistik')
             ->select('qty', 'id_barang', 'nama_barang', 'unit')
-            ->where('id_barang', $request->atk)
-            ->get(),$request->atk);  
+            ->where('id_barang', $request->logistik)
+            ->get(),$request->logistik);  
     }
 
-    public function request_atk(Request $request)
+    public function request_logistik(Request $request)
     {
-    	$inc = DB::table('tb_asset_atk_transaction')->select('id_transaction')->get();
+    	$inc = DB::table('tb_asset_logistik_transaction')->select('id_transaction')->get();
         $increment = count($inc);
         $nomor = $increment+1;
         if($nomor < 10){
@@ -675,7 +674,7 @@ class AssetAtkController extends Controller
 
             $nama_barang = $value['nama_barang'];
 
-            $tambah = new AssetAtkTransaction();
+            $tambah = new AssetLogistikTransaction();
             $tambah->id_barang = $value['id_barang'];
             $tambah->no_transac = $value['ket'];
             $tambah->qty_akhir = $value['qty_request'];
@@ -695,7 +694,7 @@ class AssetAtkController extends Controller
             $data->push($datas);
         }
 
-        $get_id_transac = AssetAtkTransaction::select('id_transaction')->where('id_barang', $request->id_barang)->orderBy('created_at','desc')->first();
+        $get_id_transac = AssetLogistikTransaction::select('id_transaction')->where('id_barang', $request->id_barang)->orderBy('created_at','desc')->first();
 
         // $get_divisi_hr = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
@@ -711,20 +710,20 @@ class AssetAtkController extends Controller
         $get_divisi_hr = User::select('email','id_position', 'name', 'id_division')->where('email', 'andi@sinergy.co.id')->first();
         $get_email_cc = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
-        $req_atk = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
+        $req_logistik = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
         // foreach ($receiver_final as $final) {
-            Mail::to($get_divisi_hr)->cc($get_email_cc)->send(new RequestATK('[SIMS-App] Request ATK', $req_atk,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'PENDING','ATK'));
+            Mail::to($get_divisi_hr)->cc($get_email_cc)->send(new RequestATK('[SIMS-App] Request Logistik', $req_logistik,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'PENDING','LOGISTIK'));
         // }
 
-		return redirect()->back()->with('update', 'Request ATK akan diproses!');
+		return redirect()->back()->with('update', 'Request Logistik akan diproses!');
     }
 
-    public function store_request_atk(Request $request)
+    public function store_request_logistik(Request $request)
     {
         $data = collect();
         foreach ($request->data as $value) {
-            $tambah = new AssetAtkRequest();
+            $tambah = new AssetLogistikRequest();
             $tambah->nama = $value['name'];
             $tambah->qty = $value['qty'];
             $tambah->keterangan = $value['ket'];
@@ -742,7 +741,7 @@ class AssetAtkController extends Controller
             $data->push($datas);
         }
 
-        $get_id_transac = AssetAtkRequest::select('id_barang')->orderBy('created_at','desc')->first();
+        $get_id_transac = AssetLogistikRequest::select('id_barang')->orderBy('created_at','desc')->first();
 
         // $get_divisi_hr = User::select('email','id_position', 'id_division', 'name')->where('email', 'yudhi@sinergy.co.id')->first();
 
@@ -759,30 +758,30 @@ class AssetAtkController extends Controller
         $get_divisi_hr = User::select('email','id_position', 'name', 'id_division')->where('email', 'andi@sinergy.co.id')->first();
         $get_email_cc = User::select('email','id_position', 'name', 'id_division')->where('email', 'yudhi@sinergy.co.id')->first();
 
-        $req_atk = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
+        $req_logistik = collect(['variable'=>$data,'nama_peminjam'=>Auth::User()->name,'request_date'=>date("Y-m-d h:i:s"),'status'=>'REQUEST']);
 
         // foreach ($receiver_final as $final) {
-            Mail::to($get_divisi_hr)->cc($get_email_cc)->send(new RequestATK('[SIMS-App] Request ATK Baru', $req_atk,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'REQUEST','ATK'));
+            Mail::to($get_divisi_hr)->cc($get_email_cc)->send(new RequestATK('[SIMS-App] Request Logistik Baru', $req_logistik,$get_divisi_hr->id_position,$get_divisi_hr->id_division,$get_divisi_hr,'REQUEST','LOGISTIK'));
         // }
 
-        return redirect()->back()->with('update', 'Request ATK akan diproses!');
+        return redirect()->back()->with('update', 'Request Logistik akan diproses!');
     }
 
     public function accept_request(Request $request)
     {
-        $cek_status = AssetAtkTransaction::select('id_barang', 'id_transaction')->where('id_barang', $request->id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $request->id_transaction)->first();
-        $count_status = AssetAtkTransaction::select('id_barang', 'id_transaction')->where('id_barang', $request->id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $request->id_transaction)->count();
+        $cek_status = AssetLogistikTransaction::select('id_barang', 'id_transaction')->where('id_barang', $request->id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $request->id_transaction)->first();
+        $count_status = AssetLogistikTransaction::select('id_barang', 'id_transaction')->where('id_barang', $request->id_barang)->where('status', 'PENDING')->where('id_transaction', '!=', $request->id_transaction)->count();
 
-        $cek_qty = AssetAtkTransaction::select('qty_awal', 'qty_akhir')->where('id_transaction', $request->id_transaction)->where('id_barang', $request->id_barang)->first();
-        $update             = AssetAtkTransaction::where('id_transaction',$request->id_transaction)->first();
+        $cek_qty = AssetLogistikTransaction::select('qty_awal', 'qty_akhir')->where('id_transaction', $request->id_transaction)->where('id_barang', $request->id_barang)->first();
+        $update             = AssetLogistikTransaction::where('id_transaction',$request->id_transaction)->first();
         $update->status     = 'ACCEPT';
         $update->update();
 
-        $update_qty = AssetAtk::where('id_barang', $request->id_barang)->first();
+        $update_qty = AssetLogistik::where('id_barang', $request->id_barang)->first();
         $update_qty->qty = $request->qty - $request->qty_akhir;
         $update_qty->update();
 
-        $tambah_changelog   = new AssetAtkChangelog();
+        $tambah_changelog   = new AssetLogistikChangeLog();
         $tambah_changelog->nik = $request->nik_peminjam;
         $tambah_changelog->id_barang = $request->id_barang;
         $tambah_changelog->qty = $request->qty_akhir;
@@ -790,7 +789,7 @@ class AssetAtkController extends Controller
         $tambah_changelog->save();
 
 
-        $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$request->id_transaction)->first();
+        $kirim = AssetLogistikTransaction::join('users', 'users.nik', '=', 'tb_asset_logistik_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$request->id_transaction)->first();
 
         $get_email_user = collect([$kirim]);
 
@@ -802,25 +801,25 @@ class AssetAtkController extends Controller
 
         $receiver_final = $get_email_user;
 
-        $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
-                    ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
-                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'keterangan', 'tb_asset_atk_transaction.created_at')
-                    ->where('tb_asset_atk_transaction.id_transaction', $request->id_transaction)
+        $req_logistik = AssetLogistik::join('tb_asset_logistik_transaction', 'tb_asset_logistik.id_barang','=', 'tb_asset_logistik_transaction.id_barang')
+                    ->join('users', 'tb_asset_logistik_transaction.nik_peminjam', '=', 'users.nik')
+                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_logistik_transaction.status', 'name', 'keterangan', 'tb_asset_logistik_transaction.created_at')
+                    ->where('tb_asset_logistik_transaction.id_transaction', $request->id_transaction)
                     ->first();
-        // return $req_atk;
+        // return $req_logistik;
 
         // foreach ($receiver_final as $final) {
-            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request ATK Diterima', $req_atk,$kirim->id_position,$kirim->id_division,$get_email_user, 'ACCEPT','ATK'));
+            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request Logistik Diterima', $req_logistik,$kirim->id_position,$kirim->id_division,$get_email_user, 'ACCEPT','LOGISTIK'));
         // }
 
        	return redirect()->back()->with('update', 'Successfully!');
     }
 
-    public function edit_atk(Request $request)
+    public function edit_logistik(Request $request)
     {
     	$id_barang = $request['id_barang_edit'];
 
-    	$update = AssetAtk::where('id_barang', $id_barang)->first();
+    	$update = AssetLogistik::where('id_barang', $id_barang)->first();
     	$update->nama_barang = $request['nama_barang_edit'];
     	$update->description = $request['deskripsi_edit'];
     	$update->update();
@@ -831,12 +830,12 @@ class AssetAtkController extends Controller
     public function reject_request(Request $request)
     {
 
-        $update             = AssetAtkTransaction::where('id_transaction',$request->id_transaction)->first();
+        $update             = AssetLogistikTransaction::where('id_transaction',$request->id_transaction)->first();
         $update->status     = 'REJECT';
         $update->note       = $request->reason;
         $update->update();
 
-        $kirim = AssetAtkTransaction::join('users', 'users.nik', '=', 'tb_asset_atk_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$request->id_transaction)->first();
+        $kirim = AssetLogistikTransaction::join('users', 'users.nik', '=', 'tb_asset_logistik_transaction.nik_peminjam')->select('users.email')->where('id_transaction',$request->id_transaction)->first();
 
         $get_email_user = collect([$kirim]);
 
@@ -848,14 +847,14 @@ class AssetAtkController extends Controller
 
         $receiver_final = $get_email_user;
 
-        $req_atk = AssetAtk::join('tb_asset_atk_transaction', 'tb_asset_atk.id_barang','=', 'tb_asset_atk_transaction.id_barang')
-                    ->join('users', 'tb_asset_atk_transaction.nik_peminjam', '=', 'users.nik')
-                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_atk_transaction.status', 'name', 'keterangan', 'tb_asset_atk_transaction.created_at','note')
-                    ->where('tb_asset_atk_transaction.id_transaction', $request->id_transaction)
+        $req_logistik = AssetLogistik::join('tb_asset_logistik_transaction', 'tb_asset_logistik.id_barang','=', 'tb_asset_logistik_transaction.id_barang')
+                    ->join('users', 'tb_asset_logistik_transaction.nik_peminjam', '=', 'users.nik')
+                    ->select('nama_barang', 'qty_akhir', 'qty_request', 'tb_asset_logistik_transaction.status', 'name', 'keterangan', 'tb_asset_logistik_transaction.created_at','note')
+                    ->where('tb_asset_logistik_transaction.id_transaction', $request->id_transaction)
                     ->first();
 
         // foreach ($receiver_final as $final) {
-            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request ATK Ditolak', $req_atk,$kirim->id_position,$kirim->id_division,$get_email_user, 'REJECT','ATK'));
+            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request Logistik Ditolak', $req_logistik,$kirim->id_position,$kirim->id_division,$get_email_user, 'REJECT','LOGISTIK'));
         // }
 
         return redirect()->back()->with('update', 'Successfully!');
@@ -872,11 +871,11 @@ class AssetAtkController extends Controller
         /*if ($qty == 0) {
             return back()->with('qty-done','Quantity Habis');
         } else {*/
-            $update = AssetAtkTransaction::where('id_transaction', $id_transaction)->first();
+            $update = AssetLogistikTransaction::where('id_transaction', $id_transaction)->first();
             $update->status = 'DONE';
             $update->update();
 
-            $update_qty = AssetAtk::where('id_barang', $id_barang)->first();
+            $update_qty = AssetLogistik::where('id_barang', $id_barang)->first();
             $update_qty->qty = $qty_restock + $qty - $qty_request;
             $update_qty->update();
 
@@ -886,14 +885,14 @@ class AssetAtkController extends Controller
         return redirect()->back()->with('update', 'Successfully!');
     }
 
-    public function reject_request_atk(Request $request)
+    public function reject_request_logistik(Request $request)
     {
-        $update = AssetAtkRequest::where('id_barang', $request->id_barang)->first();
+        $update = AssetLogistikRequest::where('id_barang', $request->id_barang)->first();
         $update->status = 'REJECTED';
         $update->note_reject = $request->reason;
         $update->update();
 
-        $kirim = AssetAtkRequest::join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')->select('users.email', 'id_position')->where('id_barang',$request->id_barang)->first();
+        $kirim = AssetLogistikRequest::join('users', 'users.nik', '=', 'tb_asset_logistik_request.nik')->select('users.email', 'id_position')->where('id_barang',$request->id_barang)->first();
 
         $get_email_user = collect([$kirim]);
 
@@ -903,16 +902,16 @@ class AssetAtkController extends Controller
 
         $receiver_final = $receiver->all();
 
-        $req_atk = AssetAtkRequest::join('users', 'tb_asset_atk_request.nik', '=', 'users.nik')
-                    ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'note_reject', 'tb_asset_atk_request.created_at')
-                    ->where('tb_asset_atk_request.id_barang', $request->id_barang)
+        $req_logistik = AssetLogistikRequest::join('users', 'tb_asset_logistik_request.nik', '=', 'users.nik')
+                    ->select('nama', 'qty', 'name', 'keterangan', 'status', 'link', 'note_reject', 'tb_asset_logistik_request.created_at')
+                    ->where('tb_asset_logistik_request.id_barang', $request->id_barang)
                     ->first();
-        // return $req_atk;
+        // return $req_logistik;
 
         $receiver_final = $get_email_user;
 
         // foreach ($receiver_final as $final) {
-            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request ATK ditolak', $req_atk,$kirim->id_position,$kirim->id_division,$get_email_user,'REJECTED','ATK'));
+            Mail::to($kirim)->send(new RequestATK('[SIMS-App] Request Logistik ditolak', $req_logistik,$kirim->id_position,$kirim->id_division,$get_email_user,'REJECTED','LOGISTIK'));
         // }
 
         return redirect()->back()->with('update', 'Successfully!');   
@@ -922,7 +921,7 @@ class AssetAtkController extends Controller
     {
         $spreadsheet = new Spreadsheet();
 
-        $prSheet = new Worksheet($spreadsheet,'LAPORAN PENGGUNAAN ATK');
+        $prSheet = new Worksheet($spreadsheet,'LAPORAN PENGGUNAAN LOGISTIK');
         $spreadsheet->addSheet($prSheet);
         $spreadsheet->removeSheetByIndex(0);
         $sheet = $spreadsheet->getActiveSheet();
@@ -943,7 +942,7 @@ class AssetAtkController extends Controller
 
         $dateReport = Carbon::parse($request->month  . "/01/" . $request->year);
         $sheet->getStyle('A1:I1')->applyFromArray($titleStyle);
-        $sheet->setCellValue('A1','LAPORAN PENGGUNAAN ALAT TULIS KANTOR');
+        $sheet->setCellValue('A1','LAPORAN PENGGUNAAN LOGISTIK');
         $sheet->setCellValue('B2','Bulan ' . $dateReport->format("F"));
         $sheet->setCellValue('B3','Tahun ' . $request->year);
         $sheet->setCellValue('B4','Report Pada ' . date('Y-m-d'));
@@ -965,19 +964,19 @@ class AssetAtkController extends Controller
         $sheet->mergeCells("G6:G7");
         $sheet->mergeCells("H6:I6");
 
-        $latestrequest = AssetAtkChangelog::selectRaw('`id_barang`, LEFT(MAX(`tb_asset_atk_changelog`.`created_at`),10) AS `latest_date_request`')->where('status', 'Out')->groupby('id_barang');
+        $latestrequest = AssetLogistikChangeLog::selectRaw('`id_barang`, LEFT(MAX(`tb_asset_logistik_changelog`.`created_at`),10) AS `latest_date_request`')->where('status', 'Out')->groupby('id_barang');
 
-        $change_log = AssetAtkChangelog::selectRaw('`id_barang`, SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "In" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_in` ')
-            ->selectRaw('SUM(CASE WHEN `tb_asset_atk_changelog`.`status` = "Out" THEN `tb_asset_atk_changelog`.`qty` ELSE 0 END) AS `sum_out`')
-            ->whereMonth('tb_asset_atk_changelog.created_at', $request->month)
-            ->whereYear('tb_asset_atk_changelog.created_at', $request->year)
-            ->groupBy('tb_asset_atk_changelog.id_barang');
+        $change_log = AssetLogistikChangeLog::selectRaw('`id_barang`, SUM(CASE WHEN `tb_asset_logistik_changelog`.`status` = "In" THEN `tb_asset_logistik_changelog`.`qty` ELSE 0 END) AS `sum_in` ')
+            ->selectRaw('SUM(CASE WHEN `tb_asset_logistik_changelog`.`status` = "Out" THEN `tb_asset_logistik_changelog`.`qty` ELSE 0 END) AS `sum_out`')
+            ->whereMonth('tb_asset_logistik_changelog.created_at', $request->month)
+            ->whereYear('tb_asset_logistik_changelog.created_at', $request->year)
+            ->groupBy('tb_asset_logistik_changelog.id_barang');
 
-        $change_logAll = AssetAtk::leftJoinSub($change_log, 'change_log',function($join){
-                    $join->on("change_log.id_barang", '=', 'tb_asset_atk.id_barang');
+        $change_logAll = AssetLogistik::leftJoinSub($change_log, 'change_log',function($join){
+                    $join->on("change_log.id_barang", '=', 'tb_asset_logistik.id_barang');
                 })
                 ->leftJoinSub($latestrequest, 'latestrequest',function($join){
-                    $join->on("latestrequest.id_barang", '=', 'tb_asset_atk.id_barang');
+                    $join->on("latestrequest.id_barang", '=', 'tb_asset_logistik.id_barang');
                 })
                 ->selectRaw('`nama_barang`, IFNULL(`sum_in`,"0") AS `sum_in`, `unit` as `unit_in`, IFNULL(`sum_out`,"0") AS `sum_out`, `unit`  as `unit_out`, IFNULL(`latest_date_request`,"-") AS `latest_date_request`, IFNULL(`qty`,"0") AS `qty_akhir`, `unit`')
                 ->get();
@@ -997,7 +996,7 @@ class AssetAtkController extends Controller
         $sheet->getColumnDimension('I')->setAutoSize(true);
 
 
-        $fileName = 'LAPORAN PENGGUNAAN ATK ' . date('Y-m-d') . '.xlsx';
+        $fileName = 'LAPORAN PENGGUNAAN LOGISTIK ' . date('Y-m-d') . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
         header('Cache-Control: max-age=0');

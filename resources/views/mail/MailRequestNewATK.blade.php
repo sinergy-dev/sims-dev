@@ -65,7 +65,11 @@
 				Hello {{$get_user->name}},
 			</p>
 			<p>
-				Request New Asset, berikut rinciannya:
+				@if($status_barang == 'ATK')
+					Request New Asset, berikut rinciannya:
+				@else
+					Request New Logistik, berikut rinciannya:
+				@endif
 			</p>
 			<div id="bg_ket" style="background-color: #ececec; padding: 10px">
 				<table style="text-align: left;margin: 5px; font-size: 14px">
@@ -106,9 +110,18 @@
 				</table>
 			</div>
 			<p style="font-size: 16px">
-				Silahkan klik link berikut ini untuk melihat Detail Request ATK.<br>
+				@if($status_barang == 'ATK')
+					Silahkan klik link berikut ini untuk melihat Detail Request ATK.<br>
+				@else
+					Silahkan klik link berikut ini untuk melihat Detail Request Logistik.<br>
+				@endif
 			</p>
-			<center><a href="{{url('/asset_atk')}}#peminjaman_asset_atk" target="_blank"><button class="button">Request ATK</button></a></center>
+			@if($status_barang == 'ATK')
+				<center><a href="{{url('/asset_atk')}}#peminjaman_asset_atk" target="_blank"><button class="button">Request ATK</button></a></center>
+			@else
+				<center><a href="{{url('/asset_logistik')}}#peminjaman_asset_atk" target="_blank"><button class="button">Request Logistik</button></a></center>
+			@endif
+			
 			<br>
 		</div>
 	</div>
