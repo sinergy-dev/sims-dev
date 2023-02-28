@@ -166,7 +166,7 @@ GA Logistik
 
           <button class="btn btn-sm btn-warning pull-right btnExport" id="btnExport" style="margin-right: 5px;display: none;" onclick="exportExcel('{{action('AssetLogistikController@reportExcel')}}')"><i class="fa fa-download"> </i>&nbsp Excel</button>
 
-          <div class="pull-right dropdown dropdownBln" style="margin-right: 5px">
+          <div class="pull-right dropdown dropdownBln" style="margin-right: 5px;display: none;">
             <button type="button" id="btnShowMonth" class="btn btn-sm btn-default dropdown-toggle" style="width:120px" data-toggle="dropdown" aria-expanded="false">
               Select Month
               <span class="fa fa-caret-down"></span>
