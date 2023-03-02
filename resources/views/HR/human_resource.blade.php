@@ -2629,9 +2629,6 @@ Human Resources
    		$("#modalAdd").modal("show")
    	}
 
-
-
-
     $('.btn-attach').click(function(){
         $.ajax({
           type:"GET",
@@ -2694,6 +2691,13 @@ Human Resources
 		    value.style.display = "none"
 		})
     })
+
+  //   $('#modalAdd').on('hidden.bs.modal', function () {
+  //   	var x = document.getElementsByClassName("tab-add");
+  //       $.each(x, function(key, value){
+		//     value.style.display = "none"
+		// })
+  //   }
 
     $('#modal_update').on('hidden.bs.modal', function () {
     	currentTab = 0
@@ -2923,8 +2927,12 @@ Human Resources
 				   }
 
 				   if (!localStorage.getItem("pend_terakhir_update") == true) {
-	               	$("#pend_terakhir_update").val(value.pend_terakhir);
 				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
+				   	if (value.pend_terakhir != "") {
+	               		$("#pend_terakhir_update").val(value.pend_terakhir);
+				   	}else{
+	               		$("#pend_terakhir_update").val(localStorage.getItem("pend_terakhir_update"));
+				   	}
 				   }else{
 				   	localStorage.setItem("pend_terakhir_update", $("#pend_terakhir_update").val())
 				   }
@@ -3879,7 +3887,6 @@ Human Resources
         });
     });
 
-
     $('#division_update').change(function(){
         $.ajax({
           type:"GET",
@@ -3901,7 +3908,6 @@ Human Resources
           },
         });
     });
-
 
     $('#division-msp-update').change(function(){
         $.ajax({
@@ -3937,7 +3943,6 @@ Human Resources
               },
       });
     });
-
 
     $('#subdivision-tech-msp_update').change(function(){
         $.ajax({
