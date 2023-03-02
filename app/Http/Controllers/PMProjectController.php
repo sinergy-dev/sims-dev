@@ -143,19 +143,19 @@ class PMProjectController extends Controller
                     $join->on('tb_pmo.project_id', '=', 'project_id.project_id');
                 })
 				->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')
-				->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','tb_pmo_project_charter.status','implementation_type');
+				->select('name_project','tb_pmo.project_id','current_phase','project_type','tb_pmo.id','implementation_type');
 
         if ($cek_role->name == 'PMO Manager' || Auth::User()->name == 'PMO Staff' || $cek_role->name == 'BCD Manager' || $cek_role->name == 'Operations Director') {
         	$data = $data->orderBy('tb_pmo.id','desc')->get()->makeHidden(['type_project_array']);
             // $data = PMO::get();
         } elseif ($cek_role->group == 'sales' || $cek_role->group == 'bcd') {
         	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-				->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','desc')
+				->where('project_id.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
 				->get()->makeHidden(['type_project_array']);
             // $data = PMO::get();
         } else {
         	$data = $data->join('tb_pmo_assign', 'tb_pmo_assign.id_project', 'tb_pmo.id')
-				->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','desc')
+				->where('tb_pmo_assign.nik', Auth::User()->nik)->orderBy('tb_pmo.id','asc')
 				->get()->makeHidden(['type_project_array']);
 
             // $data = PMO::where('assign_pm', Auth::User()->nik)->get();
@@ -243,7 +243,7 @@ class PMProjectController extends Controller
 		// 		->select('name_project','project_id as id_project','current_phase','project_type','owner','no_po_customer',DB::raw('(CASE WHEN role = "Project Manager" THEN name END) AS project_pm'),DB::raw('(CASE WHEN role = "Project Coordinator" THEN name END) AS project_pc'));
 
 
-        return $data = PMO::where('tb_pmo.id',$request->id_pmo)->get()->makeHidden(['indicator_project', 'sign','type_project']);
+        return $data = PMO::where('tb_pmo.id',$request->id_pmo)->get()->makeHidden(['indicator_project', 'sign','type_project','status']);
 
 		// return $data->where('tb_pmo.id',$request->id_pmo)->get();
 	}
@@ -312,6 +312,8 @@ class PMProjectController extends Controller
     public function getDefaultTask(Request $request)
     {
         $get_project_type = PMO::where('id', $request->id_pmo)->first();
+        $get_technology_used = DB::table('tb_pmo')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('tb_pmo.id',$request->id_pmo)->first()->technology_used;
+        // return $get_technology_used;
         if ($get_project_type->project_type == 'implementation') {
             $implementation_type = json_decode($get_project_type->implementation_type);
             if ($implementation_type == '["service"]') {
@@ -327,11 +329,16 @@ class PMProjectController extends Controller
             $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type',$implementation_type)->where('task', 'Planning')->get();
             $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', $implementation_type)->where('task', 'Executing')->get();
             $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type',$implementation_type)->where('task', 'Closing')->get();
-        } else {
-            $dataInitiating = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('task', 'Initiating')->get();
-            $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('task', 'Planning')->get();
-            $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('task', 'Executing')->get();
-            $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('task', 'Closing')->get();
+        } else if($get_technology_used == 'ATM/CRM'){
+            $dataInitiating = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Initiating')->get();
+            $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Planning')->get();
+            $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Executing')->get();
+            $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Closing')->get();
+        }else {
+            $dataInitiating = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Initiating')->get();
+            $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Planning')->get();
+            $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Executing')->get();
+            $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Closing')->get();
         }
     	
 
@@ -2326,7 +2333,7 @@ class PMProjectController extends Controller
             if ($request->status == 'draft') {
                 $update = PMOFinalReport::where('id_project', $request->id_pmo)->first();
                 $update->schedule_summary        = $request->selectScheduleSummaryFinal;
-                // $update->schedule_remarks        = $request->textareaScheduleRemarks;
+                $update->schedule_remarks        = $request->textareaScheduleRemarks;
                 $update->css                     = $request->link_feedback;
                 $update->lesson_learn            = $request->textareaLessonLearn;
                 $update->additional_notes        = $request->textareaAdditionalNote;
@@ -2338,7 +2345,7 @@ class PMProjectController extends Controller
             }else if ($request->status == 'final') {
                 $update = PMOFinalReport::where('id_project', $request->id_pmo)->first();
                 $update->schedule_summary        = $request->selectScheduleSummaryFinal;
-                // $update->schedule_remarks        = $request->textareaScheduleRemarks;
+                $update->schedule_remarks        = $request->textareaScheduleRemarks;
                 $update->css                     = $request->link_feedback;
                 $update->lesson_learn            = $request->textareaLessonLearn;
                 $update->additional_notes        = $request->textareaAdditionalNote;
@@ -2705,13 +2712,13 @@ class PMProjectController extends Controller
         });
     }
 
-    public function uploadPdfPC(Request $request)
+    public function uploadPdfPC($id_pmo)
     {
         $client = $this->getClient();
         $service = new Google_Service_Drive($client);
         $directory = '';
 
-        $data = DB::table('tb_pmo')->join('tb_pmo_project_charter', 'tb_pmo_project_charter.id_project', '=', 'tb_pmo.id')->select('parent_id_drive','project_id')->where('tb_pmo_project_charter.id_project', $request->id_pmo)->first();
+        $data = DB::table('tb_pmo')->join('tb_pmo_project_charter', 'tb_pmo_project_charter.id_project', '=', 'tb_pmo.id')->select('parent_id_drive','project_id')->where('tb_pmo_project_charter.id_project', $id_pmo)->first();
 
         $parent_id = explode('"', $data->parent_id_drive)[1];
 
@@ -2727,7 +2734,7 @@ class PMProjectController extends Controller
         $nameFileFix = str_replace(' ', '_', $fileName);
 
         if(isset($fileName)){
-            $pdf_url = urldecode(url("/PMO/downloadProjectCharterPdf?id_pmo=" . $request->id_pmo));
+            $pdf_url = urldecode(url("/PMO/downloadProjectCharterPdf?id_pmo=" . $id_pmo));
             $pdf_name = $nameFileFix;
         } else {
             $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
@@ -2767,7 +2774,7 @@ class PMProjectController extends Controller
         $tambah->save();
 
         $tambah_doc = new PMODocumentProject();
-        $tambah_doc->id_project = $request->id_pmo;
+        $tambah_doc->id_project = $id_pmo;
         $tambah_doc->id_document = $tambah->id;
         $tambah_doc->sub_task = '';
         $tambah_doc->date_time = Carbon::now()->toDateTimeString();
