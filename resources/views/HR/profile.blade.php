@@ -395,7 +395,7 @@
                         <button type="button" class="btn btn-sm btnRotateNpwp" style="color:black;float: right;background-color: transparent;" onclick="rotateImage('npwp','showgambarnpwp')" name=""><i class="fa  fa-rotate-right"></i></button>
                       </div>
                       <div class="box-body">
-                        @if($user_profile->npwp_file == "-" )
+                        @if($user_profile->npwp_file == "-" || $user_profile->npwp_file == "" || $user_profile->npwp_file == null)
                         <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarnpwp" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @else
                           <img class="entry" src="{{url('image') . "/" . $user_profile->npwp_file}}" id="showgambarnpwp" style="max-width: 200px;max-height: 200px;border-radius:5px;margin:0px auto;display:block"/>
@@ -432,14 +432,14 @@
                         <h3 class="box-title">BPJS Ketenagakerjaan File</h3>
                       </div>
                       <div class="box-body">
-                        @if($user_profile->bpjs_ket == "-")
+                        @if($user_profile->bpjs_ket_file == "-" || $user_profile->bpjs_ket_file == "" || $user_profile->bpjs_ket_file == null)
                           <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @else
-                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_ket}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;border-radius:5px"/>
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_ket_file}}" id="showgambarbpjs_ket" style="max-width: 200px;max-height: 200px;float: left;border-radius:5px"/>
                         @endif
                       </div>
-                      <div class="box-footer" style="display:none;">
-                          <input type="file" id="inputgambarbpjs_ket" name="bpjs_ket" value="{{$user_profile->bpjs_ket}}">
+                      <div class="box-footer" >
+                          <input type="file" id="inputgambarbpjs_ket" name="bpjs_ket_file" value="{{$user_profile->bpjs_ket}}">
                       </div>
                     </div>
                   </div>
@@ -452,14 +452,14 @@
                         <h3 class="box-title">BPJS Kesehatan File</h3>
                       </div>
                       <div class="box-body">
-                        @if($user_profile->bpjs_kes == "-")
+                        @if($user_profile->bpjs_kes_file == "-" || $user_profile->bpjs_kes_file == "" || $user_profile->bpjs_kes_file == null)
                           <img class="entry" src="{{url('img/img_nf.png')}}" id="showgambarbpjs_kes" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @else
-                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_kes}}" id="showgambarbpjs_kes" style="max-width: 400px;max-height: 400px;float: left;"/>
+                          <img class="entry" src="{{url('image') . "/" . $user_profile->bpjs_kes_file}}" id="showgambarbpjs_kes" style="max-width: 200px;max-height: 200px;float: left;"/>
                         @endif
                       </div>
-                      <div class="box-footer" style="display:none;">
-                          <input type="file" id="inputgambarbpjs_kes" name="bpjs_kes" value="{{$user_profile->bpjs_kes}}">
+                      <div class="box-footer">
+                          <input type="file" id="inputgambarbpjs_kes" name="bpjs_kes_file" value="{{$user_profile->bpjs_kes}}">
                       </div>
                     </div>
                   </div>
@@ -1038,25 +1038,27 @@
   }
 
   function readURL(input) {
-      if (input.files && input.files[0]) {
-        var reader = new FileReader();
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
 
-        reader.onload = function (e) {
-          $('#showgambarnpwp').attr('src', e.target.result);
-          
+      reader.onload = function (e) {
+        console.log(e)
+        if (input.id == "inputgambarktp") {
           $('#showgambarktp').attr('src', e.target.result);
-
-          $('#showgambarbpjs_kes').attr('src', e.target.result);
-
-          $('#showgambarbpjs_ket').attr('src', e.target.result);
-          
+        }else if (input.id == "inputgambarnpwp") {
+          $('#showgambarnpwp').attr('src', e.target.result);
+        }else if (input.id == "inputSign") {
           $('#showgambarsign').attr('src', e.target.result);
-          
+        }else if (input.id == "inputgambarbpjs_ket") {
+          $('#showgambarbpjs_ket').attr('src', e.target.result);
+        }else{
+          $('#showgambarbpjs_kes').attr('src', e.target.result);
         }
-
-        reader.readAsDataURL(input.files[0]);
       }
+
+      reader.readAsDataURL(input.files[0]);
     }
+  }
 
 
 
