@@ -1506,7 +1506,7 @@ PMO
             		}           		         		
             		
             	}else{
-            		$("#btnSendCSS").prop("disabled",true)
+            		$("#btnSendCSS").prop("disabled",false)
             	}
 
             	if (result.data.finalreport == 'true') {
@@ -1791,7 +1791,7 @@ PMO
 					append = append +'   	<h3 class="box-title">'+ index +'</h3>'
 					append = append + '		<div class="box-tools">'
 
-					append = append + '			<h3 class="box-title"><span style="margin-right:5px;display:inline">Weight</span><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px"></h3>		'
+					append = append + '			<h3 class="box-title"><span style="margin-right:5px;display:inline">Weight</span><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px" readonly></h3>		'
 					append = append + '		</div>'
 					append = append +'   </div>'
 					append = append +'<div class="box-body">'
