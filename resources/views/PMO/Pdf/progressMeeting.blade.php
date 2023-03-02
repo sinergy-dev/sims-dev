@@ -1153,7 +1153,7 @@
               </b>
             </p>
           </td>
-          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt;width: 40px;'>
+          <td  style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0in 5.4pt 0in 5.4pt;height:4.0pt;width: 45px;'>
             <p class=MsoNormal align=center style='margin-bottom:3.0pt;text-align:center;line-height:normal'>
               <b>
                 <span lang=EN-GB style='font-size:8.0pt;color:black'>Owner</span>
