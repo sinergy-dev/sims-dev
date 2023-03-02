@@ -577,7 +577,7 @@
           </td>
           <td  colspan=7 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{{$data['project_description']}}</span>
+              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black;font-weight:normal'>{!! nl2br($data['project_description'])!!}</span>
             </p>
           </td>
         </tr>
@@ -610,17 +610,23 @@
           </td>
           <td  vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Main Task</span>
+              <b>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Main Task</span>
+              </b>
             </p>
           </td>
           <td  colspan=4 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Planned Date</span>
+              <b>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Planned Date</span>
+              </b>
             </p>
           </td>
           <td  colspan=2 vertical-align=top style='border-top:none;border-left:none;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;padding:0in 5.4pt 0in 5.4pt'>
             <p class=MsoTocHeading style='margin-top:0in'>
-              <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Actual Date</span>
+              <b>
+                <span lang=EN-GB style='font-size:10.0pt;font-family:"Calibri",sans-serif;color:black'>Actual Date</span>
+              </b>
             </p>
           </td>
           </tr>
