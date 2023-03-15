@@ -4859,7 +4859,7 @@
           }
 
           let inputTo = ""
-          if ($("#selectTo").val() == "") {
+          if ($("#selectTo").val() == ""  || $('#selectTo').val() == null) {
             inputTo = $("#inputTo").val()
           }else{
             inputTo = $("#selectTo").val()
