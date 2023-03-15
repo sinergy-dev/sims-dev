@@ -38,7 +38,7 @@ class PRCompare extends Model
     {
     	$data = PRCompare::join('tb_pr_product_compare', 'tb_pr_compare.id', '=', 'tb_pr_product_compare.id_compare_pr')
         		->join('tb_pr_product', 'tb_pr_product.id', '=', 'tb_pr_product_compare.id_product')
-        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', 'serial_number', 'part_number', 'nominal_product', 'grand_total', 'tb_pr_compare.id')
+        		->select('name_product', 'qty', 'unit', 'tb_pr_product.description', DB::raw("(CASE WHEN (serial_number is null) THEN '-' ELSE serial_number END) as serial_number"), DB::raw("(CASE WHEN (part_number is null) THEN '-' ELSE part_number END) as part_number"), 'nominal_product', 'grand_total', 'tb_pr_compare.id')
         		->where('tb_pr_compare.id', $this->id)
         		->get();
 
