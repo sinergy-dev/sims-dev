@@ -44,7 +44,7 @@ class ReminderCreateProjectCharter extends Command
     {
         $data = DB::table('tb_pmo')->select('tb_pmo.id as id_pmo','project_id');
         $get_id_min = DB::table($data,'temp')->groupBy('project_id')->selectRaw('MIN(`temp`.`id_pmo`) as `id`');
-        $getAll = DB::table($get_id_min,'temp2')->join('tb_pmo','tb_pmo.id','temp2.id')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->select('temp2.id','project_id','nik')->where('parent_id_drive',NULL)->pluck('nik');
+        $getAll = DB::table($get_id_min,'temp2')->join('tb_pmo','tb_pmo.id','temp2.id')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik','tb_pmo_assign.nik')->select('temp2.id','project_id','tb_pmo_assign.nik','users.name')->where('parent_id_drive',NULL)->where('project_type','!=','supply_only')->pluck('nik');
 
         $dataAll = User::whereIn('users.nik',$getAll)
                     ->select('nik','email','name')
@@ -55,13 +55,7 @@ class ReminderCreateProjectCharter extends Command
         foreach ($dataAll as $key => $data) {
             Mail::to($data->email)->send(new ReminderProjectCharter(collect([
                 "to" => $data->name,
-                "project" => DB::table('tb_pmo')
-                    ->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')
-                    ->join('tb_id_project','tb_id_project.id_project','tb_pmo.project_id')
-                    ->select('project_id','project_type','sales_name','name_project')
-                    ->where('project_type','!=','supply_only')
-                    ->where('tb_pmo_assign.nik',$data->nik)
-                    ->get(),
+                "project" => DB::table($get_id_min,'temp2')->join('tb_pmo','tb_pmo.id','temp2.id')->join('tb_id_project','tb_id_project.id_project','tb_pmo.project_id')->join('tb_pmo_assign','tb_pmo_assign.id_project','tb_pmo.id')->join('users','users.nik','tb_pmo_assign.nik')->select('temp2.id','project_id','tb_pmo_assign.nik','users.name','project_type','sales_name','name_project')->where('parent_id_drive',NULL)->where('project_type','!=','supply_only')->where('tb_pmo_assign.nik',$data->nik)->get(),
                 ])
             ));
         }
