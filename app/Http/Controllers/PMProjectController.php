@@ -312,7 +312,7 @@ class PMProjectController extends Controller
     public function getDefaultTask(Request $request)
     {
         $get_project_type = PMO::where('id', $request->id_pmo)->first();
-        $get_technology_used = DB::table('tb_pmo')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('tb_pmo.id',$request->id_pmo)->first()->technology_used;
+        $get_technology_used = DB::table('tb_pmo')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->join('tb_pmo_technology_project_charter','tb_pmo_technology_project_charter.id_project_charter','tb_pmo_project_charter.id')->where('project_type','!=','supply_only')->where('tb_pmo.id',$request->id_pmo)->first();
         // return $get_technology_used;
         if ($get_project_type->project_type == 'implementation') {
             $implementation_type = json_decode($get_project_type->implementation_type);
@@ -329,16 +329,16 @@ class PMProjectController extends Controller
             $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type',$implementation_type)->where('task', 'Planning')->get();
             $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', $implementation_type)->where('task', 'Executing')->get();
             $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type',$implementation_type)->where('task', 'Closing')->get();
-        } else if($get_technology_used == 'ATM/CRM'){
-            $dataInitiating = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Initiating')->get();
-            $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Planning')->get();
-            $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Executing')->get();
-            $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Closing')->get();
-        }else {
+        } else if($get_project_type->project_type == 'supply_only' || $get_project_type->project_type == 'maintenance' && $get_technology_used->technology_used != 'ATM/CRM'){
             $dataInitiating = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Initiating')->get();
             $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Planning')->get();
             $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Executing')->get();
             $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', null)->where('task', 'Closing')->get();
+        } else if($get_technology_used->technology_used == 'ATM/CRM'){
+            $dataInitiating = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Initiating')->get();
+            $dataPlanning = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Planning')->get();
+            $dataExecuting = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Executing')->get();
+            $dataClosing = DB::table('tb_pmo_define_task')->where('project_type', $get_project_type->project_type)->where('implementation_type', 'ATM')->where('task', 'Closing')->get();
         }
     	
 

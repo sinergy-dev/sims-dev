@@ -12,7 +12,20 @@ class PMO extends Model
     protected $fillable = ['current_phase','project_type', 'implementation_type','project_id'];
     public $timestamps = false;
 
-    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array'];
+    protected $appends = ['indicator_project','sign','type_project','name_project','owner','no_po_customer','project_pm','project_pc','type_project_array','status'];
+
+    public function getStatusAttribute()
+    {
+        $data = DB::table('tb_pmo')->leftJoin('tb_pmo_project_charter','tb_pmo_project_charter.id_project','=','tb_pmo.id')->select('status')->where('tb_pmo.id',$this->id)->first();
+
+        if ($this->type_project == 'Implementation + Maintenance & Managed Service' && $this->project_type == 'maintenance') {
+            return 'Done';
+        } else {
+            return $data->status;
+        }
+
+        
+    }
 
     public function getPhaseAttribute()
     {

@@ -307,7 +307,7 @@
       <h2 style="font-family: 'Arial', sans-serif;color: darkblue;">Version 1.0</h2>
     </div>
     <div style="margin-top: 40px;">
-      <img src="{{$data['logo_company']}}" width="250" height=75 style="object-fit: cover;">
+      <img src="{{$data['logo_company']}}" width="300" style="object-fit: cover;background-size: cover;">
     </div>
     <div style="margin-top: 50px;">
       <span style="font-size:12.0pt;font-family: 'Arial',sans-serif;color: darkblue;">Author</span>

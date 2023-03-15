@@ -14,7 +14,7 @@ class PMOFinalReport extends Model
     public $timestamps = false;
 
     // protected $appends = ['note_reject', 'project_pm','project_pc','owner','customer_info','get_sign','project_id','get_milestone','project_document', 'document_distribution','internal_stakeholder'];
-    protected $appends = ['note_reject', 'project_pm','project_pc','owner','customer_info','get_sign','project_id','project_document', 'document_distribution','internal_stakeholder','term_payment','payment_date','get_milestone'];
+    protected $appends = ['note_reject', 'project_pm','project_pc','owner','customer_info','get_sign','project_id','project_document', 'document_distribution','internal_stakeholder','term_payment','payment_date','get_milestone','project_description'];
 
     public function getTermPaymentAttribute()
     {
@@ -23,6 +23,15 @@ class PMOFinalReport extends Model
         $data = json_decode($data->term_payment);
 
         return $data;
+    }
+
+    public function getProjectDescriptionAttribute()
+    {
+        $data = DB::table('tb_pmo_final_report')->join('tb_pmo', 'tb_pmo.id', 'tb_pmo_final_report.id_project')->join('tb_pmo_project_charter','tb_pmo_project_charter.id_project','tb_pmo.id')->select('project_description')->where('tb_pmo.id', $this->id_project)->first();
+
+        // $data = json_decode($data->term_payment);
+
+        return $data->project_description;
     }
 
     public function getPaymentDateAttribute()
