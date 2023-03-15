@@ -468,7 +468,7 @@ class SalesLeadController extends Controller
 
     public function getSales(Request $request)
     {
-        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->where('id_division','SALES')->where('id_company','1')->where('status_karyawan','!=','dummy')->where('id_position','!=','ADMIN');
+        $getSales = User::select(DB::raw('`nik` AS `id`,`name` AS `text`'))->whereRaw("(`id_company` = '1' AND `id_division` = 'SALES' AND `status_karyawan` != 'dummy' AND `id_position` != 'ADMIN')")->orWhereRaw("(`id_position` = 'MANAGER' AND `id_division` = 'TECHNICAL' AND `id_company` = '1'  AND `id_territory` = 'OPERATION' AND `status_karyawan` != 'dummy')");
 
         return array("data" => collect($getSales->get()));
     }
