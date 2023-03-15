@@ -2960,7 +2960,9 @@ class HRGAController extends Controller
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('tb_position','tb_position.id_position','=','users.id_position')
                 ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+                ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division',
+                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                    'users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
                 ->groupby('tb_cuti.nik')
                 ->where('status_karyawan','!=','dummy');
 
@@ -2989,7 +2991,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->whereYear('date_req',date('Y'))
@@ -3080,7 +3084,7 @@ class HRGAController extends Controller
                     $cuti = $cuti
                         ->where('users.id_company',$request->filter_com)
                         ->where('tb_cuti_detail.status','=','NEW')
-                        ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null)")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
+                        ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'OPERATION')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")
                         ->get();
                 } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
                         $cuti = $cuti
@@ -3112,7 +3116,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti','tb_cuti.pic','tb_cuti.updated_at')
                     ->where('date_off', '>=', $request->start)
                     ->where('date_off', '<=', $request->end)
                     ->groupby('tb_cuti.id_cuti');
@@ -3134,7 +3140,9 @@ class HRGAController extends Controller
                     })
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail_filterd`.`id_cuti`) as days'))
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                        DB::raw('COUNT(`tb_cuti_detail_filterd`.`id_cuti`) as days'))
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->groupby('id_cuti');
 
@@ -3259,7 +3267,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 'tb_division.id_division',DB::raw('COUNT(`tb_cuti_detail`.`id_cuti`) as days'))
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason','users.id_position','users.id_territory','tb_cuti.pic','tb_cuti.updated_at', 
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                        DB::raw('COUNT(`tb_cuti_detail`.`id_cuti`) as days'))
                     ->orderByRaw('FIELD(tb_cuti.status, "n", "v", "c", "d")')               
                     ->orderBy('tb_cuti.date_req','DESC')
                     ->where('users.id_company',$com)
@@ -3343,7 +3353,9 @@ class HRGAController extends Controller
             ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
             ->join('tb_position','tb_position.id_position','=','users.id_position')
             ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+            ->select('users.nik','users.date_of_entry','users.name','tb_position.name_position','tb_division.name_division',
+                DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                'users.cuti',DB::raw('COUNT(tb_cuti_detail.id_cuti) as niks'),DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
             ->groupby('tb_cuti.nik')
             ->where('status_karyawan','!=','dummy')
             ->get();
@@ -3351,7 +3363,9 @@ class HRGAController extends Controller
         $cuti_list = DB::table('users')
             ->join('tb_position','tb_position.id_position','=','users.id_position')
             ->join('tb_division','tb_division.id_division','=','users.id_division')
-            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
+            ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID'  WHEN (users.id_division = 'TECHNICAL PRESALES' ) THEN 'SOL' ELSE users.id_division END) as id_division"),
+                'users.cuti','users.date_of_entry',DB::raw('DATEDIFF(NOW(),date_of_entry) AS date_of_entrys'),'users.email','users.cuti2','users.status_karyawan')
             ->where('status_karyawan','!=','dummy')
             ->whereNotIn('nik',function($query) { 
                 $query->select('nik')->from('tb_cuti');
@@ -3570,7 +3584,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('id_territory', $ter)
@@ -3584,7 +3600,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','TECHNICAL')
@@ -3599,7 +3617,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_company', '1')
@@ -3613,7 +3633,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','PMO')
@@ -3627,7 +3649,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','MSM')
@@ -3641,7 +3665,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_position','MANAGER')
@@ -3658,7 +3684,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_territory','PRESALES')
@@ -3672,7 +3700,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->where('users.id_division','FINANCE')
@@ -3686,7 +3716,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->whereYear('date_req',date('Y'))   
@@ -3700,7 +3732,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->whereYear('date_req',date('Y')) 
@@ -3715,7 +3749,9 @@ class HRGAController extends Controller
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('tb_position','tb_position.id_position','=','users.id_position')
                 ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                    'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
                 ->whereYear('date_req',date('Y'))  
@@ -3728,13 +3764,15 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->groupby('nik')
                     ->whereYear('date_req',date('Y'))
                     ->where('tb_cuti_detail.status','=','NEW')
-                    ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` is null)")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")                   
+                    ->whereRaw("(`users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'SALES' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'FINANCE' OR `users`.`id_position` = 'MANAGER' AND `users`.`id_division` = 'TECHNICAL' AND `users`.`id_territory` = 'OPERATION')")->whereRaw("(`tb_cuti`.`status` = 'n' OR `tb_cuti`.`status` = 'R')")                   
                     ->get());
             
         } elseif($div == 'TECHNICAL DVG' && $pos == 'STAFF' || $div == 'TECHNICAL DPG' && $pos == 'ENGINEER STAFF' || $div == 'TECHNICAL PRESALES' && $pos == 'STAFF' || $div == 'FINANCE' && $pos == 'STAFF' || $div == 'PMO' && $pos == 'STAFF' || $pos == 'ADMIN' || $div == 'HR' && $pos == 'STAFF GA' || $div == 'HR' && $pos == 'HR STAFF' || $pos == 'STAFF HR'){
@@ -3742,7 +3780,9 @@ class HRGAController extends Controller
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('tb_position','tb_position.id_position','=','users.id_position')
                 ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                    'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
                 ->whereYear('date_req',date('Y')) 
@@ -3757,7 +3797,9 @@ class HRGAController extends Controller
                 ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                 ->join('tb_position','tb_position.id_position','=','users.id_position')
                 ->join('tb_division','tb_division.id_division','=','users.id_division')
-                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                    DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                    'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                 ->orderBy('date_req','DESC')
                 ->groupby('tb_cuti.id_cuti')
                 ->whereYear('date_req',date('Y'))   
@@ -3771,7 +3813,9 @@ class HRGAController extends Controller
                     ->join('tb_cuti_detail','tb_cuti_detail.id_cuti','=','tb_cuti.id_cuti')
                     ->join('tb_position','tb_position.id_position','=','users.id_position')
                     ->join('tb_division','tb_division.id_division','=','users.id_division')
-                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division','tb_division.id_division','tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
+                    ->select('users.nik','users.name','tb_position.name_position','tb_division.name_division',
+                        DB::raw("(CASE WHEN (users.id_division = 'TECHNICAL' AND id_territory = 'OPERATION') THEN 'OPERATION'  WHEN (users.id_position = 'ENGINEER STAFF' OR users.id_position = 'ENGINEER MANAGER') THEN 'SID' ELSE users.id_division END) as id_division"),
+                        'tb_cuti.date_req','tb_cuti.reason_leave','tb_cuti.date_start','tb_cuti.date_end','tb_cuti.id_cuti','tb_cuti.status','tb_cuti.decline_reason',DB::raw('COUNT(tb_cuti_detail.id_cuti) as days'),'users.cuti',DB::raw('COUNT(tb_cuti.id_cuti) as niks'),DB::raw('group_concat(date_off) as dates'),'users.id_position','users.email','users.id_territory','tb_cuti.pic','tb_cuti.updated_at')
                     ->orderBy('date_req','DESC')
                     ->groupby('tb_cuti.id_cuti')
                     ->whereYear('date_req',date('Y')) 
