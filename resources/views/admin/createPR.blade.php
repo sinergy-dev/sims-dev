@@ -2109,7 +2109,7 @@
             var valueVat = ""
 
             $('.grandTotalPreview').each(function() {
-                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
                 sum += temp;
             });
 
@@ -3064,7 +3064,7 @@
             var sum = 0
 
             $('.grandTotalPreviewFinalPage').each(function() {
-                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
                 sum += temp;
             });
 
@@ -3506,7 +3506,7 @@
 
             var sum = 0
             $('#grandTotalPreview').each(function() {
-                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
                 sum += temp;
             });
            
@@ -4212,7 +4212,7 @@
               // }
 
               $('.grandTotalCek').each(function() {
-                var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+                var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
                 sum += temp;
               });
 
@@ -4343,7 +4343,7 @@
           }
 
           $('.inputTotalPriceEditCek').each(function() {
-            var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+            var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
             sum += temp;
           });
 
@@ -4659,10 +4659,17 @@
       localStorage.setItem('status_tax',valueVat)
 
       $('.inputTotalPriceEdit').each(function() {
-          var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
-          sum += temp;
+        var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
+        console.log(isNaN(temp))
+        sum += temp;
       });
       $("#inputGrandTotalProduct").val(formatter.format(sum))
+
+      // $('.inputTotalPriceEdit').each(function() {
+      //     var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+      //     sum += temp;
+      // });
+      // $("#inputGrandTotalProduct").val(formatter.format(sum))
 
       if (!isNaN(valueVat)) {
         tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
