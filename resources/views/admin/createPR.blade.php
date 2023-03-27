@@ -4566,7 +4566,7 @@
         if (localStorage.getItem('isRupiah') == 'true') {
           $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
         }else{
-          $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+          $("#inputTotalPrice").val(formatter.format(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))))
         }
         $("#inputQtyProduct").closest('.col-md-4').removeClass('has-error')
         $("#inputQtyProduct").closest('input').next('span').hide();
@@ -4584,7 +4584,7 @@
         if (localStorage.getItem('isRupiah') == 'true') {
           $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
         }else{
-          $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+          $("#inputTotalPrice").val(formatter.format(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))))
         }
         $("#inputPriceProduct").closest('.col-md-4').removeClass('has-error')
         $("#inputPriceProduct").closest('input').closest('.input-group').next('span').hide();
@@ -4714,15 +4714,24 @@
     function changeCurreny(value){
       if (value == "usd") {
         $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
+        $("#inputTotalPrice").closest("div").find("div").text("$")
         localStorage.setItem("isRupiah",false)
         $('.money').mask('#0,00', {reverse: true})
 
         // $(".money").mask('000.000.000.000.000', {reverse: true})
       }else{
         $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
+        $("#inputTotalPrice").closest("div").find("div").text("Rp.")
+
         localStorage.setItem("isRupiah",true)
 
         $('.money').mask('#.##0,00', {reverse: true})
+      }
+
+      if (localStorage.getItem('isRupiah') == 'true') {
+        $("#inputTotalPrice").val(formatter.format(Math.round(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ','')))))
+      }else{
+        $("#inputTotalPrice").val(formatter.format(Number($("#inputQtyProduct").val()) * parseFloat($("#inputPriceProduct").val().replace(/\./g,'').replace(',','.').replace(' ',''))))
       }
     }
 
