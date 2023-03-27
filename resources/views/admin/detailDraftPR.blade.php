@@ -1762,7 +1762,7 @@
         var sum = 0
 
         $('.grandTotalPrice').each(function() {
-            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+            var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
             sum += temp;
         });
 
@@ -2105,7 +2105,7 @@
         var valueVat = ""
 
         $('.grandTotalPrice').each(function() {
-            var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+            var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
             sum += temp;
         });
 
@@ -2468,7 +2468,7 @@
     var sum = 0
 
     $("#grandTotalPricePembanding[data-value='" + i + "']").each(function() {
-        var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
         sum += temp;
     });
 
@@ -2482,7 +2482,7 @@
     localStorage.setItem('status_tax',valueVat)
 
     $('.inputTotalPriceEdit').each(function() {
-        var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
         sum += temp;
     });
 
@@ -3382,7 +3382,7 @@
           var valueVat = ""
 
           $('.grandTotalPreviewPembandingModal').each(function() {
-              var temp = parseInt(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+              var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
               sum += temp;
           });
 
@@ -4712,11 +4712,18 @@
     localStorage.setItem('status_tax',valueVat)
 
     $('.inputTotalPriceEdit').each(function() {
-        var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+        var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
+        console.log(isNaN(temp))
         sum += temp;
     });
-
     $("#inputGrandTotalProduct").val(formatter.format(sum))
+
+    // $('.inputTotalPriceEdit').each(function() {
+    //     var temp = parseFloat(($(this).val() == "" ? "0" : $(this).val()).replace(/\D/g, ""))
+    //     sum += temp;
+    // });
+
+    // $("#inputGrandTotalProduct").val(formatter.format(sum))
 
     if (!isNaN(valueVat)) {
       tempVat = Math.round((parseFloat(sum) * parseFloat(valueVat)) / 100)
