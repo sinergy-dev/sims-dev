@@ -817,6 +817,22 @@
         {
           "id": "box",
           "text": "Box"
+        },
+        {
+          "id": "rim",
+          "text": "Rim"
+        },
+        {
+          "id": "pad",
+          "text": "Pad"
+        },
+        {
+          "id": "set",
+          "text": "Set"
+        },
+        {
+          "id": "pack",
+          "text": "Pack"
         }
       ]
     }
