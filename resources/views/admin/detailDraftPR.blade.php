@@ -4771,9 +4771,13 @@
     if (value == "usd") {
       $("#inputPriceProduct").closest("div").find(".input-group-addon").text("$")
       localStorage.setItem('isRupiah',false)
+      $('.money').mask('#0,00', {reverse: true})
+
     }else{
       $("#inputPriceProduct").closest("div").find(".input-group-addon").text("Rp.")
       localStorage.setItem('isRupiah',true)
+
+      $('.money').mask('#.##0,00', {reverse: true})
     }
   }
 
