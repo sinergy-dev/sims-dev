@@ -352,11 +352,7 @@ SBE Detail
                     "data":{
                         id_sbe:window.location.href.split("/")[4].split("?")[0] 
                     },success:function(result){
-                        if (result.getNotes.length > 0) {
-                            $("#temporaryFunction").closest(".row").siblings().first().show()
-                            $("#temporaryFunction").closest(".row").siblings().first().find(".alert").find("span").text(result.getNotes[0].notes)
-                        }
-
+                        
                         if (result.status[0].status == "Fixed") {
                             $("#btnAddNotes").hide()
                             $("#btnGeneratePdf").hide()
@@ -370,13 +366,20 @@ SBE Detail
                             })
                         }
 
-                        if (!accesable.includes('radioConfig')) {
+                        if (!accesable.includes('radioConfig') || result.presales != "{{Auth::User()->nik}}") {
+                            $("#btnResetConfig").hide()
+                            $("#btnSaveConf").hide()
                             $("input[type='radio']").prop("disabled",true)
                             $("input[type='radio']").each(function(index,item){
                                 $(item).each(function(indexes,itemRadio){
                                     $(itemRadio).closest("label").next().remove()
                                 })
                             })
+                        }else{
+                            if (result.getNotes.length > 0) {
+                                $("#temporaryFunction").closest(".row").siblings().first().show()
+                                $("#temporaryFunction").closest(".row").siblings().first().find(".alert").find("span").text(result.getNotes[0].notes)
+                            }
                         }
 
                     }
@@ -1017,7 +1020,7 @@ SBE Detail
                                     success:function(result){  
                                         $("#tableShowConfig_"+i).each(function(item,results){
                                             z++ 
-                                            console.log(z)
+                                            
                                             $(".detailItemsTemporary_"+z).select2({
                                                 placeholder:"Select Detail Items",
                                                 data:result.data,
@@ -1963,14 +1966,14 @@ SBE Detail
                             $(resultItemTd).find(".form-control").each(function(itemInput,resultItem){ 
                                 if ($("#durationMnS").val() != '') {
                                     if(resultItem.id != "totalItems"){
-                                        console.log($(resultItemTd).find(".form-control").length)
+                                        
                                         if ($(resultItem).val() == "") {
                                             isReadyStore = false
                                             arrFalse.push($(resultItem).val())
-                                            // console.log($(resultItemTd).length)
+                                            // 
                                             $("table[name='tableMnS']:first").closest("div").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please fill the empty row!</div>')
                                             $(".alert-danger:not(:first-child)").remove()
-                                            console.log("ada yang kosong")
+                                            
                                         }else{
                                             if (resultItem.name == 'InputItemsMnS') {
                                                 itemsMnS = resultItem.value
@@ -2136,7 +2139,7 @@ SBE Detail
                 }                
             })
             
-            console.log(arrFalse)
+            
             if(arrFalse.length == 0){
                 isReadyStore = true
                 arrTableSO.push(['update'])
@@ -2144,7 +2147,7 @@ SBE Detail
                 arrItems = []
             }
 
-            console.log(isReadyStore)
+            
             cekTableLength(arrTableSO,arrTableImp,arrTableMnS,isReadyStore)
         }
     
@@ -2243,7 +2246,7 @@ SBE Detail
                 $("#"+val.id).next().hide()
                 $("#"+val.id).closest("div").removeClass("has-error")
 
-                console.log(val.value.length)
+                
                 if (val.name == "inputDuration") {
                     if (val.value.length == 1) {
                         $('ul li.active').find("input").val("")  
@@ -2452,7 +2455,7 @@ SBE Detail
         h1.innerHTML = text
             .split("")
             .map(letter => {
-              console.log(letter);
+              
               return `<span>` + letter + `</span>`;
             })
             .join("");
