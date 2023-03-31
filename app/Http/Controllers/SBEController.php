@@ -370,10 +370,13 @@ class SBEController extends Controller
 
         $status = DB::table('tb_sbe')->select('status')->where('id',$request->id_sbe)->get();
 
+        $presales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->select('sales_solution_design.nik')->where('id',$request->id_sbe)->first()->nik;
+
         return collect([
             "data" => $data,
             "getNotes" => $getNotes,
-            "status" => $status
+            "status" => $status,
+            "presales" => $presales
         ]);
     }
 
