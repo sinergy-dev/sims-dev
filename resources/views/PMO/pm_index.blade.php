@@ -907,15 +907,15 @@ PMO
                           		if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
                                 if (row.type_project == "Implementation + Maintenance & Managed Service") {
                                   if (row.project_type == "maintenance") {
-                                    return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                                      return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
+                                    }else{
+                                      return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
+                                    }
                                   }else{
-                                    return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                                   return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button><button id="btnDeleteAssign" name="btnDeleteAssign" onclick="deleteAssign('+ "'" + row.id + "'" +')" class="btn btn-sm btn-danger" style="width:110px;display:none"><i class="fa fa-trash"></i> Delete</button>'
                                   }
-                                }else{
-                                 return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" disabled><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
-                                }
                           		}else{
-                                return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
+                                  return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
                                 // if (row.type_project == "Implementation + Maintenance & Managed Service") {
                                 //   if()
                                 //   return '<button class="btn btn-sm bg-purple" style="width:110px" onclick="detailProject(' + "'" + row.id + "'" +',' + "'" + row.project_type + "'" +')"><i class="fa fa-arrow-circle-up"></i>&nbsp Detail</button>'
@@ -923,7 +923,7 @@ PMO
                                 //   return '<button class="btn btn-sm btn-primary" style="width:110px" id="btnAddProjectCharter" name="btnAddProjectCharter" onclick="btnAddProjectCharter(0,' + "'" + row.id + "'" +','+ "'create'" +')"><i class="fa fa-plus"></i>&nbsp Project Charter</button>'
                                 // }
                             		
-                          		}  
+                          	}  
                         }else if(row.status == 'New'){
                           	if ("{{Auth::User()->ttd}}" == "") {
 	                          	$("#alert").show()
@@ -1021,6 +1021,10 @@ PMO
               // }
           },
           drawCallback: function(settings) {
+            if (accesable.includes("btnDeleteAssign")) {
+              $("button[name='btnDeleteAssign']").show()
+            }
+
             if (accesable.includes("btnAddProjectCharter")) {
               $("button[name='btnAddProjectCharter']").prop("disabled",false)
             }
