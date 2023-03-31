@@ -370,10 +370,11 @@ SBE Detail
                             $("#btnResetConfig").hide()
                             $("#btnSaveConf").hide()
                             $("input[type='radio']").prop("disabled",true)
+                            $("input[type='radio']").prop("disabled",true)
                             $("input[type='radio']").each(function(index,item){
-                                $(item).each(function(indexes,itemRadio){
-                                    $(itemRadio).closest("label").next().remove()
-                                })
+                                 $(item).each(function(indexes,itemRadio){
+                                    $(itemRadio).closest("label").next().attr("onclick","showTemporarySBE("+ itemRadio.value +")")
+                                 })                           
                             })
                         }else{
                             if (result.getNotes.length > 0) {
