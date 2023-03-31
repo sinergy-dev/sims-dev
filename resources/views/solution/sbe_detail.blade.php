@@ -27,6 +27,27 @@ SBE Detail
         input[type=number] {
           -moz-appearance: textfield;
         }
+
+        .wavy {
+          animation-name: wavy;
+          animation-duration: 1.3s;
+          animation-timing-function: ease;
+          animation-iteration-count: infinite;
+          position: relative;
+          top: 0;
+          left: 0;
+        }
+        @keyframes wavy {
+          0% {
+            top: 0px;
+          }
+          50% {
+            top: -2px;
+          }
+          100% {
+            top: 0px;
+          }
+        }
 	</style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 
@@ -160,6 +181,7 @@ SBE Detail
             append = append + '                    <div class="box-header">'
             append = append + '                        <h3 class="box-title">Temporary Config</h3>'
             append = append + '                        <div class="box-tools">'
+            append = append + '                             <span class="label label-success">Saved<span>'
             append = append + '                        </div>'
             append = append + '                    </div>'
             append = append + '                    <div class="box-body" id="showConfig" style="padding:20px">'
@@ -205,15 +227,6 @@ SBE Detail
                         appendVersion = appendVersion + '   </div>' 
                         $("#showConfig").append(appendVersion)
 
-                        
-                        if (!accesable.includes('radioConfig')) {
-                            $("input[type='radio']").each(function(index,item){
-                                $(item).each(function(indexes,itemRadio){
-                                    $(itemRadio).closest("label").next().remove()
-                                })
-                            })
-                        }
-
                         $("input[type='radio']").each(function(index,item){
                             $(item).each(function(indexes,itemRadio){
                                 if (itemRadio.id == 'radioSO') {
@@ -237,6 +250,8 @@ SBE Detail
                         })
 
                         $("input[type='radio']").change(function(){
+                            $("#configs").find(".box-tools").html("<span class='label label-warning' id='status_unsaved'>Unsaved...</span>")
+                            wavyText("unsaved...")
                             $("#boxConfigTemp").empty("")
                             
                             if (this.id == 'radioSO') {
@@ -309,7 +324,8 @@ SBE Detail
             columns: [
                 {
                   title: "Name",
-                  data: "name"
+                  data: "name",
+                  orderable: false
                 },
                 {
                   title: "Roles",
@@ -324,6 +340,7 @@ SBE Detail
                   data: "date_add"
                 },
             ],
+            "aaSorting": [],
             "bFilter": true,
             "bSort":true,
             "bLengthChange": false,
@@ -352,6 +369,16 @@ SBE Detail
                                  })                           
                             })
                         }
+
+                        if (!accesable.includes('radioConfig')) {
+                            $("input[type='radio']").prop("disabled",true)
+                            $("input[type='radio']").each(function(index,item){
+                                $(item).each(function(indexes,itemRadio){
+                                    $(itemRadio).closest("label").next().remove()
+                                })
+                            })
+                        }
+
                     }
                 })
             },
@@ -2415,6 +2442,27 @@ SBE Detail
         }           
 
         createPost(swalFireCustom,formData,swalSuccess,url="/sbe/uploadPdfConfig")
+    }
+
+    function wavyText(text){
+    let delay = 200;
+
+        let h1 = document.getElementById("status_unsaved");
+
+        h1.innerHTML = text
+            .split("")
+            .map(letter => {
+              console.log(letter);
+              return `<span>` + letter + `</span>`;
+            })
+            .join("");
+
+          Array.from(h1.children).forEach((span, index) => {
+            setTimeout(() => {
+              span.classList.add("wavy");
+            }, index * 10 + delay);
+          });
+
     }
 </script>
 @endsection

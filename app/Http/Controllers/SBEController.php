@@ -360,15 +360,16 @@ class SBEController extends Controller
     {
         $data = SbeActivity::join('users','users.nik','tb_sbe_activity.operator')->join('role_user','users.nik','role_user.user_id')->join('roles','roles.id','role_user.role_id')->select('users.name','activity','date_add','roles.name as role')->where('id_sbe',$request->id_sbe)->orderBy('date_add','desc')->get();
 
-        if (SbeActivity::where('id_sbe',$request->id_sbe)->where('activity','like','Choose config version%')->orderBy('date_add','desc')->take(1)->exists()) {
-            $getNotes = array();
-        } else {
+        $activity = DB::table('tb_sbe_activity')->where('id_sbe',$request->id_sbe)->orderBy('date_add','desc')->first()->activity;
+
+        if (substr($activity, 0,9) == 'Add Notes') {
             $getNotes = SbeNotes::where('id_sbe',$request->id_sbe)->orderBy('date_add','desc')->take(1)->get();
+        } else{
+            $getNotes = array();
         }
 
         $status = DB::table('tb_sbe')->select('status')->where('id',$request->id_sbe)->get();
 
-        // return array("data"=>$data);
         return collect([
             "data" => $data,
             "getNotes" => $getNotes,
