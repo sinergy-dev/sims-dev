@@ -217,10 +217,11 @@ class AssetAtkController extends Controller
 
         $request = DB::table('tb_asset_atk_request')
                     ->join('users', 'users.nik', '=', 'tb_asset_atk_request.nik')
-                    ->select('nama', 'status', 'qty', 'keterangan', 'tb_asset_atk_request.created_at', 'name', 'link', 'id_barang','tb_asset_atk_request.nik')
+                    ->join('tb_asset_atk','tb_asset_atk.id_barang','=','tb_asset_atk_request.id_barang')
+                    ->select('nama', 'tb_asset_atk_request.status', 'tb_asset_atk_request.qty', 'keterangan', 'tb_asset_atk_request.created_at', 'name', 'link', 'tb_asset_atk_request.id_barang','tb_asset_atk_request.nik','tb_asset_atk.qty as qty_asset')
                     ->orderBy('tb_asset_atk_request.created_at','desc')
-                    ->where('status', 'PROCESS')
-                    ->orWhere('status', 'REQUEST')
+                    ->where('tb_asset_atk_request.status', 'PROCESS')
+                    ->orWhere('tb_asset_atk_request.status', 'REQUEST')
                     ->get();
 
         $request2 = DB::table('tb_asset_atk_request')
