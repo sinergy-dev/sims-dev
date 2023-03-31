@@ -611,7 +611,7 @@ Human Resources
 						    <li><a class="dropdown-item" href="{{action('HRController@exportExcelEmployee')}}">All</a></li>
 						    <li><a class="dropdown-item" href="{{action('HRController@exportExcelResignEmployee')}}">Resign</a></li>
 						</ul>
-			        	<button class="btn btn-sm btn-primary" onclick="showTabAdd(0)" style="margin-bottom: 5px"><i class="fa fa-plus"></i>&nbsp Employee</button>
+			        	<button class="btn btn-sm btn-primary" onclick="showTabAdd(0)" id="btnAddEmployee" style="margin-bottom: 5px;display: none"><i class="fa fa-plus"></i>&nbsp Employee</button>
 		      		</div>			        
 			    </div>
 		      </div>
@@ -1039,6 +1039,8 @@ Human Resources
 		  </div>
 		</div>
 
+		@if(Auth::User()->id_division == 'FINANCE' || Auth::User()->id_division == 'HR')
+		@else
 		<div class="box">
 		  <div class="box-header with-border">
 		    <h3 class="box-title"><i class="fa fa-table"></i>&nbsp<b>MSP Employees</b></h3>
@@ -1470,7 +1472,8 @@ Human Resources
 		  	</div>
 		    
 			</div>
-		  </div>
+		</div>
+		@endif
 
 		<div class="modal fade" id="modalAdd" role="dialog">
 		    <div class="modal-dialog modal-md">
@@ -2557,27 +2560,43 @@ Human Resources
         accesable.forEach(function(item,index){
           $("#" + item).show()          
         })  
+        console.log(accesable)
 
-        if (accesable.includes('btnEdit') == false) {
-	        var column1 = table1.column(9);
-	        column1.visible(!column1.visible());
+        // if (accesable.includes('btnEdit') == false) {
+	       //  var column1 = table1.column(9);
+	       //  column1.visible(!column1.visible());
 
-	        var column2 = table2.column(3);
-	        column2.visible(!column2.visible());
+	       //  var column2 = table2.column(3);
+	       //  column2.visible(!column2.visible());
 
-	        var column3 = table3.column(3);
-	        column3.visible(!column3.visible());
+	       //  var column3 = table3.column(3);
+	       //  column3.visible(!column3.visible());
 
-	        var column4 = table4.column(3);
-	        column4.visible(!column4.visible());
+	       //  var column4 = table4.column(3);
+	       //  column4.visible(!column4.visible());
 
-	        var column5 = table5.column(3);
-	        column5.visible(!column5.visible());
+	       //  var column5 = table5.column(3);
+	       //  column5.visible(!column5.visible());
 
-	        var column6 = table6.column(3);
-	        column6.visible(!column6.visible());
-        }else{
+	       //  var column6 = table6.column(3);
+	       //  column6.visible(!column6.visible());
+        // }
 
+        if (accesable.length == 0){
+        	var column1 = table1.column(10);
+	        column1.visible(false);
+
+	        var column2 = table1.column(11);
+	        column2.visible(false);
+
+	        var column3 = table3.column(4);
+	        column3.visible(false);
+
+	        var column4 = table4.column(4);
+	        column4.visible(false);
+
+	        var column5 = table5.column(4);
+	        column5.visible(false);
         }
     })
 	$(":input").inputmask();

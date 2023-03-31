@@ -273,8 +273,14 @@ GA ATK
                     </td>
                     <td>
                       @if($data->status == 'PENDING')
-                      <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}', '{{$data->nik_peminjam}}', '{{$data->created_at}}')">ACCEPT</button>
-                      <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;"  onclick="reject_update('{{$data->id_transaction}}')">REJECT</button>
+                        @if($data->qty != '0')
+                          <button class="btn btn-xs btn-success" id="btn_accept" name="btn_accept" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;" onclick="id_accept_update('{{$data->id_transaction}}','{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_akhir}}', '{{$data->nama_barang}}', '{{$data->keterangan}}', '{{$data->nik_peminjam}}', '{{$data->created_at}}')">ACCEPT</button>
+                          <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;"  onclick="reject_update('{{$data->id_transaction}}')">REJECT</button>
+                        @else 
+                          <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
+                          <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" value="{{$data->id_transaction}}" style="width: 90px; height: 25px;"  onclick="reject_update('{{$data->id_transaction}}')">REJECT</button>
+                        @endif
+                      
                       @elseif($data->status == 'PROSES')
                       <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_modal" data-toggle="modal" name="btn_done" value="{{$data->id_transaction}}" style="width: 90px; height: 25px" onclick="update_done_pr('{{$data->id_transaction}}', '{{$data->id_barang}}', '{{$data->qty}}', '{{$data->qty_request}}', '{{$data->nama_barang}}')">DONE</button>
                       @elseif($data->status == 'DONE')
@@ -307,8 +313,14 @@ GA ATK
                       </td>
                       <td>
                         @if($data->status == 'REQUEST')
-                        <button class="btn btn-xs btn-success" id="btn_accept_request_atk" value="{{$data->id_barang}}" name="btn_accept" style="width: 90px; height: 25px;">ACCEPT</button>
-                        <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" style="width: 90px; height: 25px;" onclick="reject_request_atk('{{$data->id_barang}}')">REJECT</button>
+                          @if($data->qty_asset != '0')
+                            <button class="btn btn-xs btn-success" id="btn_accept_request_atk" value="{{$data->id_barang}}" name="btn_accept" style="width: 90px; height: 25px;">ACCEPT</button>
+                            <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" style="width: 90px; height: 25px;" onclick="reject_request_atk('{{$data->id_barang}}')">REJECT</button>
+                          @else 
+                            <button class="btn btn-xs btn-success disabled" style="width: 90px; height: 25px;">ACCEPT</button>
+                            <button class="btn btn-xs btn-danger" id="btn_reject" name="btn_reject" style="width: 90px; height: 25px;" onclick="reject_request_atk('{{$data->id_barang}}')">REJECT</button>
+                          @endif
+                        
                         @elseif($data->status == 'PROCESS')
                         <button class="btn btn-xs btn-primary" id="btn-done" data-target="#done_request_modal" data-toggle="modal" name="btn_done" style="width: 90px; height: 25px" onclick="done_request_atk('{{$data->id_barang}}', '{{$data->nama}}', '{{$data->qty}}', '{{$data->nik}}', '{{$data->keterangan}}')">DONE</button>
                         @elseif($data->status == 'DONE')
