@@ -253,9 +253,11 @@ class HRController extends Controller
 
         $roles = DB::table('roles')->where('name', '!=', 'PMO Admin')->get();
 
-        $code = $request['code_input'];        
+        $code = $request['code_input'];     
 
-        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim', 'data_resign', 'roles', 'data_resign_msp'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
+        $sidebar_collapse = true;   
+
+        return view('HR/human_resource', compact('hr','hr_msp','notif','notifOpen','notifsd','notiftp','notifClaim', 'data_resign', 'roles', 'data_resign_msp','sidebar_collapse'))->with(['initView'=> $this->initMenuBase(),'feature_item'=>$this->RoleDynamic('employee')]);
     }
 
     public function getemps(Request $request)
