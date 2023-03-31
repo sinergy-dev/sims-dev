@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +51,8 @@ Route::get('/PMO/downloadProjectCharterPdf','PMProjectController@downloadProject
 Route::get('/PMO/downloadProgressMeetingPdf','PMProjectController@downloadProgressMeetingPdf');
 Route::get('/PMO/downloadFinalProjectPdf','PMProjectController@downloadFinalProjectPdf');
 
+Route::post('/sbe/uploadPdfConfig','SBEController@uploadPdfConfig');
+Route::get('/sbe/getGenerateConfig','SBEController@getGenerateConfig');
 
 // Route::get('testPermissionConfigFeature','TestController@testPermissionConfigFeature');
 
@@ -1265,6 +1267,29 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::get('/requestChange','RequestChangeController@index');
 
+	Route::get('sbe_index','SBEController@sbe_index');
+	Route::get('sbe_detail/{id}','SBEController@sbe_detail');
+	Route::get('sbe_create/','SBEController@sbe_detail');
+	Route::get('setting','SBEController@setting_sbe');
+	Route::get('/sbe/getLead','SBEController@getLead');
+	Route::post('/sbe/createConfig','SBEController@createConfig');
+	Route::post('/sbe/storeDetailItem','SBEController@storeDetailItem');
+	Route::post('/sbe/updateDetailItem','SBEController@updateDetailItem');
+	Route::get('/sbe/getDetailItem','SBEController@getDetailItem');
+	Route::get('/sbe/getDropdownDetailItem','SBEController@getDropdownDetailItem');
+	Route::get('/sbe/getDataSbe','SBEController@getDataSbe');
+	Route::get('/sbe/getSoWbyLeadID','SBEController@getSoWbyLeadID');
+	Route::get('/sbe/getActivity','SBEController@getActivity');
+	Route::post('/sbe/storeNotes','SBEController@storeNotes');
+	Route::get('/sbe/getVersionConfig','SBEController@getVersionConfig');
+	Route::get('/sbe/getDetailConfig','SBEController@getDetailConfig');
+	Route::post('/sbe/updateConfig','SBEController@updateConfig');
+	Route::post('/sbe/updateVersion','SBEController@updateVersion');
+	Route::get('/sbe/getConfigTemporary','SBEController@getConfigTemporary');
+	Route::get('/sbe/getConfigChoosed','SBEController@getConfigChoosed');
+	Route::post('/sbe/resetVersion','SBEController@resetVersion');
+	
+
 });
 Route::get('/authentication/{id}','TestController@authentication');
 
@@ -1315,5 +1340,10 @@ Route::get('testCSVUploadGetFile','TestController@testCSVUploadGetFile');
 
 Route::get('testGCal','TestController@testGCal');
 // Route::get('testSidebar','TestController@testSidebar');
+
+
+Route::get('downloadSbePdf','TestController@downloadSbePdf');
+Route::get('testMailSBE','TestController@testMailSBE');
+
 
 
