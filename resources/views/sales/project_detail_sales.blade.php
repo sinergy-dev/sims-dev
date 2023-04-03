@@ -415,11 +415,11 @@ Detail Lead Register
 		                      	<th hidden></th>
 		                        <th title="Product Tagging is Required!">SBE Tag</th>
 		                        <th>Price</th>
-		                        <td class="text-center">
+		                       <!--  <td class="text-center">
 		                          <button class="btn btn-xs btn-primary" id="btn-addSBE" onclick="addSBE()" type="button" style="border-radius:50%;width: 25px;height: 25px;">
 								              	<i class="fa fa-plus"></i>
 								              </button> 
-		                        </td>
+		                        </td> -->
 		                      </tr>
 			                  </thead>
 			                  <tbody id="tbSBE">
@@ -727,9 +727,9 @@ Detail Lead Register
 		                                        <th>Sbe Tag</th>
 		                                        <th>Price</th>
 		                                        <th class="text-center">
-		                                            <button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;" id="addSbe" onclick="addSBEResult()">
+		                                          <!--   <button class="btn btn-xs btn-primary" type="button" style="border-radius:50%;width: 25px;height: 25px;" id="addSbe" onclick="addSBEResult()">
 		                                                <i class="fa fa-plus"></i>
-		                                            </button>
+		                                            </button> -->
 		                                        </th>
 		                                    </tr>
 		                                </thead>
@@ -1858,6 +1858,25 @@ Detail Lead Register
       })
     }
 
+
+    // function sbeResult(){
+    // 	var append = ""
+
+    // 	append = append + "<tr>"
+	   //  	append = append +"<td>"
+	   //  		append = append +"<input class='form-control' readonly>"
+	   //  	append = append + "</td>"
+	   //  	append = append + "<td>"
+	   //  		  append = append + " <div class='input-group'>"
+			 //      append = append + " <span class='input-group-addon price-tooltip' style='background-color: #aaa; color:white;font-style: italic;'>Rp.</span>"
+			 //      append = append + " <input class='money form-control price_sbe_win' value='7888888' name='price_sbe_win' type='text' placeholder='Enter Product Price' readonly>"
+			 //      append = append + " </div>"	    		
+	   //  	append = append  + "</td>"
+    // 	append = append + "</tr>"
+
+    // 	$("#tbtagsbe").append(append)
+    // }
+
     var i;
     var idExist = []
     $.ajax({
@@ -1878,7 +1897,7 @@ Detail Lead Register
 
 				console.log($('#tbtagging tr').length)
       	if (result.length > 0){
-      		if ($('#tbtagging tr').length <= 0) {
+      		if ($('#table-tagging tr').length <= 0) {
 		  			$("#btnRaiseTP").prop("disabled",true)
 		  		}else{
 		  			$("#btnRaiseTP").prop("disabled",false)
@@ -1889,7 +1908,7 @@ Detail Lead Register
     })
 		
   	function addTagging(i){
-  		if ($('#tbtagging tr').length <= 0) {
+  		if ($('#table-tagging tr').length <= 0) {
   			$("#btnRaiseTP").prop("disabled",false)
   		}else{
   			$("#btnRaiseTP").prop("disabled",true)
@@ -1975,6 +1994,8 @@ Detail Lead Register
 	    			idExist.push(value.id)
 	      		++i
 	      	})
+	      	console.log(result)
+		    	// sbeResult()
 
 	      	if (result.length > 0){
 	      		if ($('#tbtagging tr').length <= 0) {
@@ -2180,9 +2201,9 @@ Detail Lead Register
       append = append + " <input data-value='" + i + "' class='money form-control price_sbe' value='0' disabled name='price_SBE' type='text' placeholder='Enter Product Price'>"
       append = append + " </div>"
       append = append + " </td>"
-      append = append + " <td class='text-center'>"
-      append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging-sbe'><i class='fa fa-pencil'></i></button>"
-      append = append + " </td>"
+      // append = append + " <td class='text-center'>"
+      // append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging-sbe'><i class='fa fa-pencil'></i></button>"
+      // append = append + " </td>"
       append = append + "</tr>"
 
       $("#tbSBE").append(append)	 
@@ -2209,9 +2230,9 @@ Detail Lead Register
 	      append = append + " <input data-value='" + i + "' class='money form-control price_sbe_win' disabled name='price_sbe_win' type='text' placeholder='Enter Product Price' value='0'>"
 	      append = append + " </div>"
 	      append = append + " </td>"
-	      append = append + " <td class='text-center'>"
-	      append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe-win'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging-sbe-win'><i class='fa fa-pencil'></i></button>"
-	      append = append + " </td>"
+	      // append = append + " <td class='text-center'>"
+	      // append = append + " <button type='button' style='width: auto !important;' class='btn btn-sm btn-danger btn-flat btn-trash-tagging-sbe-win'><i class='fa fa-trash'></i></button><button data-value='"+ i +"' type='button' style='width: auto !important;margin-left:5px' class='btn btn-sm btn-primary btn-flat btn-edit-tagging-sbe-win'><i class='fa fa-pencil'></i></button>"
+	      // append = append + " </td>"
 	      append = append + "</tr>"
 
 	      $("#tbtagsbe").append(append)	 
@@ -2935,11 +2956,13 @@ Detail Lead Register
 				      },success: function(result){
 				    		i = 0
 				    		console.log("tes"+result)
-	 							$("#tbtagsbe").empty()	 
+	 							// $("#tbtagsbe").empty()	 
 				      	$.each(result, function(key,value){
 				      		addSbeResultNotEmpty(value.id,value.tag_sbe,value.price_sbe,i)
 				      		i++
 				      	})
+				     		console.log(result)
+		    				// sbeResult()
 				      	grandTotal()
 				      }
 				    })
