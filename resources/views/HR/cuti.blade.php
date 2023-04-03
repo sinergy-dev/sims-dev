@@ -1406,7 +1406,7 @@ Leaving Permitte
                return '<span class="label label-success">Approved</span>'
               }else if(row.status == 'd'){
                return '<span class="label label-danger" onclick="decline('+ row.id_cuti +')">Declined</span>'
-              }else if(row.status == 'n'){
+              }else if(row.status == 'n' || row.status == 'R'){
                return '<span class="label label-warning">Pending</span>'
               } else {
                 return '<span class="label label-danger">Cancel</span>'
@@ -1513,7 +1513,7 @@ Leaving Permitte
                return '<span class="label label-success">Approved</span>'
               }else if(row.status == 'd'){
                return '<span class="label label-danger" onclick="decline('+ row.id_cuti +')">Declined</span>'
-              }else if(row.status == 'n'){
+              }else if(row.status == 'n' || row.status == 'R'){
                return '<span class="label label-warning">Pending</span>'
               } else {
                 return '<span class="label label-danger">Cancel</span>'
