@@ -103,7 +103,10 @@ class SBEController extends Controller
     	$cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
                     ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
 
-        $data = DB::table('sales_lead_register')->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')->join('users','users.nik','sales_lead_register.nik')->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,CONCAT(`sales_lead_register`.`lead_id`," - ",`opp_name`) AS `text`'))->where('id_company','1')->orderBy('year','desc');
+        $data = DB::table('sales_lead_register')->join('sales_solution_design','sales_solution_design.lead_id','sales_lead_register.lead_id')->join('users','users.nik','sales_lead_register.nik')->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,CONCAT(`sales_lead_register`.`lead_id`," - ",`opp_name`) AS `text`'))->where('id_company','1')
+            // ->where('sales_lead_register.result','!=','WIN')
+        ->whereRaw("(`sales_lead_register`.`result` = '' OR `sales_lead_register`.`result` = 'SD' OR `sales_lead_register`.`result` = 'TP')")
+            ->orderBy('year','desc');
 
         if ($cek_role->name == 'SOL Staff' || $cek_role->name == 'SOL Manager') {
         	$data->where('sales_solution_design.nik',$nik)->get();

@@ -35,19 +35,19 @@ SBE
 		            <div class="col-md-4 pull-right" id="search-table">
 		              <div class="input-group" style="margin-left: 10px">
 		                <div class="input-group-btn">
-		                  <button type="button" id="btnShowPID" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+		                  <button type="button" id="btnShowSbe" class="btn btn-default btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 		                    Show 10 entries
 		                  </button>
 		                  <ul class="dropdown-menu">
-		                    <li><a href="#" onclick="$('#table-pid').DataTable().page.len(10).draw();$('#btnShowPID').html('Show 10 entries')">10</a></li>
-		                    <li><a href="#" onclick="$('#table-pid').DataTable().page.len(25).draw();$('#btnShowPID').html('Show 25 entries')">25</a></li>
-		                    <li><a href="#" onclick="$('#table-pid').DataTable().page.len(50).draw();$('#btnShowPID').html('Show 50 entries')">50</a></li>
-		                    <li><a href="#" onclick="$('#table-pid').DataTable().page.len(100).draw();$('#btnShowPID').html('Show 100 entries')">100</a></li>
+		                    <li><a href="#" onclick="$('#tbListSBE').DataTable().page.len(10).draw();$('#btnShowSbe').html('Show 10 entries')">10</a></li>
+		                    <li><a href="#" onclick="$('#tbListSBE').DataTable().page.len(25).draw();$('#btnShowSbe').html('Show 25 entries')">25</a></li>
+		                    <li><a href="#" onclick="$('#tbListSBE').DataTable().page.len(50).draw();$('#btnShowSbe').html('Show 50 entries')">50</a></li>
+		                    <li><a href="#" onclick="$('#tbListSBE').DataTable().page.len(100).draw();$('#btnShowSbe').html('Show 100 entries')">100</a></li>
 		                  </ul>
 		                </div>
-		                <input id="searchBarList" type="text" class="form-control" placeholder="Search Anything">
+		                <input id="searchBarList" type="text" class="form-control" placeholder="Search Anything" onkeyup="searchCustom('tbListSBE','searchBarList')">
 		                <span class="input-group-btn">
-		                  <button id="applyFilterTableSearch" type="button" class="btn btn-default btn-md" style="width: 40px">
+		                  <button id="applyFilterTableSearch" onclick="searchCustom('tbListSBE','searchBarList')" type="button" class="btn btn-default btn-md" style="width: 40px">
 		                    <i class="fa fa-fw fa-search"></i>
 		                  </button>
 		                </span>
@@ -148,5 +148,9 @@ SBE
         "bLengthChange": false,
         "bInfo": false
     });
+
+    function searchCustom(id_table,id_seach_bar){
+        $("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
+    }
 </script>
 @endsection

@@ -53,6 +53,13 @@ class SbeConfig extends Model
       // return collect(["data"=>$data,"total_nominal"=>$dataConfig]);
     }
 
+    public function getDetailConfigReverseAttribute()
+    {
+      $data = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->join('tb_sbe_detail_item','tb_sbe_detail_item.id','tb_sbe_detail_config.detail_item')->select('item','tb_sbe_detail_item.detail_item','total_nominal','qty','tb_sbe_detail_config.price','manpower')->where('tb_sbe_config.id',$this->id)->where('status','Choosed')->orderBy('tb_sbe_detail_config.id','asc')->get()->groupby('item')->reverse();
+
+      return $data;
+    }
+
     public function getGetFunctionAttribute()
     {
     	$getByOrderId = DB::table('tb_sbe_detail_config')->where('tb_sbe_detail_config.id_config_sbe',$this->id)->select('id','id_config_sbe','item','total_nominal')->orderBy('id','asc');

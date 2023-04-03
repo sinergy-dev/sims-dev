@@ -4,10 +4,10 @@ SBE Detail
 @endsection
 @section('head_css')
 	<style type="text/css">
-		.dataTables_filter {
+		/*.dataTables_filter {
 		    display: none;
 		}
-
+*/
         textarea{
             resize: vertical;
         }
@@ -343,7 +343,8 @@ SBE Detail
             "aaSorting": [],
             "bFilter": true,
             "bSort":true,
-            "bLengthChange": false,
+            // "bLengthChange": false,
+            "pageLength": 10,
             "bInfo": false,
             drawCallback: function(settings) {
                 $.ajax({
@@ -373,7 +374,7 @@ SBE Detail
                             $("input[type='radio']").each(function(index,item){
                                 $(item).each(function(indexes,itemRadio){
                                     $(itemRadio).closest("label").next().attr("onclick","showTemporarySBE("+ itemRadio.value +")")
-                                    $(itemRadio).closest("label").next().find("i").removeClass("fa-pencil-square-o").addClass("fa-eye")
+                                    $(itemRadio).closest("label").next().find("i").removeClass("fa-pencil-square-o").addClass("fa-search-plus")
                                 })
                             })
                         }else{
@@ -1021,6 +1022,7 @@ SBE Detail
                                     success:function(result){  
                                         $("#tableShowConfig_"+i).each(function(item,results){
                                             z++ 
+                                            // console.log(z)
                                             
                                             $(".detailItemsTemporary_"+z).select2({
                                                 placeholder:"Select Detail Items",
