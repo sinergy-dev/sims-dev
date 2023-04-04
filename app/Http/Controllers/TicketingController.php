@@ -1730,6 +1730,7 @@ class TicketingController extends Controller
 			$name = 'Report_' . $client . '_-_' . Carbon::createFromDate( $req->year , $req->month + 1, 1)->format('F-Y') . '_(' . date("Y-m-d") . ')_' . Auth::user()->name . '.xlsx';
 			$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 			$location = public_path() . '/report/' . $name;
+			ob_end_clean();
 			$writer->save($location);
 			return $name;
 		}
@@ -2183,6 +2184,7 @@ class TicketingController extends Controller
 	    $name = 'Report_Bayu_-_[' . $request->start . '_to_' . $request->end . ']_(' . date("Y-m-d") . ')_' . Auth::user()->name . '.xlsx';
 		$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 		$location = public_path() . '/report/bayu/' . $name;
+		ob_end_clean();
 		$writer->save($location);
 		return $name;
 	}
@@ -2403,6 +2405,7 @@ class TicketingController extends Controller
 	    $name = 'Report_Denny_-_[' . $request->start . '_to_' . $request->end . ']_(' . date("Y-m-d") . ')_' . Auth::user()->name . '.xlsx';
 		$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 		$location = public_path() . '/report/denny/' . $name;
+		ob_end_clean();
 		$writer->save($location);
 		return $name;
 

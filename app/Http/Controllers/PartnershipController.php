@@ -851,6 +851,7 @@ class PartnershipController extends Controller
         // return $writer->save("php://output");
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $location = public_path() . '/report/partnership/' . $fileName;
+        ob_end_clean();
         $writer->save($location);
         return $fileName;
     }

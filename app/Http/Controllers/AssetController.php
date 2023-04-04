@@ -1249,6 +1249,7 @@ class AssetController extends Controller
         header('Cache-Control: max-age=0');
         
         $writer = new Xlsx($spreadsheet);
+        ob_end_clean();
         return $writer->save("php://output");
 
         $tambah_log = new LogAssetTech();
