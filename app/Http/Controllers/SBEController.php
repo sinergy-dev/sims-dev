@@ -375,11 +375,16 @@ class SBEController extends Controller
 
         $presales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->select('sales_solution_design.nik')->where('id',$request->id_sbe)->first()->nik;
 
+        $getLeadId = DB::table('tb_sbe')->select('lead_id')->where('id',$request->id_sbe)->first()->lead_id;
+
+        $getResultLeadId = DB::table('sales_lead_register')->select('result')->where('lead_id',$getLeadId)->first()->result;
+
         return collect([
             "data" => $data,
             "getNotes" => $getNotes,
             "status" => $status,
-            "presales" => $presales
+            "presales" => $presales,
+            "result" => $getResultLeadId
         ]);
     }
 
