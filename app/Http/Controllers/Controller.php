@@ -48,7 +48,14 @@ class Controller extends BaseController
 						->pluck('role_id'))
 					->pluck('feature_id'))->groupBy('group');
 
-			$getChildAll = DB::table($getGroupAll, 'temp')->join('features','features.group','temp.group')->select('features.group','url','icon_group','notif_status',DB::raw("REPLACE(`name`,'-','') as `name`"),'features.index_of')->orderBy('index_of','ASC')->get()->groupBy('group');
+			$getChildAll = DB::table($getGroupAll, 'temp')->join('features','features.group','temp.group')
+				->whereIn('id',DB::table('roles_feature')
+				->whereIn('role_id',DB::table('role_user')
+					->where('user_id',Auth::User()->nik)
+					->pluck('role_id'))
+				->pluck('feature_id'))
+				->select('features.group','url','icon_group','notif_status',DB::raw("REPLACE(`name`,'-','') as `name`"),'features.index_of')
+				->orderBy('index_of','ASC')->get()->groupBy('group');
 
 			$getGroupChild = DB::table('features')->select('group')->whereIn('group',$getName)->whereIn('id',DB::table('roles_feature')
 					->whereIn('role_id',DB::table('role_user')
@@ -56,7 +63,14 @@ class Controller extends BaseController
 						->pluck('role_id'))
 					->pluck('feature_id'))->groupBy('group');
 
-			$getChildLevelTwo = DB::table($getGroupChild, 'temp')->join('features','features.group','temp.group')->select('features.group','url','icon_group','notif_status',DB::raw("REPLACE(`name`,'-','') as `name`"),'features.index_of')->orderBy('index_of','ASC')->get()->groupBy('group');
+			$getChildLevelTwo = DB::table($getGroupChild, 'temp')->join('features','features.group','temp.group')
+				->whereIn('id',DB::table('roles_feature')
+				->whereIn('role_id',DB::table('role_user')
+					->where('user_id',Auth::User()->nik)
+					->pluck('role_id'))
+				->pluck('feature_id'))
+				->select('features.group','url','icon_group','notif_status',DB::raw("REPLACE(`name`,'-','') as `name`"),'features.index_of')
+				->orderBy('index_of','ASC')->get()->groupBy('group');
 			// $getChildLevelTwo->pluck('group')->unique()->values();
 			// return $getChildLevelTwo->keys()->toArray();
 
