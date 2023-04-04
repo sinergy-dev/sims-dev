@@ -308,11 +308,6 @@ SBE Detail
         $(".content").append(append)
         dynamicShowTempSbe(window.location.href.split("/")[4].split("?")[0],"/sbe/getConfigTemporary",arrChoosed="")
 
-        accesable.forEach(function(item,index){
-          $("#" + item).show()
-        })
-
-
         $("#tbChangeLog").DataTable({
             "ajax":{
                 "type":"GET",

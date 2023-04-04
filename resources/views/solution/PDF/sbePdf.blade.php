@@ -93,7 +93,9 @@
   <img src="{{url('img/header-sbe.png')}}" style="height:15px;width: 100%;" />
   <br><br>
   <div style="page-break-inside: avoid;">
-    <h2 class="center">{{$getAll->opp_name}}</h2>
+    <h2 class="center">Service Budget Estimate(SBE) - {{$getAll->customer_legal_name}}<br>
+      {{$getAll->opp_name}}
+    </h2>
     <table style="width:100%">
       <tr>
         <td style="width:23%">Release Date</td>
@@ -225,7 +227,10 @@
 
   @foreach($getConfig as $keyConf => $dataConfigs)
   <div style="page-break-before: always;margin-top: 50px;">
-    <h3 style="text-align:center;">{{$getAll->opp_name}}</h3>
+    <h3 style="text-align:center;">
+      Service Budget Estimate(SBE) - {{$getAll->customer_legal_name}}<br>
+      {{$getAll->opp_name}}
+    </h3>
     <table>
       <tr>
         @if($keyConf == "Implementation")

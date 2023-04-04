@@ -617,7 +617,7 @@ class SBEController extends Controller
 
         $getPresales = DB::table('tb_sbe')->join('sales_solution_design','sales_solution_design.lead_id','tb_sbe.lead_id')->where('id',$request->id_sbe)->first();
 
-        $getAll = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_lead_register.nik')->select('tb_sbe.lead_id','users.name as owner','project_location','estimated_running','duration','opp_name','tb_sbe.nominal as grand_total')->where('id_sbe',$request->id_sbe)->first();
+        $getAll = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe.id','tb_sbe_config.id_sbe')->join('sales_lead_register','sales_lead_register.lead_id','tb_sbe.lead_id')->join('users','users.nik','sales_lead_register.nik')->join('tb_contact','tb_contact.id_customer','sales_lead_register.id_customer')->select('tb_sbe.lead_id','users.name as owner','project_location','estimated_running','duration','opp_name','tb_sbe.nominal as grand_total','customer_legal_name')->where('id_sbe',$request->id_sbe)->first();
 
         $getIdConfigSbe = DB::table('tb_sbe_config')->join('tb_sbe_detail_config','tb_sbe_detail_config.id_config_sbe','tb_sbe_config.id')->select('id_sbe','id_config_sbe')->where('tb_sbe_config.status','Choosed')->where('id_sbe',$request->id_sbe)->get();
 
@@ -716,6 +716,13 @@ class SBEController extends Controller
         $updateStatus = Sbe::where('id',$request->id_sbe)->first();
         $updateStatus->status = 'Fixed';
         $updateStatus->save();
+
+        $storeActivity = new SbeActivity();
+        $storeActivity->id_sbe = $request->id_sbe;
+        $storeActivity->operator = Auth::User()->nik;
+        $storeActivity->activity = 'Generate PDF';
+        $storeActivity->date_add = Carbon::now()->toDateTimeString();
+        $storeActivity->save();
     }
 
     public function uploadToLocal($file,$directory,$nameFile){
