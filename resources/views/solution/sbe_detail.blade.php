@@ -353,7 +353,6 @@ SBE Detail
                     "data":{
                         id_sbe:window.location.href.split("/")[4].split("?")[0] 
                     },success:function(result){
-                        
                         if (result.status[0].status == "Fixed") {
                             $("#btnAddNotes").hide()
                             $("#btnGeneratePdf").hide()
@@ -365,6 +364,14 @@ SBE Detail
                                     $(itemRadio).closest("label").next().attr("onclick","showTemporarySBE("+ itemRadio.value +")")
                                  })                           
                             })
+                        }else{
+                            if(accesable.includes('btnGeneratePdf')){
+                                if (result.result != "WIN") {
+                                    $("#btnGeneratePdf").hide()
+                                }else{
+                                    $("#btnGeneratePdf").show()
+                                }
+                            }
                         }
 
                         if (!accesable.includes('radioConfig') || result.presales != "{{Auth::User()->nik}}") {
