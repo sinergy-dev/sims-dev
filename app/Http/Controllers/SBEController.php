@@ -668,7 +668,7 @@ class SBEController extends Controller
             array_push($parent,$parent_id);
         }
 
-        $fileName =  'SBE ' . $data->lead_id . '.pdf';
+        $fileName =  'SBE_' . $data->lead_id . '.pdf';
 
         if(isset($fileName)){
             $pdf_url = urldecode(url("/sbe/getGenerateConfig?id_sbe=" . $request->id_sbe));
