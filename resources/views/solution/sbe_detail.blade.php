@@ -48,6 +48,11 @@ SBE Detail
             top: 0px;
           }
         }
+
+        input[name='inputSumPriceGrandTotal']{
+            color: white;
+            background-color:#42855B!important;
+        }
 	</style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
 
@@ -436,7 +441,7 @@ SBE Detail
                             appendTemporary = appendTemporary + '            <div class="col-md-9 col-xs-12">'
                             appendTemporary = appendTemporary + '                <div class="table-responsive">'
                             appendTemporary = appendTemporary + '                    <table class="table table-bordered" width="100%">'
-                            appendTemporary = appendTemporary + '                        <thead style="background-color:'+ bg_color +'">'
+                            appendTemporary = appendTemporary + '                        <thead style="background-color:'+ bg_color +';color:white">'
                             appendTemporary = appendTemporary + '                            <tr>'
                             appendTemporary = appendTemporary + '                                <th>No</th>'
                             appendTemporary = appendTemporary + '                                <th>Function</th>'
@@ -1051,7 +1056,8 @@ SBE Detail
                         append = append + '</div>'
 
                         $(".content").append(append)
-                        $("table[name='tableShowConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right' id='inputSumPriceGrandTotal'/></td></tr>")
+                        $("table[name='tableShowConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right' id='inputSumPriceGrandTotal' name='inputSumPriceGrandTotal'/></td></tr>")
+
                         var j = 0
                         $.each(result.detail_config, function(key, results){
                             j++
@@ -1667,7 +1673,7 @@ SBE Detail
                 append = append + '</div>'
                 
                 $(".content").append(append)
-                $("table[name='tableUpdateConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right' id='inputSumPriceGrandTotal' readonly/></td></tr>")
+                $("table[name='tableUpdateConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right' id='inputSumPriceGrandTotal' name='inputSumPriceGrandTotal' readonly/></td></tr>")
 
                 $.each(result.detail_config, function(key, results){
                     tempInc++
