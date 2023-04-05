@@ -964,29 +964,29 @@ SBE Detail
                         append = append + '</div>'
                         append = append + '<div class="row">'
                         append = append + ' <div class="col-md-12 col-xs-12">'
-                        append = append + ' <label>Config*</label>'                                     
+                        append = append + '     <label>Config*</label>'                                     
                         var i = 0, z = 0, j = 0
                         $.each(result.detail_config, function(key, results){
                             i++
                             append = append + ' <table class="table" name="tableShowConfig" id="tableShowConfig_'+ i +'">'
                             append = append + '    <thead>'
                             append = append + '        <tr>'
-                            append = append + '            <th>'
+                            append = append + '            <th width=20%'
                             append = append + '                Items'
                             append = append + '            </th>'
-                            append = append + '            <th>'
+                            append = append + '            <th width=30%>'
                             append = append + '                Detail Items'
                             append = append + '            </th>'
-                            append = append + '            <th>'
+                            append = append + '            <th width=5%>'
                             append = append + '                Qty'
                             append = append + '            </th>'
-                            append = append + '            <th>'
+                            append = append + '            <th width=20%>'
                             append = append + '                Price'
                             append = append + '            </th>'
-                            append = append + '            <th>'
+                            append = append + '            <th width=5%>'
                             append = append + '                Manpower'
                             append = append + '            </th>'
-                            append = append + '            <th>'
+                            append = append + '            <th width=20%>'
                             append = append + '                Total'
                             append = append + '            </th>'
                             append = append + '        </tr>'
@@ -1039,7 +1039,7 @@ SBE Detail
                             append = append + '        <tfoot>'
                             append = append + '          <tr>'
                             append = append + '           <td colspan="4"></td>'
-                            append = append + '           <th>Grand Total</th>'
+                            append = append + '           <th>Total Cost</th>'
                             append = append + '           <td><input type="text" class="form-control" name="inputGrandTotal" id="inputGrandTotal" readonly></td>'
                             append = append + '          </tr>'
                             append = append + '        </tfoot>'
@@ -1051,7 +1051,7 @@ SBE Detail
                         append = append + '</div>'
 
                         $(".content").append(append)
-
+                        $("table[name='tableShowConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right' id='inputSumPriceGrandTotal'/></td></tr>")
                         var j = 0
                         $.each(result.detail_config, function(key, results){
                             j++
@@ -1075,6 +1075,12 @@ SBE Detail
                         })
 
                         $("input,select,textarea").attr("readonly",true)  
+
+                        var sumPriceGrandTotal = 0
+                        $("table[name='tableShowConfig']").find("input[name='inputGrandTotal']").each(function(index,item){
+                            sumPriceGrandTotal += parseInt(item.value.replaceAll(".",""))
+                        })
+                        $("#inputSumPriceGrandTotal").val(formatter.format(sumPriceGrandTotal))
                 }
             })
         })
@@ -1544,22 +1550,22 @@ SBE Detail
                         append = append + ' <table class="table" name="tableUpdateConfig" id="tableItemsUpdateConfig_'+ i +'">'
                         append = append + '    <thead>'
                         append = append + '        <tr>'
-                        append = append + '            <th>'
+                        append = append + '            <th width=20%'
                         append = append + '                Items'
                         append = append + '            </th>'
-                        append = append + '            <th>'
+                        append = append + '            <th width=25%>'
                         append = append + '                Detail Items'
                         append = append + '            </th>'
-                        append = append + '            <th>'
+                        append = append + '            <th width=5%>'
                         append = append + '                Qty'
                         append = append + '            </th>'
-                        append = append + '            <th>'
+                        append = append + '            <th width=24%>'
                         append = append + '                Price'
                         append = append + '            </th>'
-                        append = append + '            <th>'
+                        append = append + '            <th width=6%>'
                         append = append + '                Manpower'
                         append = append + '            </th>'
-                        append = append + '            <th>'
+                        append = append + '            <th width=20%>'
                         append = append + '                Total'
                         append = append + '            </th>'
                         append = append + '            <td>'
@@ -1587,7 +1593,7 @@ SBE Detail
                             append = append + '         <input type="" class="form-control priceItemsUpdate_'+ j +'" name="priceItemsUpdate" id="priceItemsUpdate" readonly="" value="'+ formatter.format(resultsDetail.price) +'">'
                             append = append + '     </td>'
                             append = append + '     <td>'
-                            append = append + '         <input type="" style="width:60px" class="form-control manpowerItems_'+ j +'" name="manpowerItemsUpdate" id="manpowerItemsUpdate" onkeyup="changeManPower(this)" value="'+ resultsDetail.manpower +'">'
+                            append = append + '         <input type="" style="width:60px;margin-left:10px" class="form-control manpowerItems_'+ j +'" name="manpowerItemsUpdate" id="manpowerItemsUpdate" onkeyup="changeManPower(this)" value="'+ resultsDetail.manpower +'">'
                             append = append + '     </td>'
                             append = append + '     <td>'
                             append = append + '         <input type="" class="form-control totalItems_'+ j +'" name="totalItems" id="totalItemsUpdate" data-value="'+ i +'" readonly value="'+ formatter.format(resultsDetail.total_nominal) +'">'
@@ -1638,7 +1644,7 @@ SBE Detail
                         append = append + '        <tfoot>'
                         append = append + '          <tr>'
                         append = append + '           <td colspan="4"></td>'
-                        append = append + '           <th>Grand Total</th>'
+                        append = append + '           <th>Total Cost</th>'
                         append = append + '           <td><input type="text" class="form-control" name="inputGrandTotal" id="inputGrandTotal" readonly></td>'
                         append = append + '          </tr>'
                         append = append + '        </tfoot>'
@@ -1661,6 +1667,7 @@ SBE Detail
                 append = append + '</div>'
                 
                 $(".content").append(append)
+                $("table[name='tableUpdateConfig']:last").find("tr:last").after("<tr><th colspan=5 style='text-align:right'>Grand Total Cost</th><td><input class='form-control' style='text-align:right' id='inputSumPriceGrandTotal' readonly/></td></tr>")
 
                 $.each(result.detail_config, function(key, results){
                     tempInc++
@@ -1697,6 +1704,13 @@ SBE Detail
                 if ($('table[name="tableUpdateConfig"]').length > 1) {
                     $("#updateItems").after("<button class='btn btn-sm btn-danger' id='removeItemsDetailforUpdate' onclick='removeItemsDetailforUpdate()' style='width:30px;margin-left:10px'><i class='fa fa-trash-o'></i></button>")
                 }
+
+                var sumPriceGrandTotal = 0
+                $("table[name='tableUpdateConfig']").find("input[name='inputGrandTotal']").each(function(index,item){
+                    sumPriceGrandTotal += parseInt(item.value.replaceAll(".",""))
+                })
+
+                $("#inputSumPriceGrandTotal").val(formatter.format(sumPriceGrandTotal))
                               
 
             }

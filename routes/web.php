@@ -1288,6 +1288,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/sbe/getConfigTemporary','SBEController@getConfigTemporary');
 	Route::get('/sbe/getConfigChoosed','SBEController@getConfigChoosed');
 	Route::post('/sbe/resetVersion','SBEController@resetVersion');
+	Route::post('/sbe/deleteDetailItem','SBEController@deleteDetailItem');
 	
 
 });
@@ -1344,6 +1345,8 @@ Route::get('testGCal','TestController@testGCal');
 
 Route::get('downloadSbePdf','TestController@downloadSbePdf');
 Route::get('testMailSBE','TestController@testMailSBE');
+
+// Route::get('testDataTable','TestController@testDataTable');
 
 
 

@@ -139,7 +139,9 @@ Setting
 	              title: "Action",
 	              render:function(data, type, row)
 		          {
-		          	return '<button class="btn btn-sm btn-warning" onclick="updateSetting('+ row.id +')">Update</button>'
+		          	// return '<button class="btn btn-sm btn-danger" onclick="updateSetting('+ row.id +')">Delete</button>'
+		          	return '<button class="btn btn-sm btn-danger" onclick="deleteSetting('+ row.id +')">Delete</button>'
+
 		          },
 	              data: null
 	            },
@@ -201,6 +203,31 @@ Setting
     	$("#saveSetting").attr("onclick","saveDetailItems('update')")    	
     }
 
+    function deleteSetting(id){
+    	formData = new FormData
+        formData.append("_token","{{ csrf_token() }}")      
+        formData.append("id",id)
+
+    	swalFireCustom = {
+	      title: 'Are you sure?',
+	      text: "Delete Items",
+	      icon: 'warning',
+	      showCancelButton: true,
+	      confirmButtonColor: '#3085d6',
+	      cancelButtonColor: '#d33',
+	      confirmButtonText: 'Yes',
+	      cancelButtonText: 'No',
+	    }
+
+	    swalSuccess = {
+	        icon: 'success',
+	        title: 'Items has been deleted!',
+	        text: 'Click Ok to reload page',
+	    }           
+
+	    createPost(swalFireCustom,formData,swalSuccess,url="/sbe/deleteDetailItem",type="POST")
+    }
+
     function saveDetailItems(status){
     	if ($("#InputItem").val() == "") {
     		$("#InputItem").next().show()
@@ -240,15 +267,15 @@ Setting
                 text: 'Click Ok to reload page',
             }           
 
-            createPost(swalFireCustom,formData,swalSuccess,url=url)
+            createPost(swalFireCustom,formData,swalSuccess,url=url,type="POST")
     	}
     }
 
-    function createPost(swalFireCustom,data,swalSuccess,url){
+    function createPost(swalFireCustom,data,swalSuccess,url,type){
     	Swal.fire(swalFireCustom).then((result) => {
           if (result.value) {
             $.ajax({
-              type:"POST",
+              type:type,
               url:"{{url('/')}}"+url,
               processData: false,
               contentType: false,

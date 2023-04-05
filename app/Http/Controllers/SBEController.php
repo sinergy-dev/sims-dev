@@ -725,6 +725,14 @@ class SBEController extends Controller
         $storeActivity->save();
     }
 
+    public function deleteDetailItem(Request $request)
+    {
+        $delete = SbeDetailItem::where('id',$request->id)->first();
+        $delete->delete();
+
+        return 'deleted';
+    }
+
     public function uploadToLocal($file,$directory,$nameFile){
         $file->move($directory,$nameFile);
     }
