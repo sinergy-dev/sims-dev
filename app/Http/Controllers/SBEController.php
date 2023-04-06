@@ -534,7 +534,7 @@ class SBEController extends Controller
             $storeRelation->save();
         }
 
-        $getAllId = SbeConfig::whereNotIn('id',$dataVersion)->get();
+        $getAllId = SbeConfig::where('id_sbe',$getId->id_sbe)->whereNotIn('id',$dataVersion)->get();
         foreach ($getAllId as $key => $value) {
             $updateVersion = SbeConfig::where('id',$value->id)->first();
             $updateVersion->status = 'New';
