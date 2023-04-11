@@ -443,9 +443,17 @@ class SBEController extends Controller
 
     public function updateConfig(Request $request)
     {
-        $getProjectType = DB::table('tb_sbe_config')->select('id_sbe','project_type')->where('id',$request->id_config_sbe)->first();
+        $getProjectType = DB::table('tb_sbe_config')->join('tb_sbe','tb_sbe_config.id_sbe','tb_sbe.id')->select('id_sbe','project_type','lead_id')->where('tb_sbe_config.id',$request->id_config_sbe)->first();
 
         $countVersion = DB::table('tb_sbe_config')->where('project_type',$getProjectType->project_type)->where('id_sbe', $request->id_sbe)->count()+1;
+
+        $getAllId = SbeConfig::where('id_sbe',$request->id_sbe)->where('project_type',$getProjectType->project_type)->get();
+        foreach ($getAllId as $key => $value) {
+            // return $value;
+            $updateVersion = SbeConfig::where('id',$value->id)->first();
+            $updateVersion->status = 'New';
+            $updateVersion->save();
+        }
 
         $createConfig = new SbeConfig();
         $createConfig->id_sbe = $request->id_sbe;
@@ -454,7 +462,7 @@ class SBEController extends Controller
         $createConfig->duration = $request->inputDurationUpdate;
         $createConfig->estimated_running = $request->inputEstimatedRunUpdate;
         $createConfig->date_add = Carbon::now()->toDateTimeString();
-        $createConfig->status = 'New';
+        $createConfig->status = 'Choosed';
         $createConfig->sow = $request->textareaSOWUpdate;
         $createConfig->oos = $request->textareaScopeUpdate;
         $createConfig->version = $countVersion;
@@ -484,6 +492,26 @@ class SBEController extends Controller
         $storeActivity->activity = 'Create config ' . $createConfig->project_type . ' with amount ' . $updateConfig->nominal;
         $storeActivity->date_add = Carbon::now()->toDateTimeString();
         $storeActivity->save();
+
+        $email_user = User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'SOL Manager')->first()->email;
+
+        $mail = new MailReviewConfigSBE(collect([
+                "subject_email" => 'Please Review this Temporary SBE',
+                "to"            => User::join('role_user','role_user.user_id', 'users.nik')->join('roles', 'roles.id', 'role_user.role_id')->where('roles.name', 'SOL Manager')->select('users.name as name')->first()->name,
+                "data"          => SbeConfig::where('status','Choosed')->where('id_sbe',$request->id_sbe)->orderByRaw('FIELD(project_type, "Supply Only", "Implementation", "Maintenance")')->get()->makeHidden(['detail_config','detail_all_config_choosed'])->groupby('project_type'),
+                "status"        => 'Review SBE',
+                "id"            => $request->id_sbe,
+                "lead_id"       => $getProjectType->lead_id
+
+            ])
+        );
+
+        $nik = Auth::User()->nik;
+        $cek_role = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
+                    ->select('name', 'roles.group')->where('user_id', $nik)->first(); 
+        if ($cek_role->name != 'SOL Manager') {
+            Mail::to($email_user)->send($mail);
+        }
     }
 
     public function getConfigChoosed(Request $request)
