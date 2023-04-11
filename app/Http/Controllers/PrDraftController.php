@@ -2065,7 +2065,7 @@ class PrDraftController extends Controller
 
             $type = $get_draft_pr->type_of_letter;
 
-            $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name', 'roles.group')->where('tb_pr_draft.id', $request['no_pr'])->first();
+            $cek_group = PRDraft::join('role_user', 'role_user.user_id', '=', 'tb_pr_draft.issuance')->join('roles', 'roles.id', '=', 'role_user.role_id')->select('roles.name as name', 'roles.group')->where('tb_pr_draft.id', $request['no_pr'])->first();
 
             if ($cek_group->group == 'pmo') {
                 $posti = 'PMO';
@@ -2308,7 +2308,10 @@ class PrDraftController extends Controller
                 ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
                 ->where(function($query){
                     $query->where('dokumen_name', 'SBE')
-                        ->orWhere('dokumen_name', 'SPK');
+                        ->orWhere('dokumen_name', 'SPK')
+                        ->orWhere('dokumen_name', 'COGS')
+                        ->orWhere('dokumen_name', 'Cogs')
+                        ->orWhere('dokumen_name', 'cogs');
                 })
                 ->get();
 
@@ -4085,7 +4088,10 @@ class PrDraftController extends Controller
                 ->where('tb_pr_document_draft.id_draft_pr', $request->no_pr)
                 ->where(function($query){
                     $query->where('dokumen_name', 'SBE')
-                        ->orWhere('dokumen_name', 'SPK');
+                        ->orWhere('dokumen_name', 'SPK')
+                        ->orWhere('dokumen_name', 'COGS')
+                        ->orWhere('dokumen_name', 'Cogs')
+                        ->orWhere('dokumen_name', 'cogs');
                 })
                 ->get();
 
