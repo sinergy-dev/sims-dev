@@ -2371,7 +2371,7 @@ class PrDraftController extends Controller
 
         $nik = Auth::User()->nik;
         $roles_manager = DB::table('role_user')->join('roles', 'roles.id', '=', 'role_user.role_id')
-                    ->select('user_id')->orWhere('name', 'like', '%MANAGER%')->where('user_id', $nik)->first(); 
+                    ->select('user_id')->orWhere('name', 'Operations Director')->where('user_id', $nik)->first();
 
         foreach ($notes as $key => $value) {
             if (isset($roles_manager)) {
