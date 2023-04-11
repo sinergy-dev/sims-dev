@@ -1033,7 +1033,7 @@
             disableResolve = 'disabled'
             disableReply = 'disabled'
           }else{
-            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}") {
+            if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Procurement")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"Operations Director")->exists()}}") {
               disableResolve
               disableReply
             }else{
@@ -1863,12 +1863,12 @@
 
         if (result.getSign == '{{Auth::User()->name}}') {
           //bcd manager & pmo manager bisa circular meskipun belum diresolve
-          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"PMO Manager")->exists()}}") {
+          if ("{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"BCD Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"PMO Manager")->exists()}}" || "{{App\RoleUser::where("user_id",Auth::User()->nik)->join("roles","roles.id","=","role_user.role_id")->where('roles.name',"SOL Manager")->exists()}}") {
             $("#btnSirkulasi").prop('disabled',false)
           }else{
             if (result.isNotes == 'False') {
               $("#btnSirkulasi").prop('disabled',true)
-              reasonReject('Please Ask Admin / Procurement to resolve notes, to continue circular process!','block','tabGroup')
+              reasonReject('Please resolve the notes, to continue circular process!','block','tabGroup')
             }else{
               
               $("#btnSirkulasi").prop('disabled',false)
