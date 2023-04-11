@@ -1007,6 +1007,10 @@ SBE Detail
                             append = append + '    </thead>'
                             append = append + '<tbody>'
 
+                            results.sort(function(a, b) {
+                              return a[0] - b[0];
+                            });
+
                             $.each(results, function(keys, resultsDetail){
                                 j++
                                 // console.log(keys)
@@ -1040,8 +1044,8 @@ SBE Detail
                                     success:function(result){  
                                         $("#tableShowConfig_"+i).each(function(item,results){
                                             z++ 
-                                            // console.log(keys+"---------")
-                                            console.log(resultsDetail.detail_item+"---------")
+                                            console.log(keys+"---------")
+                                            // console.log(resultsDetail.detail_item+"---------")
 
                                             
                                             $(".detailItemsTemporary_"+z).select2({
@@ -1613,8 +1617,12 @@ SBE Detail
                         append = append + '        </tr>'
                         append = append + '    </thead>'
                         append = append + '<tbody id="tbodyItems">'
+                        
+                        results.sort(function(a, b) {
+                            return a[0] - b[0];
+                        });
+
                         $.each(results, function(keys, resultsDetail){
-                            
                             j++
                             append = append + ' <tr>'
                             append = append + '     <td>'
@@ -1646,7 +1654,7 @@ SBE Detail
                                 success:function(result){                                  
                                     $("#tableItemsUpdateConfig_"+i).each(function(item,results){
                                     z++ 
-                                    
+                                        console.log(keys+"------")
                                         $(".detailItemsUpdate_"+z).select2({
                                             placeholder:"Select Detail Items",
                                             data:result.data
