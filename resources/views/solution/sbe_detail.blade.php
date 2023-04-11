@@ -943,8 +943,10 @@ SBE Detail
                 url:"{{url('/sbe/getDetailConfig')}}",
                 data:{
                     id_config_sbe:value
-                },success:function(result){
-                        var append = ""
+                },
+                // async: false,
+                success:function(result){
+                        var append = "", i = 0, z = 0, j = 0
 
                         append = append + '<div class="box">'
                         append = append + '    <div class="box-body">'
@@ -977,7 +979,6 @@ SBE Detail
                         append = append + '<div class="row">'
                         append = append + ' <div class="col-md-12 col-xs-12">'
                         append = append + '     <label>Config*</label>'                                     
-                        var i = 0, z = 0, j = 0
                         append = append + '<div class="table-responsive">'
                         $.each(result.detail_config, function(key, results){
                             i++
@@ -1005,8 +1006,10 @@ SBE Detail
                             append = append + '        </tr>'
                             append = append + '    </thead>'
                             append = append + '<tbody>'
+
                             $.each(results, function(keys, resultsDetail){
                                 j++
+                                // console.log(keys)
                                 append = append + ' <tr>'
                                 append = append + '     <td>'
                                 append = append + '       <input type="" style="width:300px" class="form-control" name="inputItemsTemporary" id="" value="'+ key +'" placeholder="Ex: PM Maintenance">'
@@ -1037,7 +1040,9 @@ SBE Detail
                                     success:function(result){  
                                         $("#tableShowConfig_"+i).each(function(item,results){
                                             z++ 
-                                            // console.log(z)
+                                            // console.log(keys+"---------")
+                                            console.log(resultsDetail.detail_item+"---------")
+
                                             
                                             $(".detailItemsTemporary_"+z).select2({
                                                 placeholder:"Select Detail Items",
@@ -1101,6 +1106,25 @@ SBE Detail
         })
     }
 
+    function sortReponse(data)
+    {
+        data.sort(function(a, b) {
+          var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+          var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          // names must be equal
+          return 0;
+        });
+
+        // Do something with the sorted data
+        console.log(data);
+    }
+
     //for create SBE
     //Supply Only
     function addConfigSO(val){
@@ -1152,7 +1176,6 @@ SBE Detail
             $("table[name='tableSO']").show()
         }else{            
             var append = ""
-            append = append + '<div class="table-responsive">'
             append = append + ' <table class="table" name="tableSO" id="tableItemsSO_'+ countable +'">'
             append = append + '     <thead>'
             append = append + '         <tr>'
@@ -1212,7 +1235,6 @@ SBE Detail
             append = append + '         </tr>'
             append = append + '     </tfoot>'
             append = append + '</table>'
-            append = append + '</div>'
 
             $("table[name='tableSO']:last").after(append)
             getDropdownDetailItems(countable,"SO")
@@ -1289,7 +1311,6 @@ SBE Detail
             $("table[name='tableImp']").show()
         }else{
             var append = ""
-            append = append + '<div class="table-responsive">'
             append = append + '<table class="table" name="tableImp" id="tableItemsImp_'+ countable +'">'
             append = append + '<thead>'
             append = append + '   <tr>'
@@ -1349,7 +1370,6 @@ SBE Detail
             append = append + '         </tr>'
             append = append + '     </tfoot>'
             append = append + '</table>'
-            append = append + '</div>'
             // $("select").select2()
 
             $("table[name='tableImp']:last").after(append)
@@ -1428,7 +1448,6 @@ SBE Detail
             $("table[name='tableMnS']").show()
         }else{
             var append = ""
-            append = append + '<div class="table-responsive">'
             append = append + '<table class="table" name="tableMnS" id="tableItemsMnS_'+ countable +'">'
             append = append + '<thead>'
             append = append + '   <tr>'
@@ -1469,7 +1488,7 @@ SBE Detail
             append = append + '                 <input type="number" style="width:60px" class="form-control" name="qtyItemsMnS" id="qtyItems" onkeyup="changeQtyItems(this)">'
             append = append + '             </td>'
             append = append + '             <td>'
-            append = append + '                 <input type="" class="form-control" name="priceItemsMnS" id="priceItems" readonly="" style="300px">'
+            append = append + '                 <input type="" class="form-control" name="priceItemsMnS" id="priceItems" readonly="" style="width:300px">'
             append = append + '             </td>'
             append = append + '             <td>'
             append = append + '                 <input type="" style="width:60px" class="form-control" id="manpowerItems" name="manpowerItemsMnS" onkeyup="changeManPower(this)">'
@@ -1488,7 +1507,6 @@ SBE Detail
             append = append + '         </tr>'
             append = append + '     </tfoot>'
             append = append + '</table>'
-            append = append + '</div>'
 
             $("table[name='tableMnS']:last").after(append)
             getDropdownDetailItems(countable,"MnS")
@@ -1787,7 +1805,7 @@ SBE Detail
         var countable = $("table[name='tableUpdateConfig']").length + 1
 
         var append = ""
-        append = append + '<div class="table-responsive">'
+        append = append + '<div id="divTable">'
         append = append + '<table class="table" name="tableUpdateConfig" id="tableItemsUpdateConfig_'+ countable +'">'
         append = append + '<thead>'
         append = append + '   <tr>'
