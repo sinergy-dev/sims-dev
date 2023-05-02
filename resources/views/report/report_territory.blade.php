@@ -56,7 +56,7 @@ Report Customer
             background-color: #18113d !important;
         }
         
-        .dataTables_filter {display: none;}
+        /*.dataTables_filter {display: none;}*/
   </style>
 @endsection
 @section('content')  
@@ -177,6 +177,27 @@ Report Customer
             </div>
           </div>
         </div>  
+
+        <div class="box">
+          <div class="box-header">
+              <h3 class="box-title">Customer per Territory</h3>
+          </div>
+          <div class="box-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="tbCusByTer">
+                <thead>
+                  <tr>
+                      <th>Brand Name</th>
+                      <th>Territory</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -780,6 +801,38 @@ Report Customer
       //   $('#data_lead').DataTable().ajax.url("{{url('getFilterTerritoryTabs')}}?id_territory=" + id_territory).load();
       // }
     }
+
+    $("#tbCusByTer").DataTable({
+      "ajax":{
+        "type":"GET",
+        "url":"{{url('getCustomerPerTerritory')}}",
+      },
+      "columns": [
+        { "data": "brand_name" },
+        { "data": "id_territory" },
+      ],
+      "columnDefs": [{ visible: true, targets:1 }],
+      "order": [[1, 'asc']],
+      displayLength: 25,
+      drawCallback: function (settings) {
+          var api = this.api();
+          var rows = api.rows({ page: 'current' }).nodes();
+          var last = null;
+
+          api
+              .column(1, { page: 'current' })
+              .data()
+              .each(function (group, i) {
+                  if (last !== group) {
+                      $(rows)
+                          .eq(i)
+                          .before('<tr class="group" style="color:white"><td colspan="3">' + group + '</td></tr>');
+
+                      last = group;
+                  }
+              });
+      },
+    })
     
   </script>
 @endsection
