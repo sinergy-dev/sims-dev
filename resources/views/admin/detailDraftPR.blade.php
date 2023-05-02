@@ -4036,6 +4036,10 @@
         $("#inputAddress").closest('.form-group').addClass('has-error')
         $("#inputAddress").closest('textarea').next('span').show();
         $("#inputAddress").prev('.input-group-addon').css("background-color","red");
+      }else if($("#note_pembanding").val() == "") {
+        $("#note_pembanding").closest('.form-group').addClass('has-error')
+        $("#note_pembanding").closest('textarea').next('span').show();
+        $("#note_pembanding").prev('.input-group-addon').css("background-color","red");
       }else{
         let inputTo = ""
         if ($("#selectTo").val() == "") {

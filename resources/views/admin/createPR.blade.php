@@ -1516,9 +1516,6 @@
     }
 
     function InitiateFilterParam(arrStatusBack,arrTypeBack){
-      console.log(arrStatusBack)
-
-
       Pace.restart();
       Pace.track(function() {
         var tempType = 'type_of_letter[]=', tempStatus = 'status[]=', tempUser = 'user[]=', tempStartDate = 'startDate=', tempEndDate = 'endDate=', tempAnything = 'search='
@@ -2180,7 +2177,6 @@
                 url:"{{url('/admin/getSupplier')}}",
                 type:"GET",
                 success:function(results){
-                  console.log(result)
                   $("#selectTo").select2({
                     data:results,
                     placeholder:"Select Supplier"
@@ -2350,7 +2346,6 @@
                   },
                   success:function(result){
                     var selectedPid = result.pr.pid
-
                     // $("#selectLeadId").val(result.pr.lead_id).trigger("change")
                     // $("#selectQuoteNum").val(result.pr.quote_number).trigger("change")
 
@@ -2367,7 +2362,7 @@
                             data: result.data,
                             placeholder: "Select Pid",
                             dropdownParent: $('#ModalDraftPr')
-                        }).on('change', function() {
+                        }).on('select2:select', function() {
                           var data = $("#selectPid option:selected").text();
                           $("#selectLeadId").empty()
                           $.ajax({
@@ -2400,19 +2395,27 @@
                                   })
                                 }
                               }) 
+
+                              if (result.linkSbe.length > 0) {
+                                const myFileSbe = new File(['{{asset("/")}}'+result.linkSbe[0].document_location], '/'+result.linkSbe[0].document_location,{
+                                  type: 'text/plain',
+                                  lastModified: new Date(),
+                                });
+                                // Now let's create a DataTransfer to get a FileList
+                                const dataTransferSbe = new DataTransfer();
+                                dataTransferSbe.items.add(myFileSbe);
+                                fileSBE.files = dataTransferSbe.files;
+
+                                $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").show()
+                                $("#link_sbe").attr("href",result.linkSbe[0].link_drive)
+                              }else{
+                                $("#inputSBE").val("")
+                                $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").hide()
+                              }
                             }
                           }) 
 
-                          const myFileSbe = new File(['{{asset("/draft_pr/146_quote_supplier.pdf")}}'], '/draft_pr/146_quote_supplier.pdf',{
-                            type: 'text/plain',
-                            lastModified: new Date(),
-                          });
-                          // Now let's create a DataTransfer to get a FileList
-                          const dataTransferSbe = new DataTransfer();
-                          dataTransferSbe.items.add(myFileSbe);
-                          fileSBE.files = dataTransferSbe.files;
-
-                          $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").show()
+                         
                         })
 
                         if (status == 'reject' || status == 'revision' || status == 'saved') {
@@ -3119,7 +3122,6 @@
             url:"{{url('/admin/getSupplier')}}",
             type:"GET",
             success:function(result){
-              console.log(result)
               $("#selectTo").select2({
                 data:result,
                 placeholder:"Select Supplier"
@@ -3172,7 +3174,6 @@
             fillInput('spk')
             fillInput('sbe')
             fillInput('quoteSupplier')      
-
           }else{
             $(".modal-title").text('Internal Purchase Request')
             $("#formForPrInternal").show()
@@ -3192,7 +3193,7 @@
                   data: result.data,
                   placeholder: "Select Pid",
                   dropdownParent: $('#ModalDraftPr')
-              }).on('change', function() {
+              }).on('select2:select', function() {
                 var data = $("#selectPid option:selected").text();
                 var lead_id = $("#selectLeadId option:selected").text();
 
@@ -3204,12 +3205,34 @@
                     pid:data
                   },
                   success: function(result) {
+                    let fileSPK   = document.querySelector('input[type="file"][name="inputSPK"]');
+
+                    let fileSBE   = document.querySelector('input[type="file"][name="inputSBE"]');
+
+                    let fileQuote = document.querySelector('input[type="file"][name="inputQuoteSupplier"]');
 
                     $("#selectLeadId").select2({
                         data: result.data,
                         placeholder: "Select Lead Register",
                         dropdownParent: $('#ModalDraftPr')
                     })
+
+                    if (result.linkSbe.length > 0) {
+                      const myFileSbe = new File(['{{asset("/")}}'+result.linkSbe[0].document_location], '/'+result.linkSbe[0].document_location,{
+                        type: 'text/plain',
+                        lastModified: new Date(),
+                      });
+                      // Now let's create a DataTransfer to get a FileList
+                      const dataTransferSbe = new DataTransfer();
+                      dataTransferSbe.items.add(myFileSbe);
+                      fileSBE.files = dataTransferSbe.files;
+
+                      $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").show()
+                      $("#link_sbe").attr("href",result.linkSbe[0].link_drive)
+                    }else{
+                      $("#inputSBE").val("")
+                      $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").hide()
+                    }
                   }
                 }) 
 
@@ -4675,7 +4698,6 @@
 
       $('.inputTotalPriceEdit').each(function() {
         var temp = parseFloat($(this).val() == "" ? "0" : parseFloat($(this).val().replace(/\./g,'').replace(',','.').replace(' ','')))
-        console.log(isNaN(temp))
         sum += temp;
       });
       $("#inputGrandTotalProduct").val(formatter.format(sum))
