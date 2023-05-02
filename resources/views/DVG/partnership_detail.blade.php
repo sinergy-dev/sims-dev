@@ -71,10 +71,10 @@ Partnership
 	  border-color: #00c0ef;
 	}
 
-	input[readonly]{
+/*	input[readonly]{
 		background-color:rgba(0,0,0,0) !important;
     border:none !important;
-	}
+	}*/
 
 	.form-control[disabled]{
 		background-color:rgba(0,0,0,0) !important;
@@ -82,9 +82,11 @@ Partnership
 	}
 
 	input.transparent-input {
-		outline: 0;
+	/*	outline: 0;
 	  border-width: 0 0 2px;
-	  border-color: #00c0ef
+	  border-color: #00c0ef*/
+	  background-color:rgba(0,0,0,0) !important;
+    border:none !important;
 	}
 
 	select.transparent-input{
@@ -835,10 +837,11 @@ Partnership
     append = append + "<input data-value='" + i + "' name='cert_name[]' id='cert_name' class='form-control' type='text' placeholder='Ex: 350-401 ENCOR'>"
     append = append + " </td>"
     append = append + " <td>"
-    append = append + "<input data-value='" + i + "' name='expired_date[]' id='expired_date' class='form-control' type='date'>"
+    append = append + "	<input data-value='" + i + "' name='expired_date[]' id='expired_date' class='form-control' type='date'>"
+    append = append + "		<div class='checkbox'><label><input id='cbLifetimeAddCert' class='cbLifetimeAddCert' type='checkbox'>Check for Lifetime Date</label></div>"
     append = append + " </td>"
     append = append + " <td>"
-    append = append + "<input data-value='" + i + "' name='certificate_eng[]' id='certificate_eng' class='form-control' type='file'>"
+    append = append + "		<input data-value='" + i + "' name='certificate_eng[]' id='certificate_eng' class='form-control' type='file'>"
     append = append + " </td>"
     append = append + " <td style='white-space: nowrap'>"
     append = append + " <select class='form-control select2-person' data-value='" + i + "' id='select2-person' style='width: 100%!important' name='cert_person[]'></select> "
@@ -1461,6 +1464,14 @@ Partnership
 		$("#modalAddCert").modal("show")
 	})
 
+  $('body').on('click','#cbLifetimeAddCert',function(){
+		if ($(this).is(':checked')) {
+			$(this).closest("div").closest("td").find("input#expired_date").prop("readonly",true)
+		}else{
+			$(this).closest("div").closest("td").find("input#expired_date").prop("readonly",false)
+		}
+	})
+
 	$("#btnSubmitCert").click(function(){
 			// const fileupload = $('#certificate_eng').prop('files')[0];
 
@@ -1472,13 +1483,20 @@ Partnership
    //    	formData.append('nama_file', nama_file);
 			// }
 
-			var cert_eng = []
-      $('#tbListCert .new-list').each(function() {
-				// console.log(fileupload)
+			var cert_eng = [], lifetimeArr = []
+			$(".cbLifetimeAddCert").each(function(index,itemLifeTime){
+    			if ($(itemLifeTime).is(':checked')) {
+      			lifetimeArr.push("Lifetime")
+      		}else{
+      			lifetimeArr.push($(itemLifeTime).closest("div").closest("td").find("input#expired_date").val())
+      		}
+    	})
+
+      $('#tbListCert .new-list').each(function(index,item) {
         cert_eng.push({
           cert_type:$(this).find("#cert_type").val(),
           cert_name:$(this).find('#cert_name').val(),
-          expired_date:$(this).find('#expired_date').val(),
+          expired_date:JSON.stringify(lifetimeArr),
           nama_file:$(this).find('#certificate_eng').val(),
           cert_person:$(this).find('#select2-person').val(),
           // certificate_eng:$(this).find('#certificate_eng').prop('files')[0],

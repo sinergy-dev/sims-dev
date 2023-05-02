@@ -72,16 +72,16 @@ class rejectCuti extends Command
                     ->where('id_cuti', $data_reject->id_cuti)->first();
 
             $nik = $name_cuti->nik;
-            $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
+            $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->where('id_company','1')->first();
             $ter = $territory->id_territory;
-            $division = DB::table('users')->select('id_division')->where('nik', $nik)->first();
+            $division = DB::table('users')->select('id_division')->where('nik', $nik)->where('id_company','1')->first();
             $div = $division->id_division;
-            $position = DB::table('users')->select('id_position')->where('nik', $nik)->first();
+            $position = DB::table('users')->select('id_position')->where('nik', $nik)->where('id_company','1')->first();
             $pos = $position->id_position; 
-            $company = DB::table('users')->select('id_company')->where('nik',$nik)->first();
+            $company = DB::table('users')->select('id_company')->where('nik',$nik)->where('id_company','1')->first();
             $com = $company->id_company;
 
-            $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->first();
+            $cek_role = DB::table('users')->join('role_user','role_user.user_id','users.nik')->join('roles','roles.id','role_user.role_id')->select('users.name','roles.name as name_role')->where('user_id',$nik)->where('id_company','1')->first();
 
             if ($ter != NULL) {
                 if ($pos == 'MANAGER' || $pos == 'ENGINEER MANAGER' || $pos == 'OPERATION DIRECTOR') {

@@ -4129,6 +4129,24 @@ class ReportController extends Controller
         return array("data" => $data->get());
     }
 
+    public function getCustomerPerTerritory(Request $request){
+        $data = Sales2::join('users','users.nik','=','sales_lead_register.nik')
+            ->join('tb_contact','tb_contact.id_customer','=','sales_lead_register.id_customer')
+            ->select('tb_contact.brand_name','users.id_territory')
+            ->where('result','!=','CANCEL')
+            ->where('result','!=','HOLD')
+            ->where('result','!=','SPECIAL')
+            ->where('sales_lead_register.result','!=','hmm')
+            ->where('users.status_karyawan','!=','dummy')
+            ->whereRaw("(`id_territory` != 'SALES MSP' AND `id_territory` != 'SPECIALIST' AND `id_territory` != 'PRESALES')")
+            ->groupBy('id_territory')
+            ->groupBy('sales_lead_register.id_customer');
+
+        // return array("data" => $data->get()->groupBy('id_territory'));
+        // return $data;
+        return array("data" => $data->get());
+    }
+
     public function report_product_technology(){
         $nik = Auth::User()->nik;
         $territory = DB::table('users')->select('id_territory')->where('nik', $nik)->first();
@@ -4757,12 +4775,13 @@ class ReportController extends Controller
 
         if($request->id_territory == "OPERATION"){
             // $data->where('users.id_territory',$request->id_territory);
-            $data->where('users.nik','=','1100492050');
-            $data = $data->get()->map(function ($arr) {
-                $arr['id_territory'] = "OPERATION";
-                return $arr;
-            });
-            return array("data" => $data);
+            // $data->where('users.nik','=','1100492050');
+            // $data = $data->get()->map(function ($arr) {
+            //     $arr['id_territory'] = "OPERATION";
+            //     return $arr;
+            // });
+            $data->where('users.id_territory',$request->id_territory);
+            return array("data" => $data->get());
 
         } else {
             $data->where('users.id_territory',$request->id_territory);

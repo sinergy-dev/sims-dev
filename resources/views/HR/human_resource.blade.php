@@ -175,7 +175,7 @@ Human Resources
 		  			<div class="pull-right" style="margin-right: 20px">
 		  				<div class="input-container">
 						    <i class="fa fa-search icon"></i>
-						    <input class="input-field form-control Search" id="search" name="search" type="text" placeholder="Search..." name="email">
+						  <!--   <input class="input-field form-control Search" id="search" name="search" type="text" placeholder="Search..." name="email"> -->
 						    <!-- <button class="btn btn-primary btn-sm">Cari</button> -->
 						</div>
 		  			</div>
@@ -2553,6 +2553,7 @@ Human Resources
 	function searchCustom(id_table,id_seach_bar){
 		$("#" + id_table).DataTable().search($('#' + id_seach_bar).val()).draw();
 	}
+
 	$(document).ready(function(){
 		localStorage.clear();
 
@@ -2560,8 +2561,7 @@ Human Resources
         accesable.forEach(function(item,index){
           $("#" + item).show()          
         })  
-        console.log(accesable)
-
+        
         // if (accesable.includes('btnEdit') == false) {
 	       //  var column1 = table1.column(9);
 	       //  column1.visible(!column1.visible());
@@ -2599,6 +2599,7 @@ Human Resources
 	        column5.visible(false);
         }
     })
+
 	$(":input").inputmask();
 	$("#phone_number").inputmask({"mask": "(+62) 999-9999-9999"});
 	$("#phone_number_update").inputmask({"mask": "(+62) 999-9999-9999"});
@@ -2635,11 +2636,11 @@ Human Resources
 		var x = document.getElementsByClassName("tab-add");
 		x[n].style.display = "inline";
 		if (n == (x.length - 1)) {
-			console.log(n)
+			
 			document.getElementById("nextBtnAdd").innerHTML = "Register";
 			$("#nextBtnAdd").attr('onclick','submitRegEmp()');				
 		} else {
-			console.log(n)
+			
 			$("#nextBtnAdd").attr('onclick','nextPrevAdd(1)');
 			$("#prevBtnAdd").attr('onclick','nextPrevAdd(-1)')
 			document.getElementById("nextBtnAdd").innerHTML = "Next";
@@ -2730,7 +2731,7 @@ Human Resources
 
     var currentTab = 0
     function showEditTab(value,n){ 
-    	console.log(value)
+    	
     	if (n == 0) {
 		document.getElementById("prevBtn").style.display = "none";
 		} else {
@@ -2760,7 +2761,7 @@ Human Resources
           },
           success: function(result){
           	$.each(result[0], function(key, value){
-          		console.log(value.id_company)
+          		
           	   if (value.id_company == '2') {
           	   	$("#div_roles").hide()
           	   }else{
@@ -2877,10 +2878,24 @@ Human Resources
 				   	localStorage.setItem("akhir_kontrak_update", $("#akhir_kontrak_update").val())
 				   }
 
+				   localStorage.setItem("address_update", $("#address_update").val())
 				   if (!localStorage.getItem("address_update") == true) {
-	               	$("#address_update").val(value.address);
+				   	localStorage.setItem("address_update", $("#address_update").val())
+				   	if (value.address != "") {
+	               		$("#address_update").val(value.address);
+				   	}else{
+	               		$("#address_update").val(localStorage.getItem("address_update"));
+				   	}
+				   }else{
 				   	localStorage.setItem("address_update", $("#address_update").val())
 				   }
+
+				   // if (!localStorage.getItem("address_update") == true) {
+				   // 	localStorage.setItem("address_update", $("#address_update").val())
+	      //          	$("#address_update").val(value.address);
+				   // }else{
+				   // 	localStorage.setItem("address_update", $("#address_update").val())
+				   // }
 
 				   if (!localStorage.getItem("phone_number_update") == true) {
 	               	$("#phone_number_update").val(value.phone);
@@ -3034,7 +3049,7 @@ Human Resources
 	               	}
 		            
 		            if (value.id_company == "1") {
-		            	console.log("sip")
+		            	
 		             	$("#company_view_update").val("SIP").prop("readonly", true);
 	               		localStorage.setItem("company_update", 1)
 		            }else{
@@ -3258,7 +3273,7 @@ Human Resources
 
 				// 		})
 				// 		// data=data.message;
-				// 		console.log(data.errors);
+				
 				// 	}
 				// }
 	        }); 
@@ -3269,7 +3284,7 @@ Human Resources
   //   $('.btn-editan2').click(function(n){    	
 		// var currentTab = 0
 
-		// console.log(n)
+		
   //       $.ajax({
   //         type:"GET",
   //         url:"{{url('/hu_rec/get_hu')}}",
@@ -3282,7 +3297,7 @@ Human Resources
   //           'processing': '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
   //         },
   //         success: function(result){
-  //         	console.log(result)
+  
   //           $.each(result[0], function(key, value){
   //              $("#nik_update").val(value.nik).prop("readonly", true);
   //              $("#name_update").val(value.name).prop("readonly", true);
@@ -3538,7 +3553,6 @@ Human Resources
             });
             } else if (result[1] == 'ACC') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
               append = append + "<option>" + value.name_position + "</option>";
             });
             } 
@@ -3680,22 +3694,22 @@ Human Resources
             });
             } else if (result[1] == 'ADMIN_MSP') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             } else if (result[1] == 'WAREHOUSE_MSP') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             } else if (result[1] == 'OPERATION_MSP') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             } else {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             }
@@ -3722,7 +3736,7 @@ Human Resources
             });
             } else if (result[1] == 'NONE_MSP') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             }
@@ -3841,7 +3855,7 @@ Human Resources
             });
             } else if (result[1] == 'ACC') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             } 
@@ -3890,12 +3904,12 @@ Human Resources
             });
             } else if (result[1] == 'PMO') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             } else if (result[1] == 'DIR') {
               $.each(result[0], function(key, value){
-              /*console.log(value);*/
+              
               append = append + "<option>" + value.name_position + "</option>";
             });
             }
@@ -3953,7 +3967,7 @@ Human Resources
                 });
                 } else if (result[1] == 'OPERATION_MSP') {
                   $.each(result[0], function(key, value){
-                  /*console.log(value);*/
+                  
                   append = append + "<option>" + value.name_position + "</option>";
                 });
                 }
@@ -4063,7 +4077,7 @@ Human Resources
   	$(".Search").keyup(function(){
       	var dInput = this.value;
       	var dLength = dInput.length;
-    	console.log(dInput);
+    	
     	if (dLength < 1) {
     		var value = $(this).val().toLowerCase();
 		    $("#all #alls2").filter(function() {
@@ -4166,7 +4180,7 @@ Human Resources
 
 	function statusSelect(id)
 	{
-		console.log(id.value)
+		
 		if (id.value == 'Tetap') {
 			$("#status_karyawan_update").val("Karyawan Tetap");
 		}else if (id.value == 'Kontrak') {
@@ -4178,7 +4192,7 @@ Human Resources
 
 	function companySelect(id)
 	{
-		console.log(id.value);
+		
 		if (id.value == '1') {
 			$('#divisi_update').html(append)
             var append = "<option value=''>-- Select Option --</option>";
@@ -4356,7 +4370,7 @@ Human Resources
     }
 
     function roleSelect(id){
-    	console.log(id)
+    	
     	$("#roles_view_update").val($("#roles_user_update option:selected").text());
 
 		localStorage.setItem("roles_update", $("#roles_user_update").val())
