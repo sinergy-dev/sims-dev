@@ -402,6 +402,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/get_top_win_msp', 'ReportController@get_top_win_msp');
 	Route::get('/get_filter_top_win_sip', 'ReportController@get_filter_top_win_sip');
 	Route::get('/get_filter_top_win_msp', 'ReportController@get_filter_top_win_msp');
+	Route::get('/getCustomerPerTerritory', 'ReportController@getCustomerPerTerritory');
 	
 
 
