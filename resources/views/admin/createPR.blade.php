@@ -914,14 +914,18 @@
             <div id="notAllChecked" style="display:none;">
                 <div class="form-group">
                   <label>Approve/Reject*</label><br>
-                  <span>
-                    <input type="radio" class="minimal radioConfirm" name="radioConfirm" value="approve">
-                    Approve
-                  </span><br>
-                  <span>
-                    <input type="radio" class="minimal radioConfirm" name="radioConfirm" value="reject">
-                    Reject
-                  </span>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" class="minimal radioConfirm" name="radioConfirm" value="approve">
+                      Approve
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" class="minimal radioConfirm" name="radioConfirm" value="reject">
+                      Reject
+                    </label>
+                  </div>
                 </div>
                 <div class="form-group" style="display:none;" id="divReasonReject">
                   <h4>Reason of Reject</h4>
@@ -2398,6 +2402,17 @@
                               }) 
                             }
                           }) 
+
+                          const myFileSbe = new File(['{{asset("/draft_pr/146_quote_supplier.pdf")}}'], '/draft_pr/146_quote_supplier.pdf',{
+                            type: 'text/plain',
+                            lastModified: new Date(),
+                          });
+                          // Now let's create a DataTransfer to get a FileList
+                          const dataTransferSbe = new DataTransfer();
+                          dataTransferSbe.items.add(myFileSbe);
+                          fileSBE.files = dataTransferSbe.files;
+
+                          $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").show()
                         })
 
                         if (status == 'reject' || status == 'revision' || status == 'saved') {
@@ -3917,7 +3932,7 @@
                     appendDokumen = appendDokumen + '<div class="form-group" style="font-size: reguler;">'
                       appendDokumen = appendDokumen + '<div class="row">'
                         appendDokumen = appendDokumen + '<div class="col-md-6">'
-                          appendDokumen = appendDokumen + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;"><a href="'+item.link_drive+'" target="blank"><i class="'+ fa_doc +'"></i>'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1] +'</a>'
+                          appendDokumen = appendDokumen + '<div style="border: 1px solid #dee2e6 !important;padding: 5px;background-color: #EEEEEE;"><a href="'+item.link_drive+'" target="blank"><i class="'+ fa_doc +'"></i>'+ item.dokumen_location.substring(0,15) + '....'+ item.dokumen_location.split(".")[0].substring(item.dokumen_location.length -10) + "." + item.dokumen_location.split(".")[1] +'</a>'
                           appendDokumen = appendDokumen + '</div>'
                         appendDokumen = appendDokumen + '</div>'
                         appendDokumen = appendDokumen + '<div class="col-md-6">'

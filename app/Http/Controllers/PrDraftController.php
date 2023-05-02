@@ -717,7 +717,18 @@ class PrDraftController extends Controller
     {
         $data = collect(SalesProject::join('sales_lead_register', 'sales_lead_register.lead_id', '=', 'tb_id_project.lead_id')->select(DB::raw('`sales_lead_register`.`lead_id` AS `id`,`sales_lead_register`.`lead_id` AS `text`'))->where('tb_id_project.id_project', $request->pid)->get());
 
-        return array("data" => $data);
+        // return $data[0]['id'];
+
+        $getLinkSbe = DB::table('tb_sbe')->join('tb_sbe_document','tb_sbe_document.id_sbe','tb_sbe.id')->where('lead_id',$data[0]['id'])->select('link_drive','document_name','document_location')->get();
+
+        // return $getLinkSbe;
+
+        return collect([
+            'data' => $data,
+            'linkSbe' => $getLinkSbe
+        ]);
+
+        // return array("data" => $data);
     }
 
     public function getPidAll(Request $request)
