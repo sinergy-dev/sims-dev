@@ -375,7 +375,7 @@ class PrDraftController extends Controller
         sort($date);
         
         return collect([
-            "data" => $getData->get(),
+            "data" => $getData->get()->makeHidden(['comparison']),
             "data_type_letter" => $getData->pluck('tb_pr_draft.type_of_letter')->unique()->values()->map(function ($item, $key){
                 return array("id" => $item, "text" => $item);
             }),
@@ -665,37 +665,37 @@ class PrDraftController extends Controller
             $getDataEPR = PRDraft::where('type_of_letter', 'EPR')
             // ->where('status', '!=', 'SAVED')
             ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
-            ->get();
+            ->get()->makeHidden(['comparison']);
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->get();
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->whereIn('issuance',$listTerritory)->get()->makeHidden(['comparison']);
         } else {
-            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->get();
+            $getDataEPR = PRDraft::where('type_of_letter', 'EPR')->where('issuance',$nik)->get()->makeHidden(['comparison']);
         }
 
         if ($cek_role->name == 'BCD Manager' || $cek_role->name == 'BCD Procurement' || $cek_role->name == 'Operations Director' || $cek_role->name == 'President Director') {
             $getData = PRDraft::where('type_of_letter', 'IPR')
             // ->where('status', '!=', 'SAVED')
             ->whereRaw("(`status` != 'SAVED' AND `status` != 'CANCEL')")
-            ->get();
+            ->get()->makeHidden(['comparison']);
         } else if ($cek_role->name == 'Sales Manager'){
             $listTerritory = User::where('id_territory',$territory)->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listTerritory)->get()->makeHidden(['comparison']);
         } else if ($cek_role->name == 'PMO Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','pmo')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
         } else if ($cek_role->name == 'MSM Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','msm')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
         } else if ($cek_role->name == 'HR Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','hr')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
         } else if ($cek_role->name == 'SOL Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','presales')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
         } else if ($cek_role->name == 'SID Manager'){
             $listGroup = User::join('role_user', 'role_user.user_id', '=', 'users.nik')->join('roles', 'roles.id', '=', 'role_user.role_id')->where('roles.group','DPG')->pluck('nik');
-            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get();
+            $getData = PRDraft::where('type_of_letter', 'IPR')->whereIn('issuance',$listGroup)->get()->makeHidden(['comparison']);
         } else {
             $getData = PRDraft::where('type_of_letter', 'IPR')->where('issuance',$nik)->get();
         }
