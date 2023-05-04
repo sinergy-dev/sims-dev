@@ -347,7 +347,9 @@ class SBEController extends Controller
 
         if ($cek_role->name == 'SOL Staff') {
             $data->where('sales_solution_design.nik',$nik)->get();
-        } else {
+        } elseif($cek_role->group == 'sales'){
+            $data->where('sales_lead_register.nik',$nik)->get();
+        }else {
             $data->get();
         }
 
@@ -673,6 +675,70 @@ class SBEController extends Controller
         $fileName = 'SBE ' . $getAll->lead_id . '.pdf';
 
         return $pdf->stream($fileName);
+    }
+
+    public function uploadPdfConfigManual(Request $request)
+    {
+        $client = $this->getClient();
+        $service = new Google_Service_Drive($client);
+
+        $data = Sbe::where('id',$request->id_sbe)->first();
+
+
+        if ($data->parent_id_drive == null) {
+            $parentID = $this->googleDriveMakeFolder($request->project_id);
+            $parent_id = $this->googleDriveMakeFolder($data->lead_id);
+            $data->parent_id_drive = $parent_id;
+            $data->save();
+
+
+            $getParent = DB::table('tb_sbe')->where('id',$request->id_sbe)->first();
+            $parent_id = explode('"', $getParent->parent_id_drive)[1];
+            $parent = [];
+            array_push($parent,$parent_id);
+        } else {
+            $getParent = DB::table('tb_sbe')->where('id',$request->id_sbe)->first();
+            $parent_id = explode('"', $getParent->parent_id_drive)[1];
+            $parent = [];
+            array_push($parent,$parent_id);
+        }
+
+        $fileName =  'SBE_' . $data->lead_id . '.pdf';
+
+        if(isset($fileName)){
+            $pdf_url = urldecode(url("/sbe/getGenerateConfig?id_sbe=" . $request->id_sbe));
+            $pdf_name = $fileName;
+        } else {
+            $pdf_url = 'http://test-drive.sinergy.co.id:8000/Lampiran.pdf';
+            $pdf_name = 'pdf_lampiran';
+        }
+
+        $file = new Google_Service_Drive_DriveFile();
+        $file->setName($pdf_name);
+        $file->setParents($parent);
+
+        $result = $service->files->create(
+            $file, 
+            array(
+                'data' => file_get_contents($pdf_url, false, stream_context_create(["ssl" => ["verify_peer"=>false, "verify_peer_name"=>false]])),
+                'mimeType' => 'application/octet-stream',
+                'uploadType' => 'multipart',
+                'supportsAllDrives' => true
+            )
+        );
+
+        $optParams = array(
+            'fields' => 'files(webViewLink)',
+            'q' => 'mimeType="application/pdf" and "' . explode('"',$getParent->parent_id_drive)[1] . '" in parents',
+            'supportsAllDrives' => true,
+            'includeItemsFromAllDrives' => true
+        );
+
+        $link = $service->files->listFiles($optParams)->getFiles()[0]->getWebViewLink();
+
+        $updateLink = SbeDocument::where('id_sbe',$request->id_sbe)->first();
+        $updateLink->link_drive = $link;
+        $updateLink->save();
     }
 
     public function uploadPdfConfig(Request $request)
