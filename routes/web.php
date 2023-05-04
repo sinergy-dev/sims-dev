@@ -1348,6 +1348,8 @@ Route::get('downloadSbePdf','TestController@downloadSbePdf');
 Route::get('testMailSBE','TestController@testMailSBE');
 
 // Route::get('testDataTable','TestController@testDataTable');
+// Route::get('testFullCalendar','TestController@indexCalendar');
+
 
 
 
