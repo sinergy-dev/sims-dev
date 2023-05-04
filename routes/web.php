@@ -52,6 +52,7 @@ Route::get('/PMO/downloadProgressMeetingPdf','PMProjectController@downloadProgre
 Route::get('/PMO/downloadFinalProjectPdf','PMProjectController@downloadFinalProjectPdf');
 
 Route::post('/sbe/uploadPdfConfig','SBEController@uploadPdfConfig');
+Route::get('/sbe/uploadPdfConfigManual','SBEController@uploadPdfConfigManual');
 Route::get('/sbe/getGenerateConfig','SBEController@getGenerateConfig');
 
 // Route::get('testPermissionConfigFeature','TestController@testPermissionConfigFeature');

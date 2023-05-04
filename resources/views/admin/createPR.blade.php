@@ -2406,9 +2406,11 @@
                                 dataTransferSbe.items.add(myFileSbe);
                                 fileSBE.files = dataTransferSbe.files;
 
+                                $("#inputSBE").attr("disabled",true).css("cursor","not-allowed")
                                 $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").show()
                                 $("#link_sbe").attr("href",result.linkSbe[0].link_drive)
                               }else{
+                                $("#inputSBE").attr("disabled",false).css("cursor","")
                                 $("#inputSBE").val("")
                                 $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").hide()
                               }
@@ -3227,9 +3229,11 @@
                       dataTransferSbe.items.add(myFileSbe);
                       fileSBE.files = dataTransferSbe.files;
 
+                      $("#inputSBE").attr("disabled",true).css("cursor","not-allowed")
                       $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").show()
                       $("#link_sbe").attr("href",result.linkSbe[0].link_drive)
                     }else{
+                      $("#inputSBE").attr("disabled",false).css("cursor","")
                       $("#inputSBE").val("")
                       $("#inputSBE").closest(".form-group").find("#span_link_drive_sbe").hide()
                     }

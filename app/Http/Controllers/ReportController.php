@@ -4139,6 +4139,7 @@ class ReportController extends Controller
             ->where('sales_lead_register.result','!=','hmm')
             ->where('users.status_karyawan','!=','dummy')
             ->whereRaw("(`id_territory` != 'SALES MSP' AND `id_territory` != 'SPECIALIST' AND `id_territory` != 'PRESALES')")
+            ->where('id_territory',$request->id_territory)
             ->groupBy('id_territory')
             ->groupBy('sales_lead_register.id_customer');
 

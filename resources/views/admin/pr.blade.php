@@ -539,18 +539,21 @@
         "type":"GET",
         "url":"{{url('getdatapr')}}",
         "dataSrc": function (json){
-
           json.data.forEach(function(data,index){
+            data.btn_show_pdf = ""
             if("{{Auth::User()->nik}}" == data.issuance_nik && data.status != 'Done' || "{{Auth::User()->id_position}}" == "PROCUREMENT") {
               var x = '"' + data.no + '","' + data.to + '","' + data.attention+ '","' +data.title+ '","' +data.description+ '","' +data.amount+ '","' +data.project_id+ '","' +data.status+ '","' + data.type_of_letter+ '","' + data.date+ '","' + data.position + '"'
               data.btn_edit = "<button class='btn btn-xs btn-primary' onclick='edit_pr(" + x + ")'>&nbsp Edit</button>";
             } else {
-              data.btn_edit = "<button class='btn btn-xs btn-primary disabled'>&nbsp Edit</button>";
+              if (data.status == 'Done') {
+                data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><a style='margin-left:5px' class='btn btn-sm btn-success' target='_blank' href='{{url('/admin/getPdfPRFromLink')}}/?no_pr="+ data.id_draft_pr +"'>&nbsp Show Pdf</a>"
+              }else{
+                data.btn_edit = "<button class='btn btn-sm btn-primary disabled'>&nbsp Edit</button><button style='margin-left:5px' class='btn btn-sm btn-success' disabled>&nbsp Show Pdf</button>"
+              }
             }
               
           });
           return json.data;
-          
         }
       },
       "columns": [
