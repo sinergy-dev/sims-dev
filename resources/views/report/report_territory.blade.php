@@ -187,7 +187,7 @@ Report Customer
               <table class="table table-bordered" id="tbCusByTer">
                 <thead>
                   <tr>
-                      <th>Brand Name</th>
+                      <th>Customer Name</th>
                       <th>Territory</th>
                   </tr>
                 </thead>
@@ -779,7 +779,6 @@ Report Customer
     }    
 
     function changeTerritory(id_territory) {
-      console.log(id_territory)
       start_date  = moment($('#reportrange').val().split(' - ')[0],'DD/MM/YYYY').format("YYYY-MM-DD HH:mm:ss");
       end_date    = moment($('#reportrange').val().split(' - ')[1],'DD/MM/YYYY').format("YYYY-MM-DD HH:mm:ss");
       if (id_territory == "all") {
@@ -788,10 +787,12 @@ Report Customer
         $('#sip').css("display","block");
       }else if (id_territory == "msp") {
         $('#data_leadmsp').DataTable().ajax.url("{{url('getreportcustomermsp')}}?start_date=" + start_date + "&" + "end_date=" + end_date).load();
+        tableCustByTer.ajax.url("{{url('getCustomerPerTerritory')}}?id_territory=" + id_territory).load();
         $('#msp').css("display","block");
         $('#sip').css("display","none");
       }else{
         $('#data_lead').DataTable().ajax.url("{{url('getFilterTerritoryTabs')}}?start_date=" + start_date + "&" + "end_date=" + end_date + "&" + "id_territory=" + id_territory).load();
+        tableCustByTer.ajax.url("{{url('getCustomerPerTerritory')}}?id_territory=" + id_territory).load();
         $('#msp').css("display","none");
         $('#sip').css("display","block");
       }
@@ -802,16 +803,19 @@ Report Customer
       // }
     }
 
-    $("#tbCusByTer").DataTable({
+    var tableCustByTer = $("#tbCusByTer").DataTable({
       "ajax":{
         "type":"GET",
-        "url":"{{url('getCustomerPerTerritory')}}",
+        "url":"{{url('getCustomerPerTerritory')}}?id_territory="+id_territory,
       },
       "columns": [
         { "data": "brand_name" },
         { "data": "id_territory" },
       ],
-      "columnDefs": [{ visible: true, targets:1 }],
+      "columnDefs": [
+        { visible: true, targets:1 },
+        {"targets": 0,"orderable": false}
+      ],
       "order": [[1, 'asc']],
       displayLength: 25,
       drawCallback: function (settings) {
