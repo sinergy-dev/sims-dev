@@ -90,7 +90,7 @@
   <title>SBE - {{$getAll->opp_name}}</title>
 </head>
 <body>
-  <img src="{{url('img/header-sbe.png')}}" style="height:15px;width: 100%;" />
+  <img src="img/header-sbe.png" style="height:15px;width: 100%;" />
   <br><br>
   <div style="page-break-inside: avoid;">
     <h2 class="center">Service Budget Estimate(SBE) - {{$getAll->customer_legal_name}}<br>
@@ -126,105 +126,104 @@
   
   <div style="page-break-inside: avoid;"> 
     @foreach($getFunction as $keys => $datas)
-      <div style="display: flex;">
-        <div style="margin-left: 10px;">
-          @if($keys == "Implementation")
-            <div style="width: 100px;height: 50px;background-color: #789de5;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
-              <b style="text-align: center;">
-                  {{$keys}}
-              </b>
-            </div>
-          @elseif($keys == "Maintenance")
-            <div style="width: 100px;height: 50px;background-color: #ea3323;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
-              <b style="text-align: center;">
-                  {{$keys}}
-              </b>
-            </div>
-          @else
-            <div style="width: 100px;height: 50px;background-color: #f19e38;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
-              <b style="text-align: center;">
-                  {{$keys}}
-              </b>
-            </div>
-          @endif
-        </div>
-        <div style="float: right;margin-left: 150px;">
-          @foreach($datas as $data_config)
-            <table class="table-bordered">
-                @if($keys == "Implementation")
-                  <thead style="background-color:#789de5">
-                @elseif($keys == "Maintenance")
-                  <thead style="background-color:#ea3323">
-                @else
-                  <thead style="background-color:#f19e38">
-                @endif
-                <tr>
-                  <th style="width: 20px;text-align: center;">No</th>
-                  <th style="text-align: center;">Function</th>
-                  <th style="text-align: center;">Total</th>
-                </tr>
-              </thead> 
-              <?php $i = 0 ?>
-              @foreach($data_config->get_function as $datas_config)
-              <tbody>
+      <div style="margin-bottom: 40px;">
+        <div style="display: flex;">
+          <div style="margin-left: 10px;">
+            @if($keys == "Implementation")
+              <div style="width: 100px;height: 50px;background-color: #789de5;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
+                <b style="text-align: center;">
+                    {{$keys}}
+                </b>
+              </div>
+            @elseif($keys == "Maintenance")
+              <div style="width: 100px;height: 50px;background-color: #ea3323;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
+                <b style="text-align: center;">
+                    {{$keys}}
+                </b>
+              </div>
+            @else
+              <div style="width: 100px;height: 50px;background-color: #f19e38;color: white;text-align: center;margin-left: 10px;margin-top: 10px;padding-top: 25px;">
+                <b style="text-align: center;">
+                    {{$keys}}
+                </b>
+              </div>
+            @endif
+          </div>
+          <div style="float: right;margin-left: 150px;margin-bottom: 60px;">
+            @foreach($datas as $data_config)
+              <table class="table-bordered">
+                  @if($keys == "Implementation")
+                    <thead style="background-color:#789de5">
+                  @elseif($keys == "Maintenance")
+                    <thead style="background-color:#ea3323">
+                  @else
+                    <thead style="background-color:#f19e38">
+                  @endif
                   <tr>
-                    <td style="text-align: center;">{{++$i}}</td>
-                    <td style="text-align: left;">{{$datas_config->item}}</td>
-                    <td style="text-align: right">IDR {{number_format($datas_config->total_nominal)}}</td>
+                    <th style="width: 20px;text-align: center;">No</th>
+                    <th style="text-align: center;">Function</th>
+                    <th style="text-align: center;">Total</th>
                   </tr>
-              </tbody>
-              @endforeach
+                </thead> 
+                <?php $i = 0 ?>
+                @foreach($data_config->get_function as $datas_config)
+                <tbody>
+                    <tr>
+                      <td style="text-align: center;">{{++$i}}</td>
+                      <td style="text-align: left;">{{$datas_config->item}}</td>
+                      <td style="text-align: right">IDR {{number_format($datas_config->total_nominal)}}</td>
+                    </tr>
+                </tbody>
+                @endforeach
 
-              <tfoot>
-                <tr>
-                  <th colspan="2" style="text-align:right;">Grand Total Cost</th>
-                  <th style="text-align:right;">IDR {{number_format($data_config->nominal)}}</th>
-                </tr>
-              </tfoot>   
-            </table>
-          @endforeach
+                <tfoot>
+                  <tr>
+                    <th colspan="2" style="text-align:right;">Grand Total Cost</th>
+                    <th style="text-align:right;">IDR {{number_format($data_config->nominal)}}</th>
+                  </tr>
+                </tfoot>   
+              </table>
+            @endforeach
+          </div>
         </div>
       </div>
-    @endforeach    
-      <table style="width:96.5%">
-        <tr>
-          <th style="text-align:right;width: 65%;">Grand Total SBE Operational</th>
-          <th style="text-align:right">IDR {{number_format($getAll->grand_total)}}</th>
-        </tr>
-      </table>      
+    @endforeach   
+      <div>
+        <table style="width:96.5%;margin-top:-25px;">
+          <tr>
+            <th style="text-align:right;width: 65%;">Grand Total SBE Operational</th>
+            <th style="text-align:right">IDR {{number_format($getAll->grand_total)}}</th>
+          </tr>
+        </table>  
+        <table style="width: 100%;text-align: center;margin-top:15px">
+          <tr>
+            @foreach($getSign as $data_sign)
+            <td>
+              <div style="margin-top:15px">
+                @if($data_sign->position == "SOL Manager")
+                Approval By:<br><br>
+                @else
+                Issued By:<br><br>
+                @endif
+                <img src="{{$data_sign->ttd_digital}}" style="height:50px;width: 50px;background-size:cover ;">
+                <br><u>{{$data_sign->name}}</u><br>
+                {{$data_sign->position}}
+              </div>
+              <u></u>
+              <br>
+              <i>
+                <b></b>
+              </i>
+            </td>
+            @endforeach
+          </tr>
+        </table>   
+        <p>Note : If you have any further inqueries, please do not hesitate to contact us. We thank you for your kind attention.</p>
+      </div> 
+      <br><br><br><br><br><br>
+      <img src="img/header-sbe.png" style="width:100%;height: 15px; A_CSS_ATTRIBUTE:all;position: absolute" />
   </div>
-
-  <div style="page-break-inside: avoid;">
-    <table style="width: 100%;text-align: center;">
-      <tr>
-        @foreach($getSign as $data_sign)
-        <td>
-          <div style="margin-top:15px;margin-bottom: 5px;">
-            @if($data_sign->position == "SOL Manager")
-            Approval By:<br><br>
-            @else
-            Issued By:<br><br>
-            @endif
-            <img src="{{$data_sign->ttd_digital}}" style="height:50px;width: 50px;background-size:cover ;">
-            <br><u>{{$data_sign->name}}</u><br>
-            {{$data_sign->position}}
-          </div>
-          <div>
-            <!-- <small style="color:#a6a6a6;">(Date Sign)</small> -->
-          </div>
-          <u></u>
-          <br>
-          <i>
-            <b></b>
-          </i>
-        </td>
-        @endforeach
-      </tr>
-    </table>
-    <p>Note : If you have any further inqueries, please do not hesitate to contact us. We thank you for your kind attention.</p>
-  </div><br><br><br><br><br><br>
-  <img src="{{url('img/header-sbe.png')}}" style="width:100%;height: 15px; A_CSS_ATTRIBUTE:all;position: absolute" />
-
+  
   @foreach($getConfig as $keyConf => $dataConfigs)
   <div style="page-break-before: always;margin-top: 50px;">
     <h3 style="text-align:center;">
