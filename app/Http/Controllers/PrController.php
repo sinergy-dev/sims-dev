@@ -741,12 +741,14 @@ class PrController extends Controller
     {
         $tahun = date("Y"); 
 
-        return array("data" => PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
+        $data = PR::join('users as user_from', 'user_from.nik', '=', 'tb_pr.from')
                                 ->join('users as issuance', 'issuance.nik', '=', 'tb_pr.issuance')
-                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount', 'status')
+                                ->select('no','no_pr', 'position', 'type_of_letter', 'month', 'date', 'to', 'attention', 'title', 'description', 'division', 'project_id', 'user_from.name as user_from', 'note', 'issuance.name as issuance', 'category', 'issuance as issuance_nik', 'amount', 'status','id_draft_pr')
                                 ->where('result', '!=', 'R')
                                 ->where('date','like',$tahun."%")
-                                ->get());
+                                ->get();
+
+        return array("data" => $data);
     }
 
     public function destroy_pr($no)
