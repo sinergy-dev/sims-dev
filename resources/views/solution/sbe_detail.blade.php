@@ -2142,6 +2142,9 @@ SBE Detail
                                             }
                                         }
                                     }
+                                }else{
+                                    $("#durationSO").next().show()
+                                    $("#durationSO").closest("div").addClass("has-error")
                                 }
                             })
                             
@@ -2207,6 +2210,9 @@ SBE Detail
                                         }
                                     }
                                     
+                                }else{
+                                    $("#durationImp").next().show()
+                                    $("#durationImp").closest("div").addClass("has-error")
                                 }
                             })
                         })
@@ -2268,6 +2274,9 @@ SBE Detail
                                             }
                                         }
                                     }
+                                }else{
+                                    $("#durationMnS").next().show()
+                                    $("#durationMnS").closest("div").addClass("has-error")
                                 }
                             })
                         })
@@ -2386,6 +2395,9 @@ SBE Detail
         if (isReadyStore == true) {
             createPost(swalFireCustom,formData,swalSuccess,url)
         }else{
+
+
+
             if ($(".nav-tabs-custom").find('.alert-danger').length == 0) {
                 $(".nav-tabs-custom").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please Add Config!</div>') 
             }
