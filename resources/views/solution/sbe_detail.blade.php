@@ -2611,21 +2611,16 @@ SBE Detail
             $(val).last().closest("div").next().hide()
             $(val).last().closest("div").closest(".form-group").removeClass("has-error")
 
-            console.log($(".cbConfig:checked").length)
             if ($(".cbConfig:checked").length == 1) {
-                console.log($(".cbConfig:checked").length)
-                if (val.id == "cbSO") {
+                if ($(".cbConfig:checked")[0].id == "cbSO") {
                     $('.nav-tabs li:nth-child(1)').addClass("active")
                     $('.tab-content div:nth-child(1)').addClass('active')
-
-                }else if (val.id == "cbImp") {
+                }else if ($(".cbConfig:checked")[0].id== "cbImp") {
                     $('.nav-tabs li:nth-child(2)').addClass("active")
                     $('.tab-content div:nth-child(2)').addClass('active')
-
-                }else if (val.id == "cbMnS") {
+                }else{
                     $('.nav-tabs li:nth-child(3)').addClass("active")
                     $('.tab-content div:nth-child(3)').addClass('active')
-
                 }
             }
 
@@ -2638,18 +2633,23 @@ SBE Detail
                     $('.tab-content div:nth-child(1)').removeClass('active')
 
                     if ($(".cbConfig:checked").length >= 1) {
-                        if ($(".cbConfig:checked")[0].id == "cbSO") {
-                            $('.nav-tabs li:nth-child(1)').addClass("active")
-                            $('.tab-content div:nth-child(1)').addClass('active')
-
-                        }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                        if ($('.tab-content .tab-pane.active').attr("id") == "tab_1") {
+                            if ($(".cbConfig:checked")[0].id == "cbSO") {
+                                $('.nav-tabs li:nth-child(1)').addClass("active")
+                                $('.tab-content div:nth-child(1)').addClass('active')
+                            }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                                $('.nav-tabs li:nth-child(2)').addClass("active")
+                                $('.tab-content div:nth-child(2)').addClass('active')
+                            }else{
+                                $('.nav-tabs li:nth-child(3)').addClass("active")
+                                $('.tab-content div:nth-child(3)').addClass('active')
+                            }
+                        }else if ($('.tab-content .tab-pane.active').attr("id") == "tab_2") {
                             $('.nav-tabs li:nth-child(2)').addClass("active")
                             $('.tab-content div:nth-child(2)').addClass('active')
-
-                        }else if ($(".cbConfig:checked")[0].id == "cbMnS") {
+                        }else {
                             $('.nav-tabs li:nth-child(3)').addClass("active")
                             $('.tab-content div:nth-child(3)').addClass('active')
-
                         }
                     }
 
@@ -2664,18 +2664,23 @@ SBE Detail
                     $('.tab-content div:nth-child(2)').removeClass('active')
 
                     if ($(".cbConfig:checked").length >= 1) {
-                        if ($(".cbConfig:checked")[0].id == "cbSO") {
+                        if ($('.tab-content .tab-pane.active').attr("id") == "tab_1") {
                             $('.nav-tabs li:nth-child(1)').addClass("active")
                             $('.tab-content div:nth-child(1)').addClass('active')
-
-                        }else if ($(".cbConfig:checked")[0].id== "cbImp") {
-                            $('.nav-tabs li:nth-child(2)').addClass("active")
-                            $('.tab-content div:nth-child(2)').addClass('active')
-
-                        }else if ($(".cbConfig:checked")[0].id == "cbMnS") {
+                        }else if ($('.tab-content .tab-pane.active').attr("id") == "tab_2") {
+                            if ($(".cbConfig:checked")[0].id == "cbSO") {
+                                $('.nav-tabs li:nth-child(1)').addClass("active")
+                                $('.tab-content div:nth-child(1)').addClass('active')
+                            }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                                $('.nav-tabs li:nth-child(2)').addClass("active")
+                                $('.tab-content div:nth-child(2)').addClass('active')
+                            }else{
+                                $('.nav-tabs li:nth-child(3)').addClass("active")
+                                $('.tab-content div:nth-child(3)').addClass('active')
+                            }
+                        }else{
                             $('.nav-tabs li:nth-child(3)').addClass("active")
                             $('.tab-content div:nth-child(3)').addClass('active')
-
                         }
                     }
                 }
@@ -2688,19 +2693,26 @@ SBE Detail
                     $('.nav-tabs li:nth-child(3)').hide().prop('disabled', true).removeClass('active').addClass('disabled').find("a").removeAttr("data-toggle")
                     $('.tab-content div:nth-child(3)').removeClass('active');
 
+                   
                     if ($(".cbConfig:checked").length >= 1) {
-                        if ($(".cbConfig:checked")[0].id == "cbSO") {
+                        if ($('.tab-content .tab-pane.active').attr("id") == "tab_1") {
                             $('.nav-tabs li:nth-child(1)').addClass("active")
                             $('.tab-content div:nth-child(1)').addClass('active')
-
-                        }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                        }else if ($('.tab-content .tab-pane.active').attr("id") == "tab_2") {
                             $('.nav-tabs li:nth-child(2)').addClass("active")
                             $('.tab-content div:nth-child(2)').addClass('active')
-
-                        }else if ($(".cbConfig:checked")[0].id == "cbMnS") {
-                            $('.nav-tabs li:nth-child(3)').addClass("active")
-                            $('.tab-content div:nth-child(3)').addClass('active')
-
+                        }else{
+                            if ($(".cbConfig:checked")[0].id == "cbSO") {
+                                $('.nav-tabs li:nth-child(1)').addClass("active")
+                                $('.tab-content div:nth-child(1)').addClass('active')
+                            }else if ($(".cbConfig:checked")[0].id== "cbImp") {
+                                $('.nav-tabs li:nth-child(2)').addClass("active")
+                                $('.tab-content div:nth-child(2)').addClass('active')
+                            }else{
+                                $('.nav-tabs li:nth-child(3)').addClass("active")
+                                $('.tab-content div:nth-child(3)').addClass('active')
+                            }
+                            
                         }
                     }
                 }
