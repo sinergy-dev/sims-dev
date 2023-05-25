@@ -418,6 +418,8 @@ SBE Detail
                     if (result.length == 0) {
                         showEmptyConfig()
                     }else{
+                        var sumTotalPrice = 0
+
                         $.each(result,function(index,items){
                             if (index == "Implementation") {
                                 var bg_color = "#789de5"
@@ -440,12 +442,12 @@ SBE Detail
                             appendTemporary = appendTemporary + '            </div>'
                             appendTemporary = appendTemporary + '            <div class="col-md-9 col-xs-12">'
                             appendTemporary = appendTemporary + '                <div class="table-responsive">'
-                            appendTemporary = appendTemporary + '                    <table class="table table-bordered" width="100%">'
+                            appendTemporary = appendTemporary + '                    <table class="table table-bordered" id="tablePreviewConfig" width="100%">'
                             appendTemporary = appendTemporary + '                        <thead style="background-color:'+ bg_color +';color:white">'
                             appendTemporary = appendTemporary + '                            <tr>'
                             appendTemporary = appendTemporary + '                                <th>No</th>'
                             appendTemporary = appendTemporary + '                                <th>Function</th>'
-                            appendTemporary = appendTemporary + '                                <th>Total</th>'
+                            appendTemporary = appendTemporary + '                                <th width="150">Total</th>'
                             appendTemporary = appendTemporary + '                            </tr>'
                             appendTemporary = appendTemporary + '                        </thead>'
                             appendTemporary = appendTemporary + '                        <tbody>'
@@ -460,7 +462,7 @@ SBE Detail
                             })
                             appendTemporary = appendTemporary + '      <tfoot>'
                             appendTemporary = appendTemporary + '          <tr>'
-                            appendTemporary = appendTemporary + '              <th colspan="2" style="text-align:right">Grand Total</th>'
+                            appendTemporary = appendTemporary + '              <th colspan="2" style="text-align:right">Total Price</th>'
                             appendTemporary = appendTemporary + '              <th>'+ formatter.format(items[0].nominal) +'</th>'
                             appendTemporary = appendTemporary + '          </tr>'
                             appendTemporary = appendTemporary + '                        </tfoot>'
@@ -468,10 +470,34 @@ SBE Detail
                             appendTemporary = appendTemporary + '                </div>'
                             appendTemporary = appendTemporary + '            </div>'
                             appendTemporary = appendTemporary + '        </div>'
+
+                            sumTotalPrice += parseInt(items[0].nominal) 
                         })
-                        
+
                         appendTemporary = appendTemporary + '     <button class="btn btn-sm btn-success pull-right" onclick="generatePDF()" id="btnGeneratePdf" style="display:none">Generate</button>'
                         $("#boxConfigTemp").append(appendTemporary).fadeIn('slow')
+
+
+                        var appendGrandTotal = ""
+                        appendGrandTotal = appendGrandTotal + "<div class='row'>"
+                        appendGrandTotal = appendGrandTotal + "     <div class='pull-right'>"
+                        appendGrandTotal = appendGrandTotal + "         <div class='col-md-12'>"
+                        appendGrandTotal = appendGrandTotal + "             <table class='table'>"
+                        appendGrandTotal = appendGrandTotal + "                 <tr>"
+                        appendGrandTotal = appendGrandTotal + "                     <th colspan=2>"
+                        appendGrandTotal = appendGrandTotal + "                         Grand Total Price"
+                        appendGrandTotal = appendGrandTotal + "                     </th>"
+                        appendGrandTotal = appendGrandTotal + "                     <th width='150'>"
+                        appendGrandTotal = appendGrandTotal + formatter.format(sumTotalPrice)
+                        appendGrandTotal = appendGrandTotal + "                     </th>"
+                        appendGrandTotal = appendGrandTotal + "                 </tr>"
+                        appendGrandTotal = appendGrandTotal + "             </table>"
+
+                        appendGrandTotal = appendGrandTotal + "         </div>"
+                        appendGrandTotal = appendGrandTotal + "     </div>"
+                        appendGrandTotal = appendGrandTotal + "</div>" 
+
+                        $("#boxConfigTemp").find(".row").last().after(appendGrandTotal)
                     }
 
                     accesable.forEach(function(item,index){
@@ -2142,6 +2168,9 @@ SBE Detail
                                             }
                                         }
                                     }
+                                }else{
+                                    $("#durationSO").next().show()
+                                    $("#durationSO").closest("div").addClass("has-error")
                                 }
                             })
                             
@@ -2207,6 +2236,9 @@ SBE Detail
                                         }
                                     }
                                     
+                                }else{
+                                    $("#durationImp").next().show()
+                                    $("#durationImp").closest("div").addClass("has-error")
                                 }
                             })
                         })
@@ -2268,6 +2300,9 @@ SBE Detail
                                             }
                                         }
                                     }
+                                }else{
+                                    $("#durationMnS").next().show()
+                                    $("#durationMnS").closest("div").addClass("has-error")
                                 }
                             })
                         })
@@ -2386,6 +2421,9 @@ SBE Detail
         if (isReadyStore == true) {
             createPost(swalFireCustom,formData,swalSuccess,url)
         }else{
+
+
+
             if ($(".nav-tabs-custom").find('.alert-danger').length == 0) {
                 $(".nav-tabs-custom").prepend('<div class="alert alert-danger alert-dismissible"><h4><i class="icon fa fa-ban"></i> Alert!</h4>Please Add Config!</div>') 
             }
