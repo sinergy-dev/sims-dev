@@ -482,7 +482,7 @@ SBE Detail
                         appendGrandTotal = appendGrandTotal + "<div class='row'>"
                         appendGrandTotal = appendGrandTotal + "     <div class='pull-right'>"
                         appendGrandTotal = appendGrandTotal + "         <div class='col-md-12'>"
-                        appendGrandTotal = appendGrandTotal + "             <table class='table'>"
+                        appendGrandTotal = appendGrandTotal + "             <table class='table' style='background-color:#42855B!important;color:white'>"
                         appendGrandTotal = appendGrandTotal + "                 <tr>"
                         appendGrandTotal = appendGrandTotal + "                     <th colspan=2>"
                         appendGrandTotal = appendGrandTotal + "                         Grand Total Price"
