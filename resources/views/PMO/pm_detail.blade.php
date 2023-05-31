@@ -1085,6 +1085,34 @@ PMO
 		  </div>
 		</div>
 	</div>
+
+	<!--modal custom task-->
+	<div class="modal fade" id="ModalTypeMilestone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog modal-sm" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	        <h5 class="modal-title">Milestone</h5>
+	      </div>
+	      <div class="modal-body">
+	        <div class="form-group">
+	        	<label>Milestone Type</label>
+	        	<select class="form-control select2" id="selectTypeMilestone" name="selectTypeMilestone">
+	        		<option></option>
+	        	</select>
+                <span class="help-block" style="display:none">Please Select Milestone Type!</span>
+	        </div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary" onclick="saveTypeMilestone()">Save</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
 @endsection
 @section('scriptImport')
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
@@ -1343,6 +1371,7 @@ PMO
 	    ['2', 'Document Final Prokect', 'Closing','link','closing'],
 
 	];
+
 	$('#tbDocuments').DataTable({
 		ajax:{
         	url:"{{url('/PMO/getShowDocument')}}",
@@ -1384,7 +1413,6 @@ PMO
                 "data": null,
                 render:function(data, type, row)
                 {	
-                	console.log(row)
                 	return '<button class="btn btn-sm btn-danger" onclick="deleteDoc('+ row.id_document +')"><i class="fa fa-trash-o"></i>&nbspDelete</button>'
                     
                 },
@@ -1418,18 +1446,117 @@ PMO
     	}
     }
 
-    function btnAddMilestone(status){
-    	$(".milestone").show()
-    	$(".detail_project").hide()
-
-    	milestone(status)
+    function btnAddMilestone(status){    	
+    	if (status == 'add') {
+    		$("#ModalTypeMilestone").modal('show')
+    		$("#selectTypeMilestone").select2({
+    			placeholder:"Select Milestone Type",
+    			data:[{
+    				id:"Defined",
+    				text:"Defined"
+    			},
+    			{
+    				id:"Custom",
+    				text:"Custom"
+    			}
+    			]
+    		})
+    	}else{
+    		milestone(status)
+    		$(".milestone").show()
+    		$(".detail_project").hide()
+    	}
     }
 
-    function btnshowMilestone(status){
+	function saveTypeMilestone(){
+		if ($("#selectTypeMilestone").val() == "") {
+			$("#selectTypeMilestone").closest("div").find("span").show()
+            $("#selectTypeMilestone").closest("div").addClass("has-error")
+		}else{
+			if ($("#selectTypeMilestone").val() == 'Defined') {
+				milestone('Defined')
+				function updateQueryParam(param, value) {
+				  var url = new URL(window.location.href);
+				  var params = new URLSearchParams(url.search);
+
+				  // Update the parameter value in the URL
+				  params.set(param, value);
+
+				  // Construct the new URL with the updated parameter
+				  var newURL = url.origin + url.pathname + '?' + params.toString();
+
+				  // Change the URL without refreshing the page using replaceState
+				  window.history.replaceState(null, '', newURL);
+				}
+
+				// Usage example
+				updateQueryParam('type_milestone', 'defined');
+			}else{
+				milestone('Custom')
+				function updateQueryParam(param, value) {
+				  var url = new URL(window.location.href);
+				  var params = new URLSearchParams(url.search);
+
+				  // Update the parameter value in the URL
+				  params.set(param, value);
+
+				  // Construct the new URL with the updated parameter
+				  var newURL = url.origin + url.pathname + '?' + params.toString();
+
+				  // Change the URL without refreshing the page using replaceState
+				  window.history.replaceState(null, '', newURL);
+				}
+
+				// Usage example
+				updateQueryParam('type_milestone', 'custom');
+			}
+			$(".milestone").show()
+			$("#ModalTypeMilestone").modal("hide")
+	    	$(".detail_project").hide()
+		}
+		
+	}
+
+    function btnshowMilestone(status,ganttstatus){
     	$(".milestone").show()
     	$(".detail_project").hide()
 
-    	milestone(status)
+    	if (ganttstatus == "custom") {
+    		function updateQueryParam(param, value) {
+			  var url = new URL(window.location.href);
+			  var params = new URLSearchParams(url.search);
+
+			  // Update the parameter value in the URL
+			  params.set(param, value);
+
+			  // Construct the new URL with the updated parameter
+			  var newURL = url.origin + url.pathname + '?' + params.toString();
+
+			  // Change the URL without refreshing the page using replaceState
+			  window.history.replaceState(null, '', newURL);
+			}
+
+			// Usage example
+			updateQueryParam('type_milestone', 'custom');
+    	}else{
+    		function updateQueryParam(param, value) {
+			  var url = new URL(window.location.href);
+			  var params = new URLSearchParams(url.search);
+
+			  // Update the parameter value in the URL
+			  params.set(param, value);
+
+			  // Construct the new URL with the updated parameter
+			  var newURL = url.origin + url.pathname + '?' + params.toString();
+
+			  // Change the URL without refreshing the page using replaceState
+			  window.history.replaceState(null, '', newURL);
+			}
+
+			// Usage example
+			updateQueryParam('type_milestone', 'defined');
+    	}
+    	milestone(status,ganttstatus)
     }
 
     function getProgressBar(){
@@ -1482,7 +1609,11 @@ PMO
             			$("#btnAddMilestone").hide()
             		}else{
             			$("#btnAddMilestone").find("i").removeClass('fa-plus').addClass('fa-eye')
-    					$("#btnAddMilestone").attr("onclick","btnshowMilestone('show')")
+            			if (result.data.ganttStatus == "custom") {
+    						$("#btnAddMilestone").attr("onclick","btnshowMilestone('show','custom')")
+            			}else{
+    						$("#btnAddMilestone").attr("onclick","btnshowMilestone('show','defined')")
+            			}
 
     					if (result.data.kickoff == 'true') {
 		            		$("#btnAddMilestone").hide()
@@ -1518,7 +1649,6 @@ PMO
 	            		$("#btnAddMilestone").prop("disabled",true)
 		            	$("#btnAddWeekly").prop("disabled",true)
 		            	$("#btnFinalProject").attr("disabled")
-		            	console.log("lohh")
 	            	}else{
 	            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
 	            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
@@ -1541,15 +1671,11 @@ PMO
 	            			$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"update")')
 	            			$("#btnFinalProject").find("i").removeClass("fa fa-plus").addClass("fa fa-wrench")
 	            			$("#btnFinalProject").removeAttr("disabled")
-
-	            			console.log("aku disini")
-
 	            			if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
 		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
 		            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").closest("div").css("cursor","not-allowed")
 		            		}
 	            		}else if (result.data.approveFinalReport == '') {
-	            			console.log(table.length)
 	            			if (table.data().count() > 0) {
 			            		if(table.row(0).data().milestone == "Submit Final Project Closing Report" ){
 			            			$("input[name='cbTaskDone'][value="+ table.row(0).data().id_gantt +"]").prop("disabled",true)
@@ -1565,10 +1691,8 @@ PMO
 									    $(this).hide();
 									});
 
-									console.log("disinii")
 			            			$("#btnFinalProject").attr("disabled")
 				            	}else{
-				            		console.log("iniii")
 			            			$("#btnFinalProject").removeAttr("disabled")
 		            				$("#btnFinalProject").attr("onclick",'btnFinalProject(0,"create")')
 				            	}
@@ -1717,7 +1841,7 @@ PMO
         })
     }
 
-    function milestone(status){    	
+    function milestone(status,ganttstatus){    	
     	firstPage = false
     	$(".content-title").text("Milestone")
     	$("#milestone-container").empty("")
@@ -1728,12 +1852,29 @@ PMO
     			id_pmo:window.location.href.split("/")[6].split("?")[0],
     			type:window.location.search.split("=")[1]
     		}
+
+    		if (ganttstatus == "custom") {
+    			width = "900px"
+    			marginRight = ""
+    		}else{
+	    		width = "500px"
+	    		marginRight = "margin-right: 152px;"
+    		}
     	}else{
-    		url = "/PMO/getDefaultTask"
+    		if (status == "Defined") {
+    			url = "/PMO/getDefaultTask"
+    			width = "500px"
+    			marginRight = ""
+    		}else{
+    			url = "/PMO/getPhase"
+	    		width = "900px"
+	    		marginRight = "margin-right: 152px;"
+    		}
     		data = {
     			id_pmo:window.location.href.split("/")[6].split("?")[0],
     			type:window.location.search.split("=")[1]    			
-    		}
+	    	}
+    		
     	}
     	
     	$.ajax({
@@ -1741,7 +1882,7 @@ PMO
     		type:"GET",
     		data:data,
     		success:function(result){
-    // 			var timeout;
+    			// 			var timeout;
 
 				// function warning() {
 				//     timeout = setTimeout(function() {
@@ -1768,7 +1909,12 @@ PMO
     			let type = window.location.search.split("=")[1], resultAddingWeight = ''
     			let inc = 0;
     			let isExecutingWithSolution = false
+
     			$.each(result,function(index,value){
+    				$('input[type="checkbox"].minimal').iCheck({
+				      checkboxClass: 'icheckbox_minimal-blue',
+				    })
+
     				if (index == 'Executing') {
     					console.log(isNaN(parseFloat(Object.keys(value))))
     				}
@@ -1784,132 +1930,176 @@ PMO
 	    			}
     				
 					// for ($i = 0; $i < 4; $i++){
-				
-					append = append +'<div style="width: 50%;width: 500px;display:inline-block;margin-right: 20px;vertical-align:top">'
-					append = append +'	<div class="box">'
-					append = append +'   <div class="box-header">'
-					append = append +'   	<h3 class="box-title">'+ index +'</h3>'
-					append = append + '		<div class="box-tools">'
-
-					append = append + '			<h3 class="box-title"><span style="margin-right:5px;display:inline">Weight</span><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px" readonly></h3>		'
+					append = append +'<div style="width: 50%;width:'+ width +';display:inline-block;margin-right: 20px;vertical-align:top">'
+					append = append +' <div class="box">'
+					append = append +'  <div class="box-header">'
+					append = append +'   <h3 class="box-title">'+ index +'</h3>'
+					append = append + '	  <div class="box-tools">'
+					append = append + '	    <div class="pull-right"><label style="margin-right:14px;display:inline">Weight</label><input class="form-control" id="inputWeight" name="inputWeight" value="'+ resultAddingWeight[inc++] +'" type="text" minlength="1" maxlength="2" placeholder="75%" style="display:inline;width:60px;'+marginRight+'" readonly></div>		'
 					append = append + '		</div>'
 					append = append +'   </div>'
 					append = append +'<div class="box-body">'
 						if (index == "Executing") {
 							if (status == "show") {
-								if (window.location.search.split("=")[1] == "implementation") {
-									if (isNaN(parseFloat(Object.keys(value)))) {
-										$.each(value,function(idx,values){
-											incIdx++									
+								if (ganttstatus == "custom") {
+									append = append +'<form class="form_'+ index +'">'
+									$.each(value,function(idx,values){
+										incIdx++
 
+										append = append +' 	<div class="form-group form_group_'+index+'">'
+											append = append +' 		<div class="row">'
+											append = append +' 			<div class="col-md-5">'
+											append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-2">'
+											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+ idx +'" placeholder="Start date" value="'+ moment(values.start_date).format('MM/DD/YYYY') +'">'
+											append = append +'				</div>'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-2">'
+											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="'+ idx +'" value="'+ moment(values.end_date).format('MM/DD/YYYY') +'">'
+											append = append +'				</div>'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-1">'
+											append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="'+ idx +'" value="'+ values.bobot +'">'
+											append = append +' 			</div>'
+											append = append +'			<div class="col-md-2">'
+											if (values.deliverable_document == "true") {
+												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox" checked> Deliverable Doc.<br></label>'
+												append = append +'				</div>'
+											}else{
+												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
+												append = append +'				</div>'
+											}
+											append = append +' 			</div>'
+											append = append +' 		</div>'
+											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+										append = append +' 	</div>'
+									})
+									append = append + '<div  style="display:flex;justify-content:center">'
+									append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
+									append = append + '</div>'
+
+									append = append +'</form>'
+								}else{
+									if (window.location.search.split("=")[1] == "implementation") {
+										if (isNaN(parseFloat(Object.keys(value)))) {
+											$.each(value,function(idx,values){
+												incIdx++									
+
+												append = append +'<form class="form_'+ index +'">'
+												isExecutingWithSolution = true
+												append = append + "<div class='form-group'>"
+												append = append + "	<label>Solution Name</label>"
+												append = append + "	<input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone' value='"+ idx +"'>"
+												append = append + "	<span style='display:none;color:red' class='help-block'></span>"
+												append = append + "</div>"	
+												$.each(values,function(idx,valuesExecuting){
+													append = append +' 	<div class="form-group">'
+
+													append = append +' 		<label>'+ valuesExecuting.text +'</label>'
+													append = append +' 		<div class="row">'
+													append = append +' 			<div class="col-md-5">'
+													append = append +' 				<div class="input-group">'
+													append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(valuesExecuting.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-5">'
+													// append = append +' 				<div class="input-group">'
+													// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+													// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ valuesExecuting[0].index +'">'
+													// append = append +'				</div>'
+													append = append +' 				<div class="input-group">'
+													append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(valuesExecuting.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-2">'
+													append = append +' 				<input value="'+ valuesExecuting.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
+													append = append +' 			</div>'
+													append = append +' 		</div>'
+													append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+
+													append = append +' 	</div>'
+												})
+
+												append = append +'</form>'
+											})
+										}else{
 											append = append +'<form class="form_'+ index +'">'
-											isExecutingWithSolution = true
-											append = append + "<div class='form-group'>"
-											append = append + "	<label>Solution Name</label>"
-											append = append + "	<input class='form-control' placeholder='Fill solution name' id='inputSolutionMilestone' name='inputSolutionMilestone' value='"+ idx +"'>"
-											append = append + "	<span style='display:none;color:red' class='help-block'></span>"
-											append = append + "</div>"	
-											$.each(values,function(idx,valuesExecuting){
+											$.each(value,function(idx,values){
+											incIdx++
 												append = append +' 	<div class="form-group">'
-
-												append = append +' 		<label>'+ valuesExecuting.text +'</label>'
-												append = append +' 		<div class="row">'
-												append = append +' 			<div class="col-md-5">'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(valuesExecuting.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-												append = append +'				</div>'
-												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-5">'
-												// append = append +' 				<div class="input-group">'
-												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ valuesExecuting[0].index +'">'
-												// append = append +'				</div>'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(valuesExecuting.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-												append = append +'				</div>'
-												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-2">'
-												append = append +' 				<input value="'+ valuesExecuting.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + valuesExecuting.deliverable_document +'" style="display:none">'
-												append = append +' 			</div>'
-												append = append +' 		</div>'
-												append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-
+													append = append +' 		<label>'+ values.text +'</label>'
+													append = append +' 		<div class="row">'
+													append = append +' 			<div class="col-md-5">'
+													append = append +' 				<div class="input-group">'
+													append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-5">'
+													// append = append +' 				<div class="input-group">'
+													// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+													// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
+													// append = append +'				</div>'
+													append = append +' 				<div class="input-group">'
+													append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+													append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+													append = append +'				</div>'
+													append = append +' 			</div>'
+													append = append +' 			<div class="col-md-2">'
+													append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+													append = append +' 			</div>'
+													append = append +' 		</div>'
+													append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+												
 												append = append +' 	</div>'
 											})
-
 											append = append +'</form>'
-										})
+										}
 									}else{
 										append = append +'<form class="form_'+ index +'">'
 										$.each(value,function(idx,values){
-										incIdx++
-											append = append +' 	<div class="form-group">'
-												append = append +' 		<label>'+ values.text +'</label>'
-												append = append +' 		<div class="row">'
-												append = append +' 			<div class="col-md-5">'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-												append = append +'				</div>'
-												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-5">'
-												// append = append +' 				<div class="input-group">'
-												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
-												// append = append +'				</div>'
-												append = append +' 				<div class="input-group">'
-												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-												append = append +'				</div>'
-												append = append +' 			</div>'
-												append = append +' 			<div class="col-md-2">'
-												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-												append = append +' 			</div>'
-												append = append +' 		</div>'
-												append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+											append = append + "<div class='form-group'>"
+
+											append = append +' 		<label>'+ values.text +'</label>'
+											append = append +' 		<div class="row">'
+											append = append +' 			<div class="col-md-5">'
+											append = append +' 				<div class="input-group">'
+											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+											append = append +'				</div>'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-5">'
+											// append = append +' 				<div class="input-group">'
+											// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+											// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
+											// append = append +'				</div>'
+											append = append +' 				<div class="input-group">'
+											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+											append = append +'				</div>'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-2">'
+											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+											append = append +' 			</div>'
+											append = append +' 		</div>'
+											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 											
 											append = append +' 	</div>'
+
 										})
 										append = append +'</form>'
 									}
-								}else{
-									append = append +'<form class="form_'+ index +'">'
-									$.each(value,function(idx,values){
-										append = append + "<div class='form-group'>"
-
-										append = append +' 		<label>'+ values.text +'</label>'
-										append = append +' 		<div class="row">'
-										append = append +' 			<div class="col-md-5">'
-										append = append +' 				<div class="input-group">'
-										append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-5">'
-										// append = append +' 				<div class="input-group">'
-										// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-										// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
-										// append = append +'				</div>'
-										append = append +' 				<div class="input-group">'
-										append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-										append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-										append = append +'				</div>'
-										append = append +' 			</div>'
-										append = append +' 			<div class="col-md-2">'
-										append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
-										append = append +' 			</div>'
-										append = append +' 		</div>'
-										append = append +'		<span class="help-block" style="display:none;color:red"></span>'
-										
-										append = append +' 	</div>'
-
-									})
-									append = append +'</form>'
 								}
-								
-							}else{
+							}else if (status == "Defined") {
 								append = append +'<form class="form_'+ index +'">'
 									$.each(value,function(idx,values){
 									append = append +' 	<div class="form-group">'
@@ -1939,40 +2129,124 @@ PMO
 									append = append +' 	</div>'
 									})
 								append = append +'</form>'
+							}else{
+								append = append +'<form class="form_'+ index +'">'
+								append = append +' 	<div class="form-group form_group_'+index+'">'
+									append = append +' 		<div class="row">'
+									append = append +' 			<div class="col-md-5">'
+									append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
+									append = append +' 			</div>'
+									append = append +' 			<div class="col-md-2">'
+									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+									append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+									append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone" data-value="" placeholder="Start date" value="">'
+									append = append +'				</div>'
+									append = append +' 			</div>'
+									append = append +' 			<div class="col-md-2">'
+									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+									append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+									append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone" data-value="" value="">'
+									append = append +'				</div>'
+									append = append +' 			</div>'
+									append = append +' 			<div class="col-md-1">'
+									append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
+									append = append +' 			</div>'
+									append = append +'			<div class="col-md-2">'
+									append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+									append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
+									append = append +'				</div>'
+									append = append +' 			</div>'
+									append = append +' 		</div>'
+									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+								append = append +' 	</div>'
+
+								append = append + '<div  style="display:flex;justify-content:center">'
+								append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
+								append = append + '</div>' 
+
+								append = append +'</form>'
 							}
 						}else{
 							if (status == "show") {
-								append = append +'<form class="form_'+ index +'">'
+								if (ganttstatus == "custom") {
+									append = append +'<form class="form_'+ index +'">'
 									$.each(value,function(idx,values){
-										incIdx++						
-										append = append +' 	<div class="form-group">'
-											append = append +' 		<label>'+ values.text +'</label>'
+										incIdx++
+
+										append = append +' 	<div class="form-group form_group_'+index+'">'
 											append = append +' 		<div class="row">'
 											append = append +' 			<div class="col-md-5">'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
-											append = append +'				</div>'
+											append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="'+ idx +'" placeholder="Enter Task Name" value="'+ values.text +'">'
 											append = append +' 			</div>'
-											append = append +' 			<div class="col-md-5">'
-											// append = append +' 				<div class="input-group">'
-											// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
-											// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
-											// append = append +'				</div>'
-											append = append +' 				<div class="input-group">'
-											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
-											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+											append = append +' 			<div class="col-md-2">'
+											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+											append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="'+ idx +'" placeholder="Start date" value="' + moment(values.start_date).format('MM/DD/YYYY') +'">'
 											append = append +'				</div>'
 											append = append +' 			</div>'
 											append = append +' 			<div class="col-md-2">'
-											append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+											append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+											append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+											append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'">'
+											append = append +'				</div>'
+											append = append +' 			</div>'
+											append = append +' 			<div class="col-md-1">'
+											append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+ index +'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="'+ idx +'" value="'+ values.bobot +'">'
+											append = append +' 			</div>'
+											append = append +'			<div class="col-md-2">'
+											if (values.deliverable_document == "true") {
+												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox" checked> Deliverable Doc.<br></label>'
+												append = append +'				</div>'
+											}else{
+												append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+												append = append +'					<label><input data-value="'+ idx +'" id="cbDocMilestone_'+index+'" name="cbDocMilestone" style="height: 15px;width: 15px;" type="checkbox"> Deliverable Doc.<br></label>'
+												append = append +'				</div>'
+											}
 											append = append +' 			</div>'
 											append = append +' 		</div>'
-											append = append +'		<span class="help-block" style="display:none;color:red"></span>'								
+											append = append +'		<span class="help-block" style="display:none;color:red"></span>'
 										append = append +' 	</div>'
 									})
-								append = append +'</form>'
-							}else{
+									append = append + '<div  style="display:flex;justify-content:center">'
+									append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'"><i class="fa fa-plus"></i>&nbspTask</button>' 
+									append = append + '</div>'
+
+									append = append +'</form>'
+								}else{
+									append = append +'<form class="form_'+ index +'">'
+										$.each(value,function(idx,values){
+											incIdx++						
+											append = append +' 	<div class="form-group">'
+												append = append +' 		<label>'+ values.text +'</label>'
+												append = append +' 		<div class="row">'
+												append = append +' 			<div class="col-md-5">'
+												append = append +' 				<div class="input-group">'
+												append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" value="' + moment(values.start_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-5">'
+												// append = append +' 				<div class="input-group">'
+												// append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-clock-o"></i></span>'
+												// append = append +'					<input value="1" style="display:inline;font-size:12px;width:80px" placeholder="duration" type="text" name="durationMilestone" class="form-control" id="durationMilestone" data-value="'+ values[0].index +'">'
+												// append = append +'				</div>'
+												append = append +' 				<div class="input-group">'
+												append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+												append = append +'					<input style="display:inline;font-size:12px;" placeholder="Select Finish Date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" value="' + moment(values.end_date).format('MM/DD/YYYY') +'" data-value="'+ incIdx +'">'
+												append = append +'				</div>'
+												append = append +' 			</div>'
+												append = append +' 			<div class="col-md-2">'
+												append = append +' 				<input value="'+ values.bobot +'" class="form-control click" type="text" minlength="1" maxlength="4" name="weightMilestone_'+ index +'" id="weightMilestone" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px" data-value="'+ incIdx +'"><input type="text" name="deliverable_document" class="form-control" id="deliverable_document" value="' + values.deliverable_document +'" style="display:none">'
+												append = append +' 			</div>'
+												append = append +' 		</div>'
+												append = append +'		<span class="help-block" style="display:none;color:red"></span>'								
+											append = append +' 	</div>'
+										})
+									append = append +'</form>'
+								}
+								
+							}else if (status == "Defined") {
 								append = append +'<form class="form_'+ index +'">'
 									$.each(value,function(idx,values){
 										append = append +' 	<div class="form-group">'
@@ -2002,6 +2276,42 @@ PMO
 										append = append +' 	</div>'
 									})
 								append = append +'</form>'
+							}else{
+								append = append +'<form class="form_'+ index +'">'
+								append = append +' 	<div class="form-group form_group_'+index+'">'
+									append = append +' 		<div class="row">'
+									append = append +' 			<div class="col-md-5">'
+									append = append +'				<input class="form-control" type="text" name="inputLabelTask" class="form-control" id="inputLabelTask" data-value="" placeholder="Enter Task Name" value="">'
+									append = append +' 			</div>'
+									append = append +' 			<div class="col-md-2">'
+									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+									append = append +'					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+									append = append +'					<input style="display:inline;" type="text" name="startDateMilestone" class="form-control" id="startDateMilestone_'+ index +'" data-value="0" placeholder="Start date" value="">'
+									append = append +'				</div>'
+									append = append +' 			</div>'
+									append = append +' 			<div class="col-md-2">'
+									append = append +' 				<div class="input-group" style="margin-left: -15px;">'
+									append = append +'					<span class="input-group-addon"><i style="display:inline" class="fa fa-calendar"></i></span>'
+									append = append +'					<input style="display:inline;font-size:12px;" placeholder="Finish date" type="text" name="finishDateMilestone" class="form-control" id="finishDateMilestone_'+ index +'" data-value="0" value="">'
+									append = append +'				</div>'
+									append = append +' 			</div>'
+									append = append +' 			<div class="col-md-1">'
+									append = append +' 				<input class="form-control" type="text" minlength="1" maxlength="4" id="weightMilestone" name="weightMilestone_'+index+'" placeholder="weight %" style="display:inline;width:60px;float:right;font-size:12px;margin-left: -15px;" data-value="">'
+									append = append +' 			</div>'
+									append = append +'			<div class="col-md-2">'
+									append = append +'				<div class="form-group" style="margin-left: -15px;margin-top: 5px;">'
+									append = append +'					<label><input id="cbDocMilestone_'+index+'" name="cbDocMilestone" type="checkbox" class="" style="height: 15px;width: 15px;"> Deliverable Doc.<br></label>'
+									append = append +'				</div>'
+									append = append +' 			</div>'
+									append = append +' 		</div>'
+									append = append +'		<span class="help-block" style="display:none;color:red"></span>'
+								append = append +' 	</div>'
+
+								append = append + '<div  style="display:flex;justify-content:center">'
+								append = append +'	<button type="button" class="btn btn-sm btn-primary" id="btnAddTask_'+index+'" name="btnAddTask"><i class="fa fa-plus"></i>&nbspTask</button>'
+								append = append + '</div>'
+								
+								append = append +'</form>'
 							}
 						}						
 					append = append +'	<div>'
@@ -2009,23 +2319,26 @@ PMO
 						append = append + '<button class="btn btn-sm bg-purple pull-right" style="display:none" id="saveMilestone">Save</button>'
 					}
 					if (index == "Executing") {
-						if (window.location.search.split("=")[1] != "supply_only") {
-							append = append +'		<div style="display:flex;justify-content:center">'
-							let text = ''
-							if (window.location.search.split("=")[1] == 'implementation') {
-								text = 'Solution'
-							}else{
-								text = 'PM'
-							}
+						if (status == "Defined") {
+							if (window.location.search.split("=")[1] != "supply_only") {
+								append = append +'		<div style="display:flex;justify-content:center">'
+								let text = ''
+								if (window.location.search.split("=")[1] == 'implementation') {
+									text = 'Solution'
+								}else{
+									text = 'PM'
+								}
 
-							if (isExecutingWithSolution == true) {
-								append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button><button style="margin-left:5px" id="removeCloneExecuting" value="'+ text +'" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>'
-								append = append +'		</div>'
-							}else{
-								append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button>'
-								append = append +'		</div>'
+								if (isExecutingWithSolution == true) {
+									append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button><button style="margin-left:5px" id="removeCloneExecuting" value="'+ text +'" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button>'
+									append = append +'		</div>'
+								}else{
+									append = append +'			<button style="" class="btn btn-sm bg-purple" id="btnAddSolution" name="btnAddSolution"><i class="fa fa-plus"></i> '+ text + ' </button>'
+									append = append +'		</div>'
+								}
 							}
-						}						
+						}
+												
 					}
 					append = append +'	</div>'
 					append = append +'   		</div>'
@@ -2047,95 +2360,42 @@ PMO
 							idx = idx
 						}
 
-    					console.log("ini milestone")
-		    			$("#finishDateMilestone_Initiating[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Initiating[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
-
-		    			$("#finishDateMilestone_Planning[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Planning[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
-
-		    			$("#finishDateMilestone_Executing[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
-
-		    			$("#finishDateMilestone_Closing[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Closing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
-
-		    			$("#startDateMilestone_Initiating[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Initiating[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
-
-		    			$("#startDateMilestone_Planning[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Planning[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
-
-		    			$("#startDateMilestone_Executing[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
-
-		    			$("#startDateMilestone_Closing[data-value='"+ idx +"']").change(function(){
-							console.log("changed")
-		    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Closing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
-		    					$(this).removeAttr('value')
-		    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
-		    				}else{
-		    					$(this).closest(".form-group").find("span.help-block").hide()
-		    					$(this).closest(".form-group").find("span.help-block").text()
-		    				}
-		    			})
+    					validationDate(idx)
 	    			})
+					
+					var incStartMil = 0
+					var incFinishMil = 0
+
+					$("#btnAddTask_"+index).click(function(e){
+						var appendCloneForm = $(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).last().clone()
+						appendCloneForm.find(":input").val('').end()
+						appendCloneForm.find(':input[name="startDateMilestone"]').attr('data-value', function(i, val) {
+				            return ++incStartMil
+ 				        });
+
+ 				        appendCloneForm.find(':input[name="finishDateMilestone"]').attr('data-value', function(i, val) {
+				            return ++incFinishMil
+ 				        });
+						$(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).last().after(appendCloneForm)
+
+						if ($("#btnDeleteTask_"+index).length === 0) {
+							$("#btnAddTask_"+index).after("<button type='button' class='btn btn-sm btn-danger fa fa-trash' style='margin-left:5px;width:35px' id='btnDeleteTask_"+ index +"'></button>")
+						}
+
+						$("#btnDeleteTask_"+index).click(function(){
+							$(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).last().remove()
+
+							if ($(".form_"+e.target.id.split("_")[1]).find('.form_group_'+index).length == 1) {
+								$("#btnDeleteTask_"+index).remove()
+							}
+						})
+
+						$("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
+							autoclose: true
+						})
+
+						validationDate(incStartMil)
+					})
     			})
 
     			if ("{{App\RoleUser::where('user_id',Auth::User()->nik)->join('roles','roles.id','=','role_user.role_id')->where('roles.name','PMO Manager')->exists()}}") {
@@ -2151,7 +2411,6 @@ PMO
 					$("#removeCloneExecuting").remove()
 			        count++;
 					++incLabel;
-					// console.log(incLabel)
 					if ($(this)[0].innerText.replace(" ","") == 'PM') {
 						$("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").hide()
 						let countLastCloneStart = parseInt($('.form_Executing:last').find(".form-group:last").find("#startDateMilestone_Executing").attr("data-value"))
@@ -2160,8 +2419,6 @@ PMO
 
 						$(".form_Executing:last").find(".form-group:nth-last-child(-n+3)").each(function(idx,item){
 							$(item).find("label").each(function(idx,label){
-								console.log(label.innerHTML.split("-"))
-
 								// label.innerHTML.replace(count-1,count)
 								append = append + '<div class="form-group">'
 									append = append + '<label>'+ label.innerHTML.replace(label.innerHTML.split("-")[1].replace(" ",""),parseInt(label.innerHTML.split("-")[1].replace(" ",""))+1) +'</label>'
@@ -2223,9 +2480,7 @@ PMO
 			        let idx = 0
 			        $.each($(".form_Executing:last"),function(idx,item){
 			        	$(item).find("#finishDateMilestone_Executing").each(function(idx,itemData){
-			        		console.log($(itemData).attr("data-value"))
 			        		$("#finishDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
-								console.log("changed")
 			    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
 			    					$(this).removeAttr('value')
 			    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
@@ -2236,7 +2491,6 @@ PMO
 			    			})
 
 			    			$("#startDateMilestone_Executing[data-value='"+ $(itemData).attr("data-value") +"']").change(function(){
-								console.log("changed")
 			    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
 			    					$(this).removeAttr('value')
 			    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
@@ -2251,7 +2505,6 @@ PMO
 				})
 
 				$(document).on("click","#removeCloneExecuting",function() {
-					console.log(count)
 					if (this.value == 'PM') {
 						$(".form_Executing:last").find(".form-group:nth-last-child(-n+3)").remove()
 						if (count == 1) {
@@ -2296,7 +2549,7 @@ PMO
 					let arrClosingCountNull = []
 
 					$(".form_Initiating").each(function(){
-					    $(this).find(':input').each(function(index,value){
+					    $(this).find('input[type!="checkbox"]').each(function(index,value){
 					        if(value.value == ""){
 					            arrInitiatingCountNull.push(value.value)
 					        }
@@ -2307,7 +2560,7 @@ PMO
 					})
 
 					$(".form_Planning").each(function(){
-					    $(this).find(':input').each(function(index,value){
+					    $(this).find('input[type!="checkbox"]').each(function(index,value){
 					        if(value.value == ""){
 					            arrPlanningCountNull.push(value.value)
 					        }
@@ -2319,7 +2572,7 @@ PMO
 					})
 
 					$(".form_Executing").each(function(){
-					    $(this).find(':input').each(function(index,value){
+					    $(this).find('input[type!="checkbox"]').each(function(index,value){
 					        if(value.value == ""){
 					            arrExecutingCountNull.push(value.value)
 					        }
@@ -2330,12 +2583,10 @@ PMO
 					})
 
 					$(".form_Closing").each(function(){
-					    $(this).find(':input').each(function(index,value){
+					    $(this).find('input[type!="checkbox"]').each(function(index,value){
 					        if(value.value == ""){
 					            arrClosingCountNull.push(value.value)
 					        }
-
-					        if (true) {}
 					        // else{
 					        //     arrClosingCountNull = []
 
@@ -2390,7 +2641,7 @@ PMO
 					if (arrInitiatingCountNull.length  > 0) {
 						validationEmptyMilestone("weightMilestone_Initiating",false)
 					}else if (arrInitiatingCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+						if ($("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
 							validationEmptyMilestone("weightMilestone_Initiating",true)
 						}
 					}
@@ -2399,7 +2650,7 @@ PMO
 					if (arrPlanningCountNull.length > 0) {
 						validationEmptyMilestone("weightMilestone_Planning",false)
 					}else if (arrPlanningCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+						if ($("input[name='weightMilestone_Planning']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
 							validationEmptyMilestone("weightMilestone_Planning",true)
 						}
 					} 
@@ -2407,17 +2658,15 @@ PMO
 					if (arrExecutingCountNull.length > 0) {
 						validationEmptyMilestone("weightMilestone_Executing",false)					
 					}else if (arrExecutingCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+						if ($("input[name='weightMilestone_Executing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
 							validationEmptyMilestone("weightMilestone_Executing",true)
 						}
 					}
 
-					console.log(arrExecutingCountNull.length + "wadaw")
-
 					if (arrClosingCountNull.length > 0) {
 						validationEmptyMilestone("weightMilestone_Closing",false)
 					}else if (arrClosingCountNull.length == 0) {
-						if ($("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone Date/Weight!") {
+						if ($("input[name='weightMilestone_Closing']:last").closest("div").closest(".row").next("span").text() == "Please Fill Empty Milestone !") {
 							validationEmptyMilestone("weightMilestone_Closing",true)
 						}
 					}											
@@ -2451,11 +2700,6 @@ PMO
 				})	
 
 				function validationMilestone(values,inputValue,x){
-					console.log(values)
-					console.log(inputValue)
-
-					console.log(values - inputValue)
-
 					if (values > inputValue) {
 						if (x == "weight_0") {
 							$("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").show().text("Weight child is greater than Weight Total!").css("display","inline")
@@ -2524,7 +2768,6 @@ PMO
 				}
 
 				function validationEmptyMilestone(x,status){
-					console.log("masuk")
 					if (status == true) {
 						$("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").hide()
 						$("input[name='"+ x +"']:last").closest("div").closest(".row").next("span").text("")
@@ -2533,8 +2776,93 @@ PMO
 					}
 				}
 
-				let arrInitiating = [], arrPlanning = [], arrExecuting = [], arrClosing = [], arrMainMilestone = [], arrSolutionMilestone = []
-				let arrExecutingFinal = '', arrExecutingGroup = ''
+				function validationDate(idx){
+					$("#finishDateMilestone_Initiating[data-value='"+ idx +"']").change(function(){
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Initiating[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+
+	    			$("#finishDateMilestone_Planning[data-value='"+ idx +"']").change(function(){
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Planning[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+
+	    			$("#finishDateMilestone_Executing[data-value='"+ idx +"']").change(function(){
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+
+	    			$("#finishDateMilestone_Closing[data-value='"+ idx +"']").change(function(){
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) < Date.parse(moment($('#startDateMilestone_Closing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid finish date, cannot less than start date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+
+	    			$("#startDateMilestone_Initiating[data-value='"+ idx +"']").change(function(){
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Initiating[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+
+	    			$("#startDateMilestone_Planning[data-value='"+ idx +"']").change(function(){
+						
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Planning[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+
+	    			$("#startDateMilestone_Executing[data-value='"+ idx +"']").change(function(){
+						
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Executing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+
+	    			$("#startDateMilestone_Closing[data-value='"+ idx +"']").change(function(){
+						
+	    				if (Date.parse(moment(this.value).format("YYYY-MM-DD")) > Date.parse(moment($('#finishDateMilestone_Closing[data-value="'+ $(this).data("value") +'"]').val()).format("YYYY-MM-DD"))) {
+	    					$(this).removeAttr('value')
+	    					$(this).closest(".form-group").find("span.help-block").show().text("Please enter the valid start date, cannot greater than finish date")
+	    				}else{
+	    					$(this).closest(".form-group").find("span.help-block").hide()
+	    					$(this).closest(".form-group").find("span.help-block").text()
+	    				}
+	    			})
+				}
+
+				var arrInitiating = [], arrPlanning = [], arrExecuting = [], arrClosing = [], arrMainMilestone = [], arrSolutionMilestone = []
+				var arrExecutingFinal = '', arrExecutingGroup = ''
 
 				function readyToPostMilestone(){
 					let isInitiatingHide = $("input[name='weightMilestone_Initiating']:last").closest("div").closest(".row").next("span").is(':hidden')
@@ -2555,327 +2883,402 @@ PMO
 				        }
 
 				        let startdateMilestone = '', finishDateMilestone = '', weightMilestone = '', labelTask = '', deliverableDoc = '', solutionMilestone = '',arrExecutingGroup = ''
+
 				        arrMainMilestone = ['Initiating','Planning','Executing','Closing']
 
-						arrInitiating = []
-						$(".form_Initiating").find(".form-group").each(function(idx,item){
-						    $(item).find("label").each(function(idx,label){
-						    	$(item).find("label").each(function(idx,label){
-						            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						            labelTask = label.innerHTML
-						        })
-						        
-						        $(item).find("div.row").find("#startDateMilestone_Initiating").each(function(idx,itemsDate){
-						            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-						            
-						        })
-
-						        $(item).find("div.row").find("#finishDateMilestone_Initiating").each(function(idx,itemsDuration){
-						            
-						            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-						            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
-						        })
-						    
-						        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-						            
-						            weightMilestone = itemsWeight.value
-						            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-						            
-						        })
-
-						        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-						            deliverableDoc = itemsDeliverDoc.value
-						            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-						            
-						        })
-
-						        arrInitiating.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
-						    })
-						})
-
-						arrPlanning = []
-						$(".form_Planning").find(".form-group").each(function(idx,item){
-						    $(item).find("label").each(function(idx,label){
-						    	$(item).find("label").each(function(idx,label){
-						            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						            labelTask = label.innerHTML
-						        })
-						        // create an empty array of length n
-						        $(item).find("div.row").find("#startDateMilestone_Planning").each(function(idx,itemsDate){
-						            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-						            
-						        })
-
-						        $(item).find("div.row").find("#finishDateMilestone_Planning").each(function(idx,itemsDuration){
-						            
-						            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-						            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
-						        })
-						    
-						        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-						            
-						            weightMilestone = itemsWeight.value
-						            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-						            
-						        })
-
-						        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-						            deliverableDoc = itemsDeliverDoc.value
-						            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-						            
-						        })
-
-						        arrPlanning.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
-						    })
-						})
-
-						arrExecuting = [], arrExecutingSolution = []
-						for (var i = 0; i <= $(".form_Executing").length-1 ; i++) {		
-							if ($(".form_Executing").length > 1) {
-								$(".form_Executing:eq("+ i +")").find(".form-group").not(":eq(0)").each(function(idx,item){
-									// if (label.innerHTML != 'Solution Name') {
-										// arrExecuting[i] =  new Array()
-										$(item).find("label").each(function(idx,label){
-											$(".form_Executing:eq("+ i +")").find(".form-group").eq(0).each(function(idx,itemLabelSol){
+						if (window.location.href.split("/")[6].split('?')[1].split('=')[2] == "custom") {
+							$.each(arrMainMilestone,function(index,value){
+								$(".form_"+value).find(".form_group_"+value).each(function(idx,item){
+							        if (value == "Initiating") {
+							        	$(item).find("div.row").find("#inputLabelTask").each(function(idx,itemsTask){
 								            // arrInitiating.push({"dateMilestone":itemsDate.value})
-									            $(itemLabelSol).find("input[name='inputSolutionMilestone']").each(function(idx,label){
-								            		solutionMilestone = label.value
-									            })
-								            	// arrExecutingSolution[itemsMilestone.value] = new Array
-								      
-									        })
+								            itemTaskMilestone = itemsTask.value
+								            
+								        })
 
-											$(item).find("label").each(function(idx,label){
-									            // arrInitiating.push({"dateMilestone":itemsDate.value})
-									            if (label.innerHTML != 'Solution Name') {
-									            	labelTask = label.innerHTML
-									            }
-									        })
+									    $(item).find("div.row").find("#startDateMilestone_"+value).each(function(idx,itemsDate){
+								            // arrInitiating.push({"dateMilestone":itemsDate.value})
+								            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+								            
+								        })
 
-									     	$(item).find("div.row").find("#startDateMilestone_Executing").each(function(idx,itemsDate){
-									            // arrInitiating.push({"dateMilestone":itemsDate.value})
-									            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-									            
-									        })
+								        $(item).find("div.row").find("#finishDateMilestone_"+value).each(function(idx,itemsDuration){
+								            
+								            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+								            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+								        })
+								    
+								        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+								            
+								            weightMilestone = itemsWeight.value
+								            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+								            
+								        })
 
-									        $(item).find("div.row").find("#finishDateMilestone_Executing").each(function(idx,itemsDuration){
-									            
-									            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-									            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
-									        })
-									    
-									        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-									            
-									            weightMilestone = itemsWeight.value
-									            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-									            
-									        })
+								        $(item).find("div.row").find("#cbDocMilestone_"+value).each(function(idx,itemsDeliverDoc){
+								        	if ($(itemsDeliverDoc).is(":checked")) {
+								        		cbDocMilestone = "true"
+								        	}else{
+								        		cbDocMilestone = "false"
+								        	}
+								            
+								        })
 
-									        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-										            deliverableDoc = itemsDeliverDoc.value
-										            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-										            
-										    })
+							        	arrInitiating.push({"inputTaskMilestone":itemTaskMilestone,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":cbDocMilestone})
+							        }else if (value == "Planning") {
+							        	$(item).find("div.row").find("#inputLabelTask").each(function(idx,itemsTask){
+							            // arrInitiating.push({"dateMilestone":itemsDate.value})
+								            itemTaskMilestone = itemsTask.value
+								            
+								        })
 
-										    // if (arrExecuting[i] == null)
-									     //        arrExecuting[i] = arrExecutingSolution;
-									     //    else
-									            arrExecuting.push({"labelSolution":solutionMilestone,"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
-										})
-								        // arrExecuting[i].push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
+									    $(item).find("div.row").find("#startDateMilestone_"+value).each(function(idx,itemsDate){
+								            // arrInitiating.push({"dateMilestone":itemsDate.value})
+								            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+								            
+								        })
 
-								    // }
+								        $(item).find("div.row").find("#finishDateMilestone_"+value).each(function(idx,itemsDuration){
+								            
+								            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+								            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+								        })
+								    
+								        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+								            
+								            weightMilestone = itemsWeight.value
+								            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+								            
+								        })
 
+								        $(item).find("div.row").find("#cbDocMilestone_"+value).each(function(idx,itemsDeliverDoc){
+								        	if ($(itemsDeliverDoc).is(":checked")) {
+								        		cbDocMilestone = "true"
+								        	}else{
+								        		cbDocMilestone = "false"
+								        	}
+								            
+								        })
+							        	arrPlanning.push({"inputTaskMilestone":itemTaskMilestone,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":cbDocMilestone})
+							        }else if (value == "Executing") {
+							        	$(item).find("div.row").find("#inputLabelTask").each(function(idx,itemsTask){
+								            // arrInitiating.push({"dateMilestone":itemsDate.value})
+								            itemTaskMilestone = itemsTask.value
+								            
+								        })
+
+									    $(item).find("div.row").find("#startDateMilestone_"+value).each(function(idx,itemsDate){
+								            // arrInitiating.push({"dateMilestone":itemsDate.value})
+								            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+								            
+								        })
+
+								        $(item).find("div.row").find("#finishDateMilestone_"+value).each(function(idx,itemsDuration){
+								            
+								            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+								            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+								        })
+								    
+								        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+								            
+								            weightMilestone = itemsWeight.value
+								            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+								            
+								        })
+
+								        $(item).find("div.row").find("#cbDocMilestone_"+value).each(function(idx,itemsDeliverDoc){
+								        	if ($(itemsDeliverDoc).is(":checked")) {
+								        		cbDocMilestone = "true"
+								        	}else{
+								        		cbDocMilestone = "false"
+								        	}
+								            
+								        })
+
+							        	arrExecuting.push({"inputTaskMilestone":itemTaskMilestone,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":cbDocMilestone})
+
+							        	arrExecutingGroup = arrExecuting  
+							        }else{
+							        	$(item).find("div.row").find("#inputLabelTask").each(function(idx,itemsTask){
+								            // arrInitiating.push({"dateMilestone":itemsDate.value})
+								            itemTaskMilestone = itemsTask.value
+								            
+								        })
+
+									    $(item).find("div.row").find("#startDateMilestone_"+value).each(function(idx,itemsDate){
+								            // arrInitiating.push({"dateMilestone":itemsDate.value})
+								            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+								            
+								        })
+
+								        $(item).find("div.row").find("#finishDateMilestone_"+value).each(function(idx,itemsDuration){
+								            
+								            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+								            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+								        })
+								    
+								        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+								            
+								            weightMilestone = itemsWeight.value
+								            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+								            
+								        })
+
+								        $(item).find("div.row").find("#cbDocMilestone_"+value).each(function(idx,itemsDeliverDoc){
+								        	if ($(itemsDeliverDoc).is(":checked")) {
+								        		cbDocMilestone = "true"
+								        	}else{
+								        		cbDocMilestone = "false"
+								        	}
+								        })
+
+							        	arrClosing.push({"inputTaskMilestone":itemTaskMilestone,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":cbDocMilestone})
+							        }
+							        
 								})
-								// const groupBy = (array, key) => {
-								//   // Return the end result
-								//   return array.reduce((result, currentValue) => {
-								//     // If an array already present for key, push it to the array. Else create an array and push the object
-								//     (result[currentValue[key]] = result[currentValue[key]] || []).push(
-								//       currentValue
-								//     );
-								//     // Return the current iteration `result` value, this will be taken as next iteration `result` value and accumulate
-								//     return result;
-								// 	console.log(result)
+							})
+							
+						}else{
+							$(".form_Initiating").find(".form-group").each(function(idx,item){
+							    $(item).find("label").each(function(idx,label){
+							    	$(item).find("label").each(function(idx,label){
+							            // arrInitiating.push({"dateMilestone":itemsDate.value})
+							            labelTask = label.innerHTML
+							        })
+							        
+							        $(item).find("div.row").find("#startDateMilestone_Initiating").each(function(idx,itemsDate){
+							            // arrInitiating.push({"dateMilestone":itemsDate.value})
+							            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+							            
+							        })
 
-								//   }, {}); // empty object is the initial value for result object
-								// };
-
-								arrExecutingGroup = arrExecuting.reduce((result, currentValue) => {
-								    // If an array already present for key, push it to the array. Else create an array and push the object
-								    (result[currentValue['labelSolution']] = result[currentValue['labelSolution']] || []).push(
-								      currentValue
-								    );
-								    // Return the current iteration `result` value, this will be taken as next iteration `result` value and accumulate
-								    return result;
-								}, {});
-							}else{
-								$(".form_Executing:eq("+ i +")").find(".form-group").each(function(idx,item){
-									// if (label.innerHTML != 'Solution Name') {
-										    console.log("okee")
-										    console.log($(item).find("label"))
-										// arrExecuting[i] =  new Array()
-										$(item).find("label").each(function(idx,label){
-											$(item).find("label").each(function(idx,label){
-									            // arrInitiating.push({"dateMilestone":itemsDate.value})
-									            if (label.innerHTML != 'Solution Name') {
-									            	labelTask = label.innerHTML
-									            }
-									        })
-
-									     	$(item).find("div.row").find("#startDateMilestone_Executing").each(function(idx,itemsDate){
-									            // arrInitiating.push({"dateMilestone":itemsDate.value})
-									            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-									            
-									        })
-
-									        $(item).find("div.row").find("#finishDateMilestone_Executing").each(function(idx,itemsDuration){
-									            
-									            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-									            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
-									        })
-									    
-									        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-									            
-									            weightMilestone = itemsWeight.value
-									            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-									            
-									        })
-
-									        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-										            deliverableDoc = itemsDeliverDoc.value
-										            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-										            
-										    })
-
-										    // if (arrExecuting[i] == null)
-									     //        arrExecuting[i] = arrExecutingSolution;
-									     //    else
-									            arrExecuting.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
-										})
-
-
-								        // arrExecuting[i].push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
-
-								    // }
-
-								})
-								arrExecutingGroup = arrExecuting
-							}	
-						}
-
-						// $(".form_Executing").find(".form-group").each(function(idx,item){
-						//     $(item).find("label").each(function(idx,label){
-						// 	    // arrExecutingFinal = arrExecutingSolution.map((item, i) => Object.assign({}, item, arrExecuting[i]));
-
-						//     	if (label.innerHTML != 'Solution Name') {
-						//     		$(item).find("label").each(function(idx,label){
-						// 	            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						// 	            labelTask = label.innerHTML
-						// 	        })
-						
-						// 	        $(item).find("div.row").find("#startDateMilestone").each(function(idx,itemsDate){
-						// 	            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						// 	            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-						
-						// 	        })
-
-						// 	        $(item).find("div.row").find("#finishDateMilestone").each(function(idx,itemsDuration){
-						
-						// 	            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-						// 	            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
-						// 	        })
+							        $(item).find("div.row").find("#finishDateMilestone_Initiating").each(function(idx,itemsDuration){
+							            
+							            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+							            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+							        })
 							    
-						// 	        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-						
-						// 	            weightMilestone = itemsWeight.value
-						// 	            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+							        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
 							            
-						// 	        })
-
-						// 	        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-						// 	            deliverableDoc = itemsDeliverDoc.value
-						// 	            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+							            weightMilestone = itemsWeight.value
+							            // arrInitiating.push({"weightMilestone":itemsWeight.value})
 							            
-						// 	        })
-						//     	}
+							        })
 
-					 //    		$(item).find("input[name='inputSolutionMilestone']").each(function(idx,itemsMilestone){
-					 //            // arrInitiating.push({"dateMilestone":itemsDate.value})
-					 //            	solutionMilestone = itemsMilestone.value
-					 
-						//         })
+							        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
+							            deliverableDoc = itemsDeliverDoc.value
+							            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+							            
+							        })
 
-					 //    		arrExecuting.push({"nameSolution":solutionMilestone,"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
-						    	
+							        arrInitiating.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
+							    })
+							})
 
-						//     	arrExecutingFinal = arrExecuting
+							$(".form_Planning").find(".form-group").each(function(idx,item){
+							    $(item).find("label").each(function(idx,label){
+							    	$(item).find("label").each(function(idx,label){
+							            // arrInitiating.push({"dateMilestone":itemsDate.value})
+							            labelTask = label.innerHTML
+							        })
+							        // create an empty array of length n
+							        $(item).find("div.row").find("#startDateMilestone_Planning").each(function(idx,itemsDate){
+							            // arrInitiating.push({"dateMilestone":itemsDate.value})
+							            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+							            
+							        })
+
+							        $(item).find("div.row").find("#finishDateMilestone_Planning").each(function(idx,itemsDuration){
+							            
+							            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+							            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+							        })
+							    
+							        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+							            
+							            weightMilestone = itemsWeight.value
+							            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+							            
+							        })
+
+							        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
+							            deliverableDoc = itemsDeliverDoc.value
+							            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+							            
+							        })
+
+							        arrPlanning.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
+							    })
+							})
+
+							for (var i = 0; i <= $(".form_Executing").length-1 ; i++) {		
+								if ($(".form_Executing").length > 1) {
+									$(".form_Executing:eq("+ i +")").find(".form-group").not(":eq(0)").each(function(idx,item){
+										// if (label.innerHTML != 'Solution Name') {
+											// arrExecuting[i] =  new Array()
+											$(item).find("label").each(function(idx,label){
+												$(".form_Executing:eq("+ i +")").find(".form-group").eq(0).each(function(idx,itemLabelSol){
+									            // arrInitiating.push({"dateMilestone":itemsDate.value})
+										            $(itemLabelSol).find("input[name='inputSolutionMilestone']").each(function(idx,label){
+									            		solutionMilestone = label.value
+										            })
+									            	// arrExecutingSolution[itemsMilestone.value] = new Array
+									      
+										        })
+
+												$(item).find("label").each(function(idx,label){
+										            // arrInitiating.push({"dateMilestone":itemsDate.value})
+										            if (label.innerHTML != 'Solution Name') {
+										            	labelTask = label.innerHTML
+										            }
+										        })
+
+										     	$(item).find("div.row").find("#startDateMilestone_Executing").each(function(idx,itemsDate){
+										            // arrInitiating.push({"dateMilestone":itemsDate.value})
+										            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+										            
+										        })
+
+										        $(item).find("div.row").find("#finishDateMilestone_Executing").each(function(idx,itemsDuration){
+										            
+										            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+										            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+										        })
+										    
+										        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+										            
+										            weightMilestone = itemsWeight.value
+										            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+										            
+										        })
+
+										        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
+											            deliverableDoc = itemsDeliverDoc.value
+											            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+											            
+											    })
+
+											    // if (arrExecuting[i] == null)
+										     //        arrExecuting[i] = arrExecutingSolution;
+										     //    else
+										            arrExecuting.push({"labelSolution":solutionMilestone,"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
+											})
+									        // arrExecuting[i].push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
+
+									    // }
+
+									})
+									// const groupBy = (array, key) => {
+									//   // Return the end result
+									//   return array.reduce((result, currentValue) => {
+									//     // If an array already present for key, push it to the array. Else create an array and push the object
+									//     (result[currentValue[key]] = result[currentValue[key]] || []).push(
+									//       currentValue
+									//     );
+									//     // Return the current iteration `result` value, this will be taken as next iteration `result` value and accumulate
+									//     return result;
+									// 	console.log(result)
+
+									//   }, {}); // empty object is the initial value for result object
+									// };
+
+									arrExecutingGroup = arrExecuting.reduce((result, currentValue) => {
+									    // If an array already present for key, push it to the array. Else create an array and push the object
+									    (result[currentValue['labelSolution']] = result[currentValue['labelSolution']] || []).push(
+									      currentValue
+									    );
+									    // Return the current iteration `result` value, this will be taken as next iteration `result` value and accumulate
+									    return result;
+									}, {});
+								}else{
+									$(".form_Executing:eq("+ i +")").find(".form-group").each(function(idx,item){
+										// if (label.innerHTML != 'Solution Name') {
+											// arrExecuting[i] =  new Array()
+											$(item).find("label").each(function(idx,label){
+												$(item).find("label").each(function(idx,label){
+										            // arrInitiating.push({"dateMilestone":itemsDate.value})
+										            if (label.innerHTML != 'Solution Name') {
+										            	labelTask = label.innerHTML
+										            }
+										        })
+
+										     	$(item).find("div.row").find("#startDateMilestone_Executing").each(function(idx,itemsDate){
+										            // arrInitiating.push({"dateMilestone":itemsDate.value})
+										            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+										            
+										        })
+
+										        $(item).find("div.row").find("#finishDateMilestone_Executing").each(function(idx,itemsDuration){
+										            
+										            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+										            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+										        })
+										    
+										        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+										            
+										            weightMilestone = itemsWeight.value
+										            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+										            
+										        })
+
+										        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
+											            deliverableDoc = itemsDeliverDoc.value
+											            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+											            
+											    })
+
+											    // if (arrExecuting[i] == null)
+										     //        arrExecuting[i] = arrExecutingSolution;
+										     //    else
+										            arrExecuting.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc});
+											})
 
 
+									        // arrExecuting[i].push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})	
 
+									    // }
 
-						//      //    if (label.innerHTML == 'Solution Name') {
-						//     	// 	$(item).find("div.row").find("#inputSolutionMilestone").each(function(idx,itemsMilestone){
-						// 	    //         // arrInitiating.push({"dateMilestone":itemsDate.value})
-						// 	    //         solutionMilestone = itemsMilestone.value
+									})
+									arrExecutingGroup = arrExecuting
+								}	
+							}
+
+							$(".form_Closing").find(".form-group").each(function(idx,item){
+							    $(item).find("label").each(function(idx,label){
+							    	$(item).find("label").each(function(idx,label){
+							            // arrInitiating.push({"dateMilestone":itemsDate.value})
+							            labelTask = label.innerHTML
+							        })// create an empty array of length n
+							        $(item).find("div.row").find("#startDateMilestone_Closing").each(function(idx,itemsDate){
+							            // arrInitiating.push({"dateMilestone":itemsDate.value})
+							            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
+							            
+							        })
+
+							        $(item).find("div.row").find("#finishDateMilestone_Closing").each(function(idx,itemsDuration){
+							            
+							            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
+							            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
+							        })
+							    
+							        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
+							            
+							            weightMilestone = itemsWeight.value
+							            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+							            
+							        })
+
+							        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
+							            deliverableDoc = itemsDeliverDoc.value
+							            // arrInitiating.push({"weightMilestone":itemsWeight.value})
+							            
+							        })
+
+							        arrClosing.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
+							    })
+							})
+						}
 						
-						// 	    //     })
-
-						// 	    //     arrExecutingSolution.push({"solutionName":solutionMilestone})
-						// 	    //     arrExecutingFinal = arrExecutingSolution.map((item, i) => Object.assign({}, item, arrExecuting[i]));
-
-						
-
-						//     	// }else{
-						//     	// 	arrExecutingFinal = arrExecuting
-						//     	// }
-
-						//     	// matrix.push({"id":key, "name":list[key]});
-
-						//     })
-						// })
-
-						arrClosing = []
-						$(".form_Closing").find(".form-group").each(function(idx,item){
-						    $(item).find("label").each(function(idx,label){
-						    	$(item).find("label").each(function(idx,label){
-						            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						            labelTask = label.innerHTML
-						        })// create an empty array of length n
-						        $(item).find("div.row").find("#startDateMilestone_Closing").each(function(idx,itemsDate){
-						            // arrInitiating.push({"dateMilestone":itemsDate.value})
-						            startDateMilestone = moment(itemsDate.value).format('YYYY-MM-DD')
-						            
-						        })
-
-						        $(item).find("div.row").find("#finishDateMilestone_Closing").each(function(idx,itemsDuration){
-						            
-						            finishDateMilestone = moment(itemsDuration.value).format('YYYY-MM-DD')
-						            // arrInitiating.push({"finishDateMilestone":itemsDuration.value})
-						        })
-						    
-						        $(item).find("div.row").find("#weightMilestone").each(function(idx,itemsWeight){
-						            
-						            weightMilestone = itemsWeight.value
-						            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-						            
-						        })
-
-						        $(item).find("div.row").find("#deliverable_document").each(function(idx,itemsDeliverDoc){
-						            deliverableDoc = itemsDeliverDoc.value
-						            // arrInitiating.push({"weightMilestone":itemsWeight.value})
-						            
-						        })
-
-						        arrClosing.push({"labelTask":labelTask,"startDateMilestone":startDateMilestone,"finishDateMilestone":finishDateMilestone,"weightMilestone":weightMilestone,"deliverableDoc":deliverableDoc})
-						    })
-						})
-
-						console.log(JSON.stringify(arrClosing)+"closing")
-						console.log(JSON.stringify(arrExecutingGroup))
-
 						formData = new FormData
 						formData.append("_token","{{ csrf_token() }}")		
 						formData.append("id_pmo",window.location.href.split("/")[6].split("?")[0])		
@@ -2883,7 +3286,8 @@ PMO
 						formData.append("arrInitiating",JSON.stringify(arrInitiating))		
 						formData.append("arrPlanning",JSON.stringify(arrPlanning))		
 						formData.append("arrExecuting",JSON.stringify(arrExecutingGroup))		
-						formData.append("arrClosing",JSON.stringify(arrClosing))		
+						formData.append("arrClosing",JSON.stringify(arrClosing))	
+						formData.append("type_milestone",window.location.href.split("/")[6].split('?')[1].split('=')[2])	
 
 				        // data = {
 				        //   _token:"{{ csrf_token() }}",
@@ -2901,7 +3305,11 @@ PMO
           					text: 'Click Ok to reload page',
 				        }
 
-						createPost(swalFireCustom,formData,swalSuccess,url="/PMO/storeMilestone")
+				        if (window.location.href.split("/")[6].split('?')[1].split('=')[2] == "custom") {
+							createPost(swalFireCustom,formData,swalSuccess,url="/PMO/storeCustomMilestone")
+				        }else{
+							createPost(swalFireCustom,formData,swalSuccess,url="/PMO/storeMilestone")
+				        }
 					}
 
 					
@@ -2911,7 +3319,6 @@ PMO
 					
 					
 				}
-
 
 				$("input[name='startDateMilestone'],input[name='finishDateMilestone']").datepicker({
 					autoclose: true
@@ -3559,7 +3966,6 @@ PMO
 
     let arrReason = []
   	function reasonReject(item,display,nameClass,typeCallout=""){
-  		console.log(arrReason.length)
 	    $(".divReasonRejectRevision").remove()
 	      arrReason.push(item)
 
@@ -3680,21 +4086,18 @@ PMO
     })
 
     $("#inputRatingIssue").keyup(function(){
-    	console.log(this)
     	if (this.value > 5) {
     		$("#inputRatingIssue").val("")
     	}
     })
 
     $("#inputImpact").keyup(function(){
-    	console.log(this)
     	if (this.value > 5) {
     		$("#inputImpact").val("")
     	}
     })
 
     $("#inputLikelihood").keyup(function(){
-    	console.log(this)
     	if (this.value > 5) {
     		$("#inputLikelihood").val("")
     	}
@@ -3817,13 +4220,11 @@ PMO
         ],
         "rowCallback": function( row, data ) {
       		if (accesable.includes("cbTaskDone")) {
-      			console.log(data.deliverable_document)
           		if (data.deliverable_document != "true") {
           			$('td:eq(4)', row).html( '<input type="checkbox" class="minimal" name="cbTaskDone" id="cbTaskDone" value="'+ data.id_gantt +'"> Task Done');
           			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").prop("disabled",false)
           			// $("input[name='cbTaskDone'][value="+ data.id_gantt +"]").closest("div").removeClass("disabled").prop("disabled",false)
           		}else{
-          			console.log($('td:eq(4)', row)[0])
           			$("input[name='cbTaskDone']").closest("div").css("cursor","not-allowed")	          
           		}
       		}else{
@@ -4537,7 +4938,6 @@ PMO
 			    }
 		    }
 
-		    console.log(n)
 	    }else{
 	    	x[1].style.display = "inline";
 	    	x[0].style.display = "none";
@@ -5037,7 +5437,6 @@ PMO
 
 					$("#divAddTerms").append(append3)
 					if (status == 'verify') {
-						console.log("sini")
 						$("#btnAddTerms").hide()
 						let arrTerms = [], arrPayment = []
 		        		
@@ -5150,7 +5549,6 @@ PMO
 					}				
 
 			    }else {
-			    	console.log(status)
 			      	if (n == 0) {
 			      		$(".modal-title").text('Project Information')
 				        document.getElementById("prevBtnFinal").innerHTML = "Cancel";
