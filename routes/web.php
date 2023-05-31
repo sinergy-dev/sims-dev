@@ -1081,6 +1081,7 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::post('/PMO/postRisk','PMProjectController@postRisk');
 	Route::get('/PMO/getShowDocument','PMProjectController@getShowDocument');
 	Route::post('/PMO/storeMilestone','PMProjectController@storeMilestone');
+	Route::post('/PMO/storeCustomMilestone','PMProjectController@storeCustomMilestone');
 	Route::post('/PMO/storeWeeklyReport','PMProjectController@storeWeeklyReport');
 	Route::post('/PMO/storeFinalReport','PMProjectController@storeFinalReport');
 	Route::post('/PMO/storeScheduleRemarksFinalReport','PMProjectController@storeScheduleRemarksFinalReport');
@@ -1113,6 +1114,8 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::get('/PMO/exportRiskExcel','PMProjectController@exportRiskExcel');
 	Route::get('/PMO/exportIssueExcel','PMProjectController@exportIssueExcel');
 	Route::get('/PMO/getAllActivity','PMProjectController@getAllActivity');
+
+	Route::get('/PMO/getPhase','PMProjectController@getPhase');
 
 	
 
