@@ -10,4 +10,11 @@ class Cuti extends Model
     protected $primaryKey = 'id_cuti';
     protected $fillable = ['nik', 'date_req', 'date_start', 'date_end', 'reason_leave', 'acting_during_leave'];
     public $timestamps = false;
+
+    protected $appends = ['remarks'];
+
+    public function getRemarksAttribute()
+    {
+   		return 'Leaving Permit';
+    }
 }
