@@ -95,6 +95,62 @@ class TimesheetController extends Controller
         return json_decode($response->getBody(),true);
     }
 
+    public function getOauth2AccessToken(){
+        $client = new Client();
+
+        $response = $client->request(
+                'POST',
+                'https://oauth2.googleapis.com/token',
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/x-www-form-urlencoded',
+                    ],
+                    'form_params' => [
+                        'grant_type' => 'refresh_token',
+                        'client_id' => env('GCALENDER_CLIENT_ID'),
+                        'client_secret' => env('GCALENDAR_CLIENT_SECRET'),
+                        'refresh_token' => env('GCALENDAR_REFRESH_TOKEN')
+                    ]
+                ]
+            );
+
+        $response = json_decode($response->getBody());
+
+        return "Bearer " . $response->access_token;
+        // if(Cache::store('file')->has('webex_access_token')){
+        //   Log::info('Webex Access Token still falid');
+        //   return "Bearer " . Cache::store('file')->get('webex_access_token');
+        // } else {
+        //   Log::error('Webex Access Token not falid. Try to refresh token');
+        //   $client = new Client();
+        //   $response = $client->request(
+        //     'POST',
+        //     'https://webexapis.com/v1/access_token',
+        //     [
+        //       'headers' => [
+        //         'Content-Type' => 'application/x-www-form-urlencoded',
+        //       ],
+        //       'form_params' => [
+        //         'grant_type' => 'refresh_token',
+        //         'client_id' => env('WEBEX_CLIENT_ID'),
+        //         'client_secret' => env('WEBEX_CLIENT_SECRET'),
+        //         'refresh_token' => env('WEBEX_REFRESH_TOKEN')
+        //       ]
+        //     ]
+        //   );
+
+        //   $response = json_decode($response->getBody());
+
+        //   if(isset($response->access_token)){
+        //     Log::info('Refresh Token success. Save token to cache file');
+        //     Cache::store('file')->put('webex_access_token',$response->access_token,now()->addSeconds($response->expires_in));
+        //     return "Bearer " . Cache::store('file')->get('webex_access_token');
+        //   } else {
+        //     Log::error('Refresh Token failed. Please to try change "refresh token"');
+        //   }
+        // }
+    }
+
     public function storePhaseConfig(Request $request)
     {
     	$store = new TimesheetPhase();
